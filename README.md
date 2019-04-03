@@ -23,6 +23,8 @@ _See [overview](#view) and demos for details._
 
 * [Environment](#env)
 
+* [Wiki Pages as Living Document](#wiki)
+
 * [Launching a Demo](#launch)
 
 * [Data description](#data)
@@ -66,6 +68,11 @@ Written for Dr. Bradford Griffin by Big Data Hub RA Maude Lachaine under the sup
 ## :seedling: Environment <a name="env"></a>
 
 All demos are implemented in python 3.7.2 If using [Pipenv](https://pipenv.readthedocs.io/en/latest/), use the Pipfile to set up your environment. If you prefer not using Pipenv, use the requirement.txt file to set up an environment or for documentation about working library versions and requirements.
+
+
+## :video_game: Wiki Pages as Living Documents <a name="wiki"></a>
+
+Make sure to check the **wiki pages** of this repository for updates and notes on the project. This will be a living document evolving with our work - everyone is welcome to contribute and add insights, thoughts and suggestions.
 
 ## :rocket: Launching a Demo <a name="launch"></a>
 
