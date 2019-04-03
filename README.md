@@ -1,5 +1,7 @@
 <hr/>
 
+<br/>
+
 # Prototype for modernization and customization of [CIMS](https://pics.uvic.ca/sites/default/files/uploads/CIMS%20Community%20Excel%20model%20user%20documentation_0.pdf) 
 
 _using Python 3.7.2_
@@ -9,6 +11,8 @@ _**Spring/Summer 2019, Big Data Hub, SFU**_
 
 <hr/>
 
+<br/>
+
 ### Prototyping, brainstorming, and designing an updated, modularized and customizable version of ISTUM/CIMS, a realistic technology simulation model. 
 
 _See [overview](#view) and demos for details._
@@ -16,8 +20,11 @@ _See [overview](#view) and demos for details._
 
 [![Follow](https://img.shields.io/twitter/follow/maude_ll.svg?style=social&label=Follow)](https://twitter.com/maude_ll)
 
+<br/>
 
 ## :clipboard: Table of Contents
+
+<br/>
 
 * [Overview](#view)
 
@@ -30,19 +37,29 @@ _See [overview](#view) and demos for details._
 * [Data description](#data)
 
 * [Simulation Structure Overview](#sim)
+
    * [Tree Structure](#tree_strcu)
+
    * [Node Types](#node)
+   
    * [Equations and Connection Rules](#eqn)
+
    * [Additional Info](#add_infp)
 
+
 * [Algorithms](#alg)
+
   * [Simple Pseudocode and other Recipes](#pseudocode)
+  
   * [The Fancier Route - Time and Space](#fancy)
-  * [Calibration](#calib)
+ 
+  * [Calibration - Deterministic and Stochastic Models](#calib)
+
 
 * [Contact Info](#fin)
 
 <hr/>
+<br/>
 
 ## :eye: Overview <a name="view"></a>
 CIMS: simulation models for economy, energy and materials
@@ -64,15 +81,21 @@ CIMS: simulation models for economy, energy and materials
 Written for Dr. Bradford Griffin by Big Data Hub RA Maude Lachaine under the supervision of Dr. Steven Bergner.
 
 <hr/>
+<br/>
 
 ## :seedling: Environment <a name="env"></a>
 
 All demos are implemented in python 3.7.2 If using [Pipenv](https://pipenv.readthedocs.io/en/latest/), use the Pipfile to set up your environment. If you prefer not using Pipenv, use the requirement.txt file to set up an environment or for documentation about working library versions and requirements.
 
+<br/>
 
 ## :video_game: Wiki Pages as Living Documents <a name="wiki"></a>
 
 Make sure to check the **wiki pages** of this repository for updates and notes on the project. This will be a living document evolving with our work - everyone is welcome to contribute and add insights, thoughts and suggestions.
+
+Also don't hesitate to check or contribute to the [to-do list](https://gitlab.rcg.sfu.ca/dashboard/todos)
+
+<br/>
 
 ## :rocket: Launching a Demo <a name="launch"></a>
 
@@ -94,17 +117,21 @@ jupyter notebook --NotebookApp.iopub_data_rate_limit=1.0e10
 
 The flag may be necessary to view some interactive plots, depending on your machine.
 
-
+<br/>
 
 ## :bar_chart: Data description <a name="data"></a>
 
 _To be completed: description of xml file, transition to json to cson, and the tree structure encoded in file_
+
+<br/>
 
 ## :hammer: Simulation Structure Overview <a name="sim"></a>
 
 For details on methods and implemention, view the notebook directory.
 
 _Branches below tbd_
+
+<br/>
 
 ### Tree Structure <a name="tree_strcu"></a>
 
