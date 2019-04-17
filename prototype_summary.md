@@ -99,5 +99,3 @@ At time t, for $k^{th}$ tech.
 
 
 ### Prototype
-
-Consider how time is modeled

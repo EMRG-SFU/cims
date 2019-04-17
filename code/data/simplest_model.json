@@ -1,0 +1,33 @@
+{"years": [2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050],
+ "region":  {"Alberta":
+       {"sector":
+            {"residential":
+
+            {"end_use":
+                 {"heating":
+
+                 {"tech":
+                       {"fam_elec_baseboard":
+                            {"attributes":
+                                 {"demand_unit": "floorspace",
+                                  "units": "m_squared",
+                                  "stock": 20000,
+                                  "available": 1900,
+                                  "unavailable": 2100,
+                                  "lifetime": 25,
+                                  "capital": {"cost": []},
+                                  "o_and_m": {"cost": []},
+                                  "intangible": {"cost": []},
+                                  "output": {"cost": []},
+                                  "discount_rate": {"cost": []},
+                                  "electricity": {"end_use": []}
+                                  }
+                            }
+                       }
+                  }
+                  }
+            }
+            }
+      }
+      }
+}

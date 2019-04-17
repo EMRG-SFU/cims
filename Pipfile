@@ -6,6 +6,12 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+jupyter = "*"
+matplotlib = "*"
+scipy = "*"
+pandas = "*"
+ipykernel = "*"
+cson = "*"
 
 [requires]
 python_version = "3.7"
