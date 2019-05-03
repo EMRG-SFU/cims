@@ -12,6 +12,7 @@ scipy = "*"
 pandas = "*"
 ipykernel = "*"
 cson = "*"
+excel2json = "*"
 
 [requires]
 python_version = "3.7"

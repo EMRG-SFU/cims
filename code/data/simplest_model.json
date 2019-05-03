@@ -15,12 +15,12 @@
                                   "available": 1900,
                                   "unavailable": 2100,
                                   "lifetime": 25,
-                                  "capital": {"cost": []},
-                                  "o_and_m": {"cost": []},
-                                  "intangible": {"cost": []},
-                                  "output": {"cost": []},
-                                  "discount_rate": {"cost": []},
-                                  "electricity": {"end_use": []}
+                                  "capital": {"cost": [20]},
+                                  "o_and_m": {"cost": [50]},
+                                  "intangible": {"cost": [10]},
+                                  "output": {"cost": [40]},
+                                  "discount_rate": {"cost": [5]},
+                                  "electricity": {"supply": [10]}
                                   }
                             }
                        }
