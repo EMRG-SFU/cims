@@ -8,14 +8,15 @@ import pandas as pd
 
 import os
 import json
+import cson
+from excel2json import convert_from_file
 
-# change later, current path messed up
+# local modules
+import helper.utils
+
+# ML: will remove later: just an artifact of my computer setting
 os.chdir("/Users/maudelachaine/Desktop/bigDataHub/pycims_prototype/code")
-os.getcwd()
 
-
-with open('data/simplest_model.json') as json_file:
-    tune_jcims = json.load(json_file)
 
 '''
 Model specified in JSON/CSON file
@@ -25,9 +26,14 @@ Have default model, but changes that can be written by the program
 Make modifications possible through command line
 '''
 
+# This is temporary, will generalize later when prototype works
+
+years = [2005, 2010, 2015, 2020, 2025, 2030, 2035, 2040, 2045, 2050]
+
 
 class ContainerCIMS:
     '''
+    This is the big container that contains all the nodes and connections
     Outputs:
        - Annualized life cycle costs by sector by year by technology
        - Fuel use and emissions by sector by year by technology
@@ -39,9 +45,123 @@ class ContainerCIMS:
 
     Include Supply and Demand Feedbacks later? (10 types of output, see p.14 table 4 in manual)
     '''
-    def __init__(self, nodes, decision_rules, *args, **kwargs):
-        self.nodes = nodes
-        self.decision_rules = decision_rules
+    def __init__(self, datapath='data/simplest_model.json',
+                       save_dir='saved_models'
+                       is_notebook=False,
+                       make_log=True,
+                       *args, **kwargs):
+
+        self.fieldnames = fieldnames
+        self.attributes = attributes
+        self.datapath = datapath
+        self.save_dir = save_dir
+        self.is_notebook = is_notebook
+
+        if make_log:
+            # log for debugging: keep path for plotting, but saves a logfile as well
+            self.logpath = utils.logged()
+
+       # get data member
+       self.read_input()
+
+       '''
+       Build tree/run model here
+
+       '''
+
+
+    def read_input(self, printJSON=False):
+        '''
+        Read datafile
+        The file must contain the model structure. This could be changed in a later iteration
+        '''
+
+        if self.datapath.endswith('.xls') or self.datapath.endswith('.xlsx'):
+            print('converting excel file into json file...')
+            convert(self.datapath)    # ML: check that new file is created at the same place, with the same name (except ext)
+            rootname, _ = os.path.splitext(self.datapath)
+            self.datapath = rootname + ".json"
+
+        if self.datapath.endswith('.json'):
+            with open(self.datapath) as json_file:
+                data = json.load(json_file)
+
+        elif self.datapath.endswith('.cson'):
+            with open(self.datapath) as cson_file:
+                data = json.load(cson_file)
+
+        else:
+            print('Data file must have .json, .cson, .xls or .xlsx extension')
+
+        if printJSON and self.is_notebook:
+            print('Collapsable rendition of model:')
+            utils.RenderJSON(data)
+
+        self.data = data
+
+
+class Node:
+    '''
+    ML: Find a better way to go through graph
+    '''
+    def __init__(self):
+        data = self.data
+
+        # to gather the types of values
+        types = []
+        answer = []
+        attribs = []
+
+        count = 0
+        for key, value in self.tree_walk(data):
+            if key == 'attributes':
+                attribs.append(key)
+                attribs.append(value)
+                break
+
+            if count % 2 == 0:
+                types.append(key)
+            else:
+                answer.append(key)
+            count += 1
+        # attributes
+        self.attribs
+        self.types
+        self.answer
+
+
+    def tree_walk(dictionary):
+        '''
+        clunky way to iterate through nested/structured dict
+        '''
+
+        for key, value in dictionary.items():
+            if isinstance(value, dict):
+                yield (key, value)
+                yield from tree_walk(value)
+            else:
+                yield (key, value)
+
+    def is_leaf(self):
+        '''
+        Returns boolean: whether it is a leaf (no descendent)
+        '''
+        assert self.ntype == "leaf" or "parent" or "root",
+                                       "ntype must be set to `leaf` or `parent` or `root`"
+        if self.ntype == "leaf":
+            return True
+        else:
+            return False
+
+
+
+class NodeType(Node): # NodeType is-a Node
+    def __init__(self):
+        '''
+        fetch the place in the graph we are at
+        '''
+
+
 
 
 
@@ -69,6 +189,7 @@ class TechType:
 
 
 
+
 class AttrType:
     '''
     Builds a dictionary of attributes for feeding into tech type
@@ -76,34 +197,6 @@ class AttrType:
     def __init__(self, *args, **kwargs):
 
 
-
-
-class NodeType:
-    def __init__(self, ntype, *args, **kwargs):
-        self.ntype = ntype
-
-    def is_root(self):
-        '''
-        Returns boolean: whether it is a root (no parent)
-        '''
-        assert self.ntype == "leaf" or "parent" or "root",
-                                       "ntype must be set to `leaf` or `parent` or `root`"
-        if self.ntype == "root":
-            return True
-        else:
-            return False
-
-
-    def is_leaf(self):
-        '''
-        Returns boolean: whether it is a leaf (no descendent)
-        '''
-        assert self.ntype == "leaf" or "parent" or "root",
-                                       "ntype must be set to `leaf` or `parent` or `root`"
-        if self.ntype == "leaf":
-            return True
-        else:
-            return False
 
 
 
@@ -272,11 +365,3 @@ Classes below may or may not be necessary
 
 class SupplySide(TechType, *args, **kwargs):
     def __init__(self):
-
-
-
-
-
-
-# with open('data/simplest_new.cson', 'w') as outfile:
-#     json.dump(data, outfile, indent=4)
