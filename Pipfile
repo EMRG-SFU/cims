@@ -13,6 +13,7 @@ pandas = "*"
 ipykernel = "*"
 cson = "*"
 excel2json = "*"
+networkx = "*"
 
 [requires]
 python_version = "3.7"

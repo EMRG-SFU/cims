@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "65914a51a8672facb792a2747150fe2c22e03165b465b586325ec01937ec8524"
+            "sha256": "0331013d49b3348d32ccdd088fd5381a6c8da2686e7e2814aa611abba9c9ce34"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -275,6 +275,13 @@
             ],
             "version": "==4.4.0"
         },
+        "networkx": {
+            "hashes": [
+                "sha256:8311ddef63cf5c5c5e7c1d0212dd141d9a1fe3f474915281b73597ed5f1d4e3d"
+            ],
+            "index": "pypi",
+            "version": "==2.3"
+        },
         "notebook": {
             "hashes": [
                 "sha256:573e0ae650c5d76b18b6e564ba6d21bf321d00847de1d215b418acb64f056eb8",
@@ -452,10 +459,10 @@
         },
         "qtconsole": {
             "hashes": [
-                "sha256:1ac4a65e81a27b0838330a6d351c2f8435d4013d98a95373e8a41119b2968390",
-                "sha256:bc1ba15f50c29ed50f1268ad823bb6543be263c18dd093b80495e9df63b003ac"
+                "sha256:a667558c7b1e1442a2e5bcef1686c55e096efd0b58d8b2a0a8415f4579991ee3",
+                "sha256:fdfc6002d9d2834c88f9c92e0f6f590284ff3740fa53016f188a62d58bcca6d8"
             ],
-            "version": "==4.4.3"
+            "version": "==4.4.4"
         },
         "scipy": {
             "hashes": [

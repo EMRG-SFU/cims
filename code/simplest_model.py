@@ -11,6 +11,9 @@ import json
 import cson
 from excel2json import convert_from_file
 
+# build graph visualization
+import networkx as nx
+
 # local modules
 import helper.utils
 
@@ -46,16 +49,16 @@ class ContainerCIMS:
     Include Supply and Demand Feedbacks later? (10 types of output, see p.14 table 4 in manual)
     '''
     def __init__(self, datapath='data/simplest_model.json',
-                       save_dir='saved_models'
+                       save_dir='saved_models',
+                       graph_viz=True,
                        is_notebook=False,
                        make_log=True,
                        *args, **kwargs):
 
-        self.fieldnames = fieldnames
-        self.attributes = attributes
         self.datapath = datapath
         self.save_dir = save_dir
         self.is_notebook = is_notebook
+        self.graph_viz = graph_viz
 
         if make_log:
             # log for debugging: keep path for plotting, but saves a logfile as well
@@ -64,10 +67,23 @@ class ContainerCIMS:
        # get data member
        self.read_input()
 
+       if self.graph_viz:
+           # initialize graph for visualization - ML: not sure if should make a viz method
+           G = nx.MultiDiGraph()
+
+###### LAST MODS TO HERE: building visualization (May 3rd 2019, 3pm) #####
+
+
        '''
        Build tree/run model here
 
        '''
+
+
+
+
+    # parent class constructor (`has-a` relationship)
+    Node.__init__(self)
 
 
     def read_input(self, printJSON=False):
@@ -91,13 +107,29 @@ class ContainerCIMS:
                 data = json.load(cson_file)
 
         else:
-            print('Data file must have .json, .cson, .xls or .xlsx extension')
+            print('Data file must have .json, .cson, .xls or .xlsx extension - creating empty data model')
+            data = {}
 
         if printJSON and self.is_notebook:
             print('Collapsable rendition of model:')
             utils.RenderJSON(data)
 
         self.data = data
+
+    # def make_graph(self):
+    #     '''
+    #     Initialize/build graph to visualize model (partly or completely)
+    #     '''
+
+
+
+
+
+
+
+
+
+
 
 
 class Node:
@@ -130,11 +162,11 @@ class Node:
         self.answer
 
 
-    def tree_walk(dictionary):
+    def tree_walk(self):
         '''
         clunky way to iterate through nested/structured dict
         '''
-
+        dictionary = self.data
         for key, value in dictionary.items():
             if isinstance(value, dict):
                 yield (key, value)
@@ -163,6 +195,16 @@ class NodeType(Node): # NodeType is-a Node
 
 
 
+
+
+
+
+class EndUse(NodeType):
+    def __init__(self):
+        '''
+        End use is a different type of node that is attached to demand (and potentially supply)
+        Accounting of input/output is necessary
+        '''
 
 
 class TechType:
@@ -365,3 +407,55 @@ Classes below may or may not be necessary
 
 class SupplySide(TechType, *args, **kwargs):
     def __init__(self):
+
+
+
+
+
+
+
+
+### TESTS ####
+#
+#
+# def tree_walk(dictionary):
+#     '''
+#     clunky way to iterate through nested/structured dict
+#     '''
+#
+#     for key, value in dictionary.items():
+#         if isinstance(value, dict):
+#             yield (key, value)
+#             yield from tree_walk(value)
+#         else:
+#             yield (key, value)
+#
+#
+#
+# # to gather the types of values
+# types = []
+# answer = []
+# attribs = []
+#
+# count = 0
+# for key, value in tree_walk(d):
+#     if key == 'attributes':
+#         attribs.append(key)
+#         attribs.append(value)
+#         break
+#
+#     if count % 2 == 0:
+#         types.append(key)
+#     else:
+#         answer.append(key)
+#     count += 1
+#
+#
+# types
+#
+# attribs[1]
+#
+# for k, v in attribs[1].items():
+#     print(k)
+#     print(v)
+#     print('\n')
