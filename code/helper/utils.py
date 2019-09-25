@@ -233,6 +233,14 @@ def change_price_for_fuel( data, fuel_type, new_price ):
 #         print("Unable to change price of " + fuel_type + ": no records")
 
 
+def change_quantity_demanded( data, fuel_type, new_demand ):
+    results = select_subcategory(data = data,
+                             filter_func = value_includes({"fuel": fuel_type}))
+
+    num_changed = modify_values( results, "demand", new_demand)
+
+
+
 '''
 SAVING FUNCTIONS
 '''
