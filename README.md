@@ -6,7 +6,7 @@
 
 _using Python 3.7.2_
 
-_**Spring/Summer 2019, Big Data Hub, SFU**_
+_**Big Data Hub, SFU, 2019**_
 
 
 <hr/>
