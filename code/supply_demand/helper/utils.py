@@ -63,7 +63,6 @@ def filter_func(key, value, results, condition_func):
 
 def filter_obs(data, fuel_type = "electricity", val = "fuel", verbose=True):
     
-
     cond_func = lambda value: value["fuel"] == fuel_type
     filtered = process_subtypes( data["demand_step"], filter_func, cond_func )
     
@@ -136,8 +135,7 @@ def value_includes( value_criteria ):
         # note: an empty value criteria will always be true
         return True
 
-    # we now return a new function that we just made with the specific
-    #  values filed in -- this is a closure or a more proper 'lambda'
+    # return new function that we just made with the specific values filled in (closure)
     return filter
 
 #  for the result of a select - return a list only of the 'values'
@@ -147,7 +145,7 @@ def reduce_to_values( select_results ):
     return [i[0] for i in select_results]
 
 def gather_values( select_results, value_name ):
-    # add error checking to make sure this is a list
+    # TODO add error checking to make sure this is a list
     gathered_values = []
     for result in select_results:
         # see if this is a tuple
@@ -171,20 +169,14 @@ def gather_values( select_results, value_name ):
     return gathered_values
 
 
-# the MOST IMPORTANT thing to note is that when do a select, we get back a list
-#  and because of the way python works with *labels*... we get *labels* to 
+#  Note is that when do a select, we get back a list and we get *labels* to 
 #  the dictionaries in the original nested structure -- so when we change values
 #  in the list, we change them in the original data structure
-# Make sure you understand why this works!
 
 def modify_values( select_results, value_key_name, new_value_key_value ):
     
     # NOTE: if you pass in a dictionary (or even list) as new_value_key_value it 
-    #       probably won't do what you expect (labels again) -- you may want to 
-    #       check for this and do a deep copy each time you insert it
-    
-    # for fun we'll return the number of values we've inserted, so you can 
-    #  make sure that your operation has actually done something
+    #       may be better to do a deep copy each time it's inserted
     num_changes = 0
     
     # add error checking to make sure select_results is a list
@@ -238,22 +230,39 @@ def find_quantity_for_fuel( fuel_type, data ):
 def change_price_for_fuel( data, fuel_type, new_price ):
     results = select_subcategory(data = data,
                              filter_func = value_includes({"fuel": fuel_type}))
-
     num_changed = modify_values( results, "price", new_price)
-
-#     if num_changed > 0:
-#         print("Changed price of " + fuel_type + " to " + str(new_price))
-#     else:
-#         print("Unable to change price of " + fuel_type + ": no records")
 
 
 def change_quantity_demanded( data, fuel_type, new_demand ):
     results = select_subcategory(data = data,
                              filter_func = value_includes({"fuel": fuel_type}))
-
     num_changed = modify_values( results, "demand", new_demand)
 
 
+class DictAppend(dict):
+    """
+    Dict subclass to easily append values in an inner list inside a nested dictionary
+    Usage: 
+       d = DictAppend()
+       d['a']['b'].append('c')
+       makes print(d)
+       return {'a':{'b':['c']}}
+    """
+    def __init__(self, parent = None, key = None):
+        self.parent = parent
+        self.key = key
+    def __missing__(self, key):
+        self[key] = DictAppend(self, key)
+        return self[key]
+    def append(self, item):
+        self.parent[self.key] = [item]
+    def __setitem__(self, key, val):
+        dict.__setitem__(self, key, val)
+        try:
+            val.parent = self
+            val.key = key
+        except AttributeError:
+            pass    
 
 '''
 SAVING FUNCTIONS
