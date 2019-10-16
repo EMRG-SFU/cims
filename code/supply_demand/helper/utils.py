@@ -217,12 +217,10 @@ def find_quantity_for_fuel( fuel_type, data ):
     results = select_subcategory(data = data,
                                  filter_func = value_includes({"fuel": fuel_type}))
     result_values = gather_values( results, "demand" )
-
     # now given that they're all the same, we can just look at the first one
     if len(result_values) == 0:
         found_quant = None
     else:
-
         found_quant = result_values
     return found_quant
 
