@@ -2,6 +2,11 @@
 A place to house notes and answers to questions, primarily those that have come up in meetings. Currently, they are
 sorted by date, but that isn't super important and will likely make sense to change in the future. 
 
+### Nov 20, 2019
+* Information (like prices) should be inherited from parent nodes. This is where we talked about if a data is needed and 
+isn't available at the node itself, look to the ancestors for the information. **Question: What happens when a node has
+multiple parents? Who should it inherit from? Is this based on structure which stipulates 1 parent per node?**
+
 ### Nov 13, 2019
 * JA implemented an abstract aggregation function that adds fuels demand from each node. BG asked that the aggregation 
 function be made abstract enough to be able to aggregate other attributes as well. JA: confident that this will be able
@@ -26,3 +31,5 @@ get a list of these attributes to ML&JA.
 
 * In the model description, unchanging values have now been filled in. This means that empty cells indicate a calue that
 needs to be calculated.
+
+
