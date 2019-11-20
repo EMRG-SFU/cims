@@ -1,45 +1,53 @@
 import networkx as nx
 import copy
 import random
+import pickle
+
+pickle_in = open('/Users/jilliana/Documents/Consulting/pyCIMs/pycims_prototype/temp/graph.pickle', 'rb')
+g_all = pickle.load(pickle_in)
+
+g_nodes = [n for n, a in g_all.nodes(data=True) if 'type' in a.keys()]  # Find nodes that have data
+g = g_all.subgraph(g_nodes).copy()
+
+fuels = ['Electricity', 'Natural Gas', 'Solar', 'Wind']
 
 
-g = nx.DiGraph()
+def search_nodes(g, search_term):
+    """Search nodes to see if there is one that contains the search term in the final component of its name"""
 
-# Add nodes
-standard_nodes = ['Canada', 'Alberta']
-demand_nodes = ['Residential', 'Building Type', 'Dish Washing', 'Shell', 'Clothes Washing', 'Space Heating',
-                'Water Heating', 'Furnace']
-supply_nodes = ['Natural Gas', 'Solar', 'Wind', 'Electricity', 'Generation', 'Base Load', 'Conventional', 'Renewables']
-g.add_nodes_from(standard_nodes, node_type='standard')
-g.add_nodes_from(demand_nodes, node_type='demand')
-g.add_nodes_from(supply_nodes, node_type='supply')
+    def search(name):
+        components = name.split('.')
+        last_comp = components[-1]
 
-# Add edges
-g.add_edge('Canada', 'Alberta')
-g.add_edge('Alberta', 'Residential')
-g.add_edge('Alberta', 'Natural Gas')
-g.add_edge('Alberta', 'Solar')
-g.add_edge('Alberta', 'Wind')
-g.add_edge('Alberta', 'Electricity')
-g.add_edge('Residential', 'Building Type')
-g.add_edge('Electricity', 'Generation')
-g.add_edge('Building Type', 'Dish Washing')
-g.add_edge('Building Type', 'Shell')
-g.add_edge('Building Type', 'Clothes Washing')
-g.add_edge('Generation', 'Base Load')
-g.add_edge('Shell', 'Space Heating')
-g.add_edge('Shell', 'Water Heating')
-g.add_edge('Base Load', 'Conventional')
-g.add_edge('Base Load', 'Renewables')
-g.add_edge('Space Heating', 'Furnace')
+        return search_term.lower() in last_comp.lower()
+
+    return [n for n in g.nodes if search(n)]
 
 
-def process_node(n, g):
+def process_node(node, graph, year='2000'):
     # FAKE FUNCTION
-    if n in ['Dish Washing', 'Space Heating', 'Furnace', 'Water Heating', 'Clothes Washing']:
-        fuels = ['Natural Gas', 'Solar', 'Wind', 'Electricity']
-        demand = {f: random.randint(10, 100) for f in fuels}
-        g.nodes[n]['demand'] = demand
+    # TODO: CHANGE FUNCTION
+
+    data = graph.nodes[node][year]
+    if 'technologies' in data.keys():
+        demands = {f: 0 for f in fuels}
+        for tech, data in data['technologies'].items():
+            if not type(data['Service requested']) is list:
+                sr = [data['Service requested']]
+            else:
+                sr = data['Service requested']
+            # Get List of Requested Fuels
+            requested = [(r['branch'].split('.')[-1], r['year_value']) for r in sr]
+
+            for r, yv in requested:
+                is_fuel = r in fuels
+                # print(r, yv, is_fuel)
+                if is_fuel:
+                    demands[r] += yv
+                else:
+                    pass
+
+        graph.nodes[node][year]['demand'] = demands
 
 
 def process_node_with_estimates(n):
@@ -72,17 +80,19 @@ def process_demand(g):
                 n_cur = min(candidates, key=lambda x: candidates[x])
                 # Process chosen node in the sub-graph, using estimated values from their parents
                 process_node_with_estimates(n_cur)
-            print(n_cur)
             visited.append(n_cur)
             sg_cur.remove_node(n_cur)
 
             # Return the updated sub graph
 
-    def aggregate_demand(sub_g):
+    def aggregate_demand(sub_g, year='2000'):
         # Sum the demand across all nodes in the sub-graph
 
         # Find all the demands
-        demands_by_node = [v for k, v in nx.get_node_attributes(sub_g, 'demand').items()]
+        node_year = [v for k, v in nx.get_node_attributes(sub_g, year).items()]
+        demands_by_node = [v['demand'] for k, v in nx.get_node_attributes(sub_g, year).items() if 'demand' in v.keys()]
+        # demands_by_node = [v['demand'] for k, v in nx.get_node_attributes(sub_g, year).items()]
+
         all_demands = [(k, v) for demands in demands_by_node for k, v in demands.items()]
 
         # Sum over the demands
@@ -96,7 +106,7 @@ def process_demand(g):
         return summed_demands
 
     # Find the demand sub-graph
-    d_nodes = [n for n, a in g.nodes(data=True) if a['node_type'] in ('demand', 'standard')]
+    d_nodes = [n for n, a in g.nodes(data=True) if a['type'] in ('demand', 'standard')]
     g_demand = g.subgraph(d_nodes).copy()
 
     # Traverse the sub-graph, processing as we encounter nodes
@@ -106,3 +116,6 @@ def process_demand(g):
     demand_by_fuel = aggregate_demand(g_demand)
 
     return demand_by_fuel
+
+
+print(process_demand(g))
