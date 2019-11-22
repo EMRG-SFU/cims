@@ -4,18 +4,19 @@ import re
 
 
 class Model:
-    def __init__(self, node_dfs, tech_dfs):
+    def __init__(self, reader):
         """ Constructor """
         self.graph = nx.DiGraph()
-        self.node_dfs = node_dfs
-        self.tech_dfs = tech_dfs
+        self.node_dfs, self.tech_dfs = reader.get_model_description(node_col='Node',
+                                                                    extra_cols=['Demand?'])
+        self.incompatible_df = reader.get_incompatible_techs()
 
         self.fuels = ['Electricity', 'Natural Gas', 'Solar', 'Wind']
 
         self._make_nodes(type_col='Demand?')
         self._make_edges()
 
-    def _make_nodes(self, type_col='Demand?'):
+    def _make_nodes(self, type_col):
         def is_year(cn):
             """Check if input int or str is 4 digits [0-9] between begin ^ and end $ of string"""
             # unit test: assert is_year, 1900
@@ -188,6 +189,7 @@ class Model:
 
         return [n for n in self.graph.nodes if search(n)]
 
+    # TODO: Maybe move the process demand and process supply functions outside of the class
     def process_demand(self, year):
         def traverse_sub_graph(sub_g):
 
@@ -284,3 +286,4 @@ class Model:
 
     def process_supply(self):
         pass
+

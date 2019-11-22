@@ -54,57 +54,79 @@ def get_node_cols(mdf, first_data_col_name="Node", extra_cols=['Demand?']):
 # ********************************
 # Core Functions
 # ********************************
-def read_model_description(infile, model_sheet, node_col, extra_cols):
-    # ------------------------
-    # Read in the data
-    # ------------------------
-    mxl = pd.read_excel(infile, sheet_name=None, header=1)  # Read model_description from excel
-    model_df = mxl[model_sheet].replace({pd.np.nan: None})  # Read the model sheet into a dataframe
-    model_df.index += 3                                     # Adjust index to correspond to Excel line numbers
-                                                            # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
-    model_df.columns = [str(c) for c in model_df.columns]   # Convert all column names to strings (years were ints)
-    n_cols, y_cols = get_node_cols(model_df, node_col, extra_cols)    # Find columns, separated year cols from non-year cols
-    all_cols = np.concatenate((n_cols, y_cols))
-    mdf = model_df.loc[1:, all_cols]                        # Create df, drop irrelevant columns & skip first, empty row
 
-    # ------------------------
-    # Extract Node DFs
-    # ------------------------
-    # determine, row ranges for each node def, based on non-empty Node field
-    node_rows = mdf.Node[~mdf.Node.isnull()]  # does not work if node names have been filled in
-    node_rows.index.name = "Row Number"
-    last_row = mdf.index[-1]
-    node_start_ends = zip(node_rows.index,
-                          node_rows.index[1:].tolist() + [last_row])
+class Reader:
+    def __init__(self, infile, sheet_map):
+        self.infile = infile
+        self.sheet_map = sheet_map
 
-    # extract Node DataFrames, at this point still including Technologies
-    node_dfs = {}
-    non_node_cols = mdf.columns != node_col
-    for s, e in node_start_ends:
-        node_df = mdf.loc[s + 1:e - 1]
-        node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
-        try:
-            node_name = list(node_df[node_df['Parameter'] == 'Service provided']['Branch'])[0]
-        except IndexError:
-            continue
-        node_dfs[node_name] = node_df
+    def get_model_description(self, node_col, extra_cols):
+        # ------------------------
+        # Read in the data
+        # ------------------------
+        mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
+        model_df = mxl[self.sheet_map['model']].replace({pd.np.nan: None})  # Read the model sheet into a dataframe
+        model_df.index += 3  # Adjust index to correspond to Excel line numbers
+        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
+        model_df.columns = [str(c) for c in
+                            model_df.columns]  # Convert all column names to strings (years were ints)
+        n_cols, y_cols = get_node_cols(model_df, node_col,
+                                       extra_cols)  # Find columns, separated year cols from non-year cols
+        all_cols = np.concatenate((n_cols, y_cols))
+        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
-    # ------------------------
-    # Extract Tech DFs
-    # ------------------------
-    # Extract tech dfs from node df's and rewrite node df without techs
-    tech_dfs = {}
-    for nn, ndf in node_dfs.items():
-        if any(ndf.Parameter.isin(["Technology", "Service"])):  # Technologies can also be called Services
-            tdfs = {}
-            first_row, last_row = ndf.index[0], ndf.index[-1]
-            tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
-            for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
-                tech_df = ndf.loc[trs:tre - 1]
-                tech_name = tech_df.iloc[0].Value
-                tdfs[tech_name] = tech_df
-            tech_dfs[nn] = tdfs
-            node_dfs[nn] = ndf.loc[:tech_rows[0] - 1]
+        # ------------------------
+        # Extract Node DFs
+        # ------------------------
+        # determine, row ranges for each node def, based on non-empty Node field
+        node_rows = mdf.Node[~mdf.Node.isnull()]  # does not work if node names have been filled in
+        node_rows.index.name = "Row Number"
+        last_row = mdf.index[-1]
+        node_start_ends = zip(node_rows.index,
+                              node_rows.index[1:].tolist() + [last_row])
 
-    return node_dfs, tech_dfs
+        # extract Node DataFrames, at this point still including Technologies
+        node_dfs = {}
+        non_node_cols = mdf.columns != node_col
+        for s, e in node_start_ends:
+            node_df = mdf.loc[s + 1:e - 1]
+            node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
+            try:
+                node_name = list(node_df[node_df['Parameter'] == 'Service provided']['Branch'])[0]
+            except IndexError:
+                continue
+            node_dfs[node_name] = node_df
 
+        # ------------------------
+        # Extract Tech DFs
+        # ------------------------
+        # Extract tech dfs from node df's and rewrite node df without techs
+        tech_dfs = {}
+        for nn, ndf in node_dfs.items():
+            if any(ndf.Parameter.isin(["Technology", "Service"])):  # Technologies can also be called Services
+                tdfs = {}
+                first_row, last_row = ndf.index[0], ndf.index[-1]
+                tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
+                for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
+                    tech_df = ndf.loc[trs:tre - 1]
+                    tech_name = tech_df.iloc[0].Value
+                    tdfs[tech_name] = tech_df
+                tech_dfs[nn] = tdfs
+                node_dfs[nn] = ndf.loc[:tech_rows[0] - 1]
+
+        return node_dfs, tech_dfs
+
+    def get_incompatible_techs(self):
+        # ------------------------
+        # Read in the data
+        # ------------------------
+        mxl = pd.read_excel(self.infile, sheet_name=None)  # Read model_description from excel
+        inc_df = mxl[self.sheet_map['incompatible']].replace({pd.np.nan: None})  # Read the model sheet into a DataFrame
+        inc_df = inc_df.dropna(axis=1)
+        return inc_df
+
+    def get_default_tech_params(self):
+        mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
+        dflt_df = mxl[self.sheet_map['default_tech']].replace({pd.np.nan: None})
+        dflt_df = dflt_df.dropna(axis=1)
+        return dflt_df
