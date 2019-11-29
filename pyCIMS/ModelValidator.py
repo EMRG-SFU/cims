@@ -7,12 +7,11 @@
 
 # Where does this debugging happen?
 #   Can it operate on the excel file itself? Does it need to use the node & tech DataFrame dictionaries?
-
+# TODO: Should the model validation be moved into the Reader class. Initial thoughts are yes.
 import pandas as pd
 import numpy as np
 from Reader import get_node_cols
 import warnings
-
 
 class ModelValidator:
     def __init__(self, xl_file):

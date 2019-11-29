@@ -14,6 +14,8 @@ pycims_reader = pyCIMS.Reader(infile=file,
 
 # From the reader, create a model
 my_model = pyCIMS.Model(pycims_reader)
+my_model.build_graph()
+my_model.run()
 
 # Access the networkx graph of the model
 print(my_model.graph)
