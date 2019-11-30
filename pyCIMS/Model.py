@@ -1,18 +1,19 @@
-
 import networkx as nx
 import copy as copy
 import re
+import random
 
 
 class Model:
     def __init__(self, reader):
-        """ Constructor """
+        """
+        Construct the Model from reader.
+        :param reader: pyCIMS.Reader.
+        """
         self.graph = nx.DiGraph()
-        self.node_dfs, self.tech_dfs = reader.get_model_description(node_col='Node',
-                                                                    extra_cols=['Demand?'])
-        self.incompatible_df = reader.get_incompatible_techs()
-
+        self.node_dfs, self.tech_dfs = reader.get_model_description()
         self.fuels = ['Electricity', 'Natural Gas', 'Solar', 'Wind']
+        self.years = ['2000', '2005', '2010']
 
     def build_graph(self):
         def is_year(cn):
@@ -23,18 +24,13 @@ class Model:
 
         def make_nodes(type_col):
             def add_node_data(current_node):
-                """
-
-                :param current_node:
-                :return:
-                """
                 # Copy the current node dataframe
                 current_node_df = copy.deepcopy(self.node_dfs[current_node])
 
-                # 1. we are going to create a node in the graph
+                # Add a node to the graph
                 self.graph.add_node(current_node)
 
-                # 2. We will store the Supply/Demand Type of node. This is a special case.
+                # Store whether the node type (supply, demand, or standard)
                 typ = list(current_node_df[type_col])[0]
                 if typ:
                     self.graph.nodes[current_node]['type'] = typ.lower()
@@ -43,7 +39,7 @@ class Model:
                 # Drop Demand column
                 current_node_df = current_node_df.drop(type_col, axis=1)
 
-                # 3. We will store the Competition Type of the node at the node level. This is another special case.
+                # Store node's competition type. (If there is one)
                 comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
                 if len(set(comp_list)) == 1:
                     comp_type = comp_list[0]
@@ -53,56 +49,43 @@ class Model:
                 # Get rid of competition type row
                 current_node_df = current_node_df[current_node_df['Parameter'] != 'Competition type']
 
-                # 4. For the remaining rows, group data by year.
-                # Get Year Columns
-                years = [c for c in current_node_df.columns if is_year(c)]
+                # For the remaining data, group by year.
+                years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
+                non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
 
-                # Get Non-Year Columns
-                non_years = [c for c in current_node_df.columns if not is_year(c)]
-
-                # For each year:
                 for y in years:
                     year_df = current_node_df[non_years + [y]]
                     year_dict = {}
-                    for parameter, source, branch, unit, value, year_value in zip(
-                            *[year_df[c] for c in year_df.columns]):
-                        if parameter in year_dict.keys():
+                    for param, src, branch, unit, val, year_value in zip(*[year_df[c] for c in year_df.columns]):
+                        if param in year_dict.keys():
                             pass
                         else:
-                            year_dict[parameter] = {}
+                            year_dict[param] = {}
 
-                        dct = {'source': source,
+                        dct = {'source': src,
                                'branch': branch,
                                'unit': unit,
                                'year_value': year_value}
-                        #             # Clean Dict
-                        #             clean_dict = {k: v for k, v in dct.items() if v is not None}
 
-                        year_dict[parameter][value] = dct
+                        year_dict[param][val] = dct
 
                     # Add data to node
                     self.graph.nodes[current_node][y] = year_dict
 
             def add_tech_data(node_name, tech_name):
-                # TODO: I think we need to differentiate between Technologies and Services.
-
                 t_df = copy.deepcopy(self.tech_dfs[node_name][tech_name])
 
-                # 1. Remove the row that indicates this is a service or technology.
+                # Remove the row that indicates this is a service or technology.
                 t_df = t_df[~t_df['Parameter'].isin(['Service', 'Technology'])]
 
-                # 2. Remove the Demand? column
+                # Remove the Demand? column
                 t_df = t_df.drop('Demand?', axis=1)
 
                 # VERY SIMILAR to what we do for nodes. But not quite. Because we don't use the value column anymore
-                # 4. For the remaining rows, group data by year.
-                # Get Year Columns
-                years = [c for c in t_df.columns if is_year(c)]
+                # For the remaining rows, group data by year.
+                years = [c for c in t_df.columns if is_year(c)]             # Get Year Columns
+                non_years = [c for c in t_df.columns if not is_year(c)]     # Get Non-Year Columns
 
-                # Get Non-Year Columns
-                non_years = [c for c in t_df.columns if not is_year(c)]
-
-                # For each year:
                 for y in years:
                     year_df = t_df[non_years + [y]]
                     year_dict = {}
@@ -188,93 +171,101 @@ class Model:
         make_edges()
         initialize()
 
-    def run(self, equilibrium_threshold=0.01):
-        def traverse_graph(sub_graph, node_process_func):
-            # Find the root of the sub-graph
-            root = [n for n, d in sub_graph.in_degree() if d == 0][0]
+    def run(self, equilibrium_threshold=0.05):
+        def run_year(year):
+            def traverse_graph(sub_graph, node_process_func):
+                # Find the root of the sub-graph
+                root = [n for n, d in sub_graph.in_degree() if d == 0][0]
 
-            # Find the distance from the root to each node in the sub-graph
-            dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
+                # Find the distance from the root to each node in the sub-graph
+                dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
 
-            # Start the traversal
-            sg_cur = copy.deepcopy(sub_graph)
-            visited = []
+                # Start the traversal
+                sg_cur = copy.deepcopy(sub_graph)
+                visited = []
 
-            while len(sg_cur.nodes) > 0:
-                active_front = [n for n, d in sg_cur.in_degree if d == 0]
+                while len(sg_cur.nodes) > 0:
+                    active_front = [n for n, d in sg_cur.in_degree if d == 0]
 
-                if len(active_front) > 0:
-                    # Choose a node on the active front
-                    n_cur = active_front[0]
-                    # Process that node in the sub-graph
-                    node_process_func(n_cur)
-                else:
-                    # Resolve a loop
-                    candidates = {n: dist_from_root[n] for n in sg_cur}
-                    n_cur = min(candidates, key=lambda x: candidates[x])
-                    # Process chosen node in the sub-graph, using estimated values from their parents
-                    node_process_func(n_cur, with_estimates=True)
+                    if len(active_front) > 0:
+                        # Choose a node on the active front
+                        n_cur = active_front[0]
+                        # Process that node in the sub-graph
+                        node_process_func(n_cur)
+                    else:
+                        # Resolve a loop
+                        candidates = {n: dist_from_root[n] for n in sg_cur}
+                        n_cur = min(candidates, key=lambda x: candidates[x])
+                        # Process chosen node in the sub-graph, using estimated values from their parents
+                        node_process_func(n_cur, with_estimates=True)
 
-                visited.append(n_cur)
-                sg_cur.remove_node(n_cur)
+                    visited.append(n_cur)
+                    sg_cur.remove_node(n_cur)
 
-                # Return the updated sub graph
+                    # Return the updated sub graph
 
-        def get_subgraph(node_types):
-            nodes = [n for n, a in self.graph.nodes(data=True) if a['type'] in node_types]
-            sub_g = self.graph.subgraph(nodes).copy()
-            return sub_g
+            def get_subgraph(node_types):
+                nodes = [n for n, a in self.graph.nodes(data=True) if a['type'] in node_types]
+                sub_g = self.graph.subgraph(nodes).copy()
+                return sub_g
 
-        def calc_demand():
-            def demand_process_func():
-                pass
+            def calc_demand():
+                def demand_process_func(node, with_estimates=False):
+                    self.graph.nodes[node]['demand'] = {f: random.randint(10, 50) for f in self.fuels}
+                    pass
 
-            # Find the demand sub-graph
-            g_demand = get_subgraph(['demand', 'standard'])
+                # Find the demand sub-graph
+                g_demand = get_subgraph(['demand', 'standard'])
 
-            # Traverse the sub-graph, processing as we encounter nodes
-            traverse_graph(g_demand, demand_process_func)
+                # Traverse the sub-graph, processing as we encounter nodes
+                traverse_graph(g_demand, demand_process_func)
 
-            # Aggregate demand
-            demand_by_fuel = self.aggregate(g_demand, 'demand')
+                # Aggregate demand
+                demand_by_fuel = self.aggregate(g_demand, [year, 'demand'], agg_func=sum)
 
-            return demand_by_fuel
+                return demand_by_fuel
 
-        def calc_supply():
-            def supply_process_func():
-                pass
+            def calc_supply():
+                def supply_process_func(node, with_estimates=False):
+                    pass
 
-            # Find the supply sub-graph
-            g_supply = get_subgraph(['supply', 'standard'])
+                # Find the supply sub-graph
+                g_supply = get_subgraph(['supply', 'standard'])
 
-            # Traverse the sub-graph processing as we encounter nodes
-            traverse_graph(g_supply, supply_process_func)
+                # Traverse the sub-graph processing as we encounter nodes
+                traverse_graph(g_supply, supply_process_func)
 
-            # Find the prices by fuel (Note: Unsure. This might actually happen in the previous step...)
-            fuel_prices = {}
+                # Find the prices by fuel (Note: Unsure. This might actually happen in the previous step...)
+                fuel_prices = {}
 
-            return fuel_prices
+                return fuel_prices
 
-        def equilibrium_check(dict1, dict2, threshold):
-            for fuel in dict1:
-                abs_diff = abs(dict1[fuel] - dict2[fuel])
-                rel_diff = abs_diff/dict1[fuel]
-                if rel_diff > threshold:
-                    return False
+            def equilibrium_check(dict1, dict2, threshold):
+                for fuel in dict1:
+                    abs_diff = abs(dict1[fuel] - dict2[fuel])
+                    rel_diff = abs_diff / dict1[fuel]
+                    if rel_diff > threshold:
+                        return False
 
-            return True
+                return True
 
-        prev_demand = {}
-        prev_supply = {}
-        equilibrium = False
-        while not equilibrium:
-            curr_demand = calc_demand()
-            curr_supply = calc_supply()
-            equilibrium = equilibrium_check(prev_demand, curr_demand, equilibrium_threshold) and \
-                          equilibrium_check(prev_supply, curr_supply, equilibrium_threshold)
+            prev_demand = {}
+            prev_supply = {}
+            equilibrium = False
+            while not equilibrium:
+                curr_demand = calc_demand()
+                curr_supply = calc_supply()
+                equilibrium = equilibrium_check(prev_demand, curr_demand, equilibrium_threshold) and \
+                              equilibrium_check(prev_supply, curr_supply, equilibrium_threshold)
 
-        # TODO: Add finishing procedures. Ex. Storing resulting prices and demands
-        # Some finishing things... Lik
+                prev_demand = curr_demand
+                prev_supply = curr_supply
+
+            # TODO: Add finishing procedures. Ex. Storing resulting prices and demands
+            # Some finishing things... Lik
+
+        for y in self.years:
+            run_year(y)
 
     def search_nodes(self, search_term):
         """Search nodes to see if there is one that contains the search term in the final component of its name"""
