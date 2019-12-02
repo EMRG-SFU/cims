@@ -1,6 +1,5 @@
 import numpy as np
-import pandas as pd
-
+import warnings
 import pandas as pd
 import re
 
@@ -51,45 +50,98 @@ def get_node_cols(mdf, first_data_col_name="Node", extra_cols=['Demand?']):
     return node_cols, year_cols
 
 
-# ********************************
-# Core Functions
-# ********************************
-
 class Reader:
-    def __init__(self, infile, sheet_map):
+    def __init__(self, infile, sheet_map, node_col, extra_cols):
         self.infile = infile
         self.sheet_map = sheet_map
+        self.node_col = node_col
+        self.extra_cols = extra_cols
 
-    def get_model_description(self, node_col, extra_cols):
-        # ------------------------
-        # Read in the data
-        # ------------------------
+        self.model_df = self._get_model_df()
+
+        self.node_dfs = {}
+        self.tech_dfs = {}
+        self.warnings = {}
+
+    def _get_model_df(self):
         mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
         model_df = mxl[self.sheet_map['model']].replace({pd.np.nan: None})  # Read the model sheet into a dataframe
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
                             model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df, node_col,
-                                       extra_cols)  # Find columns, separated year cols from non-year cols
+        n_cols, y_cols = get_node_cols(model_df, self.node_col,
+                                       self.extra_cols)  # Find columns, separated year cols from non-year cols
         all_cols = np.concatenate((n_cols, y_cols))
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
+        return mdf
+
+    def validate_model(self, verbose=True):
+        model_warnings = {}
+
+        def unspecified_nodes(p, r):
+            referenced_unspecified = set(r).difference(set(p))
+            if len(referenced_unspecified) > 0:
+                w = """{} nodes have been referenced but not specified in the model description: 
+                       {}""".format(len(referenced_unspecified), referenced_unspecified)
+                model_warnings['unspecified_nodes'] = referenced_unspecified
+                if verbose:
+                    warnings.warn(w)
+
+        def unreferenced_nodes(p, r):
+            specified_unreferenced = set(p).difference(set(r))
+            if len(specified_unreferenced) > 0:
+                w = "{} nodes have been specified in the model description but are not referenced by another node:{}"\
+                    .format(len(specified_unreferenced), specified_unreferenced)
+                model_warnings['unreferenced_nodes'] = specified_unreferenced
+                if verbose:
+                    warnings.warn(w)
+
+        def mismatched_node_names(p):
+            node_name_indexes = self.model_df['Node'].dropna()
+            mismatched = []
+            # Given an index where a service provided line lives find the name of the Node housing it.
+            for i, x in p.iteritems():
+                cand = node_name_indexes.loc[:i]
+                node_name_index = cand.index.max()
+                node_name = list(cand)[-1]
+                branch_node_name = x.split('.')[-1]
+
+                if node_name != branch_node_name:
+                    mismatched.append((node_name_index, node_name, branch_node_name))
+
+            if len(mismatched) > 0:
+                w = """{} nodes had a name mismatch with their branch: {}""".format(len(mismatched), mismatched)
+                model_warnings['mismatched_node_names'] = mismatched
+                if verbose:
+                    warnings.warn(w)
+
+        providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
+        requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
+
+        mismatched_node_names(providers)
+        unspecified_nodes(providers, requested)
+        unreferenced_nodes(providers, requested)
+
+        return model_warnings
+
+    def get_model_description(self, inplace=False):
         # ------------------------
         # Extract Node DFs
         # ------------------------
         # determine, row ranges for each node def, based on non-empty Node field
-        node_rows = mdf.Node[~mdf.Node.isnull()]  # does not work if node names have been filled in
+        node_rows = self.model_df.Node[~self.model_df.Node.isnull()]  # does not work if node names have been filled in
         node_rows.index.name = "Row Number"
-        last_row = mdf.index[-1]
+        last_row = self.model_df.index[-1]
         node_start_ends = zip(node_rows.index,
                               node_rows.index[1:].tolist() + [last_row])
 
         # extract Node DataFrames, at this point still including Technologies
         node_dfs = {}
-        non_node_cols = mdf.columns != node_col
+        non_node_cols = self.model_df.columns != self.node_col
         for s, e in node_start_ends:
-            node_df = mdf.loc[s + 1:e - 1]
+            node_df = self.model_df.loc[s + 1:e - 1]
             node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
             try:
                 node_name = list(node_df[node_df['Parameter'] == 'Service provided']['Branch'])[0]
@@ -114,7 +166,24 @@ class Reader:
                 tech_dfs[nn] = tdfs
                 node_dfs[nn] = ndf.loc[:tech_rows[0] - 1]
 
+        if inplace:
+            self.node_dfs = node_dfs
+            self.tech_dfs = tech_dfs
+
         return node_dfs, tech_dfs
+
+    def get_years(self):
+        cols = [y for y in self.model_df.columns if is_year(y)]
+        return cols
+
+    def get_fuels(self):
+        fuel_df = self.model_df[(self.model_df['Parameter'] == 'Service provided') &
+                                (self.model_df['Unit'] == 'GJ') &
+                                (self.model_df['Demand?'] == 'Supply')]
+
+        fuel_nodes = list(fuel_df['Branch'])
+
+        return fuel_nodes
 
     def get_incompatible_techs(self):
         # ------------------------
