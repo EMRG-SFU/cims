@@ -172,6 +172,19 @@ class Reader:
 
         return node_dfs, tech_dfs
 
+    def get_years(self):
+        cols = [y for y in self.model_df.columns if is_year(y)]
+        return cols
+
+    def get_fuels(self):
+        fuel_df = self.model_df[(self.model_df['Parameter'] == 'Service provided') &
+                                (self.model_df['Unit'] == 'GJ') &
+                                (self.model_df['Demand?'] == 'Supply')]
+
+        fuel_nodes = list(fuel_df['Branch'])
+
+        return fuel_nodes
+
     def get_incompatible_techs(self):
         # ------------------------
         # Read in the data
@@ -186,4 +199,3 @@ class Reader:
         dflt_df = mxl[self.sheet_map['default_tech']].replace({pd.np.nan: None})
         dflt_df = dflt_df.dropna(axis=1)
         return dflt_df
-

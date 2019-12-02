@@ -12,8 +12,8 @@ class Model:
         """
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = reader.get_model_description()
-        self.fuels = ['Electricity', 'Natural Gas', 'Solar', 'Wind']
-        self.years = ['2000', '2005', '2010']
+        self.fuels = reader.get_fuels()
+        self.years = reader.get_years()
 
     def build_graph(self):
         def is_year(cn):
@@ -249,20 +249,16 @@ class Model:
 
                 return True
 
-            prev_demand = {}
-            prev_supply = {}
+            prev_prices = {}
             equilibrium = False
             while not equilibrium:
-                curr_demand = calc_demand()
-                curr_supply = calc_supply()
-                equilibrium = equilibrium_check(prev_demand, curr_demand, equilibrium_threshold) and \
-                              equilibrium_check(prev_supply, curr_supply, equilibrium_threshold)
+                curr_demand = calc_demand(prev_prices)
+                curr_prices = calc_supply(curr_demand)
+                equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
 
-                prev_demand = curr_demand
-                prev_supply = curr_supply
+                prev_prices = curr_prices
 
             # TODO: Add finishing procedures. Ex. Storing resulting prices and demands
-            # Some finishing things... Lik
 
         for y in self.years:
             run_year(y)
