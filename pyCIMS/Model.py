@@ -12,8 +12,9 @@ class Model:
         """
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = reader.get_model_description()
-        self.fuels = reader.get_fuels()
+        self.fuels = []
         self.years = reader.get_years()
+        self.tech_defaults = reader.get_default_tech_params()
 
     def build_graph(self):
         def is_year(cn):
@@ -22,7 +23,17 @@ class Model:
             re_year = re.compile(r'^[0-9]{4}$')
             return bool(re_year.match(str(cn)))
 
-        def make_nodes(type_col):
+        def get_value(node, key):
+            parent = '.'.join(node.split('.')[:-1])
+            if key in self.graph.nodes[node].keys():
+                val = self.graph.nodes[node][key]
+            elif parent:
+                val = get_value(parent, key)
+            else:
+                val = None
+            return val
+
+        def make_nodes():
             def add_node_data(current_node):
                 # Copy the current node dataframe
                 current_node_df = copy.deepcopy(self.node_dfs[current_node])
@@ -30,14 +41,20 @@ class Model:
                 # Add a node to the graph
                 self.graph.add_node(current_node)
 
-                # Store whether the node type (supply, demand, or standard)
-                typ = list(current_node_df[type_col])[0]
-                if typ:
-                    self.graph.nodes[current_node]['type'] = typ.lower()
+                # Find Parent data from parent (if there is a parent)
+                parent_node = '.'.join(current_node.split('.')[:-1])
+                if parent_node:
+                    parent_data = self.graph.nodes[parent_node]
+
+                # Store node type (if there is one)
+                typ = list(current_node_df[current_node_df['Parameter'] == 'Sector type']['Value'])
+                if len(typ) > 0:
+                    self.graph.nodes[current_node]['type'] = typ[0].lower()
                 else:
-                    self.graph.nodes[current_node]['type'] = 'standard'
-                # Drop Demand column
-                current_node_df = current_node_df.drop(type_col, axis=1)
+                    val = get_value(current_node, 'type')
+                    self.graph.nodes[current_node]['type'] = val if val else 'standard'
+                # Drop Demand row
+                current_node_df = current_node_df[current_node_df['Parameter'] != 'Sector type']
 
                 # Store node's competition type. (If there is one)
                 comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
@@ -79,7 +96,7 @@ class Model:
                 t_df = t_df[~t_df['Parameter'].isin(['Service', 'Technology'])]
 
                 # Remove the Demand? column
-                t_df = t_df.drop('Demand?', axis=1)
+                # t_df = t_df.drop('Demand?', axis=1)
 
                 # VERY SIMILAR to what we do for nodes. But not quite. Because we don't use the value column anymore
                 # For the remaining rows, group data by year.
@@ -167,8 +184,18 @@ class Model:
         def initialize():
             pass
 
-        make_nodes(type_col='Demand?')
+        def get_fuels():
+            fuels = []
+            for n, d in self.graph.nodes(data=True):
+                is_supply = d['type'] == 'supply'
+                prov_gj = any([data['unit'] == 'GJ' for service, data in d[self.years[0]]['Service provided'].items()])
+                if is_supply & prov_gj:
+                    fuels += [n]
+            return fuels
+
+        make_nodes()
         make_edges()
+        self.fuels = get_fuels()
         initialize()
 
     def run(self, equilibrium_threshold=0.05):
@@ -191,41 +218,54 @@ class Model:
                         # Choose a node on the active front
                         n_cur = active_front[0]
                         # Process that node in the sub-graph
-                        node_process_func(n_cur)
+                        node_process_func(sub_graph, n_cur)
                     else:
                         # Resolve a loop
                         candidates = {n: dist_from_root[n] for n in sg_cur}
                         n_cur = min(candidates, key=lambda x: candidates[x])
                         # Process chosen node in the sub-graph, using estimated values from their parents
-                        node_process_func(n_cur, with_estimates=True)
+                        node_process_func(sub_graph, n_cur, with_estimates=True)
 
                     visited.append(n_cur)
                     sg_cur.remove_node(n_cur)
-
-                    # Return the updated sub graph
 
             def get_subgraph(node_types):
                 nodes = [n for n, a in self.graph.nodes(data=True) if a['type'] in node_types]
                 sub_g = self.graph.subgraph(nodes).copy()
                 return sub_g
 
-            def calc_demand():
-                def demand_process_func(node, with_estimates=False):
-                    self.graph.nodes[node]['demand'] = {f: random.randint(10, 50) for f in self.fuels}
-                    pass
+            def calc_demand(prices):
+                def demand_process_func(g, node, with_estimates=False):
+                    g.nodes[node]['demand'] = {f: random.randint(10, 50) for f in self.fuels}
+
+                def calculate_service_cost(sub_graph):
+                    def calculate_node_sc(node):
+                        children = sub_graph[node]
+                        if len(children) == 0:
+                            service_cost = 10
+                        else:
+                            service_cost = sum([calculate_node_sc(c) for c in children])
+                        sub_graph.nodes[node]['service cost'] = service_cost
+                        return service_cost
+
+                    roots = [n for n, d in sub_graph.in_degree() if d == 0]
+                    for root in roots:
+                        print(calculate_node_sc(root))
 
                 # Find the demand sub-graph
                 g_demand = get_subgraph(['demand', 'standard'])
+
+                # Calculate Service Cost for every node in the sub-graph
+                # calculate_service_cost(g_demand)
 
                 # Traverse the sub-graph, processing as we encounter nodes
                 traverse_graph(g_demand, demand_process_func)
 
                 # Aggregate demand
-                demand_by_fuel = self.aggregate(g_demand, [year, 'demand'], agg_func=sum)
-
+                demand_by_fuel = self.aggregate(g_demand, ['demand'], agg_func=sum)
                 return demand_by_fuel
 
-            def calc_supply():
+            def calc_supply(demand):
                 def supply_process_func(node, with_estimates=False):
                     pass
 
@@ -254,9 +294,10 @@ class Model:
             while not equilibrium:
                 curr_demand = calc_demand(prev_prices)
                 curr_prices = calc_supply(curr_demand)
-                equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
+                # equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
+                equilibrium = True
 
-                prev_prices = curr_prices
+                # prev_prices = curr_prices
 
             # TODO: Add finishing procedures. Ex. Storing resulting prices and demands
 
@@ -281,13 +322,13 @@ class Model:
         :return:
         """
 
-        def get_val(dict, key_list):
+        def get_val(dict, key_list, name_TEMP):
             value = dict
             for k in key_list:
                 value = value[k]
             return value
 
-        values_by_node = [get_val(data, agg_key) for name, data in sub_graph.nodes(data=True)]
+        values_by_node = [get_val(data, agg_key, name) for name, data in sub_graph.nodes(data=True)]
 
         all_values = [(k, v) for values in values_by_node for k, v in values.items()]
 
