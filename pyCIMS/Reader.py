@@ -156,7 +156,7 @@ class Reader:
                 first_row, last_row = ndf.index[0], ndf.index[-1]
                 tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
                 for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
-                    tech_df = ndf.loc[trs:tre - 1]
+                    tech_df = ndf.loc[trs:tre]
                     tech_name = tech_df.iloc[0].Value
                     tdfs[tech_name] = tech_df
                 tech_dfs[nn] = tdfs
