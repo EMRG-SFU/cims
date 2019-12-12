@@ -4,6 +4,30 @@ import re
 import random
 
 
+def find_value(graph, node, parameter, year):
+    year_data = graph.nodes[node][year]
+    data = graph.nodes[node]
+    parent = '.'.join(node.split('.')[:-1])
+
+    # Look at the Node/Year
+    if parameter in year_data.keys():
+        val = year_data[parameter]
+
+    # Look at the Node
+    elif parameter in data.keys():
+        val = data[parameter]
+
+    # Look at the Parent
+    elif parent:
+        val = find_value(graph, parent, parameter, year)
+
+    # Worst Case, return None
+    else:
+        val = None
+
+    return val
+
+
 class Model:
     def __init__(self, reader):
         """
@@ -15,6 +39,7 @@ class Model:
         self.fuels = []
         self.years = reader.get_years()
         self.tech_defaults = reader.get_default_tech_params()
+        self.results = {} # TODO: POPULATE THIS
 
     def build_graph(self):
         def is_year(cn):
@@ -295,6 +320,7 @@ class Model:
                 curr_demand = calc_demand(prev_prices)
                 curr_prices = calc_supply(curr_demand)
                 # equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
+                print(year, curr_demand)
                 equilibrium = True
 
                 # prev_prices = curr_prices
