@@ -4,14 +4,37 @@ import re
 import random
 
 
-def find_value(graph, node, parameter, year):
-    year_data = graph.nodes[node][year]
+def find_value(graph, node, parameter, year=None):
+    """
+    Find a parameter's value at a given node or its structural ancestors.
+
+    First attempts to locate a parameter at a given node. If the parameter does not exist at that node, a recursive call
+    is made to find the parameter's value at `node`'s parent, if one exists. If no parent exists None is returned.
+    Parameters
+    ----------
+    graph : networkx.Graph
+        The graph where `node` resides.
+    node : str
+        The name of the node to begin our search from. Must be contained within `graph`. (e.g. 'pyCIMS.Canada.Alberta')
+    parameter : str
+        The name of the parameter whose value is being found. (e.g. 'Sector type')
+    year : str, optional
+        The year associated with sub-dictionary to search at `node`. Default is None, which implies that year
+        sub-dictionaries should be searched. Instead, only search for `parameter` in `node`s top level data.
+
+    Returns
+    -------
+    Any
+        The value associated with `parameter` if a value can be found at `node` or one of its ancestors. Otherwise None
+    """
     data = graph.nodes[node]
     parent = '.'.join(node.split('.')[:-1])
 
     # Look at the Node/Year
-    if parameter in year_data.keys():
-        val = year_data[parameter]
+    if year:
+        year_data = graph.nodes[node][year]
+        if parameter in year_data.keys():
+            val = year_data[parameter]
 
     # Look at the Node
     elif parameter in data.keys():
@@ -39,59 +62,91 @@ class Model:
         self.fuels = []
         self.years = reader.get_years()
         self.tech_defaults = reader.get_default_tech_params()
-        self.results = {} # TODO: POPULATE THIS
+        self.results = {}   # TODO: POPULATE THIS
 
     def build_graph(self):
-        def is_year(cn):
-            """Check if input int or str is 4 digits [0-9] between begin ^ and end $ of string"""
-            # unit test: assert is_year, 1900
+        """ Populates self.graph with nodes & edges and sets self.fuels to a list of fuel nodes.
+
+        Returns
+        -------
+        None
+
+        """
+        def is_year(cn: str or int) -> bool:
+            """ Determines whether `cn` is a year
+
+            Parameters
+            ----------
+            cn : int or str
+                The value to check to determine if it is a year.
+
+            Returns
+            -------
+            bool
+                True if `cn` is made entirely of digits [0-9] and is 4 characters in length. False otherwise.
+
+            Examples
+            --------
+            >>> is_year(1900)
+            True
+
+            >>> is_year('2010')
+            True
+            """
             re_year = re.compile(r'^[0-9]{4}$')
             return bool(re_year.match(str(cn)))
 
-        def get_value(node, key):
-            parent = '.'.join(node.split('.')[:-1])
-            if key in self.graph.nodes[node].keys():
-                val = self.graph.nodes[node][key]
-            elif parent:
-                val = get_value(parent, key)
-            else:
-                val = None
-            return val
-
         def make_nodes():
+            """
+            Add nodes to `self.graph` using `self.node_dfs` and `self.tech_dfs`.
+
+            Returns
+            -------
+            networkx.Graph
+                An updated self.graph that contains all nodes and technologies in self.node_dfs and self.tech_dfs.
+            """
             def add_node_data(current_node):
-                # Copy the current node dataframe
-                current_node_df = copy.deepcopy(self.node_dfs[current_node])
+                """ Add and populate a new node to `self.graph`
 
-                # Add a node to the graph
-                self.graph.add_node(current_node)
+                Parameters
+                ----------
+                current_node : str
+                    The name of the node (branch format) to add.
 
-                # Find Parent data from parent (if there is a parent)
-                parent_node = '.'.join(current_node.split('.')[:-1])
-                if parent_node:
-                    parent_data = self.graph.nodes[parent_node]
+                Returns
+                -------
+                networkx.Graph
+                    `self.graph` with `node` added, along with its associated data.
+                """
+                # 1 Copy the current graph & the current node's dataframe
+                current_node_df = copy.copy(self.node_dfs[current_node])
+                graph = copy.copy(self.graph)
 
-                # Store node type (if there is one)
+                # 2 Add an empty node to the graph
+                graph.add_node(current_node)
+
+                # 3 Find node type (supply, demand, or standard)
                 typ = list(current_node_df[current_node_df['Parameter'] == 'Sector type']['Value'])
                 if len(typ) > 0:
-                    self.graph.nodes[current_node]['type'] = typ[0].lower()
+                    graph.nodes[current_node]['type'] = typ[0].lower()
                 else:
-                    val = get_value(current_node, 'type')
-                    self.graph.nodes[current_node]['type'] = val if val else 'standard'
+                    # If type isn't in the node's df, try to find it in the ancestors
+                    val = find_value(graph, current_node, 'type')
+                    graph.nodes[current_node]['type'] = val if val else 'standard'
                 # Drop Demand row
                 current_node_df = current_node_df[current_node_df['Parameter'] != 'Sector type']
 
-                # Store node's competition type. (If there is one)
+                # 4 Find node's competition type. (If there is one)
                 comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
                 if len(set(comp_list)) == 1:
                     comp_type = comp_list[0]
-                    self.graph.nodes[current_node]['competition_type'] = comp_type.lower()
+                    graph.nodes[current_node]['competition_type'] = comp_type.lower()
                 elif len(set(comp_list)) > 1:
                     print("TOO MANY COMPETITION TYPES")
                 # Get rid of competition type row
                 current_node_df = current_node_df[current_node_df['Parameter'] != 'Competition type']
 
-                # For the remaining data, group by year.
+                # 5 For the remaining data, group by year.
                 years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
                 non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
 
@@ -110,21 +165,37 @@ class Model:
                                'year_value': year_value}
 
                         year_dict[param][val] = dct
-
                     # Add data to node
-                    self.graph.nodes[current_node][y] = year_dict
+                    graph.nodes[current_node][y] = year_dict
 
-            def add_tech_data(node_name, tech_name):
-                t_df = copy.deepcopy(self.tech_dfs[node_name][tech_name])
+                # 6 Return the new graph
+                return graph
 
-                # Remove the row that indicates this is a service or technology.
+            def add_tech_data(node, tech):
+                """
+                Add and populate a new technology to `node`'s data within`self.graph`
+                Parameters
+                ----------
+                node : str
+                    The name of the node the new technology data will reside in.
+                tech : str
+                    The name of the technology being added to the graph.
+                Returns
+                -------
+                networkx.Graph
+                    `self.graph` with the data for `tech` contained within `node`'s node data
+
+                """
+                # 1 Copy the current graph & the current tech's dataframe
+                t_df = copy.copy(self.tech_dfs[node][tech])
+                graph = copy.copy(self.graph)
+
+                # 2 Remove the row that indicates this is a service or technology.
                 t_df = t_df[~t_df['Parameter'].isin(['Service', 'Technology'])]
 
-                # Remove the Demand? column
-                # t_df = t_df.drop('Demand?', axis=1)
-
-                # VERY SIMILAR to what we do for nodes. But not quite. Because we don't use the value column anymore
-                # For the remaining rows, group data by year.
+                # 3 Group data by year & add to the tech's dictionary
+                # NOTE: This is very similar to what we do for nodes (above). However, it differs because here we aren't
+                # using the value column (its redundant here).
                 years = [c for c in t_df.columns if is_year(c)]             # Get Year Columns
                 non_years = [c for c in t_df.columns if not is_year(c)]     # Get Non-Year Columns
 
@@ -147,69 +218,123 @@ class Model:
                         else:
                             year_dict[parameter] = dct
 
-                    # Add technologies key if needed
-                    if 'technologies' not in self.graph.nodes[node_name][y].keys():
-                        self.graph.nodes[node_name][y]['technologies'] = {}
+                    # Add technologies key (to the node's data) if needed
+                    if 'technologies' not in graph.nodes[node][y].keys():
+                        graph.nodes[node][y]['technologies'] = {}
 
                     # Add the technology specific data for that year
-                    self.graph.nodes[node_name][y]['technologies'][tech_name] = year_dict
+                    graph.nodes[node][y]['technologies'][tech] = year_dict
 
-            # Add each node and its associated data to the Graph
+                # 4 Return the new graph
+                return graph
+
+            # 1 Copy graph
+            new_graph = copy.copy(self.graph)
+
+            # 2 Add nodes to the graph
             for n in self.node_dfs.keys():
-                add_node_data(n)
+                new_graph = add_node_data(n)
 
+            # 3 Add technologies to the graph
             for node in self.tech_dfs:
                 # Add technologies key to node data
                 for tech in self.tech_dfs[node]:
-                    add_tech_data(node, tech)
+                    new_graph = add_tech_data(node, tech)
+
+            # Return the graph
+            return new_graph
 
         def make_edges():
-            def add_edges(node_name, df):
-                # Find edges based on Requester/Provider relationships
-                # ----------------------------------------------------
+            """
+            Add edges to `self.graph` using information in `self.node_dfs` and `self.tech_dfs`.
+
+            Returns
+            -------
+            networkx.Graph
+                An updated `self.graph` that contains all edges defined in `self.node_dfs` and `self.tech_dfs`.
+
+            """
+            def add_edges(node, df):
+                """ Add edges associated with `node` to `self.graph` based on data in `df`.
+
+                Edges are added to the graph based on: (1) if a node is requesting a service provided by
+                another node or (2) the relationships implicit in the branch structure used to identify a node. When an
+                edge is added to the graph, we also store the edge type ('request_provide', 'structure') in the edge
+                attributes. An edge may have more than one type.
+
+                Parameters
+                ----------
+                node : str
+                    The name of the node we are creating edges for. Should already be a node within self.graph.
+
+                df : pandas.DataFrame
+                    The DataFrame we will use to create edges for `node`.
+
+                Returns
+                -------
+                networkx.Graph
+                    An updated version of self.graph with edges associated with `node` added to the graph.
+                """
+                # 1 Copy the graph
+                graph = copy.copy(self.graph)
+
+                # 2 Find edges based on requester/provider relationships
+                #   These are the edges that exist because one node requests a service to another node
                 # Find all nodes node is requesting services from
                 providers = df[df['Parameter'] == 'Service requested']['Branch'].unique()
-                rp_edges = [(node_name, p) for p in providers]
-                self.graph.add_edges_from(rp_edges)
+                rp_edges = [(node, p) for p in providers]
+                graph.add_edges_from(rp_edges)
 
                 # Add them to the graph
                 for e in rp_edges:
                     try:
-                        types = self.graph.edges[e]['type']
+                        types = graph.edges[e]['type']
                         if 'request_provide' not in types:
-                            self.graph.edges[e]['type'] += ['request_provide']
+                            graph.edges[e]['type'] += ['request_provide']
                     except KeyError:
-                        self.graph.edges[e]['type'] = ['request_provide']
+                        graph.edges[e]['type'] = ['request_provide']
 
-                # Find edges based on branch
-                # --------------------------
+                # 3 Find edge based on branch structure.
+                #   e.g. If our node was pyCIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
                 # Find the node's parent
-                parent = '.'.join(node_name.split('.')[:-1])
-                s_edges = []
+                parent = '.'.join(node.split('.')[:-1])
                 if parent:
-                    s_edges += [(parent, node_name)]
-                self.graph.add_edges_from(s_edges)
-
-                # Add them to the graph
-                for e in s_edges:
+                    s_edge = (parent, node)
+                    graph.add_edge(s_edge)
+                    # Add the edges type
                     try:
-                        types = self.graph.edges[e]['type']
+                        types = graph.edges[s_edge]['type']
                         if 'structure' not in types:
-                            self.graph.edges[e]['type'] += ['structure']
+                            graph.edges[s_edge]['type'] += ['structure']
                     except KeyError:
-                        self.graph.edges[e]['type'] = ['structure']
+                        graph.edges[s_edge]['type'] = ['structure']
+
+                # 4 Return resulting graph
+                return graph
+
+            graph = self.graph
 
             for node in self.node_dfs:
-                add_edges(node, self.node_dfs[node])
+                graph = add_edges(node, self.node_dfs[node])
 
             for node in self.tech_dfs:
                 for tech in self.tech_dfs[node]:
-                    add_edges(node, self.tech_dfs[node][tech])
+                    graph = add_edges(node, self.tech_dfs[node][tech])
 
-        def initialize():
-            pass
+            return graph
 
         def get_fuels():
+            """ Find the names of nodes supplying fuel.
+
+            Currently, this is any node which (1) provides a service whose unit is GJ and (2) is a supply node.
+            TODO: Update this once node type has been added to model description. Fuels will be any sector level
+                  supply nodes specified within the graph.
+            Returns
+            -------
+            list of str
+                A list containing the names of nodes which supply fuels.
+            """
+
             fuels = []
             for n, d in self.graph.nodes(data=True):
                 is_supply = d['type'] == 'supply'
@@ -218,14 +343,69 @@ class Model:
                     fuels += [n]
             return fuels
 
-        make_nodes()
-        make_edges()
+        self.graph = make_nodes()
+        self.graph = make_edges()
         self.fuels = get_fuels()
-        initialize()
 
     def run(self, equilibrium_threshold=0.05):
+        """
+        Runs the entire model, progressing year-by-year until an equilibrium has been reached for each year.
+
+        # TODO: add max_iterations parameter
+
+        Parameters
+        ----------
+        equilibrium_threshold : float, optional
+            The largest relative difference between prices allowed for an equilibrium to be reached. Must be between
+            [0, 1]. Relative difference is calculated as the absolute difference between two prices, divided by the
+            first price.
+
+        Returns
+        -------
+        None
+            Nothing is returned, but `self.graph` will be updated with the resulting prices, quantities, etc calculated
+            for each year.
+
+        """
         def run_year(year):
+            """
+            Run the model for the given `year` until an equilibrium in fuel prices is reached between iterations.
+
+            The model will be run for the given year, alternating between demand and supply calculations until an
+            equilibrium in prices between iterations is reached.
+
+            Parameters
+            ----------
+            year : int or str
+                The year to run the model for.
+
+            Returns
+            -------
+            None
+                Nothing is returned, but `self.graph` will be updated with the resulting prices, quantities, etc.
+            """
             def traverse_graph(sub_graph, node_process_func):
+                """
+                Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
+
+                A node is only visited once its parents have been visited. In the case of a loop (where every node has
+                at least one parent who hasn't been visited) the node closest to the `sub_graph` root will be visited
+                and processed using the values held over from the last iteration.
+
+                Parameters
+                ----------
+                sub_graph : networkx.DiGraph
+                    The graph to be traversed.
+
+                node_process_func : function (nx.DiGraph, str) -> None
+                    The function to be applied to each node in `sub_graph`. Doesn't return anything but should have an
+                    effect on the node data within `sub_graph`.
+
+                Returns
+                -------
+                None
+
+                """
                 # Find the root of the sub-graph
                 root = [n for n, d in sub_graph.in_degree() if d == 0][0]
 
@@ -255,11 +435,42 @@ class Model:
                     sg_cur.remove_node(n_cur)
 
             def get_subgraph(node_types):
+                """
+                Find the sub-graph of `self.graph` that only includes nodes whose type is in `node_types`.
+
+                Parameters
+                ----------
+                node_types : list of str
+                    A list of node types ('standard', 'supply', or 'demand') to include in the returned sub-graph.
+
+                Returns
+                -------
+                networkx.Graph
+                    The returned graph is a sub-graph of `self.graph`. A node is only included if its type is one
+                    of `node_types`. A edge is only included if it connects two nodes found in the returned graph.
+                """
                 nodes = [n for n, a in self.graph.nodes(data=True) if a['type'] in node_types]
                 sub_g = self.graph.subgraph(nodes).copy()
                 return sub_g
 
             def calc_demand(prices):
+                """
+                Using `self.graph` calculate the services requested by the demand side of the tree in a given iteration.
+
+                For now, this means getting the quantity of fuel being requested by demand-side nodes.
+
+                Parameters
+                ----------
+                prices : dict of {str: float}
+                    Fuel prices to use for estimates or initialization. (Likely were produced in the last iteration)
+
+                Returns
+                -------
+                dict of {str: float}
+                    A dictionary containing the fuels (keys) requested by the demand side of the tree, along with the
+                    quantity of those fuels being requested.
+
+                """
                 def demand_process_func(g, node, with_estimates=False):
                     g.nodes[node]['demand'] = {f: random.randint(10, 50) for f in self.fuels}
 
@@ -277,16 +488,16 @@ class Model:
                     for root in roots:
                         print(calculate_node_sc(root))
 
-                # Find the demand sub-graph
+                # 1 Find the demand sub-graph
                 g_demand = get_subgraph(['demand', 'standard'])
 
-                # Calculate Service Cost for every node in the sub-graph
+                # 2 Calculate Service Cost for every node in the sub-graph
                 # calculate_service_cost(g_demand)
 
-                # Traverse the sub-graph, processing as we encounter nodes
+                # 3 Traverse the sub-graph, processing as we encounter nodes
                 traverse_graph(g_demand, demand_process_func)
 
-                # Aggregate demand
+                # 4 Aggregate demand
                 demand_by_fuel = self.aggregate(g_demand, ['demand'], agg_func=sum)
                 return demand_by_fuel
 
@@ -294,18 +505,39 @@ class Model:
                 def supply_process_func(node, with_estimates=False):
                     pass
 
-                # Find the supply sub-graph
+                # 1 Find the supply sub-graph
                 g_supply = get_subgraph(['supply', 'standard'])
 
-                # Traverse the sub-graph processing as we encounter nodes
+                # 2 Traverse the sub-graph processing as we encounter nodes
                 traverse_graph(g_supply, supply_process_func)
 
-                # Find the prices by fuel (Note: Unsure. This might actually happen in the previous step...)
+                # 3 Find the prices by fuel (Note: Unsure. This might actually happen in the previous step...)
                 fuel_prices = {}
 
                 return fuel_prices
 
             def equilibrium_check(dict1, dict2, threshold):
+                """
+                Determines whether an equilibrium has been reached between dict1 and dict2.
+
+                Parameters
+                ----------
+                dict1 : dict of {str: float}
+                    A dictionary mapping fuels to their prices. Keys must match keys in `dict2`.
+                dict2 : dict of {str: float}
+                    A dictionary mapping fuels to their prices. Keys must match keys in `dict1`.
+                threshold : float, optional
+                    The largest relative difference between prices allowed for an equilibrium to be reached. Must be
+                    between [0, 1]. Relative difference is calculated as the absolute difference between two prices,
+                    divided by the first price.
+
+                Returns
+                -------
+                bool
+                    True if all fuels have a relative difference <= `threshold` when comparing prices in `dict1` to
+                    prices in `dict2`. False otherwise.
+
+                """
                 for fuel in dict1:
                     abs_diff = abs(dict1[fuel] - dict2[fuel])
                     rel_diff = abs_diff / dict1[fuel]
@@ -320,7 +552,6 @@ class Model:
                 curr_demand = calc_demand(prev_prices)
                 curr_prices = calc_supply(curr_demand)
                 # equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
-                print(year, curr_demand)
                 equilibrium = True
 
                 # prev_prices = curr_prices
@@ -341,6 +572,25 @@ class Model:
 
     def aggregate(self, sub_graph, agg_key, agg_func=sum):
         """
+        Retrieves values to aggregate from each node in the `sub_graph` using `agg_key`. Then applies the `agg_func` to
+        these values to get a final aggregation.
+        Parameters
+        ----------
+        sub_graph : networkx.Graph
+            The graph to be aggregated over.
+
+        agg_key : list [str]
+            The key list needed to access the values for aggregation.
+
+        agg_func : function (any) -> any
+            The aggregation function to apply over the collection of values retreived using `agg_key` from all nodes in
+            the `sub_graph`.
+
+        Returns
+        -------
+
+        """
+        """
         Sum agg_val across all nodes in a given subgraph.
         :param sub_graph: nx.Graph. The sub-graph to be aggregated over.
         :param agg_key: List of str. The key list needed to access the values to be aggregated. Will be used to
@@ -349,6 +599,10 @@ class Model:
         """
 
         def get_val(dict, key_list, name_TEMP):
+            """
+            Retrieve value from nested dictionary using the key list.
+            if key_list = [x, y, z] then will retrieve dict[x][y][z].
+            """
             value = dict
             for k in key_list:
                 value = value[k]
