@@ -52,16 +52,47 @@ def find_value(graph, node, parameter, year=None):
 
 
 class Model:
+    """
+    Relevant dataframes and associated information taken from the model description provided in `reader`. Also includes
+    methods needed for building and running the Model.
+
+    Parameters
+    ----------
+    reader : pyCIMS.Reader
+        The Reader set up to ingest the description (excel file) for our model.
+
+    Attributes
+    ----------
+    graph : networkx.DiGraph
+        Model Graph populated using the `build_graph` method. Model services are nodes in `graph`, with data contained
+        within an associated dictionary. Structural and Request/Provide relationships are edges in the `graph`.
+
+    node_dfs : dict {str: pandas.DataFrame}
+        Node names (branch form) are the keys in the dictionary. Associated DataFrames (specified in the excel model
+        description) are the values. DataFrames do not include 'Technology' or 'Service' information for a node.
+
+    tech_dfs : dict {str: dict {str: pandas.DataFrame}}
+        Technology & service information from the excel model description. Node names (branch form) are keys in
+        `tech_dfs` to sub-dictionaries. These sub-dictionaries have technology/service names as keys and pandas
+         DataFrames as values. These DataFrames contain information from the excel model description.
+
+    fuels : list [str]
+        List of supply-side sector nodes (fuels, etc) requested by the demand side of the Model Graph.  Populated using
+        the `build_graph` method.
+
+    years : list [str or int]
+        List of the years for which the model will be run.
+
+    # TODO: Fill this in once we figure out how we want to do results
+    results :
+
+    """
+
     def __init__(self, reader):
-        """
-        Construct the Model from reader.
-        :param reader: pyCIMS.Reader.
-        """
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = reader.get_model_description()
         self.fuels = []
         self.years = reader.get_years()
-        self.tech_defaults = reader.get_default_tech_params()
         self.results = {}   # TODO: POPULATE THIS
 
     def build_graph(self):
@@ -562,7 +593,20 @@ class Model:
             run_year(y)
 
     def search_nodes(self, search_term):
-        """Search nodes to see if there is one that contains the search term in the final component of its name"""
+        """
+        Search `graph.self` to find the nodes which contain `search_term` in the node name's final component. Not case
+        sensitive.
+
+        Parameters
+        ----------
+        search_term : str
+            The search term.
+
+        Returns
+        -------
+        list [str]
+            A list of node names (branch format) whose last component contains `search_term`.
+        """
         def search(name):
             components = name.split('.')
             last_comp = components[-1]
@@ -588,27 +632,37 @@ class Model:
 
         Returns
         -------
-
-        """
-        """
-        Sum agg_val across all nodes in a given subgraph.
-        :param sub_graph: nx.Graph. The sub-graph to be aggregated over.
-        :param agg_key: List of str. The key list needed to access the values to be aggregated. Will be used to
-        :param agg_func:
-        :return:
+        any
+            The result from applying `agg_func` to the list of aggregated values retrieved from `sub_graph` using
+            `agg_key`.
         """
 
-        def get_val(dict, key_list, name_TEMP):
-            """
-            Retrieve value from nested dictionary using the key list.
-            if key_list = [x, y, z] then will retrieve dict[x][y][z].
+        def get_nested_values(dict, key_list):
+            """Retrieves value from the nested dictionary `dict` using the `key_list`.
+
+            Parameters
+            ----------
+            dict : dict {str : dict or str}
+                A nested dictionary, with at least `len(key_list)` levels of nesting.
+
+            key_list : list [str]
+                A list of keys used to access a value in dict. Where elements of `key_list` can be denoted as k0...kn,
+                k0 must be a key in `dict`, k1 must be a key in `dict[k0]`, ... , kn must be a key in
+                `dict[k0][k1]...[kn-1]`.
+
+            Returns
+            -------
+            any
+                Returns the value found by using the keys found in `key_list` to access a value within the nested
+                dictionary `dict`. For example, if `key_list` = [x, y, z] then this function will retrieve the value
+                found at `dict[x][y][z]`
             """
             value = dict
             for k in key_list:
                 value = value[k]
             return value
 
-        values_by_node = [get_val(data, agg_key, name) for name, data in sub_graph.nodes(data=True)]
+        values_by_node = [get_nested_values(data, agg_key, name) for name, data in sub_graph.nodes(data=True)]
 
         all_values = [(k, v) for values in values_by_node for k, v in values.items()]
 
