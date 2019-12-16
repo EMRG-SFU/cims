@@ -331,7 +331,8 @@ class Model:
                 parent = '.'.join(node.split('.')[:-1])
                 if parent:
                     s_edge = (parent, node)
-                    graph.add_edge(s_edge)
+                    print(s_edge)
+                    graph.add_edge(s_edge[0], s_edge[1])
                     # Add the edges type
                     try:
                         types = graph.edges[s_edge]['type']
@@ -678,3 +679,4 @@ class Model:
         aggregates = {k: agg_func(v) for k, v in value_lists.items()}
 
         return aggregates
+
