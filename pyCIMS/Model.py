@@ -31,10 +31,10 @@ def find_value(graph, node, parameter, year=None):
     parent = '.'.join(node.split('.')[:-1])
 
     # Look at the Node/Year
-    if year:
-        year_data = graph.nodes[node][year]
-        if parameter in year_data.keys():
-            val = year_data[parameter]
+    if year and (parameter in graph.nodes[node][year].keys()):
+        # year_data = graph.nodes[node][year]
+        # if parameter in year_data.keys():
+        val = graph.nodes[node][year][parameter]
 
     # Look at the Node
     elif parameter in data.keys():
@@ -663,7 +663,7 @@ class Model:
                 value = value[k]
             return value
 
-        values_by_node = [get_nested_values(data, agg_key, name) for name, data in sub_graph.nodes(data=True)]
+        values_by_node = [get_nested_values(data, agg_key) for name, data in sub_graph.nodes(data=True)]
 
         all_values = [(k, v) for values in values_by_node for k, v in values.items()]
 
