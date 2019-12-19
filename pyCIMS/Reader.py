@@ -1,5 +1,4 @@
 import numpy as np
-import warnings
 import pandas as pd
 import re
 
@@ -58,7 +57,6 @@ class Reader:
 
         self.node_dfs = {}
         self.tech_dfs = {}
-        self.warnings = {}
 
     def _get_model_df(self):
         mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
@@ -72,55 +70,6 @@ class Reader:
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         return mdf
-
-    def validate_model(self, verbose=True):
-        model_warnings = {}
-
-        def unspecified_nodes(p, r):
-            referenced_unspecified = set(r).difference(set(p))
-            if len(referenced_unspecified) > 0:
-                w = """{} nodes have been referenced but not specified in the model description: 
-                       {}""".format(len(referenced_unspecified), referenced_unspecified)
-                model_warnings['unspecified_nodes'] = referenced_unspecified
-                if verbose:
-                    warnings.warn(w)
-
-        def unreferenced_nodes(p, r):
-            specified_unreferenced = set(p).difference(set(r))
-            if len(specified_unreferenced) > 0:
-                w = "{} nodes have been specified in the model description but are not referenced by another node:{}"\
-                    .format(len(specified_unreferenced), specified_unreferenced)
-                model_warnings['unreferenced_nodes'] = specified_unreferenced
-                if verbose:
-                    warnings.warn(w)
-
-        def mismatched_node_names(p):
-            node_name_indexes = self.model_df['Node'].dropna()
-            mismatched = []
-            # Given an index where a service provided line lives find the name of the Node housing it.
-            for i, x in p.iteritems():
-                cand = node_name_indexes.loc[:i]
-                node_name_index = cand.index.max()
-                node_name = list(cand)[-1]
-                branch_node_name = x.split('.')[-1]
-
-                if node_name != branch_node_name:
-                    mismatched.append((node_name_index, node_name, branch_node_name))
-
-            if len(mismatched) > 0:
-                w = """{} nodes had a name mismatch with their branch: {}""".format(len(mismatched), mismatched)
-                model_warnings['mismatched_node_names'] = mismatched
-                if verbose:
-                    warnings.warn(w)
-
-        providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
-        requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
-
-        mismatched_node_names(providers)
-        unspecified_nodes(providers, requested)
-        unreferenced_nodes(providers, requested)
-
-        return model_warnings
 
     def get_model_description(self, inplace=False):
         # ------------------------
