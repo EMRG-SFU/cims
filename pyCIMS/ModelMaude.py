@@ -2,10 +2,13 @@ import networkx as nx
 import copy as copy
 import re
 import random
+import numpy as np
 from pprint import pprint
 import traceback
 import sys
 import logging
+
+### NEXT STEP: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
 
 
 # Configure logging and set flag to raise exceptions
@@ -57,6 +60,8 @@ def find_value(graph, node, parameter, year=None):
     # Worst Case, return None
     return None
 
+
+
 def get_name(branch_name):
     '''
     Fetch name of the object of interest from a branch name
@@ -73,8 +78,6 @@ def get_name(branch_name):
     return name
 
 
-
-
 def check_type(variable, datatype, node="unnamed", passing=False):
     try:
         if not isinstance(variable, datatype):
@@ -88,17 +91,42 @@ def check_type(variable, datatype, node="unnamed", passing=False):
             raise
 
 
-def get_crf(g, node, tech, year):
-    r = g.nodes[node][year]["technologies"][tech]["Discount rate_Financial"]["year_value"]
-    # ML! Set to 2000 but check if viable
-    N = g.nodes[node]["2000"]["technologies"][tech]["Lifetime"]["year_value"]
-    if r == None:
-        last_year = str(int(year)- 5)
-        r = g.nodes[node][last_year]["technologies"][tech]["Discount rate_Financial"]["year_value"]
-    if N == None:
-        last_year = str(int(year)- 5)
-        N = g.nodes[node][last_year]["technologies"][tech]["Lifetime"]["year_value"]
+def lastyear_tech(g, node, year, tech, param, step=5):
+    """
+    Check if there's a value filled out within a tech, if not, take last years value
+    """
+    value = g.nodes[node][year]["technologies"][tech][param]["year_value"]
+    if value == None:
+        if year == "2000":
+            raise ValueError(f"No initial value for node {node}, tech {tech}, parameter {param}")
+        else:
+            last_year = str( int(year) - step )
+            value = g.nodes[node][last_year]["technologies"][tech][param]["year_value"]
+    return value
 
+
+def lastyear_fuel(g, node, year, fuel, param, step=5):
+    """
+    In an operation related to fuel, check if there's a value filled out, if not, take last years value
+    """
+    value = g.nodes[node][year][param][fuel]["year_value"]
+
+    if value == None:
+        if year == "2000":
+            raise ValueError(f"No initial value for node {node}, fuel {fuel}, parameter {param}")
+        else:
+            last_year = str( int(year) - step )
+            value = g.nodes[node][last_year][param][fuel]["year_value"]
+
+    return value
+
+
+
+def get_crf(g, node, tech, year):
+    r = lastyear_tech(g, node, year, tech, param = "Discount rate_Financial")
+    N = g.nodes[node]["2000"]["technologies"][tech]["Lifetime"]["year_value"]
+
+    # ML: inconsistency in blue vals vs. empty vals - see Water heating
     crf = r/(1 - (1 + r)**(-1.0 * N))
     return crf
 
@@ -132,13 +160,11 @@ def get_lcc(g, node, tech, year):
     return lcc
 
 
-def get_marketshare(g, node, tech, year, v=10):
+def get_marketshare(g, node, tech, year, v = 10):
     techs = find_value(g, node, 'technologies', year)
     sum_lcc = 0
     for alltech in techs.keys():
         lcc = g.nodes[node][year]["technologies"][alltech]["LCC"]["year_value"]
-        print(f"lcc: {lcc}")
-        print(alltech)
 
         if lcc == None:
             year = str( int(year) - 5)
@@ -149,24 +175,22 @@ def get_marketshare(g, node, tech, year, v=10):
             lcc_v = 0.0
 
         sum_lcc += lcc_v
-        print(f"sum lcc: {sum_lcc}")
+
     tech_lcc = g.nodes[node][year]["technologies"][alltech]["LCC"]["year_value"]
     if tech_lcc == 0.0 or tech_lcc == None:
         tech_lcc_v = 0.0
     else:
         tech_lcc_v = tech_lcc**(-1.0*v)
     if sum_lcc > 1e-16:
-        market_share = tech_lcc/sum_lcc
+        market_share = tech_lcc_v/sum_lcc
     elif sum_lcc < 0.0:
         print("weird things in marketshare")
         market_share = 0.0
     else:
         # temporary fix on float point err
         sum_lcc = 1e-10
-        market_share = tech_lcc/sum_lcc
+        market_share = tech_lcc_v/sum_lcc
     return market_share
-
-
 
 
 
@@ -214,6 +238,9 @@ class Model:
         self.node_dfs, self.tech_dfs = reader.get_model_description()
         self.fuels = []
         self.years = reader.get_years()
+        self.prices = {}
+        self.quantity = {}
+
         self.results = {}   # TODO: POPULATE THIS
 
     def build_graph(self):
@@ -302,6 +329,17 @@ class Model:
                 years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
                 non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
 
+                # 6 Find node's competition type. (If there is one) [ ML - possibly temporarily]
+                bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
+                if len(set(bp_list)) == 1:
+                    bp_type = bp_list[0]
+                    graph.nodes[current_node]['blueprint'] = bp_type.lower()
+                elif len(set(bp_list)) < 1:
+                    graph.nodes[current_node]['blueprint'] = 'unavailable'
+                # Get rid of blueprint type row
+                current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
+
+
                 for y in years:
                     year_df = current_node_df[non_years + [y]]
                     year_dict = {}
@@ -320,7 +358,7 @@ class Model:
                     # Add data to node
                     graph.nodes[current_node][y] = year_dict
 
-                # 6 Return the new graph
+                # 7 Return the new graph
                 return graph
 
             def add_tech_data(node, tech):
@@ -452,7 +490,6 @@ class Model:
                 parent = '.'.join(node.split('.')[:-1])
                 if parent:
                     s_edge = (parent, node)
-                    # print(s_edge)
                     graph.add_edge(s_edge[0], s_edge[1])
                     # Add the edges type
                     try:
@@ -501,6 +538,9 @@ class Model:
         self.graph = make_edges()
         self.fuels = get_fuels()
 
+        self.prices = {get_name(f): {"year_value": None} for f in self.fuels}
+        self.quantity = {get_name(q): {"year_value": None} for q in self.fuels}
+
     def run(self, equilibrium_threshold=0.05):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for each year.
@@ -521,6 +561,9 @@ class Model:
             for each year.
 
         """
+
+
+
         def run_year(year):
             """
             Run the model for the given `year` until an equilibrium in fuel prices is reached between iterations.
@@ -538,7 +581,9 @@ class Model:
             None
                 Nothing is returned, but `self.graph` will be updated with the resulting prices, quantities, etc.
             """
-            def traverse_graph(sub_graph, node_process_func):
+            self.iter = 0
+
+            def traverse_graph(sub_graph, node_process_func, **kwargs):
                 """
                 Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -577,18 +622,18 @@ class Model:
                         # Choose a node on the active front
                         n_cur = active_front[0]
                         # Process that node in the sub-graph
-                        node_process_func(sub_graph, n_cur)
+                        node_process_func(sub_graph, n_cur, **kwargs)
                     else:
                         # Resolve a loop
                         candidates = {n: dist_from_root[n] for n in sg_cur}
                         n_cur = min(candidates, key=lambda x: candidates[x])
                         # Process chosen node in the sub-graph, using estimated values from their parents
-                        node_process_func(sub_graph, n_cur, with_estimates=True)
+                        node_process_func(sub_graph, n_cur, **kwargs)
 
                     visited.append(n_cur)
                     sg_cur.remove_node(n_cur)
 
-            def depth_first_post(sub_graph, node_process_func, prices):
+            def depth_first_post(sub_graph, node_process_func):
                 """
                 Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -637,15 +682,15 @@ class Model:
                         # Choose a node on the active front
                         n_cur = active_front[0]
                         # Process that node in the sub-graph
-                        node_process_func(sub_graph, n_cur, prices)
-                        # print(n_cur)
+                        node_process_func(sub_graph, n_cur)
+
                     else:
                         # Resolve a loop
                         # ML! is this to deal with thigns like furnace? Not sure it's needed
                         candidates = {n: dist_from_root[n] for n in sg_cur}
                         n_cur = min(candidates, key=lambda x: candidates[x])
                         # Process chosen node in the sub-graph, using estimated values from their parents
-                        node_process_func(sub_graph, n_cur, state_dict, with_estimates=True)
+                        node_process_func(sub_graph, n_cur)
                         print(f"loop: {n_cur}")
                     visited.append(n_cur)
                     sg_cur.remove_node(n_cur)
@@ -669,7 +714,7 @@ class Model:
                 sub_g = self.graph.subgraph(nodes).copy()
                 return sub_g
 
-            def calc_demand(prices = None):
+            def calc_demand():
                 """
                 Using `self.graph` calculate the services requested by the demand side of the tree in a given iteration.
 
@@ -688,16 +733,43 @@ class Model:
 
                 """
 
+                def get_prices(sub_graph, node, price_key="Price"):
+                    '''
+                    Change to take last value when exists
+                    '''
+                    blueprint = sub_graph.nodes[node]['blueprint']
+                    if blueprint != "region":
+                        # only regions have prices
+                        return
 
-                def get_prices(sub_graph, prices):
-                    # fetch starting prices if needed (make more general later)
-                    if prices is None:
-                        prices = find_value(sub_graph, 'pyCIMS.Canada.Alberta', 'Price', '2000')
-                    return prices
+                    try:
+                        sub_graph.nodes[node][year][price_key]
+                    except KeyError:
+                        # passes over 'non active' region nodes
+                        return
+
+                    except Exception as e:
+                        # catches error that aren't related to key
+                        logger.error(f"Error in node {get_name(node)}, year {year}\n"\
+                                      "when looking for {price_key}\n Error {e}",
+                                       exc_info=False)
+                        raise e
+
+                    else:
+                        prices = find_value(sub_graph, node, price_key, year)
+
+                    for fuel, price in prices.items():
+                        # check if last year's value is needed
+
+                        if price["year_value"] == None:
+                            prices[fuel]["year_value"] = lastyear_fuel(sub_graph, node, year, fuel, price_key)
+
+                    self.prices = prices
+                    # print(prices)
+                    return
 
 
-                def calculate_service_cost(sub_graph, node, prices):
-                    service_cost = {get_name(f): 0.0 for f in self.fuels}
+                def calculate_service_cost(sub_graph, node):
 
                     # ML: to change once we fix the node types
                     if get_name(node) not in ["pyCIMS", "Canada", "Alberta", "Residential", "Buildings"]:
@@ -736,13 +808,12 @@ class Model:
                                     break
 
                             if sub_graph.nodes[node]["is_leaf"]:
-                                # print(f"leaf name {get_name(node)}")
                                 fuel_req = get_name(branch_req)
-                                if fuel_req in prices.keys():
+                                if fuel_req in self.prices.keys():
                                     # ML! This will be summed when tech in more than 1 node
-                                    fuel_price = prices[fuel_req]['year_value']
+                                    fuel_price = self.prices[fuel_req]['year_value']
+
                                     sc = fuel_price * req_val
-                                    service_cost[fuel_req] = sc
                                     s_cost = {"Service cost": {"year_value": sc}}
 
                                     sub_graph.nodes[node][year]["technologies"][key].update(s_cost)
@@ -767,8 +838,8 @@ class Model:
 
 
                 g_demand = get_subgraph(['demand', 'standard'])
-                prices = get_prices(g_demand, prices)
-                depth_first_post(g_demand, calculate_service_cost, prices)
+                traverse_graph(g_demand, get_prices)
+                depth_first_post(g_demand, calculate_service_cost)
 
 
 
@@ -808,23 +879,30 @@ class Model:
                     prices in `dict2`. False otherwise.
 
                 """
-                for fuel in dict1:
-                    abs_diff = abs(dict1[fuel] - dict2[fuel])
-                    rel_diff = abs_diff / dict1[fuel]
-                    if rel_diff > threshold:
-                        return False
 
-                return True
+                in_tol = False
+                for fuel in self.fuels:
+                    fuel = get_name(fuel)
+                    if fuel in dict1.keys():
 
-            prev_prices = None
+                        in_tol = np.isclose(np.array([dict1[fuel]['year_value']]),
+                                            np.array([dict2[fuel]['year_value']]),
+                                            rtol=threshold)
+                        if not in_tol:
+                            self.iter += 1
+                            return in_tol
+                return in_tol
+
+
+
             equilibrium = False
             while not equilibrium:
-                curr_demand = calc_demand(prev_prices)
+                curr_demand = calc_demand()
+                prev_prices = self.prices
                 curr_prices = calc_supply(curr_demand)
-                # equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
-                equilibrium = True
+                curr_prices = self.prices
+                equilibrium = equilibrium_check(prev_prices, curr_prices, equilibrium_threshold)
 
-                # prev_prices = curr_prices
 
             # TODO: Add finishing procedures. Ex. Storing resulting prices and demands
 

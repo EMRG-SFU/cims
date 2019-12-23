@@ -17,9 +17,10 @@ my_reader = pyCIMS.Reader(infile=file,
                                      'incompatible': 'Incompatible',
                                      'default_tech': 'Technologies'},
                           node_col='Node')
-# If you want to validate that the model is defined correctly
-model_warnings = my_reader.validate_model(verbose=False)
-pprint(model_warnings)
+
+# # If you want to validate that the model is defined correctly
+# model_warnings = my_reader.validate_model(verbose=False)
+# pprint(model_warnings)
 
 # Create a model from the reader
 my_model = pyCIMS.Model(my_reader)
