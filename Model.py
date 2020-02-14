@@ -73,6 +73,8 @@ class Model:
     def __init__(self, reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = reader.get_model_description()
+        self.step = 5  # Make this an input later
+
         self.fuels = []
         self.years = reader.get_years()
 
@@ -151,7 +153,6 @@ class Model:
 
                 # get prices inside `region` node
                 traverse_graph(g_demand, self.init_prices, year)
-
                 depth_first_post(g_demand, self.get_service_cost, year)
                 traverse_graph(g_demand, self.passes, year)
 
@@ -204,8 +205,6 @@ class Model:
                 if sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] == None:
                     sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] = 0.0
 
-                    # Get Full Cap Cost (will have more terms later)
-
                 if sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] == None:
                     sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] = 1.0
 
@@ -223,7 +222,8 @@ class Model:
                     crf = get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
                     sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
 
-                    # get Capital Cost
+                    # get Full Cap Cost (will have more terms later)
+
                     full_cc = get_capcost(sub_graph, node, year, tech, crf)
                     sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
 
@@ -240,11 +240,13 @@ class Model:
             # get marketshares based on each competing service/tech
             for tech in sub_graph.nodes[node][year]["technologies"].keys():
                 # go through available techs
-                avail = sub_graph.nodes[node][year]['technologies'][tech]['Available']['year_value']
-                unavail = sub_graph.nodes[node][year]['technologies'][tech]['Unavailable']['year_value']
                 marketshare = 0.0
 
-                if int(year) <= unavail and int(year) >= avail:
+                # go through available techs (range is [lower year, upper year + 1] to work with range function
+                low, up = range_available(sub_graph, node, tech)
+
+                if int(year) in range(low, up):
+
                     curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
                     # print(f"tech: {tech}, lcc: {curr_lcc}")
                     # print(f"curr_lcc: {curr_lcc}")
@@ -294,16 +296,11 @@ class Model:
 
 
 
-
-
-
-
     def passes(self, sub_graph, node, year):
         '''
         '''
 
         blueprint = find_value(sub_graph, node, "blueprint", year)
-
 
         if blueprint == "stacked":
             self.stacked_node(sub_graph, node, year)
@@ -333,8 +330,8 @@ class Model:
                     # ML: check if we should check ahead when on base year instead
                     # to flag estimate right away
                     # TODO remove 5 and put step
-                    self.prices[year][fuel]["raw_year_value"] = self.prices[str(int(year) - 5)][fuel]["raw_year_value"]
-                    self.prices[year][fuel]["year_value"] = self.prices[str(int(year) - 5)][fuel]["raw_year_value"]
+                    self.prices[year][fuel]["raw_year_value"] = self.prices[str(int(year) - self.step)][fuel]["raw_year_value"]
+                    self.prices[year][fuel]["year_value"] = self.prices[str(int(year) - self.step)][fuel]["raw_year_value"]
                     self.prices[year][fuel]["to_estimate"] = True
 
                 else:
@@ -356,6 +353,9 @@ class Model:
 
 
     def sector_node(self, sub_graph, node, year):
+        """
+        Fixed Ratio
+        """
 
         self.results[year][get_name(node)] = {}
         results = self.results
@@ -365,7 +365,12 @@ class Model:
         requested = sub_graph.nodes[node][year]["Service requested"]
 
         # ML catch if there's no multiplier
-        multiplier = sub_graph.nodes[node][year]["Price Multiplier"]
+        try:
+            multiplier = sub_graph.nodes[node][year]["Price Multiplier"]
+        except KeyError:
+            print("Sector has no multiplier field")
+            multiplier = None
+
         prices = copy.copy(self.prices)
 
         for fuel, multi in multiplier.items():
@@ -385,6 +390,9 @@ class Model:
 
 
     def stacked_node(self, sub_graph, node, year):
+        """
+        Fixed Market Share
+        """
 
         self.results[year][get_name(node)] = {}
         results = self.results
@@ -424,13 +432,16 @@ class Model:
 
         self.results = results
 
-        print("complete stacked (fixed ratio)")
+        # print("complete stacked (fixed ratio)")
 
 
 
     def compete_node(self, sub_graph, node, year):
         self.results[year][get_name(node)] = {}
         results = self.results
+
+        print(f"node: {get_name(node)}")
+        pprint(f"quantity{self.quantity}")
 
         children = child_name(sub_graph, node)
 
@@ -517,10 +528,9 @@ class Model:
                 for object in prov_dict.keys():
                     sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[child]
 
-        self.quantity[year] = temp_results
-
+        self.quantity[year][get_name(node)] = temp_results
         self.results = results
 
 
 
-        print("complete compete")
+        # print("complete compete")
