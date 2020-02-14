@@ -142,164 +142,98 @@ class Model:
                 print(f"year: {year}")
                 self.iter = 0
                 self.results[year] = {}
-                self.tech_results[year] = {}
                 self.prices[year] = {get_name(f): {"year_value": None, "to_estimate": False} for f in self.fuels}
                 self.quantity[year] = {get_name(q): {"year_value": None, "to_estimate": False} for q in self.fuels}
 
 
                 # # DEMAND
                 # get initial prices
-                if self.iter == 0:
-                    # get prices inside `region` node
-                    traverse_graph(g_demand, self.init_prices, year)
+
+                # get prices inside `region` node
+                traverse_graph(g_demand, self.init_prices, year)
+
                 depth_first_post(g_demand, self.get_service_cost, year)
                 traverse_graph(g_demand, self.passes, year)
 
-                # temp
+
+                # RUN SUPPLY HERE AND DO EQUILIBRIUM CHECK
+
+                # temporary
                 equilibrium = False
                 self.iter += 1
-
                 # TODO: Make sure (estimated) prices are changed between years IN THE GRAPH
 
-        pprint(self.results)
+
 
 
 
     def get_service_cost(self, sub_graph, node, year):
 
         results = self.results
+        fuels = self.fuels
+        prices = self.prices
 
         total_lcc_v = 0.0
 
         child = child_name(sub_graph, node, return_empty=True)
 
-        # print(f"node: {get_name(node)}")
-        # print(f"child name: {child}")
-
         if sub_graph.nodes[node]["competition type"] == "tech compete":
+
             v = self.get_heterogeneity(sub_graph, node, year)
-            # print(f"node, v: {get_name(node)}, {v}")
-            try:
-                results[year][get_name(node)] = {}
-            except:
-                pass
+            results[year][get_name(node)] = {}
 
             for tech in sub_graph.nodes[node][year]["technologies"].keys():
                 results[year][get_name(node)][tech] = {}
 
-                # insert values that will be needed inside of nodes
-                tech_params = ["Service cost", "Output", "CRF", "LCC", "Full capital cost"]
-                param_vals = [0.0, 1.0, 0.0, 0.0, 0.0]
-                # output is set to 1 to work with cap cost formula (cc/output)*crf
+                # insert values that will be needed inside of nodes TEMP
+                tech_params = ["Service cost", "CRF", "LCC", "Full capital cost"]
+                param_vals = [0.0, 0.0, 0.0, 0.0]
+
                 for param_name, param_val in zip(tech_params, param_vals):
                     # go through all tech parameters and make sure we don't overwrite something that exists
                     try:
-                        param_exists = sub_graph.nodes[node][year]["technologies"][tech][param_name]
+                        print(sub_graph.nodes[node][year]["technologies"][tech][param_name])
 
                     except KeyError:
                         self.add_tech_element(sub_graph, node, year, tech, param_name, value=param_val)
-                        param_exists = sub_graph.nodes[node][year]["technologies"][tech][param_name]
 
                     except:
                         raise Exception
-                    # else:
-                    #     pprint(f"Parameter already filled out as: {param_name}: {param_exists}")
 
-
+                # TODO Make default values `automatic` (based on default value sheet)
                 if sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] == None:
                     sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] = 0.0
 
-                service_req = sub_graph.nodes[node][year]["technologies"][tech]["Service requested"]
+                    # Get Full Cap Cost (will have more terms later)
 
-                # go through available techs
-                avail = sub_graph.nodes[node][year]['technologies'][tech]['Available']['year_value']
-                unavail = sub_graph.nodes[node][year]['technologies'][tech]['Unavailable']['year_value']
+                if sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] == None:
+                    sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] = 1.0
 
-                if int(year) <= unavail and int(year) >= avail:
+                # go through available techs (range is [lower year, upper year + 1] to work with range function
+                low, up = range_available(sub_graph, node, tech)
 
-                    # sometimes more than one thing requested, that would make results into a list
-                    # (eg [{year_value:... , branch:...electricity, ...},
-                    #      {year_value:... , branch:...furnace, ...}}])
-                    if isinstance(service_req, dict):
-                        if service_req['branch'] in self.fuels:
-                            service_req_val = service_req["year_value"]
-                            price_tech = self.prices[year][get_name(service_req['branch'])]["year_value"]
-                            service_cost = price_tech * service_req_val
-                            sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
-                        else:
-                            service_req_val = service_req["year_value"]
+                if int(year) in range(low, up):
 
-                            for i, c in enumerate(child):
-                                # print(f"node within: {get_name(node)}")
-                                # print(f"child within: {c}")
-                                child_lccs = sub_graph.nodes[c][year]["total lcc"]
-                                # print(f"child_lccs: {child_lccs}")
-                                service_cost = child_lccs * service_req_val
-                                # if i > 0:
-                                    # print(f"(dict)Check service cost at node {get_name(node)}, for tech {tech}: Multiple children not leading to leaf")
-                                sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
+                    # get service cost
+                    service_cost = get_service_cost(sub_graph, node, year, tech, fuels, prices)
+                    sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
 
 
-                    elif isinstance(service_req, list):
-                        for reqs in service_req:
-                            if reqs['branch'] in self.fuels:
-                                service_req_val = reqs["year_value"]
-                                service_cost = self.prices[year][get_name(reqs['branch'])]["year_value"] * service_req_val
-                                sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
-                            else:
-                                service_req_val = reqs["year_value"]
-
-                                for i, c in enumerate(child):
-
-                                    child_lccs = sub_graph.nodes[c][year]["total lcc"]
-                                    service_cost = child_lccs * service_req_val
-                                    if i > 0:
-                                        print(f"Check service cost at node {get_name(node)}, for tech {tech}: Multiple children not leading to leaf")
-                                    sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
-
-                    else:
-                        print(f"type for service requested? {type(service_req)}")
-
-
-                    # CRF:
-                    finance_discount = sub_graph.nodes[node][year]["technologies"][tech]["Discount rate_Financial"]["year_value"]
-                    lifespan = sub_graph.nodes[node][year]["technologies"][tech]["Lifetime"]["year_value"]
-                    if lifespan != None:
-                        crf = finance_discount/(1 - (1 + finance_discount)**(-1.0*lifespan))
-                    else:
-                        # TODO: Check that this is correct - (lifespan is None at tech: Furnace, for example)
-                        crf = 1.0
-
+                    # get CRF:
+                    crf = get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
                     sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
 
-                    # Get Full Cap Cost (will have more terms later)
-                    output = sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"]
-                    if output == None:
-                        self.add_tech_element(sub_graph, node, year, tech, "Output", value=1.0)
-                        output = sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"]
-
-
-                    cap_cost = sub_graph.nodes[node][year]["technologies"][tech]["Capital cost"]["year_value"]
-                    if cap_cost == None:
-                        self.add_tech_element(sub_graph, node, year, tech, "Capital cost", value=0.0)
-                        cap_cost = sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"]
-
-                    full_cap_cost = (cap_cost/output)*crf
-                    sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cap_cost
-
-                    # print(f"full capital cost:{full_cap_cost}")
+                    # get Capital Cost
+                    full_cc = get_capcost(sub_graph, node, year, tech, crf)
+                    sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
 
                     # Get LCC
                     operating_cost = sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"]
-                    service_cost = sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"]
-
-                    lcc = service_cost + operating_cost + full_cap_cost
+                    lcc = service_cost + operating_cost + full_cc
                     sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
-
 
                     # get marketshare (calculate instead of using given ones (base year 2000 only)(?))
                     # TODO: catch min and max marketshares
-
                     total_lcc_v += lcc**(-1.0*v)   # will need to catch other competing lccs in other branches?
 
             weighted_lccs = 0
@@ -312,8 +246,6 @@ class Model:
 
                 if int(year) <= unavail and int(year) >= avail:
                     curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
-                    # print("\n")
-                    # print(get_name(node))
                     # print(f"tech: {tech}, lcc: {curr_lcc}")
                     # print(f"curr_lcc: {curr_lcc}")
                     if curr_lcc > 0.0:
@@ -326,12 +258,10 @@ class Model:
                 sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = marketshare
 
             sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
-
-
-        self.results = results
-
             # print(f"node: {get_name(node)}, weighted lccs: {weighted_lccs}")
 
+        self.results = results
+        self.prices = prices
 
 
 
@@ -370,7 +300,6 @@ class Model:
 
     def passes(self, sub_graph, node, year):
         '''
-        Getting values from non-compete nodes, nodes outside of iteration process
         '''
 
         blueprint = find_value(sub_graph, node, "blueprint", year)
@@ -462,7 +391,7 @@ class Model:
 
         children = child_name(sub_graph, node)
         temp_results = {c: 0.0 for c in children}
-
+        # TODO change get_provided
         service_unit, provided = get_provided(sub_graph, node, year, results)
 
 
@@ -475,6 +404,7 @@ class Model:
             requested = vals["Service requested"]
 
             results[year][get_name(node)][tech]["marketshare"] = marketshare["year_value"]
+
             for req in requested:
 
                 results[year][get_name(node)][tech][get_name(req["branch"])] = {}
@@ -506,8 +436,11 @@ class Model:
 
         if isinstance(children, list):
             temp_results = {c: 0.0 for c in children}
+
         elif isinstance(children, str):
             temp_results = {children: 0.0}
+
+
 
         prov_dict = sub_graph.nodes[node][year]["Service provided"]
 
@@ -518,18 +451,15 @@ class Model:
 
         results[year][get_name(node)][service_unit] = provided
 
-
         for tech, vals in sub_graph.nodes[node][year]["technologies"].items():
 
             results[year][get_name(node)][tech] = {}
-
             marketshare = vals["Market share"]
-            requested = vals["Service requested"]
-            print(f"ms: {marketshare}")
-
             results[year][get_name(node)][tech]["marketshare"] = marketshare["year_value"]
+            requested = vals["Service requested"]
 
             if isinstance(requested, list):
+
                 for req in requested:
                     if req["branch"] not in self.fuels:
 
@@ -541,6 +471,23 @@ class Model:
 
                         results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
                         temp_results[req["branch"]] += downflow["result"]
+
+                    else:
+                        # if req is a fuel
+                        temp_results.update({req["branch"]: 0})
+
+
+
+                        results[year][get_name(node)][tech][get_name(req["branch"])] = {}
+                        downflow = {"value": req["year_value"],
+                                    "result_unit": split_unit(req["unit"])[0],
+                                    "location": req["branch"],
+                                    "result": req["year_value"] * marketshare["year_value"]}
+
+                        results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
+                        temp_results[req["branch"]] += downflow["result"]
+
+
 
             elif isinstance(requested, dict):
                 if requested["branch"] not in self.fuels:
@@ -554,107 +501,26 @@ class Model:
                     results[year][get_name(node)][tech][get_name(requested["branch"])] = downflow
                     temp_results[requested["branch"]] += downflow["result"]
 
+
+
         if isinstance(children, list):
             for child in children:
                 if child not in self.fuels:
-
                     prov_dict = sub_graph.nodes[child][year]["Service provided"]
                     for object in prov_dict.keys():
-
                         sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[child]
 
         elif isinstance(children, str):
             child = children
             if child not in self.fuels:
-
                 prov_dict = sub_graph.nodes[child][year]["Service provided"]
                 for object in prov_dict.keys():
-
                     sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[child]
+
+        self.quantity[year] = temp_results
 
         self.results = results
 
 
+
         print("complete compete")
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # def stacked_node(self, sub_graph, node, year):
-    #     self.results[year][get_name(node)] = {}
-    #     results = self.results
-    #     service_unit, provided = get_provided(sub_graph, node, year, results)
-    #     # # pprint(f"provided: {provided}") -- number
-    #     # # print(f"unnit: {service_unit}") -- buildings
-    #     results[year][get_name(node)][service_unit] = provided
-    #
-    #     self.results = results
-    #
-    #
-    #
-    #
-    # def compete_node(self, sub_graph, node, year):
-    #     "Runs tech compete nodes"
-    #     self.results[year][get_name(node)]["quantity"] = 0
-    #     results = self.results
-    #     tech_results = {}
-    #     tech_results[get_name(node)] = {}
-    #
-    #     parent_node = parent_name(node)
-    #     parent_compete = find_value(sub_graph, parent_node, "competition type", year)
-    #
-    #     # if parent_compete == "fixed market shares":
-    #     parent_tech = find_value(sub_graph, parent_node, "technologies", year)
-    #
-    #     for tech, params in parent_tech.items():
-    #         req_from_par = sub_graph.nodes[parent_node][year]["technologies"][tech]["Service requested"]
-    #
-    #         # note: results[year][tech]['Service requested'] is a list of dicts
-    #         for idx, service_req in enumerate(req_from_par):
-    #         # ML!!! TODO change this because we don't want to operate local node (say, shell) over parent node
-    #         #            (say, building). In this case, all would just be shell and other requests from techs are overlooked
-    #             if service_req["branch"] == node:
-    #
-    #                 parent_tech_unit = sub_graph.nodes[parent_node][year]["technologies"][tech]["Service requested"][idx]["unit"]
-    #
-    #                 # weird way to get market share since we are fetching the parent node info in service_req
-    #                 parent_marketshare = sub_graph.nodes[parent_node][year]["technologies"][tech]["Market share"]["year_value"]
-    #
-    #
-    #                 par = split_unit(parent_tech_unit)
-    #
-    #                 # left hand side of mesure of service provided (i.e. `m2 floorspace` for `m2 floorspace/building`)
-    #                 requested = par[0]
-    #                 # right hand side of mesure of service provided (i.e. `building` for `m2 floorspace/building`)
-    #                 parent_provides = par[1]
-    #                 print(f"parent_provedes: {parent_provides}")
-    #                 print(results[year][get_name(node)])
-    #                 print("\n")
-    #
-    #                 value_provided = results[year][get_name(node)][parent_provides]
-    #                 parent_val_required = service_req["year_value"]
-    #                 # gather info without marketshare, in case it is needed when aggregating with various nodes outside of this branch
-    #                 tech_results[get_name(node)][tech] = (parent_val_required * value_provided)
-    #                 # aggregate all the things requested by this node from the parent node
-    #                 # ML! TODO: Arrange things to aggregate properly when item to aggregate comes from various nodes (see Furnace example)
-    #                 #           One way to do this might be to check the "is_leaf" field and aggregate likes from other leaves, then 'remove'
-    #                 results[year][get_name(node)]["quantity"] += tech_results[get_name(node)][tech] * parent_marketshare
-    #         self.tech_results = tech_results
-    #         self.results = results
-    #
-    #
-    #
-    #
-    #     # else:
-    #     #     print(f"Node {get_name(node)}: fill compete when parent not fixed")
-    #
-    #     # print(f"Tech compete at node {get_name(node)} initialized")

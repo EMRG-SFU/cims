@@ -51,6 +51,23 @@ def check_type(variable, datatype, node="unnamed", passing=False):
         else:
             raise
 
+
+
+def range_available(g, node, tech, add_upper=True):
+    """
+    NOTE: year not mentioned atm because dataset specifies that it remains constant
+
+    Returns +1 at upper boundary if using range() function
+    """
+    avail = g.nodes[node]['2000']['technologies'][tech]['Available']['year_value']
+    unavail = g.nodes[node]['2000']['technologies'][tech]['Unavailable']['year_value']
+    if add_upper:
+        return int(avail), int(unavail) + 1
+    else:
+        return int(avail), int(unavail)
+
+
+
 def is_year(cn: str or int) -> bool:
     """ Determines whether `cn` is a year
 

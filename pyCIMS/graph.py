@@ -125,9 +125,9 @@ def child_name(g, curr_node, return_empty=False):
         return child
 
     elif return_empty:
-        return ""
+        return []
     else:
-        return curr_node
+        return [curr_node]
 
 
 
@@ -352,7 +352,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
 
-    # 6 Find node's competition type. (If there is one) [ ML - possibly temporarily]
+    # 6 Find node's competition type. (If there is one) [ and `blueprint` - possibly temporarily]
     bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
     if len(set(bp_list)) == 1:
         bp_type = bp_list[0]
@@ -427,8 +427,15 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'year_value': year_value}
 
 
-            # TODO: CHANGE for competition type (fixed market )
+            # TODO: CHANGE for competition type (fixed market ) !!! Very temporary
             if node == "pyCIMS.Canada.Alberta.Residential.Buildings" and parameter == "Service requested":
+                if parameter in year_dict.keys():
+                    year_dict[parameter].append(dct)
+
+                else:
+                    year_dict[parameter] = [dct]
+
+            elif node == "pyCIMS.Canada.Alberta.Residential.Buildings.Dishwashing" and parameter == "Service requested":
                 if parameter in year_dict.keys():
                     year_dict[parameter].append(dct)
 
