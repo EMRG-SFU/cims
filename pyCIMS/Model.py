@@ -12,7 +12,7 @@ import sys
 import logging
 
 from graph import *  # find_value, get_parent, parent_name, make_nodes, make_edges
-# from graph import traverse_graph, depth_first_post, get_subgraph
+from graph import traverse_graph, breadth_first_post, get_subgraph
 # from graph import  get_fuels
 from utils import *  # get_name, split_unit, check_type, is_year, aggregate
 from econ import *
@@ -75,6 +75,7 @@ class Model:
 
         self.fuels = []
         self.years = reader.get_years()
+        self.base_year = int(self.years[0])
 
         self.prices = {}
         self.quantity = {}
@@ -161,13 +162,13 @@ class Model:
 
                 # get prices inside `region` node
                 # traverse_graph(g_demand, self.init_prices, year)
-                depth_first_post(g_demand, self.get_service_cost, year)
+                breadth_first_post(g_demand, self.get_service_cost, year)
                 traverse_graph(g_demand, self.passes, year)                 # HERE
 
                 # Supply
                 # ******************
                 # print("***** ***** SUPPLY ***** *****")
-                depth_first_post(g_supply, self.get_service_cost, year)
+                breadth_first_post(g_supply, self.get_service_cost, year)
 
                 # Update Prices
                 prev_prices = cur_prices
@@ -207,8 +208,6 @@ class Model:
                 equilibrium = eq_check(prev_prices, cur_prices)
                 self.iter += 1
 
-                print("quantity @ Dishwashing", self.quantity[year]['pyCIMS.Canada.Alberta.Residential.Buildings.Dishwashing']['pyCIMS.Canada.Alberta.Electricity'])
-                print("price of Electricity", self.prices[year]['pyCIMS.Canada.Alberta.Electricity']['raw_year_value'], self.prices[year]['pyCIMS.Canada.Alberta.Electricity']['year_value'])
                 x = 1
                 # TODO: Make sure (estimated) prices are changed between years IN THE GRAPH
 
@@ -472,7 +471,6 @@ class Model:
 
         self.results = results
         # print('done sector')
-
         return
 
     def stacked_node(self, sub_graph, node, year):
@@ -534,23 +532,34 @@ class Model:
         # pprint(f"quantity{self.quantity}")
 
         children = child_name(sub_graph, node)
+        temp_results = {get_name(c): 0.0 for c in children}
 
-        if isinstance(children, list):
-            temp_results = {c: 0.0 for c in children}
+        # vv OLD IMPLEMENTATION vv
+        # if isinstance(children, list):
+        #     temp_results = {c: 0.0 for c in children}
+        #
+        # elif isinstance(children, str):
+        #     temp_results = {children: 0.0}
+        #
+        # prov_dict = sub_graph.nodes[node][year]["Service provided"]
+        #
+        # for obj, vals in prov_dict.items():
+        #     provided = vals["year_value"]
+        #     service_unit = vals["unit"]
+        # ^^ OLD IMPLEMENTATION ^^
 
-        elif isinstance(children, str):
-            temp_results = {children: 0.0}
+        # vv New IMPLEMENTATION vv
+        provided_dict = sub_graph.nodes[node][year]["Service provided"]
+        # NOTE: Is traversal order correct?? Printing seems to show depth first (shell-space h-furnace-dish-clothes)
 
-        prov_dict = sub_graph.nodes[node][year]["Service provided"]
-
-        for obj, vals in prov_dict.items():
-            provided = vals["year_value"]
-            service_unit = vals["unit"]
+        provided_vals = list(provided_dict.values())[0]
+        provided = provided_vals["year_value"]
+        service_unit = provided_vals["unit"]
+        # ^^ NEW IMPLEMENTATION ^^
 
         results[year][get_name(node)][service_unit] = provided
 
         for tech, vals in sub_graph.nodes[node][year]["technologies"].items():
-
             results[year][get_name(node)][tech] = {}
             marketshare = vals["Market share"]
             results[year][get_name(node)][tech]["marketshare"] = marketshare["year_value"]
@@ -567,10 +576,12 @@ class Model:
                                               marketshare["year_value"]}
 
                         results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
-                        temp_results[req["branch"]] += downflow["result"]
+                        temp_results[get_name(req["branch"])] += downflow["result"]
+                        # print(f"downflow list not fuel: {downflow['result']}")
 
                     else:
                         # if req is a fuel
+                        # CHANGE THIS in case it overwrites in corner cases
                         temp_results.update({req["branch"]: 0})
 
                         results[year][get_name(node)][tech][get_name(req["branch"])] = {}
@@ -580,8 +591,8 @@ class Model:
                                     "result": req["year_value"] * marketshare["year_value"]}
 
                         results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
-                        temp_results[req["branch"]] += downflow["result"]
-
+                        temp_results[get_name(req["branch"])] += downflow["result"]
+                        # print(f"downflow list fuel: {downflow['result']}")
 
 
             elif isinstance(requested, dict):
@@ -594,24 +605,59 @@ class Model:
                                           marketshare["year_value"]}
 
                     results[year][get_name(node)][tech][get_name(requested["branch"])] = downflow
-                    temp_results[requested["branch"]] += downflow["result"]
+                    temp_results[get_name(requested["branch"])] += downflow["result"]
+                    # print(f"downflow dict: {downflow['result']}")
+                else:
+                    # print(f"fuel dict: {requested}")
+                    # print("get info here")
+                    temp_results.update({get_name(requested["branch"]): 0.0})
+
+
+                    results[year][get_name(node)][tech][get_name(requested["branch"])] = {}
+                    downflow = {"value": requested["year_value"],
+                                "result_unit": split_unit(requested["unit"])[0],
+                                "location": requested["branch"],
+                                "result": requested["year_value"] * results[year][get_name(node)][service_unit] * marketshare["year_value"]}
+
+                    # vv NEW IMPLEMENTATION vv
+                    results[year][get_name(node)][tech][get_name(requested["branch"])] = downflow
+                    temp_results[get_name(requested["branch"])] += downflow["result"]
+                    # print(f"downflow dict: {downflow['result']}")
+                    # ^^ NEW IMPLEMENTATION
 
         if isinstance(children, list):
             for child in children:
                 if child not in self.fuels:
                     prov_dict = sub_graph.nodes[child][year]["Service provided"]
                     for object in prov_dict.keys():
-                        sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[child]
+                        sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[get_name(child)]
 
         elif isinstance(children, str):
             child = children
             if child not in self.fuels:
                 prov_dict = sub_graph.nodes[child][year]["Service provided"]
                 for object in prov_dict.keys():
-                    sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[child]
+                    sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[get_name(child)]
 
-        self.quantity[year][get_name(node)] = temp_results
-        self.results = results
+
+
+        for tech, vals in sub_graph.nodes[node][year]["technologies"].items():
+            requested = vals["Service requested"]
+
+            if isinstance(requested, list):
+                for req in requested:
+                    if req["branch"] in self.fuels:
+                        self.quantity[year][get_name(req["branch"])]["year_value"] = temp_results[get_name(req["branch"])]
+
+
+            elif isinstance(requested, dict):
+                if requested["branch"] in self.fuels:
+                    self.quantity[year][get_name(requested["branch"])]["year_value"] = temp_results[get_name(requested["branch"])]
+
+        # print(f"temp_results: {temp_results}")
+        # pprint(f"quantity{self.quantity[year][get_name(node)]}")
+
+        return
 
         # print("complete compete")
 
