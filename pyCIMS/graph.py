@@ -16,6 +16,7 @@ from utils import is_year
 1- Perform action in graph
 '''
 
+
 def find_value(graph, node, parameter, year=None):
     """
     Find a parameter's value at a given node or its structural ancestors.
@@ -97,7 +98,6 @@ def get_parent(g, curr_node, year):
     return parent_node
 
 
-
 def parent_name(curr_node, return_empty=False):
     """
     curr_node is current node name (str)
@@ -128,7 +128,6 @@ def child_name(g, curr_node, return_empty=False):
         return []
     else:
         return [curr_node]
-
 
 
 def get_fuels(graph, years):
@@ -172,9 +171,11 @@ def get_subgraph(graph, node_types):
     sub_g = graph.subgraph(nodes).copy()
     return sub_g
 
+
 """
 2 - TRAVERSALS
 """
+
 
 def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
     """
@@ -272,7 +273,6 @@ def depth_first_post(sub_graph, node_process_func, *args, **kwargs):
         else:
             sub_graph.nodes[node_name]["is_leaf"] = False
 
-
     # Start the traversal
     sg_cur = deepcopy(sub_graph)
     visited = []
@@ -289,17 +289,15 @@ def depth_first_post(sub_graph, node_process_func, *args, **kwargs):
 
         else:
             # Resolve a loop
-            # ML! is this to deal with thigns like furnace? Not sure it's needed
+            # ML! is this to deal with things like furnace? Not sure it's needed
             candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = max(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
-            print(f"loop occured in graph -- resolving by chosing node farthest from root: {n_cur}")
+            print(f"loop occurred in graph -- resolving by choosing node farthest from root: {n_cur}")
 
         visited.append(n_cur)
         sg_cur.remove_node(n_cur)
-
-
 
 
 """

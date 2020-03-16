@@ -26,9 +26,9 @@ def get_name(branch_name):
     -------
     :name: str, name of last word to the right in branch name
     '''
-    name = branch_name.split('.')[-1:][0]
-    return name
-
+    # name = branch_name.split('.')[-1:][0]
+    # return name
+    return branch_name
 
 
 def split_unit(unit):
