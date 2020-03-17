@@ -1,21 +1,12 @@
 from __future__ import print_function
 
-import networkx as nx
-from copy import deepcopy
 import copy
-import re
+import networkx as nx
+import graph_utils
+import econ
+import utils
 import random
-import numpy as np
-from pprint import pprint
-import traceback
-import sys
 import logging
-
-from graph import *  # find_value, get_parent, parent_name, make_nodes, make_edges
-from graph import traverse_graph, breadth_first_post, get_subgraph
-# from graph import  get_fuels
-from utils import *  # get_name, split_unit, check_type, is_year, aggregate
-from econ import *
 
 ### NEXT STEP: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
 
@@ -81,7 +72,8 @@ class Model:
         self.quantity = {}
         self.results = {}
 
-        # Special container for estimated parameters that need to be held for later aggregation with nodes from other branches
+        # Special container for estimated parameters that need to be held for later aggregation with nodes from
+        # other branches
         self.tech_results = {}
 
         self.build_graph()
@@ -96,14 +88,14 @@ class Model:
         None
 
         """
-        graph = deepcopy(self.graph)
+        graph = copy.deepcopy(self.graph)
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
         years = self.years
 
-        graph = make_nodes(graph, node_dfs, tech_dfs)
-        graph = make_edges(graph, node_dfs, tech_dfs)
-        self.fuels = get_fuels(graph, years)
+        graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
+        graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
+        self.fuels = graph_utils.get_fuels(graph, years)
 
         self.graph = graph
 
@@ -127,8 +119,8 @@ class Model:
 
         """
 
-        g_demand = get_subgraph(self.graph, ['demand', 'standard'])
-        g_supply = get_subgraph(self.graph, ['supply', 'standard'])
+        g_demand = graph_utils.get_subgraph(self.graph, ['demand', 'standard'])
+        g_supply = graph_utils.get_subgraph(self.graph, ['supply', 'standard'])
 
         for year in self.years:
             equilibrium = False
@@ -137,10 +129,10 @@ class Model:
             print(f"***** ***** year: {year} ***** *****")
             self.iter = 0
             self.results[year] = {}
-            self.prices[year] = {get_name(f): {"year_value": None, "to_estimate": False} for f in self.fuels}
-            self.quantity[year] = {get_name(q): {"year_value": None, "to_estimate": False} for q in self.fuels}
+            self.prices[year] = {utils.get_name(f): {"year_value": None, "to_estimate": False} for f in self.fuels}
+            self.quantity[year] = {utils.get_name(q): {"year_value": None, "to_estimate": False} for q in self.fuels}
 
-            traverse_graph(g_demand, self.init_prices, year)
+            graph_utils.traverse_graph(g_demand, self.init_prices, year)
 
             while not equilibrium:
                 print('----- ----- ITER {} ----- ----- '.format(self.iter))
@@ -162,13 +154,13 @@ class Model:
 
                 # get prices inside `region` node
                 # traverse_graph(g_demand, self.init_prices, year)
-                breadth_first_post(g_demand, self.get_service_cost, year)
-                traverse_graph(g_demand, self.passes, year)                 # HERE
+                graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                graph_utils.traverse_graph(g_demand, self.passes, year)                 # HERE
 
                 # Supply
                 # ******************
                 # print("***** ***** SUPPLY ***** *****")
-                breadth_first_post(g_supply, self.get_service_cost, year)
+                graph_utils.breadth_first_post(g_supply, self.get_service_cost, year)
 
                 # Update Prices
                 prev_prices = cur_prices
@@ -232,15 +224,15 @@ class Model:
 
         total_lcc_v = 0.0
 
-        child = child_name(sub_graph, node, return_empty=True)
+        child = graph_utils.child_name(sub_graph, node, return_empty=True)
 
         if sub_graph.nodes[node]["competition type"] == "tech compete":
 
             v = self.get_heterogeneity(sub_graph, node, year)
-            results[year][get_name(node)] = {}
+            results[year][utils.get_name(node)] = {}
 
             for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                results[year][get_name(node)][tech] = {}
+                results[year][utils.get_name(node)][tech] = {}
 
                 # insert values that will be needed inside of nodes TEMP
                 tech_params = ["Service cost", "CRF", "LCC", "Full capital cost"]
@@ -265,20 +257,20 @@ class Model:
                     sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] = 1.0
 
                 # go through available techs (range is [lower year, upper year + 1] to work with range function
-                low, up = range_available(sub_graph, node, tech)
+                low, up = utils.range_available(sub_graph, node, tech)
 
                 if int(year) in range(low, up):
 
                     # get service cost
-                    service_cost = get_service_cost(sub_graph, node, year, tech, fuels, prices)
+                    service_cost = econ.get_service_cost(sub_graph, node, year, tech, fuels, prices)
                     sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
                     # get CRF:
-                    crf = get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
+                    crf = econ.get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
                     sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
 
                     # get Full Cap Cost (will have more terms later)
 
-                    full_cc = get_capcost(sub_graph, node, year, tech, crf)
+                    full_cc = econ.get_capcost(sub_graph, node, year, tech, crf)
                     sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
 
                     # Get LCC
@@ -297,7 +289,7 @@ class Model:
                 marketshare = 0.0
 
                 # go through available techs (range is [lower year, upper year + 1] to work with range function
-                low, up = range_available(sub_graph, node, tech)
+                low, up = utils.range_available(sub_graph, node, tech)
 
                 if int(year) in range(low, up):
 
@@ -310,7 +302,7 @@ class Model:
                         else:
                             marketshare = curr_lcc ** (-1.0 * v) / total_lcc_v
 
-                    results[year][get_name(node)][tech] = {"marketshare": marketshare}
+                    results[year][utils.get_name(node)][tech] = {"marketshare": marketshare}
                     # print(f"marketshare: {marketshare} for tech {tech}")
                     weighted_lccs += marketshare * curr_lcc
                 print('\t', tech)
@@ -358,7 +350,7 @@ class Model:
 
     def init_prices(self, sub_graph, node, year):
 
-        blueprint = find_value(sub_graph, node, "blueprint", year)
+        blueprint = graph_utils.find_value(sub_graph, node, "blueprint", year)
 
         if blueprint == "region":
             self.region_node(sub_graph, node, year)
@@ -368,7 +360,7 @@ class Model:
 
     def passes(self, sub_graph, node, year):
 
-        blueprint = find_value(sub_graph, node, "blueprint", year)
+        blueprint = graph_utils.find_value(sub_graph, node, "blueprint", year)
 
         if blueprint == "stacked":
             self.stacked_node(sub_graph, node, year)
@@ -397,7 +389,7 @@ class Model:
             return
 
         # if active:
-        self.results[year][get_name(node)] = {}
+        self.results[year][utils.get_name(node)] = {}
         results = self.results
 
         for fuel, price in prices.items():
@@ -423,7 +415,7 @@ class Model:
         # keeping attribute values (macroeconomic indicators) in result dict
         for indicator, value in attributes.items():
             # indicator is name, for now naming by unit for ease in fetching from children
-            results[year][get_name(node)][value["unit"]] = value["year_value"]
+            results[year][utils.get_name(node)][value["unit"]] = value["year_value"]
         # print("done region")
         self.results = results
         return
@@ -442,11 +434,11 @@ class Model:
             (A) multiply requested by the provided
         4. Save results. Return nothing. 
         """
-        self.results[year][get_name(node)] = {}
+        self.results[year][utils.get_name(node)] = {}
         results = self.results
 
-        service_unit, provided = get_provided(sub_graph, node, year, results)
-        results[year][get_name(node)][service_unit] = provided
+        service_unit, provided = econ.get_provided(sub_graph, node, year, results)
+        results[year][utils.get_name(node)][service_unit] = provided
         requested = sub_graph.nodes[node][year]["Service requested"]
 
         # ML catch if there's no multiplier
@@ -464,10 +456,10 @@ class Model:
                     fuel_key = [k for k in self.prices[year].keys() if k.split('.')[-1] == fuel][0]  # TODO: REMOVE!
                     self.prices[year][fuel_key]["year_value"] = prices[year][fuel_key]["raw_year_value"] * multi["year_value"]
                 else:
-                    print(f"No multiplier in node {get_name(node)}, for year {year}")
+                    print(f"No multiplier in node {utils.get_name(node)}, for year {year}")
 
         for req in requested.values():
-            results[year][get_name(node)][service_unit] = provided * req["year_value"]
+            results[year][utils.get_name(node)][service_unit] = provided * req["year_value"]
 
         self.results = results
         # print('done sector')
@@ -478,33 +470,33 @@ class Model:
         Fixed Market Share
         """
 
-        self.results[year][get_name(node)] = {}
+        self.results[year][utils.get_name(node)] = {}
         results = self.results
 
-        children = child_name(sub_graph, node)
+        children = graph_utils.child_name(sub_graph, node)
         temp_results = {c: 0.0 for c in children}
         # TODO change get_provided
-        service_unit, provided = get_provided(sub_graph, node, year, results)
+        service_unit, provided = econ.get_provided(sub_graph, node, year, results)
 
-        results[year][get_name(node)][service_unit] = provided
+        results[year][utils.get_name(node)][service_unit] = provided
 
         for tech, vals in sub_graph.nodes[node][year]["technologies"].items():
-            results[year][get_name(node)][tech] = {}
+            results[year][utils.get_name(node)][tech] = {}
 
             marketshare = vals["Market share"]
             requested = vals["Service requested"]
 
-            results[year][get_name(node)][tech]["marketshare"] = marketshare["year_value"]
+            results[year][utils.get_name(node)][tech]["marketshare"] = marketshare["year_value"]
 
             for req in requested:
-                results[year][get_name(node)][tech][get_name(req["branch"])] = {}
+                results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = {}
                 downflow = {"value": req["year_value"],
-                            "result_unit": split_unit(req["unit"])[0],
+                            "result_unit": utils.split_unit(req["unit"])[0],
                             "location": req["branch"],
-                            "result": req["year_value"] * results[year][get_name(node)][service_unit] * marketshare[
+                            "result": req["year_value"] * results[year][utils.get_name(node)][service_unit] * marketshare[
                                 "year_value"]}
 
-                results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
+                results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = downflow
                 temp_results[req["branch"]] += downflow["result"]
 
         for child in children:
@@ -525,14 +517,14 @@ class Model:
             (A) update the tech in the results with marketshare and services requested
             (B) For each service being requested, calculate the quantity being requested.
         """
-        self.results[year][get_name(node)] = {}
+        self.results[year][utils.get_name(node)] = {}
         results = self.results
 
         # print(f"node: {get_name(node)}")
         # pprint(f"quantity{self.quantity}")
 
-        children = child_name(sub_graph, node)
-        temp_results = {get_name(c): 0.0 for c in children}
+        children = graph_utils.child_name(sub_graph, node)
+        temp_results = {utils.get_name(c): 0.0 for c in children}
 
         # vv OLD IMPLEMENTATION vv
         # if isinstance(children, list):
@@ -557,26 +549,26 @@ class Model:
         service_unit = provided_vals["unit"]
         # ^^ NEW IMPLEMENTATION ^^
 
-        results[year][get_name(node)][service_unit] = provided
+        results[year][utils.get_name(node)][service_unit] = provided
 
         for tech, vals in sub_graph.nodes[node][year]["technologies"].items():
-            results[year][get_name(node)][tech] = {}
+            results[year][utils.get_name(node)][tech] = {}
             marketshare = vals["Market share"]
-            results[year][get_name(node)][tech]["marketshare"] = marketshare["year_value"]
+            results[year][utils.get_name(node)][tech]["marketshare"] = marketshare["year_value"]
             requested = vals["Service requested"]
 
             if isinstance(requested, list):
                 for req in requested:
                     if req["branch"] not in self.fuels:
-                        results[year][get_name(node)][tech][get_name(req["branch"])] = {}
+                        results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = {}
                         downflow = {"value": req["year_value"],
-                                    "result_unit": split_unit(req["unit"])[0],
+                                    "result_unit": utils.split_unit(req["unit"])[0],
                                     "location": req["branch"],
-                                    "result": req["year_value"] * results[year][get_name(node)][service_unit] *
+                                    "result": req["year_value"] * results[year][utils.get_name(node)][service_unit] *
                                               marketshare["year_value"]}
 
-                        results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
-                        temp_results[get_name(req["branch"])] += downflow["result"]
+                        results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = downflow
+                        temp_results[utils.get_name(req["branch"])] += downflow["result"]
                         # print(f"downflow list not fuel: {downflow['result']}")
 
                     else:
@@ -584,44 +576,44 @@ class Model:
                         # CHANGE THIS in case it overwrites in corner cases
                         temp_results.update({req["branch"]: 0})
 
-                        results[year][get_name(node)][tech][get_name(req["branch"])] = {}
+                        results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = {}
                         downflow = {"value": req["year_value"],
-                                    "result_unit": split_unit(req["unit"])[0],
+                                    "result_unit": utils.split_unit(req["unit"])[0],
                                     "location": req["branch"],
                                     "result": req["year_value"] * marketshare["year_value"]}
 
-                        results[year][get_name(node)][tech][get_name(req["branch"])] = downflow
-                        temp_results[get_name(req["branch"])] += downflow["result"]
+                        results[year][utils.get_name(node)][tech][utils.get_name(req["branch"])] = downflow
+                        temp_results[utils.get_name(req["branch"])] += downflow["result"]
                         # print(f"downflow list fuel: {downflow['result']}")
 
 
             elif isinstance(requested, dict):
                 if requested["branch"] not in self.fuels:
-                    results[year][get_name(node)][tech][get_name(requested["branch"])] = {}
+                    results[year][utils.get_name(node)][tech][utils.get_name(requested["branch"])] = {}
                     downflow = {"value": requested["year_value"],
-                                "result_unit": split_unit(requested["unit"])[0],
+                                "result_unit": utils.split_unit(requested["unit"])[0],
                                 "location": requested["branch"],
-                                "result": requested["year_value"] * results[year][get_name(node)][service_unit] *
+                                "result": requested["year_value"] * results[year][utils.get_name(node)][service_unit] *
                                           marketshare["year_value"]}
 
-                    results[year][get_name(node)][tech][get_name(requested["branch"])] = downflow
-                    temp_results[get_name(requested["branch"])] += downflow["result"]
+                    results[year][utils.get_name(node)][tech][utils.get_name(requested["branch"])] = downflow
+                    temp_results[utils.get_name(requested["branch"])] += downflow["result"]
                     # print(f"downflow dict: {downflow['result']}")
                 else:
                     # print(f"fuel dict: {requested}")
                     # print("get info here")
-                    temp_results.update({get_name(requested["branch"]): 0.0})
+                    temp_results.update({utils.get_name(requested["branch"]): 0.0})
 
 
-                    results[year][get_name(node)][tech][get_name(requested["branch"])] = {}
+                    results[year][utils.get_name(node)][tech][utils.get_name(requested["branch"])] = {}
                     downflow = {"value": requested["year_value"],
-                                "result_unit": split_unit(requested["unit"])[0],
+                                "result_unit": utils.split_unit(requested["unit"])[0],
                                 "location": requested["branch"],
-                                "result": requested["year_value"] * results[year][get_name(node)][service_unit] * marketshare["year_value"]}
+                                "result": requested["year_value"] * results[year][utils.get_name(node)][service_unit] * marketshare["year_value"]}
 
                     # vv NEW IMPLEMENTATION vv
-                    results[year][get_name(node)][tech][get_name(requested["branch"])] = downflow
-                    temp_results[get_name(requested["branch"])] += downflow["result"]
+                    results[year][utils.get_name(node)][tech][utils.get_name(requested["branch"])] = downflow
+                    temp_results[utils.get_name(requested["branch"])] += downflow["result"]
                     # print(f"downflow dict: {downflow['result']}")
                     # ^^ NEW IMPLEMENTATION
 
@@ -630,14 +622,14 @@ class Model:
                 if child not in self.fuels:
                     prov_dict = sub_graph.nodes[child][year]["Service provided"]
                     for object in prov_dict.keys():
-                        sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[get_name(child)]
+                        sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[utils.get_name(child)]
 
         elif isinstance(children, str):
             child = children
             if child not in self.fuels:
                 prov_dict = sub_graph.nodes[child][year]["Service provided"]
                 for object in prov_dict.keys():
-                    sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[get_name(child)]
+                    sub_graph.nodes[child][year]["Service provided"][object]["year_value"] = temp_results[utils.get_name(child)]
 
 
 
@@ -647,12 +639,12 @@ class Model:
             if isinstance(requested, list):
                 for req in requested:
                     if req["branch"] in self.fuels:
-                        self.quantity[year][get_name(req["branch"])]["year_value"] = temp_results[get_name(req["branch"])]
+                        self.quantity[year][utils.get_name(req["branch"])]["year_value"] = temp_results[utils.get_name(req["branch"])]
 
 
             elif isinstance(requested, dict):
                 if requested["branch"] in self.fuels:
-                    self.quantity[year][get_name(requested["branch"])]["year_value"] = temp_results[get_name(requested["branch"])]
+                    self.quantity[year][utils.get_name(requested["branch"])]["year_value"] = temp_results[utils.get_name(requested["branch"])]
 
         # print(f"temp_results: {temp_results}")
         # pprint(f"quantity{self.quantity[year][get_name(node)]}")

@@ -1,12 +1,6 @@
-import networkx as nx
-import copy as copy
 import re
-import random
-import numpy as np
-from pprint import pprint
-import traceback
-import sys
 import logging
+import graph_utils
 
 # Configure logging and set flag to raise exceptions
 logging.raiseExceptions = True
@@ -52,7 +46,6 @@ def check_type(variable, datatype, node="unnamed", passing=False):
             raise
 
 
-
 def range_available(g, node, tech, add_upper=True):
     """
     NOTE: year not mentioned atm because dataset specifies that it remains constant
@@ -65,7 +58,6 @@ def range_available(g, node, tech, add_upper=True):
         return int(avail), int(unavail) + 1
     else:
         return int(avail), int(unavail)
-
 
 
 def is_year(cn: str or int) -> bool:
@@ -93,7 +85,6 @@ def is_year(cn: str or int) -> bool:
     return bool(re_year.match(str(cn)))
 
 
-
 def get_nested_values(dict, key_list):
     """Retrieves value from the nested dictionary `dict` using the `key_list`.
 
@@ -118,7 +109,6 @@ def get_nested_values(dict, key_list):
     for k in key_list:
         value = value[k]
     return value
-
 
 
 def aggregate(sub_graph, agg_key, agg_func=sum):
@@ -163,16 +153,17 @@ def aggregate(sub_graph, agg_key, agg_func=sum):
     return aggregates
 
 
-
-def search_nodes(search_term):
+def search_nodes(search_term, g):
     """
-    Search `graph` to find the nodes which contain `search_term` in the node name's final component. Not case
+    Search `g` to find the nodes which contain `search_term` in the node name's final component. Not case
     sensitive.
 
     Parameters
     ----------
     search_term : str
         The search term.
+
+    g : NetworkX Graph.
 
     Returns
     -------
@@ -184,4 +175,4 @@ def search_nodes(search_term):
         last_comp = components[-1]
         return search_term.lower() in last_comp.lower()
 
-    return [n for n in graph.nodes if search(n)]
+    return [n for n in g.nodes if search(n)]

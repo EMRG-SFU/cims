@@ -1,30 +1,20 @@
-import networkx as nx
-from copy import deepcopy
 import copy
-import re
-import random
-import numpy as np
-from pprint import pprint
-import traceback
-import sys
-import logging
-
-from utils import * # get_name, split_unit
-from graph import * # get_parent, parent_name
+import utils
+import graph_utils
 
 
 def get_provided(g, node, year, parent_provide):
-    node_name = get_name(node)
+    node_name = utils.get_name(node)
     provided = copy.copy(g.nodes[node][year]["Service provided"])
     service_name = list(provided.keys())[0]
     service = provided[service_name]['branch']
     if service == node_name:
-        parent = get_parent(g, node, year)
+        parent = graph_utils.get_parent(g, node, year)
         parent_request = parent["Service requested"][service_name]
-        request_units = split_unit(parent_request['unit'])
+        request_units = utils.split_unit(parent_request['unit'])
         service_unit = provided[service_name]['unit']
 
-        provide_val = parent_request['year_value'] * parent_provide[year][get_name(parent_name(node))][request_units[-1]]
+        provide_val = parent_request['year_value'] * parent_provide[year][utils.get_name(graph_utils.parent_name(node))][request_units[-1]]
         g.nodes[node][year]["Service provided"][service_name]["year_value"] = provide_val
         return service_unit, provide_val
 
@@ -77,9 +67,9 @@ def get_service_cost(g, node, year, tech, fuels, prices):
     # print(prices[year])
     service_cost = []
 
-    child = child_name(g, node, return_empty=True)
+    child = graph_utils.child_name(g, node, return_empty=True)
 
-    check_type(child, list)
+    utils.check_type(child, list)
 
     try:
         service_req = g.nodes[node][year]["technologies"][tech]["Service requested"]
@@ -90,7 +80,7 @@ def get_service_cost(g, node, year, tech, fuels, prices):
             if service_req['branch'] in fuels:
                 service_req_val = service_req["year_value"]
                 # price_tech = prices[year][get_name(service_req['branch'])]["year_value"]
-                price_tech = prices[year][get_name(service_req['branch'])]["raw_year_value"]  # JA
+                price_tech = prices[year][utils.get_name(service_req['branch'])]["raw_year_value"]  # JA
                 service_cost.append(price_tech * service_req_val)
 
             else:
@@ -113,7 +103,7 @@ def get_service_cost(g, node, year, tech, fuels, prices):
                     service_req_val = reqs["year_value"]
                     # TODO: Make sure the price multipliers are being applied
                     # service_cost.append(prices[year][get_name(reqs['branch'])]["year_value"] * service_req_val)
-                    service_cost.append(prices[year][get_name(reqs['branch'])]["raw_year_value"] * service_req_val) #JA
+                    service_cost.append(prices[year][utils.get_name(reqs['branch'])]["raw_year_value"] * service_req_val) #JA
 
                 else:
                     # TODO check reqs that it's not overwriting values below

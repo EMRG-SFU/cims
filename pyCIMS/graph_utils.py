@@ -1,16 +1,9 @@
 import networkx as nx
 from copy import deepcopy
 import copy
-import re
-import random
-import numpy as np
-from pprint import pprint
-import traceback
-import sys
-import logging
 
-
-from utils import is_year
+# from utils import is_year
+import utils
 
 '''
 1- Perform action in graph
@@ -347,8 +340,8 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     current_node_df = current_node_df[current_node_df['Parameter'] != 'Competition type']
 
     # 5 For the remaining data, group by year.
-    years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
-    non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
+    years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
+    non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
     # 6 Find node's competition type. (If there is one) [ and `blueprint` - possibly temporarily]
     bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
@@ -359,7 +352,6 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
         graph.nodes[current_node]['blueprint'] = 'unavailable'
     # Get rid of blueprint type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
-
 
     for y in years:
         year_df = current_node_df[non_years + [y]]
@@ -410,8 +402,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
     # 3 Group data by year & add to the tech's dictionary
     # NOTE: This is very similar to what we do for nodes (above). However, it differs because here we aren't
     # using the value column (its redundant here).
-    years = [c for c in t_df.columns if is_year(c)]             # Get Year Columns
-    non_years = [c for c in t_df.columns if not is_year(c)]     # Get Non-Year Columns
+    years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
+    non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
     for y in years:
         year_df = t_df[non_years + [y]]
