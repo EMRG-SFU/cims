@@ -22,10 +22,8 @@ Okay. So now it is changing between years. But it still isn't changing between i
 """
 
 ### NEXT STEP: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
-# TODO: Implement a proper price initialization
 # TODO: Evaluate whether methods should avoid side effects.
 # TODO: Implement automatic defaults
-# TODO: Make sure price multipliers are in effect
 # TODO: Implement logic for determining when to read, calculate, inherit, or use default values
 
 # __true_print = print  # for when using cmd line
