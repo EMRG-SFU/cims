@@ -2,7 +2,7 @@
 import pyCIMS
 from pprint import pprint
 
-file = 'pycims_prototype/pyCIMS_model_description.xlsm'
+file = 'pycims_prototype/pyCIMS_model_description2.xlsm'
 
 my_validator = pyCIMS.ModelValidator(file)
 my_validator.validate(raise_warnings=False)
@@ -23,3 +23,4 @@ my_model.build_graph()
 
 # Run the Model
 my_model.run()
+
