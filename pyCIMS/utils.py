@@ -1,6 +1,5 @@
 import re
 import logging
-import graph_utils
 
 # Configure logging and set flag to raise exceptions
 logging.raiseExceptions = True

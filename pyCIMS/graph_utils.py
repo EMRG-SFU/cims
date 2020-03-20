@@ -3,7 +3,7 @@ from copy import deepcopy
 import copy
 
 # from utils import is_year
-import utils
+from . import utils
 
 '''
 1- Perform action in graph

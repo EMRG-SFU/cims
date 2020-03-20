@@ -1,6 +1,6 @@
 import copy
-import utils
-import graph_utils
+from . import utils
+from . import graph_utils
 
 
 def get_provided(g, node, year, parent_provide):

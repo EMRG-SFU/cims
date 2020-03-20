@@ -1,25 +1,13 @@
 from __future__ import print_function
-
 import copy
 import networkx as nx
-import graph_utils
-import econ
-import utils
 import random
 import logging
 import warnings
 
-# NOTES
-"""
-Even though the price is changing every iteration, marketshare is not changing. Why would this be? Is it because prices
-doesn't change from the service cost perspective?
-
-Okay. So now it is changing between years. But it still isn't changing between iterations... Is this because the service
- cost calculations is happening using the node prices. But the price update happens to the self.prices object? So... 
- what are our solutions here? One possible solution is to re-call the init_prices function. We don't want to do this
- actually, there are other things that are happening in the init function, that we don't want to be calling all the 
- time. Instead, I need to implement the update work (updating prices at nodes) within the update_prices function.  
-"""
+from . import graph_utils
+from . import utils
+from . import econ
 
 ### NEXT STEP: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
 # TODO: Evaluate whether methods should avoid side effects.

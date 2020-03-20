@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from Reader import get_node_cols
+from .Reader import get_node_cols
 import warnings
 
 
