@@ -1,5 +1,4 @@
 import networkx as nx
-from copy import deepcopy
 import copy
 
 # from utils import is_year
@@ -231,11 +230,10 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
 
 def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
     """
+    TODO: Rename Function
+    TODO: Properly document
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
-    A node is only visited once its parents have been visited. In the case of a loop (where every node has
-    at least one parent who hasn't been visited) the node closest to the `sub_graph` root will be visited
-    and processed using the values held over from the last iteration.
 
     Parameters
     ----------
@@ -267,7 +265,7 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
             sub_graph.nodes[node_name]["is_leaf"] = False
 
     # Start the traversal
-    sg_cur = deepcopy(sub_graph)
+    sg_cur = copy.deepcopy(sub_graph)
     visited = []
 
     while len(sg_cur.nodes) > 0:
@@ -319,7 +317,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'] == 'Sector type']['Value'])
+    typ = list(current_node_df[current_node_df['Parameter'] == 'Node type']['Value'])
     if len(typ) > 0:
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
@@ -327,7 +325,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
         val = find_value(graph, current_node, 'type')
         graph.nodes[current_node]['type'] = val if val else 'standard'
     # Drop Demand row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'Sector type']
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'Node type']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
@@ -344,19 +342,20 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
     # 6 Find node's competition type. (If there is one) [ and `blueprint` - possibly temporarily]
-    bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
-    if len(set(bp_list)) == 1:
-        bp_type = bp_list[0]
-        graph.nodes[current_node]['blueprint'] = bp_type.lower()
-    elif len(set(bp_list)) < 1:
-        graph.nodes[current_node]['blueprint'] = 'unavailable'
-    # Get rid of blueprint type row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
+    # bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
+    # if len(set(bp_list)) == 1:
+    #     bp_type = bp_list[0]
+    #     graph.nodes[current_node]['blueprint'] = bp_type.lower()
+    # elif len(set(bp_list)) < 1:
+    #     graph.nodes[current_node]['blueprint'] = 'unavailable'
+    # # Get rid of blueprint type row
+    # current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
 
     for y in years:
         year_df = current_node_df[non_years + [y]]
         year_dict = {}
-        for param, src, branch, unit, val, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        # for param, src, branch, unit, val, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for param, val, branch, src, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
             if param in year_dict.keys():
                 pass
             else:
@@ -373,8 +372,6 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
 
     # 7 Return the new graph
     return graph
-
-
 
 
 def add_tech_data(graph, node, tech_dfs, tech):
@@ -408,9 +405,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
     for y in years:
         year_df = t_df[non_years + [y]]
         year_dict = {}
-
-        for parameter, source, branch, unit, value, year_value in zip(
-                *[year_df[c] for c in year_df.columns]):
+        for parameter, value, branch, source, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': source,
                    'branch': branch,
                    'unit': unit,
@@ -455,7 +450,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
 
     # 4 Return the new graph
     return graph
-
 
 
 def add_edges(graph, node, df):
@@ -549,7 +543,6 @@ def make_nodes(graph, node_dfs, tech_dfs):
     networkx.Graph
         An updated graph that contains all nodes and technologies in node_dfs and tech_dfs.
     """
-
 
     # 1 Copy graph
     new_graph = copy.copy(graph)

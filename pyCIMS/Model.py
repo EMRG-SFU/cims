@@ -9,16 +9,10 @@ from . import graph_utils
 from . import utils
 from . import econ
 
-### NEXT STEP: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
+# TODO: deal with iter = 1 to see when it's appropriate to keep a value constant throughout iteration
 # TODO: Evaluate whether methods should avoid side effects.
 # TODO: Implement automatic defaults
 # TODO: Implement logic for determining when to read, calculate, inherit, or use default values
-
-# __true_print = print  # for when using cmd line
-# def print(*args, **kwargs):
-#     __true_print(*args, **kwargs)
-#     sys.stdout.flush()
-
 
 # Configure logging and set flag to raise exceptions
 logging.raiseExceptions = True
@@ -102,7 +96,7 @@ class Model:
 
         self.graph = graph
 
-    def run(self, equilibrium_threshold=0.05, max_iterations=10):
+    def run(self, equilibrium_threshold=0.005, max_iterations=10):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for each year.
 
@@ -133,34 +127,36 @@ class Model:
 
             # Initialize Basic Variables
             equilibrium = False
-            cur_prices = copy.deepcopy(self.prices)
+            # cur_prices = copy.deepcopy(self.prices)
             iteration = 0
 
             # Initialize Results
             self.results[year] = {}
-            self.prices[year] = {f: {"year_value": None, "to_estimate": False} for f in self.fuels}
+            # self.prices[year] = {f: {"year_value": None, "to_estimate": False} for f in self.fuels}
             self.quantity[year] = {q: {"year_value": None, "to_estimate": False} for q in self.fuels}
 
-            # Initialize Prices
-            # graph_utils.traverse_graph(g_demand, self.init_prices, year)
-            graph_utils.traverse_graph(self.graph, self.init_prices, year)
+            # Initialize Values
+            # graph_utils.traverse_graph(self.graph, self.init_prices, year)
+            graph_utils.traverse_graph(self.graph, self.new_init_prices, year)
 
             while not equilibrium:
                 print('iter {}'.format(iteration))
 
                 # Printing Prices
-                for f, p in self.prices[year].items():
-                    print('\tprice of {}: {}'.format(f, p['year_value']))
-
-                # # Printing Quantities
-                # for f, q in self.quantity[year].items():
-                #     print('\tquantity of {}: {}'.format(f, q['year_value']))
-
-                # Printing Marketshares
-                for f, ms in self.results[year]['pyCIMS.Canada.Alberta.Residential.Buildings.Shell.Space heating.Furnace'].items():
-                    if type(ms) is dict:
-                        print('\tmarketshare of {}: {}'.format(f, ms['marketshare']))
-
+                prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f
+                          in self.fuels}
+                for f, p in prices.items():
+                    print('\tprice of {}: {}'.format(f, p))
+            #
+            #     # # Printing Quantities
+            #     # for f, q in self.quantity[year].items():
+            #     #     print('\tquantity of {}: {}'.format(f, q['year_value']))
+            #
+            #     # Printing Marketshares
+            #     for f, ms in self.results[year]['pyCIMS.Canada.Alberta.Residential.Buildings.Shell.Space heating.Furnace'].items():
+            #         if type(ms) is dict:
+            #             print('\tmarketshare of {}: {}'.format(f, ms['marketshare']))
+            #
                 if iteration > max_iterations:
                     warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
                     break
@@ -168,7 +164,7 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate Service Costs on Demand Side
-                graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                graph_utils.breadth_first_post(g_demand, self.new_get_service_cost, year)
 
                 # Calculate Quantities
                 graph_utils.traverse_graph(g_demand, self.passes, year)
@@ -176,11 +172,15 @@ class Model:
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.breadth_first_post(g_supply, self.get_service_cost, year)
+                graph_utils.breadth_first_post(g_supply, self.new_get_service_cost, year)
 
                 # Update Prices
-                prev_prices = copy.deepcopy(self.prices)
-                self.prices = self.update_prices(year, g_supply)
+                # Go and get all the previous prices
+                prev_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f in self.fuels}
+                # Now actually update prices
+                self.new_update_prices(year, g_supply)
+                # Go get all the new prices
+                new_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f in self.fuels}
 
                 # Equilibrium
                 # ******************
@@ -206,20 +206,21 @@ class Model:
                     True if every fuel has changed less than `equilibrium_threshold`. False otherwise.
                     """
 
-                    # Check if prev is empty or year not in previous (first year or first iteration)
-                    if (len(prev) == 0) or (year not in prev.keys()):
-                        return False
-
+                    # # Check if prev is empty or year not in previous (first year or first iteration)
+                    # if (len(prev) == 0): # or (iteration == 0):
+                    #     return False
+                    x = year
                     # For every fuel, check if the relative difference exceeds the threshold
-                    for fuel in new[year]:
-                        prev_fuel_price = prev[year][fuel]['year_value']
-                        new_fuel_price = new[year][fuel]['year_value']
+                    for fuel in new:
+                        # prev_fuel_price = prev[year][fuel]['year_value']
+                        # new_fuel_price = new[year][fuel]['year_value']
+                        prev_fuel_price = prev[fuel]
+                        new_fuel_price = new[fuel]
                         if (prev_fuel_price is None) or (new_fuel_price is None):
                             return False
                         # print('\t {}: {} {}'.format(fuel, prev_fuel_price, new_fuel_price))
                         abs_diff = abs(new_fuel_price - prev_fuel_price)
                         rel_diff = abs_diff/prev_fuel_price
-
                         # If any fuel's relative difference exceeds the threshold, an equilibrium has not been reached
                         if rel_diff > equilibrium_threshold:
                             return False
@@ -227,11 +228,11 @@ class Model:
                     # Otherwise, an equilibrium has been reached
                     return True
 
-                equilibrium = eq_check(prev_prices, self.prices)
+                equilibrium = eq_check(prev_prices, new_prices)
 
                 iteration += 1
 
-    def get_service_cost(self, sub_graph, node, year, rand=False):
+    def old_get_service_cost(self, sub_graph, node, year, rand=False):
         """
         1. Initialize
             * results, fuels, and prices to what is in the model object.
@@ -247,7 +248,6 @@ class Model:
         """
         results = self.results
         fuels = self.fuels
-        # prices = self.prices
         # Calculate Prices
         temp_prices = copy.deepcopy(sub_graph.nodes[node][year]['Price'])
         for fuel, price_mult in sub_graph.nodes[node][year]['Price Multiplier'].items():
@@ -363,6 +363,119 @@ class Model:
 
         self.results = results
 
+    def new_get_service_cost(self, sub_graph, node, year, rand=False):
+        """
+        # TODO: Seperate the code out into smaller functions & document.
+        1. Initialize
+            * results, fuels, and prices to what is in the model object.
+            * total_lcc_v = 0
+            * child to be all the children of the node
+        2. Check if the node is a tech compete node. If its not, do nothing.
+        3. For every tech in the node
+            (A) Initialize the parameters we have
+            (B) Calculate service cost, CRF, capital cost, LCC, marketshare
+        4. Calculate the weighted lcc for the node
+        5. Return results
+
+        """
+        results = self.results
+        fuels = self.fuels
+
+        total_lcc_v = 0.0
+
+        child = graph_utils.child_name(sub_graph, node, return_empty=True)
+
+        # Check if the node is a tech compete node.
+        if sub_graph.nodes[node]["competition type"] == "tech compete":
+            # Initialize the results for the node at year
+            results[year][node] = {}
+
+            # Find the v parameter
+            v = self.get_heterogeneity(sub_graph, node, year)
+
+            # For every tech in the node, compute econ calculations
+            for tech in sub_graph.nodes[node][year]["technologies"].keys():
+                # Calculate Econ Measures
+                def calculate_tech_econ():
+                    tech_result = {}
+
+                    # Initialize calculable value
+                    tech_param_names = ["Service cost", "CRF", "LCC", "Full capital cost"]
+                    tech_param_values = [0.0, 0.0, 0.0, 0.0]
+                    # go through all tech parameters and make sure we don't overwrite something that exists
+                    for param_name, param_val in zip(tech_param_names, tech_param_values):
+                        if param_name not in sub_graph.nodes[node][year]['technologies'][tech].keys():
+                            self.add_tech_element(sub_graph, node, year, tech, param_name, value=param_val)
+
+                    # Initialize values with defaults
+                    def_param_names = ['Operating cost', 'Output']
+                    def_param_values = [0, 1]
+                    for param_name, param_val in zip(def_param_names, def_param_values):
+                        if sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] is None:
+                            sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] = param_val
+
+                calculate_tech_econ()
+
+                # # TODO Make default values `automatic` (based on default value sheet)
+                # if sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] is None:
+                #     sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"] = 0.0
+                #
+                # if sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] is None:
+                #     sub_graph.nodes[node][year]["technologies"][tech]["Output"]["year_value"] = 1.0
+
+                # go through available techs (range is [lower year, upper year + 1] to work with range function
+                low, up = utils.range_available(sub_graph, node, tech)
+
+                if int(year) in range(low, up):
+                    # get service cost
+                    service_cost = econ.get_technology_service_cost(sub_graph, self.graph, node, year, tech, fuels)
+                    sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
+                    # get CRF:
+                    crf = econ.get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
+                    sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
+
+                    # get Full Cap Cost (will have more terms later)
+                    full_cc = econ.get_capcost(sub_graph, node, year, tech, crf)
+                    sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
+
+                    # Get LCC
+                    operating_cost = sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"]
+                    lcc = service_cost + operating_cost + full_cc
+                    sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
+
+                    # get marketshare (calculate instead of using given ones (base year 2000 only)(?))
+                    # TODO: catch min and max marketshares
+                    total_lcc_v += lcc ** (-1.0 * v)  # will need to catch other competing lccs in other branches?
+
+            weighted_lccs = 0
+
+            # get marketshares based on each competing service/tech
+            for tech in sub_graph.nodes[node][year]["technologies"].keys():
+                # go through available techs
+                marketshare = 0.0
+
+                # go through available techs (range is [lower year, upper year + 1] to work with range function
+                low, up = utils.range_available(sub_graph, node, tech)
+
+                if int(year) in range(low, up):
+
+                    curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
+
+                    if curr_lcc > 0.0:
+                        if rand:
+                            marketshare = random.random()
+                        else:
+                            marketshare = curr_lcc ** (-1.0 * v) / total_lcc_v
+
+                    results[year][node][tech] = {"marketshare": marketshare}
+                    weighted_lccs += marketshare * curr_lcc
+
+                sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = marketshare
+
+            sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
+
+        self.results = results
+
     def add_tech_element(self, g, node, year, tech, param, value=0.0, source=None, unit=None):
         """
         Include a new set of parameter: {values} as a nested dict
@@ -382,16 +495,6 @@ class Model:
             v = 10
         return v
 
-    # def init_prices(self, sub_graph, node, year):
-    #
-    #     blueprint = graph_utils.find_value(sub_graph, node, "blueprint", year)
-    #
-    #     if blueprint == "region":
-    #         self.region_node(sub_graph, node, year)
-    #
-    #     if blueprint == "sector":
-    #         self.sector_node(sub_graph, node, year)
-
     def passes(self, sub_graph, node, year):
         blueprint = graph_utils.find_value(sub_graph, node, "blueprint", year)
 
@@ -401,7 +504,7 @@ class Model:
         if blueprint == "compete":
             self.compete_node(sub_graph, node, year)
 
-    def init_prices(self, graph, node, year, step=5):
+    def old_init_prices(self, graph, node, year, step=5):
         def init_node_prices():
             # Prices @ Nodes
             # --------------
@@ -455,6 +558,7 @@ class Model:
             # --- OLD CODE BELOW HERE -- STILL IN USE
             self.results[year][node] = {}
             # Attributes
+            # if (graph.nodes[node]['competition type'] == 'region') & ('Attribute' in graph.nodes[node][year].keys()):
             if (graph.nodes[node]['blueprint'] == 'region') & ('Attribute' in graph.nodes[node][year].keys()):
                 attributes = graph.nodes[node][year]["Attribute"]
                 # keeping attribute values (macroeconomic indicators) in result dict
@@ -463,6 +567,7 @@ class Model:
                     self.results[year][utils.get_name(node)][value["unit"]] = value["year_value"]
 
             # Services Being Provided
+            # if graph.nodes[node]['competition type'] == 'sector':
             if graph.nodes[node]['blueprint'] == 'sector':
                 service_unit, provided = econ.get_provided(graph, node, year, self.results)
                 self.results[year][node][service_unit] = provided
@@ -484,101 +589,72 @@ class Model:
         old_init()
         init_self_prices()
 
-    # def region_node(self, sub_graph, node, year):
-    #     """
-    #     JA Notes:
-    #     1. Check if the region node is active. Active nodes are those which have Prices.
-    #     2. If it is active, clear the results for the node.
-    #     3. for every fuel whose price is specified at the node, check if the fuel is in our prices dict. If so, check
-    #        if price was set exogenously.
-    #         (A) NO -> initialize the current year prices (raw, year_value) for that fuel to be the prices from the
-    #                   previous year. Set that fuel as an estimatable fuel.
-    #         (B) YES -> Turn off estimation for the fuel. Set prices based on exogenous value.
-    #     4. Add attributes to results.
-    #     5. Return results
-    #     """
-    #     # check if "active" or not
-    #     try:
-    #         prices = sub_graph.nodes[node][year]["Price"]
-    #     except KeyError:
-    #         # if non active (region without price (or attributes))
-    #         return
-    #
-    #     # if active:
-    #     self.results[year][utils.get_name(node)] = {}
-    #     results = self.results
-    #
-    #     for fuel, price in prices.items():
-    #         price_short_names = [p.split('.')[-1] for p in self.prices[year].keys()]
-    #         # if fuel in self.prices[year].keys():
-    #         if fuel in price_short_names:
-    #             fuel_key = [k for k in self.prices[year].keys() if k.split('.')[-1] == fuel][0]  # TODO: REMOVE!
-    #             if price["year_value"] is None:
-    #                 # ML: check if we should check ahead when on base year instead
-    #                 # to flag estimate right away
-    #                 self.prices[year][fuel_key]["raw_year_value"] = self.prices[str(int(year) - self.step)][fuel_key]["raw_year_value"]
-    #                 self.prices[year][fuel_key]["year_value"] = self.prices[str(int(year) - self.step)][fuel_key]["raw_year_value"]
-    #                 self.prices[year][fuel_key]["to_estimate"] = True
-    #
-    #             else:
-    #                 # when there's a price at first iteration
-    #                 self.prices[year][fuel_key]["raw_year_value"] = price["year_value"]
-    #                 self.prices[year][fuel_key]["year_value"] = price["year_value"]
-    #                 self.prices[year][fuel_key]["to_estimate"] = False
-    #
-    #     attributes = sub_graph.nodes[node][year]["Attribute"]
-    #     # keeping attribute values (macroeconomic indicators) in result dict
-    #     for indicator, value in attributes.items():
-    #         # indicator is name, for now naming by unit for ease in fetching from children
-    #         results[year][utils.get_name(node)][value["unit"]] = value["year_value"]
-    #     # print("done region")
-    #     self.results = results
-    #     return
+    def new_init_prices(self, graph, node, year, step=5):
+        def init_node_price_multipliers():
+            # Grab the price multipliers from the parents (if they exist)
+            parents = list(graph.predecessors(node))
+            parent_price_multipliers = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'Price Multiplier' in graph.nodes[parent][year].keys():
+                    parent_price_multipliers.update(graph.nodes[parent][year]['Price Multiplier'])
 
-    # def sector_node(self, sub_graph, node, year):
-    #     """
-    #     Fixed Ratio
-    #     """
-    #     """
-    #     JA Notes:
-    #     1. Check if the sector contains price multipliers.
-    #     2. For each multiplier:
-    #         (A) Check if the corresponding fuel is in our price list. If yes:
-    #             i) If multiplier has been defined -> update price's year_value with multiplier * raw_year_value
-    #     3. For each service requested:
-    #         (A) multiply requested by the provided
-    #     4. Save results. Return nothing.
-    #     """
-    #     self.results[year][utils.get_name(node)] = {}
-    #     results = self.results
-    #
-    #     service_unit, provided = econ.get_provided(sub_graph, node, year, results)
-    #     results[year][utils.get_name(node)][service_unit] = provided
-    #     requested = sub_graph.nodes[node][year]["Service requested"]
-    #
-    #     # ML catch if there's no multiplier
-    #     try:
-    #         multiplier = sub_graph.nodes[node][year]["Price Multiplier"]
-    #     except KeyError:
-    #         ("Sector has no multiplier field")
-    #         multiplier = None
-    #
-    #     prices = copy.copy(self.prices)
-    #
-    #     for fuel, multi in multiplier.items():
-    #         if fuel in [f.split('.')[-1] for f in self.prices[year].keys()]:
-    #             if multi:
-    #                 fuel_key = [k for k in self.prices[year].keys() if k.split('.')[-1] == fuel][0]  # TODO: REMOVE!
-    #                 self.prices[year][fuel_key]["year_value"] = prices[year][fuel_key]["raw_year_value"] * multi["year_value"]
-    #             else:
-    #                 print(f"No multiplier in node {utils.get_name(node)}, for year {year}")
-    #
-    #     for req in requested.values():
-    #         results[year][utils.get_name(node)][service_unit] = provided * req["year_value"]
-    #
-    #     self.results = results
-    #     # print('done sector')
-    #     return
+            # Grab the price multipliers from the current node
+            node_price_multipliers = {}
+            # Grab the price multiplier from the current node (if they exist)
+            if 'Price Multiplier' in graph.nodes[node][year].keys():
+                node_price_multipliers.update(graph.nodes[node][year]['Price Multiplier'])
+
+            # Update the Parent's Multipliers by the Child's (through multiplication)
+            for fuel, mult in node_price_multipliers.items():
+                if fuel in parent_price_multipliers.keys():
+                    parent_price_multipliers[fuel]['year_value'] *= mult['year_value']
+                else:
+                    parent_price_multipliers[fuel] = mult
+
+            # Set Price Multiplier of node in the graph
+            graph.nodes[node][year]['Price Multiplier'] = parent_price_multipliers
+
+        def old_init():
+            # --- OLD CODE BELOW HERE -- STILL IN USE
+            self.results[year][node] = {}
+            # Attributes
+            if (graph.nodes[node]['competition type'] == 'region') & ('Attribute' in graph.nodes[node][year].keys()):
+                attributes = graph.nodes[node][year]["Attribute"]
+                # keeping attribute values (macroeconomic indicators) in result dict
+                for indicator, value in attributes.items():
+                    # TODO: CHANGE to be unit agnostic. Instead be something like node_name.attribute_name
+                    # indicator is name, for now naming by unit for ease in fetching from children
+                    self.results[year][utils.get_name(node)][value["unit"]] = value["year_value"]
+
+            # Services Being Provided
+            if (graph.nodes[node]['competition type'] == 'sector') & (graph.nodes[node]['type']=='demand'):
+                service_unit, provided = econ.get_provided(graph, node, year, self.results)
+                self.results[year][node][service_unit] = provided
+                # Services Being Requested
+                requested = graph.nodes[node][year]["Service requested"]
+                for req in requested.values():
+                    self.results[year][node][service_unit] = provided * req["year_value"]
+
+        def init_prices_to_be_estimated():
+            """
+            Needs to estimate Production Costs for values to be estimated. Will start by using the value settled on
+            in the previous year.
+            """
+            # Determine if a fuel
+            if node in self.fuels:
+                fuel_name = node.split('.')[-1]
+                if graph.nodes[node][year]['Production Cost'][fuel_name]['year_value'] is None:
+                    graph.nodes[node][year]['Production Cost'][fuel_name]['to_estimate'] = True
+                    last_year = str(int(year) - step)
+                    last_year_value = graph.nodes[node][last_year]['Production Cost'][fuel_name]['year_value']
+                    graph.nodes[node][year]['Production Cost'][fuel_name]['year_value'] = last_year_value
+                else:
+                    graph.nodes[node][year]['Production Cost'][fuel_name]['to_estimate'] = False
+
+        init_node_price_multipliers()
+        old_init()
+        init_prices_to_be_estimated()
 
     def stacked_node(self, sub_graph, node, year):
         """
@@ -769,7 +845,7 @@ class Model:
 
         # print("complete compete")
 
-    def update_prices(self, year, supply_subgraph):
+    def old_update_prices(self, year, supply_subgraph):
         """
         1. Determine what fuels need to be calculated
         2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
@@ -823,5 +899,61 @@ class Model:
             for n, d in self.graph.nodes(data=True):
                 if fuel in d[year]['Price'].keys():
                     self.graph.nodes[n][year]['Price'][fuel]['year_value'] = fuel_price
+
+        return new_prices
+
+    def new_update_prices(self, year, supply_subgraph):
+        """
+        1. Determine what fuels need to be calculated
+        2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
+            (A) If a tech compete node, just return the lcc. This is production cost.
+            (B) If its a fixed ratio or sector node:
+                  i) find all the services being requested
+                 ii) for each service, multiply the price by the requested amount to get a weighted cost.
+                iii) calculate the weighted average production cost of the requested services.
+        3. Store the prices of the nodes in the new prices dictionary. Return dictionary.
+
+        Parameters
+        ----------
+        year : str
+        supply_subgraph: nx.Graph
+
+        Returns
+        -------
+        A dictionary containing the updated prices. Keys are fuel nodes, values are prices.
+        """
+        # TESTING
+        prev_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0] for f in
+                       self.fuels}
+        price_keys_to_estimate = [f for f, d in prev_prices.items() if d['to_estimate']]
+        new_prices = copy.deepcopy(prev_prices)
+
+        # For each price we need to estimate, go find the price
+        def calc_price(node_name):
+            # Base Case is that we hit a tech compete node
+            if supply_subgraph.nodes[node_name]['competition type'] == 'tech compete':
+                return supply_subgraph.nodes[node_name][year]['total lcc']
+
+            elif supply_subgraph.nodes[node_name]['competition type'] in ['fixed ratio', 'sector']:
+                # Find all the services being requested
+                services_requested = [(d['branch'], d['year_value']) for s, d in supply_subgraph.nodes[node_name][year]['Service requested'].items()]
+
+                # For each service multiply their price by their request amount
+                total_req = 0
+                total_lcc = 0
+                for branch, req_amount in services_requested:
+                    total_req += req_amount
+                    total_lcc += req_amount * calc_price(branch)
+
+                # Divide it by the total request amount
+                # return random.randint(5, 200)
+                return total_lcc / total_req
+
+        for fuel in price_keys_to_estimate:
+            fuel_price = calc_price(node_name=fuel)
+            new_prices[fuel]['year_value'] = fuel_price
+            # Update the price @ the fuel node
+            fuel_name = fuel.split('.')[-1]
+            self.graph.nodes[fuel][year]['Production Cost'][fuel_name]['year_value'] = fuel_price
 
         return new_prices
