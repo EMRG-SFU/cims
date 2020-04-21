@@ -155,7 +155,7 @@ def get_subgraph(graph, node_types):
 
     Returns
     -------
-    networkx.Graph
+    networkx.DiGraph or networkX.Graph
         The returned graph is a sub-graph of `graph`. A node is only included if its type is one
         of `node_types`. A edge is only included if it connects two nodes found in the returned graph.
     """
@@ -405,6 +405,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
     for y in years:
         year_df = t_df[non_years + [y]]
         year_dict = {}
+
         for parameter, value, branch, source, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': source,
                    'branch': branch,
@@ -436,9 +437,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
                         year_dict[parameter] = [year_dict[parameter], dct]
                 else:
                     year_dict[parameter] = dct
-
-
-
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][y].keys():
