@@ -3,6 +3,7 @@ import copy
 import networkx as nx
 import random
 import logging
+import math
 import warnings
 
 from . import graph_utils
@@ -61,8 +62,8 @@ class Model:
         self.base_year = int(self.years[0])
 
         self.prices = {}
-        self.quantities = {}
         self.results = {}
+        self.nodes_calculated_quantity = []
 
         # Special container for estimated parameters that need to be held for later aggregation with nodes from
         # other branches
@@ -126,32 +127,39 @@ class Model:
 
             # Initialize Results
             self.results[year] = {}
-            self.quantities[year] = {}
 
             # Initialize Values
             graph_utils.traverse_graph(self.graph, self.init_prices, year)
 
+            # Calculate Retirements
+            # graph_utils.traverse_graph(self.graph, self.stock_retirement, year)
+
             while not equilibrium:
                 print('iter {}'.format(iteration))
 
-                # Printing Prices
+                # # Printing Prices
                 prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f
                           in self.fuels}
                 for f, p in prices.items():
                     print('\tprice of {}: {}'.format(f, p))
+                #
+                # if iteration > max_iterations:
+                #     warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
+                #     break
 
-
-                if iteration > max_iterations:
-                    warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
-                    break
+                # Initialize for the Iteration
+                self.iteration_initialization(year)
 
                 # DEMAND
                 # ******************
                 # Calculate Service Costs on Demand Side
                 graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
 
-                # Calculate Quantities
-                graph_utils.traverse_graph(g_demand, self.calc_quantity, year)
+                # Calculate Quantities (Total Stock Needed)
+                graph_utils.traverse_graph(g_demand, self.calc_quantity, year)  # Total amount needed
+
+                # Calculate Existing, Base, & New Stocks
+                graph_utils.traverse_graph(g_demand, self.calc_existing_stock, year)
 
                 # Supply
                 # ******************
@@ -211,11 +219,14 @@ class Model:
 
                 equilibrium = eq_check(prev_prices, new_prices)
 
+                if year == self.years[0]:
+                    equilibrium = True
+
                 iteration += 1
 
                 # Printing Quantities
-                for node, quantity_data in self.quantities[year].items():
-                    print('\tquantity of {}: {}'.format(node, quantity_data))
+                # for node, quantity_data in self.quantities[year].items():
+                #     print('\tquantity of {}: {}'.format(node, quantity_data))
 
     def get_service_cost(self, sub_graph, node, year, rand=False):
         """
@@ -293,26 +304,29 @@ class Model:
 
             # get marketshares based on each competing service/tech
             for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                # go through available techs
-                marketshare = 0.0
+                market_share = sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value']
+                if market_share is None:
+                    market_share_exogenous = False
+                    market_share = 0
+                else:
+                    market_share_exogenous = True
 
                 # go through available techs (range is [lower year, upper year + 1] to work with range function
                 low, up = utils.range_available(sub_graph, node, tech)
-
                 if int(year) in range(low, up):
-
                     curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
-
                     if curr_lcc > 0.0:
-                        if rand:
-                            marketshare = random.random()
-                        else:
-                            marketshare = curr_lcc ** (-1.0 * v) / total_lcc_v
+                        if market_share_exogenous is False:
+                            market_share = curr_lcc ** (-1.0 * v) / total_lcc_v
 
-                    results[year][node][tech] = {"marketshare": marketshare}
-                    weighted_lccs += marketshare * curr_lcc
+                    results[year][node][tech] = {"marketshare": market_share}
+                    weighted_lccs += market_share * curr_lcc
 
-                sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = marketshare
+                sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = market_share
+
+                if (node == 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell') and (year == '2005'):
+                    x = 1
+
 
             sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
 
@@ -404,6 +418,14 @@ class Model:
         old_init()
         init_prices_to_be_estimated()
 
+    def iteration_initialization(self, year):
+        # Reset which nodes have been visited
+        self.nodes_calculated_quantity = []
+
+        # Reset the quantities at each node
+        for n in self.graph.nodes():
+            self.graph.nodes[n][year]['quantities'] = {}
+
     def update_prices(self, year, supply_subgraph):
         """
         1. Determine what fuels need to be calculated
@@ -480,10 +502,16 @@ class Model:
         Returns
         -------
         None
-            self.quantities will be updated with the amount provided by the node's services in the given year.
+            quantities at each node will be updated with the amount provided by the node's services in the given year.
         """
-
         node_year_data = self.graph.nodes[node][year]
+
+        # If the node has already been visited in the iteration, go onto the next node (needed for the standard nodes
+        # that would otherwise be visited twice
+        if node in self.nodes_calculated_quantity:
+            return
+        else:
+            self.nodes_calculated_quantity.append(node)
 
         # What is being provided by the node?
         services_to_provide = node_year_data['Service provided']
@@ -495,7 +523,7 @@ class Model:
             if self.graph.nodes[node]['competition type'] == 'root':
                 totals_to_provide[service_unit] = 1
             else:
-                totals_to_provide[service_unit] = self.quantities[year][node][service_unit]
+                totals_to_provide[service_unit] = self.graph.nodes[node][year]['quantities'][service_unit]
 
         # Based on what this node needs to provide, find out how much it must request from other services
         def calc_quantity_from_services(requested_services):
@@ -527,13 +555,16 @@ class Model:
                 quant_requested = market_share * year_value * service_amount_mult
 
                 # Check if we need to initialize quantities
-                year_quantities = self.quantities[year]
-                if service_data['branch'] not in year_quantities.keys():
-                    year_quantities[service_data['branch']] = {}
-                    year_quantities[service_data['branch']][result_unit] = 0
+                year_node = self.graph.nodes[service_data['branch']][year]
+                if 'quantities' not in year_node.keys():
+                    year_node['quantities'] = {}
 
-                # Save in results
-                self.quantities[year][service_data['branch']][result_unit] += quant_requested
+                if result_unit not in year_node['quantities'].keys():
+                    year_node['quantities'][result_unit] = 0
+
+                # Save results
+                year_node['quantities'][result_unit] += quant_requested
+                self.graph.nodes[service_data['branch']][year]['quantities'] = year_node['quantities']
 
         if 'technologies' in node_year_data:
             # For each technology, find the services being requested
@@ -547,3 +578,122 @@ class Model:
             # Calculate the quantities being for each of the services
             services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
             calc_quantity_from_services(services_being_requested)
+
+    def calc_existing_stock(self, graph, node, year):
+        def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
+            unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
+            return max(unretired_base_stock, 0.0)
+
+        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=11.513):
+            exponent = (intercept / lifespan) * ((int(current_year) - int(purchased_year)) - lifespan)
+            unretired_purchased_stock = purchased_stock / (1 + math.exp(exponent))
+            return unretired_purchased_stock
+
+        if graph.nodes[node]['competition type'] != 'tech compete':
+            # we don't care about existing stock
+            return
+
+        earlier_years = [y for y in self.years if int(y) < int(year)]
+
+        if len(earlier_years) == 0:
+            # Means we are on initial year -- there is no existing stock. All stock is base stock.
+            node_quantities = self.graph.nodes[node][year]['quantities']
+            for tech in graph.nodes[node][year]['technologies']:
+                # find the market share for the tech
+                market_share = graph.nodes[node][year]['technologies'][tech]['Market share']['year_value']
+
+                graph.nodes[node][year]['technologies'][tech]['existing_stock'] = {}
+                graph.nodes[node][year]['technologies'][tech]['base_stock'] = {}
+                graph.nodes[node][year]['technologies'][tech]['new_stock'] = {}
+
+                for unit, quant in node_quantities.items():
+                    graph.nodes[node][year]['technologies'][tech]['existing_stock'][unit] = 0
+                    graph.nodes[node][year]['technologies'][tech]['base_stock'][unit] = quant * market_share
+                    graph.nodes[node][year]['technologies'][tech]['new_stock'][unit] = 0
+
+        else:
+            # Means we are not on the initial year & we need to calculate remaining base and existing stock
+            for tech in graph.nodes[node][year]['technologies']:
+                graph.nodes[node][year]['technologies'][tech]['existing_stock'] = {}
+                graph.nodes[node][year]['technologies'][tech]['new_stock'] = {}
+
+                for y in earlier_years:
+                    node_quantities = self.graph.nodes[node][y]['quantities']
+
+                    tech_lifespan = graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
+                    if tech_lifespan is None:
+                        # TODO: Get rid of this. Adjust to deal with service techs and defaults
+                        break
+
+                    for unit, quant in node_quantities.items():
+                        # Base Stock
+                        if 'base_stock' in graph.nodes[node][y]['technologies'][tech].keys():
+                            # Calculate base stock from year y
+                            orig_base_stock = graph.nodes[node][y]['technologies'][tech]['base_stock'][unit]
+                            remain_base_stock = base_stock_retirement(orig_base_stock, y, year, tech_lifespan)
+                            if unit not in graph.nodes[node][year]['technologies'][tech]['existing_stock'].keys():
+                                graph.nodes[node][year]['technologies'][tech]['existing_stock'][unit] = remain_base_stock
+                            else:
+                                graph.nodes[node][year]['technologies'][tech]['existing_stock'][unit] += remain_base_stock
+
+                        # # Purchased Stock
+                        # orig_purchased_stock = graph.nodes[node][y]['technologies'][tech]['new_stock'][unit]
+                        # remain_purchased_stock = purchased_stock_retirement(orig_purchased_stock, y, year, tech_lifespan)
+                        # if unit not in graph.nodes[node][year]['technologies'][tech]['existing_stock'].keys():
+                        #     graph.nodes[node][year]['technologies'][tech]['existing_stock'][unit] = remain_purchased_stock
+                        # else:
+                        #     graph.nodes[node][year]['technologies'][tech]['existing_stock'][unit] += remain_purchased_stock
+
+        # Calculate new stock needing to be competed for (at the node level)
+        # print('**** **** ****')
+        total_to_compete_for = {}
+        for unit, quant in self.graph.nodes[node][year]['quantities'].items():
+            total_to_compete_for[unit] = quant
+        # print(node, total_to_compete_for)
+        for tech in graph.nodes[node][year]['technologies']:
+            for unit, quant in graph.nodes[node][year]['technologies'][tech]['existing_stock'].items():
+                # print(unit, quant)
+                total_to_compete_for[unit] -= quant
+        # print(node, total_to_compete_for)
+
+    def stock_retirement(self, graph, node, year):
+        def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
+            unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
+            return unretired_base_stock
+
+        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=11.513):
+            exponent = (intercept / lifespan) * ((current_year - purchased_year) - lifespan)
+            unretired_purchased_stock = purchased_stock / (1 + math.exp(exponent))
+            return unretired_purchased_stock
+
+        # Lets assume that this is being done at the beginning of the year
+
+        if graph.nodes[node]['competition type'] != 'tech compete':
+            # No retirement to be done for non tech-compete nodes
+            return
+
+        earlier_years = [y for y in self.years if int(y) < int(year)]
+
+        existing_stock_dict = {}
+        for y in earlier_years:
+            print('\t{}'.format(y))
+            node_quantities = self.graph.nodes[node][y]['quantities']
+            for tech in graph.nodes[node][year]['technologies']:
+                # find the market share for the tech
+                market_share = graph.nodes[node][y]['technologies'][tech]['Market share']['year_value']
+
+                # Use marketshare to find the portion of base stock attributed to this tech
+                base_stocks = {unit: quant * base_market_share for unit, quant in node_quantities.items()}
+
+                # Lifespan
+                lifespan = graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
+                if lifespan is None:
+                    lifespan = 10
+
+                for unit, quant in base_stocks.items():
+                    if y == self.years[0]:
+                        existing_stock = base_stock_retirement(quant, y, year, lifespan)
+                    else:
+                        existing_stock = purchased_stock_retirement(quant, y, year, lifespan)
+
+                    print('\t\tExisting Stocks @ {} [{}]: {} {}'.format(node.split('.')[-1], tech, existing_stock, unit))

@@ -1,4 +1,5 @@
 import copy
+import math
 from . import utils
 from . import graph_utils
 
@@ -132,3 +133,28 @@ def get_capcost(g, node, year, tech, crf, default_full_cc=0.0):
             full_cap_cost = (cap_cost / output) * crf
 
     return full_cap_cost
+
+
+def calculate_stock_retirement(type, starting_stock, starting_year, years, intercept=11.513):
+    def base_stock_retirement(base_stock, initial_year, current_year, lifespan):
+        unretired_base_stock = base_stock * (1 - (current_year - initial_year)/lifespan)
+        return unretired_base_stock
+
+    def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan):
+        exponent = (intercept / lifespan) * ((current_year - purchased_year) - lifespan)
+        unretired_purchased_stock = purchased_stock / (1 + math.exp(exponent))
+        return unretired_purchased_stock
+
+    stock_by_year = {}
+
+    tech_lifespan = 10  # TODO: FIND THIS
+
+    for year in years:
+        if type == 'base':
+            remaining_stock = base_stock_retirement(starting_stock, starting_year, year, tech_lifespan)
+        elif type == 'purchased':
+            remaining_stock = purchased_stock_retirement(starting_stock, starting_year, year, tech_lifespan)
+
+        stock_by_year[year] = remaining_stock
+
+    return stock_by_year
