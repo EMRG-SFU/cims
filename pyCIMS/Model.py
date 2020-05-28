@@ -62,12 +62,10 @@ class Model:
         self.base_year = int(self.years[0])
 
         self.prices = {}
-        self.results = {}
         self.nodes_calculated_quantity = []
 
         # Special container for estimated parameters that need to be held for later aggregation with nodes from
         # other branches
-        self.tech_results = {}
 
         self.build_graph()
 
@@ -124,9 +122,6 @@ class Model:
             # Initialize Basic Variables
             equilibrium = False
             iteration = 0
-
-            # Initialize Results
-            self.results[year] = {}
 
             # Initialize Graph Values
             graph_utils.traverse_graph(self.graph, self.init_prices, year)
@@ -245,16 +240,12 @@ class Model:
         5. Return results
 
         """
-        results = self.results
         fuels = self.fuels
 
         total_lcc_v = 0.0
 
         # Check if the node is a tech compete node.
         if sub_graph.nodes[node]["competition type"] == "tech compete":
-            # Initialize the results for the node at year
-            results[year][node] = {}
-
             # Find the v parameter
             v = self.get_heterogeneity(sub_graph, node, year)
 
@@ -335,14 +326,11 @@ class Model:
                     #     if market_share_exogenous is False:
                     #         market_share = curr_lcc ** (-1.0 * v) / total_lcc_v
                     #
-                    # results[year][node][tech] = {"marketshare": market_share}
                     weighted_lccs += market_share * curr_lcc
 
                 # sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = market_share
 
             sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
-
-        self.results = results
 
     def add_tech_element(self, g, node, year, tech, param, value=0.0, source=None, unit=None):
         """
@@ -389,27 +377,6 @@ class Model:
             # Set Price Multiplier of node in the graph
             graph.nodes[node][year]['Price Multiplier'] = parent_price_multipliers
 
-        def old_init():
-            # --- OLD CODE BELOW HERE -- STILL IN USE
-            self.results[year][node] = {}
-            # Attributes
-            if (graph.nodes[node]['competition type'] == 'region') & ('Attribute' in graph.nodes[node][year].keys()):
-                attributes = graph.nodes[node][year]["Attribute"]
-                # keeping attribute values (macroeconomic indicators) in result dict
-                for indicator, value in attributes.items():
-                    # TODO: CHANGE to be unit agnostic. Instead be something like node_name.attribute_name
-                    # indicator is name, for now naming by unit for ease in fetching from children
-                    self.results[year][node][value["unit"]] = value["year_value"]
-
-            # Services Being Provided
-            if (graph.nodes[node]['competition type'] == 'sector') & (graph.nodes[node]['type'] == 'demand'):
-                service_unit, provided = econ.get_provided(graph, node, year, self.results)
-                self.results[year][node][service_unit] = provided
-                # Services Being Requested
-                requested = graph.nodes[node][year]["Service requested"]
-                for req in requested.values():
-                    self.results[year][node][service_unit] = provided * req["year_value"]
-
         def init_prices_to_be_estimated():
             """
             Needs to estimate Production Costs for values to be estimated. Will start by using the value settled on
@@ -427,7 +394,6 @@ class Model:
                     graph.nodes[node][year]['Production Cost'][fuel_name]['to_estimate'] = False
 
         init_node_price_multipliers()
-        old_init()
         init_prices_to_be_estimated()
 
     def iteration_initialization(self, year):
