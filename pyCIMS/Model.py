@@ -127,17 +127,17 @@ class Model:
             graph_utils.traverse_graph(self.graph, self.init_prices, year)
 
             while not equilibrium:
+                if iteration > max_iterations:
+                    warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
+                    break
+
                 print('iter {}'.format(iteration))
 
-                # # Printing Prices
+                # Printing Prices
                 prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f
                           in self.fuels}
                 for f, p in prices.items():
                     print('\tprice of {}: {}'.format(f, p))
-                #
-                # if iteration > max_iterations:
-                #     warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
-                #     break
 
                 # Printing Market Shares
                 shell_node = 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell'
@@ -154,18 +154,26 @@ class Model:
                 # Calculate Service Costs on Demand Side
                 graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
 
-                # Calculate Quantities (Total Stock Needed)
-                # graph_utils.traverse_graph(g_demand, self.calc_quantity, year)  # Total amount needed
-                graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)  # Total amount needed
+                for _ in range(4):
+                    # Calculate Quantities (Total Stock Needed)
+                    # graph_utils.traverse_graph(g_demand, self.calc_quantity, year)  # Total amount needed
+                    graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)  # Total amount needed
+
+                    # Calculate Service Costs on Demand Side
+                    graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
                 graph_utils.breadth_first_post(g_supply, self.get_service_cost, year)
 
-                # Calculate Fuel Quantities
-                # graph_utils.traverse_graph(g_supply, self.calc_quantity, year)
-                graph_utils.traverse_graph(g_supply, self.stock_retirement_and_allocation, year)
+                for _ in range(4):
+                    # Calculate Fuel Quantities
+                    # graph_utils.traverse_graph(g_supply, self.calc_quantity, year)
+                    graph_utils.traverse_graph(g_supply, self.stock_retirement_and_allocation, year)
+
+                    # Calculate Service Costs on Demand Side
+                    graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
 
                 # Update Prices
                 # Go and get all the previous prices
@@ -238,7 +246,6 @@ class Model:
             (B) Calculate service cost, CRF, capital cost, LCC, marketshare
         4. Calculate the weighted lcc for the node
         5. Return results
-
         """
         fuels = self.fuels
 
