@@ -23,15 +23,18 @@ class ModelValidator:
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         self.model_df = mdf
-        self.index2node_map = self.model_df[self.node_col].ffill()
+        self.index2node_map = self.model_df[self.node_col].ffill() 
 
     def find_roots(self):
-        # TODO: Update this once the model description has been updated
-        root_idx = self.model_df[(self.model_df['Parameter'] == 'Node type') &
+        #TODO: Update this once the model description has been updated
+        #root_idx = self.model_df[(self.model_df['Parameter'] == 'Node type') &
+                                 #(self.model_df['Value'] == 'Root')].index
+        
+        root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
                                  (self.model_df['Value'] == 'Root')].index
         root_nodes = set([self.index2node_map[ri] for ri in root_idx])
 
-        return root_nodes
+        return root_nodes 
 
     def validate(self, verbose=True, raise_warnings=False):
         def unspecified_nodes(p, r):
