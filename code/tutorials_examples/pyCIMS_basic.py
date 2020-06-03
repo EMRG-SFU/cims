@@ -2,8 +2,8 @@
 import pyCIMS
 from pprint import pprint
 
-file = 'pycims_prototype/pyCIMS_model_description2.xlsm'
 file = 'pycims_prototype/pyCIMS_model_description_20200221.xlsm'
+file = 'pycims_prototype/pyCIMS_model_description_20200527_noServices.xlsm'
 
 my_validator = pyCIMS.ModelValidator(file)
 my_validator.validate(raise_warnings=False)
