@@ -1,8 +1,6 @@
 from __future__ import print_function
 import copy
 import networkx as nx
-import random
-import logging
 import math
 import warnings
 
@@ -16,6 +14,26 @@ from . import econ
 # TODO: Implement logic for determining when to read, calculate, inherit, or use default values
 # TODO: Separate the get_service_cost code out into smaller functions & document.
 # TODO: Should we be initializing quantities when we initialize prices?
+
+
+class NodeQuantity:
+    def __init__(self):
+        self.units = []
+        self.quantities = {}
+
+    def add_quantity_request(self, amount, unit, requesting_node, requesting_technology=None):
+        node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
+        if unit not in self.units:
+            self.units.append(unit)
+            self.quantities[unit] = {}
+
+        self.quantities[unit][node_tech] = amount
+
+    def get_total_quantity(self, unit):
+        total = 0
+        for node_tech, amount in self.quantities[unit].items():
+            total += amount
+        return total
 
 
 class Model:
@@ -62,7 +80,6 @@ class Model:
         self.base_year = int(self.years[0])
 
         self.prices = {}
-        self.nodes_calculated_quantity = []
 
         # Special container for estimated parameters that need to be held for later aggregation with nodes from
         # other branches
@@ -113,7 +130,10 @@ class Model:
 
         """
 
+        # Find the demand subtree
         g_demand = graph_utils.get_subgraph(self.graph, ['demand', 'standard'])
+
+        # Find the supply subtree
         g_supply = graph_utils.get_subgraph(self.graph, ['supply', 'standard'])
 
         for year in self.years:
@@ -127,25 +147,27 @@ class Model:
             graph_utils.traverse_graph(self.graph, self.init_prices, year)
 
             while not equilibrium:
+                # Early exit if we reach the maximum number of iterations
                 if iteration > max_iterations:
                     warnings.warn("Max iterations reached for year {}. Continuing on to next year.".format(year))
                     break
 
+                # Print iteration number
                 print('iter {}'.format(iteration))
 
-                # Printing Prices
+                # Printing Prices -- Optional
                 prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f
                           in self.fuels}
                 for f, p in prices.items():
                     print('\tprice of {}: {}'.format(f, p))
 
-                # Printing Market Shares
+                # Printing Market Shares -- Optional
                 shell_node = 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell'
                 mar = {t: d['Market share']['year_value'] for t, d in self.graph.nodes[shell_node][year]['technologies'].items()}
                 for t, ms in mar.items():
                     print('\tmarket share of {}: {}'.format(t, ms))
 
-                # Initialize for the Iteration
+                # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
                 # DEMAND
@@ -153,10 +175,14 @@ class Model:
                 # Calculate Service Costs on Demand Side
                 graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
 
-                for _ in range(4):
+                for ix in range(4):
+                    # print('\t ***** DEM {} *****'.format(ix))
                     # Calculate Quantities (Total Stock Needed)
                     # graph_utils.traverse_graph(g_demand, self.calc_quantity, year)  # Total amount needed
                     graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)  # Total amount needed
+
+                    if int(year) == self.base_year:
+                        break
 
                     # Calculate Service Costs on Demand Side
                     graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
@@ -166,10 +192,14 @@ class Model:
                 # Calculate Service Costs on Supply Side
                 graph_utils.breadth_first_post(g_supply, self.get_service_cost, year)
 
-                for _ in range(4):
+                for ix in range(4):
+                    # print('\t ***** SUP {} *****'.format(ix))
                     # Calculate Fuel Quantities
                     # graph_utils.traverse_graph(g_supply, self.calc_quantity, year)
                     graph_utils.traverse_graph(g_supply, self.stock_retirement_and_allocation, year)
+
+                    if int(year) == self.base_year:
+                        break
 
                     # Calculate Service Costs on Demand Side
                     graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
@@ -228,10 +258,6 @@ class Model:
                     equilibrium = True
 
                 iteration += 1
-
-                # Printing Quantities
-                # for node, quantity_data in self.quantities[year].items():
-                #     print('\tquantity of {}: {}'.format(node, quantity_data))
 
     def initial_lcc_calculation(self, sub_graph, node, year):
         """
@@ -512,12 +538,9 @@ class Model:
         init_prices_to_be_estimated()
 
     def iteration_initialization(self, year):
-        # Reset which nodes have been visited
-        self.nodes_calculated_quantity = []
-
         # Reset the quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year]['quantities'] = {}
+            self.graph.nodes[n][year]['quantities'] = NodeQuantity()
 
     def update_prices(self, year, supply_subgraph):
         """
@@ -576,6 +599,46 @@ class Model:
         return new_prices
 
     def stock_retirement_and_allocation(self, sub_graph, node, year):
+        def helper_quantity_from_services(requested_services, assessed_demand, technology=None):
+            if isinstance(requested_services, dict):
+                requested_services = [requested_services]
+
+            for service_data in requested_services:
+
+                # Find the units
+                result_unit = service_data['unit'].split('/')[0].strip().lower()
+                per_unit = service_data['unit'].split('/')[-1].strip().lower()
+
+                # Find the multiplier based on quantity to be provided
+                service_amount_mult = 1
+                for provided_service_unit, provided_service_amount in assessed_demand.items():
+                    if provided_service_unit.lower() == per_unit:
+                        service_amount_mult = provided_service_amount
+
+                # Find market share
+                try:
+                    market_share = service_data['Market share']['year_value']
+                except KeyError:
+                    market_share = 1
+
+                # Find the ratio to provide
+                year_value = service_data['year_value']
+
+                # Calculate the total quantity requested
+                quant_requested = market_share * year_value * service_amount_mult
+
+                # Check if we need to initialize quantities
+                year_node = self.graph.nodes[service_data['branch']][year]
+                if 'quantities' not in year_node.keys():
+                    year_node['quantities'] = NodeQuantity()
+
+                # Save results
+                year_node['quantities'].add_quantity_request(amount=quant_requested,
+                                                             unit=result_unit,
+                                                             requesting_node=node,
+                                                             requesting_technology=technology
+                                                             )
+
         def general_allocation():
             node_year_data = self.graph.nodes[node][year]
 
@@ -589,48 +652,9 @@ class Model:
                 if self.graph.nodes[node]['competition type'] == 'root':
                     totals_to_provide[service_unit] = 1
                 else:
-                    totals_to_provide[service_unit] = self.graph.nodes[node][year]['quantities'][service_unit]
+                    totals_to_provide[service_unit] = self.graph.nodes[node][year]['quantities'].get_total_quantity(service_unit)
 
                 # Based on what this node needs to provide, find out how much it must request from other services
-                def calc_quantity_from_services(requested_services):
-                    if isinstance(requested_services, dict):
-                        requested_services = [requested_services]
-
-                    for service_data in requested_services:
-
-                        # Find the units
-                        result_unit = service_data['unit'].split('/')[0].strip().lower()
-                        per_unit = service_data['unit'].split('/')[-1].strip().lower()
-
-                        # Find the multiplier based on quantity to be provided
-                        service_amount_mult = 1
-                        for provided_service_unit, provided_service_amount in totals_to_provide.items():
-                            if provided_service_unit.lower() == per_unit:
-                                service_amount_mult = provided_service_amount
-
-                        # Find market share
-                        try:
-                            market_share = service_data['Market share']['year_value']
-                        except KeyError:
-                            market_share = 1
-
-                        # Find the ratio to provide
-                        year_value = service_data['year_value']
-
-                        # Calculate the total quantity requested
-                        quant_requested = market_share * year_value * service_amount_mult
-
-                        # Check if we need to initialize quantities
-                        year_node = self.graph.nodes[service_data['branch']][year]
-                        if 'quantities' not in year_node.keys():
-                            year_node['quantities'] = {}
-
-                        if result_unit not in year_node['quantities'].keys():
-                            year_node['quantities'][result_unit] = 0
-
-                        # Save results
-                        year_node['quantities'][result_unit] += quant_requested
-                        self.graph.nodes[service_data['branch']][year]['quantities'] = year_node['quantities']
 
                 if 'technologies' in node_year_data:
                     # For each technology, find the services being requested
@@ -638,15 +662,14 @@ class Model:
                         if 'Service requested' in tech_data.keys():
                             services_being_requested = tech_data['Service requested']
                             # Calculate the quantities being for each of the services
-                            calc_quantity_from_services(services_being_requested)
+                            helper_quantity_from_services(services_being_requested, totals_to_provide)
 
                 elif 'Service requested' in node_year_data:
                     # Calculate the quantities being for each of the services
                     services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
-                    calc_quantity_from_services(services_being_requested)
+                    helper_quantity_from_services(services_being_requested, totals_to_provide)
 
         def tech_compete_allocation():
-
             # Demand Assessment
             # *****************
             # Count demanded quantities from above nodes or technologies (for the top node, derive demand quantities
@@ -660,7 +683,7 @@ class Model:
             assessed_demand = {}
             for provided_service, provided_service_data in services_to_provide.items():
                 service_unit = provided_service_data['unit'].strip().lower()
-                assessed_demand[service_unit] = self.graph.nodes[node][year]['quantities'][service_unit]
+                assessed_demand[service_unit] = self.graph.nodes[node][year]['quantities'].get_total_quantity(service_unit)
 
             # Existing Tech Specific Stocks
             # *****************************
@@ -761,69 +784,20 @@ class Model:
                     total_market_shares_by_tech[t] = total_market_share
                     self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = total_market_share
 
-            # print(total_market_shares_by_tech)
-
             # Send demand quantities to services below
             # Based on what this node needs to provide, find out how much it must request from other services
-            def calc_quantity_from_services(requested_services):
-                if isinstance(requested_services, dict):
-                    requested_services = [requested_services]
-
-                for service_data in requested_services:
-
-                    # Find the units
-                    result_unit = service_data['unit'].split('/')[0].strip().lower()
-                    per_unit = service_data['unit'].split('/')[-1].strip().lower()
-
-                    # Find the multiplier based on quantity to be provided
-                    service_amount_mult = 1
-                    for provided_service_unit, provided_service_amount in assessed_demand.items():
-                        if provided_service_unit.lower() == per_unit:
-                            service_amount_mult = provided_service_amount
-
-                    # Find market share
-                    try:
-                        market_share = service_data['Market share']['year_value']
-                    except KeyError:
-                        market_share = 1
-
-                    # Find the ratio to provide
-                    year_value = service_data['year_value']
-
-                    # Calculate the total quantity requested
-                    quant_requested = market_share * year_value * service_amount_mult
-
-                    # Check if we need to initialize quantities
-                    year_node = self.graph.nodes[service_data['branch']][year]
-                    if 'quantities' not in year_node.keys():
-                        year_node['quantities'] = {}
-
-                    if result_unit not in year_node['quantities'].keys():
-                        year_node['quantities'][result_unit] = 0
-
-                    # Save results
-                    year_node['quantities'][result_unit] += quant_requested
-                    self.graph.nodes[service_data['branch']][year]['quantities'] = year_node['quantities']
-
             if 'technologies' in node_year_data:
                 # For each technology, find the services being requested
                 for tech, tech_data in node_year_data['technologies'].items():
                     if 'Service requested' in tech_data.keys():
                         services_being_requested = tech_data['Service requested']
                         # Calculate the quantities being for each of the services
-                        calc_quantity_from_services(services_being_requested)
+                        helper_quantity_from_services(services_being_requested, assessed_demand)
 
             elif 'Service requested' in node_year_data:
                 # Calculate the quantities being for each of the services
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
-                calc_quantity_from_services(services_being_requested)
-
-        # If the node has already been visited in the iteration, go onto the next node (needed for the standard nodes
-        # that would otherwise be visited twice
-        if node in self.nodes_calculated_quantity:
-            return
-        else:
-            self.nodes_calculated_quantity.append(node)
+                helper_quantity_from_services(services_being_requested, assessed_demand)
 
         # Otherwise, move into the proper allocation function
         if self.graph.nodes[node]['competition type'] == 'tech compete':
