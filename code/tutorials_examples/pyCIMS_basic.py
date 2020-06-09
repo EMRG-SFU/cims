@@ -10,11 +10,11 @@ my_validator.validate(raise_warnings=False)
 pprint(my_validator.warnings)
 
 # Create a model description reader
-my_reader = pyCIMS.Reader(infile=file,
-                          sheet_map={'model': 'Model',
-                                     'incompatible': 'Incompatible',
-                                     'default_tech': 'Technologies'},
-                          node_col='Node')
+my_reader = pyCIMS.ModelReader(infile=file,
+                               sheet_map={'model': 'Model',
+                                          'incompatible': 'Incompatible',
+                                          'default_tech': 'Technologies'},
+                               node_col='Node')
 
 # Create a model from the reader
 my_model = pyCIMS.Model(my_reader)

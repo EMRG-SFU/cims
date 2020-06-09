@@ -47,7 +47,7 @@ def get_node_cols(mdf, first_data_col_name="Node"):
     return node_cols, year_cols
 
 
-class Reader:
+class ModelReader:
     def __init__(self, infile, sheet_map, node_col):
         self.infile = infile
         self.sheet_map = sheet_map
