@@ -45,7 +45,7 @@ class ModelValidator:
             comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
             for index, value in zip(comp_types.index, comp_types['Value']):
                 if value not in valid_comp_type:
-                    invalid_nodes.append(self.index2node_map[index])
+                    invalid_nodes.append((index, self.index2node_map[index]))
                 
             if len(invalid_nodes) > 0:
                 self.warnings['invalid_competition_type'] = invalid_nodes
