@@ -4,6 +4,16 @@ from . import utils
 from . import graph_utils
 
 
+def get_heterogeneity(g, node, year):
+    try:
+        v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
+    except KeyError:
+        v = 10  # default val
+    if v is None:
+        v = 10
+    return v
+
+
 def get_provided(g, node, year, parent_provide):
     node_name = node
     provided = copy.copy(g.nodes[node][year]["Service provided"])

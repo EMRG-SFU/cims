@@ -7,6 +7,7 @@ import pprint as pp
 from . import graph_utils
 from . import utils
 from . import econ
+from . import lcc_calculation
 
 # TODO: Evaluate whether methods should avoid side effects.
 # TODO: Implement automatic defaults
@@ -43,6 +44,7 @@ class NodeQuantity:
         pp.pprint(self.history)
         # for unit in self.units:
         #     pp.pprint(self.history[unit])
+
 
 class Model:
     """
@@ -115,7 +117,7 @@ class Model:
         self.fuels = graph_utils.get_fuels(graph, self.years)
         self.graph = graph
 
-    def run(self, equilibrium_threshold=0.005, max_iterations=10):
+    def run(self, equilibrium_threshold=0.005, max_iterations=10, verbose=True):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -131,6 +133,10 @@ class Model:
             The maximum number of times to iterate between supply and demand in an attempt to reach
             an equilibrium. If max_iterations is reached, a warning will be raised, iteration for
             that year will stop, and iteration for the next year will begin.
+
+        verbose : bool, optional
+            Whether or not to have verbose printing during iterations. If true, fuel prices are
+            printed at the end of each iteration.
 
         Returns
         -------
@@ -153,7 +159,7 @@ class Model:
             iteration = 0
 
             # Initialize Graph Values
-            graph_utils.traverse_graph(self.graph, self.init_prices, year)
+            graph_utils.traverse_graph(self.graph, self.initialize_node, year)
 
             while not equilibrium:
                 # Early exit if we reach the maximum number of iterations
@@ -165,24 +171,24 @@ class Model:
                 # Print iteration number
                 print('iter {}'.format(iteration))
 
-                # Printing Prices -- Optional
-                prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value'] for f
-                          in self.fuels}
-                for f, p in prices.items():
-                    print('\tprice of {}: {}'.format(f, p))
-
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
                 # DEMAND
                 # ******************
-                # Calculate Service Costs on Demand Side
-                # graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
-                graph_utils.breadth_first_post(g_demand, self.initial_lcc_calculation, year)
+                # Use initial LCC Calculation to calculate service costs on demand side
+                # graph_utils.breadth_first_post(g_demand, self.initial_lcc_calculation, year)
+                graph_utils.breadth_first_post(g_demand,
+                                               lcc_calculation.lcc_calculation,
+                                               year,
+                                               self.step,
+                                               self.graph,
+                                               self.fuels)
 
                 for ix in range(4):
                     # Calculate Quantities (Total Stock Needed)
                     graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)
+
 
                     # Printing Market Shares -- Optional
                     shell_node = 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell'
@@ -192,33 +198,52 @@ class Model:
                     mar = {t: (d['new_market_share'], d['total_market_share']) for t, d in
                            self.graph.nodes[shell_node][year]['technologies'].items()}
                     for t, ms in mar.items():
+                        # if t in ['Standard', 'R2000', 'LEED']:
                         print('\tmarket share of {}: '
                               '\n\t\tNew - {}\n\t\tTot - {}'.format(t, ms[0], ms[1]))
                         quant_accessor = '{}[{}]'.format(shell_node, t)
                         print('\t\tQuantity - {}'.format(self.graph.nodes[space_node][year]['quantities'].quantities['gj'][quant_accessor]))
+
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                    # graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                    graph_utils.breadth_first_post(g_demand,
+                                                   lcc_calculation.lcc_calculation,
+                                                   year,
+                                                   self.step,
+                                                   self.graph,
+                                                   self.fuels)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.breadth_first_post(g_supply, self.initial_lcc_calculation, year)
-
+                # graph_utils.breadth_first_post(g_supply, self.initial_lcc_calculation, year)
+                graph_utils.breadth_first_post(g_supply,
+                                               lcc_calculation.lcc_calculation,
+                                               year,
+                                               self.step,
+                                               self.graph,
+                                               self.fuels)
                 for _ in range(4):
                     # Calculate Fuel Quantities
-                    # graph_utils.traverse_graph(g_supply, self.calc_quantity, year)
                     graph_utils.traverse_graph(g_supply, self.stock_retirement_and_allocation, year)
 
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                    # graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
+                    graph_utils.breadth_first_post(g_supply,
+                                                   lcc_calculation.lcc_calculation,
+                                                   year,
+                                                   self.step,
+                                                   self.graph,
+                                                   self.fuels)
 
                 # Update Prices
+                # *************
                 # Go and get all the previous prices
                 prev_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value']
                                for f in self.fuels}
@@ -230,275 +255,69 @@ class Model:
                 new_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value']
                               for f in self.fuels}
 
-                # Equilibrium
-                # ******************
-                def eq_check(prev, new):
-                    """
-                    Return False unless an equilibrium has been reached.
-                        1. Check if prev is empty or year not in previous (first year or first
-                           iteration)
-                        2. For every fuel, check if the relative difference exceeds the threshold
-                            (A) If it does, return False
-                            (B) Otherwise, keep checking
-                        3. If all fuels are checked and no relative difference exceeds the
-                           threshold, return True
+                # Check for an Equilibrium
+                # ************************
+                equilibrium = (int(year) == self.base_year) or \
+                              self.check_equillibrium(prev_prices,
+                                                      new_prices,
+                                                      equilibrium_threshold)
 
-                    Parameters
-                    ----------
-                    prev : dict
+                # Print if Verbose
+                # ****************
+                if verbose:
+                    self.print_prices(year)
 
-                    new : dict
-
-
-                    Returns
-                    -------
-                    True if all fuels changed less than `equilibrium_threshold`. False otherwise.
-                    """
-
-                    # For every fuel, check if the relative difference exceeds the threshold
-                    for fuel in new:
-                        prev_fuel_price = prev[fuel]
-                        new_fuel_price = new[fuel]
-                        if (prev_fuel_price is None) or (new_fuel_price is None):
-                            return False
-                        abs_diff = abs(new_fuel_price - prev_fuel_price)
-                        rel_diff = abs_diff/prev_fuel_price
-                        # If any fuel's relative difference exceeds the threshold, an equilibrium
-                        # has not been reached
-                        if rel_diff > equilibrium_threshold:
-                            return False
-
-                    # Otherwise, an equilibrium has been reached
-                    return True
-
-                equilibrium = eq_check(prev_prices, new_prices)
-
-                if year == self.years[0]:
-                    equilibrium = True
-
+                # Next Iteration
+                # **************
                 iteration += 1
 
-    def initial_lcc_calculation(self, sub_graph, node, year):
+    def check_equillibrium(self, prev, new, threshold):
         """
-        Intent is for this to be used in the initial lcc calculation at the start of an iteration.
-        1. Initialize
-            * results, fuels, and prices to what is in the model object.
-            * total_lcc_v = 0
-            * child to be all the children of the node
-        2. Check if the node is a tech compete node. If its not, do nothing.
-        3. For every tech in the node
-            (A) Initialize the parameters we have
-            (B) Calculate service cost, CRF, capital cost, LCC, marketshare
-        4. Calculate the weighted lcc for the node
-        5. Return results
+        Return False unless an equilibrium has been reached.
+            1. Check if prev is empty or year not in previous (first year or first
+               iteration)
+            2. For every fuel, check if the relative difference exceeds the threshold
+                (A) If it does, return False
+                (B) Otherwise, keep checking
+            3. If all fuels are checked and no relative difference exceeds the
+               threshold, return True
+
+        Parameters
+        ----------
+        prev : dict
+
+        new : dict
+
+        threshold : float
+
+        Returns
+        -------
+        True if all fuels changed less than `threshold`. False otherwise.
         """
 
-        total_lcc_v = 0.0
-        # Check if the node is a tech compete node.
-        if sub_graph.nodes[node]["competition type"] == "tech compete":
-            # Find the v parameter
-            v = self.get_heterogeneity(sub_graph, node, year)
-            # For every tech in the node, compute econ calculations
-            for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                # Calculate Econ Measures
-                def calculate_tech_econ():
-                    # Initialize calculable value
-                    tech_param_names = ["Service cost", "CRF", "LCC", "Full capital cost"]
-                    tech_param_values = [0.0, 0.0, 0.0, 0.0]
-                    for param_name, param_val in zip(tech_param_names, tech_param_values):
-                        technologies = sub_graph.nodes[node][year]['technologies'][tech].keys()
-                        if param_name not in technologies:
-                            self.add_tech_element(sub_graph, node, year, tech,
-                                                  param_name, param_val)
+        # For every fuel, check if the relative difference exceeds the threshold
+        for fuel in new:
+            prev_fuel_price = prev[fuel]
+            new_fuel_price = new[fuel]
+            if (prev_fuel_price is None) or (new_fuel_price is None):
+                return False
+            abs_diff = abs(new_fuel_price - prev_fuel_price)
+            rel_diff = abs_diff / prev_fuel_price
+            # If any fuel's relative difference exceeds the threshold, an equilibrium
+            # has not been reached
+            if rel_diff > threshold:
+                return False
 
-                    # Initialize values with defaults
-                    def_param_names = ['Operating cost', 'Output']
-                    def_param_values = [0, 1]
-                    for param_name, param_val in zip(def_param_names, def_param_values):
-                        if sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] is None:
-                            sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] = param_val
-                calculate_tech_econ()
+        # Otherwise, an equilibrium has been reached
+        return True
 
-                # If the technology is available in this year, go through it
-                # (range is [lower year, upper year + 1] to work with range function
-                low, up = utils.range_available(sub_graph, node, tech)
+    def print_prices(self, year):
+        # Printing Prices -- Optional
+        for fuel in self.fuels:
+            price = list(self.graph.nodes[fuel][year]['Production Cost'].values())[0]['year_value']
+            print('\tprice of {}: {}'.format(fuel, price))
 
-                if int(year) in range(low, up):
-                    # get service cost
-                    service_cost = econ.get_technology_service_cost(sub_graph, self.graph, node,
-                                                                    year, tech, self.fuels)
-                    sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
-
-                    # get CRF:
-                    crf = econ.get_crf(sub_graph, node, year, tech,
-                                       finance_base=0.1, life_base=10.0)
-                    sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
-
-                    # get Full Cap Cost (will have more terms later)
-                    full_cc = econ.get_capcost(sub_graph, node, year, tech, crf)
-                    sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
-
-                    # Get LCC
-                    operating_cost = sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"]
-                    lcc = service_cost + operating_cost + full_cc
-                    sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
-
-                    # Add to total LCC V
-                    # TODO: catch min and max marketshares
-                    total_lcc_v += lcc ** (-1.0 * v)
-
-            # Set the total lcc value
-            sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
-
-            weighted_lccs = 0
-
-            # For every tech, compute lccs & market share
-            for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                # Find the market shares for each tech
-                # ************************************
-                # Determine whether Market share is exogenous or not
-                exo_market_share = sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value']
-                if exo_market_share is not None:
-                    sub_graph.nodes[node][year]['technologies'][tech]['Market share']['exogenous'] = True
-                else:
-                    sub_graph.nodes[node][year]['technologies'][tech]['Market share']['exogenous'] = False
-
-                # If Market share is exogenous, we will set new market share and total market share accordingly
-                if sub_graph.nodes[node][year]['technologies'][tech]['Market share']['exogenous']:
-                    sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = exo_market_share
-                    sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = exo_market_share
-                    market_share = exo_market_share
-
-                # Next, we will check if total marketshare was calculated previously in this year
-                elif 'total_market_share' in sub_graph.nodes[node][year]['technologies'][tech].keys():
-                    market_share = sub_graph.nodes[node][year]['technologies'][tech]['total_market_share']
-
-                # If it wasn't calculated previously, then use the total calculated last year
-                else:
-                    previous_year = str(int(year) - self.step)
-                    market_share = sub_graph.nodes[node][previous_year]['technologies'][tech]['total_market_share']
-
-                if market_share is None:
-                    warnings.warn("Market Share is NONE!!")
-
-                # Calculate LCCs for the Tech
-                # ************************************
-                # find the years where the tech is available
-                low, up = utils.range_available(sub_graph, node, tech)
-                if int(year) in range(low, up):
-                    curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
-                    weighted_lccs += market_share * curr_lcc
-
-                # sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value'] = market_share
-
-            sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
-
-    def get_service_cost(self, sub_graph, node, year):
-        """
-        1. Initialize
-            * results, fuels, and prices to what is in the model object.
-            * total_lcc_v = 0
-            * child to be all the children of the node
-        2. Check if the node is a tech compete node. If its not, do nothing.
-        3. For every tech in the node
-            (A) Initialize the parameters we have
-            (B) Calculate service cost, CRF, capital cost, LCC, marketshare
-        4. Calculate the weighted lcc for the node
-        5. Return results
-        """
-        fuels = self.fuels
-
-        total_lcc_v = 0.0
-
-        # Check if the node is a tech compete node.
-        if sub_graph.nodes[node]["competition type"] == "tech compete":
-            # Find the v parameter
-            v = self.get_heterogeneity(sub_graph, node, year)
-
-            # For every tech in the node, compute econ calculations
-            for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                # Calculate Econ Measures
-                def calculate_tech_econ():
-                    # Initialize calculable value
-                    tech_param_names = ["Service cost", "CRF", "LCC", "Full capital cost"]
-                    tech_param_values = [0.0, 0.0, 0.0, 0.0]
-                    # go through all tech parameters and make sure we don't overwrite something that exists
-                    for param_name, param_val in zip(tech_param_names, tech_param_values):
-                        if param_name not in sub_graph.nodes[node][year]['technologies'][tech].keys():
-                            self.add_tech_element(sub_graph, node, year, tech, param_name, value=param_val)
-
-                    # Initialize values with defaults
-                    def_param_names = ['Operating cost', 'Output']
-                    def_param_values = [0, 1]
-                    for param_name, param_val in zip(def_param_names, def_param_values):
-                        if sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] is None:
-                            sub_graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] = param_val
-
-                calculate_tech_econ()
-
-                # go through available techs (range is [lower year, upper year + 1] to work with range function
-                low, up = utils.range_available(sub_graph, node, tech)
-
-                if int(year) in range(low, up):
-                    # get service cost
-                    service_cost = econ.get_technology_service_cost(sub_graph, self.graph, node, year, tech, fuels)
-                    sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = service_cost
-                    # get CRF:
-                    crf = econ.get_crf(sub_graph, node, year, tech, finance_base=0.1, life_base=10.0)
-                    sub_graph.nodes[node][year]["technologies"][tech]["CRF"]["year_value"] = crf
-
-                    # get Full Cap Cost (will have more terms later)
-                    full_cc = econ.get_capcost(sub_graph, node, year, tech, crf)
-                    sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"]["year_value"] = full_cc
-
-                    # Get LCC
-                    operating_cost = sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"]
-                    lcc = service_cost + operating_cost + full_cc
-                    sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
-
-                    # Get Total LCC V
-                    # TODO: catch min and max marketshares
-                    total_lcc_v += lcc ** (-1.0 * v)  # will need to catch other competing lccs in other branches?
-
-            sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
-
-            weighted_lccs = 0
-
-            # For every tech, compute lccs
-            for tech in sub_graph.nodes[node][year]["technologies"].keys():
-                total_market_share = sub_graph.nodes[node][year]['technologies'][tech]['total_market_share']
-
-                if total_market_share is None:
-                    warnings.warn("Market Share is NONE @ {} in {}!!".format(node, year))
-
-                # go through available techs (range is [lower year, upper year + 1] to work with range function
-                low, up = utils.range_available(sub_graph, node, tech)
-                if int(year) in range(low, up):
-                    curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
-                    weighted_lccs += total_market_share * curr_lcc
-
-            sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
-
-    def add_tech_element(self, g, node, year, tech, param, value=0.0, source=None, unit=None):
-        """
-        Include a new set of parameter: {values} as a nested dict
-
-        """
-        g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
-                                                                       "branch": str(node),
-                                                                       "source": source,
-                                                                       "unit": unit}})
-
-    def get_heterogeneity(self, g, node, year):
-        try:
-            v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
-        except KeyError:
-            v = 10  # default val
-        if v is None:
-            v = 10
-        return v
-
-    def init_prices(self, graph, node, year, step=5):
+    def initialize_node(self, graph, node, year, step=5):
         def init_node_price_multipliers():
             # Grab the price multipliers from the parents (if they exist)
             parents = list(graph.predecessors(node))
@@ -739,7 +558,7 @@ class Model:
                     # TODO: Check that marketshares are accurately being calculated
                     low, up = utils.range_available(sub_graph, node, t)
                     if low < int(year) < up:
-                        v = self.get_heterogeneity(sub_graph, node, year)
+                        v = econ.get_heterogeneity(sub_graph, node, year)
                         tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["LCC"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
                         new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
