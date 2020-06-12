@@ -32,10 +32,6 @@ def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None
                                                                        "unit": unit}})
 
 
-def find_initial_market_share():
-    pass
-
-
 def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph

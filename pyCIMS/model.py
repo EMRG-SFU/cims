@@ -162,22 +162,19 @@ class Model:
             graph_utils.traverse_graph(self.graph, self.initialize_node, year)
 
             while not equilibrium:
+                print('iter {}'.format(iteration))
                 # Early exit if we reach the maximum number of iterations
                 if iteration > max_iterations:
                     warnings.warn("Max iterations reached for year {}. "
                                   "Continuing to next year.".format(year))
                     break
 
-                # Print iteration number
-                print('iter {}'.format(iteration))
-
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
                 # DEMAND
                 # ******************
-                # Use initial LCC Calculation to calculate service costs on demand side
-                # graph_utils.breadth_first_post(g_demand, self.initial_lcc_calculation, year)
+                # Calculate LCC values on demand side
                 graph_utils.breadth_first_post(g_demand,
                                                lcc_calculation.lcc_calculation,
                                                year,
@@ -188,21 +185,6 @@ class Model:
                 for ix in range(4):
                     # Calculate Quantities (Total Stock Needed)
                     graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)
-
-
-                    # Printing Market Shares -- Optional
-                    shell_node = 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell'
-                    space_node = 'pyCIMS.Canada.Alberta.Residential.Buildings.Shell.Space heating'
-                    # print('\t***** DEM {} *****\n{}'.format(ix, self.graph.nodes['pyCIMS.Canada.Alberta.Residential.Buildings.Shell.Space heating'][year]['quantities'].quantities['gj']))
-                    print('\t***** DEM {} *****'.format(ix))
-                    mar = {t: (d['new_market_share'], d['total_market_share']) for t, d in
-                           self.graph.nodes[shell_node][year]['technologies'].items()}
-                    for t, ms in mar.items():
-                        # if t in ['Standard', 'R2000', 'LEED']:
-                        print('\tmarket share of {}: '
-                              '\n\t\tNew - {}\n\t\tTot - {}'.format(t, ms[0], ms[1]))
-                        quant_accessor = '{}[{}]'.format(shell_node, t)
-                        print('\t\tQuantity - {}'.format(self.graph.nodes[space_node][year]['quantities'].quantities['gj'][quant_accessor]))
 
                     if int(year) == self.base_year:
                         break
@@ -310,12 +292,6 @@ class Model:
 
         # Otherwise, an equilibrium has been reached
         return True
-
-    def print_prices(self, year):
-        # Printing Prices -- Optional
-        for fuel in self.fuels:
-            price = list(self.graph.nodes[fuel][year]['Production Cost'].values())[0]['year_value']
-            print('\tprice of {}: {}'.format(fuel, price))
 
     def initialize_node(self, graph, node, year, step=5):
         def init_node_price_multipliers():
