@@ -37,6 +37,34 @@ class ModelValidator:
         return root_nodes 
 
     def validate(self, verbose=True, raise_warnings=False):
+        def invalid_competition_type():
+            valid_comp_type = ['Root',
+                               'Region',
+                               'Sector',
+                               'Sector No Tech',
+                               'Tech Compete',
+                               'Fixed Ratio']
+            invalid_nodes = []
+            comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
+            for index, value in zip(comp_types.index, comp_types['Value']):
+                if value not in valid_comp_type:
+                    invalid_nodes.append((index, self.index2node_map[index]))
+        
+            if len(invalid_nodes) > 0:
+                self.warnings['invalid_competition_type'] = invalid_nodes
+            
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
+                print("{} nodes has invalid competition types. {}".format(len(invalid_nodes),
+                                                                               more_info if len(invalid_nodes) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
+                w = "{} rnodes has invalid competition types. {}".format(len(invalid_nodes),
+                                                                               more_info if len(invalid_nodes) else "")
+                warnings.warn(w)
+                    
         def unspecified_nodes(p, r):
             referenced_unspecified = [(i, v) for i, v in r.iteritems() if v not in p.values]
 
@@ -104,7 +132,7 @@ class ModelValidator:
         def nodes_no_provided_service(p):
             nodes = self.model_df[self.node_col].dropna()
             nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
-            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
+            nodes_no_service = [(i,n) for i, n in nodes.iteritems() if (n not in nodes_that_provide) or (p[i+1] is None)]
 
             if len(nodes_no_service) > 0:
                 self.warnings['nodes_no_provided_service'] = nodes_no_service
@@ -129,3 +157,4 @@ class ModelValidator:
         unspecified_nodes(providers, requested)
         unreferenced_nodes(providers, requested, roots)
         nodes_no_provided_service(providers)
+        invalid_competition_type()
