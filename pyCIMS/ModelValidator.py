@@ -26,11 +26,7 @@ class ModelValidator:
         self.index2node_map = self.model_df[self.node_col].ffill() 
 
     def find_roots(self):
-        #TODO: Update this once the model description has been updated
-        #root_idx = self.model_df[(self.model_df['Parameter'] == 'Node type') &
-                                 #(self.model_df['Value'] == 'Root')].index
-        
-        root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
+        root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') & 
                                  (self.model_df['Value'] == 'Root')].index
         root_nodes = set([self.index2node_map[ri] for ri in root_idx])
 
@@ -44,27 +40,28 @@ class ModelValidator:
                                'Sector No Tech',
                                'Tech Compete',
                                'Fixed Ratio']
+            
             invalid_nodes = []
             comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
             for index, value in zip(comp_types.index, comp_types['Value']):
                 if value not in valid_comp_type:
                     invalid_nodes.append((index, self.index2node_map[index]))
-        
+                
             if len(invalid_nodes) > 0:
                 self.warnings['invalid_competition_type'] = invalid_nodes
-            
+
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
-                print("{} nodes has invalid competition types. {}".format(len(invalid_nodes),
-                                                                               more_info if len(invalid_nodes) else ""))
+                print("{} nodes had invalid competition types. {}".format(len(invalid_nodes),
+                                                                                  more_info if len(invalid_nodes) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
-                w = "{} rnodes has invalid competition types. {}".format(len(invalid_nodes),
-                                                                               more_info if len(invalid_nodes) else "")
+                w = "{} nodes had invalid competition types. {}".format(len(invalid_nodes),
+                                                                                  more_info if len(invalid_nodes) else "")
                 warnings.warn(w)
-                    
+        
         def unspecified_nodes(p, r):
             referenced_unspecified = [(i, v) for i, v in r.iteritems() if v not in p.values]
 
