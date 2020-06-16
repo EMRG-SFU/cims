@@ -107,10 +107,12 @@ class ModelValidator:
                 cand = node_name_indexes.loc[:i]
                 node_name_index = cand.index.max()
                 node_name = list(cand)[-1]
-                branch_node_name = x.split('.')[-1]
-
-                if node_name != branch_node_name:
-                    mismatched.append((node_name_index, node_name, branch_node_name))
+                if x is None: 
+                    mismatched.append((node_name_index, node_name, None))
+                else:
+                    branch_node_name = x.split('.')[-1]
+                    if node_name != branch_node_name:
+                        mismatched.append((node_name_index, node_name, branch_node_name))
 
             if len(mismatched) > 0:
                 self.warnings['mismatched_node_names'] = mismatched
@@ -129,7 +131,7 @@ class ModelValidator:
         def nodes_no_provided_service(p):
             nodes = self.model_df[self.node_col].dropna()
             nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
-            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
+            nodes_no_service = [(i,n) for i, n in nodes.iteritems() if n not in nodes_that_provide] 
 
             if len(nodes_no_service) > 0:
                 self.warnings['nodes_no_provided_service'] = nodes_no_service
