@@ -1,6 +1,17 @@
 import copy
+import math
 from . import utils
 from . import graph_utils
+
+
+def get_heterogeneity(g, node, year):
+    try:
+        v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
+    except KeyError:
+        v = 10  # default val
+    if v is None:
+        v = 10
+    return v
 
 
 def get_provided(g, node, year, parent_provide):
@@ -64,7 +75,6 @@ def get_technology_service_cost(g, full_graph, node, year, tech, fuels):
            # ii) Otherwise, use the service's children/techs to find the lcc at the node. Add this to the service cost.
     4. Return the service cost (currently assumes that there can only be one TODO: VERIFY / FIX THIS)
     """
-
     def do_sc_calculation(service_requested):
         service_requested_value = service_requested['year_value']
         service_cost = 0
