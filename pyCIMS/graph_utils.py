@@ -541,13 +541,20 @@ def make_nodes(graph, node_dfs, tech_dfs):
     networkx.Graph
         An updated graph that contains all nodes and technologies in node_dfs and tech_dfs.
     """
-
     # 1 Copy graph
     new_graph = copy.copy(graph)
 
     # 2 Add nodes to the graph
-    for n in node_dfs.keys():
-        new_graph = add_node_data(graph, n, node_dfs)
+    # The strategy of trying to add a node to the graph, and then adding it to a "to add" list
+    # if that doesn't work, deals with the possibility that nodes may be defined out of order.
+    node_dfs_to_add = list(node_dfs.keys())
+    while len(node_dfs_to_add) > 0:
+        n = node_dfs_to_add.pop(0)
+        try:
+            new_graph = add_node_data(graph, n, node_dfs)
+
+        except KeyError as e:
+            node_dfs_to_add.append(n)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:
