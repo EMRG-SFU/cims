@@ -244,8 +244,8 @@ class ModelValidator:
                                                 columns=['Index','Name'])
                 techs_within_node = techs_within_node.append({'Index': node.index.max(), 'Name': None},
                                                             ignore_index=True)
-                for i in range(techs_within_node.shape[1]):
-                    if i == techs_within_node.shape[1]-1:
+                for i in range(techs_within_node.shape[0]):
+                    if i == techs_within_node.shape[0]-1:
                         break
                     else:
                         start_index = techs_within_node['Index'].loc[i]
@@ -267,8 +267,7 @@ class ModelValidator:
                 more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
-                warnings.warn(w)
-
+                warnings.warn(w)            
 
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
