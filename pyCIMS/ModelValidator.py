@@ -227,6 +227,48 @@ class ModelValidator:
                                 more_info if len(nodes_requesting_self) else "")
                 warnings.warn(w)
 
+        def nodes_no_requested_service(r):
+            nodes = self.model_df["Node"].dropna()
+            techs = self.model_df[self.model_df['Parameter'] == "Technology"]['Value']
+            nodes_with_tech = list(set(self.index2node_map[techs.index]))
+            nodes_without_tech = [n for i, n in nodes.iteritems() if n not in nodes_with_tech]
+
+            nodes_that_request = [self.index2node_map[i] for i, v in r.iteritems()]
+            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_request]
+
+            nodes_or_techs_no_service = [(i, n) for i, n in nodes_no_service if n in nodes_without_tech]
+           
+            for n in nodes_with_tech:
+                node = self.index2node_map[self.index2node_map == n]
+                techs_within_node = pd.DataFrame([(i, v) for i, v in techs.iteritems() if i in node.index],
+                                                columns=['Index','Name'])
+                techs_within_node = techs_within_node.append({'Index': node.index.max(), 'Name': None},
+                                                            ignore_index=True)
+                for i in range(techs_within_node.shape[0]):
+                    if i == techs_within_node.shape[0]-1:
+                        break
+                    else:
+                        start_index = techs_within_node['Index'].loc[i]
+                        end_index = techs_within_node['Index'].loc[i+1]
+                        tech_name = techs_within_node['Name'].loc[i]
+                        if 'Service requested' not in list(self.model_df['Parameter'].loc[start_index:end_index]):
+                            nodes_or_techs_no_service.append((nodes[nodes == n].index[0], n, tech_name))
+        
+            if len(nodes_or_techs_no_service) > 0:
+                self.warnings['nodes_no_requested_service'] = nodes_or_techs_no_service
+
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
+                print("{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
+                                                                                       more_info if len(nodes_or_techs_no_service) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
+                w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
+                                                                                     more_info if len(nodes_or_techs_no_service) else "")
+                warnings.warn(w)            
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -237,3 +279,4 @@ class ModelValidator:
         nodes_no_provided_service(providers)
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
+        nodes_no_requested_service(requested)
