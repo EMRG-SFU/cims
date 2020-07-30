@@ -267,7 +267,42 @@ class ModelValidator:
                 more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
-                warnings.warn(w)            
+                warnings.warn(w)    
+
+        def discrepencies_in_model_and_tree():
+            mxl = pd.read_excel(self.xl_file, sheet_name=None, header=2)    
+            tree_df = mxl['Tree'].replace({pd.np.nan: None})  
+            tree_df = tree_df.drop(tree_df.index[[0,1]])
+            tree_sheet = pd.Series(tree_df['Branch']).reset_index(drop=True).str.lower()
+
+            d = self.model_df.drop(self.model_df.index[0:13])
+            p = d[d['Parameter'] == 'Service provided']['Branch']
+            model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
+
+            nodes_with_discrepencies = []
+            for i, n in tree_sheet.iteritems():
+                if n not in list(model_sheet):
+                    break
+                else:
+                    if i != model_sheet[model_sheet == n].index[0]:
+                        nodes_with_discrepencies.append((i, n))
+            
+            if len(nodes_with_discrepencies) > 0:
+                self.warnings['discrepencies_in_model_and_tree'] = nodes_with_discrepencies
+                
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for more info"
+                print("{} nodes have discrepencies between model and tree sheets. {}".format(len(nodes_with_discrepencies),
+                                                                                       more_info if len(nodes_with_discrepencies) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for more info"
+                w = "{} nodes have discrepencies between model and tree sheets. {}".format(len(nodes_with_discrepencies),
+                                                                                     more_info if len(nodes_with_discrepencies) else "")
+                warnings.warn(w)  
+
+                
 
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
@@ -280,3 +315,4 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
+        discrepencies_in_model_and_tree()
