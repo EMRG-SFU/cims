@@ -223,14 +223,14 @@ class Model:
                 # Update Prices
                 # *************
                 # Go and get all the previous prices
-                prev_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value']
+                prev_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0]['year_value']
                                for f in self.fuels}
 
                 # Now actually update prices
                 self.update_prices(year, g_supply)
 
                 # Go get all the new prices
-                new_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0]['year_value']
+                new_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0]['year_value']
                               for f in self.fuels}
 
                 # Check for an Equilibrium
@@ -321,19 +321,19 @@ class Model:
 
         def init_prices_to_be_estimated():
             """
-            Needs to estimate Production Costs for values to be estimated. Will start by using the value settled on
-            in the previous year.
+            Needs to estimate Production Costs for values to be estimated. Will start by using the
+            value settled on in the previous year.
             """
             # Determine if a fuel
             if node in self.fuels:
-                fuel_name = node.split('.')[-1]
-                if graph.nodes[node][year]['Production Cost'][fuel_name]['year_value'] is None:
-                    graph.nodes[node][year]['Production Cost'][fuel_name]['to_estimate'] = True
+                fuel_name = list(graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
+                if graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] is None:
+                    graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = True
                     last_year = str(int(year) - step)
-                    last_year_value = graph.nodes[node][last_year]['Production Cost'][fuel_name]['year_value']
-                    graph.nodes[node][year]['Production Cost'][fuel_name]['year_value'] = last_year_value
+                    last_year_value = graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
+                    graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
                 else:
-                    graph.nodes[node][year]['Production Cost'][fuel_name]['to_estimate'] = False
+                    graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
 
         init_node_price_multipliers()
         init_prices_to_be_estimated()
@@ -363,7 +363,7 @@ class Model:
         -------
         A dictionary containing the updated prices. Keys are fuel nodes, values are prices.
         """
-        prev_prices = {f: list(self.graph.nodes[f][year]['Production Cost'].values())[0] for f in
+        prev_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0] for f in
                        self.fuels}
         price_keys_to_estimate = [f for f, d in prev_prices.items() if d['to_estimate']]
         new_prices = copy.deepcopy(prev_prices)
@@ -394,8 +394,8 @@ class Model:
             fuel_price = calc_price(node_name=fuel)
             new_prices[fuel]['year_value'] = fuel_price
             # Update the price @ the fuel node
-            fuel_name = fuel.split('.')[-1]
-            self.graph.nodes[fuel][year]['Production Cost'][fuel_name]['year_value'] = fuel_price
+            fuel_name = list(self.graph.nodes[fuel][year]['Life Cycle Cost'].keys())[0]
+            self.graph.nodes[fuel][year]['Life Cycle Cost'][fuel_name]['year_value'] = fuel_price
 
         return new_prices
 

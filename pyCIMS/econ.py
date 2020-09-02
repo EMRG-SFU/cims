@@ -81,14 +81,14 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
         service_cost = 0
         if service_requested['branch'] in fuels:
             fuel_branch = service_requested['branch']
-            fuel_name = service_requested['branch'].split('.')[-1]
-
-            fuel_price = full_graph.nodes[fuel_branch][year]['Production Cost'][fuel_name]['year_value']
+            fuel_name = list(full_graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
+            fuel_price = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             service_cost = fuel_price * service_requested_value
         else:
             service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
-            # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to grab the lcc (currently, the total lcc isn't known)
+            # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to
+            #  grab the lcc (currently, the total lcc isn't known)
             if 'total lcc' in full_graph.nodes[service_requested_branch][year]:
                 service_requested_lcc = full_graph.nodes[service_requested_branch][year]['total lcc']
             else:
@@ -129,9 +129,8 @@ def get_node_service_cost(sub_graph, full_graph, node, year, fuels):
         service_cost = 0
         if service_requested['branch'] in fuels:
             fuel_branch = service_requested['branch']
-            fuel_name = service_requested['branch'].split('.')[-1]
-
-            fuel_price = full_graph.nodes[fuel_branch][year]['Production Cost'][fuel_name]['year_value']
+            fuel_name = list(full_graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
+            fuel_price = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             service_cost = fuel_price * service_requested_value
         else:
             service_requested_value = service_requested['year_value']
