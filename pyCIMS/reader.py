@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import re
+import os
 
 
 # ********************************
@@ -50,6 +51,10 @@ def get_node_cols(mdf, first_data_col_name="Node"):
 class ModelReader:
     def __init__(self, infile, sheet_map, node_col):
         self.infile = infile
+        excel_engine_map = {'.xlsb': 'pyxlsb',
+                            '.xlsm': 'xlrd'}
+        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+
         self.sheet_map = sheet_map
         self.node_col = node_col
 
@@ -59,8 +64,14 @@ class ModelReader:
         self.tech_dfs = {}
 
     def _get_model_df(self):
-        mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
-        model_df = mxl[self.sheet_map['model']].replace({pd.np.nan: None})  # Read the model sheet into a dataframe
+
+        # Read model_description from excel
+        mxl = pd.read_excel(self.infile,
+                            sheet_name=None,
+                            header=1,
+                            engine=self.excel_engine)
+
+        model_df = mxl[self.sheet_map['model']].replace({np.nan: None})  # Read the model sheet into a dataframe
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
@@ -125,14 +136,21 @@ class ModelReader:
         # ------------------------
         # Read in the data
         # ------------------------
-        mxl = pd.read_excel(self.infile, sheet_name=None)  # Read model_description from excel
-        inc_df = mxl[self.sheet_map['incompatible']].replace({pd.np.nan: None})  # Read the model sheet into a DataFrame
+        # Read model_description from excel
+        mxl = pd.read_excel(self.infile,
+                            sheet_name=None,
+                            engine=self.excel_engine)
+        inc_df = mxl[self.sheet_map['incompatible']].replace({np.nan: None})  # Read the model sheet into a DataFrame
         inc_df = inc_df.dropna(axis=1)
         return inc_df
 
     def get_default_tech_params(self):
-        mxl = pd.read_excel(self.infile, sheet_name=None, header=1)  # Read model_description from excel
-        df = mxl[self.sheet_map['default_tech']].replace({pd.np.nan: None})
+        # Read model_description from excel
+        mxl = pd.read_excel(self.infile,
+                            sheet_name=None,
+                            header=1,
+                            engine=self.excel_engine)
+        df = mxl[self.sheet_map['default_tech']].replace({np.nan: None})
 
         header_rows = df[(~df['Parameter'].isna()) & (df.drop('Parameter', axis=1).isna().all(axis=1))]
         last_row = df.index[-1]
