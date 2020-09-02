@@ -1,5 +1,6 @@
 import networkx as nx
 import copy
+import warnings
 
 # from utils import is_year
 from . import utils
@@ -125,22 +126,20 @@ def child_name(g, curr_node, return_empty=False):
 def get_fuels(graph, years):
     """ Find the names of nodes supplying fuel.
 
-    Currently, this is any node which (1) provides a service whose unit is GJ and (2) is a supply node.
-    TODO: Update this once node type has been added to model description. Fuels will be any sector level
-          supply nodes specified within the graph.
+    This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
+    Sector (either Sector or Sector No Tech).
+
     Returns
     -------
     list of str
         A list containing the names of nodes which supply fuels.
     """
-
     fuels = []
     for n, d in graph.nodes(data=True):
-        is_supply = d['type'] == 'supply'
-        # GJ trick should change later (might not be GJ) - ML!
-        prov_gj = any([data['unit'] == 'GJ' for service, data in d[years[0]]['Service provided'].items()])
-        if is_supply & prov_gj:
-            fuels += [n]
+        is_supply = d['type'].lower() == 'supply'
+        is_sector = 'sector' in d['competition type'].lower()
+        if is_supply & is_sector:
+            fuels.append(n)
     return fuels
 
 
@@ -275,17 +274,15 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
             # Choose a node on the active front
             n_cur = active_front[0]
             # Process that node in the sub-graph
-            # print(f"node: {n_cur}")
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         else:
+            warnings.warn("Found a Loop")
             # Resolve a loop
-            # ML! is this to deal with things like furnace? Not sure it's needed
             candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = max(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
-            print(f"loop occurred in graph -- resolving by choosing node farthest from root: {n_cur}")
 
         visited.append(n_cur)
         sg_cur.remove_node(n_cur)
@@ -317,7 +314,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'] == 'Node type']['Value'])
+    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Value'])
     if len(typ) > 0:
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
@@ -341,20 +338,9 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
-    # 6 Find node's competition type. (If there is one) [ and `blueprint` - possibly temporarily]
-    # bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
-    # if len(set(bp_list)) == 1:
-    #     bp_type = bp_list[0]
-    #     graph.nodes[current_node]['blueprint'] = bp_type.lower()
-    # elif len(set(bp_list)) < 1:
-    #     graph.nodes[current_node]['blueprint'] = 'unavailable'
-    # # Get rid of blueprint type row
-    # current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
-
     for y in years:
         year_df = current_node_df[non_years + [y]]
         year_dict = {}
-        # for param, src, branch, unit, val, year_value in zip(*[year_df[c] for c in year_df.columns]):
         for param, val, branch, src, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
             if param in year_dict.keys():
                 pass
@@ -412,7 +398,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'unit': unit,
                    'year_value': year_value}
 
-
             # TODO: CHANGE for competition type (fixed market ) !!! Very temporary
             if node == "pyCIMS.Canada.Alberta.Residential.Buildings" and parameter == "Service requested":
                 if parameter in year_dict.keys():
@@ -429,10 +414,9 @@ def add_tech_data(graph, node, tech_dfs, tech):
                     year_dict[parameter] = [dct]
 
             else:
-
                 if parameter in year_dict.keys():
                     if type(year_dict[parameter]) is list:
-                        year_dict[parameter] = year_dict[parameter].append(dct)
+                        year_dict[parameter].append(dct)
                     else:
                         year_dict[parameter] = [year_dict[parameter], dct]
                 else:
@@ -443,7 +427,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
             graph.nodes[node][y]['technologies'] = {}
 
         # Add the technology specific data for that year
-
         graph.nodes[node][y]['technologies'][tech] = year_dict
 
     # 4 Return the new graph
@@ -520,8 +503,6 @@ def make_edges(graph, node_dfs, tech_dfs):
         An updated `graph` that contains all edges defined in `node_dfs` and `tech_dfs`.
 
     """
-
-
     for node in node_dfs:
         graph = add_edges(graph, node, node_dfs[node])
 

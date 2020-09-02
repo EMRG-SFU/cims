@@ -1,7 +1,7 @@
 import copy
-import math
 from . import utils
 from . import graph_utils
+import warnings
 
 
 def get_heterogeneity(g, node, year):
@@ -65,7 +65,7 @@ def lastyear_fuel(g, node, year, fuel, param, step=5):
     return value
 
 
-def get_technology_service_cost(g, full_graph, node, year, tech, fuels):
+def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
     """
     Find the service cost associated with a given technology.
 
@@ -76,6 +76,7 @@ def get_technology_service_cost(g, full_graph, node, year, tech, fuels):
     4. Return the service cost (currently assumes that there can only be one TODO: VERIFY / FIX THIS)
     """
     def do_sc_calculation(service_requested):
+        # print('\t {}'.format(service_requested))
         service_requested_value = service_requested['year_value']
         service_cost = 0
         if service_requested['branch'] in fuels:
@@ -87,15 +88,20 @@ def get_technology_service_cost(g, full_graph, node, year, tech, fuels):
         else:
             service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
-            service_requested_lcc = g.nodes[service_requested_branch][year]['total lcc']
+            # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to grab the lcc (currently, the total lcc isn't known)
+            if 'total lcc' in full_graph.nodes[service_requested_branch][year]:
+                service_requested_lcc = full_graph.nodes[service_requested_branch][year]['total lcc']
+            else:
+                service_requested_lcc = 10 # WRONG -- TEMPORARY  -- NEED TO FIX
+
             service_cost += service_requested_lcc * service_requested_value
 
         return service_cost
 
     total_tech_service_cost = 0
 
-    if 'Service requested' in g.nodes[node][year]['technologies'][tech]:
-        service_req = g.nodes[node][year]['technologies'][tech]['Service requested']
+    if 'Service requested' in sub_graph.nodes[node][year]['technologies'][tech]:
+        service_req = sub_graph.nodes[node][year]['technologies'][tech]['Service requested']
         if isinstance(service_req, dict):
             total_tech_service_cost += do_sc_calculation(service_req)
         elif isinstance(service_req, list):
@@ -107,12 +113,56 @@ def get_technology_service_cost(g, full_graph, node, year, tech, fuels):
     return total_tech_service_cost
 
 
+def get_node_service_cost(sub_graph, full_graph, node, year, fuels):
+    """
+    Find the service cost associated with a given node that doesn't include technologies.
+
+    1. For each service being requested:
+            i) If the service is a fuel, find the fuel price and add it to the service cost.
+           ii) Otherwise, use the service's total lcc which was calculated already.
+           # ii) Otherwise, use the service's children/techs to find the lcc at the node. Add this to the service cost.
+    4. Return the service cost (currently assumes that there can only be one TODO: VERIFY / FIX THIS)
+    """
+    def do_sc_calculation(service_requested):
+        # print('\t {}'.format(service_requested))
+        service_requested_value = service_requested['year_value']
+        service_cost = 0
+        if service_requested['branch'] in fuels:
+            fuel_branch = service_requested['branch']
+            fuel_name = service_requested['branch'].split('.')[-1]
+
+            fuel_price = full_graph.nodes[fuel_branch][year]['Production Cost'][fuel_name]['year_value']
+            service_cost = fuel_price * service_requested_value
+        else:
+            service_requested_value = service_requested['year_value']
+            service_requested_branch = service_requested['branch']
+            service_requested_lcc = full_graph.nodes[service_requested_branch][year]['total lcc']
+            service_cost += service_requested_lcc * service_requested_value
+
+        return service_cost
+
+    total_node_service_cost = 0
+
+    if 'Service requested' in sub_graph.nodes[node][year]:
+        service_req = sub_graph.nodes[node][year]['Service requested']
+        if 'year_value' in service_req:
+            total_node_service_cost += do_sc_calculation(service_req)
+        else:
+            for req in service_req.values():
+                total_node_service_cost += do_sc_calculation(req)
+
+    return total_node_service_cost
+
+
 def get_crf(g, node, year, tech, finance_base=0.1, life_base=10.0):
     # TODO: Determine why we do this instead of get CRF from the model description
     # TODO: Verify that this is doing the correct calculation
     finance_discount = g.nodes[node][year]["technologies"][tech]["Discount rate_Financial"]["year_value"]
     lifespan = g.nodes[node][year]["technologies"][tech]["Lifetime"]["year_value"]
     if finance_discount is None:
+        finance_discount = finance_base
+    if finance_discount == 0:
+        warnings.warn('Discount rate_Financial has value of 0 at {} -- {}'.format(node, tech))
         finance_discount = finance_base
 
     if lifespan is None:
@@ -129,16 +179,19 @@ def get_capcost(g, node, year, tech, crf, default_full_cc=0.0):
     tech_data = g.nodes[node][year]['technologies'][tech]
 
     full_cap_cost = tech_data["Full capital cost"]["year_value"]
-    if full_cap_cost is None:
+    if full_cap_cost:
+        pass
+    else:
         # Try to Calculate
-        overnight_cc = tech_data['Overnight capital cost']['year_value']
+        # overnight_cc = tech_data['Overnight capital cost']['year_value']
+        overnight_cc = tech_data['Capital cost']['year_value']
         upfront_fixed = tech_data['Upfront fixed intangible cost']['year_value']
         upfront_declining = 0  # TODO: Find & implement calculation for this
-        if None in [overnight_cc, upfront_fixed, upfront_declining]:
-            full_cap_cost = default_full_cc
-        else:
-            cap_cost = overnight_cc + upfront_fixed + upfront_declining
-            output = tech['Output']['year_value']
-            full_cap_cost = (cap_cost / output) * crf
+
+        cap_cost_components = [x if x else 0 for x in [overnight_cc, upfront_fixed, upfront_declining]]
+        cap_cost = sum(cap_cost_components)
+
+        output = tech_data['Output']['year_value']
+        full_cap_cost = (cap_cost / output) * crf
 
     return full_cap_cost

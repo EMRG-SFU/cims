@@ -80,7 +80,7 @@ class ModelReader:
         node_rows.index.name = "Row Number"
         last_row = self.model_df.index[-1]
         node_start_ends = zip(node_rows.index,
-                              node_rows.index[1:].tolist() + [last_row])
+                              node_rows.index[1:].tolist() + [last_row + 1]) # Adding 1 to make sure last row is included
 
         # extract Node DataFrames, at this point still including Technologies
         node_dfs = {}

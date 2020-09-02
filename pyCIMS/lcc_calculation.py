@@ -32,7 +32,7 @@ def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None
                                                                        "unit": unit}})
 
 
-def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
+def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_warnings=False):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
     at the appropriate node. Specifically,
@@ -66,32 +66,35 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
     total_lcc_v = 0.0
+    # print('Node {}'.format(node))
 
-    # Check if the node is a tech compete node.
+    # Find the v parameter
+    v = econ.get_heterogeneity(sub_graph, node, year)
+
+    # Check if the node is a tech compete node:
     if sub_graph.nodes[node]["competition type"] == "tech compete":
-        # Find the v parameter
-        v = econ.get_heterogeneity(sub_graph, node, year)
         node_techs = sub_graph.nodes[node][year]["technologies"].keys()
 
         # For every tech in the node, retrieve or compute required economic values
         for tech in node_techs:
-            calculate_tech_econ_values(sub_graph, node, tech, year)
+            # calculate_tech_econ_values(sub_graph, node, tech, year)
+            calculate_tech_econ_values(full_graph, node, tech, year)
 
             # If the technology is available in this year, go through it
             # (range is [lower year, upper year + 1] to work with range function
-            low, up = utils.range_available(sub_graph, node, tech)
+            # low, up = utils.range_available(sub_graph, node, tech)
+            low, up = utils.range_available(full_graph, node, tech)
 
             if int(year) in range(low, up):
                 # Service Cost
                 # ************
-                service_cost = econ.get_technology_service_cost(sub_graph,
-                                                                full_graph,
-                                                                node,
-                                                                year,
-                                                                tech,
-                                                                fuels)
-                sub_graph.nodes[node][year]["technologies"][tech]["Service cost"][
-                    "year_value"] = service_cost
+                annual_service_cost = econ.get_technology_service_cost(sub_graph,
+                                                                       full_graph,
+                                                                       node,
+                                                                       year,
+                                                                       tech,
+                                                                       fuels)
+                sub_graph.nodes[node][year]["technologies"][tech]["Service cost"]["year_value"] = annual_service_cost
 
                 # CRF
                 # ************
@@ -114,17 +117,59 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
                 sub_graph.nodes[node][year]["technologies"][tech]["Full capital cost"][
                     "year_value"] = full_cc
 
+                cc_declining = 0    # Temporary, TODO: remove this line after testing completed
+                cc_dec_limit = 1    # Temporary, TODO: remove this line after testing completed
+                cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost']['year_value'] # TODO: Implement defaults
+                if cc_overnight is None:
+                    cc_overnight = 0
+                capital_cost = calc_capital_cost(cc_declining, cc_overnight, cc_dec_limit)
+
                 # LCC
                 # *****************
-                operating_cost = \
-                sub_graph.nodes[node][year]["technologies"][tech]["Operating cost"]["year_value"]
-                lcc = service_cost + operating_cost + full_cc
+                declining_upfront_intangible_cost = 0   # Temporary, TODO: remove this line after testing completed
+                fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront fixed intangible cost']['year_value'] # TODO: implement defaults
+                if fixed_upfront_intangible_cost is None:
+                    fixed_upfront_intangible_cost = 0
+                output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
+                upfront_cost = calc_upfront_cost(capital_cost,
+                                                 fixed_upfront_intangible_cost,
+                                                 declining_upfront_intangible_cost,
+                                                 output,
+                                                 crf)
+
+                operating_maintenance_cost = sub_graph.nodes[node][year]['technologies'][tech]['Operating cost']['year_value']
+                fixed_annual_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Annual fixed intangible cost']['year_value']
+
+                if fixed_annual_intangible_cost is None:
+                    fixed_annual_intangible_cost = 0
+                declining_annual_intangible_cost = 0    # Temporary, TODO: remove this line after testing completed
+                output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
+                annual_cost = calc_annual_cost(operating_maintenance_cost,
+                                               fixed_annual_intangible_cost,
+                                               declining_annual_intangible_cost,
+                                               output)
+
+                lcc = calc_lcc(upfront_cost, annual_cost, annual_service_cost)
+
                 sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
 
                 # LCC ^ -v
                 # *****************
-                lcc_neg_v = lcc ** (-1.0 * v)
-                total_lcc_v += lcc_neg_v
+                if lcc == 0:
+                    if show_warnings:
+                        warnings.warn('LCC has value of 0 at {} -- {}'.format(node, tech))
+                    lcc = 0.0001
+
+                if lcc < 0:
+                    if show_warnings:
+                        warnings.warn('LCC has negative value at {} -- {}'.format(node, tech))
+                    lcc = 1
+
+                try:
+                    lcc_neg_v = lcc ** (-1.0 * v)
+                    total_lcc_v += lcc_neg_v
+                except OverflowError as e:
+                    raise e
 
         # Set sum of LCC raised to negative variance
         sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
@@ -163,7 +208,8 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
                 market_share = sub_graph.nodes[node][previous_year]['technologies'][tech]['total_market_share']
 
             if market_share is None:
-                warnings.warn("Market Share is NONE!!")
+                if show_warnings:
+                    warnings.warn("Market Share is NONE!!")
 
             # Weight LCC and Add to Node Total
             # ********************************
@@ -174,3 +220,57 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels):
                 weighted_lccs += market_share * curr_lcc
 
         sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
+
+    elif ('technologies' in sub_graph.nodes[node].keys()) and (sub_graph.nodes[node]['competition_type']=='Fixed Ratio'):
+        print("{} is fixed ratio w/ techs".format(node))
+    else:
+        # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
+        # rule, multiply the LCCs of the service required by its "Service Requested" line value.
+        # Sometimes, the Service Requested line values act as percent shares that add up to 1 for a
+        # given fixed ratio decision node. Other times, they do not and the Service Requested Line
+        # values sum to numbers greater or less than 1.
+        service_cost = econ.get_node_service_cost(sub_graph,
+                                                  full_graph,
+                                                  node,
+                                                  year,
+                                                  fuels)
+
+        # Is service cost just the cost of these nodes?
+        sub_graph.nodes[node][year]["total lcc"] = service_cost
+
+
+def calc_lcc(upfront_cost, annual_cost, annual_service_cost):
+    lcc = upfront_cost + annual_cost + annual_service_cost
+    return lcc
+
+
+def calc_upfront_cost(capital_cost, fixed_upfront_intangible_cost, declining_upfront_intangible_cost, output, crf):
+    uc = (capital_cost + fixed_upfront_intangible_cost + declining_upfront_intangible_cost)/output * crf
+    return uc
+
+
+def calc_annual_cost(operating_maintenance_cost, fixed_annual_intangible_cost, declining_annual_intangible_cost, output):
+    ac = (operating_maintenance_cost + fixed_annual_intangible_cost + declining_annual_intangible_cost) / output
+    return ac
+
+
+def calc_capital_cost(declining_cc, overnight_cc, declining_limit=1):
+    cc = max(declining_cc, overnight_cc*declining_limit)
+    return cc
+
+
+def calc_declining_cc(gcc, new_stock, cumul_new_stock, progress_ratio):
+    pass
+
+
+def calc_upfront_declining_intangible_cost(initial_upfront_intangible_cost, rate_constant, shape_constant, percent_new_market_share):
+    rate_constant = 0
+    pass
+
+
+def annual_declining_intangible_cost(inition_annual_intangible_cost, rate_constant, shape_constant, percent_new_market_share):
+    rate_constant = 0
+    pass
+
+
+
