@@ -531,7 +531,8 @@ class Model:
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
                         except OverflowError:
-                            print(tech_lcc, v)
+                            warnings.warn("Overflow Error when calculating new marketshare for "
+                                          "tech {} @ node {}".format(t, node))
 
                 self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0
