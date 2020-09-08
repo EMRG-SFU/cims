@@ -173,3 +173,10 @@ def search_nodes(search_term, g):
         return search_term.lower() in last_comp.lower()
 
     return [n for n in g.nodes if search(n)]
+
+
+def compare_strings(s1, s2):
+    a = s1.lower().strip()
+    b = s2.lower().strip()
+
+    return a == b
