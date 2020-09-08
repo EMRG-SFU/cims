@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from .reader import get_node_cols
 import warnings
+import os
 
 
 class ModelValidator:
@@ -12,8 +13,11 @@ class ModelValidator:
         self.warnings = {}
 
         # Turn Excel file into Dataframe
-        mxl = pd.read_excel(xl_file, sheet_name=None, header=1)    # Read model_description from excel
-        model_df = mxl['Model'].replace({pd.np.nan: None})      # Read the model sheet into a dataframe
+        excel_engine_map = {'.xlsb': 'pyxlsb',
+                            '.xlsm': 'xlrd'}
+        excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
+        mxl = pd.read_excel(xl_file, sheet_name=None, header=1, engine=excel_engine)
+        model_df = mxl['Model'].replace({np.nan: None})      # Read the model sheet into a dataframe
         model_df.index += 3                                     # Adjust index to correspond to Excel line numbers
                                                                 # +1: 0 vs 1 origin, +1: header skip, +1: column headers
         model_df.columns = [str(c) for c in
