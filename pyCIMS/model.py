@@ -155,7 +155,7 @@ class Model:
             iteration = 0
 
             # Initialize Graph Values
-            graph_utils.traverse_graph(self.graph, self.initialize_node, year)
+            graph_utils.top_down_traversal(self.graph, self.initialize_node, year)
 
             while not equilibrium:
                 print('iter {}'.format(iteration))
@@ -171,54 +171,58 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate LCC values on demand side
-                graph_utils.breadth_first_post(g_demand,
-                                               lcc_calculation.lcc_calculation,
-                                               year,
-                                               self.step,
-                                               self.graph,
-                                               self.fuels)
+                graph_utils.bottom_up_traversal(g_demand,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self.step,
+                                                self.graph,
+                                                self.fuels)
 
                 for ix in range(4):
                     # Calculate Quantities (Total Stock Needed)
-                    graph_utils.traverse_graph(g_demand, self.stock_retirement_and_allocation, year)
+                    graph_utils.top_down_traversal(g_demand,
+                                                   self.stock_retirement_and_allocation,
+                                                   year)
 
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    # graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
-                    graph_utils.breadth_first_post(g_demand,
-                                                   lcc_calculation.lcc_calculation,
-                                                   year,
-                                                   self.step,
-                                                   self.graph,
-                                                   self.fuels)
+                    # graph_utils.bottom_up_traversal(g_demand, self.get_service_cost, year)
+                    graph_utils.bottom_up_traversal(g_demand,
+                                                    lcc_calculation.lcc_calculation,
+                                                    year,
+                                                    self.step,
+                                                    self.graph,
+                                                    self.fuels)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                # graph_utils.breadth_first_post(g_supply, self.initial_lcc_calculation, year)
-                graph_utils.breadth_first_post(g_supply,
-                                               lcc_calculation.lcc_calculation,
-                                               year,
-                                               self.step,
-                                               self.graph,
-                                               self.fuels)
+                # graph_utils.bottom_up_traversal(g_supply, self.initial_lcc_calculation, year)
+                graph_utils.bottom_up_traversal(g_supply,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self.step,
+                                                self.graph,
+                                                self.fuels)
                 for _ in range(4):
                     # Calculate Fuel Quantities
-                    graph_utils.traverse_graph(g_supply, self.stock_retirement_and_allocation, year)
+                    graph_utils.top_down_traversal(g_supply,
+                                                   self.stock_retirement_and_allocation,
+                                                   year)
 
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    # graph_utils.breadth_first_post(g_demand, self.get_service_cost, year)
-                    graph_utils.breadth_first_post(g_supply,
-                                                   lcc_calculation.lcc_calculation,
-                                                   year,
-                                                   self.step,
-                                                   self.graph,
-                                                   self.fuels)
+                    # graph_utils.bottom_up_traversal(g_demand, self.get_service_cost, year)
+                    graph_utils.bottom_up_traversal(g_supply,
+                                                    lcc_calculation.lcc_calculation,
+                                                    year,
+                                                    self.step,
+                                                    self.graph,
+                                                    self.fuels)
 
                 # Update Prices
                 # *************

@@ -168,7 +168,7 @@ def get_subgraph(graph, node_types):
 """
 
 
-def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
+def top_down_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -230,7 +230,7 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
         sg_cur.remove_node(n_cur)
 
 
-def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
+def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
