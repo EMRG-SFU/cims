@@ -172,9 +172,9 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
-    A node is only visited once its parents have been visited. In the case of a loop (where every node has
-    at least one parent who hasn't been visited) the node closest to the `sub_graph` root will be visited
-    and processed using the values held over from the last iteration.
+    A node is only visited once its parents have been visited. In the case of a loop (where every
+    node has at least one parent who hasn't been visited) the node closest to the `sub_graph` root
+    will be visited and processed using the values held over from the last iteration.
 
     Parameters
     ----------
@@ -191,7 +191,9 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
 
     """
     # Find the root of the sub-graph
-    root = [n for n, d in sub_graph.in_degree() if d == 0][0]
+    possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+    possible_roots.sort(key=lambda n: len(n))
+    root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
@@ -217,6 +219,7 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
             # Process that node in the sub-graph
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
+            warnings.warn("Found a Loop -- ")
             # Resolve a loop
             candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = min(candidates, key=lambda x: candidates[x])
@@ -229,6 +232,12 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
 
 def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
     """
+    Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
+
+    A node is only visited once its children have been visited. In the case of a loop (where every
+    node has at least one parent who hasn't been visited) the node furthest from the `sub_graph`
+    root will be visited and processed using the values held over from the last iteration.
+
     TODO: Rename Function
     TODO: Properly document
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -240,8 +249,8 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
         The graph to be traversed.
 
     node_process_func : function (nx.DiGraph, str) -> None
-        The function to be applied to each node in `sub_graph`. Doesn't return anything but should have an
-        effect on the node data within `sub_graph`.
+        The function to be applied to each node in `sub_graph`. Doesn't return anything but should
+        have an effect on the node data within `sub_graph`.
 
     Returns
     -------
@@ -250,7 +259,9 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
     """
 
     # Find the root of the sub-graph
-    root = [n for n, d in sub_graph.in_degree() if d == 0][0]
+    possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+    possible_roots.sort(key=lambda n: len(n))
+    root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)

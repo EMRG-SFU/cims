@@ -14,7 +14,7 @@ def calculate_tech_econ_values(graph, node, tech, year):
             add_tech_param(graph, node, year, tech, param_name, param_val)
 
     # Initialize values not provided exogenously
-    def_param_names = ['Operating cost', 'Output']
+    def_param_names = ['Operating and maintenance cost', 'Output']
     def_param_values = [0, 1]
     for param_name, param_val in zip(def_param_names, def_param_values):
         if graph.nodes[node][year]["technologies"][tech][param_name]["year_value"] is None:
@@ -119,7 +119,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
 
                 cc_declining = 0    # Temporary, TODO: remove this line after testing completed
                 cc_dec_limit = 1    # Temporary, TODO: remove this line after testing completed
-                cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost']['year_value'] # TODO: Implement defaults
+                cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost_overnight']['year_value'] # TODO: Implement defaults
                 if cc_overnight is None:
                     cc_overnight = 0
                 capital_cost = calc_capital_cost(cc_declining, cc_overnight, cc_dec_limit)
@@ -127,7 +127,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                 # LCC
                 # *****************
                 declining_upfront_intangible_cost = 0   # Temporary, TODO: remove this line after testing completed
-                fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront fixed intangible cost']['year_value'] # TODO: implement defaults
+                fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value'] # TODO: implement defaults
                 if fixed_upfront_intangible_cost is None:
                     fixed_upfront_intangible_cost = 0
                 output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
@@ -137,8 +137,8 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                                                  output,
                                                  crf)
 
-                operating_maintenance_cost = sub_graph.nodes[node][year]['technologies'][tech]['Operating cost']['year_value']
-                fixed_annual_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Annual fixed intangible cost']['year_value']
+                operating_maintenance_cost = sub_graph.nodes[node][year]['technologies'][tech]['Operating and maintenance cost']['year_value']
+                fixed_annual_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Annual intangible cost_fixed']['year_value']
 
                 if fixed_annual_intangible_cost is None:
                     fixed_annual_intangible_cost = 0
@@ -155,7 +155,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
 
                 # LCC ^ -v
                 # *****************
-                if lcc == 0:
+                if round(lcc, 20) == 0:
                     if show_warnings:
                         warnings.warn('LCC has value of 0 at {} -- {}'.format(node, tech))
                     lcc = 0.0001

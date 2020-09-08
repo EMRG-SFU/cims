@@ -182,9 +182,8 @@ def get_capcost(g, node, year, tech, crf, default_full_cc=0.0):
         pass
     else:
         # Try to Calculate
-        # overnight_cc = tech_data['Overnight capital cost']['year_value']
-        overnight_cc = tech_data['Capital cost']['year_value']
-        upfront_fixed = tech_data['Upfront fixed intangible cost']['year_value']
+        overnight_cc = tech_data['Capital cost_overnight']['year_value']
+        upfront_fixed = tech_data['Upfront intangible cost_fixed']['year_value']
         upfront_declining = 0  # TODO: Find & implement calculation for this
 
         cap_cost_components = [x if x else 0 for x in [overnight_cc, upfront_fixed, upfront_declining]]
