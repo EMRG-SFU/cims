@@ -328,8 +328,23 @@ class Model:
             Needs to estimate Production Costs for values to be estimated. Will start by using the
             value settled on in the previous year.
             """
+            def quick_lcc(node, year):
+                fuel_name = node.split('.')[-1]
+                if node == 'pyCIMS.Canada.Alberta.Electricity':
+                    if year == '2000':
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 22}}
+                    else:
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': None}}
+                else:
+                    graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 6.5}}
+
             # Determine if a fuel
             if node in self.fuels:
+                # TODO: Verify this calculation is correct for when life cycle cost is calculated
+                #  from children nodes
+                if 'Life Cycle Cost' not in graph.nodes[node][year].keys():
+                    quick_lcc(node, year)
+
                 fuel_name = list(graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
                 if graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] is None:
                     graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = True
@@ -531,8 +546,9 @@ class Model:
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
                         except OverflowError:
-                            warnings.warn("Overflow Error when calculating new marketshare for "
-                                          "tech {} @ node {}".format(t, node))
+                            if self.show_run_warnings:
+                                warnings.warn("Overflow Error when calculating new marketshare for "
+                                              "tech {} @ node {}".format(t, node))
 
                 self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0
