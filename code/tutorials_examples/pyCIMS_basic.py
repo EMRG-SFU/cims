@@ -3,7 +3,7 @@ import pyCIMS
 from pprint import pprint
 
 # file = 'pycims_prototype/model_descriptions/pyCIMS_model_description_Alberta_Validated-July 31.xlsb'
-file = 'pycims_prototype/model_descriptions/pyCIMS_model_description_Alberta_Validated-July 31-Jillian.xlsb'
+file = 'pycims_prototype/pyCIMS_model_description_Alberta_Validated.xlsb'
 
 my_validator = pyCIMS.ModelValidator(file)
 my_validator.validate(raise_warnings=False)
