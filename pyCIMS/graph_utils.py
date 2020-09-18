@@ -159,7 +159,7 @@ def get_subgraph(graph, node_types):
         of `node_types`. A edge is only included if it connects two nodes found in the returned graph.
     """
     nodes = [n for n, a in graph.nodes(data=True) if a['type'] in node_types]
-    sub_g = graph.subgraph(nodes).copy()
+    sub_g = graph.subgraph(nodes)
     return sub_g
 
 
@@ -207,8 +207,7 @@ def top_down_traversal(sub_graph, node_process_func, *args, **kwargs):
             sub_graph.nodes[node_name]["is_leaf"] = False
 
     # Start the traversal
-    sg_cur = copy.deepcopy(sub_graph)
-    visited = []
+    sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.in_degree if d == 0]
@@ -226,9 +225,7 @@ def top_down_traversal(sub_graph, node_process_func, *args, **kwargs):
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
-        visited.append(n_cur)
         sg_cur.remove_node(n_cur)
-
 
 def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
@@ -275,8 +272,7 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
             sub_graph.nodes[node_name]["is_leaf"] = False
 
     # Start the traversal
-    sg_cur = copy.deepcopy(sub_graph)
-    visited = []
+    sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.out_degree if d == 0]
@@ -295,7 +291,6 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
-        visited.append(n_cur)
         sg_cur.remove_node(n_cur)
 
 
