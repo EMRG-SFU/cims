@@ -1,0 +1,16 @@
+name: pycims_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3
+  - jupyter
+  - matplotlib
+  - numpy
+  - pandas>=1
+  - pip
+  - scipy
+  - setuptools
+  - networkx
+  - xlrd
+  - pip:
+    - pyxlsb
