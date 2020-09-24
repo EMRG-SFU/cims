@@ -267,8 +267,33 @@ class ModelValidator:
                 more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
-                warnings.warn(w)            
+                warnings.warn(w)  
+                
+                
+        def nodes_with_zero_output():
+            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:,7:18]
+            zero_output_nodes = []
+            for i in range(output.shape[0]):
+                if output.iloc[i,1:12].eq(0).any():
+                    ind = output.index[i]
+                    zero_output_nodes.append((ind, self.index2node_map[ind]))
+            
+            if len(zero_output_nodes) > 0:
+                self.warnings['nodes_with_zero_output'] = zero_output_nodes
 
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['nodes_with_zero_output'] for more info"
+                print("{} nodes have 0 in the output line. {}".format(len(zero_output_nodes),
+                                                                                       more_info if len(zero_output_nodes) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['nodes_with_zero_output'] for more info"
+                w = "{} nodes have 0 in the output line. {}".format(len(zero_output_nodes),
+                                                                                     more_info if len(zero_output_nodes) else "")
+                warnings.warn(w)
+        
+        
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -280,3 +305,7 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
+        nodes_with_zero_output()
+        
+        
+      
