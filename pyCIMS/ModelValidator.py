@@ -269,7 +269,10 @@ class ModelValidator:
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)  
-                
+
+        def nodes_with_zero_output():
+            pass
+
         def fuel_nodes_no_lcc():
             d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
@@ -313,4 +316,5 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
+        nodes_with_zero_output()
         fuel_nodes_no_lcc()
