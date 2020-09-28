@@ -1,5 +1,6 @@
 import networkx as nx
 import copy
+import warnings
 
 # from utils import is_year
 from . import utils
@@ -125,22 +126,20 @@ def child_name(g, curr_node, return_empty=False):
 def get_fuels(graph, years):
     """ Find the names of nodes supplying fuel.
 
-    Currently, this is any node which (1) provides a service whose unit is GJ and (2) is a supply node.
-    TODO: Update this once node type has been added to model description. Fuels will be any sector level
-          supply nodes specified within the graph.
+    This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
+    Sector (either Sector or Sector No Tech).
+
     Returns
     -------
     list of str
         A list containing the names of nodes which supply fuels.
     """
-
     fuels = []
     for n, d in graph.nodes(data=True):
-        is_supply = d['type'] == 'supply'
-        # GJ trick should change later (might not be GJ) - ML!
-        prov_gj = any([data['unit'] == 'GJ' for service, data in d[years[0]]['Service provided'].items()])
-        if is_supply & prov_gj:
-            fuels += [n]
+        is_supply = d['type'].lower() == 'supply'
+        is_sector = 'sector' in d['competition type'].lower()
+        if is_supply & is_sector:
+            fuels.append(n)
     return fuels
 
 
@@ -160,7 +159,7 @@ def get_subgraph(graph, node_types):
         of `node_types`. A edge is only included if it connects two nodes found in the returned graph.
     """
     nodes = [n for n, a in graph.nodes(data=True) if a['type'] in node_types]
-    sub_g = graph.subgraph(nodes).copy()
+    sub_g = graph.subgraph(nodes)
     return sub_g
 
 
@@ -169,13 +168,13 @@ def get_subgraph(graph, node_types):
 """
 
 
-def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
+def top_down_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
-    A node is only visited once its parents have been visited. In the case of a loop (where every node has
-    at least one parent who hasn't been visited) the node closest to the `sub_graph` root will be visited
-    and processed using the values held over from the last iteration.
+    A node is only visited once its parents have been visited. In the case of a loop (where every
+    node has at least one parent who hasn't been visited) the node closest to the `sub_graph` root
+    will be visited and processed using the values held over from the last iteration.
 
     Parameters
     ----------
@@ -192,7 +191,9 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
 
     """
     # Find the root of the sub-graph
-    root = [n for n, d in sub_graph.in_degree() if d == 0][0]
+    possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+    possible_roots.sort(key=lambda n: len(n))
+    root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
@@ -206,8 +207,7 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
             sub_graph.nodes[node_name]["is_leaf"] = False
 
     # Start the traversal
-    sg_cur = copy.deepcopy(sub_graph)
-    visited = []
+    sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.in_degree if d == 0]
@@ -218,18 +218,23 @@ def traverse_graph(sub_graph, node_process_func, *args, **kwargs):
             # Process that node in the sub-graph
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
+            warnings.warn("Found a Loop -- ")
             # Resolve a loop
             candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
-        visited.append(n_cur)
         sg_cur.remove_node(n_cur)
 
-
-def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
+def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
+    Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
+
+    A node is only visited once its children have been visited. In the case of a loop (where every
+    node has at least one parent who hasn't been visited) the node furthest from the `sub_graph`
+    root will be visited and processed using the values held over from the last iteration.
+
     TODO: Rename Function
     TODO: Properly document
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -241,8 +246,8 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
         The graph to be traversed.
 
     node_process_func : function (nx.DiGraph, str) -> None
-        The function to be applied to each node in `sub_graph`. Doesn't return anything but should have an
-        effect on the node data within `sub_graph`.
+        The function to be applied to each node in `sub_graph`. Doesn't return anything but should
+        have an effect on the node data within `sub_graph`.
 
     Returns
     -------
@@ -251,7 +256,9 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
     """
 
     # Find the root of the sub-graph
-    root = [n for n, d in sub_graph.in_degree() if d == 0][0]
+    possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+    possible_roots.sort(key=lambda n: len(n))
+    root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
@@ -265,8 +272,7 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
             sub_graph.nodes[node_name]["is_leaf"] = False
 
     # Start the traversal
-    sg_cur = copy.deepcopy(sub_graph)
-    visited = []
+    sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.out_degree if d == 0]
@@ -275,19 +281,16 @@ def breadth_first_post(sub_graph, node_process_func, *args, **kwargs):
             # Choose a node on the active front
             n_cur = active_front[0]
             # Process that node in the sub-graph
-            # print(f"node: {n_cur}")
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         else:
+            warnings.warn("Found a Loop")
             # Resolve a loop
-            # ML! is this to deal with things like furnace? Not sure it's needed
             candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = max(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
-            print(f"loop occurred in graph -- resolving by choosing node farthest from root: {n_cur}")
 
-        visited.append(n_cur)
         sg_cur.remove_node(n_cur)
 
 
@@ -317,7 +320,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'] == 'Node type']['Value'])
+    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Value'])
     if len(typ) > 0:
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
@@ -341,20 +344,9 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
-    # 6 Find node's competition type. (If there is one) [ and `blueprint` - possibly temporarily]
-    # bp_list = list(current_node_df[current_node_df['Parameter'] == 'Blueprint']['Value'])
-    # if len(set(bp_list)) == 1:
-    #     bp_type = bp_list[0]
-    #     graph.nodes[current_node]['blueprint'] = bp_type.lower()
-    # elif len(set(bp_list)) < 1:
-    #     graph.nodes[current_node]['blueprint'] = 'unavailable'
-    # # Get rid of blueprint type row
-    # current_node_df = current_node_df[current_node_df['Parameter'] != 'Blueprint']
-
     for y in years:
         year_df = current_node_df[non_years + [y]]
         year_dict = {}
-        # for param, src, branch, unit, val, year_value in zip(*[year_df[c] for c in year_df.columns]):
         for param, val, branch, src, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
             if param in year_dict.keys():
                 pass
@@ -412,7 +404,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'unit': unit,
                    'year_value': year_value}
 
-
             # TODO: CHANGE for competition type (fixed market ) !!! Very temporary
             if node == "pyCIMS.Canada.Alberta.Residential.Buildings" and parameter == "Service requested":
                 if parameter in year_dict.keys():
@@ -429,10 +420,9 @@ def add_tech_data(graph, node, tech_dfs, tech):
                     year_dict[parameter] = [dct]
 
             else:
-
                 if parameter in year_dict.keys():
                     if type(year_dict[parameter]) is list:
-                        year_dict[parameter] = year_dict[parameter].append(dct)
+                        year_dict[parameter].append(dct)
                     else:
                         year_dict[parameter] = [year_dict[parameter], dct]
                 else:
@@ -443,7 +433,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
             graph.nodes[node][y]['technologies'] = {}
 
         # Add the technology specific data for that year
-
         graph.nodes[node][y]['technologies'][tech] = year_dict
 
     # 4 Return the new graph
@@ -520,8 +509,6 @@ def make_edges(graph, node_dfs, tech_dfs):
         An updated `graph` that contains all edges defined in `node_dfs` and `tech_dfs`.
 
     """
-
-
     for node in node_dfs:
         graph = add_edges(graph, node, node_dfs[node])
 
@@ -541,13 +528,20 @@ def make_nodes(graph, node_dfs, tech_dfs):
     networkx.Graph
         An updated graph that contains all nodes and technologies in node_dfs and tech_dfs.
     """
-
     # 1 Copy graph
     new_graph = copy.copy(graph)
 
     # 2 Add nodes to the graph
-    for n in node_dfs.keys():
-        new_graph = add_node_data(graph, n, node_dfs)
+    # The strategy of trying to add a node to the graph, and then adding it to a "to add" list
+    # if that doesn't work, deals with the possibility that nodes may be defined out of order.
+    node_dfs_to_add = list(node_dfs.keys())
+    while len(node_dfs_to_add) > 0:
+        n = node_dfs_to_add.pop(0)
+        try:
+            new_graph = add_node_data(graph, n, node_dfs)
+
+        except KeyError as e:
+            node_dfs_to_add.append(n)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:

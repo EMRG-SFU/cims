@@ -7,5 +7,9 @@ setup(
    author='Jillian Anderson & Maude Lachaine-Loiselle',
    author_email='jilliana@sfu.ca',
    packages=find_packages(),
-   install_requires=['networkx', 'numpy', 'pandas'],  # external packages as dependencies
+   install_requires=['networkx',
+                     'numpy',
+                     'pandas>=1',
+                     'xlrd',
+                     'pyxlsb'],  # external packages as dependencies
 )
