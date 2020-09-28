@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 from .reader import get_node_cols
 import warnings
+import os
 
 
 class ModelValidator:
@@ -269,36 +270,36 @@ class ModelValidator:
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)  
                 
-        def nodes_no_production_cost():
+        def fuel_nodes_no_lcc():
             d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
             for n in supply_nodes:
                 node = self.index2node_map[self.index2node_map == n]
-                dat = self.model_df.loc[node.index,:]
+                dat = self.model_df.loc[node.index, :]
                 s = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower()
-                if 'sector' in s.to_string():
-                    if 'Production Cost' not in list(dat['Parameter']): 
-                        no_prod_cost.append((node.index[0],n))
+                if 'sector no tech' in s.to_string():
+                    if 'Life Cycle Cost' not in list(dat['Parameter']):
+                        no_prod_cost.append((node.index[0], n))
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'Production Cost'].iloc[:,7:18]
-                        if prod_cost.iloc[0,1:12].isnull().all():
-                            no_prod_cost.append((node.index[0],n))
+                        prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 7:18]
+                        if prod_cost.iloc[0].isnull().any():
+                            no_prod_cost.append((node.index[0], n))
             
             if len(no_prod_cost) > 0:
-                self.warnings['nodes_without_production_cost'] = no_prod_cost
+                self.warnings['fuels_without_lcc'] = no_prod_cost
 
             # Print Problems
             if verbose:
-                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
-                print("{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
-                                                                                       more_info if len(no_prod_cost) else ""))
+                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
+                print("{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                                                                   more_info if len(no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
-                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
-                w = "{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
-                                                                                     more_info if len(no_prod_cost) else "")
+                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
+                w = "{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                                                                 more_info if len(no_prod_cost) else "")
                 warnings.warn(w)                
         
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
@@ -312,7 +313,4 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
-        nodes_no_production_cost()
-        
-        
-      
+        fuel_nodes_no_lcc()
