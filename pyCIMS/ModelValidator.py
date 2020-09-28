@@ -274,36 +274,48 @@ class ModelValidator:
                 warnings.warn(w)
 
         def discrepencies_in_model_and_tree():
-            mxl = pd.read_excel(self.xl_file, sheet_name=None, header=2)    
-            tree_df = mxl['Tree'].replace({pd.np.nan: None})  
-            tree_df = tree_df.drop(tree_df.index[[0,1]])
-            tree_sheet = pd.Series(tree_df['Branch']).reset_index(drop=True).str.lower()
+            excel_engine_map = {'.xlsb': 'pyxlsb',
+                                '.xlsm': 'xlrd'}
+            excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
+            mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=2, engine=excel_engine)
+            # mxl = pd.read_excel(self.xl_file, sheet_name=None, header=2)
+            tree_df = mxl_tree.replace({pd.np.nan: None})
+            tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
 
-            d = self.model_df.drop(self.model_df.index[0:13])
+            d = self.model_df
             p = d[d['Parameter'] == 'Service provided']['Branch']
             model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
 
             nodes_with_discrepencies = []
             for i, n in tree_sheet.iteritems():
+                discrepancy = False
                 if n not in list(model_sheet):
-                    break
+                    discrepancy = True
+                    model_order = None
                 else:
                     if i != model_sheet[model_sheet == n].index[0]:
-                        nodes_with_discrepencies.append((i, n))
-            
+                        discrepancy = True
+                        model_order = model_sheet[model_sheet == n].index[0]
+                if discrepancy:
+                    nodes_with_discrepencies.append((i, model_order, n))
+
             if len(nodes_with_discrepencies) > 0:
                 self.warnings['discrepencies_in_model_and_tree'] = nodes_with_discrepencies
                 
             # Print Problems
             if verbose:
-                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for more info"
-                print("{} nodes have discrepencies between model and tree sheets. {}".format(len(nodes_with_discrepencies),
-                                                                                       more_info if len(nodes_with_discrepencies) else ""))
+                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
+                            "more info."
+                print("{} nodes have been defined in a different order between the model and tree "
+                      "sheets. {}".format(len(nodes_with_discrepencies),
+                                          more_info if len(nodes_with_discrepencies) else ""))
             # Raise Warnings
             if raise_warnings:
-                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for more info"
-                w = "{} nodes have discrepencies between model and tree sheets. {}".format(len(nodes_with_discrepencies),
-                                                                                     more_info if len(nodes_with_discrepencies) else "")
+                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
+                            "more info."
+                w = "{} nodes have been defined in a different order between the model and tree" \
+                    "sheets. {}".format(len(nodes_with_discrepencies),
+                                        more_info if len(nodes_with_discrepencies) else "")
                 warnings.warn(w)  
 
         def nodes_with_zero_output():
