@@ -272,8 +272,8 @@ class ModelValidator:
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)  
-                
-                
+
+
         def nodes_with_zero_output():
             output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:,7:18]
             zero_output_nodes = []
@@ -281,7 +281,7 @@ class ModelValidator:
                 if output.iloc[i,1:12].eq(0).any():
                     ind = output.index[i]
                     zero_output_nodes.append((ind, self.index2node_map[ind]))
-            
+
             if len(zero_output_nodes) > 0:
                 self.warnings['nodes_with_zero_output'] = zero_output_nodes
 
@@ -296,7 +296,38 @@ class ModelValidator:
                 w = "{} nodes have 0 in the output line. {}".format(len(zero_output_nodes),
                                                                                      more_info if len(zero_output_nodes) else "")
                 warnings.warn(w)
+
+        def fuel_nodes_no_lcc():
+            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
+            supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
+
+            no_prod_cost = []
+            for n in supply_nodes:
+                node = self.index2node_map[self.index2node_map == n]
+                dat = self.model_df.loc[node.index, :]
+                s = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower()
+                if 'sector no tech' in s.to_string():
+                    if 'Life Cycle Cost' not in list(dat['Parameter']):
+                        no_prod_cost.append((node.index[0], n))
+                    else:
+                        prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 7:18]
+                        if prod_cost.iloc[0].isnull().any():
+                            no_prod_cost.append((node.index[0], n))
         
+            if len(no_prod_cost) > 0:
+                self.warnings['fuels_without_lcc'] = no_prod_cost
+
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
+                print("{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                                                                   more_info if len(no_prod_cost) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
+                w = "{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                                                                 more_info if len(no_prod_cost) else "")
+                warnings.warn(w)                
         
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
@@ -310,6 +341,4 @@ class ModelValidator:
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
         nodes_with_zero_output()
-        
-        
-      
+        fuel_nodes_no_lcc()
