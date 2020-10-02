@@ -227,6 +227,7 @@ def top_down_traversal(sub_graph, node_process_func, *args, **kwargs):
 
         sg_cur.remove_node(n_cur)
 
+
 def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -235,7 +236,6 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, **kwargs):
     node has at least one parent who hasn't been visited) the node furthest from the `sub_graph`
     root will be visited and processed using the values held over from the last iteration.
 
-    TODO: Rename Function
     TODO: Properly document
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -348,17 +348,25 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
         year_df = current_node_df[non_years + [y]]
         year_dict = {}
         for param, val, branch, src, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
-            if param in year_dict.keys():
-                pass
-            else:
-                year_dict[param] = {}
-
             dct = {'source': src,
                    'branch': branch,
                    'unit': unit,
                    'year_value': year_value}
 
+            # TODO: Switch away from dictionary of dictionary I think
+            # if param in year_dict.keys():
+            #     if isinstance(year_dict[param], list):
+            #         year_dict[param].append(dct)
+            #     else:
+            #         year_dict[param] = [year_dict[param], dct]
+            # else:
+            #     year_dict[param] = dct
+            if param in year_dict.keys():
+                pass
+            else:
+                year_dict[param] = {}
             year_dict[param][val] = dct
+
         # Add data to node
         graph.nodes[current_node][y] = year_dict
 
@@ -389,8 +397,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
     t_df = t_df[~t_df['Parameter'].isin(['Service', 'Technology'])]
 
     # 3 Group data by year & add to the tech's dictionary
-    # NOTE: This is very similar to what we do for nodes (above). However, it differs because here we aren't
-    # using the value column (its redundant here).
+    # NOTE: This is very similar to what we do for nodes (above). However, it differs because
+    # we aren't using the value column (its redundant here).
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
@@ -399,34 +407,19 @@ def add_tech_data(graph, node, tech_dfs, tech):
         year_dict = {}
 
         for parameter, value, branch, source, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
-            dct = {'source': source,
+            dct = {'value': value,
+                   'source': source,
                    'branch': branch,
                    'unit': unit,
                    'year_value': year_value}
 
-            # TODO: CHANGE for competition type (fixed market ) !!! Very temporary
-            if node == "pyCIMS.Canada.Alberta.Residential.Buildings" and parameter == "Service requested":
-                if parameter in year_dict.keys():
+            if parameter in year_dict.keys():
+                if isinstance(year_dict[parameter], list):
                     year_dict[parameter].append(dct)
-
                 else:
-                    year_dict[parameter] = [dct]
-
-            elif node == "pyCIMS.Canada.Alberta.Residential.Buildings.Dishwashing" and parameter == "Service requested":
-                if parameter in year_dict.keys():
-                    year_dict[parameter].append(dct)
-
-                else:
-                    year_dict[parameter] = [dct]
-
+                    year_dict[parameter] = [year_dict[parameter], dct]
             else:
-                if parameter in year_dict.keys():
-                    if type(year_dict[parameter]) is list:
-                        year_dict[parameter].append(dct)
-                    else:
-                        year_dict[parameter] = [year_dict[parameter], dct]
-                else:
-                    year_dict[parameter] = dct
+                year_dict[parameter] = dct
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][y].keys():
