@@ -268,7 +268,39 @@ class ModelValidator:
                 w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)  
-                
+ 
+        def nodes_no_production_cost():
+            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
+            supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
+
+            no_prod_cost = []
+            for n in supply_nodes:
+                node = self.index2node_map[self.index2node_map == n]
+                dat = self.model_df.loc[node.index,:]
+                s = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower()
+                if 'sector' in s.to_string():
+                    if 'Production Cost' not in list(dat['Parameter']): 
+                        no_prod_cost.append((node.index[0],n))
+                    else:
+                        prod_cost = dat[dat['Parameter'] == 'Production Cost'].iloc[:,7:18]
+                        if prod_cost.iloc[0,1:12].isnull().all():
+                            no_prod_cost.append((node.index[0],n))
+
+            if len(no_prod_cost) > 0:
+                self.warnings['nodes_without_production_cost'] = no_prod_cost
+
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
+                print("{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
+                                                                                       more_info if len(no_prod_cost) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
+                w = "{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
+                                                                                     more_info if len(no_prod_cost) else "")
+                warnings.warn(w)                
+               
         def nodes_no_capital_cost():
             d = self.model_df[self.model_df['Parameter'] == 'Competition type']['Value'].str.lower() == 'tech compete'
             tech_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
@@ -293,7 +325,6 @@ class ModelValidator:
                             tech_cap_cost = self.model_df[self.model_df['Parameter'] == 'Capital cost_overnight'].loc[start_index:end_index].iloc[:,7:18]
                             if tech_cap_cost.iloc[0,1:12].isnull().all():
                                 no_cap_cost.append((node.index[0],n,tech_name))
-
                             
             if len(no_cap_cost) > 0:
                 self.warnings['nodes_without_capital_cost'] = no_cap_cost
@@ -321,6 +352,7 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
+        nodes_no_production_cost()
         nodes_no_capital_cost()
         
       
