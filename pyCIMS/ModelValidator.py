@@ -269,37 +269,46 @@ class ModelValidator:
                                                                                      more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)  
                 
-        def nodes_no_production_cost():
-            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
-            supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
-
-            no_prod_cost = []
-            for n in supply_nodes:
+        def nodes_no_capital_cost():
+            d = self.model_df[self.model_df['Parameter'] == 'Competition type']['Value'].str.lower() == 'tech compete'
+            tech_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
+            no_cap_cost = []
+            
+            for n in tech_nodes:
                 node = self.index2node_map[self.index2node_map == n]
                 dat = self.model_df.loc[node.index,:]
-                s = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower()
-                if 'sector' in s.to_string():
-                    if 'Production Cost' not in list(dat['Parameter']): 
-                        no_prod_cost.append((node.index[0],n))
-                    else:
-                        prod_cost = dat[dat['Parameter'] == 'Production Cost'].iloc[:,7:18]
-                        if prod_cost.iloc[0,1:12].isnull().all():
-                            no_prod_cost.append((node.index[0],n))
-            
-            if len(no_prod_cost) > 0:
-                self.warnings['nodes_without_production_cost'] = no_prod_cost
+                if 'Technology' not in list(dat['Parameter']):
+                    cap_cost = dat[dat['Parameter'] == 'Capital cost_overnight'].iloc[:,7:18]
+                    if cap_cost.iloc[0,1:12].isnull().all():
+                        no_cap_cost.append((node.index[0],n))
+                else: 
+                    techs = dat[dat['Parameter'] == 'Technology']
+                    for i in range(techs.shape[0]):
+                        if i == techs.shape[0]-1:
+                            break
+                        else: 
+                            tech_name = techs.iloc[i]['Value']
+                            start_index = techs.index[i]
+                            end_index = techs.index[i+1]
+                            tech_cap_cost = self.model_df[self.model_df['Parameter'] == 'Capital cost_overnight'].loc[start_index:end_index].iloc[:,7:18]
+                            if tech_cap_cost.iloc[0,1:12].isnull().all():
+                                no_cap_cost.append((node.index[0],n,tech_name))
 
+                            
+            if len(no_cap_cost) > 0:
+                self.warnings['nodes_without_capital_cost'] = no_cap_cost
+            
             # Print Problems
             if verbose:
-                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
-                print("{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
-                                                                                       more_info if len(no_prod_cost) else ""))
+               more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
+               print("{} tech compete nodes or technologies don't have a capital cost. {}".format(len(no_cap_cost),
+                                                                                       more_info if len(no_cap_cost) else ""))
             # Raise Warnings
             if raise_warnings:
-                more_info = "See ModelValidator.warnings['nodes_without_production_cost'] for more info"
-                w = "{} fuel nodes don't have a production cost. {}".format(len(no_prod_cost),
-                                                                                     more_info if len(no_prod_cost) else "")
-                warnings.warn(w)                
+               more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
+               w = "{} tech compete nodes or technologies don't have a capital cost. {}".format(len(no_cap_cost),
+                                                                                     more_info if len(no_cap_cost) else "")
+               warnings.warn(w)              
         
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
@@ -312,7 +321,6 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service(requested)
-        nodes_no_production_cost()
-        
+        nodes_no_capital_cost()
         
       
