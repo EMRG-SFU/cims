@@ -322,7 +322,7 @@ class ModelValidator:
             output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:,7:18]
             zero_output_nodes = []
             for i in range(output.shape[0]):
-                if output.iloc[i,1:12].eq(0).any():
+                if output.iloc[i, 0:12].eq(0).any():
                     ind = output.index[i]
                     zero_output_nodes.append((ind, self.index2node_map[ind]))
 
