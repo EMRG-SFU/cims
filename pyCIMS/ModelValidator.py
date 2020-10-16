@@ -279,7 +279,7 @@ class ModelValidator:
             excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
             mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=2, engine=excel_engine)
             # mxl = pd.read_excel(self.xl_file, sheet_name=None, header=2)
-            tree_df = mxl_tree.replace({pd.np.nan: None})
+            tree_df = mxl_tree.replace({np.nan: None})
             tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
 
             d = self.model_df
@@ -410,6 +410,7 @@ class ModelValidator:
                w = "{} tech compete nodes or technologies don't have a capital cost. {}".format(len(no_cap_cost),
                                                                                      more_info if len(no_cap_cost) else "")
                warnings.warn(w) 
+
         
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
