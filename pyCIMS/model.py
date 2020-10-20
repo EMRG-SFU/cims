@@ -155,7 +155,8 @@ class Model:
             iteration = 0
 
             # Initialize Graph Values
-            graph_utils.top_down_traversal(self.graph, self.initialize_node, year)
+            self.initialize_graph(self.graph, year)
+            # graph_utils.top_down_traversal(self.graph, self.initialize_node, year)
 
             while not equilibrium:
                 print('iter {}'.format(iteration))
@@ -297,6 +298,130 @@ class Model:
         # Otherwise, an equilibrium has been reached
         return True
 
+    def initialize_graph(self, graph, year):
+        def init_node_price_multipliers(graph, node, year, step=5):
+            # Grab the price multipliers from the parents (if they exist)
+            parents = list(graph.predecessors(node))
+            parent_price_multipliers = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'Price Multiplier' in graph.nodes[parent][year].keys():
+                    parent_price_multipliers.update(graph.nodes[parent][year]['Price Multiplier'])
+
+            # Grab the price multipliers from the current node
+            node_price_multipliers = {}
+            # Grab the price multiplier from the current node (if they exist)
+            if 'Price Multiplier' in graph.nodes[node][year].keys():
+                node_price_multipliers.update(graph.nodes[node][year]['Price Multiplier'])
+
+            # Update the Parent's Multipliers by the Child's (through multiplication)
+            for fuel, mult in node_price_multipliers.items():
+                if fuel in parent_price_multipliers.keys():
+                    parent_price_multipliers[fuel]['year_value'] *= mult['year_value']
+                else:
+                    parent_price_multipliers[fuel] = mult
+
+            # Set Price Multiplier of node in the graph
+            graph.nodes[node][year]['Price Multiplier'] = parent_price_multipliers
+
+        def init_fuel_lcc(graph, node, year, step=5):
+            def calc():
+                fuel_name = node.split('.')[-1]
+                # Idea --> get the children of the node. And use a graph traversal to calculate LCC
+                # for everything in the subgraph. Then, we have our LCC.
+                descendants = [n for n in graph.nodes if node in n]
+                descendant_tree = nx.subgraph(graph, descendants)
+                graph_utils.bottom_up_traversal(descendant_tree,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self.step,
+                                                self.graph,
+                                                self.fuels,
+                                                root=node
+                                                )
+
+            print("initializing fuel node {}".format(node))
+
+            if node == 'pyCIMS.Canada.Alberta.Biodiesel':
+                jillian = 1
+            if node == 'pyCIMS.Canada.Alberta.Electricity':
+                jillian = 1
+
+            if node not in self.fuels:
+                # Don't worry about initializing LCC at this node if its not a fuel
+                return
+            if int(year) != self.base_year:
+                # If this is not the base year, no need to do anything.
+                return
+
+            if "Life Cycle Cost" not in graph.nodes[node][year].keys():
+                calc()
+
+            lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
+            fuel_name = list(lcc_dict.keys())[0]
+
+            if lcc_dict[fuel_name]['year_value'] is None:
+                lcc_dict[fuel_name]['to_estimate'] = True
+                last_year = str(int(year) - step)
+                last_year_value = graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
+
+            if node in self.fuels:
+                lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
+                fuel_name = list(lcc_dict.keys())[0]
+                if lcc_dict[fuel_name]['year_value'] is None:
+                    lcc_dict[fuel_name]['to_estimate'] = True
+                    last_year = str(int(year) - step)
+                    last_year_value = graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
+                    graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
+                else:
+                    graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
+
+            print("{} initialized".format(node))
+
+
+        # def init_fuel_lcc(graph, node, year, step=5):
+        #     def quick_lcc():
+        #         fuel_name = node.split('.')[-1]
+        #         if node == 'pyCIMS.Canada.Alberta.Electricity':
+        #             if year == '2000':
+        #                 graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 22}}
+        #             else:
+        #                 graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': None}}
+        #         else:
+        #             graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 6.5}}
+        #
+        #     # Determine if a fuel
+        #     if node in self.fuels:
+        #         if 'Life Cycle Cost' not in graph.nodes[node][year].keys():
+        #             quick_lcc()
+        #
+        #         fuel_name = list(graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
+        #         if graph.nodes[node][year]['Life Cycle Cost'][fuel_name][
+        #             'year_value'] is None:
+        #             graph.nodes[node][year]['Life Cycle Cost'][fuel_name][
+        #                 'to_estimate'] = True
+        #             last_year = str(int(year) - step)
+        #             last_year_value = \
+        #             graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
+        #             graph.nodes[node][year]['Life Cycle Cost'][fuel_name][
+        #                 'year_value'] = last_year_value
+        #         else:
+        #             graph.nodes[node][year]['Life Cycle Cost'][fuel_name][
+        #                 'to_estimate'] = False
+
+
+        graph_utils.top_down_traversal(graph,
+                                       init_node_price_multipliers,
+                                       year)
+
+        graph_utils.bottom_up_traversal(graph,
+                                        init_fuel_lcc,
+                                        year)
+        """Looks like a problem is coming up within the initialization phase. Electricity's LCC has
+           been calculated OK. But Biodiesel's has not. There seems to be a loop between Biodiesel 
+           and Ethanol... How do we calculate the LCC then?"""
+        print("Initialization complete")
+
     def initialize_node(self, graph, node, year, step=5):
         def init_node_price_multipliers():
             # Grab the price multipliers from the parents (if they exist)
@@ -343,12 +468,36 @@ class Model:
                 else:
                     graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': None}}
 
+            def sector_supply_lcc(node, year):
+                """
+                Calculate LCC for "Sector" supply nodes which don't have LCC exogenously defined.
+                These are all fuel nodes with children.
+                """
+                fuel_name = node.split('.')[-1]
+
+                # Idea --> get the children of the node. And use a graph traversal to calculate LCC
+                # for everything in the subgraph. Then, we have our LCC.
+                descendants = [n for n in graph.nodes if node in n]
+                descendant_tree = nx.subgraph(graph, descendants)
+                graph_utils.bottom_up_traversal(descendant_tree,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self.step,
+                                                self.graph,
+                                                self.fuels)
+
+                fuel_lcc = 0
+                lcc_calculation.lcc_calculation()
+                # Calculate the LCC of the child node.
+                graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: utils.create_value_dict(6.5)}
+
             # Determine if a fuel
             if node in self.fuels:
                 # TODO: Verify this calculation is correct for when life cycle cost is calculated
                 #  from children nodes
                 if 'Life Cycle Cost' not in graph.nodes[node][year].keys():
-                    quick_lcc(node, year)
+                    # quick_lcc(node, year)
+                    sector_supply_lcc(node, year)
 
                 fuel_name = list(graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
                 if graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] is None:
@@ -396,7 +545,7 @@ class Model:
         def calc_price(node_name):
             # Base Case is that we hit a tech compete node
             if supply_subgraph.nodes[node_name]['competition type'] == 'tech compete':
-                return supply_subgraph.nodes[node_name][year]['total lcc']
+                return supply_subgraph.nodes[node_name][year]['Life Cycle Cost']
 
             elif supply_subgraph.nodes[node_name]['competition type'] in ['fixed ratio', 'sector']:
                 # Find all the services being requested

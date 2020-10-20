@@ -70,10 +70,10 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
     Find the service cost associated with a given technology.
 
     1. For each service being requested:
-            i) If the service is a fuel, find the fuel price and add it to the service cost.
-           ii) Otherwise, use the service's total lcc which was calculated already.
-           # ii) Otherwise, use the service's children/techs to find the lcc at the node. Add this to the service cost.
-    4. Return the service cost (currently assumes that there can only be one TODO: VERIFY / FIX THIS)
+            i) If the service is a fuel, find the fuel price (Life Cycle Cost) and add it to the
+               service cost.
+           ii) Otherwise, use the service's Life Cycle Cost which was calculated already.
+    2. Return the service cost (currently assumes that there can only be one TODO: VERIFY / FIX THIS)
     """
     def do_sc_calculation(service_requested):
         # print('\t {}'.format(service_requested))
@@ -88,9 +88,11 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
             service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
             # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to
-            #  grab the lcc (currently, the total lcc isn't known)
-            if 'total lcc' in full_graph.nodes[service_requested_branch][year]:
-                service_requested_lcc = full_graph.nodes[service_requested_branch][year]['total lcc']
+            #  grab the lcc (currently, the LCC isn't known)
+            if 'Life Cycle Cost' in full_graph.nodes[service_requested_branch][year]:
+                service_name = service_requested_branch.split('.')[-1]
+                service_requested_lcc = full_graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
+
             else:
                 service_requested_lcc = 10 # WRONG -- TEMPORARY  -- NEED TO FIX
 
@@ -135,7 +137,8 @@ def get_node_service_cost(sub_graph, full_graph, node, year, fuels):
         else:
             service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
-            service_requested_lcc = full_graph.nodes[service_requested_branch][year]['total lcc']
+            service_name = service_requested_branch.split('.')[-1]
+            service_requested_lcc = full_graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
             service_cost += service_requested_lcc * service_requested_value
 
         return service_cost
