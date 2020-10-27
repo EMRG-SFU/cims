@@ -328,15 +328,20 @@ class Model:
             Needs to estimate Production Costs for values to be estimated. Will start by using the
             value settled on in the previous year.
             """
+
             def quick_lcc(node, year):
                 fuel_name = node.split('.')[-1]
-                if node == 'pyCIMS.Canada.Alberta.Electricity':
-                    if year == '2000':
-                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 22}}
+                if year == '2000':
+                    if node == 'pyCIMS.Canada.Alberta.Electricity':
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 10}}
+                    elif node == 'pyCIMS.Canada.Alberta.Ethanol':
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 27.5}}
+                    elif node == 'pyCIMS.Canada.Alberta.Biodiesel':
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 21}}
                     else:
-                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': None}}
+                        graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 1}}
                 else:
-                    graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': 6.5}}
+                    graph.nodes[node][year]['Life Cycle Cost'] = {fuel_name: {'year_value': None}}
 
             # Determine if a fuel
             if node in self.fuels:
@@ -538,11 +543,11 @@ class Model:
                             # TODO: Address the problem of a 0 LCC properly
                             if self.show_run_warnings:
                                 warnings.warn("Technology {} @ node {} has an LCC=0".format(t, node))
-                            tech_lcc = 10
+                            tech_lcc = 0.0001
                         if tech_lcc < 0:
                             if self.show_run_warnings:
                                 warnings.warn("Technology {} @ node {} has a negative LCC".format(t, node))
-                            tech_lcc = 10
+                            tech_lcc = 0.0001
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
                         except OverflowError:

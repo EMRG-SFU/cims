@@ -163,7 +163,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                 if lcc < 0:
                     if show_warnings:
                         warnings.warn('LCC has negative value at {} -- {}'.format(node, tech))
-                    lcc = 1
+                    lcc = 0.0001
 
                 try:
                     lcc_neg_v = lcc ** (-1.0 * v)
