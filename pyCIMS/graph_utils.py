@@ -201,12 +201,6 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
 
     original_leaves = [n for n, d in sub_graph.out_degree if d == 0]
 
-    for node_name in sub_graph:
-        if node_name in original_leaves:
-            sub_graph.nodes[node_name]["is_leaf"] = True
-        else:
-            sub_graph.nodes[node_name]["is_leaf"] = False
-
     # Start the traversal
     sg_cur = sub_graph.copy()
 
@@ -255,7 +249,8 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
     None
 
     """
-    # Find the root of the sub-graph
+
+    # If root hasn't been provided, find the sub-graph's root
     if not root:
         possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
         possible_roots.sort(key=lambda n: len(n))
@@ -264,35 +259,16 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
 
-    original_leaves = [n for n, d in sub_graph.out_degree if d == 0]
-
-    for node_name in sub_graph:
-        if node_name in original_leaves:
-            sub_graph.nodes[node_name]["is_leaf"] = True
-        else:
-            sub_graph.nodes[node_name]["is_leaf"] = False
-
     # Start the traversal
     sg_cur = sub_graph.copy()
-
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.out_degree if d == 0]
 
-        # if len(active_front) > 0:
-        one_node_processed = False
-        while (one_node_processed is False) and (len(active_front) > 0):
+        if len(active_front) > 0:
             # Choose a node on the active front
             n_cur = active_front[0]
-            # Process that node in the sub-graph
-            try:
-                # Try to process the node
-                node_process_func(sub_graph, n_cur, *args, **kwargs)
-                one_node_processed = True
-            except:
-                # if you can't (for whatever reason), move the node to the end of the end of the
-                # active front.
-                active_front = active_front[1:]
-                continue
+            # Process the node
+            node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop")
             # Resolve a loop
