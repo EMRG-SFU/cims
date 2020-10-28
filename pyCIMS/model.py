@@ -1,8 +1,8 @@
 import copy
 import math
 import warnings
-import networkx as nx
 import pprint as pp
+import networkx as nx
 
 from . import graph_utils
 from . import utils
@@ -299,24 +299,59 @@ class Model:
         return True
 
     def initialize_graph(self, graph, year):
-        def init_node_price_multipliers(graph, node, year, step=5):
-            # Grab the price multipliers from the parents (if they exist)
+        """
+        Initializes the graph at the start of a simulation year.
+        Specifically, initializes (1) price multiplier values and (2) fuel nodes' LCC value.
+
+        Parameters
+        ----------
+        graph : NetworkX.DiGraph
+            The graph object being initialized.
+
+        year: str
+            The string representing the current simulation year (e.g. "2005").
+
+        Returns
+        -------
+        Nothing is returned, but `self.graph` will be updated with the initialized nodes.
+        """
+        def init_node_price_multipliers(graph, node, year):
+            """
+            Function for initializing the Price Multipler values for a given node in a graph. This
+            function assumes all of node's parents have already had their price multipliers
+            initialized.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized price
+            multiplier values.
+            """
+            # Retrieve price multipliers from the parents (if they exist)
             parents = list(graph.predecessors(node))
             parent_price_multipliers = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if 'Price Multiplier' in graph.nodes[parent][year].keys():
+                if 'Price Multiplier' in graph.nodes[parent][year]:
                     parent_price_multipliers.update(graph.nodes[parent][year]['Price Multiplier'])
 
-            # Grab the price multipliers from the current node
-            node_price_multipliers = {}
             # Grab the price multiplier from the current node (if they exist)
-            if 'Price Multiplier' in graph.nodes[node][year].keys():
+            node_price_multipliers = {}
+            if 'Price Multiplier' in graph.nodes[node][year]:
                 node_price_multipliers.update(graph.nodes[node][year]['Price Multiplier'])
 
-            # Update the Parent's Multipliers by the Child's (through multiplication)
+            # Multiply the node's price multipliers by its parents' price multipliers
             for fuel, mult in node_price_multipliers.items():
-                if fuel in parent_price_multipliers.keys():
+                if fuel in parent_price_multipliers:
                     parent_price_multipliers[fuel]['year_value'] *= mult['year_value']
                 else:
                     parent_price_multipliers[fuel] = mult
@@ -325,7 +360,38 @@ class Model:
             graph.nodes[node][year]['Price Multiplier'] = parent_price_multipliers
 
         def init_fuel_lcc(graph, node, year, step=5):
-            def calc():
+            """
+            Function for initializing LCC for a node in a graph, if that node is a fuel node. This
+            function assumes all of node's children have already been processed by this function.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            step: int, optional
+                The number of years between simulation years. Default is 5.
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized LCC if
+            node is a fuel node.
+            """
+
+            def calc_lcc_from_children():
+                """
+                Helper function to calculate a node's LCC from its children.
+
+                Returns
+                -------
+                Nothing is returned, but the node will be updated with a new LCC value.
+                """
                 # Find the subtree rooted at the fuel node
                 descendants = [n for n in graph.nodes if node in n]
                 descendant_tree = nx.subgraph(graph, descendants)
@@ -343,9 +409,7 @@ class Model:
             if node in self.fuels:
                 if "Life Cycle Cost" not in graph.nodes[node][year]:
                     # LCC needs to be calculated from children
-                    calc()
-                    # TODO Check that the assumption that any fuel node without LCC must be
-                    #  estimated is correct.
+                    calc_lcc_from_children()
                     lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
                     fuel_name = list(lcc_dict.keys())[0]
                     lcc_dict[fuel_name]['to_estimate'] = True
