@@ -180,3 +180,13 @@ def compare_strings(s1, s2):
     b = s2.lower().strip()
 
     return a == b
+
+
+def create_value_dict(year_val, source=None, branch=None, unit=None):
+    value_dictionary = {'source': source,
+                        'branch': branch,
+                        'unit': unit,
+                        'year_value': year_val
+                        }
+
+    return value_dictionary
