@@ -277,8 +277,7 @@ class ModelValidator:
             excel_engine_map = {'.xlsb': 'pyxlsb',
                                 '.xlsm': 'xlrd'}
             excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
-            mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=2, engine=excel_engine)
-            # mxl = pd.read_excel(self.xl_file, sheet_name=None, header=2)
+            mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=3, engine=excel_engine)
             tree_df = mxl_tree.replace({pd.np.nan: None})
             tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
 
