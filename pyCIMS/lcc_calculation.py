@@ -65,24 +65,24 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
     -------
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
+    # print('\tcalculating LCC for {}'.format(node))
     total_lcc_v = 0.0
-    # print('Node {}'.format(node))
-
-    # Find the v parameter
     v = econ.get_heterogeneity(sub_graph, node, year)
 
+    # Check if the node has an exogenously defined LCC
+    if 'Life Cycle Cost' in sub_graph.nodes[node][year]:
+        return
     # Check if the node is a tech compete node:
-    if sub_graph.nodes[node]["competition type"] == "tech compete":
+    elif sub_graph.nodes[node]["competition type"] == "tech compete":
+        # Get all of the technologies in the node
         node_techs = sub_graph.nodes[node][year]["technologies"].keys()
 
         # For every tech in the node, retrieve or compute required economic values
         for tech in node_techs:
-            # calculate_tech_econ_values(sub_graph, node, tech, year)
             calculate_tech_econ_values(full_graph, node, tech, year)
 
             # If the technology is available in this year, go through it
             # (range is [lower year, upper year + 1] to work with range function
-            # low, up = utils.range_available(sub_graph, node, tech)
             low, up = utils.range_available(full_graph, node, tech)
 
             if int(year) in range(low, up):
@@ -163,7 +163,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                 if lcc < 0:
                     if show_warnings:
                         warnings.warn('LCC has negative value at {} -- {}'.format(node, tech))
-                    lcc = 1
+                    lcc = 0.0001
 
                 try:
                     lcc_neg_v = lcc ** (-1.0 * v)
@@ -219,7 +219,8 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                 curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
                 weighted_lccs += market_share * curr_lcc
 
-        sub_graph.nodes[node][year]["total lcc"] = weighted_lccs
+        fuel_name = node.split('.')[-1]
+        sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(weighted_lccs)}
 
     elif ('technologies' in sub_graph.nodes[node].keys()) and (sub_graph.nodes[node]['competition_type']=='Fixed Ratio'):
         print("{} is fixed ratio w/ techs".format(node))
@@ -236,7 +237,8 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                                                   fuels)
 
         # Is service cost just the cost of these nodes?
-        sub_graph.nodes[node][year]["total lcc"] = service_cost
+        fuel_name = node.split('.')[-1]
+        sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(service_cost)}
 
 
 def calc_lcc(upfront_cost, annual_cost, annual_service_cost):
