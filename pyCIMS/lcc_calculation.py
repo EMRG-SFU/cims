@@ -146,14 +146,20 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
 
                 # LCC
                 # *****************
-                declining_upfront_intangible_cost = 0   # Temporary, TODO: remove this line after testing completed
+                declining_uic = calc_declining_uic(sub_graph,
+                                                   node,
+                                                   tech,
+                                                   year,
+                                                   year_step,
+                                                   base_year='2000')
                 fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value'] # TODO: implement defaults
                 if fixed_upfront_intangible_cost is None:
                     fixed_upfront_intangible_cost = 0
+
                 output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
                 upfront_cost = calc_upfront_cost(cap_cost,
                                                  fixed_upfront_intangible_cost,
-                                                 declining_upfront_intangible_cost,
+                                                 declining_uic,
                                                  output,
                                                  crf)
 
@@ -162,11 +168,16 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
 
                 if fixed_annual_intangible_cost is None:
                     fixed_annual_intangible_cost = 0
-                declining_annual_intangible_cost = 0    # Temporary, TODO: remove this line after testing completed
+                declining_aic = calc_declining_aic(sub_graph,
+                                                   node,
+                                                   tech,
+                                                   year,
+                                                   year_step,
+                                                   '2000')
                 output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
                 annual_cost = calc_annual_cost(operating_maintenance_cost,
                                                fixed_annual_intangible_cost,
-                                               declining_annual_intangible_cost,
+                                               declining_aic,
                                                output)
 
                 lcc = calc_lcc(upfront_cost, annual_cost, annual_service_cost)
@@ -267,17 +278,24 @@ def calc_lcc(upfront_cost, annual_cost, annual_service_cost):
 
 
 def calc_upfront_cost(capital_cost, fixed_upfront_intangible_cost, declining_upfront_intangible_cost, output, crf):
-    uc = (capital_cost + fixed_upfront_intangible_cost + declining_upfront_intangible_cost)/output * crf
+    uc = (capital_cost +
+          fixed_upfront_intangible_cost +
+          declining_upfront_intangible_cost)/output * crf
     return uc
 
 
 def calc_annual_cost(operating_maintenance_cost, fixed_annual_intangible_cost, declining_annual_intangible_cost, output):
-    ac = (operating_maintenance_cost + fixed_annual_intangible_cost + declining_annual_intangible_cost) / output
+    ac = (operating_maintenance_cost +
+          fixed_annual_intangible_cost +
+          declining_annual_intangible_cost) / output
     return ac
 
 
 def calc_capital_cost(declining_cc, overnight_cc, declining_limit=1):
-    cc = max(declining_cc, overnight_cc*declining_limit)
+    if declining_cc is None:
+        cc = overnight_cc
+    else:
+        cc = max(declining_cc, overnight_cc*declining_limit)
     return cc
 
 
@@ -286,7 +304,7 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
     dcc_class = tech_data['Capital cost_declining_Class']['value']
 
     if dcc_class is None:
-        cc_declining = 0
+        cc_declining = None
 
     else:
         # Progress Ratio
@@ -309,7 +327,8 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
                 cns_k = 0  # TODO: Implement defaults
             cns_sum += cns_k
 
-        # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
+        # New Stock summed over all techs in DCC class and over all previous years
+        # (excluding base year)
         dcc_class_techs = techs_in_dcc_class(sub_graph, dcc_class, year)
         ns_sum = 0
         for node_k, tech_k in dcc_class_techs:
@@ -319,34 +338,10 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
                 ns_sum += ns_jk
 
         # Calculate Declining Capital Cost
-        if cns_sum == 0:
-            jillian = 1
-            print(node, '\n\t', tech, '\n\t', dcc_class)
         inner_sums = (cns_sum + ns_sum) / cns_sum
         cc_declining = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
 
     return cc_declining
-
-
-def old_calc_declining_cc(declining_cc_limit, gcc_t, new_stock, cumul_new_stock, progress_ratio):
-    inner_nom = 1
-    # Inner term's nominator is (X) + (Y), summed over all classes, k.
-    # (X) = cumulative new stock for all years up to and including the base year for a given class k
-    # (Y) = new stock for a given class  new stock for ,
-    #       summed over all years {base year + step, ..., current_year - step}
-
-    # Sum from the first non-base year in the simulation to the previous year. of the new stock added in year for a given class
-    # inner term's nominator is (X)
-
-    inner_denom = 1
-    # Inner term's denominator is (X) summed over all declining capital cost classes, k.
-    # (X) = cumulative stock for all years up to and including the base year, for a given class
-    # Q: So is this inner term just the base year stock for a given class?
-
-    inner = inner_nom / inner_denom
-    cc_declining = gcc_t * [(inner)**math.lo(progress_ratio, 2)]
-
-    return 0
 
 
 def calc_gcc(sub_graph, node, tech, year, step, aeei):
@@ -363,16 +358,52 @@ def calc_gcc(sub_graph, node, tech, year, step, aeei):
     return gcc
 
 
-def calc_upfront_declining_intangible_cost(initial_upfront_intangible_cost, rate_constant, shape_constant, percent_new_market_share):
-    denominator = 1 + rate_constant * math.e ** (shape_constant * percent_new_market_share)
-    uic_declining = initial_upfront_intangible_cost / denominator
-    return uic_declining
+def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year):
+    # Retrieve Exogenous Terms from Model Description
+    tech_data = sub_graph.nodes[node][year]['technologies'][tech]
+    initial_uic = tech_data['Upfront intangible cost_declining_initial']['year_value']
+    if initial_uic is None:
+        initial_uic = 0  # TODO: Implement defaults
+    rate_constant = tech_data['Upfront intangible cost_declining_rate']['year_value']
+    if rate_constant is None:
+        rate_constant = 0  # TODO: Implement defaults
+    shape_constant = tech_data['Upfront intangible cost_declining_shape']['year_value']
+    if shape_constant is None:
+        shape_constant = 0  # TODO: Implement defaults
+
+    # Calculate Declining UIC
+    if year == base_year:
+        return initial_uic
+    else:
+        prev_year = str(int(year) - year_step)
+        prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
+        denominator = 1 + rate_constant * math.e ** (shape_constant * prev_nms)
+        uic_declining = initial_uic / denominator
+        return uic_declining
 
 
-def annual_declining_intangible_cost(initial_annual_intangible_cost, rate_constant, shape_constant, percent_new_market_share):
-    denominator = 1 + rate_constant * math.e ** (shape_constant * percent_new_market_share)
-    aic_declining = initial_annual_intangible_cost / denominator
-    return aic_declining
+def calc_declining_aic(sub_graph, node, tech, year, year_step, base_year):
+    # Retrieve Exogenous Terms from Model Description
+    tech_data = sub_graph.nodes[node][year]['technologies'][tech]
+    initial_aic = tech_data['Annual intangible cost_declining_initial']['year_value']
+    if initial_aic is None:
+        initial_aic = 0  # TODO: Implement Defaults
+    rate_constant = tech_data['Annual intangible cost_declining_rate']['year_value']
+    if rate_constant is None:
+        rate_constant = 0  # TODO: Implement Defaults
+    shape_constant = tech_data['Annual intangible cost_declining_shape']['year_value']
+    if shape_constant is None:
+        shape_constant = 0  # TODO: Implement Defaults
+
+    # Calculate Declining AIC
+    if year == base_year:
+        return initial_aic
+    else:
+        prev_year = str(int(year) - year_step)
+        prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
+        denominator = 1 + rate_constant * math.e ** (shape_constant * prev_nms)
+        aic_declining = initial_aic / denominator
+        return aic_declining
 
 
 def techs_in_dcc_class(graph, dcc_class, year):
