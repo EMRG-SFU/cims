@@ -33,7 +33,7 @@ def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None
                                                                        "unit": unit}})
 
 
-def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_warnings=False):
+def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fuels, show_warnings=False):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
     at the appropriate node. Specifically,
@@ -140,7 +140,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                                                  year,
                                                  tech,
                                                  year_step,
-                                                 base_year='2000')
+                                                 str(base_year))
 
                 cap_cost = calc_capital_cost(declining_cc, cc_overnight, declining_cc_limit)
 
@@ -151,7 +151,7 @@ def lcc_calculation(sub_graph, node, year, year_step, full_graph, fuels, show_wa
                                                    tech,
                                                    year,
                                                    year_step,
-                                                   base_year='2000')
+                                                   str(base_year))
                 fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value'] # TODO: implement defaults
                 if fixed_upfront_intangible_cost is None:
                     fixed_upfront_intangible_cost = 0
