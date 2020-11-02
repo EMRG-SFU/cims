@@ -377,7 +377,7 @@ def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year):
     else:
         prev_year = str(int(year) - year_step)
         prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
-        denominator = 1 + rate_constant * math.e ** (shape_constant * prev_nms)
+        denominator = 1 + rate_constant * math.exp(shape_constant * prev_nms)
         uic_declining = initial_uic / denominator
         return uic_declining
 
@@ -401,7 +401,7 @@ def calc_declining_aic(sub_graph, node, tech, year, year_step, base_year):
     else:
         prev_year = str(int(year) - year_step)
         prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
-        denominator = 1 + rate_constant * math.e ** (shape_constant * prev_nms)
+        denominator = 1 + rate_constant * math.exp(shape_constant * prev_nms)
         aic_declining = initial_aic / denominator
         return aic_declining
 
