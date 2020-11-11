@@ -64,7 +64,7 @@ def log_dict(val):
         return val_pairs
 
 
-def log_model(model, output_file):
+def log_model(model, output_file, parameter=None):
     def add_log_item(all_logs, log_tuple):
         log_func = {int: log_int,
                     float: log_float,
@@ -90,26 +90,61 @@ def log_model(model, output_file):
             log = node, year, tech, param, prepped_val
             all_logs.append(log)
 
-    data_tuples = []
-    for node in model.graph.nodes:
-        # Log Year Agnostic Values
-        for param, val in model.graph.nodes[node].items():
-            if param not in model.years:
-                log = node, None, None, param, val
-                add_log_item(data_tuples, log)
-
-        # Log Year Specific Values
-        for year in model.years:
-            ny_data = model.graph.nodes[node][year]
-            for param, val in ny_data.items():
-                if param == 'technologies':
-                    for tech, tech_data in ny_data['technologies'].items():
-                        for tech_param, tech_val in tech_data.items():
-                            log = node, year, tech, tech_param, tech_val
-                            add_log_item(data_tuples, log)
-                else:
-                    log = node, year, None, param, val
+    if parameter is None:
+        data_tuples = []
+        for node in model.graph.nodes:
+            # Log Year Agnostic Values
+            for param, val in model.graph.nodes[node].items():
+                if param not in model.years:
+                    log = node, None, None, param, val
                     add_log_item(data_tuples, log)
+
+            # Log Year Specific Values
+            for year in model.years:
+                ny_data = model.graph.nodes[node][year]
+                for param, val in ny_data.items():
+                    if param == 'technologies':
+                        for tech, tech_data in ny_data['technologies'].items():
+                            for tech_param, tech_val in tech_data.items():
+                                log = node, year, tech, tech_param, tech_val
+                                add_log_item(data_tuples, log)
+                    else:
+                        log = node, year, None, param, val
+                        add_log_item(data_tuples, log)
+
+    else:
+        data_tuples = []
+        for node in model.graph.nodes:
+            # Log Year Agnostic Values
+
+            for param, val in model.graph.nodes[node].items():
+                if param == parameter:
+
+                    if param not in model.years:
+                        log = node, None, None, param, val
+                        add_log_item(data_tuples, log)
+
+            # Log Year Specific Values
+            for year in model.years:
+                ny_data = model.graph.nodes[node][year]
+
+                for param, val in ny_data.items():
+
+                    if param == 'technologies':
+
+                        for tech, tech_data in ny_data['technologies'].items():
+                            for tech_param, tech_val in tech_data.items():
+                                if tech_param == parameter:
+                                    log = node, year, tech, tech_param, tech_val
+                                    add_log_item(data_tuples, log)
+
+                    else:
+
+                        log = node, year, None, parameter, val
+                        add_log_item(data_tuples, log)
+
+                        # for param in ['Competition type', 'Captial cost_overnight', 'Service requested', 'Life Cycle Cost',
+        #               'Market share']
 
     log_df = pd.DataFrame(data_tuples)
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
