@@ -143,9 +143,6 @@ def log_model(model, output_file, parameter=None):
                         log = node, year, None, parameter, val
                         add_log_item(data_tuples, log)
 
-                        # for param in ['Competition type', 'Captial cost_overnight', 'Service requested', 'Life Cycle Cost',
-        #               'Market share']
-
     log_df = pd.DataFrame(data_tuples)
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
