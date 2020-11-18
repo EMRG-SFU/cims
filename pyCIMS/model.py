@@ -19,24 +19,16 @@ from . import lcc_calculation
 class NodeQuantity:
     def __init__(self):
         self.quantities = {}
-        self.history = {}
 
     def add_quantity_request(self, amount, requesting_node, requesting_technology=None):
         node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
-        if node_tech not in self.history:
-            self.history[node_tech] = []
-
         self.quantities[node_tech] = amount
-        self.history[node_tech].append(amount)
 
     def get_total_quantity(self):
         total = 0
         for amount in self.quantities.values():
             total += amount
         return total
-
-    def get_marketshare_history(self, num_internal_iters=4):
-        pp.pprint(self.history)
 
 
 class Model:
@@ -578,16 +570,40 @@ class Model:
 
             # Assessment of capital stock availability
             # ****************************************
-            # At the node level subtract total remaining stock for each technology from demanded
-            # quantities to determine how much new stock must be allocated through competition. If
-            # remaining stock already meets quantity demanded, no competition is required.  If no
-            # competition is required, any unneeded surplus stock should be retired at a proportion
-            # based on the previous years total market shares starting with the oldest vintages
-            # (surplus retirements up for discussion)
+            # Subtract total stock for each technology, after natural retirements, from demanded
+            # quantities to determine how many new stock must be allocated through competition. If
+            # remaining stock already meets quantity demanded, no competition is required and
+            # un-needed surplus stock is force retired starting with the oldest vintage at a
+            # proportion of each vintages's remaining total market shares.
             # TODO: Deal with surplus retirements
             new_stock_demanded = copy.copy(assessed_demand)
             for t, e_stocks in existing_stock_per_tech.items():
                 new_stock_demanded -= e_stocks
+
+            # Surplus Retirements (aka Early Retirement)
+            if new_stock_demanded < 0:
+                surplus = -1 * new_stock_demanded
+
+                # Base Stock Retirement
+                total_base_stock = 0
+                for tech in existing_stock_per_tech:
+                    t_base_stock = self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']
+                    total_base_stock += t_base_stock
+
+                if total_base_stock == 0:
+                    pass
+                else:
+                    retirement_proportion = max(0, min(surplus / total_base_stock, 1))
+                    for tech in existing_stock_per_tech:
+                        t_base_stock = self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']
+                        amount_tech_to_retire = t_base_stock * retirement_proportion
+                        # Remove from existing stock
+                        existing_stock_per_tech[tech] -= amount_tech_to_retire
+                        # Remove from surplus & new stock demanded
+                        surplus -= amount_tech_to_retire
+                        new_stock_demanded += amount_tech_to_retire
+                        # note early retirement in the model
+                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -689,13 +705,27 @@ class Model:
 
     def small_calc_existing_stock(self, graph, node, year, tech):
         def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
-            unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
-            return max(unretired_base_stock, 0.0)
+            # How much base stock remains if only natural retirements have occurred?
+            naturally_unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
+
+            # What is the remaining base stock from the previous year? This considers early
+            # retirements.
+            prev_year = str(int(year) - self.step)
+            if int(prev_year) == self.base_year:
+                prev_year_unretired_base_stock = graph.nodes[node][prev_year]['technologies'][tech]['base_stock']
+            else:
+                prev_year_unretired_base_stock = graph.nodes[node][prev_year]['technologies'][tech]['base_stock_remaining']
+
+            base_stock_remaining = max(min(naturally_unretired_base_stock, prev_year_unretired_base_stock), 0.0)
+
+            return base_stock_remaining
 
         def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=11.513):
             exponent = (intercept / lifespan) * ((int(current_year) - int(purchased_year)) - lifespan)
             unretired_purchased_stock = purchased_stock / (1 + math.exp(exponent))
-            return unretired_purchased_stock
+            retired_purchased_stock = purchased_stock - unretired_purchased_stock
+
+            return max(unretired_purchased_stock, 0), retired_purchased_stock
 
         if graph.nodes[node]['competition type'] != 'tech compete':
             # we don't care about existing stock for non-tech compete nodes
@@ -709,6 +739,7 @@ class Model:
         # Means we are not on the initial year & we need to calculate remaining base and new stock
         # (existing)
         existing_stock = 0
+        remaining_base_stock = 0
         for y in earlier_years:
             # TODO: Allow default parameters
             tech_lifespan = self.graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
@@ -716,12 +747,16 @@ class Model:
 
             # Base Stock
             tech_base_stock_y = self.graph.nodes[node][y]['technologies'][tech]['base_stock']
-            remain_base_stock = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
-            existing_stock += remain_base_stock
+            remain_base_stock_vintage_y = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
+            remaining_base_stock += remain_base_stock_vintage_y
+            existing_stock += remain_base_stock_vintage_y
 
             # New Stock
             tech_new_stock_y = self.graph.nodes[node][y]['technologies'][tech]['new_stock']
-            remain_new_stock = purchased_stock_retirement(tech_new_stock_y, y, year, tech_lifespan)
+            remain_new_stock, retired_new_stock = purchased_stock_retirement(tech_new_stock_y, y,
+                                                                             year, tech_lifespan)
             existing_stock += remain_new_stock
+
+        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
 
         return existing_stock
