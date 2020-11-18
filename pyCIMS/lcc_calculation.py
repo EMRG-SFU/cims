@@ -146,37 +146,40 @@ def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fue
 
                 # LCC
                 # *****************
+                fixed_uic = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value']  # TODO: implement defaults
+                if fixed_uic is None:
+                    fixed_uic = 0
+
                 declining_uic = calc_declining_uic(sub_graph,
                                                    node,
                                                    tech,
                                                    year,
                                                    year_step,
                                                    str(base_year))
-                fixed_upfront_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value'] # TODO: implement defaults
-                if fixed_upfront_intangible_cost is None:
-                    fixed_upfront_intangible_cost = 0
 
                 output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
+
                 upfront_cost = calc_upfront_cost(cap_cost,
-                                                 fixed_upfront_intangible_cost,
+                                                 fixed_uic,
                                                  declining_uic,
                                                  output,
                                                  crf)
 
                 operating_maintenance_cost = sub_graph.nodes[node][year]['technologies'][tech]['Operating and maintenance cost']['year_value']
-                fixed_annual_intangible_cost = sub_graph.nodes[node][year]['technologies'][tech]['Annual intangible cost_fixed']['year_value']
 
-                if fixed_annual_intangible_cost is None:
-                    fixed_annual_intangible_cost = 0
+                fixed_aic = sub_graph.nodes[node][year]['technologies'][tech]['Annual intangible cost_fixed']['year_value']
+                if fixed_aic is None:
+                    fixed_aic = 0
+
                 declining_aic = calc_declining_aic(sub_graph,
                                                    node,
                                                    tech,
                                                    year,
                                                    year_step,
                                                    '2000')
-                output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
+
                 annual_cost = calc_annual_cost(operating_maintenance_cost,
-                                               fixed_annual_intangible_cost,
+                                               fixed_aic,
                                                declining_aic,
                                                output)
 
@@ -277,17 +280,17 @@ def calc_lcc(upfront_cost, annual_cost, annual_service_cost):
     return lcc
 
 
-def calc_upfront_cost(capital_cost, fixed_upfront_intangible_cost, declining_upfront_intangible_cost, output, crf):
+def calc_upfront_cost(capital_cost, fixed_uic, declining_uic, output, crf):
     uc = (capital_cost +
-          fixed_upfront_intangible_cost +
-          declining_upfront_intangible_cost)/output * crf
+          fixed_uic +
+          declining_uic)/output * crf
     return uc
 
 
-def calc_annual_cost(operating_maintenance_cost, fixed_annual_intangible_cost, declining_annual_intangible_cost, output):
+def calc_annual_cost(operating_maintenance_cost, fixed_aic, declining_aic, output):
     ac = (operating_maintenance_cost +
-          fixed_annual_intangible_cost +
-          declining_annual_intangible_cost) / output
+          fixed_aic +
+          declining_aic) / output
     return ac
 
 
@@ -352,7 +355,7 @@ def calc_gcc(sub_graph, node, tech, year, step, aeei):
     else:
         cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost_overnight']['year_value']
         if cc_overnight is None:
-            cc_overnight = 0
+            cc_overnight = 0  # TODO: Implement defaults
         gcc = cc_overnight
 
     return gcc
@@ -377,7 +380,7 @@ def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year):
     else:
         prev_year = str(int(year) - year_step)
         prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
-        denominator = 1 + rate_constant * math.exp(shape_constant * prev_nms)
+        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
         uic_declining = initial_uic / denominator
         return uic_declining
 
@@ -401,7 +404,7 @@ def calc_declining_aic(sub_graph, node, tech, year, year_step, base_year):
     else:
         prev_year = str(int(year) - year_step)
         prev_nms = sub_graph.nodes[node][prev_year]['technologies'][tech]['new_market_share']
-        denominator = 1 + rate_constant * math.exp(shape_constant * prev_nms)
+        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
         aic_declining = initial_aic / denominator
         return aic_declining
 
