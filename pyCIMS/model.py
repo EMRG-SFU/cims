@@ -176,6 +176,7 @@ class Model:
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels)
 
@@ -194,6 +195,7 @@ class Model:
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self.step,
+                                                    self.base_year,
                                                     self.graph,
                                                     self.fuels)
 
@@ -205,6 +207,7 @@ class Model:
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels)
                 for _ in range(4):
@@ -222,6 +225,7 @@ class Model:
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self.step,
+                                                    self.base_year,
                                                     self.graph,
                                                     self.fuels)
 
@@ -401,10 +405,10 @@ class Model:
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels,
-                                                root=node
-                                                )
+                                                root=node)
 
             if node in self.fuels:
                 if "Life Cycle Cost" not in graph.nodes[node][year]:
