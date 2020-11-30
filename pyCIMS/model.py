@@ -542,7 +542,7 @@ class Model:
                                                       technology_market_share=t_ms)
 
             elif 'Service requested' in node_year_data:
-                # Calculate the quantities being for each of the services
+                # Calculate the quantities being requested for each of the services
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
                 helper_quantity_from_services(services_being_requested, total_to_provide)
 
@@ -748,39 +748,23 @@ class Model:
 
             return base_stock_remaining
 
-        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=11.513):
-            # Calculate Exponent
-            exponent = (intercept / lifespan) * ((int(current_year) - int(purchased_year)) - lifespan)
-
-            # Calculate Adjustment Multiplier
+        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=-11.513):
             prev_year = str(int(year) - self.step)
             prev_y_tech_data = graph.nodes[node][prev_year]['technologies'][tech]
 
-            # If the current year is the purchased year
-            if purchased_year == current_year:
-                adj_multiplier = 1
-            else:
-                if purchased_year == str(self.base_year):
-                    prev_y_unretired_new_stock_pre_surplus = 0
-                    prev_y_unretired_new_stock = 0
-                elif purchased_year == current_year:
-                    prev_y_unretired_new_stock_pre_surplus = 0
-                    prev_y_unretired_new_stock = 0
-                elif purchased_year == prev_year:
-                    prev_y_unretired_new_stock_pre_surplus = purchased_stock
-                    prev_y_unretired_new_stock = purchased_stock
-                    prev_y_adj_multiplier = 1
-                else:
-                    prev_y_unretired_new_stock_pre_surplus = prev_y_tech_data['new_stock_remaining_pre_surplus'][purchased_year]
-                    prev_y_unretired_new_stock = prev_y_tech_data['new_stock_remaining'][purchased_year]
-                    prev_y_adj_multiplier = prev_y_tech_data['adjustment_multiplier'][purchased_year]
+            # Calculate the remaining purchased stock with only natural retirements
+            prev_y_exponent = intercept * (1 - (int(prev_year) - int(purchased_year)) / lifespan)
+            prev_y_fictional_purchased_stock_remain = purchased_stock / (1 + math.exp(prev_y_exponent))
 
-                if prev_y_unretired_new_stock_pre_surplus == 0:
-                    adj_multiplier = 0
-                else:
-                    adj_multiplier = prev_y_unretired_new_stock / \
-                                     prev_y_unretired_new_stock_pre_surplus * \
-                                     prev_y_adj_multiplier
+            # Calculate Adjustment Multiplier
+            adj_multiplier = 1
+
+            if int(prev_year) > int(purchased_year):
+                prev_y_unretired_new_stock = prev_y_tech_data['new_stock_remaining'][purchased_year]
+
+                if prev_y_fictional_purchased_stock_remain > 0:
+                    adj_multiplier = prev_y_unretired_new_stock / prev_y_fictional_purchased_stock_remain
+
             # Update the tech data
             tech_data = graph.nodes[node][current_year]['technologies'][tech]
             if 'adjustment_multiplier' not in tech_data:
@@ -788,9 +772,10 @@ class Model:
             tech_data['adjustment_multiplier'][purchased_year] = adj_multiplier
 
             # Calculate the remaining purchased stock
+            exponent = intercept * (1 - (int(current_year) - int(purchased_year)) / lifespan)
             purchased_stock_remaining = purchased_stock / (1 + math.exp(exponent)) * adj_multiplier
 
-            return max(purchased_stock_remaining, 0)
+            return purchased_stock_remaining
 
         if graph.nodes[node]['competition type'] != 'tech compete':
             # we don't care about existing stock for non-tech compete nodes
@@ -825,5 +810,6 @@ class Model:
 
         graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
+        #Retired stock will be removed later from ['new_stock_remaining']
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
         return existing_stock
