@@ -58,9 +58,12 @@ def log_dict(val):
     else:
         val_pairs = []
         for k, v in val.items():
-            year_value = v['year_value']
-            unit = v['unit']
-            val_pairs.append((k, unit, year_value))
+            if isinstance(v, dict):
+                year_value = v['year_value']
+                unit = v['unit']
+                val_pairs.append((k, unit, year_value))
+            elif isinstance(v, int) or isinstance(v, float):
+                val_pairs.append((k, None, float(v)))
         return val_pairs
 
 
