@@ -278,7 +278,8 @@ class ModelValidator:
                                 '.xlsm': 'xlrd'}
             excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
             mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=3, engine=excel_engine)
-            tree_df = mxl_tree.replace({pd.np.nan: None})
+
+            tree_df = mxl_tree.replace({np.nan: None})
             tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
 
             d = self.model_df
@@ -370,7 +371,52 @@ class ModelValidator:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
                 w = "{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
                                                                  more_info if len(no_prod_cost) else "")
-                warnings.warn(w)                
+                warnings.warn(w)  
+
+        def nodes_no_capital_cost():
+            nodes = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
+            nodes.index = nodes.index-1
+            end = pd.Series(['None'],index=[self.model_df.index.max()])
+            nodes = nodes.append(end)
+            no_cap_cost = []
+
+            for i in range(nodes.shape[0]-1):
+                node_index = nodes.index[i]
+                node_name = nodes.iloc[i]
+                start_index = nodes.index[i]
+                end_index = nodes.index[i+1]
+                dat = self.model_df.loc[start_index:end_index]
+                tech_nodes = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower() == 'tech compete'
+                if tech_nodes.iloc[0]:
+                    if 'Technology' not in list(dat['Parameter']):
+                        if 'Capital cost_overnight' not in list(dat['Parameter']):
+                            no_cap_cost.append((node_index,node_name))
+                    else: 
+                        techs = dat[dat['Parameter'] == 'Technology']['Value']
+                        end = pd.Series(['None'],index=[dat.index.max()])
+                        techs = techs.append(end)
+                        for i in range(techs.shape[0]-1):
+                            tech_name = techs.iloc[i]
+                            start_index = techs.index[i]
+                            end_index = techs.index[i+1]
+                            if 'Capital cost_overnight' not in list(dat['Parameter'].loc[start_index:end_index]):
+                                no_cap_cost.append((node_index,node_name,tech_name))
+
+            if len(no_cap_cost) > 0:
+                self.warnings['nodes_without_capital_cost'] = no_cap_cost
+
+            # Print Problems
+            if verbose:
+                more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
+                print("{} tech compete nodes don't have capital cost. {}".format(len(no_cap_cost),
+                                                                   more_info if len(no_cap_cost) else ""))
+            # Raise Warnings
+            if raise_warnings:
+                more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
+                w = "{} tech compete nodes don't have capital cost. {}".format(len(no_cap_cost),
+                                                                 more_info if len(no_cap_cost) else "")
+                warnings.warn(w)  
+                    
         
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
@@ -386,3 +432,4 @@ class ModelValidator:
         discrepencies_in_model_and_tree()
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
+        nodes_no_capital_cost()
