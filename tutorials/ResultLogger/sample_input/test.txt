@@ -1,6 +1,0 @@
-# test txt for logging function
-new_market_share
-Life Cycle Cost
-competition type
-Service requested
-Capital cost_overnight
