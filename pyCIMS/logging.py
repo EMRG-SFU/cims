@@ -76,7 +76,7 @@ def openfile(path):
 # define slim list example, change the content in parameter_list1 if you want a different list
 def slimlist(default_list):
     if default_list == 'slim':
-        p_list = ['new_market_share', 'Life Cycle Cost', 'Competition type',
+        p_list = ['new_market_share', 'Life Cycle Cost', 'competition type',
                   'Service requested', 'Capital cost_overnight']
     return p_list
 
