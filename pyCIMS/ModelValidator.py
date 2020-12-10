@@ -364,12 +364,12 @@ class ModelValidator:
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                print("{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                print("{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
                                                                    more_info if len(no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                w = "{} fuel nodes don't have an LCC. {}".format(len(no_prod_cost),
+                w = "{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
                                                                  more_info if len(no_prod_cost) else "")
                 warnings.warn(w)  
 
