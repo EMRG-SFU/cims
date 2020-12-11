@@ -70,7 +70,6 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
         self.years = model_reader.get_years()

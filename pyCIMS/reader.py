@@ -145,55 +145,31 @@ class ModelReader:
         return inc_df
 
     def get_default_tech_params(self):
-        """
-        Finds the default parameter values as defined in the model description.
-        Returns
-        -------
-        Two dictionaries.
-
-        The first is a dictionary containing the default values for technologies. This dictionary is
-        keyed by the parameter names.
-
-        The second is a nested dictionary containing the default values for nodes. This dictionary
-        is keyed by competition types ("Sector", "Tech Compete", etc). Each value is another
-        dictionary, keyed by parameter names.
-        """
-        # To get rid of the SettingWithCopyWarning being raised when we create a new column.
-        # This warning is a false positive when dealing with new columns.
-        pd.options.mode.chained_assignment = None
-
         # Read model_description from excel
         mxl = pd.read_excel(self.infile,
                             sheet_name=None,
-                            header=0,
+                            header=1,
                             engine=self.excel_engine)
         df = mxl[self.sheet_map['default_tech']].replace({np.nan: None})
 
-        # Remove empty rows
-        df = df.dropna(axis=0, how="all")
+        header_rows = df[(~df['Parameter'].isna()) & (df.drop('Parameter', axis=1).isna().all(axis=1))]
+        last_row = df.index[-1]
+        header_start_ends = list(zip(header_rows.index,
+                                     header_rows.index[1:].tolist() + [last_row]))
 
-        # Forward fill the parameter type
-        df['Unnamed: 0'] = df['Unnamed: 0'].ffill()
+        header_dfs = {}
+        for s, e in header_start_ends:
+            header_df = df.loc[s+1:e-1]
+            header_df = header_df.dropna(axis=1, how='all')
+            df_name = df.iloc[s]['Parameter']
+            header_dfs[df_name] = header_df
 
-        # Technology Default Parameters
-        technology_df = df[df['Unnamed: 0'] == 'Technology format']
-        node_df_has_defaults = technology_df[~technology_df['Default value'].isna()]
-        technology_defaults = {}
-        for param, val in zip(node_df_has_defaults['Parameter'],
-                              node_df_has_defaults['Default value']):
-            technology_defaults[param] = val
+        defaults = header_dfs['Default technology format']
+        defaults = defaults[defaults['Required / Optional'] == 'Optional']
 
-        # Other Default Parameters
-        node_df = df[df['Unnamed: 0'] != 'Technology format']
-        node_df['node_type'] = node_df['Unnamed: 0'].str.split(' node format').str[0]
-        node_df_has_defaults = node_df[~node_df['Default value'].isna()]
-        node_defaults = {}
-        for comp_type, param, val in zip(node_df_has_defaults['node_type'],
-                                         node_df_has_defaults['Parameter'],
-                                         node_df_has_defaults['Default value']):
-            if comp_type not in node_defaults:
-                node_defaults[comp_type] = {}
-            node_defaults[comp_type][param] = val
+        default_dict = {}
+        for p, v, u in zip(defaults['Parameter'], defaults['Default value'], defaults['Unit']):
+            default_dict[p] = {'default value': v,
+                               'unit': u}
 
-        # Return
-        return technology_defaults, node_defaults
+        return default_dict
