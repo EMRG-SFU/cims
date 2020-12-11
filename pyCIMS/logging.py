@@ -67,52 +67,126 @@ def log_dict(val):
         return val_pairs
 
 
-def log_model(model, output_file):
-    def add_log_item(all_logs, log_tuple):
-        log_func = {int: log_int,
-                    float: log_float,
-                    NodeQuantity: log_NodeQuantity,
-                    list: log_list,
-                    dict: log_dict,
-                    str: log_str,
-                    bool: log_bool}
+# helper function for opening txt file
+def openfile(path):
+    with open(path) as f:
+        p_list = f.readlines()
+        p_list = [x.strip() for x in p_list]
 
-        node, year, tech, param, val = log_tuple
-        # Process the value & year value
-        try:
-            prepped_val = log_func[type(val)](val)
-        except KeyError:
-            prepped_val = val
+    return p_list
+
+
+# define slim list example, change the content in parameter_list1 if you want a different list
+def slimlist(default_list):
+    if default_list == 'slim':
+        p_list = ['new_market_share', 'Life Cycle Cost', 'competition type',
+                  'Service requested', 'Capital cost_overnight']
+    return p_list
+
+
+def add_log_item(all_logs, log_tuple):
+    log_func = {int: log_int,
+                float: log_float,
+                NodeQuantity: log_NodeQuantity,
+                list: log_list,
+                dict: log_dict,
+                str: log_str,
+                bool: log_bool}
+
+    node, year, tech, param, val = log_tuple
+    # Process the value & year value
+    try:
+        prepped_val = log_func[type(val)](val)
+    except KeyError:
+        prepped_val = val
 
         # Log
-        if isinstance(prepped_val, list):
-            for val in prepped_val:
-                log = node, year, tech, param, val
-                all_logs.append(log)
-        else:
-            log = node, year, tech, param, prepped_val
+    if isinstance(prepped_val, list):
+        for val in prepped_val:
+            log = node, year, tech, param, val
             all_logs.append(log)
+    else:
+        log = node, year, tech, param, prepped_val
+        all_logs.append(log)
+    return all_logs
 
-    data_tuples = []
-    for node in model.graph.nodes:
-        # Log Year Agnostic Values
-        for param, val in model.graph.nodes[node].items():
-            if param not in model.years:
-                log = node, None, None, param, val
-                add_log_item(data_tuples, log)
 
-        # Log Year Specific Values
-        for year in model.years:
-            ny_data = model.graph.nodes[node][year]
-            for param, val in ny_data.items():
-                if param == 'technologies':
-                    for tech, tech_data in ny_data['technologies'].items():
-                        for tech_param, tech_val in tech_data.items():
-                            log = node, year, tech, tech_param, tech_val
-                            add_log_item(data_tuples, log)
-                else:
-                    log = node, year, None, param, val
+def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
+    # parameter_list: a list of string such as ['aa', 'bb','cc']
+    # path: str path of the txt file such as 'test.txt'
+    # default_list: str of default list, right now 'all' return all parameters and 'slim' return a pre-defined 5 parameters
+
+    # if no argument chosen or defualt_list = 'all', return all parameters
+    if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
+
+        data_tuples = []
+        for node in model.graph.nodes:
+            # Log Year Agnostic Values
+            for param, val in model.graph.nodes[node].items():
+                if param not in model.years:
+                    log = node, None, None, param, val
                     add_log_item(data_tuples, log)
+
+            # Log Year Specific Values
+            for year in model.years:
+                ny_data = model.graph.nodes[node][year]
+                for param, val in ny_data.items():
+                    if param == 'technologies':
+                        for tech, tech_data in ny_data['technologies'].items():
+                            for tech_param, tech_val in tech_data.items():
+                                log = node, year, tech, tech_param, tech_val
+                                add_log_item(data_tuples, log)
+                    else:
+                        log = node, year, None, param, val
+                        add_log_item(data_tuples, log)
+
+
+    else:
+        # path argument exist
+        if path and (parameter_list is None and default_list is None):
+            p_list = openfile(path)
+
+        # parameter_list argument exist
+        elif parameter_list and (default_list is None and path is None):
+            p_list = parameter_list
+
+        # default_list argument exist
+        elif default_list and (parameter_list is None and path is None):
+            p_list = slimlist(default_list)
+
+        # print this if there are more than 2 argument specified
+        else:
+            print(
+                'Error! You can only use parameter_list or path or default_list. You cannot specify them at the same time!')
+            return
+
+        l = len(p_list)
+        data_tuples = []
+        for node in model.graph.nodes:
+            # Log Year Agnostic Values
+            for i in range(l):
+
+                for param, val in model.graph.nodes[node].items():
+                    if param == p_list[i]:
+                        if param not in model.years:
+                            log = node, None, None, param, val
+                            add_log_item(data_tuples, log)
+
+                # Log Year Specific Values
+                for year in model.years:
+                    ny_data = model.graph.nodes[node][year]
+
+                    for param, val in ny_data.items():
+                        if param == 'technologies':
+                            for tech, tech_data in ny_data['technologies'].items():
+                                for tech_param, tech_val in tech_data.items():
+                                    if tech_param == p_list[i]:
+                                        log = node, year, tech, tech_param, tech_val
+                                        add_log_item(data_tuples, log)
+                        else:
+                            if param == p_list[i]:
+                                log = node, year, None, param, val
+                                add_log_item(data_tuples, log)
 
     log_df = pd.DataFrame(data_tuples)
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
