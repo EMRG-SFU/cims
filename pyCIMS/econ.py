@@ -5,12 +5,15 @@ import warnings
 
 
 def get_heterogeneity(g, node, year):
+    # TODO: Implement fetch logic (check at the node, if its not there check at the parent, if its
+    #       not there, see if there is a function, otherwise use a default value (need to verify
+    #       this order))
     try:
-        v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
-    except KeyError:
-        v = 10  # default val
-    if v is None:
-        v = 10
+        v_dict = g.nodes[node][year]["Heterogeneity"]
+        v = v_dict[None]['year_value']
+    except KeyError as e:
+        v = 10    # TODO: Implement Defaults
+
     return v
 
 
@@ -95,7 +98,7 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
             # service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
             # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to
-            #  grab the lcc (currently, the LCC isn't known)
+            #  grab the lcc (currently, the Life Cycle Cost isn't known)
             if 'Life Cycle Cost' in full_graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = full_graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']

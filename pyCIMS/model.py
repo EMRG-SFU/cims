@@ -1,7 +1,6 @@
 import copy
 import math
 import warnings
-import pprint as pp
 import networkx as nx
 
 from . import graph_utils
@@ -19,24 +18,16 @@ from . import lcc_calculation
 class NodeQuantity:
     def __init__(self):
         self.quantities = {}
-        self.history = {}
 
     def add_quantity_request(self, amount, requesting_node, requesting_technology=None):
         node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
-        if node_tech not in self.history:
-            self.history[node_tech] = []
-
         self.quantities[node_tech] = amount
-        self.history[node_tech].append(amount)
 
     def get_total_quantity(self):
         total = 0
         for amount in self.quantities.values():
             total += amount
         return total
-
-    def get_marketshare_history(self, num_internal_iters=4):
-        pp.pprint(self.history)
 
 
 class Model:
@@ -79,8 +70,7 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.step = 5  # Make this an input later
-
+        self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
         self.years = model_reader.get_years()
         self.base_year = int(self.years[0])
@@ -171,11 +161,12 @@ class Model:
 
                 # DEMAND
                 # ******************
-                # Calculate LCC values on demand side
+                # Calculate Life Cycle Cost values on demand side
                 graph_utils.bottom_up_traversal(g_demand,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels)
 
@@ -194,6 +185,7 @@ class Model:
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self.step,
+                                                    self.base_year,
                                                     self.graph,
                                                     self.fuels)
 
@@ -205,6 +197,7 @@ class Model:
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels)
                 for _ in range(4):
@@ -222,6 +215,7 @@ class Model:
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self.step,
+                                                    self.base_year,
                                                     self.graph,
                                                     self.fuels)
 
@@ -301,7 +295,8 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' LCC value.
+        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
+        value.
 
         Parameters
         ----------
@@ -361,8 +356,9 @@ class Model:
 
         def init_fuel_lcc(graph, node, year, step=5):
             """
-            Function for initializing LCC for a node in a graph, if that node is a fuel node. This
-            function assumes all of node's children have already been processed by this function.
+            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
+            node. This function assumes all of node's children have already been processed by this
+            function.
 
             Parameters
             ----------
@@ -380,35 +376,35 @@ class Model:
 
             Returns
             -------
-            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized LCC if
-            node is a fuel node.
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
+            Cycle Cost if node is a fuel node.
             """
 
             def calc_lcc_from_children():
                 """
-                Helper function to calculate a node's LCC from its children.
+                Helper function to calculate a node's Life Cycle Cost from its children.
 
                 Returns
                 -------
-                Nothing is returned, but the node will be updated with a new LCC value.
+                Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
                 """
                 # Find the subtree rooted at the fuel node
                 descendants = [n for n in graph.nodes if node in n]
                 descendant_tree = nx.subgraph(graph, descendants)
 
-                # Calculate the LCCs for the sub-tree
+                # Calculate the Life Cycle Costs for the sub-tree
                 graph_utils.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self.step,
+                                                self.base_year,
                                                 self.graph,
                                                 self.fuels,
-                                                root=node
-                                                )
+                                                root=node)
 
             if node in self.fuels:
                 if "Life Cycle Cost" not in graph.nodes[node][year]:
-                    # LCC needs to be calculated from children
+                    # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
                     lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
                     fuel_name = list(lcc_dict.keys())[0]
@@ -442,7 +438,7 @@ class Model:
         """
         1. Determine what fuels need to be calculated
         2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
-            (A) If a tech compete node, just return the lcc. This is production cost.
+            (A) If a tech compete node, just return the life cycle cost. This is production cost.
             (B) If its a fixed ratio or sector node:
                   i) find all the services being requested
                  ii) for each service, multiply the price by the requested amount to get a weighted cost.
@@ -550,7 +546,7 @@ class Model:
                                                       technology_market_share=t_ms)
 
             elif 'Service requested' in node_year_data:
-                # Calculate the quantities being for each of the services
+                # Calculate the quantities being requested for each of the services
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
                 helper_quantity_from_services(services_being_requested, total_to_provide)
 
@@ -578,16 +574,68 @@ class Model:
 
             # Assessment of capital stock availability
             # ****************************************
-            # At the node level subtract total remaining stock for each technology from demanded
-            # quantities to determine how much new stock must be allocated through competition. If
-            # remaining stock already meets quantity demanded, no competition is required.  If no
-            # competition is required, any unneeded surplus stock should be retired at a proportion
-            # based on the previous years total market shares starting with the oldest vintages
-            # (surplus retirements up for discussion)
+            # Subtract total stock for each technology, after natural retirements, from demanded
+            # quantities to determine how many new stock must be allocated through competition. If
+            # remaining stock already meets quantity demanded, no competition is required and
+            # un-needed surplus stock is force retired starting with the oldest vintage at a
+            # proportion of each vintages's remaining total market shares.
             # TODO: Deal with surplus retirements
             new_stock_demanded = copy.copy(assessed_demand)
             for t, e_stocks in existing_stock_per_tech.items():
                 new_stock_demanded -= e_stocks
+
+            # Surplus Retirements (aka Early Retirement)
+            if new_stock_demanded < 0:
+                surplus = -1 * new_stock_demanded
+
+                # Base Stock Retirement
+                total_base_stock = 0
+                for tech in existing_stock_per_tech:
+                    t_base_stock = self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']
+                    total_base_stock += t_base_stock
+
+                if total_base_stock == 0:
+                    pass
+                else:
+                    retirement_proportion = max(0, min(surplus / total_base_stock, 1))
+                    for tech in existing_stock_per_tech:
+                        t_base_stock = self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']
+                        amount_tech_to_retire = t_base_stock * retirement_proportion
+                        # Remove from existing stock
+                        existing_stock_per_tech[tech] -= amount_tech_to_retire
+                        # Remove from surplus & new stock demanded
+                        surplus -= amount_tech_to_retire
+                        new_stock_demanded += amount_tech_to_retire
+                        # note early retirement in the model
+                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] -= amount_tech_to_retire
+
+                # New Stock Retirement
+                possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
+                                                                    (int(y) < int(year))]
+                for purchase_year in possible_purchase_years:
+                    total_new_stock_remaining_pre_surplus = 0
+                    if surplus > 0:
+                        for tech in existing_stock_per_tech:
+                            tech_data = self.graph.nodes[node][year]['technologies'][tech]
+                            t_rem_new_stock_pre_surplus = tech_data['new_stock_remaining_pre_surplus'][purchase_year]
+                            total_new_stock_remaining_pre_surplus += t_rem_new_stock_pre_surplus
+
+                    if total_new_stock_remaining_pre_surplus == 0:
+                        retirement_proportion = 0
+                    else:
+                        retirement_proportion = max(0, min(surplus/total_new_stock_remaining_pre_surplus, 1))
+
+                    for tech in existing_stock_per_tech:
+                        tech_data = self.graph.nodes[node][year]['technologies'][tech]
+                        t_rem_new_stock_pre_surplus = tech_data['new_stock_remaining_pre_surplus'][purchase_year]
+                        amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
+                        # Remove from existing stock
+                        existing_stock_per_tech[tech] -= amount_tech_to_retire
+                        # Remove from surplus & new stock demanded
+                        surplus -= amount_tech_to_retire
+                        new_stock_demanded += amount_tech_to_retire
+                        # note new stock remaining (post surplus) in the model
+                        tech_data['new_stock_remaining'][purchase_year] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -611,16 +659,16 @@ class Model:
                     low, up = utils.range_available(sub_graph, node, t)
                     if low < int(year) < up:
                         v = econ.get_heterogeneity(sub_graph, node, year)
-                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["LCC"]["year_value"]
+                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["Life Cycle Cost"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
                         if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 LCC properly
+                            # TODO: Address the problem of a 0 Life Cycle Cost properly
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has an LCC=0".format(t, node))
+                                warnings.warn("Technology {} @ node {} has an Life Cycle Cost=0".format(t, node))
                             tech_lcc = 0.0001
                         if tech_lcc < 0:
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a negative LCC".format(t, node))
+                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
                             tech_lcc = 0.0001
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
@@ -689,13 +737,49 @@ class Model:
 
     def small_calc_existing_stock(self, graph, node, year, tech):
         def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
-            unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
-            return max(unretired_base_stock, 0.0)
+            # How much base stock remains if only natural retirements have occurred?
+            naturally_unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
 
-        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=11.513):
-            exponent = (intercept / lifespan) * ((int(current_year) - int(purchased_year)) - lifespan)
-            unretired_purchased_stock = purchased_stock / (1 + math.exp(exponent))
-            return unretired_purchased_stock
+            # What is the remaining base stock from the previous year? This considers early
+            # retirements.
+            prev_year = str(int(year) - self.step)
+            if int(prev_year) == self.base_year:
+                prev_year_unretired_base_stock = graph.nodes[node][prev_year]['technologies'][tech]['base_stock']
+            else:
+                prev_year_unretired_base_stock = graph.nodes[node][prev_year]['technologies'][tech]['base_stock_remaining']
+
+            base_stock_remaining = max(min(naturally_unretired_base_stock, prev_year_unretired_base_stock), 0.0)
+
+            return base_stock_remaining
+
+        def purchased_stock_retirement(purchased_stock, purchased_year, current_year, lifespan, intercept=-11.513):
+            prev_year = str(int(year) - self.step)
+            prev_y_tech_data = graph.nodes[node][prev_year]['technologies'][tech]
+
+            # Calculate the remaining purchased stock with only natural retirements
+            prev_y_exponent = intercept * (1 - (int(prev_year) - int(purchased_year)) / lifespan)
+            prev_y_fictional_purchased_stock_remain = purchased_stock / (1 + math.exp(prev_y_exponent))
+
+            # Calculate Adjustment Multiplier
+            adj_multiplier = 1
+
+            if int(prev_year) > int(purchased_year):
+                prev_y_unretired_new_stock = prev_y_tech_data['new_stock_remaining'][purchased_year]
+
+                if prev_y_fictional_purchased_stock_remain > 0:
+                    adj_multiplier = prev_y_unretired_new_stock / prev_y_fictional_purchased_stock_remain
+
+            # Update the tech data
+            tech_data = graph.nodes[node][current_year]['technologies'][tech]
+            if 'adjustment_multiplier' not in tech_data:
+                tech_data['adjustment_multiplier'] = {}
+            tech_data['adjustment_multiplier'][purchased_year] = adj_multiplier
+
+            # Calculate the remaining purchased stock
+            exponent = intercept * (1 - (int(current_year) - int(purchased_year)) / lifespan)
+            purchased_stock_remaining = purchased_stock / (1 + math.exp(exponent)) * adj_multiplier
+
+            return purchased_stock_remaining
 
         if graph.nodes[node]['competition type'] != 'tech compete':
             # we don't care about existing stock for non-tech compete nodes
@@ -709,6 +793,8 @@ class Model:
         # Means we are not on the initial year & we need to calculate remaining base and new stock
         # (existing)
         existing_stock = 0
+        remaining_base_stock = 0
+        remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
             # TODO: Allow default parameters
             tech_lifespan = self.graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
@@ -716,12 +802,18 @@ class Model:
 
             # Base Stock
             tech_base_stock_y = self.graph.nodes[node][y]['technologies'][tech]['base_stock']
-            remain_base_stock = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
-            existing_stock += remain_base_stock
+            remain_base_stock_vintage_y = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
+            remaining_base_stock += remain_base_stock_vintage_y
+            existing_stock += remain_base_stock_vintage_y
 
             # New Stock
             tech_new_stock_y = self.graph.nodes[node][y]['technologies'][tech]['new_stock']
             remain_new_stock = purchased_stock_retirement(tech_new_stock_y, y, year, tech_lifespan)
+            remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
 
+        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
+        # Retired stock will be removed later from ['new_stock_remaining']
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
         return existing_stock
