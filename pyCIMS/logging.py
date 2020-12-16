@@ -191,8 +191,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
         # Warning if there are more than 2 argument specified
         else:
-            warnings.warn(
-                "Warning! You can only choose one argument: 'parameter_list' or 'path' or 'default_list'. You cannot specify them at the same time!")
+            raise ValueError("ValueError exception thrown: multiple parameters specified")
+
             return
 
         l = len(p_list)
@@ -204,7 +204,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
             for i in range(l):
                 # check if the input parameter exists.
                 if p_list[i] not in total_parameter_list:
-                    raise ValueError("ValueError exception thrown: parameter not exist")
+                    message = "parameter {parameter:} does not exist".format(parameter=p_list[i])
+                    warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
 
