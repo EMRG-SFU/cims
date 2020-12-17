@@ -144,6 +144,26 @@ def model_parameter(model):
     return model_list
 
 
+def search_parameter(model, search: list[str] = None):
+    model_list = model_parameter(model)
+
+    print('You are searching if any parameter in the model contains ', search)
+    search_list = []
+    for i in range(len(search)):
+        m = search[i]
+        matching = [x for x in model_list if m in x]
+
+        search_list += matching
+
+    if len(search_list) == 0:
+        warnings.warn(
+            "You search term doesn't match with any parameter in the model")
+        return
+
+    print('Here are all the parameters contain your search term : ')
+    return search_list
+
+
 def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
     '''
     parameter_list: a list of string such as ['aa', 'bb','cc']
