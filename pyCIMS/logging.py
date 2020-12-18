@@ -144,7 +144,7 @@ def model_parameter(model):
     return model_list
 
 
-def search_parameter(model, search: list[str] = None):
+def search_parameter(model, search: [str] = None):
     model_list = model_parameter(model)
 
     print('You are searching if any parameter in the model contains ', search)
