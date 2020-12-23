@@ -125,12 +125,12 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 # Find overnight capital cost
                 cc_overnight = tech_data['Capital cost_overnight']['year_value']
                 if cc_overnight is None:
-                    cc_overnight = model.technology_defaults['Capital cost_overnight']
+                    cc_overnight = model.get_tech_paramter_default('Capital cost_overnight')
 
                 # Find declining limit
                 declining_cc_limit = tech_data['Capital cost_declining_limit']['year_value']
                 if declining_cc_limit is None:
-                    declining_cc_limit = model.technology_defaults['Capital cost_declining_limit']
+                    declining_cc_limit = model.get_tech_paramter_default('Capital cost_declining_limit')
 
                 # Find Declining Capital Cost
                 declining_cc = calc_declining_cc(sub_graph,
@@ -145,7 +145,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 # *****************
                 fixed_uic = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value']
                 if fixed_uic is None:
-                    fixed_uic = model.technology_defaults['Upfront intangible cost_fixed']
+                    fixed_uic = model.get_tech_paramter_default('Upfront intangible cost_fixed')
 
                 declining_uic = calc_declining_uic(sub_graph,
                                                    node,
@@ -305,12 +305,12 @@ def calc_declining_cc(sub_graph, node, year, tech, model):
         # Progress Ratio
         progress_ratio = tech_data['Capital cost_declining_Progress Ratio']['year_value']
         if progress_ratio is None:
-            progress_ratio = model.technology_defaults['Capital cost_declining_Progress Ratio']
+            progress_ratio = model.get_tech_paramter_default('Capital cost_declining_Progress Ratio')
 
         # GCC_t
         aeei = tech_data['Capital cost_declining_AEEI']['year_value']
         if aeei is None:
-            aeei = model.technology_defaults['Capital cost_declining_AEEI']
+            aeei = model.get_tech_paramter_default('Capital cost_declining_AEEI')
         gcc_t = calc_gcc(sub_graph, node, tech, year, aeei, model)
 
         # Cumulative New Stock summed over all techs in DCC Class
@@ -319,7 +319,7 @@ def calc_declining_cc(sub_graph, node, year, tech, model):
         for node_k, tech_k in dcc_class_techs:
             cns_k = sub_graph.nodes[node_k][year]['technologies'][tech_k]['Capital cost_declining_cumulative new stock']['year_value']
             if cns_k is None:
-                cns_k = model.technology_defaults['Capital cost_declining_cumulative new stock']
+                cns_k = model.get_tech_paramter_default('Capital cost_declining_cumulative new stock')
             cns_sum += cns_k
 
         # New Stock summed over all techs in DCC class and over all previous years
@@ -347,7 +347,7 @@ def calc_gcc(sub_graph, node, tech, year, aeei, model):
     else:
         cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost_overnight']['year_value']
         if cc_overnight is None:
-            cc_overnight = model.technology_defaults['Capital cost_overnight']
+            cc_overnight = model.get_tech_paramter_default('Capital cost_overnight')
         gcc = cc_overnight
 
     return gcc
@@ -359,15 +359,15 @@ def calc_declining_uic(sub_graph, node, tech, year, model):
 
     initial_uic = tech_data['Upfront intangible cost_declining_initial']['year_value']
     if initial_uic is None:
-        initial_uic = model.technology_defaults['Upfront intangible cost_declining_initial']
+        initial_uic = model.get_tech_paramter_default('Upfront intangible cost_declining_initial')
 
     rate_constant = tech_data['Upfront intangible cost_declining_rate']['year_value']
     if rate_constant is None:
-        rate_constant = model.technology_defaults['Upfront intangible cost_declining_rate']
+        rate_constant = model.get_tech_paramter_default('Upfront intangible cost_declining_rate')
 
     shape_constant = tech_data['Upfront intangible cost_declining_shape']['year_value']
     if shape_constant is None:
-        shape_constant = model.technology_defaults['Upfront intangible cost_declining_shape']
+        shape_constant = model.get_tech_paramter_default('Upfront intangible cost_declining_shape')
 
     # Calculate Declining UIC
     if int(year) == int(model.base_year):
@@ -387,13 +387,13 @@ def calc_declining_aic(sub_graph, node, tech, year, model):
     tech_data = sub_graph.nodes[node][year]['technologies'][tech]
     initial_aic = tech_data['Annual intangible cost_declining_initial']['year_value']
     if initial_aic is None:
-        initial_aic = model.technology_defaults['Annual intangible cost_declining_initial']
+        initial_aic = model.get_tech_paramter_default('Annual intangible cost_declining_initial')
     rate_constant = tech_data['Annual intangible cost_declining_rate']['year_value']
     if rate_constant is None:
-        rate_constant = model.technology_defaults['Annual intangible cost_declining_rate']
+        rate_constant = model.get_tech_paramter_default('Annual intangible cost_declining_rate')
     shape_constant = tech_data['Annual intangible cost_declining_shape']['year_value']
     if shape_constant is None:
-        shape_constant = model.technology_defaults['Annual intangible cost_declining_shape']
+        shape_constant = model.get_tech_paramter_default('Annual intangible cost_declining_shape')
 
     # Calculate Declining AIC
     if int(year) == int(model.base_year):

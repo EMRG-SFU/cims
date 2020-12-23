@@ -802,7 +802,7 @@ class Model:
         remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
             tech_lifespan = self.graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
-            tech_lifespan_default = self.technology_defaults['Lifetime']
+            tech_lifespan_default = self.get_tech_paramter_default('Lifetime')
             tech_lifespan = tech_lifespan_default if tech_lifespan is None else tech_lifespan
 
             # Base Stock
@@ -822,3 +822,9 @@ class Model:
         #Retired stock will be removed later from ['new_stock_remaining']
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
         return existing_stock
+
+    def get_tech_paramter_default(self, parameter):
+        return self.technology_defaults[parameter]
+
+    def get_node_paramter_default(self, parameter, competition_type):
+        return self.node_defaults[competition_type][parameter]

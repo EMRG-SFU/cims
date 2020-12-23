@@ -11,9 +11,9 @@ def get_heterogeneity(model, node, year):
     try:
         v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
     except KeyError:
-        v = model.node_defaults[node_type]['Heterogeneity']
+        v = model.get_node_paramter_default('Heterogeneity', node_type)
     if v is None:
-        v = model.node_defaults[node_type]['Heterogeneity']
+        v = model.get_node_paramter_default('Heterogeneity', node_type)
 
     return v
 
@@ -89,7 +89,7 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels, 
                 fuel_name = list(full_graph.nodes[fuel_branch][year]['Life Cycle Cost'].keys())[0]
                 service_requested_lcc = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             else:
-                service_requested_lcc = model.node_defaults['sector']['Life Cycle Cost']
+                service_requested_lcc = model.get_node_paramter_default('Life Cycle Cost', 'sector')
 
         else:
             service_requested_branch = service_requested['branch']
