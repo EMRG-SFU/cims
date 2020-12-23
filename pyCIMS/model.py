@@ -167,10 +167,10 @@ class Model:
                 graph_utils.bottom_up_traversal(g_demand,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels,
+                                                # self.step,
+                                                # self.base_year,
+                                                # self.graph,
+                                                # self.fuels,
                                                 self)
 
                 for ix in range(4):
@@ -187,10 +187,10 @@ class Model:
                     graph_utils.bottom_up_traversal(g_demand,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self.step,
-                                                    self.base_year,
-                                                    self.graph,
-                                                    self.fuels,
+                                                    # self.step,
+                                                    # self.base_year,
+                                                    # self.graph,
+                                                    # self.fuels,
                                                     self)
 
                 # Supply
@@ -200,10 +200,10 @@ class Model:
                 graph_utils.bottom_up_traversal(g_supply,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels,
+                                                # self.step,
+                                                # self.base_year,
+                                                # self.graph,
+                                                # self.fuels,
                                                 self)
                 for _ in range(4):
                     # Calculate Fuel Quantities
@@ -219,10 +219,10 @@ class Model:
                     graph_utils.bottom_up_traversal(g_supply,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self.step,
-                                                    self.base_year,
-                                                    self.graph,
-                                                    self.fuels,
+                                                    # self.step,
+                                                    # self.base_year,
+                                                    # self.graph,
+                                                    # self.fuels,
                                                     self)
 
                 # Update Prices
@@ -400,10 +400,10 @@ class Model:
                 graph_utils.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels,
+                                                # self.step,
+                                                # self.base_year,
+                                                # self.graph,
+                                                # self.fuels,
                                                 self,
                                                 root=node)
 

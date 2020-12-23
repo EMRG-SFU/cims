@@ -69,7 +69,7 @@ def lastyear_fuel(g, node, year, fuel, param, step=5):
     return value
 
 
-def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
+def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels, model):
     """
     Find the service cost associated with a given technology.
 
@@ -89,22 +89,16 @@ def get_technology_service_cost(sub_graph, full_graph, node, year, tech, fuels):
                 fuel_name = list(full_graph.nodes[fuel_branch][year]['Life Cycle Cost'].keys())[0]
                 service_requested_lcc = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             else:
-                service_requested_lcc = 1  # TODO: Properly implement defaults
-                # full_graph.nodes[fuel_branch][year]['Life Cycle Cost'] = {fuel_name: utils.create_value_dict(1)}
+                service_requested_lcc = model.node_defaults['sector']['Life Cycle Cost']
 
-            # fuel_name = list(full_graph.nodes[fuel_branch][year]['Life Cycle Cost'].keys())[0]
-            # fuel_price = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
-            # service_cost = fuel_price * service_requested_value
         else:
-            # service_requested_value = service_requested['year_value']
             service_requested_branch = service_requested['branch']
-            # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to
-            #  grab the lcc (currently, the LCC isn't known)
             if 'Life Cycle Cost' in full_graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = full_graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
 
             else:
+                # Encountering a non-visited node
                 service_requested_lcc = 1 # TODO: Properly implement defaults
 
         service_cost += service_requested_lcc * service_requested_value

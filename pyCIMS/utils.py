@@ -190,3 +190,7 @@ def create_value_dict(year_val, source=None, branch=None, unit=None):
                         }
 
     return value_dictionary
+
+
+def get_parameter_default():
+    pass
