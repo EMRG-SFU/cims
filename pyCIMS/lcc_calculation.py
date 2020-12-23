@@ -23,17 +23,17 @@ def calculate_tech_econ_values(graph, node, tech, year):
 
 
 def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None):
-        """
-        Include a new set of parameter: {values} as a nested dict
+    """
+    Include a new set of parameter: {values} as a nested dict
 
-        """
-        g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
-                                                                       "branch": str(node),
-                                                                       "source": source,
-                                                                       "unit": unit}})
+    """
+    g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
+                                                                   "branch": str(node),
+                                                                   "source": source,
+                                                                   "unit": unit}})
 
 
-def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fuels, show_warnings=False):
+def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fuels, model, show_warnings=False):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
     at the appropriate node. Specifically,
@@ -66,15 +66,14 @@ def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fue
     -------
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
-    # print('\tcalculating LCC for {}'.format(node))
-    total_lcc_v = 0.0
-    v = econ.get_heterogeneity(sub_graph, node, year)
 
     # Check if the node has an exogenously defined LCC
     if 'Life Cycle Cost' in sub_graph.nodes[node][year]:
         return
     # Check if the node is a tech compete node:
     elif sub_graph.nodes[node]["competition type"] == "tech compete":
+        total_lcc_v = 0.0
+        v = econ.get_heterogeneity(model, node, year)
         # Get all of the technologies in the node
         node_techs = sub_graph.nodes[node][year]["technologies"].keys()
 
@@ -124,15 +123,13 @@ def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fue
 
                 # Find overnight capital cost
                 cc_overnight = tech_data['Capital cost_overnight']['year_value']
-                # TODO: Implement defaults
                 if cc_overnight is None:
-                    cc_overnight = 0
+                    cc_overnight = model.technology_defaults['Capital cost_overnight']
 
                 # Find declining limit
                 declining_cc_limit = tech_data['Capital cost_declining_limit']['year_value']
-                # TODO: Implement defaults
                 if declining_cc_limit is None:
-                    declining_cc_limit = 0
+                    declining_cc_limit = model.technology_defaults['Capital cost_declining_limit']
 
                 # Find Declining Capital Cost
                 declining_cc = calc_declining_cc(sub_graph,
@@ -140,22 +137,24 @@ def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fue
                                                  year,
                                                  tech,
                                                  year_step,
-                                                 str(base_year))
+                                                 str(base_year),
+                                                 model)
 
                 cap_cost = calc_capital_cost(declining_cc, cc_overnight, declining_cc_limit)
 
                 # LCC
                 # *****************
-                fixed_uic = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value']  # TODO: implement defaults
+                fixed_uic = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value']
                 if fixed_uic is None:
-                    fixed_uic = 0
+                    fixed_uic = model.technology_defaults['Upfront intangible cost_fixed']
 
                 declining_uic = calc_declining_uic(sub_graph,
                                                    node,
                                                    tech,
                                                    year,
                                                    year_step,
-                                                   str(base_year))
+                                                   str(base_year),
+                                                   model)
 
                 output = sub_graph.nodes[node][year]['technologies'][tech]['Output']['year_value']
 
@@ -176,7 +175,8 @@ def lcc_calculation(sub_graph, node, year, year_step, base_year, full_graph, fue
                                                    tech,
                                                    year,
                                                    year_step,
-                                                   '2000')
+                                                   '2000',   # TODO: Read this value from somewhere
+                                                   model)
 
                 annual_cost = calc_annual_cost(operating_maintenance_cost,
                                                fixed_aic,
@@ -302,7 +302,7 @@ def calc_capital_cost(declining_cc, overnight_cc, declining_limit=1):
     return cc
 
 
-def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
+def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year, model):
     tech_data = sub_graph.nodes[node][year]['technologies'][tech]
     dcc_class = tech_data['Capital cost_declining_Class']['value']
 
@@ -313,13 +313,13 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
         # Progress Ratio
         progress_ratio = tech_data['Capital cost_declining_Progress Ratio']['year_value']
         if progress_ratio is None:
-            progress_ratio = 1  # TODO: Implement defaults
+            progress_ratio = model.technology_defaults['Capital cost_declining_Progress Ratio']
 
         # GCC_t
         aeei = tech_data['Capital cost_declining_AEEI']['year_value']
         if aeei is None:
-            aeei = 0  # TODO: Implement defaults
-        gcc_t = calc_gcc(sub_graph, node, tech, year, year_step, aeei)
+            aeei = model.technology_defaults['Capital cost_declining_AEEI']
+        gcc_t = calc_gcc(sub_graph, node, tech, year, year_step, aeei, model)
 
         # Cumulative New Stock summed over all techs in DCC Class
         dcc_class_techs = techs_in_dcc_class(sub_graph, dcc_class, year)
@@ -327,7 +327,7 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
         for node_k, tech_k in dcc_class_techs:
             cns_k = sub_graph.nodes[node_k][year]['technologies'][tech_k]['Capital cost_declining_cumulative new stock']['year_value']
             if cns_k is None:
-                cns_k = 0  # TODO: Implement defaults
+                cns_k = model.technology_defaults['Capital cost_declining_cumulative new stock']
             cns_sum += cns_k
 
         # New Stock summed over all techs in DCC class and over all previous years
@@ -347,32 +347,32 @@ def calc_declining_cc(sub_graph, node, year, tech, year_step, base_year):
     return cc_declining
 
 
-def calc_gcc(sub_graph, node, tech, year, step, aeei):
+def calc_gcc(sub_graph, node, tech, year, step, aeei, model):
     previous_year = str(int(year) - step)
     if previous_year in sub_graph.nodes[node]:
         gcc = ((1 - aeei) ** step) * \
-              calc_gcc(sub_graph, node, tech, previous_year, step, aeei)
+              calc_gcc(sub_graph, node, tech, previous_year, step, aeei, model)
     else:
         cc_overnight = sub_graph.nodes[node][year]['technologies'][tech]['Capital cost_overnight']['year_value']
         if cc_overnight is None:
-            cc_overnight = 0  # TODO: Implement defaults
+            cc_overnight = model.technology_defaults['Capital cost_overnight']
         gcc = cc_overnight
 
     return gcc
 
 
-def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year):
+def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year, model):
     # Retrieve Exogenous Terms from Model Description
     tech_data = sub_graph.nodes[node][year]['technologies'][tech]
     initial_uic = tech_data['Upfront intangible cost_declining_initial']['year_value']
     if initial_uic is None:
-        initial_uic = 0  # TODO: Implement defaults
+        initial_uic = model.technology_defaults['Upfront intangible cost_declining_initial']
     rate_constant = tech_data['Upfront intangible cost_declining_rate']['year_value']
     if rate_constant is None:
-        rate_constant = 0  # TODO: Implement defaults
+        rate_constant = model.technology_defaults['Upfront intangible cost_declining_rate']
     shape_constant = tech_data['Upfront intangible cost_declining_shape']['year_value']
     if shape_constant is None:
-        shape_constant = 0  # TODO: Implement defaults
+        shape_constant = model.technology_defaults['Upfront intangible cost_declining_shape']
 
     # Calculate Declining UIC
     if year == base_year:
@@ -385,18 +385,18 @@ def calc_declining_uic(sub_graph, node, tech, year, year_step, base_year):
         return uic_declining
 
 
-def calc_declining_aic(sub_graph, node, tech, year, year_step, base_year):
+def calc_declining_aic(sub_graph, node, tech, year, year_step, base_year, model):
     # Retrieve Exogenous Terms from Model Description
     tech_data = sub_graph.nodes[node][year]['technologies'][tech]
     initial_aic = tech_data['Annual intangible cost_declining_initial']['year_value']
     if initial_aic is None:
-        initial_aic = 0  # TODO: Implement Defaults
+        initial_aic = model.technology_defaults['Annual intangible cost_declining_initial']
     rate_constant = tech_data['Annual intangible cost_declining_rate']['year_value']
     if rate_constant is None:
-        rate_constant = 0  # TODO: Implement Defaults
+        rate_constant = model.technology_defaults['Annual intangible cost_declining_rate']
     shape_constant = tech_data['Annual intangible cost_declining_shape']['year_value']
     if shape_constant is None:
-        shape_constant = 0  # TODO: Implement Defaults
+        shape_constant = model.technology_defaults['Annual intangible cost_declining_shape']
 
     # Calculate Declining AIC
     if year == base_year:

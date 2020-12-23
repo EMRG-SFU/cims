@@ -170,7 +170,8 @@ class Model:
                                                 self.step,
                                                 self.base_year,
                                                 self.graph,
-                                                self.fuels)
+                                                self.fuels,
+                                                self)
 
                 for ix in range(4):
                     # Calculate Quantities (Total Stock Needed)
@@ -189,7 +190,8 @@ class Model:
                                                     self.step,
                                                     self.base_year,
                                                     self.graph,
-                                                    self.fuels)
+                                                    self.fuels,
+                                                    self)
 
                 # Supply
                 # ******************
@@ -201,7 +203,8 @@ class Model:
                                                 self.step,
                                                 self.base_year,
                                                 self.graph,
-                                                self.fuels)
+                                                self.fuels,
+                                                self)
                 for _ in range(4):
                     # Calculate Fuel Quantities
                     graph_utils.top_down_traversal(g_supply,
@@ -219,7 +222,8 @@ class Model:
                                                     self.step,
                                                     self.base_year,
                                                     self.graph,
-                                                    self.fuels)
+                                                    self.fuels,
+                                                    self)
 
                 # Update Prices
                 # *************
@@ -400,6 +404,7 @@ class Model:
                                                 self.base_year,
                                                 self.graph,
                                                 self.fuels,
+                                                self,
                                                 root=node)
 
             if node in self.fuels:
@@ -658,7 +663,7 @@ class Model:
                     # TODO: Check that marketshares are accurately being calculated
                     low, up = utils.range_available(sub_graph, node, t)
                     if low < int(year) < up:
-                        v = econ.get_heterogeneity(sub_graph, node, year)
+                        v = econ.get_heterogeneity(self, node, year)
                         tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["LCC"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
                         if tech_lcc == 0:
@@ -796,9 +801,9 @@ class Model:
         remaining_base_stock = 0
         remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
-            # TODO: Allow default parameters
             tech_lifespan = self.graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
-            tech_lifespan = 10 if tech_lifespan is None else tech_lifespan
+            tech_lifespan_default = self.technology_defaults['Lifetime']
+            tech_lifespan = tech_lifespan_default if tech_lifespan is None else tech_lifespan
 
             # Base Stock
             tech_base_stock_y = self.graph.nodes[node][y]['technologies'][tech]['base_stock']

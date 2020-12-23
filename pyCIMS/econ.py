@@ -4,13 +4,17 @@ from . import graph_utils
 import warnings
 
 
-def get_heterogeneity(g, node, year):
+def get_heterogeneity(model, node, year):
+    # TODO: Replace with a general "get parameter" function
+    g = model.graph
+    node_type = g.nodes[node]['competition type']
     try:
         v = g.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
     except KeyError:
-        v = 10  # default val
+        v = model.node_defaults[node_type]['Heterogeneity']
     if v is None:
-        v = 10
+        v = model.node_defaults[node_type]['Heterogeneity']
+
     return v
 
 

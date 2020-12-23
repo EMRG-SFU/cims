@@ -191,9 +191,10 @@ class ModelReader:
         for comp_type, param, val in zip(node_df_has_defaults['node_type'],
                                          node_df_has_defaults['Parameter'],
                                          node_df_has_defaults['Default value']):
-            if comp_type not in node_defaults:
-                node_defaults[comp_type] = {}
-            node_defaults[comp_type][param] = val
+            if comp_type.lower() not in node_defaults:
+                node_defaults[comp_type.lower()] = {}
+            node_defaults[comp_type.lower()][param] = val
 
+        # Lower
         # Return
         return technology_defaults, node_defaults
