@@ -145,27 +145,10 @@ class ModelReader:
         return inc_df
 
     def get_default_tech_params(self):
-        """
-        Finds the default parameter values as defined in the model description.
-        Returns
-        -------
-        Two dictionaries.
-
-        The first is a dictionary containing the default values for technologies. This dictionary is
-        keyed by the parameter names.
-
-        The second is a nested dictionary containing the default values for nodes. This dictionary
-        is keyed by competition types ("Sector", "Tech Compete", etc). Each value is another
-        dictionary, keyed by parameter names.
-        """
-        # To get rid of the SettingWithCopyWarning being raised when we create a new column.
-        # This warning is a false positive when dealing with new columns.
-        pd.options.mode.chained_assignment = None
-
         # Read model_description from excel
         mxl = pd.read_excel(self.infile,
                             sheet_name=None,
-                            header=0,
+                            header=1,
                             engine=self.excel_engine)
         df = mxl[self.sheet_map['default_tech']].replace({np.nan: None})
 

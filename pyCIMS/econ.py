@@ -1,15 +1,35 @@
 import warnings
 
 
-def get_heterogeneity(model, node, year):
-    graph = model.graph
-    node_type = graph.nodes[node]['competition type']
+def get_heterogeneity(g, node, year):
+    # TODO: Implement fetch logic (check at the node, if its not there check at the parent, if its
+    #       not there, see if there is a function, otherwise use a default value (need to verify
+    #       this order))
     try:
-        v = graph.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
-    except KeyError:
-        v = model.get_node_parameter_default('Heterogeneity', node_type)
-    if v is None:
-        v = model.get_node_parameter_default('Heterogeneity', node_type)
+        v_dict = g.nodes[node][year]["Heterogeneity"]
+        v = v_dict[None]['year_value']
+    except KeyError as e:
+        v = 10    # TODO: Implement Defaults
+
+    return v
+
+
+def get_provided(g, node, year, parent_provide):
+    node_name = node
+    provided = copy.copy(g.nodes[node][year]["Service provided"])
+    service_name = list(provided.keys())[0]
+    service = provided[service_name]['branch']
+    if service == node_name:
+        parent = graph_utils.get_parent(g, node, year)
+        parent_request = parent["Service requested"][service_name]
+        request_units = utils.split_unit(parent_request['unit'])
+        service_unit = provided[service_name]['unit']
+
+        parent_req_val = parent_request['year_value']
+        parent_provide_unit = parent_provide[year][graph_utils.parent_name(node)][request_units[-1]]
+        # provide_val = parent_request['year_value'] * \
+        # parent_provide[year][graph_utils.parent_name(node)][request_units[-1]]
+        provide_val = parent_req_val / parent_provide_unit
 
     return v
 
@@ -38,7 +58,9 @@ def get_technology_service_cost(sub_graph, node, year, tech, model):
 
         else:
             service_requested_branch = service_requested['branch']
-            if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
+            # TODO: Add Some Reasonable Default/Behaviour for when we have broken a loop & need to
+            #  grab the lcc (currently, the Life Cycle Cost isn't known)
+            if 'Life Cycle Cost' in full_graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
             else:
