@@ -6,7 +6,7 @@ import math
 
 def calculate_tech_econ_values(graph, node, tech, year):
     # Initialize Values that need to be calculated
-    tech_param_names = ["Service cost", "CRF", "Life Cycle Cost", "Full capital cost"]
+    tech_param_names = ["Service cost", "CRF", "LCC", "Full capital cost"]
     tech_param_values = [0.0, 0.0, 0.0, 0.0]
     for param_name, param_val in zip(tech_param_names, tech_param_values):
         present_tech_params = graph.nodes[node][year]['technologies'][tech].keys()
@@ -38,14 +38,14 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     at the appropriate node. Specifically,
 
     Determines the node's:
-    * Total Life Cycle Cost (weighted using total market share across all technologies)
-    * Sum of Life Cycle Costs raised to the negative variance
+    * Total LCC (weighted using total market share across all technologies)
+    * Sum of LCCs raised to the negative variance
 
     Determines each of the node's technology's:
     * Service cost
     * CRF
     * Full capital cost
-    * Life Cycle Cost
+    * LCC
 
     Initializes new_market_share and total_market_share for technologies where market share
     is exogenously defined.
@@ -65,10 +65,8 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     -------
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
-    total_lcc_v = 0.0
-    v = econ.get_heterogeneity(sub_graph, node, year)
 
-    # Check if the node has an exogenously defined Life Cycle Cost
+    # Check if the node has an exogenously defined LCC
     if 'Life Cycle Cost' in sub_graph.nodes[node][year]:
         pass
     # Check if the node is a tech compete node:
@@ -128,7 +126,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
 
                 cap_cost = calc_capital_cost(declining_cc, cc_overnight, declining_cc_limit)
 
-                # Life Cycle Cost
+                # LCC
                 # *****************
                 fixed_uic = sub_graph.nodes[node][year]['technologies'][tech]['Upfront intangible cost_fixed']['year_value']
                 if fixed_uic is None:
@@ -167,18 +165,18 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
 
                 lcc = calc_lcc(upfront_cost, annual_cost, annual_service_cost)
 
-                sub_graph.nodes[node][year]["technologies"][tech]["Life Cycle Cost"]["year_value"] = lcc
+                sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"] = lcc
 
-                # Life Cycle Cost ^ -v
-                # ********************
+                # LCC ^ -v
+                # *****************
                 if round(lcc, 20) == 0:
                     if show_warnings:
-                        warnings.warn('Life Cycle Cost has value of 0 at {} -- {}'.format(node, tech))
+                        warnings.warn('LCC has value of 0 at {} -- {}'.format(node, tech))
                     lcc = 0.0001
 
                 if lcc < 0:
                     if show_warnings:
-                        warnings.warn('Life Cycle Cost has negative value at {} -- {}'.format(node, tech))
+                        warnings.warn('LCC has negative value at {} -- {}'.format(node, tech))
                     lcc = 0.0001
 
                 try:
@@ -187,21 +185,20 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 except OverflowError as e:
                     raise e
 
-        # Set sum of Life Cycle Cost raised to negative variance
+        # Set sum of LCC raised to negative variance
         sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
 
-        # Weighted Life Cycle Cost
-        # ************************
+        # Weighted LCC
+        # *************
         weighted_lccs = 0
-        # For every tech, use a exogenous or previously calculated market share to calculate Life
-        # Cycle Cost
+        # For every tech, use a exogenous or previously calculated market share to calculate LCC
         for tech in node_techs:
             # Determine whether Market share is exogenous or not
             exo_market_share = sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value']
             exogenous = exo_market_share is not None
             sub_graph.nodes[node][year]['technologies'][tech]['Market share']['exogenous'] = exogenous
 
-            # Determine what market share to use for weighing Life Cycle Costs
+            # Determine what market share to use for weighing LCCs
             # If market share is exogenous, set new & total market share to exogenous value
             if exogenous:
                 sub_graph.nodes[node][year]['technologies'][tech][
@@ -211,12 +208,12 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 market_share = exo_market_share
 
             # If market share is not exogenous, but was calculated in a previous iteration for
-            # this year, use total market share for calculating Life Cycle Cost
+            # this year, use total market share for calculating LCC
             elif 'total_market_share' in sub_graph.nodes[node][year]['technologies'][tech].keys():
                 market_share = sub_graph.nodes[node][year]['technologies'][tech]['total_market_share']
 
-            # If market share is not exogenous and hasn't been calculated in a previous year, use
-            # the total market share calculated in the previous year for calculating Life Cycle Cost
+            # If market share is not exogenous and hasn't been calculated in a previous year,
+            # use the total market share calculated in the previous year for calculating LCC
             else:
                 previous_year = str(int(year) - model.step)
                 market_share = sub_graph.nodes[node][previous_year]['technologies'][tech]['total_market_share']
@@ -225,12 +222,12 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 if show_warnings:
                     warnings.warn("Market Share is NONE!!")
 
-            # Weight Life Cycle Cost and Add to Node Total
-            # ********************************************
+            # Weight LCC and Add to Node Total
+            # ********************************
             # find the years where the tech is available
             low, up = utils.range_available(sub_graph, node, tech)
             if int(year) in range(low, up):
-                curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["Life Cycle Cost"]["year_value"]
+                curr_lcc = sub_graph.nodes[node][year]["technologies"][tech]["LCC"]["year_value"]
                 weighted_lccs += market_share * curr_lcc
 
         fuel_name = node.split('.')[-1]
@@ -240,10 +237,10 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         print("{} is fixed ratio w/ techs".format(node))
     else:
         # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
-        # rule, multiply the Life Cycle Costs of the service required by its "Service Requested"
-        # line value. Sometimes, the Service Requested line values act as percent shares that add up
-        # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
-        # Requested Line values sum to numbers greater or less than 1.
+        # rule, multiply the LCCs of the service required by its "Service Requested" line value.
+        # Sometimes, the Service Requested line values act as percent shares that add up to 1 for a
+        # given fixed ratio decision node. Other times, they do not and the Service Requested Line
+        # values sum to numbers greater or less than 1.
         service_cost = econ.get_node_service_cost(sub_graph,
                                                   model.graph,
                                                   node,
