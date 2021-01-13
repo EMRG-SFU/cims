@@ -12,7 +12,7 @@ pprint(my_validator.warnings)
 my_reader = pyCIMS.ModelReader(infile=file,
                                sheet_map={'model': 'Model',
                                           'incompatible': 'Incompatible',
-                                          'default_tech': 'Technologies'},
+                                          'default_tech': 'Technology_Node templates'},
                                node_col='Node')
 
 # Create a model from the reader

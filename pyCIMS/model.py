@@ -9,7 +9,6 @@ from . import econ
 from . import lcc_calculation
 
 # TODO: Evaluate whether methods should avoid side effects.
-# TODO: Implement automatic defaults
 # TODO: Implement logic for determining when to read, calculate, inherit, or use default values
 # TODO: Separate the get_service_cost code out into smaller functions & document.
 # TODO: Should we be initializing quantities when we initialize prices?
@@ -70,6 +69,7 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
+        self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
         self.years = model_reader.get_years()
@@ -99,7 +99,7 @@ class Model:
         graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels = graph_utils.get_fuels(graph, self.years)
+        self.fuels = graph_utils.get_fuels(graph)
         self.graph = graph
 
     def run(self, equilibrium_threshold=0.005, max_iterations=10, show_warnings=True):
@@ -146,7 +146,6 @@ class Model:
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
-            # graph_utils.top_down_traversal(self.graph, self.initialize_node, year)
 
             while not equilibrium:
                 print('iter {}'.format(iteration))
@@ -161,16 +160,13 @@ class Model:
 
                 # DEMAND
                 # ******************
-                # Calculate Life Cycle Cost values on demand side
+                # Calculate LCC values on demand side
                 graph_utils.bottom_up_traversal(g_demand,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels)
+                                                self)
 
-                for ix in range(4):
+                for _ in range(4):
                     # Calculate Quantities (Total Stock Needed)
                     graph_utils.top_down_traversal(g_demand,
                                                    self.stock_retirement_and_allocation,
@@ -180,26 +176,18 @@ class Model:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    # graph_utils.bottom_up_traversal(g_demand, self.get_service_cost, year)
                     graph_utils.bottom_up_traversal(g_demand,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self.step,
-                                                    self.base_year,
-                                                    self.graph,
-                                                    self.fuels)
+                                                    self)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                # graph_utils.bottom_up_traversal(g_supply, self.initial_lcc_calculation, year)
                 graph_utils.bottom_up_traversal(g_supply,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels)
+                                                self)
                 for _ in range(4):
                     # Calculate Fuel Quantities
                     graph_utils.top_down_traversal(g_supply,
@@ -210,14 +198,10 @@ class Model:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    # graph_utils.bottom_up_traversal(g_demand, self.get_service_cost, year)
                     graph_utils.bottom_up_traversal(g_supply,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self.step,
-                                                    self.base_year,
-                                                    self.graph,
-                                                    self.fuels)
+                                                    self)
 
                 # Update Prices
                 # *************
@@ -238,11 +222,6 @@ class Model:
                               self.check_equillibrium(prev_prices,
                                                       new_prices,
                                                       equilibrium_threshold)
-
-                # Print if Verbose
-                # ****************
-                # if verbose:
-                #     self.print_prices(year)
 
                 # Next Iteration
                 # **************
@@ -278,7 +257,7 @@ class Model:
             if prev_fuel_price == 0:
                 if self.show_run_warnings:
                     warnings.warn("Previous fuel price is 0 for {}".format(fuel))
-                prev_fuel_price = 1
+                prev_fuel_price = self.get_node_parameter_default('Life Cycle Cost', 'sector')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
                 return False
@@ -295,8 +274,7 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
-        value.
+        Specifically, initializes (1) price multiplier values and (2) fuel nodes' LCC value.
 
         Parameters
         ----------
@@ -356,9 +334,8 @@ class Model:
 
         def init_fuel_lcc(graph, node, year, step=5):
             """
-            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
-            node. This function assumes all of node's children have already been processed by this
-            function.
+            Function for initializing LCC for a node in a graph, if that node is a fuel node. This
+            function assumes all of node's children have already been processed by this function.
 
             Parameters
             ----------
@@ -376,35 +353,32 @@ class Model:
 
             Returns
             -------
-            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
-            Cycle Cost if node is a fuel node.
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized LCC if
+            node is a fuel node.
             """
 
             def calc_lcc_from_children():
                 """
-                Helper function to calculate a node's Life Cycle Cost from its children.
+                Helper function to calculate a node's LCC from its children.
 
                 Returns
                 -------
-                Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
+                Nothing is returned, but the node will be updated with a new LCC value.
                 """
                 # Find the subtree rooted at the fuel node
                 descendants = [n for n in graph.nodes if node in n]
                 descendant_tree = nx.subgraph(graph, descendants)
 
-                # Calculate the Life Cycle Costs for the sub-tree
+                # Calculate the LCCs for the sub-tree
                 graph_utils.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self.step,
-                                                self.base_year,
-                                                self.graph,
-                                                self.fuels,
+                                                self,
                                                 root=node)
 
             if node in self.fuels:
                 if "Life Cycle Cost" not in graph.nodes[node][year]:
-                    # Life Cycle Cost needs to be calculated from children
+                    # LCC needs to be calculated from children
                     calc_lcc_from_children()
                     lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
                     fuel_name = list(lcc_dict.keys())[0]
@@ -438,7 +412,7 @@ class Model:
         """
         1. Determine what fuels need to be calculated
         2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
-            (A) If a tech compete node, just return the life cycle cost. This is production cost.
+            (A) If a tech compete node, just return the lcc. This is production cost.
             (B) If its a fixed ratio or sector node:
                   i) find all the services being requested
                  ii) for each service, multiply the price by the requested amount to get a weighted cost.
@@ -481,7 +455,6 @@ class Model:
                     total_lcc += req_amount * calc_price(branch)
 
                 # Divide it by the total request amount
-                # return random.randint(5, 200)
                 return total_lcc / total_req
 
         for fuel in price_keys_to_estimate:
@@ -494,7 +467,10 @@ class Model:
         return new_prices
 
     def stock_retirement_and_allocation(self, sub_graph, node, year):
-        def helper_quantity_from_services(requested_services, assessed_demand, technology=None, technology_market_share=1):
+        def helper_quantity_from_services(requested_services,
+                                          assessed_demand,
+                                          technology=None,
+                                          technology_market_share=1):
             if isinstance(requested_services, dict):
                 requested_services = [requested_services]
 
@@ -516,14 +492,10 @@ class Model:
                 # Save results
                 year_node['quantities'].add_quantity_request(amount=quant_requested,
                                                              requesting_node=node,
-                                                             requesting_technology=technology
-                                                             )
+                                                             requesting_technology=technology)
 
         def general_allocation():
             node_year_data = self.graph.nodes[node][year]
-
-            # What is being provided by the node?
-            service_to_provide = node_year_data['Service provided']
 
             # How much needs to be provided, based on what was requested of it?
             if self.graph.nodes[node]['competition type'] == 'root':
@@ -579,7 +551,6 @@ class Model:
             # remaining stock already meets quantity demanded, no competition is required and
             # un-needed surplus stock is force retired starting with the oldest vintage at a
             # proportion of each vintages's remaining total market shares.
-            # TODO: Deal with surplus retirements
             new_stock_demanded = copy.copy(assessed_demand)
             for t, e_stocks in existing_stock_per_tech.items():
                 new_stock_demanded -= e_stocks
@@ -596,6 +567,7 @@ class Model:
 
                 if total_base_stock == 0:
                     pass
+
                 else:
                     retirement_proportion = max(0, min(surplus / total_base_stock, 1))
                     for tech in existing_stock_per_tech:
@@ -654,21 +626,21 @@ class Model:
                     new_market_share = 0
 
                     # Find the years the technology is available
-                    # TODO: Check that low, up is correct and not off by 1
-                    # TODO: Check that marketshares are accurately being calculated
                     low, up = utils.range_available(sub_graph, node, t)
                     if low < int(year) < up:
-                        v = econ.get_heterogeneity(sub_graph, node, year)
-                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["Life Cycle Cost"]["year_value"]
+                        v = econ.get_heterogeneity(self, node, year)
+                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["LCC"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
                         if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 Life Cycle Cost properly
+                            # TODO: Address the problem of a 0 LCC properly
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has an Life Cycle Cost=0".format(t, node))
+                                warnings.warn("Technology {} @ node {} has "
+                                              "an LCC==0".format(t, node))
                             tech_lcc = 0.0001
                         if tech_lcc < 0:
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
+                                warnings.warn("Technology {} @ node {} has a "
+                                              "negative LCC".format(t, node))
                             tech_lcc = 0.0001
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
@@ -796,9 +768,9 @@ class Model:
         remaining_base_stock = 0
         remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
-            # TODO: Allow default parameters
             tech_lifespan = self.graph.nodes[node][y]['technologies'][tech]['Lifetime']['year_value']
-            tech_lifespan = 10 if tech_lifespan is None else tech_lifespan
+            tech_lifespan_default = self.get_tech_parameter_default('Lifetime')
+            tech_lifespan = tech_lifespan_default if tech_lifespan is None else tech_lifespan
 
             # Base Stock
             tech_base_stock_y = self.graph.nodes[node][y]['technologies'][tech]['base_stock']
@@ -814,6 +786,12 @@ class Model:
 
         graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
-        # Retired stock will be removed later from ['new_stock_remaining']
+        # Note: retired stock will be removed later from ['new_stock_remaining']
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
         return existing_stock
+
+    def get_tech_parameter_default(self, parameter):
+        return self.technology_defaults[parameter]
+
+    def get_node_parameter_default(self, parameter, competition_type):
+        return self.node_defaults[competition_type][parameter]
