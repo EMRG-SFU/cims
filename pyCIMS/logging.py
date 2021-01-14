@@ -1,4 +1,5 @@
 import pandas as pd
+import warnings
 from pyCIMS.model import NodeQuantity
 
 
@@ -78,9 +79,16 @@ def openfile(path):
 
 # define slim list example, change the content in parameter_list1 if you want a different list
 def slimlist(default_list):
+    # add more combinations to the list as we grow the default list
+
     if default_list == 'slim':
         p_list = ['new_market_share', 'Life Cycle Cost', 'competition type',
-                  'Service requested', 'Capital cost_overnight']
+                    'Service requested', 'Capital cost_overnight']
+
+    # this is for validating if we have defined the default name
+    else:
+        raise ValueError("ValueError exception thrown: default_list name not exist")
+
     return p_list
 
 
@@ -111,10 +119,57 @@ def add_log_item(all_logs, log_tuple):
     return all_logs
 
 
+# Add model_parameter helper function which returns all parameters in the model and store as a list
+def model_parameter(model):
+    model_list = []
+
+    for node in model.graph.nodes:
+        for param, val in model.graph.nodes[node].items():
+            # print(param)
+            if param not in model_list:
+                model_list.append(param)
+
+        for year in model.years:
+            ny_data = model.graph.nodes[node][year]
+            for param, val in ny_data.items():
+                if param not in model_list:
+                    model_list.append(param)
+
+            for param, val in ny_data.items():
+                if param == 'technologies':
+                    for tech, tech_data in ny_data['technologies'].items():
+                        for tech_param, tech_val in tech_data.items():
+                            if tech_param not in model_list:
+                                model_list.append(tech_param)
+    return model_list
+
+
+def search_parameter(model, search: [str] = None):
+    model_list = model_parameter(model)
+
+    print('You are searching if any parameter in the model contains ', search)
+    search_list = []
+    for i in range(len(search)):
+        m = search[i]
+        matching = [x for x in model_list if m in x]
+
+        search_list += matching
+
+    if len(search_list) == 0:
+        warnings.warn(
+            "You search term doesn't match with any parameter in the model")
+        return
+
+    print('Here are all the parameters contain your search term : ')
+    return search_list
+
+
 def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
-    # parameter_list: a list of string such as ['aa', 'bb','cc']
-    # path: str path of the txt file such as 'test.txt'
-    # default_list: str of default list, right now 'all' return all parameters and 'slim' return a pre-defined 5 parameters
+    '''
+    parameter_list: a list of string such as ['aa', 'bb','cc']
+    path: str path of the txt file such as 'test.txt'
+    default_list: str of default list, right now 'all' return all parameters and 'slim' return a pre-defined 5 parameters
+    '''
 
     # if no argument chosen or defualt_list = 'all', return all parameters
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
@@ -154,19 +209,26 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         elif default_list and (parameter_list is None and path is None):
             p_list = slimlist(default_list)
 
-        # print this if there are more than 2 argument specified
+        # Warning if there are more than 2 argument specified
         else:
-            print(
-                'Error! You can only use parameter_list or path or default_list. You cannot specify them at the same time!')
+            raise ValueError("ValueError exception thrown: multiple parameters specified")
+
             return
 
         l = len(p_list)
         data_tuples = []
+        total_parameter_list = model_parameter(model)
+
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for i in range(l):
+                # check if the input parameter exists.
+                if p_list[i] not in total_parameter_list:
+                    message = "parameter {parameter:} does not exist".format(parameter=p_list[i])
+                    warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
+
                     if param == p_list[i]:
                         if param not in model.years:
                             log = node, None, None, param, val
