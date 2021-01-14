@@ -160,7 +160,7 @@ class Model:
 
                 # DEMAND
                 # ******************
-                # Calculate LCC values on demand side
+                # Calculate Life Cycle Cost values on demand side
                 graph_utils.bottom_up_traversal(g_demand,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -274,7 +274,8 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' LCC value.
+        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
+        value.
 
         Parameters
         ----------
@@ -334,8 +335,9 @@ class Model:
 
         def init_fuel_lcc(graph, node, year, step=5):
             """
-            Function for initializing LCC for a node in a graph, if that node is a fuel node. This
-            function assumes all of node's children have already been processed by this function.
+            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
+            node. This function assumes all of node's children have already been processed by this
+            function.
 
             Parameters
             ----------
@@ -353,23 +355,23 @@ class Model:
 
             Returns
             -------
-            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized LCC if
-            node is a fuel node.
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
+            Cycle Cost if node is a fuel node.
             """
 
             def calc_lcc_from_children():
                 """
-                Helper function to calculate a node's LCC from its children.
+                Helper function to calculate a node's Life Cycle Cost from its children.
 
                 Returns
                 -------
-                Nothing is returned, but the node will be updated with a new LCC value.
+                Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
                 """
                 # Find the subtree rooted at the fuel node
                 descendants = [n for n in graph.nodes if node in n]
                 descendant_tree = nx.subgraph(graph, descendants)
 
-                # Calculate the LCCs for the sub-tree
+                # Calculate the Life Cycle Costs for the sub-tree
                 graph_utils.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -378,7 +380,7 @@ class Model:
 
             if node in self.fuels:
                 if "Life Cycle Cost" not in graph.nodes[node][year]:
-                    # LCC needs to be calculated from children
+                    # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
                     lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
                     fuel_name = list(lcc_dict.keys())[0]
@@ -412,7 +414,7 @@ class Model:
         """
         1. Determine what fuels need to be calculated
         2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
-            (A) If a tech compete node, just return the lcc. This is production cost.
+            (A) If a tech compete node, just return the life cycle cost. This is production cost.
             (B) If its a fixed ratio or sector node:
                   i) find all the services being requested
                  ii) for each service, multiply the price by the requested amount to get a weighted cost.
@@ -629,18 +631,16 @@ class Model:
                     low, up = utils.range_available(sub_graph, node, t)
                     if low < int(year) < up:
                         v = econ.get_heterogeneity(self, node, year)
-                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["LCC"]["year_value"]
+                        tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["Life Cycle Cost"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
                         if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 LCC properly
+                            # TODO: Address the problem of a 0 Life Cycle Cost properly
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has "
-                                              "an LCC==0".format(t, node))
+                                warnings.warn("Technology {} @ node {} has a Life Cycle Cost=0".format(t, node))
                             tech_lcc = 0.0001
                         if tech_lcc < 0:
                             if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a "
-                                              "negative LCC".format(t, node))
+                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
                             tech_lcc = 0.0001
                         try:
                             new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
