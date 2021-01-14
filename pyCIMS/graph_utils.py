@@ -1,37 +1,40 @@
-import networkx as nx
 import copy
 import warnings
+import networkx as nx
 
-# from utils import is_year
 from . import utils
 
-'''
-1- Perform action in graph
-'''
 
-
+# **************************
+# 1- Perform action in graph
+# **************************
 def find_value(graph, node, parameter, year=None):
     """
     Find a parameter's value at a given node or its structural ancestors.
 
-    First attempts to locate a parameter at a given node. If the parameter does not exist at that node, a recursive call
-    is made to find the parameter's value at `node`'s parent, if one exists. If no parent exists None is returned.
+    First attempts to locate a parameter at a given node. If the parameter does not exist at that
+    node, a recursive call is made to find the parameter's value at `node`'s parent, if one exists.
+    If no parent exists None is returned.
+
     Parameters
     ----------
     graph : networkx.Graph
         The graph where `node` resides.
     node : str
-        The name of the node to begin our search from. Must be contained within `graph`. (e.g. 'pyCIMS.Canada.Alberta')
+        The name of the node to begin our search from. Must be contained within `graph`. (e.g.
+        'pyCIMS.Canada.Alberta')
     parameter : str
         The name of the parameter whose value is being found. (e.g. 'Sector type')
     year : str, optional
-        The year associated with sub-dictionary to search at `node`. Default is None, which implies that year
-        sub-dictionaries should be searched. Instead, only search for `parameter` in `node`s top level data.
+        The year associated with sub-dictionary to search at `node`. Default is None, which implies
+        that year sub-dictionaries should be searched. Instead, only search for `parameter` in
+        `node`s top level data.
 
     Returns
     -------
     Any
-        The value associated with `parameter` if a value can be found at `node` or one of its ancestors. Otherwise None
+        The value associated with `parameter` if a value can be found at `node` or one of its
+        ancestors. Otherwise None
     """
     data = graph.nodes[node]
     parent = parent_name(node, return_empty=True)
@@ -51,45 +54,6 @@ def find_value(graph, node, parameter, year=None):
         return find_value(graph, parent, parameter, year)
 
     # Worst Case, return None
-    else:
-        return None
-
-
-def find_node_value(graph, node, parameter, year=None, worst_case=True):
-    """
-    Find a parameter's value at a given node.
-
-    """
-    data = graph.nodes[node]
-    parent = parent_name(node, return_empty=True)
-
-    # Look at the Node/Year
-    if year:
-        year_data = graph.nodes[node][year]
-        if parameter in year_data.keys():
-            return year_data[parameter]
-
-    # Look at the Node
-    if parameter in data.keys():
-        return data[parameter]
-
-    # Worst Case, return None
-    if worst_case:
-        return None
-    else:
-        # error when the field doesn't exist if `worst_case` is set to False
-        raise KeyError
-
-
-def get_parent(g, curr_node, year):
-    """
-    g is graph
-    curr_node is current node name (str)
-    """
-    parent = '.'.join(curr_node.split('.')[:-1])
-    parent_node = g.nodes[parent][year]
-    return parent_node
-
 
 def parent_name(curr_node, return_empty=False):
     """
@@ -98,32 +62,16 @@ def parent_name(curr_node, return_empty=False):
     """
     parent = '.'.join(curr_node.split('.')[:-1])
     if parent:
-        return parent
+        return_val = parent
     elif return_empty:
-        return ""
+        return_val = ""
     else:
-        return curr_node
+        return_val = curr_node
+
+    return return_val
 
 
-def child_name(g, curr_node, return_empty=False):
-    """
-    curr_node is current node name (str)
-    CAUTION: when curr_node is tree leaf, returns leaf (when retur_empty is False)
-
-    MAYBE year parameter should be included
-    """
-    child = [i for i in g.successors(curr_node)]
-
-    if child:
-        return child
-
-    elif return_empty:
-        return []
-    else:
-        return [curr_node]
-
-
-def get_fuels(graph, years):
+def get_fuels(graph):
     """ Find the names of nodes supplying fuel.
 
     This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
@@ -135,11 +83,11 @@ def get_fuels(graph, years):
         A list containing the names of nodes which supply fuels.
     """
     fuels = []
-    for n, d in graph.nodes(data=True):
-        is_supply = d['type'].lower() == 'supply'
-        is_sector = 'sector' in d['competition type'].lower()
+    for node, data in graph.nodes(data=True):
+        is_supply = data['type'].lower() == 'supply'
+        is_sector = 'sector' in data['competition type'].lower()
         if is_supply & is_sector:
-            fuels.append(n)
+            fuels.append(node)
     return fuels
 
 
@@ -150,24 +98,24 @@ def get_subgraph(graph, node_types):
     Parameters
     ----------
     node_types : list of str
-        A list of node types ('standard', 'supply', or 'demand') to include in the returned sub-graph.
+        A list of node types ('standard', 'supply', or 'demand') to include in the returned
+        sub-graph.
 
     Returns
     -------
     networkx.DiGraph or networkX.Graph
         The returned graph is a sub-graph of `graph`. A node is only included if its type is one
-        of `node_types`. A edge is only included if it connects two nodes found in the returned graph.
+        of `node_types`. A edge is only included if it connects two nodes found in the returned
+        graph.
     """
     nodes = [n for n, a in graph.nodes(data=True) if a['type'] in node_types]
     sub_g = graph.subgraph(nodes)
     return sub_g
 
 
-"""
-2 - TRAVERSALS
-"""
-
-
+# **************************
+# 2 - TRAVERSALS
+# **************************
 def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -182,8 +130,8 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
         The graph to be traversed.
 
     node_process_func : function (nx.DiGraph, str) -> None
-        The function to be applied to each node in `sub_graph`. Doesn't return anything but should have an
-        effect on the node data within `sub_graph`.
+        The function to be applied to each node in `sub_graph`. Doesn't return anything but should
+        have an effect on the node data within `sub_graph`.
 
     Returns
     -------
@@ -198,8 +146,6 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
 
     # Find the distance from the root to each node in the sub-graph
     dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
-
-    original_leaves = [n for n, d in sub_graph.out_degree if d == 0]
 
     # Start the traversal
     sg_cur = sub_graph.copy()
@@ -280,12 +226,11 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
         sg_cur.remove_node(n_cur)
 
 
-"""
-3 - Making the graph
-"""
-
-
-def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kwargs for including new fields (e.g. LCC, Service Cost, etc)
+# **************************
+# 3 - Making the graph
+# **************************
+def add_node_data(graph, current_node, node_dfs):
+    # args and kwargs for including new fields (e.g. LCC, Service Cost, etc)
     """ Add and populate a new node to `graph`
 
     Parameters
@@ -330,23 +275,15 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
-    for y in years:
-        year_df = current_node_df[non_years + [y]]
+    for year in years:
+        year_df = current_node_df[non_years + [year]]
         year_dict = {}
-        for param, val, branch, src, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': src,
                    'branch': branch,
                    'unit': unit,
                    'year_value': year_value}
 
-            # TODO: Switch away from dictionary of dictionary I think
-            # if param in year_dict.keys():
-            #     if isinstance(year_dict[param], list):
-            #         year_dict[param].append(dct)
-            #     else:
-            #         year_dict[param] = [year_dict[param], dct]
-            # else:
-            #     year_dict[param] = dct
             if param in year_dict.keys():
                 pass
             else:
@@ -354,7 +291,7 @@ def add_node_data(graph, current_node, node_dfs, *args, **kwargs): # args and kw
             year_dict[param][val] = dct
 
         # Add data to node
-        graph.nodes[current_node][y] = year_dict
+        graph.nodes[current_node][year] = year_dict
 
     # 7 Return the new graph
     return graph
@@ -388,11 +325,11 @@ def add_tech_data(graph, node, tech_dfs, tech):
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
-    for y in years:
-        year_df = t_df[non_years + [y]]
+    for year in years:
+        year_df = t_df[non_years + [year]]
         year_dict = {}
 
-        for parameter, value, branch, source, unit, nothing, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for parameter, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'value': value,
                    'source': source,
                    'branch': branch,
@@ -408,11 +345,11 @@ def add_tech_data(graph, node, tech_dfs, tech):
                 year_dict[parameter] = dct
 
         # Add technologies key (to the node's data) if needed
-        if 'technologies' not in graph.nodes[node][y].keys():
-            graph.nodes[node][y]['technologies'] = {}
+        if 'technologies' not in graph.nodes[node][year].keys():
+            graph.nodes[node][year]['technologies'] = {}
 
         # Add the technology specific data for that year
-        graph.nodes[node][y]['technologies'][tech] = year_dict
+        graph.nodes[node][year]['technologies'][tech] = year_dict
 
     # 4 Return the new graph
     return graph
@@ -422,9 +359,9 @@ def add_edges(graph, node, df):
     """ Add edges associated with `node` to `graph` based on data in `df`.
 
     Edges are added to the graph based on: (1) if a node is requesting a service provided by
-    another node or (2) the relationships implicit in the branch structure used to identify a node. When an
-    edge is added to the graph, we also store the edge type ('request_provide', 'structure') in the edge
-    attributes. An edge may have more than one type.
+    another node or (2) the relationships implicit in the branch structure used to identify a node.
+    When an edge is added to the graph, we also store the edge type ('request_provide', 'structure')
+    in the edge attributes. An edge may have more than one type.
 
     Parameters
     ----------
@@ -451,16 +388,16 @@ def add_edges(graph, node, df):
     graph.add_edges_from(rp_edges)
 
     # Add them to the graph
-    for e in rp_edges:
+    for edge in rp_edges:
         try:
-            types = graph.edges[e]['type']
+            types = graph.edges[edge]['type']
             if 'request_provide' not in types:
-                graph.edges[e]['type'] += ['request_provide']
+                graph.edges[edge]['type'] += ['request_provide']
         except KeyError:
-            graph.edges[e]['type'] = ['request_provide']
+            graph.edges[edge]['type'] = ['request_provide']
 
     # 3 Find edge based on branch structure.
-    #   e.g. If our node was pyCIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
+    # e.g. If our node was pyCIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
     # Find the node's parent
     parent = '.'.join(node.split('.')[:-1])
     if parent:
@@ -515,12 +452,12 @@ def make_nodes(graph, node_dfs, tech_dfs):
     # if that doesn't work, deals with the possibility that nodes may be defined out of order.
     node_dfs_to_add = list(node_dfs.keys())
     while len(node_dfs_to_add) > 0:
-        n = node_dfs_to_add.pop(0)
+        node_data = node_dfs_to_add.pop(0)
         try:
-            new_graph = add_node_data(graph, n, node_dfs)
+            new_graph = add_node_data(graph, node_data, node_dfs)
 
-        except KeyError as e:
-            node_dfs_to_add.append(n)
+        except KeyError:
+            node_dfs_to_add.append(node_data)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:
