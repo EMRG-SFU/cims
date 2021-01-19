@@ -3,6 +3,7 @@ import numpy as np
 from .reader import get_node_cols
 import warnings
 import os
+from .utils import is_year
 
 
 class ModelValidator:
@@ -17,14 +18,16 @@ class ModelValidator:
                             '.xlsm': 'xlrd'}
         excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
         mxl = pd.read_excel(xl_file, sheet_name=None, header=1, engine=excel_engine)
-        model_df = mxl['Model'].replace({np.nan: None})      # Read the model sheet into a dataframe
-        model_df.index += 3                                     # Adjust index to correspond to Excel line numbers
-                                                                # +1: 0 vs 1 origin, +1: header skip, +1: column headers
+        model_df = mxl['Model'].replace({np.nan: None})  # Read the model sheet into a dataframe
+        model_df.index += 3  # Adjust index to correspond to Excel line numbers
+        # +1: 0 vs 1 origin, +1: header skip, +1: column headers
         model_df.columns = [str(c) for c in
-                            model_df.columns]                   # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df, 'Node')        # Find columns, separated year cols from non-year cols
+                            model_df.columns]  # Convert all column names to strings (years were ints)
+        n_cols, y_cols = get_node_cols(model_df,
+                                       'Node')  # Find columns, separated year cols from non-year cols
         all_cols = np.concatenate((n_cols, y_cols))
-        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf = model_df.loc[1:,
+              all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         self.model_df = mdf
         self.index2node_map = self.model_df[self.node_col].ffill()
@@ -73,12 +76,14 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
                 print("{} nodes had invalid competition types. {}".format(len(invalid_nodes),
-                                                                                  more_info if len(invalid_nodes) else ""))
+                                                                          more_info if len(
+                                                                              invalid_nodes) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['invalid_competition_type'] for more info"
                 w = "{} nodes had invalid competition types. {}".format(len(invalid_nodes),
-                                                                                  more_info if len(invalid_nodes) else "")
+                                                                        more_info if len(
+                                                                            invalid_nodes) else "")
                 warnings.warn(w)
 
         def unspecified_nodes(p, r):
@@ -92,16 +97,19 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['unspecified_nodes'] for more info"
                 print("{} references to unspecified nodes. {}".format(len(referenced_unspecified),
-                                                                                           more_info if len(referenced_unspecified) else ""))
+                                                                      more_info if len(
+                                                                          referenced_unspecified) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['mismatched_node_names'] for more info"
                 w = "{} references to unspecified nodes. {}".format(len(referenced_unspecified),
-                                                                                         more_info if len(referenced_unspecified) else "")
+                                                                    more_info if len(
+                                                                        referenced_unspecified) else "")
                 warnings.warn(w)
 
         def unreferenced_nodes(p, r, roots):
-            specified_unreferenced = [(i, v) for i, v in p.iteritems() if (v not in r.values) and (v not in roots)]
+            specified_unreferenced = [(i, v) for i, v in p.iteritems() if
+                                      (v not in r.values) and (v not in roots)]
 
             if len(specified_unreferenced) > 0:
                 self.warnings['unreferenced_nodes'] = specified_unreferenced
@@ -109,13 +117,16 @@ class ModelValidator:
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['unreferenced_nodes'] for more info"
-                print("{} non-root nodes are never referenced. {}".format(len(specified_unreferenced),
-                                                                          more_info if len(specified_unreferenced) else ""))
+                print(
+                    "{} non-root nodes are never referenced. {}".format(len(specified_unreferenced),
+                                                                        more_info if len(
+                                                                            specified_unreferenced) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['unreferenced_nodes'] for more info"
                 w = "{} non-root nodes are never referenced. {}".format(len(specified_unreferenced),
-                                                                        more_info if len(specified_unreferenced) else "")
+                                                                        more_info if len(
+                                                                            specified_unreferenced) else "")
                 warnings.warn(w)
 
         def mismatched_node_names(p):
@@ -140,17 +151,19 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['mismatched_node_names'] for more info"
                 print("{} node name/branch mismatches. {}".format(len(mismatched),
-                                                                  more_info if len(mismatched) else ""))
+                                                                  more_info if len(
+                                                                      mismatched) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['mismatched_node_names'] for more info"
-                w = "{} node name/branch mismatches. {}".format(len(mismatched), more_info if len(mismatched) else "")
+                w = "{} node name/branch mismatches. {}".format(len(mismatched), more_info if len(
+                    mismatched) else "")
                 warnings.warn(w)
 
         def nodes_no_provided_service(p):
             nodes = self.model_df[self.node_col].dropna()
             nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
-            nodes_no_service = [(i,n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
+            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
 
             if len(nodes_no_service) > 0:
                 self.warnings['nodes_no_provided_service'] = nodes_no_service
@@ -158,13 +171,15 @@ class ModelValidator:
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['nodes_no_service'] for more info"
-                print("{} nodes were specified but don't provide a service. {}".format(len(nodes_no_service),
-                                                                                       more_info if len(nodes_no_service) else ""))
+                print("{} nodes were specified but don't provide a service. {}".format(
+                    len(nodes_no_service),
+                    more_info if len(nodes_no_service) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['nodes_no_service'] for more info"
-                w = "{} nodes were specified but don't provide a service. {}".format(len(nodes_no_service),
-                                                                                     more_info if len(nodes_no_service) else "")
+                w = "{} nodes were specified but don't provide a service. {}".format(
+                    len(nodes_no_service),
+                    more_info if len(nodes_no_service) else "")
                 warnings.warn(w)
 
         def nodes_requesting_self(p, r):
@@ -240,37 +255,44 @@ class ModelValidator:
             nodes_that_request = [self.index2node_map[i] for i, v in r.iteritems()]
             nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_request]
 
-            nodes_or_techs_no_service = [(i, n) for i, n in nodes_no_service if n in nodes_without_tech]
-           
+            nodes_or_techs_no_service = [(i, n) for i, n in nodes_no_service if
+                                         n in nodes_without_tech]
+
             for n in nodes_with_tech:
                 node = self.index2node_map[self.index2node_map == n]
-                techs_within_node = pd.DataFrame([(i, v) for i, v in techs.iteritems() if i in node.index],
-                                                columns=['Index','Name'])
-                techs_within_node = techs_within_node.append({'Index': node.index.max(), 'Name': None},
-                                                            ignore_index=True)
+                techs_within_node = pd.DataFrame(
+                    [(i, v) for i, v in techs.iteritems() if i in node.index],
+                    columns=['Index', 'Name'])
+                techs_within_node = techs_within_node.append(
+                    {'Index': node.index.max(), 'Name': None},
+                    ignore_index=True)
                 for i in range(techs_within_node.shape[0]):
-                    if i == techs_within_node.shape[0]-1:
+                    if i == techs_within_node.shape[0] - 1:
                         break
                     else:
                         start_index = techs_within_node['Index'].loc[i]
-                        end_index = techs_within_node['Index'].loc[i+1]
+                        end_index = techs_within_node['Index'].loc[i + 1]
                         tech_name = techs_within_node['Name'].loc[i]
-                        if 'Service requested' not in list(self.model_df['Parameter'].loc[start_index:end_index]):
-                            nodes_or_techs_no_service.append((nodes[nodes == n].index[0], n, tech_name))
-        
+                        if 'Service requested' not in list(
+                                self.model_df['Parameter'].loc[start_index:end_index]):
+                            nodes_or_techs_no_service.append(
+                                (nodes[nodes == n].index[0], n, tech_name))
+
             if len(nodes_or_techs_no_service) > 0:
                 self.warnings['nodes_no_requested_service'] = nodes_or_techs_no_service
 
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
-                print("{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
-                                                                                       more_info if len(nodes_or_techs_no_service) else ""))
+                print("{} nodes or technologies don't request other services. {}".format(
+                    len(nodes_or_techs_no_service),
+                    more_info if len(nodes_or_techs_no_service) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
-                w = "{} nodes or technologies don't request other services. {}".format(len(nodes_or_techs_no_service),
-                                                                                     more_info if len(nodes_or_techs_no_service) else "")
+                w = "{} nodes or technologies don't request other services. {}".format(
+                    len(nodes_or_techs_no_service),
+                    more_info if len(nodes_or_techs_no_service) else "")
                 warnings.warn(w)
 
         def discrepencies_in_model_and_tree():
@@ -301,7 +323,7 @@ class ModelValidator:
 
             if len(nodes_with_discrepencies) > 0:
                 self.warnings['discrepencies_in_model_and_tree'] = nodes_with_discrepencies
-                
+
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
@@ -316,10 +338,10 @@ class ModelValidator:
                 w = "{} nodes have been defined in a different order between the model and tree" \
                     "sheets. {}".format(len(nodes_with_discrepencies),
                                         more_info if len(nodes_with_discrepencies) else "")
-                warnings.warn(w)  
+                warnings.warn(w)
 
         def nodes_with_zero_output():
-            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:,7:18]
+            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:, 7:18]
             zero_output_nodes = []
             for i in range(output.shape[0]):
                 if output.iloc[i, 0:12].eq(0).any():
@@ -333,16 +355,19 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['nodes_with_zero_output'] for more info"
                 print("{} nodes have 0 in the output line. {}".format(len(zero_output_nodes),
-                                                                                       more_info if len(zero_output_nodes) else ""))
+                                                                      more_info if len(
+                                                                          zero_output_nodes) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['nodes_with_zero_output'] for more info"
                 w = "{} nodes have 0 in the output line. {}".format(len(zero_output_nodes),
-                                                                                     more_info if len(zero_output_nodes) else "")
+                                                                    more_info if len(
+                                                                        zero_output_nodes) else "")
                 warnings.warn(w)
 
         def fuel_nodes_no_lcc():
-            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
+            d = self.model_df[self.model_df['Parameter'] == 'Node type'][
+                    'Value'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
@@ -357,7 +382,7 @@ class ModelValidator:
                         prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 7:18]
                         if prod_cost.iloc[0].isnull().any():
                             no_prod_cost.append((node.index[0], n))
-        
+
             if len(no_prod_cost) > 0:
                 self.warnings['fuels_without_lcc'] = no_prod_cost
 
@@ -365,42 +390,46 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
                 print("{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
-                                                                   more_info if len(no_prod_cost) else ""))
+                                                                               more_info if len(
+                                                                                   no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
                 w = "{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
-                                                                 more_info if len(no_prod_cost) else "")
-                warnings.warn(w)  
+                                                                             more_info if len(
+                                                                                 no_prod_cost) else "")
+                warnings.warn(w)
 
         def nodes_no_capital_cost():
             nodes = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
-            nodes.index = nodes.index-1
-            end = pd.Series(['None'],index=[self.model_df.index.max()])
+            nodes.index = nodes.index - 1
+            end = pd.Series(['None'], index=[self.model_df.index.max()])
             nodes = nodes.append(end)
             no_cap_cost = []
 
-            for i in range(nodes.shape[0]-1):
+            for i in range(nodes.shape[0] - 1):
                 node_index = nodes.index[i]
                 node_name = nodes.iloc[i]
                 start_index = nodes.index[i]
-                end_index = nodes.index[i+1]
+                end_index = nodes.index[i + 1]
                 dat = self.model_df.loc[start_index:end_index]
-                tech_nodes = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower() == 'tech compete'
+                tech_nodes = dat[dat['Parameter'] == 'Competition type'][
+                                 'Value'].str.lower() == 'tech compete'
                 if tech_nodes.iloc[0]:
                     if 'Technology' not in list(dat['Parameter']):
                         if 'Capital cost_overnight' not in list(dat['Parameter']):
-                            no_cap_cost.append((node_index,node_name))
-                    else: 
+                            no_cap_cost.append((node_index, node_name))
+                    else:
                         techs = dat[dat['Parameter'] == 'Technology']['Value']
-                        end = pd.Series(['None'],index=[dat.index.max()])
+                        end = pd.Series(['None'], index=[dat.index.max()])
                         techs = techs.append(end)
-                        for i in range(techs.shape[0]-1):
+                        for i in range(techs.shape[0] - 1):
                             tech_name = techs.iloc[i]
                             start_index = techs.index[i]
-                            end_index = techs.index[i+1]
-                            if 'Capital cost_overnight' not in list(dat['Parameter'].loc[start_index:end_index]):
-                                no_cap_cost.append((node_index,node_name,tech_name))
+                            end_index = techs.index[i + 1]
+                            if 'Capital cost_overnight' not in list(
+                                    dat['Parameter'].loc[start_index:end_index]):
+                                no_cap_cost.append((node_index, node_name, tech_name))
 
             if len(no_cap_cost) > 0:
                 self.warnings['nodes_without_capital_cost'] = no_cap_cost
@@ -409,15 +438,58 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
                 print("{} tech compete nodes don't have capital cost. {}".format(len(no_cap_cost),
-                                                                   more_info if len(no_cap_cost) else ""))
+                                                                                 more_info if len(
+                                                                                     no_cap_cost) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['nodes_without_capital_cost'] for more info"
                 w = "{} tech compete nodes don't have capital cost. {}".format(len(no_cap_cost),
-                                                                 more_info if len(no_cap_cost) else "")
-                warnings.warn(w)  
-                    
-        
+                                                                               more_info if len(
+                                                                                   no_cap_cost) else "")
+                warnings.warn(w)
+
+        def nodes_bad_total_market_share():
+            """
+            Identify nodes with market shares not totally 100% in the Base Year
+            """
+            # The model's dataframe
+            data = self.model_df
+
+            # Find what column contains the base year values
+            base_year_col = [[c for c in data.columns if is_year(c)][0]]
+
+            # For each market share, find what node it belongs to (by index)
+            market_shares = data[data['Parameter'] == 'Market share'][base_year_col]
+            market_shares['Node'] = [int(self.index2node_index_map[i]) for i in market_shares.index]
+
+            # Sum the market shares for each node
+            ms_totals = market_shares.groupby('Node').sum()
+
+            # Find which nodes have a bad total market share
+            ms_total_not_100 = ms_totals[ms_totals[base_year_col[0]] != 1].reset_index()
+            node_names = [self.index2node_map[i] for i in ms_total_not_100['Node']]
+            nodes_with_bad_total_ms = list(zip(ms_total_not_100['Node'],
+                                               node_names,
+                                               ms_total_not_100[base_year_col[0]]))
+
+            if len(nodes_with_bad_total_ms) > 0:
+                self.warnings['nodes_with_bad_total_ms'] = nodes_with_bad_total_ms
+
+            if verbose:
+                info = "{} nodes have market shares that don't sum to 100%.".format(
+                    len(nodes_with_bad_total_ms))
+                more_info = "See ModelValidator.warnings['nodes_with_bad_total_ms'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(nodes_with_bad_total_ms) else ""))
+
+            if raise_warnings:
+                info = "{} nodes have market shares that don't sum to 100%.".format(
+                    len(nodes_with_bad_total_ms))
+                more_info = "See ModelValidator.warnings['nodes_with_bad_total_ms'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(nodes_with_bad_total_ms) else ""))
+                warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -433,3 +505,4 @@ class ModelValidator:
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
         nodes_no_capital_cost()
+        nodes_bad_total_market_share()
