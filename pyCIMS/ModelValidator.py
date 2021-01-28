@@ -498,7 +498,7 @@ class ModelValidator:
             data = self.model_df
 
             # Add a Column w/ Technology Name
-            techs = self.model_df[self.model_df['Parameter'] == "Technology"]['Value']
+            techs = data[data['Parameter'] == "Technology"]['Value']
             data['Tech'] = techs
             data['Tech'] = data['Tech'].ffill()
 
@@ -533,6 +533,62 @@ class ModelValidator:
                                     more_info if len(techs_no_base_year_ms) else ""))
                 warnings.warn(w)
 
+        def techs_req_service_twice():
+            """
+            Identify technologies which request the same service twice
+            """
+            # The model's DataFrame
+            data = self.model_df
+
+            # Add a Column w/ Technology Name
+            node_names = data['Node']
+            node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
+            techs = data[data['Parameter'] == "Technology"]['Value']
+            node_boundaries.update(techs)
+            tech_names = node_boundaries.ffill()
+            data['tech'] = tech_names
+
+            # Forward Fill Node IDs
+            data['node_id'] = [self.index2node_index_map[i] for i in data.index]
+            data['node_id'] = data['node_id'].fillna(0).astype(int)
+            data['node_id'] = data['node_id'].ffill()
+
+            # Filter to Service Request Rows only
+            services_req = data[data['Parameter'] == 'Service requested']
+
+            # Select the columns that will tell us things
+            req_info = services_req[['node_id', 'tech', 'Branch']]
+            duplicated = req_info[req_info.duplicated(keep=False)]
+
+            # Group & list rows (index) where duplicates exist
+            duplicated_with_idx = duplicated.reset_index()
+            duplicated_groups = duplicated_with_idx.groupby(['node_id', 'tech', 'Branch'])['index'].apply(list)
+            duplicated_groups = duplicated_groups.reset_index()
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in duplicated_groups['node_id']]
+            duplicate_req = list(zip(duplicated_groups['index'],
+                                     node_names,
+                                     duplicated_groups['tech']))
+
+            if len(duplicate_req) > 0:
+                self.warnings['duplicate_req'] = duplicate_req
+
+            if verbose:
+                info = "{} nodes/technologies request from the same service more than once.".format(
+                    len(duplicate_req))
+                more_info = "See ModelValidator.warnings['duplicate_req'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(duplicate_req) else ""))
+
+            if raise_warnings:
+                info = "{} nodes/technologies request from the same service more than once.".format(
+                    len(duplicate_req))
+                more_info = "See ModelValidator.warnings['duplicate_req'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(duplicate_req) else ""))
+                warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -550,3 +606,4 @@ class ModelValidator:
         nodes_no_capital_cost()
         nodes_bad_total_market_share()
         techs_no_base_market_share()
+        techs_req_service_twice()
