@@ -490,6 +490,49 @@ class ModelValidator:
                                     more_info if len(nodes_with_bad_total_ms) else ""))
                 warnings.warn(w)
 
+        def techs_no_base_market_share():
+            """
+            Identify technologies without a base year market share
+            """
+            # The model's DataFrame
+            data = self.model_df
+
+            # Add a Column w/ Technology Name
+            techs = self.model_df[self.model_df['Parameter'] == "Technology"]['Value']
+            data['Tech'] = techs
+            data['Tech'] = data['Tech'].ffill()
+
+            # Find Market Share Rows
+            market_shares = data[data['Parameter'] == 'Market share']
+
+            # Find Instances where there isn't a base year market share
+            base_year_col = [c for c in data.columns if is_year(c)][0]
+            ms_no_base_year = market_shares[market_shares[base_year_col].isna()]
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in ms_no_base_year.index]
+            techs_no_base_year_ms = list(zip(ms_no_base_year.index,
+                                             node_names,
+                                             ms_no_base_year['Tech']))
+
+            if len(techs_no_base_year_ms) > 0:
+                self.warnings['techs_no_base_year_ms'] = techs_no_base_year_ms
+
+            if verbose:
+                info = "{} technologies are missing a base year market share.".format(
+                    len(techs_no_base_year_ms))
+                more_info = "See ModelValidator.warnings['techs_no_base_year_ms'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(techs_no_base_year_ms) else ""))
+
+            if raise_warnings:
+                info = "{} technologies are missing a base year market share.".format(
+                    len(techs_no_base_year_ms))
+                more_info = "See ModelValidator.warnings['techs_no_base_year_ms'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(techs_no_base_year_ms) else ""))
+                warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -506,3 +549,4 @@ class ModelValidator:
         fuel_nodes_no_lcc()
         nodes_no_capital_cost()
         nodes_bad_total_market_share()
+        techs_no_base_market_share()
