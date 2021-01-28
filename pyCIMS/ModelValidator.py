@@ -533,7 +533,7 @@ class ModelValidator:
                                     more_info if len(techs_no_base_year_ms) else ""))
                 warnings.warn(w)
 
-        def techs_req_service_twice():
+        def duplicate_service_requests():
             """
             Identify technologies which request the same service twice
             """
@@ -606,4 +606,4 @@ class ModelValidator:
         nodes_no_capital_cost()
         nodes_bad_total_market_share()
         techs_no_base_market_share()
-        techs_req_service_twice()
+        duplicate_service_requests()
