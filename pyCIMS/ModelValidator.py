@@ -589,6 +589,44 @@ class ModelValidator:
                                     more_info if len(duplicate_req) else ""))
                 warnings.warn(w)
 
+        def bad_service_req():
+            """
+            Identify nodes/technologies that have a service requested line, but where the values in
+            this lines are either blank or exogenously specified as 0.
+            """
+            # The model's DataFrame
+            data = self.model_df
+
+            # Filter to Only Include Service Requested
+            services_req = data[data['Parameter'] == 'Service requested']
+
+            # Select only the year columns
+            year_cols = [c for c in services_req.columns if is_year(c)]
+            year_values = services_req[year_cols]
+
+            # Identify rows that have 0's or missing values
+            rows_nan_zero = year_values.replace(0, np.nan).isna().sum(axis=1)
+            row_has_bad_values = rows_nan_zero > 0
+            rows_with_bad_values = services_req[row_has_bad_values]
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in rows_with_bad_values.index]
+            bad_service_req = list(zip(rows_with_bad_values.index, node_names))
+
+            if len(bad_service_req) > 0:
+                self.warnings['bad_service_req'] = bad_service_req
+
+            if verbose or raise_warnings:
+                info = "{} nodes/technologies contain 0's or are missing values in service request " \
+                       "rows.".format(len(bad_service_req))
+                more_info = "See ModelValidator.warnings['bad_service_req'] for more info."
+
+                if verbose:
+                    print("{} {}".format(info, more_info if len(bad_service_req) else ""))
+                if raise_warnings:
+                    w = ("{} {}".format(info, more_info if len(bad_service_req) else ""))
+                    warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -607,3 +645,4 @@ class ModelValidator:
         nodes_bad_total_market_share()
         techs_no_base_market_share()
         duplicate_service_requests()
+        bad_service_req()
