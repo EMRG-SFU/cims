@@ -617,14 +617,68 @@ class ModelValidator:
                 self.warnings['bad_service_req'] = bad_service_req
 
             if verbose or raise_warnings:
-                info = "{} nodes/technologies contain 0's or are missing values in service request " \
-                       "rows.".format(len(bad_service_req))
+                info = "{} nodes/technologies contain 0's or are missing values in service " \
+                       "request rows.".format(len(bad_service_req))
                 more_info = "See ModelValidator.warnings['bad_service_req'] for more info."
 
                 if verbose:
                     print("{} {}".format(info, more_info if len(bad_service_req) else ""))
                 if raise_warnings:
                     w = ("{} {}".format(info, more_info if len(bad_service_req) else ""))
+                    warnings.warn(w)
+
+        def tech_compete_nodes_no_techs():
+            """
+            Identify tech compete nodes that don't contain "Technology" or "Service" headings --
+            thereby appearing to not have a technology present.
+            """
+            def check_for_header(lst):
+                lower_lst = [str(p).lower() for p in lst]
+                if ('technology' in lower_lst) or ('service' in lower_lst):
+                    header_present = True
+                else:
+                    header_present = False
+                return header_present
+
+            # The model's DataFrame
+            data = self.model_df
+
+            # Forward Fill Node IDs
+            data['node_id'] = [self.index2node_index_map[i] for i in data.index]
+            data['node_id'] = data['node_id'].fillna(0).astype(int)
+            data['node_id'] = data['node_id'].ffill()
+
+            # Add a Column w/ Competition Type
+            comp_types = data[data['Parameter'] == "Competition type"][['node_id', 'Value']]
+            comp_types.columns = ['node_id', 'comp_type']
+            data = data.merge(comp_types, on='node_id')
+
+            # Only include Tech Compete Nodes
+            tech_compete = data[data['comp_type'] == 'Tech Compete']
+
+            # Find which columns are missing headers
+            all_tc = tech_compete[['node_id', 'Parameter']]
+            params = all_tc.groupby('node_id')['Parameter'].apply(list)
+            missing_header = params[~params.apply(check_for_header)]
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in missing_header.index]
+            tc_nodes_no_techs = list(zip(missing_header.index,
+                                         node_names))
+
+            if len(tc_nodes_no_techs) > 0:
+                self.warnings['tech_compete_nodes_no_techs'] = tc_nodes_no_techs
+
+            if verbose or raise_warnings:
+                info = "{} nodes/technologies contain 0's or are missing values in service " \
+                       "request rows.".format(len(tc_nodes_no_techs))
+                more_info = "See ModelValidator.warnings['tech_compete_nodes_no_techs'] for " \
+                            "more info."
+
+                if verbose:
+                    print("{} {}".format(info, more_info if len(tc_nodes_no_techs) else ""))
+                if raise_warnings:
+                    w = ("{} {}".format(info, more_info if len(tc_nodes_no_techs) else ""))
                     warnings.warn(w)
 
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
@@ -646,3 +700,4 @@ class ModelValidator:
         techs_no_base_market_share()
         duplicate_service_requests()
         bad_service_req()
+        tech_compete_nodes_no_techs()
