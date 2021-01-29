@@ -246,54 +246,66 @@ class ModelValidator:
                                 more_info if len(nodes_requesting_self) else "")
                 warnings.warn(w)
 
-        def nodes_no_requested_service(r):
-            nodes = self.model_df["Node"].dropna()
-            techs = self.model_df[self.model_df['Parameter'] == "Technology"]['Value']
-            nodes_with_tech = list(set(self.index2node_map[techs.index]))
-            nodes_without_tech = [n for i, n in nodes.iteritems() if n not in nodes_with_tech]
+        def nodes_no_requested_service():
+            """
+            Identifies nodes or technologies which has been specified in the model description but
+            don't request services from other nodes.
+            """
+            # The model's DataFrame
+            data = self.model_df
 
-            nodes_that_request = [self.index2node_map[i] for i, v in r.iteritems()]
-            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_request]
+            # Add a Column w/ Technology Name
+            node_names = data['Node']
+            node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
+            techs = data[data['Parameter'] == "Technology"]['Value']
+            node_boundaries.update(techs)
+            tech_names = node_boundaries.ffill()
+            data['tech'] = tech_names
 
-            nodes_or_techs_no_service = [(i, n) for i, n in nodes_no_service if
-                                         n in nodes_without_tech]
+            # Forward Fill Node IDs
+            data['node_id'] = [self.index2node_index_map[i] for i in data.index]
+            data['node_id'] = data['node_id'].fillna(0).astype(int)
+            data['node_id'] = data['node_id'].ffill()
 
-            for n in nodes_with_tech:
-                node = self.index2node_map[self.index2node_map == n]
-                techs_within_node = pd.DataFrame(
-                    [(i, v) for i, v in techs.iteritems() if i in node.index],
-                    columns=['Index', 'Name'])
-                techs_within_node = techs_within_node.append(
-                    {'Index': node.index.max(), 'Name': None},
-                    ignore_index=True)
-                for i in range(techs_within_node.shape[0]):
-                    if i == techs_within_node.shape[0] - 1:
-                        break
-                    else:
-                        start_index = techs_within_node['Index'].loc[i]
-                        end_index = techs_within_node['Index'].loc[i + 1]
-                        tech_name = techs_within_node['Name'].loc[i]
-                        if 'Service requested' not in list(
-                                self.model_df['Parameter'].loc[start_index:end_index]):
-                            nodes_or_techs_no_service.append(
-                                (nodes[nodes == n].index[0], n, tech_name))
+            # Select the columns that will tell us things
+            data_subset = data[['node_id', 'tech', 'Parameter']]
+            group_cols = ['node_id', 'tech']
+            grouped = data_subset.groupby(group_cols)['Parameter'].apply(list).reset_index()
 
-            if len(nodes_or_techs_no_service) > 0:
-                self.warnings['nodes_no_requested_service'] = nodes_or_techs_no_service
+            # Find techs with no service request
+            technologies = grouped[grouped['tech'] != ""]
+            serv_req_bool = technologies['Parameter'].apply(lambda x: 'Service requested' in x)
+            techs_no_serv_req = technologies[~serv_req_bool]
 
-            # Print Problems
-            if verbose:
-                more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
-                print("{} nodes or technologies don't request other services. {}".format(
-                    len(nodes_or_techs_no_service),
-                    more_info if len(nodes_or_techs_no_service) else ""))
-            # Raise Warnings
-            if raise_warnings:
-                more_info = "See ModelValidator.warnings['nodes_no_requested_service'] for more info"
-                w = "{} nodes or technologies don't request other services. {}".format(
-                    len(nodes_or_techs_no_service),
-                    more_info if len(nodes_or_techs_no_service) else "")
-                warnings.warn(w)
+            # Find nodes with no service request
+            nodes = grouped[grouped['tech'] == '']
+            nodes_non_tech = nodes[~nodes['node_id'].isin(technologies['node_id'])]
+            serv_req_bool = nodes_non_tech['Parameter'].apply(lambda x: 'Service requested' in x)
+            nodes_no_serv_req = nodes_non_tech[~serv_req_bool]
+
+            # Combine Techs & Nodes
+            nodes_and_techs = pd.concat([techs_no_serv_req, nodes_no_serv_req])
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in nodes_and_techs['node_id']]
+            nodes_techs_no_serv_req = list(zip(nodes_and_techs['node_id'],
+                                               node_names,
+                                               nodes_and_techs['tech']))
+
+            if len(nodes_techs_no_serv_req) > 0:
+                self.warnings['nodes_no_requested_service'] = nodes_techs_no_serv_req
+
+            if verbose or raise_warnings:
+                info = "{} nodes or technologies don't request other " \
+                       "services.".format(len(nodes_techs_no_serv_req))
+                more_info = "See ModelValidator.warnings['nodes_no_requested_service'] " \
+                            "for more info."
+
+                if verbose:
+                    print("{} {}".format(info, more_info if len(nodes_techs_no_serv_req) else ""))
+                if raise_warnings:
+                    w = ("{} {}".format(info, more_info if len(nodes_techs_no_serv_req) else ""))
+                    warnings.warn(w)
 
         def discrepencies_in_model_and_tree():
             excel_engine_map = {'.xlsb': 'pyxlsb',
@@ -691,7 +703,7 @@ class ModelValidator:
         nodes_no_provided_service(providers)
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
-        nodes_no_requested_service(requested)
+        nodes_no_requested_service()
         discrepencies_in_model_and_tree()
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
