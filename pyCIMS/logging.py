@@ -228,7 +228,6 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
-
                     if param == p_list[i]:
                         if param not in model.years:
                             log = node, None, None, param, val
