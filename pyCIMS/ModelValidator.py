@@ -572,16 +572,19 @@ class ModelValidator:
             req_info = services_req[['node_id', 'tech', 'Branch']]
             duplicated = req_info[req_info.duplicated(keep=False)]
 
-            # Group & list rows (index) where duplicates exist
-            duplicated_with_idx = duplicated.reset_index()
-            duplicated_groups = duplicated_with_idx.groupby(['node_id', 'tech', 'Branch'])['index'].apply(list)
-            duplicated_groups = duplicated_groups.reset_index()
+            if len(duplicated) > 0:
+                # Group & list rows (index) where duplicates exist
+                duplicated_with_idx = duplicated.reset_index()
+                duplicated_groups = duplicated_with_idx.groupby(['node_id', 'tech', 'Branch'])['index'].apply(list)
+                duplicated_groups = duplicated_groups.reset_index()
 
-            # Create our Warning information
-            node_names = [self.index2node_map[i] for i in duplicated_groups['node_id']]
-            duplicate_req = list(zip(duplicated_groups['index'],
-                                     node_names,
-                                     duplicated_groups['tech']))
+                # Create our Warning information
+                node_names = [self.index2node_map[i] for i in duplicated_groups['node_id']]
+                duplicate_req = list(zip(duplicated_groups['index'],
+                                         node_names,
+                                         duplicated_groups['tech']))
+            else:
+                duplicate_req = []
 
             if len(duplicate_req) > 0:
                 self.warnings['duplicate_req'] = duplicate_req
@@ -682,8 +685,8 @@ class ModelValidator:
                 self.warnings['tech_compete_nodes_no_techs'] = tc_nodes_no_techs
 
             if verbose or raise_warnings:
-                info = "{} nodes/technologies contain 0's or are missing values in service " \
-                       "request rows.".format(len(tc_nodes_no_techs))
+                info = "{} tech compete nodes don't contain Technology or Service " \
+                       "headings".format(len(tc_nodes_no_techs))
                 more_info = "See ModelValidator.warnings['tech_compete_nodes_no_techs'] for " \
                             "more info."
 
