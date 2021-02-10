@@ -72,3 +72,105 @@ def create_value_dict(year_val, source=None, branch=None, unit=None):
 
     return value_dictionary
 
+
+def get_node_param(param, model, node, year, sub_param):
+    calculation_directory = {}
+    inheritable_params = []
+
+    # If the parameter's value is in the model description for that node & year (if the year has
+    # been defined), use it.
+    if year:
+        data = model.graph.nodes[node][year]
+    else:
+        data = model.graph.nodes[node]
+
+    if param in data:
+        val = data[param]
+        if isinstance(val, dict):
+            if sub_param:
+                val = val[sub_param]
+            elif 'year_value' in val:
+                val = val['year_value']
+
+    # If there is a calculation for the parameter & the arguments for that calculation are present
+    # in the model description for that node & year, calculate the parameter value using this
+    # calculation.
+    elif param in calculation_directory:
+        pass
+
+    # If the value has been defined at a structural parent node for that year, use this value.
+    elif param in inheritable_params:
+        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
+        g_structure_edges = model.graph.edge_subgraph(structured_edges)
+        parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
+        val = get_param(param, model, parent, year, tech, sub_param)
+
+    # If there is a default value defined, use this value
+    elif param in model.node_defaults:
+        val = model.get_node_parameter_default(param)
+
+    # Otherwise, use the value from the previous year. (If no base year value, throw an error)
+    else:
+        prev_year = str(int(year) - model.step)
+        if prev_year == str(model.base_year):
+            raise Exception()
+        val = get_param(param, model, node, prev_year)
+
+    return val
+
+
+def get_tech_param(param, model, node, year, tech, sub_param):
+    calculation_directory = {}
+    inheritable_params = []
+
+    # If the parameter's value is in the model description for that node & year, use it.
+    data = model.graph.nodes[node][year]['technologies'][tech]
+    if param in data:
+        val = data[param]
+        if isinstance(val, dict):
+            if sub_param:
+                val = val[sub_param]
+            elif 'year_value' in val:
+                val = val['year_value']
+
+        if val is not None:
+            return val
+
+    # If there is a calculation for the parameter & the arguments for that calculation are present
+    # in the model description for that node & year, calculate the parameter value using this
+    # calculation.
+    if param in calculation_directory:
+        pass
+
+    # If the value has been defined at a structural parent node for that year, use this value.
+    elif param in inheritable_params:
+        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
+        g_structure_edges = model.graph.edge_subgraph(structured_edges)
+        parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
+        val = get_param(param, model, parent, year, tech, sub_param)
+
+    # If there is a default value defined, use this value
+    elif param in model.technology_defaults:
+        val = model.get_tech_parameter_default(param)
+
+    # Otherwise, use the value from the previous year. (If no base year value, throw an error)
+    else:
+        prev_year = str(int(year) - model.step)
+        if prev_year == str(model.base_year):
+            raise Exception()
+        val = get_param(param, model, node, prev_year, tech, sub_param)
+
+    return val
+
+
+def get_param(param, model, node, year=None, tech=None, sub_param=None):
+    if (param == 'Lifetime') and (node == 'pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus'):
+        jillian = 1
+
+    if tech:
+        param_val = get_tech_param(param, model, node, year, tech, sub_param)
+
+    else:
+        param_val = get_node_param(param, model, node, year, sub_param)
+
+    return param_val
