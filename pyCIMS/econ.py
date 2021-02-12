@@ -1,17 +1,5 @@
 import warnings
-
-
-def get_heterogeneity(model, node, year):
-    graph = model.graph
-    node_type = graph.nodes[node]['competition type']
-    try:
-        v = graph.nodes[node][year]["Heterogeneity"]["v"]["year_value"]
-    except KeyError:
-        v = model.get_node_parameter_default('Heterogeneity', node_type)
-    if v is None:
-        v = model.get_node_parameter_default('Heterogeneity', node_type)
-
-    return v
+from utils import get_param
 
 
 def get_technology_service_cost(sub_graph, node, year, tech, model):
@@ -41,6 +29,10 @@ def get_technology_service_cost(sub_graph, node, year, tech, model):
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
+                # NEW
+                new_sr_lcc = model.get_param('Life Cycle Cost', service_requested_branch, year)
+                assert(new_sr_lcc == service_requested_lcc)
+                # NEW
             else:
                 # Encountering a non-visited node
                 service_requested_lcc = 1
@@ -106,16 +98,12 @@ def get_node_service_cost(sub_graph, full_graph, node, year, fuels):
 
 
 def get_crf(g, node, year, tech, model):
-    finance_discount = g.nodes[node][year]["technologies"][tech]["Discount rate_Financial"]["year_value"]
-    lifespan = g.nodes[node][year]["technologies"][tech]["Lifetime"]["year_value"]
-    if finance_discount is None:
-        finance_discount = model.get_tech_parameter_default('Discount rate_Financial')
+    finance_discount = model.get_param('Discount rate_Financial', node, year, tech)
+    lifespan = model.get_param('Lifetime', node, year, tech)
+
     if finance_discount == 0:
         warnings.warn('Discount rate_Financial has value of 0 at {} -- {}'.format(node, tech))
         finance_discount = model.get_tech_parameter_default('Discount rate_Financial')
-
-    if lifespan is None:
-        lifespan = model.get_tech_parameter_default('Lifetime')
 
     crf = finance_discount / (1 - (1 + finance_discount) ** (-1.0 * lifespan))
 

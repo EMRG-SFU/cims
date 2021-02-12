@@ -71,7 +71,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     # Check if the node is a tech compete node:
     elif sub_graph.nodes[node]["competition type"] == "tech compete":
         total_lcc_v = 0.0
-        v = econ.get_heterogeneity(model, node, year)
+        v = model.get_param('Heterogeneity', node, year)
         # Get all of the technologies in the node
         node_techs = sub_graph.nodes[node][year]["technologies"].keys()
 
