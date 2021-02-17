@@ -629,7 +629,7 @@ class Model:
 
                     # Find the years the technology is available
                     low, up = utils.range_available(sub_graph, node, t)
-                    if low < int(year) < up:
+                    if low <= int(year) < up:
                         v = econ.get_heterogeneity(self, node, year)
                         tech_lcc = sub_graph.nodes[node][year]["technologies"][t]["Life Cycle Cost"]["year_value"]
                         total_lcc_v = self.graph.nodes[node][year]["total_lcc_v"]
