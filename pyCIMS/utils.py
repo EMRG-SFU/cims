@@ -91,7 +91,7 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
                          'Life Cycle Cost': lcc_calculation.calc_lcc}
 
 
-def new_get_node_param(param, model, node, year, sub_param=None):
+def get_node_param(param, model, node, year, sub_param=None):
     inheritable_params = []
     val = None
 
@@ -129,7 +129,7 @@ def new_get_node_param(param, model, node, year, sub_param=None):
         structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
-        val = new_get_node_param(param, model, parent, year=year)
+        val = get_node_param(param, model, parent, year=year)
 
     # If there is a default value defined, use this value
     elif param in model.node_defaults:
@@ -145,7 +145,7 @@ def new_get_node_param(param, model, node, year, sub_param=None):
     return val
 
 
-def new_get_tech_param(param, model, node, year, tech, sub_param=None):
+def get_tech_param(param, model, node, year, tech, sub_param=None):
     inheritable_params = []
     val = None
 

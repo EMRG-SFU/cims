@@ -809,9 +809,9 @@ class Model:
 
     def get_param(self, param, node, year=None, tech=None, sub_param=None):
         if tech:
-            param_val = utils.new_get_tech_param(param, self, node, year, tech, sub_param)
+            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param)
 
         else:
-            param_val = utils.new_get_node_param(param, self, node, year)
+            param_val = utils.get_node_param(param, self, node, year)
 
         return param_val
