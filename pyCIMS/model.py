@@ -436,11 +436,6 @@ class Model:
         """
         prev_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0] for f in
                        self.fuels}
-        # v NEW v
-        new_prev_prices = {f: list(utils.get_param('Life Cycle Cost', self,
-                                                   f, year).values())[0] for f in self.fuels}
-        assert(prev_prices == new_prev_prices)
-        # ^ NEW ^
 
         price_keys_to_estimate = [f for f, d in prev_prices.items() if d['to_estimate']]
         new_prices = copy.deepcopy(prev_prices)
@@ -644,8 +639,9 @@ class Model:
                     new_market_share = 0
 
                     # Find the years the technology is available
-                    low, up = utils.range_available(sub_graph, node, t)
-                    if low < int(year) < up:
+                    first_year_available = self.get_param('Available', node, str(self.base_year), t)
+                    first_year_unavailable = self.get_param('Unavailable', node, str(self.base_year), t)
+                    if first_year_available <= int(year) < first_year_unavailable:
                         v = self.get_param('Heterogeneity', node, year)
                         tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
                         total_lcc_v = self.get_param('total_lcc_v', node, year)

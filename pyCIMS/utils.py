@@ -1,19 +1,6 @@
 import re
-
-
-def range_available(g, node, tech, add_upper=True):
-    """
-    NOTE: year not mentioned atm because dataset specifies that it remains constant
-
-    Returns +1 at upper boundary if using range() function
-    """
-    avail = g.nodes[node]['2000']['technologies'][tech]['Available']['year_value']
-    unavail = g.nodes[node]['2000']['technologies'][tech]['Unavailable']['year_value']
-    if add_upper:
-        return int(avail), int(unavail) + 1
-    else:
-        return int(avail), int(unavail)
-
+from . import lcc_calculation
+from . import econ
 
 def is_year(cn: str or int) -> bool:
     """ Determines whether `cn` is a year
@@ -73,110 +60,6 @@ def create_value_dict(year_val, source=None, branch=None, unit=None):
     return value_dictionary
 
 
-def get_node_param(param, model, node, year, sub_param):
-    calculation_directory = {}
-    inheritable_params = []
-
-    # If the parameter's value is in the model description for that node & year (if the year has
-    # been defined), use it.
-    if year:
-        data = model.graph.nodes[node][year]
-    else:
-        data = model.graph.nodes[node]
-
-    # TODO: Add functionality for getting values from parameter dicts that use None as a key
-    if param in data:
-        val = data[param]
-        if isinstance(val, dict):
-            if sub_param:
-                val = val[sub_param]
-            elif 'year_value' in val:
-                val = val['year_value']
-
-    # If there is a calculation for the parameter & the arguments for that calculation are present
-    # in the model description for that node & year, calculate the parameter value using this
-    # calculation.
-    elif param in calculation_directory:
-        pass
-
-    # If the value has been defined at a structural parent node for that year, use this value.
-    elif param in inheritable_params:
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
-        g_structure_edges = model.graph.edge_subgraph(structured_edges)
-        parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
-        val = get_param(param, model, parent, year=year, sub_param=sub_param)
-
-    # If there is a default value defined, use this value
-    elif param in model.node_defaults:
-        val = model.get_node_parameter_default(param)
-
-    # Otherwise, use the value from the previous year. (If no base year value, throw an error)
-    else:
-        prev_year = str(int(year) - model.step)
-        if prev_year == str(model.base_year):
-            raise Exception()
-        val = get_param(param, model, node, prev_year)
-
-    return val
-
-
-def get_tech_param(param, model, node, year, tech, sub_param):
-    calculation_directory = {}
-    inheritable_params = []
-
-    # If the parameter's value is in the model description for that node & year, use it.
-    data = model.graph.nodes[node][year]['technologies'][tech]
-    if param in data:
-        val = data[param]
-        if isinstance(val, dict):
-            if sub_param:
-                val = val[sub_param]
-            elif 'year_value' in val:
-                val = val['year_value']
-
-        if val is not None:
-            return val
-
-    # If there is a calculation for the parameter & the arguments for that calculation are present
-    # in the model description for that node & year, calculate the parameter value using this
-    # calculation.
-    if param in calculation_directory:
-        pass
-
-    # If the value has been defined at a structural parent node for that year, use this value.
-    elif param in inheritable_params:
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
-        g_structure_edges = model.graph.edge_subgraph(structured_edges)
-        parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
-        val = get_param(param, model, parent, year, tech, sub_param)
-
-    # If there is a default value defined, use this value
-    elif param in model.technology_defaults:
-        val = model.get_tech_parameter_default(param)
-
-    # Otherwise, use the value from the previous year. (If no base year value, throw an error)
-    else:
-        prev_year = str(int(year) - model.step)
-        if prev_year == str(model.base_year):
-            raise Exception()
-        val = get_param(param, model, node, prev_year, tech, sub_param)
-
-    return val
-
-
-def get_param(param, model, node, year=None, tech=None, sub_param=None):
-    if tech:
-        param_val = get_tech_param(param, model, node, year, tech, sub_param)
-
-    else:
-        param_val = get_node_param(param, model, node, year, sub_param)
-
-    return param_val
-
-
-
-
-
 def dict_has_None_year_value(dictionary):
     """
     Given a dictionary, check if it has a year_value key in any level where the value for the
@@ -194,9 +77,23 @@ def dict_has_None_year_value(dictionary):
     return has_none_year_value
 
 
+# ******************
+# Parameter Fetching
+# ******************
+calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
+                         'Capital cost_declining': lcc_calculation.calc_declining_cc,
+                         'Capital cost': lcc_calculation.calc_capital_cost,
+                         'CRF': lcc_calculation.calc_crf,
+                         'Upfront cost': lcc_calculation.calc_upfront_cost,
+                         'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
+                         'Annual cost': lcc_calculation.calc_annual_cost,
+                         'Service cost': lcc_calculation.calc_annual_service_cost,
+                         'Life Cycle Cost': lcc_calculation.calc_lcc}
+
+
 def new_get_node_param(param, model, node, year, sub_param=None):
-    calculation_directory = {}
     inheritable_params = []
+    val = None
 
     if year:
         data = model.graph.nodes[node][year]
@@ -221,15 +118,6 @@ def new_get_node_param(param, model, node, year, sub_param=None):
         if val is not None:
             return val
 
-    # if param in data:
-    #     val = data[param]
-    #     if sub_param:
-    #         val = val[sub_param]
-
-        # As long as (A) val isn't None and (B) val isn't a dictionary with a None year_value
-        # if (val is not None) and not (isinstance(val, dict) and dict_has_None_year_value(val)):
-        #     return val
-
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
@@ -241,7 +129,7 @@ def new_get_node_param(param, model, node, year, sub_param=None):
         structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]  # We can do this because there is only ever one structural parent
-        val = get_param(param, model, parent, year=year)
+        val = new_get_node_param(param, model, parent, year=year)
 
     # If there is a default value defined, use this value
     elif param in model.node_defaults:
@@ -258,8 +146,8 @@ def new_get_node_param(param, model, node, year, sub_param=None):
 
 
 def new_get_tech_param(param, model, node, year, tech, sub_param=None):
-    calculation_directory = {}
     inheritable_params = []
+    val = None
 
     # If the parameter's value is in the model description for that node & year, use it.
     data = model.graph.nodes[node][year]['technologies'][tech]
@@ -270,26 +158,18 @@ def new_get_tech_param(param, model, node, year, tech, sub_param=None):
                 val = val[sub_param]
             elif None in val:
                 val = val[None]
-            # elif len(val.keys()) == 1:
-            #     val = list(val.values())[0]
-            if 'year_value' in val:
+            if isinstance(val, dict) and ('year_value' in val):
                 val = val['year_value']
         if val is not None:
             return val
-    # if param in data:
-    #     val = data[param]
-    #     if sub_param:
-    #         val = val[sub_param]
-    #
-    #     # As long as (A) val isn't None and (B) val isn't a dictionary with a None value
-    #     if (val is not None) and not (isinstance(val, dict) and dict_has_None_year_value(val)):
-    #         return val
 
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
     if param in calculation_directory:
-        pass
+        # TODO: Decide -> should a calculated value then be set in the model? I think yes...
+        param_calculator = calculation_directory[param]
+        val = param_calculator(model, node, year, tech)
 
     # If the value has been defined at a structural parent node for that year, use this value.
     elif param in inheritable_params:
@@ -305,8 +185,9 @@ def new_get_tech_param(param, model, node, year, tech, sub_param=None):
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     else:
         prev_year = str(int(year) - model.step)
-        val = get_param(param, model, node, prev_year, tech)
-        if val is None:
-            raise Exception()
+        if int(prev_year) >= model.base_year:
+            val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
+        # if val is None:
+        #     raise Exception()
 
     return val
