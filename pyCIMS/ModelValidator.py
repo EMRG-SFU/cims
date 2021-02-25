@@ -56,6 +56,18 @@ class ModelValidator:
 
     def validate(self, verbose=True, raise_warnings=False):
         def invalid_competition_type():
+            """
+            Identify any nodes which use a competition type that is not one of the "Root", "Region",
+            "Sector", "Sector No Tech", "Tech Compete", and "Fixed Ratio". 
+    
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+            """
             valid_comp_type = ['Root',
                                'Region',
                                'Sector',
@@ -87,6 +99,26 @@ class ModelValidator:
                 warnings.warn(w)
 
         def unspecified_nodes(p, r):
+            """
+            Identify any nodes which are referenced in another node's "service requested" row but 
+            the node has not been specified within the mdoel description. 
+
+            Parameters
+            ----------
+            p : pd.Series
+                A series of branch names for any line in the model description where "Service
+                provided" is the parameter. Index of this series is the line number of the row where
+                it appears in the model description.
+                
+            r : pd.Series
+                A series of branch names for any line in the model description where "Service
+                requested" is the parameter. Index of this series is the line number of the row
+                where is appears in the model description.
+
+            Returns
+            -------
+            None
+            """ 
             referenced_unspecified = [(i, v) for i, v in r.iteritems() if v not in p.values]
 
             # referenced_unspecified = set(r).difference(set(p))
@@ -108,6 +140,29 @@ class ModelValidator:
                 warnings.warn(w)
 
         def unreferenced_nodes(p, r, roots):
+            """
+            Identify a non-root node which is specified in the model description but its services 
+            are not requested by another node.
+
+            Parameters
+            ----------
+            p : pd.Series
+                A series of branch names for any line in the model description where "Service
+                provided" is the parameter. Index of this series is the line number of the row where
+                it appears in the model description.
+                
+            r : pd.Series
+                A series of branch names for any line in the model description where "Service
+                requested" is the parameter. Index of this series is the line number of the row
+                where is appears in the model description.
+                
+            roots: set
+                   The root node in the model description.
+                
+            Returns
+            -------
+            None
+            """ 
             specified_unreferenced = [(i, v) for i, v in p.iteritems() if
                                       (v not in r.values) and (v not in roots)]
 
@@ -130,6 +185,21 @@ class ModelValidator:
                 warnings.warn(w)
 
         def mismatched_node_names(p):
+            """
+            Identify any nodes whose name (from the Node col) does not match the last component 
+            of their branch. 
+            
+            Parameters
+            ----------
+            p : pd.Series
+                A series of branch names for any line in the model description where "Service
+                provided" is the parameter. Index of this series is the line number of the row where
+                it appears in the model description.
+
+            Returns
+            -------
+            None
+            """            
             node_name_indexes = self.model_df['Node'].dropna()
             mismatched = []
             # Given an index where a service provided line lives find the name of the Node housing it.
@@ -161,6 +231,22 @@ class ModelValidator:
                 warnings.warn(w)
 
         def nodes_no_provided_service(p):
+            """
+            Identify any nodes which are specified but does not provide a service. 
+            Adds (index, Node Name) pairs to the warnings dictionary, 
+            under the key "nodes_no_provided_service".
+
+            Parameters
+            ----------
+            p : pd.Series
+                A series of branch names for any line in the model description where "Service
+                provided" is the parameter. Index of this series is the line number of the row where
+                it appears in the model description.
+
+            Returns
+            -------
+            None
+            """  
             nodes = self.model_df[self.node_col].dropna()
             nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
             nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
@@ -187,7 +273,7 @@ class ModelValidator:
             Identifies any nodes which request services of themselves. Adds (index, Node Name) pairs
             to the warnings dictionary, under the key "nodes_requesting_self".
 
-            If `verbose` is `True` will print nodes which were identified . If `raise_warnings` is
+            If `verbose` is `True` will print nodes whic`h were identified . If `raise_warnings` is
             `True` will raise warnings to indicate which nodes were identified.
 
             Parameters
@@ -248,8 +334,16 @@ class ModelValidator:
 
         def nodes_no_requested_service():
             """
-            Identifies nodes or technologies which has been specified in the model description but
+            Identify nodes or technologies which have been specified in the model description but
             don't request services from other nodes.
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             # The model's DataFrame
             data = self.model_df
@@ -308,6 +402,18 @@ class ModelValidator:
                     warnings.warn(w)
 
         def discrepencies_in_model_and_tree():
+            """
+            Determine whether there are any discrepancies in the Model Description Excel file between 
+            the Model and Tree sheet, in terms of structure and order. 
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+            """
             excel_engine_map = {'.xlsb': 'pyxlsb',
                                 '.xlsm': 'xlrd'}
             excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
@@ -353,6 +459,18 @@ class ModelValidator:
                 warnings.warn(w)
 
         def nodes_with_zero_output():
+            """
+            Identify nodes or technologies where the "Output" line has been set to 0 for 
+            any of the year values in the model description.
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+            """
             output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:, 7:18]
             zero_output_nodes = []
             for i in range(output.shape[0]):
@@ -378,6 +496,17 @@ class ModelValidator:
                 warnings.warn(w)
 
         def fuel_nodes_no_lcc():
+            """
+            Identify fuel nodes that do not have an "Life Cycle Cost" row specified in the base year. 
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+            """
             d = self.model_df[self.model_df['Parameter'] == 'Node type'][
                     'Value'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
@@ -413,6 +542,18 @@ class ModelValidator:
                 warnings.warn(w)
 
         def nodes_no_capital_cost():
+            """
+            Identify tech compete nodes/technologies where the "Capital cost_overnight" row 
+            hasn't been included in the model description. 
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
+            """
             nodes = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
             nodes.index = nodes.index - 1
             end = pd.Series(['None'], index=[self.model_df.index.max()])
@@ -462,7 +603,15 @@ class ModelValidator:
 
         def nodes_bad_total_market_share():
             """
-            Identify nodes with market shares not totally 100% in the Base Year
+            Identify nodes with market shares not totally 100% in the Base Year.
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             # The model's dataframe
             data = self.model_df
@@ -504,7 +653,15 @@ class ModelValidator:
 
         def techs_no_base_market_share():
             """
-            Identify technologies without a base year market share
+            Identify technologies without a base year market share.
+
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             # The model's DataFrame
             data = self.model_df
@@ -547,7 +704,15 @@ class ModelValidator:
 
         def duplicate_service_requests():
             """
-            Identify technologies which request the same service twice
+            Identify technologies which request the same service twice.
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             # The model's DataFrame
             data = self.model_df
@@ -608,6 +773,14 @@ class ModelValidator:
             """
             Identify nodes/technologies that have a service requested line, but where the values in
             this lines are either blank or exogenously specified as 0.
+            
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             # The model's DataFrame
             data = self.model_df
@@ -646,6 +819,14 @@ class ModelValidator:
             """
             Identify tech compete nodes that don't contain "Technology" or "Service" headings --
             thereby appearing to not have a technology present.
+                    
+            Parameters
+            ----------
+            None
+
+            Returns
+            -------
+            None
             """
             def check_for_header(lst):
                 lower_lst = [str(p).lower() for p in lst]
