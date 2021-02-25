@@ -8,7 +8,7 @@ from . import utils
 # **************************
 # 1- Perform action in graph
 # **************************
-def find_value(graph, node, parameter, year=None):
+def _find_value_in_ancestors(graph, node, parameter, year=None):
     """
     Find a parameter's value at a given node or its structural ancestors.
 
@@ -51,9 +51,10 @@ def find_value(graph, node, parameter, year=None):
 
     # Look at the Parent
     if parent:
-        return find_value(graph, parent, parameter, year)
+        return _find_value_in_ancestors(graph, parent, parameter, year)
 
     # Worst Case, return None
+
 
 def parent_name(curr_node, return_empty=False):
     """
@@ -256,8 +257,9 @@ def add_node_data(graph, current_node, node_dfs):
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
         # If type isn't in the node's df, try to find it in the ancestors
-        val = find_value(graph, current_node, 'type')
+        val = _find_value_in_ancestors(graph, current_node, 'type')
         graph.nodes[current_node]['type'] = val if val else 'standard'
+
     # Drop Demand row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'Node type']
 
