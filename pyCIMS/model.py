@@ -808,6 +808,36 @@ class Model:
         return self.node_defaults[competition_type][parameter]
 
     def get_param(self, param, node, year=None, tech=None, sub_param=None):
+        """
+        Retrieves a parameter's value, given a specific context (node, year, technology, and
+        sub-parameter).
+
+        Parameters
+        ----------
+        param : str
+            The name of the parameter whose value is being retrieved.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in retrieving.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`
+
+        Returns
+        -------
+        any :
+            The value of the specified `param` at `node`, given the context provided by `year` and
+            `tech`.
+        """
         if tech:
             param_val = utils.get_tech_param(param, self, node, year, tech, sub_param)
 
