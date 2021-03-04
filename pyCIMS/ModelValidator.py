@@ -601,13 +601,15 @@ class ModelValidator:
                                                                                    no_cap_cost) else "")
                 warnings.warn(w)
 
-        def nodes_bad_total_market_share():
+        def nodes_bad_total_market_share(Precision=3):
             """
             Identify nodes with market shares not totally 100% in the Base Year.
             
             Parameters
             ----------
-            None
+            Precision : int
+                        Precision is the number of decimals we will round to when market shares are 
+                        summed across nodes. For now, the default value is 3.
 
             Returns
             -------
@@ -624,7 +626,7 @@ class ModelValidator:
             market_shares['Node'] = [int(self.index2node_index_map[i]) for i in market_shares.index]
 
             # Sum the market shares for each node
-            ms_totals = market_shares.groupby('Node').sum()
+            ms_totals = round(market_shares.groupby('Node').sum(), Precision)
 
             # Find which nodes have a bad total market share
             ms_total_not_100 = ms_totals[ms_totals[base_year_col[0]] != 1].reset_index()
