@@ -905,11 +905,12 @@ class Model:
         # For each child, calculate how much of each service has been requested
         for child in children:
             # *********
-            # Add the quantity requested of the child by node
+            # Add the quantity requested of the child by node (if child is a fuel)
             # *********
             child_provided_quant = self.get_param("provided_quantities", child, year)
             child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-            requested_quantity.record_requested_quantity(child, child_quantity_provided_to_node)
+            if child in self.fuels:
+                requested_quantity.record_requested_quantity(child, child_quantity_provided_to_node)
 
             # *********
             # Calculate proportion of child's requested quantities that come from node. Record these
@@ -931,8 +932,8 @@ class Model:
                         requested_quantity.record_requested_quantity(child_rq_node,
                                                                      proportion * child_rq_amount)
             except KeyError:
-                # Occurs when a requested quantity value doesn't exist yet b/c a loop has been broken for
-                # the base year.
+                # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                # broken for the base year.
                 continue
 
         # Save the requested quantities to the node's data
