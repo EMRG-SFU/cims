@@ -44,7 +44,7 @@ def log_RequestedQuantity(val):
         service being requested by the node.
     """
     rqs = []
-    for k, v in val.requested_quantities.items():
+    for k, v in val.get_total_quantities_requested().items():
         context = k
         unit = None
         value = v

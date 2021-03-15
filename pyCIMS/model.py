@@ -41,11 +41,24 @@ class RequestedQuantity:
     def __init__(self):
         self.requested_quantities = {}
 
-    def record_requested_quantity(self, providing_node, amount):
+    def record_requested_quantity(self, providing_node, child, amount):
         if providing_node in self.requested_quantities:
-            self.requested_quantities[providing_node] += amount
+            if child in self.requested_quantities[providing_node]:
+                self.requested_quantities[providing_node][child] += amount
+            else:
+                self.requested_quantities[providing_node][child] = amount
+
         else:
-            self.requested_quantities[providing_node] = amount
+            self.requested_quantities[providing_node] = {child: amount}
+
+    def get_total_quantities_requested(self):
+        total_quants = {}
+        for service in self.requested_quantities:
+            total_service = 0
+            for child, quantity in self.requested_quantities[service].items():
+                total_service += quantity
+            total_quants[service] = total_service
+        return total_quants
 
 
 class Model:
@@ -899,18 +912,19 @@ class Model:
         # Create an empty RequestedQuantity object to fill
         requested_quantity = RequestedQuantity()
 
-        # Find the node's children
+        # Find the node's children, who they have a request/provide relationship with
         children = graph.successors(node)
-
+        req_prov_children = [c for c in children if 'request_provide' in
+                             graph.get_edge_data(node, c)['type']]
         # For each child, calculate how much of each service has been requested
-        for child in children:
+        for child in req_prov_children:
             # *********
             # Add the quantity requested of the child by node (if child is a fuel)
             # *********
             child_provided_quant = self.get_param("provided_quantities", child, year)
             child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
             if child in self.fuels:
-                requested_quantity.record_requested_quantity(child, child_quantity_provided_to_node)
+                requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
 
             # *********
             # Calculate proportion of child's requested quantities that come from node. Record these
@@ -928,8 +942,9 @@ class Model:
                     proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
                     child_requested_quant = self.get_param("requested_quantities", child, year)
-                    for child_rq_node, child_rq_amount in child_requested_quant.requested_quantities.items():
+                    for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
                         requested_quantity.record_requested_quantity(child_rq_node,
+                                                                     child,
                                                                      proportion * child_rq_amount)
             except KeyError:
                 # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
