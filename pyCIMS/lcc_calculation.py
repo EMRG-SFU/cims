@@ -157,12 +157,14 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
         # Requested Line values sum to numbers greater or less than 1.
         # TODO: change this to get_param(), with get_node_service_cost being provided in the calculable fields
+        # new_service_cost = model.get_param('Service cost', node, year)
         service_cost = econ.get_node_service_cost(sub_graph,
                                                   model.graph,
                                                   node,
                                                   year,
                                                   model.fuels)
-
+        # print(new_service_cost, service_cost)
+        # assert(new_service_cost == service_cost)
         # Is service cost just the cost of these nodes?
         fuel_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(service_cost)}
@@ -335,7 +337,7 @@ def calc_crf(model, node, year, tech):
     return crf
 
 
-def calc_annual_service_cost(model, node, year, tech):
+def calc_annual_service_cost(model, node, year, tech=None):
     """
     Find the service cost associated with a given technology.
 
@@ -356,7 +358,11 @@ def calc_annual_service_cost(model, node, year, tech):
                 service_requested_lcc = model.graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             else:
                 service_requested_lcc = model.get_node_parameter_default('Life Cycle Cost', 'sector')
-
+            try:
+                price_multiplier = model.graph.nodes[node][year]['Price Multiplier'][fuel_name]['year_value']
+            except KeyError:
+                price_multiplier = 1
+            service_requested_lcc *= price_multiplier
         else:
             service_requested_branch = service_requested['branch']
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
