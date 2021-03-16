@@ -5,7 +5,6 @@ import networkx as nx
 
 from . import graph_utils
 from . import utils
-from . import econ
 from . import lcc_calculation
 
 # TODO: Evaluate whether methods should avoid side effects.

@@ -1,6 +1,5 @@
 import warnings
 from . import utils
-from . import econ
 import math
 
 
@@ -156,15 +155,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         # line value. Sometimes, the Service Requested line values act as percent shares that add up
         # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
         # Requested Line values sum to numbers greater or less than 1.
-        # TODO: change this to get_param(), with get_node_service_cost being provided in the calculable fields
-        # new_service_cost = model.get_param('Service cost', node, year)
-        service_cost = econ.get_node_service_cost(sub_graph,
-                                                  model.graph,
-                                                  node,
-                                                  year,
-                                                  model.fuels)
-        # print(new_service_cost, service_cost)
-        # assert(new_service_cost == service_cost)
+        service_cost = model.get_param('Service cost', node, year)
         # Is service cost just the cost of these nodes?
         fuel_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(service_cost)}
@@ -375,19 +366,29 @@ def calc_annual_service_cost(model, node, year, tech=None):
 
         return service_cost
 
-    total_tech_service_cost = 0
+    total_service_cost = 0
     graph = model.graph
-    if 'Service requested' in graph.nodes[node][year]['technologies'][tech]:
-        service_req = graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+    if tech is not None:
+        data = graph.nodes[node][year]['technologies'][tech]
+    else:
+        data = graph.nodes[node][year]
+
+    if 'Service requested' in data:
+        service_req = data['Service requested']
         if isinstance(service_req, dict):
-            total_tech_service_cost += do_sc_calculation(service_req)
+            if 'year_value' in service_req:
+                total_service_cost += do_sc_calculation(service_req)
+            else:
+                for req in service_req.values():
+                    total_service_cost += do_sc_calculation(req)
         elif isinstance(service_req, list):
             for req in service_req:
-                total_tech_service_cost += do_sc_calculation(req)
+                total_service_cost += do_sc_calculation(req)
         else:
             print(f"type for service requested? {type(service_req)}")
 
-    return total_tech_service_cost
+    return total_service_cost
 
 
 def techs_in_dcc_class(model, dcc_class, year):
