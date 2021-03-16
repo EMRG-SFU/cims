@@ -18,7 +18,9 @@ def get_node_service_cost(sub_graph, full_graph, node, year, fuels):
         if service_requested['branch'] in fuels:
             fuel_branch = service_requested['branch']
             fuel_name = list(full_graph.nodes[node][year]['Life Cycle Cost'].keys())[0]
-            fuel_price = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
+            fuel_lcc = full_graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
+            price_multiplier = full_graph.nodes[node][year]['Price Multiplier'][fuel_name]['year_value']
+            fuel_price = fuel_lcc * price_multiplier
             service_cost = fuel_price * service_requested_value
         else:
             service_requested_value = service_requested['year_value']
