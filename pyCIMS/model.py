@@ -7,6 +7,8 @@ from . import graph_utils
 from . import utils
 from . import lcc_calculation
 
+from .utils import create_value_dict
+
 # TODO: Evaluate whether methods should avoid side effects.
 # TODO: Separate the get_service_cost code out into smaller functions & document.
 
@@ -449,7 +451,7 @@ class Model:
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year]['provided_quantities'] = ProvidedQuantity()
+            self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity())
 
     def update_prices(self, year, supply_subgraph):
         """
@@ -529,10 +531,10 @@ class Model:
                 # Check if we need to initialize provided_quantities
                 year_node = self.graph.nodes[service_data['branch']][year]
                 if 'provided_quantities' not in year_node.keys():
-                    year_node['provided_quantities'] = ProvidedQuantity()
+                    year_node['provided_quantities'] = create_value_dict(ProvidedQuantity())
 
                 # Save results
-                year_node['provided_quantities'].provide_quantity(amount=quant_requested,
+                year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                 requesting_node=node,
                                                                 requesting_technology=technology)
 
@@ -572,7 +574,6 @@ class Model:
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            assessed_demand = self.graph.nodes[node][year]['provided_quantities'].get_total_quantity()
             assessed_demand = self.get_param('provided_quantities', node, year).get_total_quantity()
 
             # Existing Tech Specific Stocks
@@ -623,7 +624,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note early retirement in the model
-                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] -= amount_tech_to_retire
+                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
 
                 # New Stock Retirement
                 possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
@@ -655,7 +656,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note new stock remaining (post surplus) in the model
-                        tech_data['new_stock_remaining'][purchase_year] -= amount_tech_to_retire
+                        tech_data['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -699,16 +700,16 @@ class Model:
                                 warnings.warn("Overflow Error when calculating new marketshare for "
                                               "tech {} @ node {}".format(t, node))
 
-                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
-                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0
+                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(0)
+                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0)
 
                 new_market_shares_per_tech[t] = new_market_share
                 if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share)
                 else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share)
 
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = new_market_share
+                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share)
 
             # Calculate Total Market shares -- remaining + new stock
             total_market_shares_by_tech = {}
@@ -731,7 +732,7 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = total_market_share
+                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share)
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
@@ -832,10 +833,10 @@ class Model:
             remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
 
-        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = create_value_dict(remaining_base_stock)
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = create_value_dict(remaining_new_stock_pre_surplus)
         # Note: retired stock will be removed later from ['new_stock_remaining']
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = create_value_dict(remaining_new_stock_pre_surplus)
         return existing_stock
 
     def get_tech_parameter_default(self, parameter):
@@ -952,4 +953,4 @@ class Model:
                 continue
 
         # Save the requested quantities to the node's data
-        self.graph.nodes[node][year]["requested_quantities"] = requested_quantity
+        self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity)

@@ -116,7 +116,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                     raise e
 
         # Set sum of Life Cycle Cost raised to negative variance
-        sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
+        sub_graph.nodes[node][year]["total_lcc_v"] = utils.create_value_dict(total_lcc_v)
 
         # Weighted Life Cycle Cost
         # ************************
@@ -132,8 +132,8 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             # Determine what market share to use for weighing Life Cycle Costs
             # If market share is exogenous, set new & total market share to exogenous value
             if exogenous:
-                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = exo_market_share
-                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = exo_market_share
+                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = utils.create_value_dict(exo_market_share)
+                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = utils.create_value_dict(exo_market_share)
 
             market_share = model.get_param('total_market_share', node, year, tech)
 
@@ -350,6 +350,7 @@ def calc_annual_service_cost(model, node, year, tech=None):
             else:
                 service_requested_lcc = model.get_node_parameter_default('Life Cycle Cost', 'sector')
             try:
+                fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['Price Multiplier'][fuel_name]['year_value']
             except KeyError:
                 price_multiplier = 1
