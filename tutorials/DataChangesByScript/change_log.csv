@@ -1,0 +1,1106 @@
+base_model_description,node,year,technology,parameter,sub_parameter,old_value,new_value
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,Incandescent,Market share,,0.92,0.8
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,CFL,Market share,,0.08,0.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2000,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2005,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2010,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2015,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2020,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2025,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2030,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2035,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2040,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2045,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2050,,Service requested,Recent Car,0.642948225,0.7
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2000,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2005,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2010,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2015,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2020,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2025,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2030,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2035,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2040,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2045,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2050,,Service requested,Old Truck,0.357051775,0.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2000,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2005,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2010,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2015,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2020,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2025,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2030,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2035,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2040,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2045,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,2050,,Heterogeneity,,20.0,25.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2000,,Price Multiplier,Diesel,2.8832719819482935,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2000,,Price Multiplier,Light Fuel Oil,2.8832719819482935,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2000,,Price Multiplier,Natural Gas,1.185318514096392,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2000,,Price Multiplier,Electricity,2.877762716911787,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2000,,Price Multiplier,Wood,7.924040444009997,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2005,,Price Multiplier,Diesel,2.9163557015722947,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2005,,Price Multiplier,Light Fuel Oil,2.9163557015722947,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2005,,Price Multiplier,Natural Gas,1.1989194923299649,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2005,,Price Multiplier,Electricity,1.3049238777800118,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2005,,Price Multiplier,Wood,10.01384475000787,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2010,,Price Multiplier,Diesel,1.914849570121868,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2010,,Price Multiplier,Light Fuel Oil,1.914849570121868,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2010,,Price Multiplier,Natural Gas,1.712300749964769,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2010,,Price Multiplier,Electricity,1.0378489260143198,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2010,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2015,,Price Multiplier,Diesel,3.567136384607496,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2015,,Price Multiplier,Light Fuel Oil,3.567136384607496,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2015,,Price Multiplier,Natural Gas,1.3992793347589847,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2015,,Price Multiplier,Electricity,0.8972818698347107,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2015,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2020,,Price Multiplier,Diesel,3.9008645855307864,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2020,,Price Multiplier,Light Fuel Oil,3.9008645855307864,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2020,,Price Multiplier,Natural Gas,4.984172152179559,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2020,,Price Multiplier,Electricity,0.8220173329894247,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2020,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Price Multiplier,Diesel,3.0366596203927365,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Price Multiplier,Light Fuel Oil,3.0366596203927365,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Price Multiplier,Natural Gas,3.444996570523813,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Price Multiplier,Electricity,0.8325368794326242,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Price Multiplier,Diesel,2.871839401680371,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Price Multiplier,Light Fuel Oil,2.871839401680371,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Price Multiplier,Natural Gas,2.782905252835355,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Price Multiplier,Electricity,0.847245265151515,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Price Multiplier,Diesel,2.8264896979477454,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Price Multiplier,Light Fuel Oil,2.8264896979477454,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Price Multiplier,Natural Gas,2.5154296345316487,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Price Multiplier,Electricity,0.8424008888888889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Price Multiplier,Diesel,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Price Multiplier,Light Fuel Oil,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Price Multiplier,Natural Gas,2.361660027764593,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Price Multiplier,Electricity,0.8424008888888889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Price Multiplier,Diesel,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Price Multiplier,Light Fuel Oil,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Price Multiplier,Natural Gas,2.361660027764593,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Price Multiplier,Electricity,0.8424008888888889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Price Multiplier,Diesel,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Price Multiplier,Light Fuel Oil,2.819085664685276,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Price Multiplier,Natural Gas,2.361660027764593,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Price Multiplier,Electricity,0.8424008888888889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Price Multiplier,Wood,52.264236153877825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2000,,Price Multiplier,Light Fuel Oil,2.693101236723519,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2000,,Price Multiplier,Natural Gas,0.9372711648144444,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2000,,Price Multiplier,Electricity,1.0000266533339215,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2005,,Price Multiplier,Light Fuel Oil,2.7240028675071004,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2005,,Price Multiplier,Natural Gas,0.9480259151705669,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2005,,Price Multiplier,Electricity,0.9999323016618731,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2010,,Price Multiplier,Light Fuel Oil,1.8228955953753319,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2010,,Price Multiplier,Natural Gas,1.007614870430962,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2010,,Price Multiplier,Electricity,1.0001051312649165,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2015,,Price Multiplier,Light Fuel Oil,3.3954174405264723,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2015,,Price Multiplier,Natural Gas,1.116091850343476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2015,,Price Multiplier,Electricity,1.0000982696280991,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2020,,Price Multiplier,Light Fuel Oil,3.733156460154209,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2020,,Price Multiplier,Natural Gas,2.6391118032927157,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2020,,Price Multiplier,Electricity,1.0000846272891408,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2025,,Price Multiplier,Light Fuel Oil,2.9111129694204267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2025,,Price Multiplier,Natural Gas,2.08813289059971,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2025,,Price Multiplier,Electricity,0.9999632624113476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2030,,Price Multiplier,Light Fuel Oil,2.7515238611652415,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2030,,Price Multiplier,Natural Gas,1.7171117517494738,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2030,,Price Multiplier,Electricity,1.0000357323232323,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2035,,Price Multiplier,Light Fuel Oil,2.7061741574326152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2035,,Price Multiplier,Natural Gas,1.5513793618632692,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2035,,Price Multiplier,Electricity,0.9999537142857143,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2040,,Price Multiplier,Light Fuel Oil,2.697844620012337,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2040,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2040,,Price Multiplier,Electricity,0.9999537142857143,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2045,,Price Multiplier,Light Fuel Oil,2.697844620012337,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2045,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2045,,Price Multiplier,Electricity,0.9999537142857143,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2050,,Price Multiplier,Light Fuel Oil,2.697844620012337,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2050,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2050,,Price Multiplier,Electricity,0.9999537142857143,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2000,,Price Multiplier,Diesel,3.5270176723054507,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2000,,Price Multiplier,Gasoline,3.830582153813321,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2000,,Price Multiplier,Natural Gas,0.9372711648144444,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2000,,Price Multiplier,Electricity,3.1103008858207324,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2005,,Price Multiplier,Diesel,3.5674879659544745,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2005,,Price Multiplier,Gasoline,3.874535657598915,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2005,,Price Multiplier,Natural Gas,0.9480259151705669,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2005,,Price Multiplier,Electricity,1.3049238777800118,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2010,,Price Multiplier,Diesel,2.070803511291993,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2010,,Price Multiplier,Gasoline,2.319447059006627,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2010,,Price Multiplier,Natural Gas,1.007614870430962,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2010,,Price Multiplier,Electricity,0.8525298846520366,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2015,,Price Multiplier,Diesel,4.0592049554615235,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2015,,Price Multiplier,Gasoline,4.360795369855928,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2015,,Price Multiplier,Natural Gas,1.116091850343476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2015,,Price Multiplier,Electricity,0.7896456463029468,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2020,,Price Multiplier,Diesel,4.455489882051752,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2020,,Price Multiplier,Gasoline,4.633762298790633,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2020,,Price Multiplier,Natural Gas,2.6391118032927157,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2020,,Price Multiplier,Electricity,0.7860440310117617,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Price Multiplier,Diesel,3.379951244145145,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Price Multiplier,Gasoline,3.4937278965888003,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Price Multiplier,Natural Gas,2.08813289059971,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Price Multiplier,Electricity,0.8248181053147944,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Price Multiplier,Diesel,3.149490649022979,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Price Multiplier,Gasoline,3.2457430814350827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Price Multiplier,Natural Gas,1.7171117517494738,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Price Multiplier,Electricity,0.868539241302763,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Price Multiplier,Diesel,3.0634187623467706,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Price Multiplier,Gasoline,3.151341657338596,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Price Multiplier,Natural Gas,1.5513793618632692,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2000,,Price Multiplier,Diesel,3.5270176723054507,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2000,,Price Multiplier,Gasoline,3.830582153813321,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2000,,Price Multiplier,Natural Gas,0.9372711648144444,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2000,,Price Multiplier,Electricity,3.1103008858207324,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2005,,Price Multiplier,Diesel,3.5674879659544745,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2005,,Price Multiplier,Gasoline,3.874535657598915,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2005,,Price Multiplier,Natural Gas,0.9480259151705669,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2005,,Price Multiplier,Electricity,1.3049238777800118,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2010,,Price Multiplier,Diesel,2.070803511291993,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2010,,Price Multiplier,Gasoline,2.319447059006627,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2010,,Price Multiplier,Natural Gas,1.007614870430962,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2010,,Price Multiplier,Electricity,0.8525298846520366,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2015,,Price Multiplier,Diesel,4.0592049554615235,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2015,,Price Multiplier,Gasoline,4.360795369855928,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2015,,Price Multiplier,Natural Gas,1.116091850343476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2015,,Price Multiplier,Electricity,0.7896456463029468,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2020,,Price Multiplier,Diesel,4.455489882051752,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2020,,Price Multiplier,Gasoline,4.633762298790633,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2020,,Price Multiplier,Natural Gas,2.6391118032927157,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2020,,Price Multiplier,Electricity,0.7860440310117617,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Price Multiplier,Diesel,3.379951244145145,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Price Multiplier,Gasoline,3.4937278965888003,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Price Multiplier,Natural Gas,2.08813289059971,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Price Multiplier,Electricity,0.8248181053147944,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Price Multiplier,Diesel,3.149490649022979,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Price Multiplier,Gasoline,3.2457430814350827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Price Multiplier,Natural Gas,1.7171117517494738,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Price Multiplier,Electricity,0.868539241302763,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Price Multiplier,Diesel,3.0634187623467706,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Price Multiplier,Gasoline,3.151341657338596,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Price Multiplier,Natural Gas,1.5513793618632692,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Price Multiplier,Diesel,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Price Multiplier,Natural Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Price Multiplier,Electricity,0.8738483841178476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2000,,Price Multiplier,Coal Sub Bituminous Western,4.929896502862696,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2005,,Price Multiplier,Coal Sub Bituminous Western,4.225548361560456,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2010,,Price Multiplier,Coal Sub Bituminous Western,3.026272354703567,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2015,,Price Multiplier,Coal Sub Bituminous Western,3.0818002878173942,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2020,,Price Multiplier,Coal Sub Bituminous Western,2.999252065822285,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2025,,Price Multiplier,Coal Sub Bituminous Western,3.1992022035437713,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2030,,Price Multiplier,Coal Sub Bituminous Western,3.4277166466540407,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2035,,Price Multiplier,Coal Sub Bituminous Western,3.6913871579351207,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2040,,Price Multiplier,Coal Sub Bituminous Western,3.9519556632011295,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2045,,Price Multiplier,Coal Sub Bituminous Western,3.9519556632011295,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2050,,Price Multiplier,Coal Sub Bituminous Western,3.9519556632011295,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Diesel Rail,3.5270176723054507,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Gasoline,3.830582153813321,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Heavy Fuel Oil,0.9994242673331143,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Natural_Gas,0.9372711648144444,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Petroleum Coke,1.0000000000000002,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2000,,Price Multiplier,Propane Solvent,1.0003425830763975,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Diesel Rail,3.5674879659544745,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Gasoline,3.874535657598915,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Heavy Fuel Oil,0.9996859406700371,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Natural_Gas,0.9480259151705669,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2005,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Diesel Rail,2.070803511291993,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Gasoline,2.319447059006627,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Heavy Fuel Oil,0.9997926663307422,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Natural_Gas,1.007614870430962,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2010,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Diesel Rail,4.0592049554615235,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Gasoline,4.360795369855928,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Heavy Fuel Oil,1.0001847206248533,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Natural_Gas,1.116091850343476,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2015,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Diesel Rail,4.455489882051752,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Gasoline,4.633762298790633,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Heavy Fuel Oil,0.9999719741872163,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Natural_Gas,2.6391118032927157,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2020,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Diesel Rail,3.379951244145145,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Gasoline,3.4937278965888003,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Heavy Fuel Oil,0.9999444738765372,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Natural_Gas,2.08813289059971,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Diesel Rail,3.149490649022979,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Gasoline,3.2457430814350827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Heavy Fuel Oil,0.9998376204899151,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Natural_Gas,1.7171117517494738,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Diesel Rail,3.0634187623467706,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Gasoline,3.151341657338596,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Heavy Fuel Oil,1.0000008685331758,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Natural_Gas,1.5513793618632692,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Diesel Rail,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Heavy Fuel Oil,0.9999315009236983,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Natural_Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Diesel Rail,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Heavy Fuel Oil,0.9999315009236983,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Natural_Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Diesel Rail,3.0217710752453795,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Gasoline,3.102289936974736,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Heavy Fuel Oil,0.9999315009236983,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Natural_Gas,1.4753557448275343,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Petroleum Coke,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Uranium,6.25,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Still Gas,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Price Multiplier,Propane Solvent,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2000,,Price Multiplier,Hydrogen,1.0000482391555283,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2005,,Price Multiplier,Hydrogen,0.9999264057328152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2010,,Price Multiplier,Hydrogen,0.9999994391801843,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2015,,Price Multiplier,Hydrogen,1.0000552599173136,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2020,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Price Multiplier,Hydrogen,1.0000525042890183,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2000,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2005,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2010,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2015,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2020,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Price Multiplier,Hog Fuel,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2000,,Price Multiplier,Wood,1.5763729800012387,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2005,,Price Multiplier,Wood,2.002768950001574,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2010,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2015,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2020,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Price Multiplier,Wood,10.623383126095304,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2000,,Price Multiplier,Electricity,1.5003649847267213,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2005,,Price Multiplier,Electricity,0.8522770758738812,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2000,,Price Multiplier,Electricity,4.451549724877598,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2000,,Price Multiplier,Hydrogen,1.0000482389831475,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2005,,Price Multiplier,Electricity,1.5372188072565296,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2005,,Price Multiplier,Hydrogen,0.9999264056484979,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2010,,Price Multiplier,Hydrogen,0.9999994391080618,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2015,,Price Multiplier,Hydrogen,1.0000552600132773,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2020,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Price Multiplier,Hydrogen,1.0000525042174322,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2000,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2000,,Price Multiplier,Uranium,0.9819527127884312,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2005,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2005,,Price Multiplier,Uranium,0.9819527124999999,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2010,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2010,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2015,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2015,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2020,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2020,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Price Multiplier,Geothermal,1.0,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Price Multiplier,Uranium,0.9819527116347062,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2000,,Price Multiplier,Electricity,2.023322296092747,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2005,,Price Multiplier,Electricity,0.9736504624372635,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Ethanol,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2000,,Price Multiplier,Diesel,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2000,,Price Multiplier,Light Fuel Oil,1.0937770812306922,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2000,,Price Multiplier,Natural Gas,0.8631315511914267,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2000,,Price Multiplier,Electricity,0.7221624541429579,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2005,,Price Multiplier,Diesel,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2005,,Price Multiplier,Light Fuel Oil,1.1063274803998135,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2005,,Price Multiplier,Natural Gas,0.8730355839900825,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2005,,Price Multiplier,Electricity,0.6716637169700528,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2010,,Price Multiplier,Diesel,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2010,,Price Multiplier,Light Fuel Oil,0.9695627097274767,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2010,,Price Multiplier,Natural Gas,0.9861305448354191,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2010,,Price Multiplier,Electricity,0.7370231503579953,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2015,,Price Multiplier,Diesel,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2015,,Price Multiplier,Light Fuel Oil,2.1039178190767513,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2015,,Price Multiplier,Natural Gas,1.395114812929345,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2015,,Price Multiplier,Electricity,0.682658910123967,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2020,,Price Multiplier,Diesel,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2020,,Price Multiplier,Light Fuel Oil,1.5437070753166857,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2020,,Price Multiplier,Natural Gas,2.0583601808411154,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2020,,Price Multiplier,Electricity,0.6795452669589889,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2025,,Price Multiplier,Diesel,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2025,,Price Multiplier,Light Fuel Oil,1.202501516344152,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2025,,Price Multiplier,Natural Gas,1.8894643767167414,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2025,,Price Multiplier,Electricity,0.7130659574468086,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2030,,Price Multiplier,Diesel,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2030,,Price Multiplier,Light Fuel Oil,1.0948714186876827,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2030,,Price Multiplier,Natural Gas,1.562505904369732,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2030,,Price Multiplier,Electricity,0.7508634469696969,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2035,,Price Multiplier,Diesel,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2035,,Price Multiplier,Light Fuel Oil,1.0087995320114744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2035,,Price Multiplier,Natural Gas,1.4089965523614778,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2035,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2040,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2040,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2040,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2040,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2045,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2045,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2045,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2045,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2050,,Price Multiplier,Diesel,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2050,,Price Multiplier,Light Fuel Oil,0.9662263407522744,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2050,,Price Multiplier,Natural Gas,1.3417283298616394,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Biodiesel,2050,,Price Multiplier,Electricity,0.7554532698412698,3.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Commercial,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Personal,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Transportation Freight,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Natural Gas Extraction,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Crude,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Other Manufacturing,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Waste,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Agriculture,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2025,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2030,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2035,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2040,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2045,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Electricity,2050,,Tax,CO2,0.0,50.0
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2000,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2005,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2010,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2015,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2020,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2025,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2030,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2035,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2040,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2045,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2050,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2000,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2005,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2010,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2015,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2020,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2025,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2030,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2035,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2040,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2045,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Petroleum Refining.Pumping.Precision.Small,2050,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2000,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2005,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2010,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2015,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2020,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2025,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2030,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2035,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2040,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2045,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Industrial Minerals.Pumping.Precision.Small,2050,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2000,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2005,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2010,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2015,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2020,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2025,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2030,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2035,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2040,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2045,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2050,,Heterogeneity,,0.4,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2000,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2005,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2010,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2015,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2020,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2025,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2030,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2035,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2040,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2045,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2050,,Heterogeneity,,10.0,0.6
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,,Heterogeneity,,10.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Solar Electricity,2000,,Heterogeneity,,1.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Single Family Detached,2000,,Heterogeneity,,10.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Single Family Attached,2000,,Heterogeneity,,10.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Apartments,2000,,Heterogeneity,,10.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Mobile,2000,,Heterogeneity,,10.0,1.3
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2010,,Heterogeneity,,10.0,1.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Solar Electricity,2010,,Heterogeneity,,1.0,1.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Single Family Detached,2010,,Heterogeneity,,10.0,1.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Single Family Attached,2010,,Heterogeneity,,10.0,1.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Apartments,2010,,Heterogeneity,,10.0,1.2
+pyCIMS_model_description_Alberta_Test,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Space Conditioning.Mobile,2010,,Heterogeneity,,10.0,1.2

@@ -2,6 +2,10 @@ import copy
 import math
 import warnings
 import networkx as nx
+import pandas as pd
+import re
+import time
+import pickle
 
 from . import graph_utils
 from . import utils
@@ -80,6 +84,9 @@ class Model:
         self.build_graph()
 
         self.show_run_warnings = True
+
+        self.model_description_file = model_reader.infile
+        self.change_history = pd.DataFrame(columns=['base_model_description', 'node', 'year', 'technology', 'parameter', 'sub_parameter', 'old_value', 'new_value'])
 
     def build_graph(self):
         """
@@ -842,6 +849,152 @@ class Model:
             param_val = utils.get_tech_param(param, self, node, year, tech, sub_param)
 
         else:
-            param_val = utils.get_node_param(param, self, node, year)
+            param_val = utils.get_node_param(param, self, node, year, sub_param)
 
         return param_val
+
+    def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
+        """
+        Sets a parameter's value, given a specific context (node, year, technology, and
+        sub-parameter).
+
+        Parameters
+        ----------
+        val : any or list of any
+            The new value(s) to be set at the specified `param` at `node`, given the context provided by 
+            `year`, `tech` and `sub_param`.
+        param : str
+            The name of the parameter whose value is being set.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in set.
+        year : str or list, optional
+            The year(s) which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`
+        save : bool, optional
+            This specifies whether the change should be saved in the change_log csv where True means
+            the change will be saved and False means it will not be saved
+        """
+        # Checks whether year or val is a list. If either of them is a list, the other must also be a list 
+        # of the same length
+        if isinstance(val, list) or isinstance(year, list):
+            if not isinstance(val, list):
+                print('Values must be entered as a list.')
+            elif not isinstance(year, list):
+                print('Years must be entered as a list.')
+            elif len(val) != len(year):
+                print('The number of values does not match the number of years. No changes were made.')
+        else:
+            year = [year]
+            val = [val]
+        for i in range(len(year)):
+            try:
+                self.get_param(param, node, year[i], tech, sub_param)
+            except:
+                print('Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(year[i]) + ', ' + str(tech) + ', ' + str(sub_param) + ')')
+                print('Corresponding value was not set to ' + str(val[i]) + '\n')
+                continue
+            if tech:
+                utils.set_tech_param(val[i], param, self, node, year[i], tech, sub_param, save)
+
+            else:
+                utils.set_node_param(val[i], param, self, node, year[i], sub_param, save)
+                
+    def set_param_wildcard(self, val, param, node_regex, year, tech=None, sub_param=None, save=True):
+        """
+        Sets a parameter's value, given a for all context (node, year, technology, and
+        sub-parameter) that satisfy/matches the node_regex pattern
+
+        Parameters
+        ----------
+        val : any
+            The new value to be set at the specified `param` at `node`, given the context provided by 
+            `year`, `tech` and `sub_param`.
+        param : str
+            The name of the parameter whose value is being set.
+        node_regex : str
+            The regex pattern of the node (branch format) whose parameter you are interested in matching.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`
+        save : bool, optional
+            This specifies whether the change should be saved in the change_log csv where True means
+            the change will be saved and False means it will not be saved
+        """
+        for node in self.graph.nodes:
+            if re.search(node_regex, node) != None:
+                self.set_param(val, param, node, year, tech, sub_param, save)
+
+    def set_param_log(self, output_file=''):
+        """
+        Writes the saved change history to a CSV specified at `output_file` if provided.
+
+        Parameters
+        ----------
+        output_file : str, optional
+            The output file location where the change history CSV will be saved. If this is left blank,
+            the file will be outputed at the current location with the name of the original model description
+            and a timestamp in the filename.
+        """
+        if output_file == '':
+            filename = self.model_description_file.split('/')[-1].split('.')[0]
+            timestamp = time.strftime("%Y%m%d-%H%M%S")
+            output_file = './change_log_' + filename + '_' + timestamp + '.csv'
+        self.change_history.to_csv(output_file, index=False)
+
+    def save_model(self, model_file='', save_changes=True):
+        """
+        Saves the current model to a pickle file at `model_file` if specified
+
+        Parameters
+        ----------
+        model_file : str, optional
+            The model file location where the pickled model file will be saved. If this is left blank,
+            the model will be saved at the current location with the name of the original model description
+            and a timestamp in the filename.
+        save_changes : bool, optional
+            This specifies whether the changes will be written to CSV
+        """
+        if model_file != '' and not model_file.endswith('.pkl'):
+            print('model_file must end with .pkl extension. No model was saved.')
+        else:
+            if model_file == '':
+                filename = self.model_description_file.split('/')[-1].split('.')[0]
+                timestamp = time.strftime("%Y%m%d-%H%M%S")
+                model_file = 'model_' + filename + '_' + timestamp + '.pkl'
+            with open(model_file, 'wb') as f:
+                pickle.dump(self, f)
+        if save_changes:
+            self.set_param_log(output_file='change_log_' + model_file)
+
+def load_model(model_file):
+    """
+    Loads the model at `model_file`
+
+    Parameters
+    ----------
+    model_file : str
+        The model file location where the pickled model file is saved
+    """
+    f = open(model_file,'rb')
+    model = pickle.load(f)
+    return model
