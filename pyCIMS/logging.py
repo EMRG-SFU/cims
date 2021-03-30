@@ -79,6 +79,12 @@ def log_dict(val):
 
         if year_value is None:
             return [(context, unit, None)]
+        elif isinstance(year_value, ProvidedQuantity):
+            return log_ProvidedQuantity(year_value)
+        elif isinstance(year_value, RequestedQuantity):
+            return log_RequestedQuantity(year_value)
+        elif isinstance(year_value, dict):
+            return log_dict(year_value)
         else:
             return [(context, unit, float(year_value))]
     else:
