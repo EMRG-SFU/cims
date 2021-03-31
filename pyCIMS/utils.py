@@ -176,8 +176,6 @@ def get_node_param(param, model, node, year, sub_param=None):
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     else:
         prev_year = str(int(year) - model.step)
-        if prev_year == str(model.base_year):
-            raise Exception()
         val = model.get_param(param, node, prev_year)
 
     return val

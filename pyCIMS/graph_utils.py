@@ -162,7 +162,10 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
         else:
             warnings.warn("Found a Loop -- ")
             # Resolve a loop
-            candidates = {n: dist_from_root[n] for n in sg_cur}
+            cycles = nx.simple_cycles(sg_cur)
+            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
+
+            # candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
@@ -219,8 +222,10 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
         else:
             warnings.warn("Found a Loop")
             # Resolve a loop
-            candidates = {n: dist_from_root[n] for n in sg_cur}
+            cycles = nx.simple_cycles(sg_cur)
+            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
             n_cur = max(candidates, key=lambda x: candidates[x])
+
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
