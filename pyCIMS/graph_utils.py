@@ -289,7 +289,8 @@ def add_node_data(graph, current_node, node_dfs):
             dct = {'source': src,
                    'branch': branch,
                    'unit': unit,
-                   'year_value': year_value}
+                   'year_value': year_value,
+                   'param_source': 'model'}
 
             if param in year_dict.keys():
                 pass
@@ -341,7 +342,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'source': source,
                    'branch': branch,
                    'unit': unit,
-                   'year_value': year_value}
+                   'year_value': year_value,
+                   'param_source': 'model'}
 
             if parameter in year_dict.keys():
                 if isinstance(year_dict[parameter], list):
