@@ -7,7 +7,8 @@ from . import graph_utils
 from . import utils
 from . import lcc_calculation
 
-# TODO: Evaluate whether methods should avoid side effects.
+from .utils import create_value_dict
+
 # TODO: Separate the get_service_cost code out into smaller functions & document.
 
 
@@ -229,31 +230,27 @@ class Model:
                     if int(year) == self.base_year:
                         break
 
-                    # Calculate Service Costs on Demand Side
+                    # Calculate Service Costs on Supply Side
                     graph_utils.bottom_up_traversal(g_supply,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self)
 
-                # Update Prices
-                # *************
-                # Go and get all the previous prices
-                prev_prices = {f: self.get_param('Life Cycle Cost', f, year)
-                               for f in self.fuels}
-
-                # Now actually update prices
-                self.update_prices(year, g_supply)
-
-                # Go get all the new prices
-                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
-                              for fuel in self.fuels}
-
                 # Check for an Equilibrium
                 # ************************
+                # Find the previous prices
+                prev_prices = self.prices
+
+                # Go get all the new prices
+                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year, retrieve_only=True)
+                              for fuel in self.fuels}
+
+
                 equilibrium = (int(year) == self.base_year) or \
-                              self.check_equillibrium(prev_prices,
-                                                      new_prices,
-                                                      equilibrium_threshold)
+                              self.check_equilibrium(prev_prices,
+                                                     new_prices,
+                                                     equilibrium_threshold)
+                self.prices = new_prices
 
                 # Next Iteration
                 # **************
@@ -264,7 +261,7 @@ class Model:
                                             self.calc_requested_quantities,
                                             year)
 
-    def check_equillibrium(self, prev, new, threshold):
+    def check_equilibrium(self, prev, new, threshold):
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
@@ -287,7 +284,6 @@ class Model:
         -------
         True if all fuels changed less than `threshold`. False otherwise.
         """
-
         # For every fuel, check if the relative difference exceeds the threshold
         for fuel in new:
             prev_fuel_price = prev[fuel]
@@ -353,13 +349,13 @@ class Model:
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Price Multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = self.get_param('Price Multiplier', parent, year)
+                    price_multipliers = self.get_param('Price Multiplier', parent, year, retrieve_only=True)
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multiplier from the current node (if they exist)
             node_price_multipliers = {}
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year)
+                price_multipliers = self.get_param('Price Multiplier', node, year, retrieve_only=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Multiply the node's price multipliers by its parents' price multipliers
@@ -432,7 +428,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
+                        # TODO: Change to use get_param()
+                        last_year_value = graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -449,64 +446,8 @@ class Model:
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year]['provided_quantities'] = ProvidedQuantity()
-
-    def update_prices(self, year, supply_subgraph):
-        """
-        1. Determine what fuels need to be calculated
-        2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
-            (A) If a tech compete node, just return the life cycle cost. This is production cost.
-            (B) If its a fixed ratio or sector node:
-                  i) find all the services being requested
-                 ii) for each service, multiply the price by the requested amount to get a weighted cost.
-                iii) calculate the weighted average production cost of the requested services.
-        3. Store the prices of the nodes in the new prices dictionary. Return dictionary.
-
-        Parameters
-        ----------
-        year : str
-        supply_subgraph: nx.Graph
-
-        Returns
-        -------
-        A dictionary containing the updated prices. Keys are fuel nodes, values are prices.
-        """
-        prev_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0] for f in
-                       self.fuels}
-
-        price_keys_to_estimate = [f for f, d in prev_prices.items() if d['to_estimate']]
-        new_prices = copy.deepcopy(prev_prices)
-
-        # For each price we need to estimate, go find the price
-        def calc_price(node_name):
-            # Base Case is that we hit a tech compete node
-
-            if self.get_param('competition type', node_name) == 'tech compete':
-                return self.get_param('Life Cycle Cost', node_name, year)
-
-            elif supply_subgraph.nodes[node_name]['competition type'] in ['fixed ratio', 'sector']:
-                # Find all the services being requested
-                services_requested = [(d['branch'], d['year_value'])
-                                      for s, d in supply_subgraph.nodes[node_name][year]['Service requested'].items()]
-
-                # For each service multiply their price by their request amount
-                total_req = 0
-                total_lcc = 0
-                for branch, req_amount in services_requested:
-                    total_req += req_amount
-                    total_lcc += req_amount * calc_price(branch)
-
-                # Divide it by the total request amount
-                return total_lcc / total_req
-
-        for fuel in price_keys_to_estimate:
-            fuel_price = calc_price(node_name=fuel)
-            new_prices[fuel]['year_value'] = fuel_price
-            # Update the price @ the fuel node
-            fuel_name = list(self.graph.nodes[fuel][year]['Life Cycle Cost'].keys())[0]
-            self.graph.nodes[fuel][year]['Life Cycle Cost'][fuel_name]['year_value'] = fuel_price
-
-        return new_prices
+            self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
+                                                                                 param_source='initialization')
 
     def stock_retirement_and_allocation(self, sub_graph, node, year):
         def helper_quantity_from_services(requested_services,
@@ -529,10 +470,11 @@ class Model:
                 # Check if we need to initialize provided_quantities
                 year_node = self.graph.nodes[service_data['branch']][year]
                 if 'provided_quantities' not in year_node.keys():
-                    year_node['provided_quantities'] = ProvidedQuantity()
+                    year_node['provided_quantities'] = create_value_dict(ProvidedQuantity(),
+                                                                         param_source='initialization')
 
                 # Save results
-                year_node['provided_quantities'].provide_quantity(amount=quant_requested,
+                year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                 requesting_node=node,
                                                                 requesting_technology=technology)
 
@@ -540,11 +482,10 @@ class Model:
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            if self.get_param('competition type', node) == 'root':
+            if self.get_param('competition type', node, retrieve_only=True) == 'root':
                 total_to_provide = 1
             else:
-                total_to_provide = self.get_param('provided_quantities', node, year).get_total_quantity()
-
+                total_to_provide = self.get_param('provided_quantities', node, year, retrieve_only=True).get_total_quantity()
             # Based on what this node needs to provide, find out how much it must request from other
             # services
             if 'technologies' in node_year_data:
@@ -572,9 +513,7 @@ class Model:
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            assessed_demand = self.graph.nodes[node][year]['provided_quantities'].get_total_quantity()
-            assessed_demand = self.get_param('provided_quantities', node, year).get_total_quantity()
-
+            assessed_demand = self.get_param('provided_quantities', node, year, retrieve_only=True).get_total_quantity()
             # Existing Tech Specific Stocks
             # *****************************
             # Retrieve existing technology stocks provided_quantities from ‘existing stock database’ for
@@ -605,7 +544,7 @@ class Model:
                 # Base Stock Retirement
                 total_base_stock = 0
                 for tech in existing_stock_per_tech:
-                    t_base_stock = self.get_param('base_stock_remaining', node, year, tech)
+                    t_base_stock = self.get_param('base_stock_remaining', node, year, tech, retrieve_only=True)
                     total_base_stock += t_base_stock
 
                 if total_base_stock == 0:
@@ -614,7 +553,7 @@ class Model:
                 else:
                     retirement_proportion = max(0, min(surplus / total_base_stock, 1))
                     for tech in existing_stock_per_tech:
-                        t_base_stock = self.get_param('base_stock_remaining', node, year, tech)
+                        t_base_stock = self.get_param('base_stock_remaining', node, year, tech, retrieve_only=True)
 
                         amount_tech_to_retire = t_base_stock * retirement_proportion
                         # Remove from existing stock
@@ -623,7 +562,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note early retirement in the model
-                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] -= amount_tech_to_retire
+                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
 
                 # New Stock Retirement
                 possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
@@ -634,7 +573,8 @@ class Model:
                         for tech in existing_stock_per_tech:
                             tech_data = self.graph.nodes[node][year]['technologies'][tech]
                             t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                         node, year, tech)[purchase_year]
+                                                                         node, year, tech,
+                                                                         retrieve_only=True)[purchase_year]
                             total_new_stock_remaining_pre_surplus += t_rem_new_stock_pre_surplus
 
                     if total_new_stock_remaining_pre_surplus == 0:
@@ -646,7 +586,8 @@ class Model:
                         tech_data = self.graph.nodes[node][year]['technologies'][tech]
 
                         t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                     node, year, tech)[purchase_year]
+                                                                     node, year, tech,
+                                                                     retrieve_only=True)[purchase_year]
 
                         amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
                         # Remove from existing stock
@@ -655,7 +596,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note new stock remaining (post surplus) in the model
-                        tech_data['new_stock_remaining'][purchase_year] -= amount_tech_to_retire
+                        tech_data['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -666,22 +607,24 @@ class Model:
             new_market_shares_per_tech = {}
             for t in node_year_data['technologies']:
                 new_market_shares_per_tech[t] = {}
-                market_share_exogenous = self.graph.nodes[node][year]['technologies'][t]['Market share']['exogenous']
-                # market_share_exogenous = self.get_param('Market share', node, year, t)['exogenous']
-
-                if market_share_exogenous:
-                    new_market_share = self.get_param('new_market_share', node, year, t)
+                ms, ms_source = self.get_param('Market share',
+                                               node, year, t,
+                                               return_source=True,
+                                               retrieve_only=True)
+                ms_exogenous = ms_source == 'model'
+                if ms_exogenous:
+                    new_market_share = ms
 
                 else:
                     new_market_share = 0
 
                     # Find the years the technology is available
-                    first_year_available = self.get_param('Available', node, str(self.base_year), t)
-                    first_year_unavailable = self.get_param('Unavailable', node, str(self.base_year), t)
+                    first_year_available = self.get_param('Available', node, str(self.base_year), t, retrieve_only=True)
+                    first_year_unavailable = self.get_param('Unavailable', node, str(self.base_year), t, retrieve_only=True)
                     if first_year_available <= int(year) < first_year_unavailable:
-                        v = self.get_param('Heterogeneity', node, year)
-                        tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
-                        total_lcc_v = self.get_param('total_lcc_v', node, year)
+                        v = self.get_param('Heterogeneity', node, year, retrieve_only=True)
+                        tech_lcc = self.get_param('Life Cycle Cost', node, year, t, retrieve_only=True)
+                        total_lcc_v = self.get_param('total_lcc_v', node, year, retrieve_only=True)
 
                         if tech_lcc == 0:
                             # TODO: Address the problem of a 0 Life Cycle Cost properly
@@ -699,16 +642,19 @@ class Model:
                                 warnings.warn("Overflow Error when calculating new marketshare for "
                                               "tech {} @ node {}".format(t, node))
 
-                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
-                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0
+                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(0, param_source='initialization')
+                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0, param_source='initialization')
 
                 new_market_shares_per_tech[t] = new_market_share
                 if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share,
+                                                                                                      param_source ='calculation')
                 else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share,
+                                                                                                     param_source='calculation')
 
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = new_market_share
+                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share,
+                                                                                                        param_source='calculation')
 
             # Calculate Total Market shares -- remaining + new stock
             total_market_shares_by_tech = {}
@@ -731,7 +677,8 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = total_market_share
+                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share,
+                                                                                                          param_source='calculation')
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
@@ -752,7 +699,7 @@ class Model:
                 helper_quantity_from_services(services_being_requested, assessed_demand)
 
         # Move into the proper allocation function
-        if self.get_param('competition type', node) == 'tech compete':
+        if self.get_param('competition type', node, retrieve_only=True) == 'tech compete':
             tech_compete_allocation()
         else:
             general_allocation()
@@ -766,9 +713,9 @@ class Model:
             # retirements.
             prev_year = str(int(year) - self.step)
             if int(prev_year) == self.base_year:
-                prev_year_unretired_base_stock = self.get_param('base_stock', node, prev_year, tech)
+                prev_year_unretired_base_stock = self.get_param('base_stock', node, prev_year, tech, retrieve_only=True)
             else:
-                prev_year_unretired_base_stock = self.get_param('base_stock_remaining', node, prev_year, tech)
+                prev_year_unretired_base_stock = self.get_param('base_stock_remaining', node, prev_year, tech, retrieve_only=True)
 
             base_stock_remaining = max(min(naturally_unretired_base_stock, prev_year_unretired_base_stock), 0.0)
 
@@ -786,7 +733,7 @@ class Model:
             adj_multiplier = 1
 
             if int(prev_year) > int(purchased_year):
-                prev_y_unretired_new_stock = self.get_param('new_stock_remaining', node, prev_year, tech)[purchased_year]
+                prev_y_unretired_new_stock = self.get_param('new_stock_remaining', node, prev_year, tech, retrieve_only=True)[purchased_year]
 
                 if prev_y_fictional_purchased_stock_remain > 0:
                     adj_multiplier = prev_y_unretired_new_stock / prev_y_fictional_purchased_stock_remain
@@ -803,7 +750,7 @@ class Model:
 
             return purchased_stock_remaining
 
-        if self.get_param('competition type', node) != 'tech compete':
+        if self.get_param('competition type', node, retrieve_only=True) != 'tech compete':
             # we don't care about existing stock for non-tech compete nodes
             return 0
 
@@ -818,24 +765,27 @@ class Model:
         remaining_base_stock = 0
         remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
-            tech_lifespan = self.get_param('Lifetime', node, y, tech)
+            tech_lifespan = self.get_param('Lifetime', node, y, tech, retrieve_only=True)
 
             # Base Stock
-            tech_base_stock_y = self.get_param('base_stock', node, y, tech)
+            tech_base_stock_y = self.get_param('base_stock', node, y, tech, retrieve_only=True)
             remain_base_stock_vintage_y = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
             remaining_base_stock += remain_base_stock_vintage_y
             existing_stock += remain_base_stock_vintage_y
 
             # New Stock
-            tech_new_stock_y = self.get_param('new_stock', node, y, tech)
+            tech_new_stock_y = self.get_param('new_stock', node, y, tech, retrieve_only=True)
             remain_new_stock = purchased_stock_retirement(tech_new_stock_y, y, year, tech_lifespan)
             remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
 
-        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = create_value_dict(remaining_base_stock,
+                                                                                                  param_source='calculation')
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = create_value_dict(remaining_new_stock_pre_surplus,
+                                                                                                             param_source='calculation')
         # Note: retired stock will be removed later from ['new_stock_remaining']
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = create_value_dict(remaining_new_stock_pre_surplus,
+                                                                                                 param_source='calculation')
         return existing_stock
 
     def get_tech_parameter_default(self, parameter):
@@ -844,7 +794,7 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, retrieve_only=False):
         """
         Retrieves a parameter's value, given a specific context (node, year, technology, and
         sub-parameter).
@@ -876,10 +826,13 @@ class Model:
             `tech`.
         """
         if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param)
+            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
+                                             return_source, retrieve_only)
 
         else:
-            param_val = utils.get_node_param(param, self, node, year)
+            param_val = utils.get_node_param(param, self, node, year,
+                                             return_source=return_source,
+                                             retrieve_only=retrieve_only)
 
         return param_val
 
@@ -921,7 +874,7 @@ class Model:
             # *********
             # Add the quantity requested of the child by node (if child is a fuel)
             # *********
-            child_provided_quant = self.get_param("provided_quantities", child, year)
+            child_provided_quant = self.get_param("provided_quantities", child, year, retrieve_only=True)
             child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
             if child in self.fuels:
                 requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
@@ -941,7 +894,7 @@ class Model:
                     # back to node
                     proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                    child_requested_quant = self.get_param("requested_quantities", child, year)
+                    child_requested_quant = self.get_param("requested_quantities", child, year, retrieve_only=True)
                     for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
                         requested_quantity.record_requested_quantity(child_rq_node,
                                                                      child,
@@ -952,4 +905,5 @@ class Model:
                 continue
 
         # Save the requested quantities to the node's data
-        self.graph.nodes[node][year]["requested_quantities"] = requested_quantity
+        self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
+                                                                                       param_source='calculation')
