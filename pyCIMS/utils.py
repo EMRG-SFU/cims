@@ -50,11 +50,12 @@ def search_nodes(search_term, g):
     return [n for n in g.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, branch=None, unit=None):
+def create_value_dict(year_val, source=None, branch=None, unit=None, param_source=None):
     value_dictionary = {'source': source,
                         'branch': branch,
                         'unit': unit,
-                        'year_value': year_val
+                        'year_value': year_val,
+                        'param_source': param_source
                         }
 
     return value_dictionary
@@ -93,7 +94,7 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
 inheritable_params = []
 
 
-def get_node_param(param, model, node, year, sub_param=None):
+def get_node_param(param, model, node, year, sub_param=None, return_source=False, retrieve_only=False):
     """
     Queries a model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
@@ -121,7 +122,7 @@ def get_node_param(param, model, node, year, sub_param=None):
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
     """
-    val = None
+    is_exogenous = True
 
     # Get Parameter from Description
     # ******************************
@@ -131,6 +132,7 @@ def get_node_param(param, model, node, year, sub_param=None):
         data = model.graph.nodes[node][year]
     else:
         data = model.graph.nodes[node]
+
     if param in data:
         val = data[param]
         # If the value is a dictionary, check if a base value (float, string, etc) has been nested.
@@ -142,19 +144,31 @@ def get_node_param(param, model, node, year, sub_param=None):
             elif len(val.keys()) == 1:
                 val = list(val.values())[0]
             if 'year_value' in val:
+                param_source = val['param_source']
+                is_exogenous = param_source in ['model', 'initialization']
                 val = val['year_value']
-        # As long as the value has been specified, return it.
+
+        # Choose which values to return
         if val is not None:
-            return val
+            if retrieve_only:
+                if return_source:
+                    return val, param_source
+                return val
+            elif is_exogenous:
+                if return_source:
+                    return val, param_source
+                else:
+                    return val
 
     # Calculate Parameter Value
     # ******************************
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if param in calculation_directory:
+    if (param in calculation_directory) & (not retrieve_only):
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year)
+        param_source = 'calculation'
 
     # Inherit Parameter Value
     # ******************************
@@ -164,12 +178,14 @@ def get_node_param(param, model, node, year, sub_param=None):
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
         val = get_node_param(param, model, parent, year=year)
+        param_source = 'inheritance'
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
     elif param in model.node_defaults:
         val = model.get_node_parameter_default(param)
+        param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
@@ -177,11 +193,15 @@ def get_node_param(param, model, node, year, sub_param=None):
     else:
         prev_year = str(int(year) - model.step)
         val = model.get_param(param, node, prev_year)
+        param_source = 'previous_year'
 
-    return val
+    if return_source:
+        return val, param_source
+    else:
+        return val
 
 
-def get_tech_param(param, model, node, year, tech, sub_param=None):
+def get_tech_param(param, model, node, year, tech, sub_param=None, return_source=False, retrieve_only=False):
     """
     Queries a model to retrieve a parameter value at a given node & technology, given a specified
     context (year & sub-parameter).
@@ -212,7 +232,7 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         `tech`.
     """
     val = None
-
+    is_exogenous = None
     # Get Parameter from Description
     # ******************************
     # If the parameter's value is in the model description for that node, year, & technology, use it
@@ -226,10 +246,21 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
             elif None in val:
                 val = val[None]
             if isinstance(val, dict) and ('year_value' in val):
+                param_source = val['param_source']
+                is_exogenous = param_source in ['model', 'initialization']
                 val = val['year_value']
-        # As long as the value has been specified, return it.
+
+        # As long as the value has been specified, return it. & it is exogenously specified
         if val is not None:
-            return val
+            if retrieve_only:
+                if return_source:
+                    return val, param_source
+                return val
+            elif is_exogenous:
+                if return_source:
+                    return val, param_source
+                else:
+                    return val
 
     # Calculate Parameter Value
     # ******************************
@@ -239,6 +270,7 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
     if param in calculation_directory:
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year, tech)
+        param_source = 'calculation'
 
     # Inherit Parameter Value
     # ******************************
@@ -249,12 +281,14 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
         val = model.get_param(param, parent, year, tech, sub_param)
+        param_source = 'inheritance'
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
     elif param in model.technology_defaults:
         val = model.get_tech_parameter_default(param)
+        param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
@@ -263,5 +297,9 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         prev_year = str(int(year) - model.step)
         if int(prev_year) >= model.base_year:
             val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
+            param_source = 'previous_year'
 
-    return val
+    if return_source:
+        return val, param_source
+    else:
+        return val
