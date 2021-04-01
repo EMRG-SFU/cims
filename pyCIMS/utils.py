@@ -94,9 +94,10 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
 inheritable_params = []
 
 
-def get_node_param(param, model, node, year, sub_param=None, return_source=False, retrieve_only=False):
+def get_node_param(param, model, node, year, sub_param=None,
+                   return_source=False, retrieve_only=False):
     """
-    Queries a model to retrieve a parameter value at a given node, given a specified context
+    Queries the model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
 
     Parameters
@@ -115,12 +116,22 @@ def get_node_param(param, model, node, year, sub_param=None, return_source=False
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    return_source : bool, default=False
+        Whether or not to return the method by which this value was originally obtained.
+    retrieve_only : bool, default=False
+        If True the function will only retrieve the value using the current value in the model,
+        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+        value. If False, calculation is allowed.
 
     Returns
     -------
     any :
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
+    str :
+        If return_source is `True`, will return a string indicating how the parameter's value
+        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+        default, or previous_year}.
     """
     is_exogenous = True
 
@@ -201,13 +212,15 @@ def get_node_param(param, model, node, year, sub_param=None, return_source=False
         return val
 
 
-def get_tech_param(param, model, node, year, tech, sub_param=None, return_source=False, retrieve_only=False):
+def get_tech_param(param, model, node, year, tech, sub_param=None,
+                   return_source=False, retrieve_only=False):
     """
     Queries a model to retrieve a parameter value at a given node & technology, given a specified
     context (year & sub-parameter).
 
     Parameters
     ----------
+
     param : str
         The name of the parameter whose value is being retrieved.
     model : pyCIMS.Model
@@ -224,12 +237,22 @@ def get_tech_param(param, model, node, year, tech, sub_param=None, return_source
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    return_source : bool, default=False
+        Whether or not to return the method by which this value was originally obtained.
+    retrieve_only : bool, default=False
+        If True the function will only retrieve the value using the current value in the model,
+        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+        value. If False, calculation is allowed.
 
     Returns
     -------
     any :
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
+    str :
+        If return_source is `True`, will return a string indicating how the parameter's value
+        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+        default, or previous_year}.
     """
     val = None
     is_exogenous = None
