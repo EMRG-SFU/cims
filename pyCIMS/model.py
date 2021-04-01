@@ -428,8 +428,7 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        # TODO: Change to use get_param()
-                        last_year_value = graph.nodes[node][last_year]['Life Cycle Cost'][fuel_name]['year_value']
+                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -485,7 +484,7 @@ class Model:
             if self.get_param('competition type', node, retrieve_only=True) == 'root':
                 total_to_provide = 1
             else:
-                total_to_provide = self.get_param('provided_quantities', node, year, retrieve_only=True).get_total_quantity()
+                total_to_provide = self.get_param('provided_quantities', node, year).get_total_quantity()
             # Based on what this node needs to provide, find out how much it must request from other
             # services
             if 'technologies' in node_year_data:
@@ -513,7 +512,7 @@ class Model:
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            assessed_demand = self.get_param('provided_quantities', node, year, retrieve_only=True).get_total_quantity()
+            assessed_demand = self.get_param('provided_quantities', node, year).get_total_quantity()
             # Existing Tech Specific Stocks
             # *****************************
             # Retrieve existing technology stocks provided_quantities from ‘existing stock database’ for
@@ -574,7 +573,7 @@ class Model:
                             tech_data = self.graph.nodes[node][year]['technologies'][tech]
                             t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
                                                                          node, year, tech,
-                                                                         retrieve_only=True)[purchase_year]
+                                                                    )[purchase_year]
                             total_new_stock_remaining_pre_surplus += t_rem_new_stock_pre_surplus
 
                     if total_new_stock_remaining_pre_surplus == 0:
@@ -586,8 +585,7 @@ class Model:
                         tech_data = self.graph.nodes[node][year]['technologies'][tech]
 
                         t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                     node, year, tech,
-                                                                     retrieve_only=True)[purchase_year]
+                                                                     node, year, tech,)[purchase_year]
 
                         amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
                         # Remove from existing stock
@@ -609,8 +607,7 @@ class Model:
                 new_market_shares_per_tech[t] = {}
                 ms, ms_source = self.get_param('Market share',
                                                node, year, t,
-                                               return_source=True,
-                                               retrieve_only=True)
+                                               return_source=True)
                 ms_exogenous = ms_source == 'model'
                 if ms_exogenous:
                     new_market_share = ms
@@ -794,10 +791,15 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, retrieve_only=False):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False):
         """
-        Retrieves a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter).
+        Gets a parameter's value from the model, given a specific context (node, year, technology,
+        and sub-parameter).
+
+        This will not re-calculate the parameter's value, but will only retrieve
+        values which are already stored in the model or obtained via inheritance, default values,
+        or estimation using the previous year's value. If return_source is True, this function will
+        also, return how this value was originally obtained (e.g. via calculation)
 
         Parameters
         ----------
@@ -818,21 +820,94 @@ class Model:
             `get_param()` would otherwise return a dictionary where a nested value contains the
             parameter value of interest. In this case, the key corresponding to that value can be
             provided as a `sub_param`
+        return_source : bool, default=False
+            Whether or not to return the method by which this value was originally obtained.
 
         Returns
         -------
         any :
             The value of the specified `param` at `node`, given the context provided by `year` and
             `tech`.
+        str :
+            If return_source is `True`, will return a string indicating how the parameter's value
+            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+            default, or previous_year}.
+
+        See Also
+        --------
+        Model.get_or_calc_param :  Gets a parameter's value from the model, given a specific context
+        (node, year, technology, and sub-parameter), calculating the parameter's value if needed.
         """
         if tech:
             param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source, retrieve_only)
+                                             return_source,
+                                             retrieve_only=True)
 
         else:
             param_val = utils.get_node_param(param, self, node, year,
                                              return_source=return_source,
-                                             retrieve_only=retrieve_only)
+                                             retrieve_only=True)
+
+        return param_val
+
+    def get_or_calc_param(self, param, node, year=None, tech=None, sub_param=None,
+                          return_source=False):
+        """
+        Gets a parameter's value from the model, given a specific context (node, year, technology,
+        and sub-parameter), calculating the parameter's value if needed.
+
+        If return_source is True,
+        this function will also, return how this value was originally obtained (e.g. via
+        calculation)
+
+        Parameters
+        ----------
+        param : str
+            The name of the parameter whose value is being retrieved.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in retrieving.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`
+        return_source : bool, default=False
+            Whether or not to return the method by which this value was originally obtained.
+
+        Returns
+        -------
+        any :
+            The value of the specified `param` at `node`, given the context provided by `year` and
+            `tech` and potentially using a calculator function if the parameter's value was not
+             exogenously defined.
+        str :
+            If return_source is `True`, will return a string indicating how the parameter's value
+            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+            default, or previous_year}.
+
+        See Also
+        --------
+        Model.get_param : Gets a parameter's value from the model, given a specific context (node,
+        year, technology, and sub-parameter).
+        """
+
+        if tech:
+            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
+                                             return_source,
+                                             retrieve_only=False)
+
+        else:
+            param_val = utils.get_node_param(param, self, node, year,
+                                             return_source=return_source,
+                                             retrieve_only=False)
 
         return param_val
 
