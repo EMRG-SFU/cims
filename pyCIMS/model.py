@@ -242,7 +242,7 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year, retrieve_only=True)
+                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
                               for fuel in self.fuels}
 
 
@@ -349,13 +349,13 @@ class Model:
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Price Multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = self.get_param('Price Multiplier', parent, year, retrieve_only=True)
+                    price_multipliers = self.get_param('Price Multiplier', parent, year)
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multiplier from the current node (if they exist)
             node_price_multipliers = {}
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year, retrieve_only=True)
+                price_multipliers = self.get_param('Price Multiplier', node, year)
                 node_price_multipliers.update(price_multipliers)
 
             # Multiply the node's price multipliers by its parents' price multipliers
@@ -481,7 +481,7 @@ class Model:
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            if self.get_param('competition type', node, retrieve_only=True) == 'root':
+            if self.get_param('competition type', node) == 'root':
                 total_to_provide = 1
             else:
                 total_to_provide = self.get_param('provided_quantities', node, year).get_total_quantity()
@@ -543,7 +543,7 @@ class Model:
                 # Base Stock Retirement
                 total_base_stock = 0
                 for tech in existing_stock_per_tech:
-                    t_base_stock = self.get_param('base_stock_remaining', node, year, tech, retrieve_only=True)
+                    t_base_stock = self.get_param('base_stock_remaining', node, year, tech)
                     total_base_stock += t_base_stock
 
                 if total_base_stock == 0:
@@ -552,7 +552,7 @@ class Model:
                 else:
                     retirement_proportion = max(0, min(surplus / total_base_stock, 1))
                     for tech in existing_stock_per_tech:
-                        t_base_stock = self.get_param('base_stock_remaining', node, year, tech, retrieve_only=True)
+                        t_base_stock = self.get_param('base_stock_remaining', node, year, tech)
 
                         amount_tech_to_retire = t_base_stock * retirement_proportion
                         # Remove from existing stock
@@ -616,12 +616,12 @@ class Model:
                     new_market_share = 0
 
                     # Find the years the technology is available
-                    first_year_available = self.get_param('Available', node, str(self.base_year), t, retrieve_only=True)
-                    first_year_unavailable = self.get_param('Unavailable', node, str(self.base_year), t, retrieve_only=True)
+                    first_year_available = self.get_param('Available', node, str(self.base_year), t)
+                    first_year_unavailable = self.get_param('Unavailable', node, str(self.base_year), t)
                     if first_year_available <= int(year) < first_year_unavailable:
-                        v = self.get_param('Heterogeneity', node, year, retrieve_only=True)
-                        tech_lcc = self.get_param('Life Cycle Cost', node, year, t, retrieve_only=True)
-                        total_lcc_v = self.get_param('total_lcc_v', node, year, retrieve_only=True)
+                        v = self.get_param('Heterogeneity', node, year)
+                        tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
+                        total_lcc_v = self.get_param('total_lcc_v', node, year)
 
                         if tech_lcc == 0:
                             # TODO: Address the problem of a 0 Life Cycle Cost properly
@@ -696,7 +696,7 @@ class Model:
                 helper_quantity_from_services(services_being_requested, assessed_demand)
 
         # Move into the proper allocation function
-        if self.get_param('competition type', node, retrieve_only=True) == 'tech compete':
+        if self.get_param('competition type', node) == 'tech compete':
             tech_compete_allocation()
         else:
             general_allocation()
@@ -710,9 +710,9 @@ class Model:
             # retirements.
             prev_year = str(int(year) - self.step)
             if int(prev_year) == self.base_year:
-                prev_year_unretired_base_stock = self.get_param('base_stock', node, prev_year, tech, retrieve_only=True)
+                prev_year_unretired_base_stock = self.get_param('base_stock', node, prev_year, tech)
             else:
-                prev_year_unretired_base_stock = self.get_param('base_stock_remaining', node, prev_year, tech, retrieve_only=True)
+                prev_year_unretired_base_stock = self.get_param('base_stock_remaining', node, prev_year, tech)
 
             base_stock_remaining = max(min(naturally_unretired_base_stock, prev_year_unretired_base_stock), 0.0)
 
@@ -730,7 +730,7 @@ class Model:
             adj_multiplier = 1
 
             if int(prev_year) > int(purchased_year):
-                prev_y_unretired_new_stock = self.get_param('new_stock_remaining', node, prev_year, tech, retrieve_only=True)[purchased_year]
+                prev_y_unretired_new_stock = self.get_param('new_stock_remaining', node, prev_year, tech)[purchased_year]
 
                 if prev_y_fictional_purchased_stock_remain > 0:
                     adj_multiplier = prev_y_unretired_new_stock / prev_y_fictional_purchased_stock_remain
@@ -747,7 +747,7 @@ class Model:
 
             return purchased_stock_remaining
 
-        if self.get_param('competition type', node, retrieve_only=True) != 'tech compete':
+        if self.get_param('competition type', node) != 'tech compete':
             # we don't care about existing stock for non-tech compete nodes
             return 0
 
@@ -762,16 +762,16 @@ class Model:
         remaining_base_stock = 0
         remaining_new_stock_pre_surplus = {}
         for y in earlier_years:
-            tech_lifespan = self.get_param('Lifetime', node, y, tech, retrieve_only=True)
+            tech_lifespan = self.get_param('Lifetime', node, y, tech)
 
             # Base Stock
-            tech_base_stock_y = self.get_param('base_stock', node, y, tech, retrieve_only=True)
+            tech_base_stock_y = self.get_param('base_stock', node, y, tech)
             remain_base_stock_vintage_y = base_stock_retirement(tech_base_stock_y, y, year, tech_lifespan)
             remaining_base_stock += remain_base_stock_vintage_y
             existing_stock += remain_base_stock_vintage_y
 
             # New Stock
-            tech_new_stock_y = self.get_param('new_stock', node, y, tech, retrieve_only=True)
+            tech_new_stock_y = self.get_param('new_stock', node, y, tech)
             remain_new_stock = purchased_stock_retirement(tech_new_stock_y, y, year, tech_lifespan)
             remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
@@ -840,7 +840,7 @@ class Model:
         """
         if tech:
             param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source,
+                                             return_source=return_source,
                                              retrieve_only=True)
 
         else:
@@ -949,7 +949,7 @@ class Model:
             # *********
             # Add the quantity requested of the child by node (if child is a fuel)
             # *********
-            child_provided_quant = self.get_param("provided_quantities", child, year, retrieve_only=True)
+            child_provided_quant = self.get_param("provided_quantities", child, year)
             child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
             if child in self.fuels:
                 requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
@@ -969,7 +969,7 @@ class Model:
                     # back to node
                     proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                    child_requested_quant = self.get_param("requested_quantities", child, year, retrieve_only=True)
+                    child_requested_quant = self.get_param("requested_quantities", child, year)
                     for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
                         requested_quantity.record_requested_quantity(child_rq_node,
                                                                      child,
