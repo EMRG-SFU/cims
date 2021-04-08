@@ -971,7 +971,7 @@ class Model:
                         # back to node
                         proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                        child_requested_quant = self.get_param("requested_quantities", child, year, retrieve_only=True)
+                        child_requested_quant = self.get_param("requested_quantities", child, year)
                         for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
                             requested_quantity.record_requested_quantity(child_rq_node,
                                                                          child,
