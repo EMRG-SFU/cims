@@ -852,7 +852,7 @@ class Model:
                                              retrieve_only=True)
 
         else:
-            param_val = utils.get_node_param(param, self, node, year,
+            param_val = utils.get_node_param(param, self, node, year, sub_param=sub_param,
                                              return_source=return_source,
                                              retrieve_only=True)
 
