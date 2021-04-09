@@ -6,6 +6,7 @@ import pandas as pd
 import re
 import time
 import pickle
+import operator
 
 from . import graph_utils
 from . import utils
@@ -911,7 +912,7 @@ class Model:
                 
     def set_param_wildcard(self, val, param, node_regex, year, tech=None, sub_param=None, save=True):
         """
-        Sets a parameter's value, given a for all context (node, year, technology, and
+        Sets a parameter's value, for all context (node, year, technology, and
         sub-parameter) that satisfy/matches the node_regex pattern
 
         Parameters
@@ -943,6 +944,187 @@ class Model:
         for node in self.graph.nodes:
             if re.search(node_regex, node) != None:
                 self.set_param(val, param, node, year, tech, sub_param, save)
+
+    def set_param_file(self, filepath):
+        """
+        Sets parameters' values, for all context (node, year, technology, and
+        sub-parameter) from the provided CSV file. See Data_Changes_Tutorial_by_CSV.ipynb for detailed
+        description of expected CSV file columns and values.
+
+        Parameters
+        ----------
+        filepath : str
+            This is the path to the CSV file containing all context and value change information
+        """
+
+        if not filepath.endswith('.csv'):
+            print('filepath must be in csv format')
+            return
+
+        df = pd.read_csv(filepath, delimiter=',')
+        df = df.fillna('None')
+        
+        ops = {
+            '>' : operator.gt,
+            '>=' : operator.ge,
+            '==' : operator.eq,
+            '<' : operator.lt,
+            '<=' : operator.le
+        }
+
+        for index, row in df.iterrows():
+            # set necessary variables from dataframe row
+            node = row['node'] if row['node'] != 'None' else None
+            node_regex = row['node_regex'] if row['node_regex'] != "None" else None
+            param = row['param'] if row['param'] != 'None' else None
+            tech = row['tech'] if row['tech'] != 'None' else None
+            sub_param = row['sub_param'] if row['sub_param'] != 'None' else None
+            year_operator = row['year_operator'] if row['year_operator'] != 'None' else None
+            year = row['year'] if row['year'] != 'None' else None
+            val_operator = row['val_operator'] if row['val_operator'] != 'None' else None
+            val = row['val'] if row['val'] != 'None' else None
+            search_param = row['search_param'] if row['search_param'] != 'None' else None
+            search_operator = row['search_operator'] if row['search_operator'] != 'None' else None
+            search_pattern = row['search_pattern'] if row['search_pattern'] != 'None' else None
+            
+            # changing years and vals to lists
+            if year:
+                year_int = int(year)
+                years = [x for x in self.years if ops[year_operator](int(x),year_int)]
+                vals = [val] * len(years)
+            else:
+                years = [year]
+                vals = [val]
+
+            # initial checks of the data
+            if node == None:
+                if node_regex == None:
+                    print("Row " + str(index) + ": neither node or node_regex values were indicated. Skipping this row.")
+                    continue
+            elif node == '.*':
+                if search_param == None or search_operator  == None or search_pattern == None:
+                    print("Row " + str(index) + ": since node = '.*', search_param, search_operator, and search_pattern must not be empty. Skipping this row.")
+                    continue
+            else:
+                if node_regex:
+                    print("Row " + str(index) + ": both node and node_regex values were indicated. Please specify only one. Skipping this row.")
+                    continue
+            if year_operator not in list(ops.keys()):
+                print("Row " + str(index) + ": year_operator value not one of >, >=, <, <=, ==. Skipping this row.")
+                continue
+            if val_operator not in ['>=', '<=', '==']:
+                print("Row " + str(index) + ": val_operator value not one of >=, <=, ==. Skipping this row.")
+                continue
+            if search_operator not in [None, '==']:
+                print("Row " + str(index) + ": search_operator value must be either empty or ==. Skipping this row.")
+                continue
+
+            if node == '.*':
+                # check if node satisfies search_param, search_operator, search_pattern conditions
+                for node_tmp in self.graph.nodes:
+                    if self.get_param(search_param, node_tmp).lower() == search_pattern.lower():
+                        for idx, year in enumerate(years):
+                            val_tmp = vals[idx]
+                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, index)
+            elif node == None:
+                # check if node satisfies node_regex conditions
+                for node_tmp in self.graph.nodes:
+                    if re.search(node_regex, node_tmp) != None:
+                        for idx, year in enumerate(years):
+                            val_tmp = vals[idx]
+                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, index)
+            else:
+                # node is exactly specified so use as is
+                for idx, year in enumerate(years):
+                    val_tmp = vals[idx]
+                    self.set_param_search(val_tmp, param, node, year, tech, sub_param, val_operator, index)
+    
+    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None, val_operator='==', row_index=None):
+        """
+        Sets parameter values, for all context (node, year, technology, and
+        sub-parameter), searching through tech and sub_param keys if necessary.
+
+        Parameters
+        ----------
+        val : any
+            The new value to be set at the specified `param` at `node`, given the context provided by 
+            `year`, `tech` and `sub_param`.
+        param : str
+            The name of the parameter whose value is being set.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in matching.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
+            specified node, param, and year.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`. If sub_param is `.*`, all possible sub_param keys will be searched at the
+            specified node, param, tech, and year.
+        val_operator : str, optional
+            This specifies how the value should be set. The possible values are '>=', '<=' and '=='.
+        row_index : int, optional
+            The index of the current row of the CSV. This is used to print the row number in error messages.
+        """
+
+        def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index):
+            try:
+                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, sub_param=sub_param)
+            except Exception as e:
+                print("Row " + str(row_index + 1) + ': Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(sub_param) + '). Corresponding value was not set to ' + str(val) + ".")
+                return None
+            if val_operator == '>=':
+                val = max(val, prev_val)
+            elif val_operator == '<=':
+                val = min(val, prev_val)
+            return val
+
+        if tech == '.*':
+            try:
+                # search through all technologies in node
+                techs = list(self.graph.nodes[node][year]['technologies'].keys())
+            except:
+                return
+            for tech_tmp in techs:
+                if sub_param == '.*':
+                    try:
+                        # search through all sub_parameters in node given tech
+                        sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech_tmp).keys())
+                    except: 
+                        continue
+                    for sub_param_tmp in sub_params:
+                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param_tmp, val_operator, row_index)
+                        if val_tmp:
+                            self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param_tmp)
+                # use sub_param as is if it is not .*
+                else:
+                    val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param, val_operator, row_index)
+                    if val_tmp:
+                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param)
+        else:
+            if sub_param == '.*':
+                try:
+                    # search through all sub_parameters in node given tech
+                    sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech).keys())
+                except: 
+                    return
+                for sub_param_tmp in sub_params:
+                    val_tmp = get_val_operated(val, param, node, year, tech, sub_param_tmp, val_operator, row_index)
+                    if val_tmp:
+                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param_tmp)
+            # use sub_param as is if it is not .*
+            else:
+                val_tmp = get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index)
+                if val_tmp:
+                    self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param)
+
 
     def set_param_log(self, output_file=''):
         """
