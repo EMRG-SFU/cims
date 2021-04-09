@@ -1,11 +1,10 @@
 import warnings
 from . import utils
-from . import econ
 import math
 
 
 # TODO: See if I can get rid of this function or replace with a Model.set_param() method
-def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None):
+def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None, param_source=None):
     """
     Include a new set of parameter: {values} as a nested dict
 
@@ -13,7 +12,8 @@ def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None
     g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
                                                                    "branch": str(node),
                                                                    "source": source,
-                                                                   "unit": unit}})
+                                                                   "unit": unit,
+                                                                   "param_source": param_source}})
 
 
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
@@ -51,9 +51,12 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     """
     # Check if the node has an exogenously defined Life Cycle Cost
     if 'Life Cycle Cost' in sub_graph.nodes[node][year]:
-        pass
+        lcc, lcc_source = model.get_param('Life Cycle Cost', node, year, return_source=True)
+        if lcc_source == 'model':
+            return
+
     # Check if the node is a tech compete node:
-    elif model.get_param('competition type', node) == "tech compete":
+    if model.get_param('competition type', node) in ["tech compete"]:
         total_lcc_v = 0.0
         v = model.get_param('Heterogeneity', node, year)
 
@@ -70,33 +73,46 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             if first_year_available <= int(year) < first_year_unavailable:
                 # Service Cost
                 # ************
-                annual_service_cost = model.get_param('Service cost', node, year, tech)
+                annual_service_cost, sc_source = model.get_or_calc_param('Service cost',
+                                                                 node, year, tech,
+                                                                 return_source=True)
                 # TODO: replace with a Model.set_param() function (similar to Model.get_param())
                 tech_data = model.graph.nodes[node][year]["technologies"][tech]
                 if 'Service cost' in tech_data:
                     tech_data['Service cost']['year_value'] = annual_service_cost
+                    tech_data['Service cost']['param_source'] = sc_source
                 else:
-                    add_tech_param(model.graph, node, year, tech, 'Service cost', annual_service_cost)
+                    add_tech_param(model.graph, node, year, tech,
+                                   'Service cost', annual_service_cost,
+                                   param_source=sc_source)
 
                 # CRF
                 # ************
-                crf = model.get_param("CRF", node, year, tech)
+                crf, crf_source = model.get_or_calc_param("CRF", node, year, tech, return_source=True)
                 # TODO: replace with a Model.set_param() function (similar to Model.get_param())
                 tech_data = model.graph.nodes[node][year]["technologies"][tech]
                 if 'CRF' in tech_data:
                     tech_data['CRF']['year_value'] = crf
+                    tech_data['CRF']['param_source'] = crf_source
+
                 else:
-                    add_tech_param(model.graph, node, year, tech, 'CRF', crf)
+                    add_tech_param(model.graph, node, year, tech, 'CRF', crf, param_source=crf_source)
 
                 # LCC
                 # ************
-                lcc = model.get_param('Life Cycle Cost', node, year, tech)
+                lcc, lcc_source = model.get_or_calc_param('Life Cycle Cost',
+                                                          node, year, tech,
+                                                          return_source=True)
+                if node == 'pyCIMS.Canada.Alberta.Electricity':
+                    print(lcc, lcc_source)
                 # TODO: replace with a Model.set_param() function (similar to Model.get_param())
                 tech_data = model.graph.nodes[node][year]["technologies"][tech]
                 if 'Life Cycle Cost' in tech_data:
                     tech_data['Life Cycle Cost']['year_value'] = lcc
+                    tech_data['Life Cycle Cost']['param_source'] = lcc_source
                 else:
-                    add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc)
+                    add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc,
+                                   param_source=lcc_source)
 
                 # Life Cycle Cost ^ -v
                 # ********************
@@ -117,7 +133,8 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                     raise e
 
         # Set sum of Life Cycle Cost raised to negative variance
-        sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
+        sub_graph.nodes[node][year]["total_lcc_v"] = utils.create_value_dict(total_lcc_v,
+                                                                             param_source='calculation')
 
         # Weighted Life Cycle Cost
         # ************************
@@ -126,29 +143,35 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         # Cycle Cost
         for tech in node_techs:
             # Determine whether Market share is exogenous or not
-            exo_market_share = sub_graph.nodes[node][year]['technologies'][tech]['Market share']['year_value']
-            exogenous = exo_market_share is not None
-            sub_graph.nodes[node][year]['technologies'][tech]['Market share']['exogenous'] = exogenous
+            ms, ms_source = model.get_param('Market share',
+                                            node, year, tech,
+                                            return_source=True)
+            ms_exogenous = ms_source == 'model'
 
             # Determine what market share to use for weighing Life Cycle Costs
             # If market share is exogenous, set new & total market share to exogenous value
-            if exogenous:
-                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = exo_market_share
-                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = exo_market_share
+            if ms_exogenous:
+                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = utils.create_value_dict(ms, param_source='calculation')
+                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = utils.create_value_dict(ms, param_source='calculation')
 
             market_share = model.get_param('total_market_share', node, year, tech)
 
             # Weight Life Cycle Cost and Add to Node Total
             # ********************************************
             # find the years where the tech is available
-            first_year_available = model.get_param('Available', node, str(model.base_year), tech)
-            first_year_unavailable = model.get_param('Unavailable', node, str(model.base_year), tech)
+            first_year_available = model.get_param('Available',
+                                                   node, str(model.base_year), tech)
+            first_year_unavailable = model.get_param('Unavailable',
+                                                     node, str(model.base_year), tech)
             if first_year_available <= int(year) < first_year_unavailable:
                 curr_lcc = model.get_param('Life Cycle Cost', node, year, tech)
                 weighted_lccs += market_share * curr_lcc
 
         fuel_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(weighted_lccs)}
+        if "Life Cycle Cost" in sub_graph.nodes[node][year]:
+            sub_graph.nodes[node][year]["Life Cycle Cost"].update({fuel_name: utils.create_value_dict(weighted_lccs, param_source='calculation')})
+        else:
+            sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(weighted_lccs, param_source='calculation')}
 
     else:
         # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
@@ -156,30 +179,28 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         # line value. Sometimes, the Service Requested line values act as percent shares that add up
         # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
         # Requested Line values sum to numbers greater or less than 1.
-        # TODO: change this to get_param(), with get_node_service_cost being provided in the calculable fields
-        service_cost = econ.get_node_service_cost(sub_graph,
-                                                  model.graph,
-                                                  node,
-                                                  year,
-                                                  model.fuels)
-
+        service_cost, sc_source = model.get_or_calc_param('Service cost', node, year, return_source=True)
         # Is service cost just the cost of these nodes?
         fuel_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(service_cost)}
+
+        if "Life Cycle Cost" in sub_graph.nodes[node][year]:
+            sub_graph.nodes[node][year]["Life Cycle Cost"].update({fuel_name: utils.create_value_dict(service_cost, param_source=sc_source)})
+        else:
+            sub_graph.nodes[node][year]["Life Cycle Cost"] = {fuel_name: utils.create_value_dict(service_cost, param_source=sc_source)}
 
 
 def calc_lcc(model, node, year, tech):
-    upfront_cost = model.get_param('Upfront cost', node, year, tech)
-    annual_cost = model.get_param('Annual cost', node, year, tech)
-    annual_service_cost = model.get_param('Service cost', node, year, tech)
+    upfront_cost = model.get_or_calc_param('Upfront cost', node, year, tech)
+    annual_cost = model.get_or_calc_param('Annual cost', node, year, tech)
+    annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
     lcc = upfront_cost + annual_cost + annual_service_cost
     return lcc
 
 
 def calc_upfront_cost(model, node, year, tech):
-    crf = model.get_param("CRF", node, year, tech)
-    capital_cost = model.get_param('Capital cost', node, year, tech)
-    fixed_uic = model.get_param('Upfront intangible cost_fixed', node, year, tech)
+    crf = model.get_or_calc_param("CRF", node, year, tech)
+    capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
+    fixed_uic = model.get_or_calc_param('Upfront intangible cost_fixed', node, year, tech)
     declining_uic = calc_declining_uic(model, node, year, tech)
     output = model.get_param('Output', node, year, tech)
 
@@ -194,7 +215,7 @@ def calc_annual_cost(model, node, year, tech):
     output = model.get_param('Output', node, year, tech)
     operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech)
     fixed_aic = model.get_param('Annual intangible cost_fixed', node, year, tech)
-    declining_aic = model.get_param('Annual intangible cost_declining', node, year, tech)
+    declining_aic = model.get_or_calc_param('Annual intangible cost_declining', node, year, tech)
 
     ac = (operating_maintenance_cost +
           fixed_aic +
@@ -205,7 +226,7 @@ def calc_annual_cost(model, node, year, tech):
 def calc_capital_cost(model, node, year, tech):
     cc_overnight = model.get_param('Capital cost_overnight', node, year, tech)
     declining_cc_limit = model.get_param('Capital cost_declining_limit', node, year, tech)
-    declining_cc = model.get_param("Capital cost_declining", node, year, tech)
+    declining_cc = model.get_or_calc_param("Capital cost_declining", node, year, tech)
 
     if declining_cc is None:
         cc = cc_overnight
@@ -223,7 +244,7 @@ def calc_declining_cc(model, node, year, tech):
     else:
         # Progress Ratio
         progress_ratio = model.get_param('Capital cost_declining_Progress Ratio', node, year, tech)
-        gcc_t = model.get_param('GCC_t', node, year, tech)  # capital cost adjusted for cumulative stock in all other countries
+        gcc_t = model.get_or_calc_param('GCC_t', node, year, tech)  # capital cost adjusted for cumulative stock in all other countries
 
         # Cumulative New Stock summed over all techs in DCC Class
         dcc_class_techs = techs_in_dcc_class(model, dcc_class, year)
@@ -335,7 +356,7 @@ def calc_crf(model, node, year, tech):
     return crf
 
 
-def calc_annual_service_cost(model, node, year, tech):
+def calc_annual_service_cost(model, node, year, tech=None):
     """
     Find the service cost associated with a given technology.
 
@@ -355,12 +376,19 @@ def calc_annual_service_cost(model, node, year, tech):
                 fuel_name = list(model.graph.nodes[fuel_branch][year]['Life Cycle Cost'].keys())[0]
                 service_requested_lcc = model.graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             else:
-                service_requested_lcc = model.get_node_parameter_default('Life Cycle Cost', 'sector')
-
+                service_requested_lcc = model.get_node_parameter_default('Life Cycle Cost',
+                                                                         'sector')
+            try:
+                fuel_name = fuel_branch.split('.')[-1]
+                price_multiplier = model.graph.nodes[node][year]['Price Multiplier'][fuel_name]['year_value']
+            except KeyError:
+                price_multiplier = 1
+            service_requested_lcc *= price_multiplier
         else:
             service_requested_branch = service_requested['branch']
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
-                service_requested_lcc = model.get_param('Life Cycle Cost', service_requested_branch, year)
+                service_name = service_requested_branch.split('.')[-1]
+                service_requested_lcc = model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
             else:
                 # Encountering a non-visited node
                 service_requested_lcc = 1
@@ -369,19 +397,29 @@ def calc_annual_service_cost(model, node, year, tech):
 
         return service_cost
 
-    total_tech_service_cost = 0
+    total_service_cost = 0
     graph = model.graph
-    if 'Service requested' in graph.nodes[node][year]['technologies'][tech]:
-        service_req = graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+    if tech is not None:
+        data = graph.nodes[node][year]['technologies'][tech]
+    else:
+        data = graph.nodes[node][year]
+
+    if 'Service requested' in data:
+        service_req = data['Service requested']
         if isinstance(service_req, dict):
-            total_tech_service_cost += do_sc_calculation(service_req)
+            if 'year_value' in service_req:
+                total_service_cost += do_sc_calculation(service_req)
+            else:
+                for req in service_req.values():
+                    total_service_cost += do_sc_calculation(req)
         elif isinstance(service_req, list):
             for req in service_req:
-                total_tech_service_cost += do_sc_calculation(req)
+                total_service_cost += do_sc_calculation(req)
         else:
             print(f"type for service requested? {type(service_req)}")
 
-    return total_tech_service_cost
+    return total_service_cost
 
 
 def techs_in_dcc_class(model, dcc_class, year):

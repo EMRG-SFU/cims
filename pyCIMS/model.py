@@ -10,28 +10,61 @@ import operator
 
 from . import graph_utils
 from . import utils
-from . import econ
 from . import lcc_calculation
 
-# TODO: Evaluate whether methods should avoid side effects.
-# TODO: Implement logic for determining when to read, calculate, inherit, or use default values
+from .utils import create_value_dict
+
 # TODO: Separate the get_service_cost code out into smaller functions & document.
-# TODO: Should we be initializing quantities when we initialize prices?
 
 
-class NodeQuantity:
+class ProvidedQuantity:
     def __init__(self):
-        self.quantities = {}
+        self.provided_quantities = {}
 
-    def add_quantity_request(self, amount, requesting_node, requesting_technology=None):
+    def provide_quantity(self, amount, requesting_node, requesting_technology=None):
         node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
-        self.quantities[node_tech] = amount
+        self.provided_quantities[node_tech] = amount
 
     def get_total_quantity(self):
         total = 0
-        for amount in self.quantities.values():
+        for amount in self.provided_quantities.values():
             total += amount
         return total
+
+    def get_quantity_provided_to_node(self, node):
+        """
+        Find the quantity being provided to a specific node, across all it's technologies
+        """
+        total_provided_to_node = 0
+        for pq in self.provided_quantities:
+            pq_node, pq_tech = pq.split('[', 1)
+            if pq_node == node:
+                total_provided_to_node += self.provided_quantities[pq]
+        return total_provided_to_node
+
+
+class RequestedQuantity:
+    def __init__(self):
+        self.requested_quantities = {}
+
+    def record_requested_quantity(self, providing_node, child, amount):
+        if providing_node in self.requested_quantities:
+            if child in self.requested_quantities[providing_node]:
+                self.requested_quantities[providing_node][child] += amount
+            else:
+                self.requested_quantities[providing_node][child] = amount
+
+        else:
+            self.requested_quantities[providing_node] = {child: amount}
+
+    def get_total_quantities_requested(self):
+        total_quants = {}
+        for service in self.requested_quantities:
+            total_service = 0
+            for child, quantity in self.requested_quantities[service].items():
+                total_service += quantity
+            total_quants[service] = total_service
+        return total_quants
 
 
 class Model:
@@ -134,7 +167,7 @@ class Model:
         Returns
         -------
             Nothing is returned, but `self.graph` will be updated with the resulting prices,
-            quantities, etc calculated for each year.
+            provided_quantities, etc calculated for each year.
 
         """
         self.show_run_warnings = show_warnings
@@ -205,37 +238,38 @@ class Model:
                     if int(year) == self.base_year:
                         break
 
-                    # Calculate Service Costs on Demand Side
+                    # Calculate Service Costs on Supply Side
                     graph_utils.bottom_up_traversal(g_supply,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
                                                     self)
 
-                # Update Prices
-                # *************
-                # Go and get all the previous prices
-                prev_prices = {f: self.get_param('Life Cycle Cost', f, year)
-                               for f in self.fuels}
-
-                # Now actually update prices
-                self.update_prices(year, g_supply)
+                # Check for an Equilibrium
+                # ************************
+                # Find the previous prices
+                prev_prices = self.prices
 
                 # Go get all the new prices
                 new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
                               for fuel in self.fuels}
 
-                # Check for an Equilibrium
-                # ************************
+
                 equilibrium = (int(year) == self.base_year) or \
-                              self.check_equillibrium(prev_prices,
-                                                      new_prices,
-                                                      equilibrium_threshold)
+                              self.check_equilibrium(prev_prices,
+                                                     new_prices,
+                                                     equilibrium_threshold)
+                self.prices = new_prices
 
                 # Next Iteration
                 # **************
                 iteration += 1
 
-    def check_equillibrium(self, prev, new, threshold):
+            # Once we've reached an equilibrium, calculate the quantities requested by each node.
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self.calc_requested_quantities,
+                                            year)
+
+    def check_equilibrium(self, prev, new, threshold):
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
@@ -258,7 +292,6 @@ class Model:
         -------
         True if all fuels changed less than `threshold`. False otherwise.
         """
-
         # For every fuel, check if the relative difference exceeds the threshold
         for fuel in new:
             prev_fuel_price = prev[fuel]
@@ -403,7 +436,7 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
+                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -418,66 +451,10 @@ class Model:
                                         year)
 
     def iteration_initialization(self, year):
-        # Reset the quantities at each node
+        # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year]['quantities'] = NodeQuantity()
-
-    def update_prices(self, year, supply_subgraph):
-        """
-        1. Determine what fuels need to be calculated
-        2. For each fuel whose price need to be estimated. Calculate that price . To calculate:
-            (A) If a tech compete node, just return the life cycle cost. This is production cost.
-            (B) If its a fixed ratio or sector node:
-                  i) find all the services being requested
-                 ii) for each service, multiply the price by the requested amount to get a weighted cost.
-                iii) calculate the weighted average production cost of the requested services.
-        3. Store the prices of the nodes in the new prices dictionary. Return dictionary.
-
-        Parameters
-        ----------
-        year : str
-        supply_subgraph: nx.Graph
-
-        Returns
-        -------
-        A dictionary containing the updated prices. Keys are fuel nodes, values are prices.
-        """
-        prev_prices = {f: list(self.graph.nodes[f][year]['Life Cycle Cost'].values())[0] for f in
-                       self.fuels}
-
-        price_keys_to_estimate = [f for f, d in prev_prices.items() if d['to_estimate']]
-        new_prices = copy.deepcopy(prev_prices)
-
-        # For each price we need to estimate, go find the price
-        def calc_price(node_name):
-            # Base Case is that we hit a tech compete node
-
-            if self.get_param('competition type', node_name) == 'tech compete':
-                return self.get_param('Life Cycle Cost', node_name, year)
-
-            elif supply_subgraph.nodes[node_name]['competition type'] in ['fixed ratio', 'sector']:
-                # Find all the services being requested
-                services_requested = [(d['branch'], d['year_value'])
-                                      for s, d in supply_subgraph.nodes[node_name][year]['Service requested'].items()]
-
-                # For each service multiply their price by their request amount
-                total_req = 0
-                total_lcc = 0
-                for branch, req_amount in services_requested:
-                    total_req += req_amount
-                    total_lcc += req_amount * calc_price(branch)
-
-                # Divide it by the total request amount
-                return total_lcc / total_req
-
-        for fuel in price_keys_to_estimate:
-            fuel_price = calc_price(node_name=fuel)
-            new_prices[fuel]['year_value'] = fuel_price
-            # Update the price @ the fuel node
-            fuel_name = list(self.graph.nodes[fuel][year]['Life Cycle Cost'].keys())[0]
-            self.graph.nodes[fuel][year]['Life Cycle Cost'][fuel_name]['year_value'] = fuel_price
-
-        return new_prices
+            self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
+                                                                                 param_source='initialization')
 
     def stock_retirement_and_allocation(self, sub_graph, node, year):
         def helper_quantity_from_services(requested_services,
@@ -497,15 +474,16 @@ class Model:
                 # Calculate the total quantity requested
                 quant_requested = technology_market_share * year_value * service_amount_mult
 
-                # Check if we need to initialize quantities
+                # Check if we need to initialize provided_quantities
                 year_node = self.graph.nodes[service_data['branch']][year]
-                if 'quantities' not in year_node.keys():
-                    year_node['quantities'] = NodeQuantity()
+                if 'provided_quantities' not in year_node.keys():
+                    year_node['provided_quantities'] = create_value_dict(ProvidedQuantity(),
+                                                                         param_source='initialization')
 
                 # Save results
-                year_node['quantities'].add_quantity_request(amount=quant_requested,
-                                                             requesting_node=node,
-                                                             requesting_technology=technology)
+                year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
+                                                                requesting_node=node,
+                                                                requesting_technology=technology)
 
         def general_allocation():
             node_year_data = self.graph.nodes[node][year]
@@ -514,8 +492,7 @@ class Model:
             if self.get_param('competition type', node) == 'root':
                 total_to_provide = 1
             else:
-                total_to_provide = self.get_param('quantities', node, year).get_total_quantity()
-
+                total_to_provide = self.get_param('provided_quantities', node, year).get_total_quantity()
             # Based on what this node needs to provide, find out how much it must request from other
             # services
             if 'technologies' in node_year_data:
@@ -524,35 +501,33 @@ class Model:
                     if 'Service requested' in tech_data.keys():
                         services_being_requested = tech_data['Service requested']
                         t_ms = tech_data['Market share']
-                        # Calculate the quantities being for each of the services
+                        # Calculate the provided_quantities being for each of the services
                         helper_quantity_from_services(services_being_requested,
                                                       total_to_provide,
                                                       technology=tech,
                                                       technology_market_share=t_ms)
 
             elif 'Service requested' in node_year_data:
-                # Calculate the quantities being requested for each of the services
+                # Calculate the provided_quantities being requested for each of the services
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
                 helper_quantity_from_services(services_being_requested, total_to_provide)
 
         def tech_compete_allocation():
             # Demand Assessment
             # *****************
-            # Count demanded quantities from above nodes or technologies (for the top node, derive
-            # demand quantities external to the sector).
+            # Count demanded provided_quantities from above nodes or technologies (for the top node, derive
+            # demand provided_quantities external to the sector).
             node_year_data = self.graph.nodes[node][year]
 
             # How much needs to be provided, based on what was requested of it?
-            assessed_demand = self.graph.nodes[node][year]['quantities'].get_total_quantity()
-            assessed_demand = self.get_param('quantities', node, year).get_total_quantity()
-
+            assessed_demand = self.get_param('provided_quantities', node, year).get_total_quantity()
             # Existing Tech Specific Stocks
             # *****************************
-            # Retrieve existing technology stocks quantities from ‘existing stock database’ for
+            # Retrieve existing technology stocks provided_quantities from ‘existing stock database’ for
             # simulation year once vintage-specific retirements are conducted for simulation year.
             existing_stock_per_tech = {}
             for t in node_year_data['technologies']:
-                t_existing = self.small_calc_existing_stock(sub_graph, node, year, t)
+                t_existing = self.calc_existing_stock(sub_graph, node, year, t)
                 existing_stock_per_tech[t] = t_existing
 
             # Retrofit
@@ -561,7 +536,7 @@ class Model:
             # Assessment of capital stock availability
             # ****************************************
             # Subtract total stock for each technology, after natural retirements, from demanded
-            # quantities to determine how many new stock must be allocated through competition. If
+            # provided_quantities to determine how many new stock must be allocated through competition. If
             # remaining stock already meets quantity demanded, no competition is required and
             # un-needed surplus stock is force retired starting with the oldest vintage at a
             # proportion of each vintages's remaining total market shares.
@@ -594,7 +569,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note early retirement in the model
-                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] -= amount_tech_to_retire
+                        self.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
 
                 # New Stock Retirement
                 possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
@@ -605,7 +580,8 @@ class Model:
                         for tech in existing_stock_per_tech:
                             tech_data = self.graph.nodes[node][year]['technologies'][tech]
                             t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                         node, year, tech)[purchase_year]
+                                                                         node, year, tech,
+                                                                    )[purchase_year]
                             total_new_stock_remaining_pre_surplus += t_rem_new_stock_pre_surplus
 
                     if total_new_stock_remaining_pre_surplus == 0:
@@ -617,7 +593,7 @@ class Model:
                         tech_data = self.graph.nodes[node][year]['technologies'][tech]
 
                         t_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                     node, year, tech)[purchase_year]
+                                                                     node, year, tech,)[purchase_year]
 
                         amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
                         # Remove from existing stock
@@ -626,7 +602,7 @@ class Model:
                         surplus -= amount_tech_to_retire
                         new_stock_demanded += amount_tech_to_retire
                         # note new stock remaining (post surplus) in the model
-                        tech_data['new_stock_remaining'][purchase_year] -= amount_tech_to_retire
+                        tech_data['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -637,11 +613,12 @@ class Model:
             new_market_shares_per_tech = {}
             for t in node_year_data['technologies']:
                 new_market_shares_per_tech[t] = {}
-                market_share_exogenous = self.graph.nodes[node][year]['technologies'][t]['Market share']['exogenous']
-                # market_share_exogenous = self.get_param('Market share', node, year, t)['exogenous']
-
-                if market_share_exogenous:
-                    new_market_share = self.get_param('new_market_share', node, year, t)
+                ms, ms_source = self.get_param('Market share',
+                                               node, year, t,
+                                               return_source=True)
+                ms_exogenous = ms_source == 'model'
+                if ms_exogenous:
+                    new_market_share = ms
 
                 else:
                     new_market_share = 0
@@ -670,16 +647,19 @@ class Model:
                                 warnings.warn("Overflow Error when calculating new marketshare for "
                                               "tech {} @ node {}".format(t, node))
 
-                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
-                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0
+                self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(0, param_source='initialization')
+                self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0, param_source='initialization')
 
                 new_market_shares_per_tech[t] = new_market_share
                 if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share,
+                                                                                                      param_source ='calculation')
                 else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = new_stock_demanded * new_market_share
+                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share,
+                                                                                                     param_source='calculation')
 
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = new_market_share
+                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share,
+                                                                                                        param_source='calculation')
 
             # Calculate Total Market shares -- remaining + new stock
             total_market_shares_by_tech = {}
@@ -702,9 +682,10 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = total_market_share
+                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share,
+                                                                                                          param_source='calculation')
 
-            # Send demand quantities to services below
+            # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
             # other services
             if 'technologies' in node_year_data:
@@ -712,13 +693,13 @@ class Model:
                 for tech, tech_data in node_year_data['technologies'].items():
                     if 'Service requested' in tech_data.keys():
                         services_being_requested = tech_data['Service requested']
-                        # Calculate the quantities being for each of the services
+                        # Calculate the provided_quantities being for each of the services
                         t_ms = total_market_shares_by_tech[tech]
                         helper_quantity_from_services(services_being_requested, assessed_demand,
                                                       technology=tech, technology_market_share=t_ms)
 
             elif 'Service requested' in node_year_data:
-                # Calculate the quantities being for each of the services
+                # Calculate the provided_quantities being for each of the services
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
                 helper_quantity_from_services(services_being_requested, assessed_demand)
 
@@ -728,7 +709,7 @@ class Model:
         else:
             general_allocation()
 
-    def small_calc_existing_stock(self, graph, node, year, tech):
+    def calc_existing_stock(self, graph, node, year, tech):
         def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
             # How much base stock remains if only natural retirements have occurred?
             naturally_unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
@@ -803,10 +784,13 @@ class Model:
             remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
 
-        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = remaining_base_stock
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = create_value_dict(remaining_base_stock,
+                                                                                                  param_source='calculation')
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = create_value_dict(remaining_new_stock_pre_surplus,
+                                                                                                             param_source='calculation')
         # Note: retired stock will be removed later from ['new_stock_remaining']
-        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = remaining_new_stock_pre_surplus
+        graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = create_value_dict(remaining_new_stock_pre_surplus,
+                                                                                                 param_source='calculation')
         return existing_stock
 
     def get_tech_parameter_default(self, parameter):
@@ -815,10 +799,15 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False):
         """
-        Retrieves a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter).
+        Gets a parameter's value from the model, given a specific context (node, year, technology,
+        and sub-parameter).
+
+        This will not re-calculate the parameter's value, but will only retrieve
+        values which are already stored in the model or obtained via inheritance, default values,
+        or estimation using the previous year's value. If return_source is True, this function will
+        also, return how this value was originally obtained (e.g. via calculation)
 
         Parameters
         ----------
@@ -839,21 +828,169 @@ class Model:
             `get_param()` would otherwise return a dictionary where a nested value contains the
             parameter value of interest. In this case, the key corresponding to that value can be
             provided as a `sub_param`
+        return_source : bool, default=False
+            Whether or not to return the method by which this value was originally obtained.
 
         Returns
         -------
         any :
             The value of the specified `param` at `node`, given the context provided by `year` and
             `tech`.
+        str :
+            If return_source is `True`, will return a string indicating how the parameter's value
+            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+            default, or previous_year}.
+
+        See Also
+        --------
+        Model.get_or_calc_param :  Gets a parameter's value from the model, given a specific context
+        (node, year, technology, and sub-parameter), calculating the parameter's value if needed.
         """
         if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param)
+            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
+                                             return_source=return_source,
+                                             retrieve_only=True)
 
         else:
-            param_val = utils.get_node_param(param, self, node, year, sub_param)
+            param_val = utils.get_node_param(param, self, node, year,
+                                             return_source=return_source,
+                                             retrieve_only=True)
 
         return param_val
 
+    def get_or_calc_param(self, param, node, year=None, tech=None, sub_param=None,
+                          return_source=False):
+        """
+        Gets a parameter's value from the model, given a specific context (node, year, technology,
+        and sub-parameter), calculating the parameter's value if needed.
+
+        If return_source is True,
+        this function will also, return how this value was originally obtained (e.g. via
+        calculation)
+
+        Parameters
+        ----------
+        param : str
+            The name of the parameter whose value is being retrieved.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in retrieving.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`
+        return_source : bool, default=False
+            Whether or not to return the method by which this value was originally obtained.
+
+        Returns
+        -------
+        any :
+            The value of the specified `param` at `node`, given the context provided by `year` and
+            `tech` and potentially using a calculator function if the parameter's value was not
+             exogenously defined.
+        str :
+            If return_source is `True`, will return a string indicating how the parameter's value
+            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+            default, or previous_year}.
+
+        See Also
+        --------
+        Model.get_param : Gets a parameter's value from the model, given a specific context (node,
+        year, technology, and sub-parameter).
+        """
+
+        if tech:
+            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
+                                             return_source,
+                                             retrieve_only=False)
+
+        else:
+            param_val = utils.get_node_param(param, self, node, year,
+                                             return_source=return_source,
+                                             retrieve_only=False)
+
+        return param_val
+
+    def calc_requested_quantities(self, graph, node, year):
+        """
+        Calculates the quantities which have been requested by a node in the specified year and
+        records this in the Model. This calculates all quantities that can be traced back to this
+        node. In other words, this will not only include the services that the node requests, but
+        also any quantities requested by it's successors (children, grandchildren, etc)
+
+        This method was built to be used with the bottom up traversal method
+        (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
+        all its children have been visited (except when it needs to break a loop).
+
+        Parameters
+        ----------
+        graph : networkX.Graph
+            The graph containing node & it's children.
+        node : str
+            The name of the node (in branch/path notation) for which the total requested quantities
+            will be calculated.
+        year : str
+            The year of interest.
+
+        Returns
+        -------
+        Nothing. Does set the requested_quantities parameter in the Model according to the
+        quantities requested of node & all it's successors.
+        """
+        # Create an empty RequestedQuantity object to fill
+        requested_quantity = RequestedQuantity()
+
+        # Find the node's children, who they have a request/provide relationship with
+        children = graph.successors(node)
+        req_prov_children = [c for c in children if 'request_provide' in
+                             graph.get_edge_data(node, c)['type']]
+        # For each child, calculate how much of each service has been requested
+        for child in req_prov_children:
+            # *********
+            # Add the quantity requested of the child by node (if child is a fuel)
+            # *********
+            child_provided_quant = self.get_param("provided_quantities", child, year)
+            child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
+            if child in self.fuels:
+                requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+
+            # *********
+            # Calculate proportion of child's requested quantities that come from node. Record these
+            # as well.
+            # *********
+            try:
+                child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                if child_total_quantity_provided == 0:
+                    # If the child doesn't provide any quantities, move onto the next child without
+                    # updating the node's quantity requested.
+                    continue
+                else:
+                    # Otherwise, find out what proportion of the child's requested can be traced
+                    # back to node
+                    proportion = child_quantity_provided_to_node / child_total_quantity_provided
+
+                    child_requested_quant = self.get_param("requested_quantities", child, year)
+                    for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+                        requested_quantity.record_requested_quantity(child_rq_node,
+                                                                     child,
+                                                                     proportion * child_rq_amount)
+            except KeyError:
+                # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                # broken for the base year.
+                continue
+
+        # Save the requested quantities to the node's data
+        self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
+                                                                                       param_source='calculation')
+                                                                                       
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
         Sets a parameter's value, given a specific context (node, year, technology, and
