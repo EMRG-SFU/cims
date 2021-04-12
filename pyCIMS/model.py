@@ -6,6 +6,7 @@ import networkx as nx
 from . import graph_utils
 from . import utils
 from . import lcc_calculation
+from . import stock_allocation
 
 from .utils import create_value_dict
 
@@ -643,17 +644,9 @@ class Model:
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0, param_source='initialization')
 
                 new_market_shares_per_tech[t] = new_market_share
-                if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                      param_source ='calculation')
-                else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                     param_source='calculation')
-
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share,
-                                                                                                        param_source='calculation')
 
             # Calculate Total Market shares -- remaining + new stock
+            # *****************************
             total_market_shares_by_tech = {}
             for t in node_year_data['technologies']:
                 try:
@@ -674,8 +667,23 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share,
-                                                                                                          param_source='calculation')
+
+            # Record Values in Model -- market shares & stocks
+            # **********************
+            for tech in node_year_data['technologies']:
+                # New Market Share
+                nms = new_market_shares_per_tech[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = create_value_dict(nms, param_source='calculation')
+
+                # Total Market Share -- THIS WORKS (i.e. matches previous iterations #s)
+                tms = total_market_shares_by_tech[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = create_value_dict(tms, param_source='calculation')
+
+                # New Stock & Base Stock
+                if int(year) == self.base_year:
+                    self.graph.nodes[node][year]['technologies'][tech]['base_stock'] = create_value_dict(new_stock_demanded * nms, param_source ='calculation')
+                else:
+                    self.graph.nodes[node][year]['technologies'][tech]['new_stock'] = create_value_dict(new_stock_demanded * nms, param_source='calculation')
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
