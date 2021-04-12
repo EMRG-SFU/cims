@@ -645,6 +645,15 @@ class Model:
 
                 new_market_shares_per_tech[t] = new_market_share
 
+            # Min/Max New Marketshare Limit
+            # *****************************
+            # Apply Min/Max limits to calculated New Market Share percentages and adjust final
+            # percentages to comply with limits.
+            adjusted_new_ms = stock_allocation.apply_min_max_limits(self,
+                                                                    node,
+                                                                    year,
+                                                                    new_market_shares_per_tech)
+
             # Calculate Total Market shares -- remaining + new stock
             # *****************************
             total_market_shares_by_tech = {}
@@ -654,7 +663,7 @@ class Model:
                 except KeyError:
                     existing_stock = 0
 
-                tech_total_stock = existing_stock + new_market_shares_per_tech[t] * new_stock_demanded
+                tech_total_stock = existing_stock + adjusted_new_ms[t] * new_stock_demanded
 
                 # TODO: Deal with assessed_demand == 0
                 # TODO: WARN when assessed_demand is 0. Assign a total marketshare of 0. Might need
@@ -668,11 +677,13 @@ class Model:
 
                 total_market_shares_by_tech[t] = total_market_share
 
+
+
             # Record Values in Model -- market shares & stocks
             # **********************
             for tech in node_year_data['technologies']:
                 # New Market Share
-                nms = new_market_shares_per_tech[tech]
+                nms = adjusted_new_ms[tech]
                 self.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = create_value_dict(nms, param_source='calculation')
 
                 # Total Market Share -- THIS WORKS (i.e. matches previous iterations #s)
