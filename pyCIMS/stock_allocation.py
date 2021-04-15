@@ -3,7 +3,25 @@ from . import utils
 
 
 def get_min_max_limits(model, node, year):
-    techs = model.get_param('technologies', node, year)
+    """
+    Find the minimum & maximum market share limits in a given year for all technologies at a
+    specified node in the model.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The pyCIMS model containing the market share limits you want to retrieve.
+    node : str
+        The name of the node from which you want to retrieve the market share limits.
+    year : str
+        The year to retrieve market share limits value for.
+
+    Returns
+    -------
+    dict:
+        A dictionary mapping each technology at node to the a tuple containing the minimum and
+        maximum market share limit for the specified year.
+    """
     techs = model.graph.nodes[node][year]['technologies']
     min_max_limits = {}
     for tech in techs:
@@ -20,6 +38,8 @@ def min_max_ms_compliant(new_market_shares, min_max_limits):
     ----------
     new_market_shares
     min_max_limits
+
+
 
     Returns
     -------
@@ -105,7 +125,6 @@ def apply_min_max_limits(model, node, year, new_market_shares):
     # continue to next step.
     limit_adjusted_techs = []
     while not min_max_ms_compliant(adjusted_nms, min_max_limits):
-        jillian = 1
         # Apply exogenous Min or Max New M/S limit values on the technology which has the largest
         # % difference between its limit and its initial new market share value.
         percent_differences = get_percent_differences(adjusted_nms,
