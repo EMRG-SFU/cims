@@ -917,11 +917,15 @@ class Model:
         Calculates the quantities which have been requested by a node in the specified year and
         records this in the Model. This calculates all quantities that can be traced back to this
         node. In other words, this will not only include the services that the node requests, but
-        also any quantities requested by it's successors (children, grandchildren, etc)
+        also any quantities requested by it's successors (children, grandchildren, etc).
 
         This method was built to be used with the bottom up traversal method
         (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
         all its children have been visited (except when it needs to break a loop).
+
+        Important things to note:
+           * Fuel nodes pass along quantities requested by their successors via their structural
+             parent rather than through request/provide parents.
 
         Parameters
         ----------
@@ -941,45 +945,62 @@ class Model:
         # Create an empty RequestedQuantity object to fill
         requested_quantity = RequestedQuantity()
 
-        # Find the node's children, who they have a request/provide relationship with
-        children = graph.successors(node)
-        req_prov_children = [c for c in children if 'request_provide' in
-                             graph.get_edge_data(node, c)['type']]
-        # For each child, calculate how much of each service has been requested
-        for child in req_prov_children:
-            # *********
-            # Add the quantity requested of the child by node (if child is a fuel)
-            # *********
-            child_provided_quant = self.get_param("provided_quantities", child, year)
-            child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-            if child in self.fuels:
-                requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+        if self.get_param("competition type", node) in ['root', 'region']:
+            # Find the node's children, who they have a structural relationship with
+            children = graph.successors(node)
+            structural_children = [c for c in children if 'structure' in
+                                   graph.get_edge_data(node, c)['type']]
 
-            # *********
-            # Calculate proportion of child's requested quantities that come from node. Record these
-            # as well.
-            # *********
-            else:
-                try:
-                    child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                    if child_total_quantity_provided == 0:
-                        # If the child doesn't provide any quantities, move onto the next child without
-                        # updating the node's quantity requested.
+            # For each structural child, add it's provided quantities to the region/root
+            for child in structural_children:
+                child_requested_quant = self.get_param("requested_quantities",
+                                                       child, year).get_total_quantities_requested()
+                for child_rq_node, child_rq_amount in child_requested_quant.items():
+                    requested_quantity.record_requested_quantity(child_rq_node,
+                                                                 child,
+                                                                 child_rq_amount)
+
+        else:
+            # Find the node's children, who they have a request/provide relationship with
+            children = graph.successors(node)
+            req_prov_children = [c for c in children if 'request_provide' in
+                                 graph.get_edge_data(node, c)['type']]
+
+            # For each child, calculate how much of each service has been requested
+            for child in req_prov_children:
+                # *********
+                # Add the quantity requested of the child by node (if child is a fuel)
+                # *********
+                child_provided_quant = self.get_param("provided_quantities", child, year)
+                child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
+                if child in self.fuels:
+                    requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+
+                # *********
+                # Calculate proportion of child's requested quantities that come from node. Record these
+                # as well.
+                # *********
+                else:
+                    try:
+                        child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                        if child_total_quantity_provided == 0:
+                            # If the child doesn't provide any quantities, move onto the next child without
+                            # updating the node's quantity requested.
+                            continue
+                        else:
+                            # Otherwise, find out what proportion of the child's requested can be traced
+                            # back to node
+                            proportion = child_quantity_provided_to_node / child_total_quantity_provided
+
+                            child_requested_quant = self.get_param("requested_quantities", child, year)
+                            for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+                                requested_quantity.record_requested_quantity(child_rq_node,
+                                                                             child,
+                                                                             proportion * child_rq_amount)
+                    except KeyError:
+                        # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                        # broken for the base year.
                         continue
-                    else:
-                        # Otherwise, find out what proportion of the child's requested can be traced
-                        # back to node
-                        proportion = child_quantity_provided_to_node / child_total_quantity_provided
-
-                        child_requested_quant = self.get_param("requested_quantities", child, year)
-                        for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
-                            requested_quantity.record_requested_quantity(child_rq_node,
-                                                                         child,
-                                                                         proportion * child_rq_amount)
-                except KeyError:
-                    # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
-                    # broken for the base year.
-                    continue
 
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
