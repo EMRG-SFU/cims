@@ -1027,11 +1027,15 @@ class Model:
         if isinstance(val, list) or isinstance(year, list):
             if not isinstance(val, list):
                 print('Values must be entered as a list.')
+                return
             elif not isinstance(year, list):
                 print('Years must be entered as a list.')
+                return
             elif len(val) != len(year):
                 print('The number of values does not match the number of years. No changes were made.')
-        else:
+                return
+        else: 
+            # changing years and vals to lists
             year = [year]
             val = [val]
         for i in range(len(year)):
@@ -1240,7 +1244,7 @@ class Model:
                         val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param_tmp, val_operator, row_index)
                         if val_tmp:
                             self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param_tmp)
-                # use sub_param as is if it is not .*
+                # if it is not .*, use sub_param as is 
                 else:
                     val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param, val_operator, row_index)
                     if val_tmp:
@@ -1256,7 +1260,7 @@ class Model:
                     val_tmp = get_val_operated(val, param, node, year, tech, sub_param_tmp, val_operator, row_index)
                     if val_tmp:
                         self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param_tmp)
-            # use sub_param as is if it is not .*
+            #  if it is not .*, use sub_param as is 
             else:
                 val_tmp = get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index)
                 if val_tmp:
