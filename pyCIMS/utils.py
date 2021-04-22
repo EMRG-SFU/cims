@@ -78,6 +78,12 @@ def dict_has_None_year_value(dictionary):
     return has_none_year_value
 
 
+def is_param_exogenous(model, param, node, year, tech=None):
+    val, source = model.get_param(param, node, year, tech, return_source=True)
+    ms_exogenous = source == 'model'
+    return ms_exogenous
+
+
 # ******************
 # Parameter Fetching
 # ******************
