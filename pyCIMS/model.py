@@ -145,7 +145,7 @@ class Model:
         self.fuels = graph_utils.get_fuels(graph)
         self.graph = graph
 
-    def run(self, equilibrium_threshold=0.005, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
