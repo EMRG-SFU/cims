@@ -645,21 +645,18 @@ class Model:
                         tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
                         total_lcc_v = self.get_param('total_lcc_v', node, year)
 
-                        if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 Life Cycle Cost properly
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a Life Cycle Cost=0".format(t, node))
-                            tech_lcc = 0.0001
-                        if tech_lcc < 0:
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
-                            tech_lcc = 0.0001
-                        try:
-                            new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
-                        except OverflowError:
-                            if self.show_run_warnings:
-                                warnings.warn("Overflow Error when calculating new marketshare for "
-                                              "tech {} @ node {}".format(t, node))
+                        # TODO: Instead of calculating this in 2 places, set this value in
+                        #  lcc_calculation.py. Or here. Not both.
+                        if tech_lcc < 0.01:
+                            # When lcc < 0.01, we will approximate it's weight using a TREND line
+                            w1 = 0.1 ** (-1 * v)
+                            w2 = 0.01 ** (-1 * v)
+                            slope = (w2 - w1) / (0.01 - 0.1)
+                            weight = slope * tech_lcc + (w1 - slope * 0.1)
+                        else:
+                            weight = tech_lcc ** (-1 * v)
+
+                        new_market_share = weight / total_lcc_v
 
                 self.graph.nodes[node][year]['technologies'][t]['base_stock'] = 0
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = 0

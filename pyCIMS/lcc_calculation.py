@@ -97,21 +97,20 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 else:
                     add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc)
 
-              # Life Cycle Cost ^ -v
+                # Life Cycle Cost ^ -v
                 if lcc < 0.01:
+                    # When lcc < 0.01, we will approximate it's weight using a TREND line
                     w1 = 0.1 ** (-1 * v)
                     w2 = 0.01 ** (-1 * v)
                     slope = (w2 - w1)/(0.01 - 0.1)     
-
-                try:
                     weight = slope * lcc + (w1 - slope * 0.1)
-                    total_lcc_v += weight
-                except OverflowError as e:
-                    raise e
+                else:
+                    weight = lcc ** (-1 * v)
+
+                total_lcc_v += weight
 
         # Set sum of Life Cycle Cost raised to negative variance
         sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
-
 
         # Weighted Life Cycle Cost
         # ************************
@@ -263,7 +262,11 @@ def calc_declining_uic(model, node, year, tech):
         prev_year = str(int(year) - model.step)
         prev_nms = model.get_param('new_market_share', node, prev_year, tech)
 
-        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
+        try:
+            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
+        except OverflowError:
+            print(node, year, shape_constant, rate_constant, prev_nms)
+            raise OverflowError
         uic_declining = initial_uic / denominator
         return_uic = uic_declining
 
