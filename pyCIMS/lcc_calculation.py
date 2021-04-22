@@ -97,26 +97,21 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 else:
                     add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc)
 
-                # Life Cycle Cost ^ -v
-                # ********************
-                if round(lcc, 20) == 0:
-                    if show_warnings:
-                        warnings.warn('Life Cycle Cost has value of 0 at {} -- {}'.format(node, tech))
-                    lcc = 0.0001
-
-                if lcc < 0:
-                    if show_warnings:
-                        warnings.warn('Life Cycle Cost has negative value at {} -- {}'.format(node, tech))
-                    lcc = 0.0001
+              # Life Cycle Cost ^ -v
+                if lcc < 0.01:
+                    w1 = 0.1 ** (-1 * v)
+                    w2 = 0.01 ** (-1 * v)
+                    slope = (w2 - w1)/(0.01 - 0.1)     
 
                 try:
-                    lcc_neg_v = lcc ** (-1.0 * v)
-                    total_lcc_v += lcc_neg_v
+                    weight = slope * lcc + (w1 - slope * 0.1)
+                    total_lcc_v += weight
                 except OverflowError as e:
                     raise e
 
         # Set sum of Life Cycle Cost raised to negative variance
         sub_graph.nodes[node][year]["total_lcc_v"] = total_lcc_v
+
 
         # Weighted Life Cycle Cost
         # ************************
