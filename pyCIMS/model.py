@@ -61,6 +61,15 @@ class RequestedQuantity:
             total_quants[service] = total_service
         return total_quants
 
+    def sum_requested_quantities(self):
+        total_quantity = 0
+        for fuel in self.requested_quantities:
+            fuel_rq = self.requested_quantities[fuel]
+            for source in fuel_rq:
+                total_quantity += fuel_rq[source]
+
+        return total_quantity
+
 
 class Model:
     """
@@ -428,7 +437,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)[fuel_name]['year_value']
+                        last_year_value = self.get_param('Life Cycle Cost',
+                                                         node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:

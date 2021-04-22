@@ -44,11 +44,20 @@ def log_RequestedQuantity(val):
         service being requested by the node.
     """
     rqs = []
+
+    # Log quantities per tech
     for k, v in val.get_total_quantities_requested().items():
         context = k
         unit = None
         value = v
         rqs.append((context, unit, value))
+
+    # Log total quantities
+    context = 'total'
+    unit = None
+    value = val.sum_requested_quantities()
+    rqs.append((context, unit, value))
+
     return rqs
 
 
