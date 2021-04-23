@@ -11,6 +11,7 @@ import operator
 from . import graph_utils
 from . import utils
 from . import lcc_calculation
+from . import stock_allocation
 
 from .utils import create_value_dict
 
@@ -65,6 +66,15 @@ class RequestedQuantity:
                 total_service += quantity
             total_quants[service] = total_service
         return total_quants
+
+    def sum_requested_quantities(self):
+        total_quantity = 0
+        for fuel in self.requested_quantities:
+            fuel_rq = self.requested_quantities[fuel]
+            for source in fuel_rq:
+                total_quantity += fuel_rq[source]
+
+        return total_quantity
 
 
 class Model:
@@ -143,7 +153,7 @@ class Model:
         self.fuels = graph_utils.get_fuels(graph)
         self.graph = graph
 
-    def run(self, equilibrium_threshold=0.005, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -436,7 +446,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)[fuel_name]['year_value']
+                        last_year_value = self.get_param('Life Cycle Cost',
+                                                         node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -453,6 +464,7 @@ class Model:
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
+
             self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
 
@@ -631,37 +643,35 @@ class Model:
                         tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
                         total_lcc_v = self.get_param('total_lcc_v', node, year)
 
-                        if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 Life Cycle Cost properly
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a Life Cycle Cost=0".format(t, node))
-                            tech_lcc = 0.0001
-                        if tech_lcc < 0:
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
-                            tech_lcc = 0.0001
-                        try:
-                            new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
-                        except OverflowError:
-                            if self.show_run_warnings:
-                                warnings.warn("Overflow Error when calculating new marketshare for "
-                                              "tech {} @ node {}".format(t, node))
+                        # TODO: Instead of calculating this in 2 places, set this value in
+                        #  lcc_calculation.py. Or here. Not both.
+                        if tech_lcc < 0.01:
+                            # When lcc < 0.01, we will approximate it's weight using a TREND line
+                            w1 = 0.1 ** (-1 * v)
+                            w2 = 0.01 ** (-1 * v)
+                            slope = (w2 - w1) / (0.01 - 0.1)
+                            weight = slope * tech_lcc + (w1 - slope * 0.1)
+                        else:
+                            weight = tech_lcc ** (-1 * v)
+
+                        new_market_share = weight / total_lcc_v
 
                 self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(0, param_source='initialization')
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0, param_source='initialization')
 
                 new_market_shares_per_tech[t] = new_market_share
-                if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                      param_source ='calculation')
-                else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                     param_source='calculation')
 
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share,
-                                                                                                        param_source='calculation')
+            # Min/Max New Marketshare Limit
+            # *****************************
+            # Apply Min/Max limits to calculated New Market Share percentages and adjust final
+            # percentages to comply with limits.
+            adjusted_new_ms = stock_allocation.apply_min_max_limits(self,
+                                                                    node,
+                                                                    year,
+                                                                    new_market_shares_per_tech)
 
             # Calculate Total Market shares -- remaining + new stock
+            # *****************************
             total_market_shares_by_tech = {}
             for t in node_year_data['technologies']:
                 try:
@@ -669,7 +679,7 @@ class Model:
                 except KeyError:
                     existing_stock = 0
 
-                tech_total_stock = existing_stock + new_market_shares_per_tech[t] * new_stock_demanded
+                tech_total_stock = existing_stock + adjusted_new_ms[t] * new_stock_demanded
 
                 # TODO: Deal with assessed_demand == 0
                 # TODO: WARN when assessed_demand is 0. Assign a total marketshare of 0. Might need
@@ -682,8 +692,25 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share,
-                                                                                                          param_source='calculation')
+
+
+
+            # Record Values in Model -- market shares & stocks
+            # **********************
+            for tech in node_year_data['technologies']:
+                # New Market Share
+                nms = adjusted_new_ms[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = create_value_dict(nms, param_source='calculation')
+
+                # Total Market Share -- THIS WORKS (i.e. matches previous iterations #s)
+                tms = total_market_shares_by_tech[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = create_value_dict(tms, param_source='calculation')
+
+                # New Stock & Base Stock
+                if int(year) == self.base_year:
+                    self.graph.nodes[node][year]['technologies'][tech]['base_stock'] = create_value_dict(new_stock_demanded * nms, param_source ='calculation')
+                else:
+                    self.graph.nodes[node][year]['technologies'][tech]['new_stock'] = create_value_dict(new_stock_demanded * nms, param_source='calculation')
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
@@ -927,11 +954,15 @@ class Model:
         Calculates the quantities which have been requested by a node in the specified year and
         records this in the Model. This calculates all quantities that can be traced back to this
         node. In other words, this will not only include the services that the node requests, but
-        also any quantities requested by it's successors (children, grandchildren, etc)
+        also any quantities requested by it's successors (children, grandchildren, etc).
 
         This method was built to be used with the bottom up traversal method
         (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
         all its children have been visited (except when it needs to break a loop).
+
+        Important things to note:
+           * Fuel nodes pass along quantities requested by their successors via their structural
+             parent rather than through request/provide parents.
 
         Parameters
         ----------
@@ -951,47 +982,66 @@ class Model:
         # Create an empty RequestedQuantity object to fill
         requested_quantity = RequestedQuantity()
 
-        # Find the node's children, who they have a request/provide relationship with
-        children = graph.successors(node)
-        req_prov_children = [c for c in children if 'request_provide' in
-                             graph.get_edge_data(node, c)['type']]
-        # For each child, calculate how much of each service has been requested
-        for child in req_prov_children:
-            # *********
-            # Add the quantity requested of the child by node (if child is a fuel)
-            # *********
-            child_provided_quant = self.get_param("provided_quantities", child, year)
-            child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-            if child in self.fuels:
-                requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+        if self.get_param("competition type", node) in ['root', 'region']:
+            # Find the node's children, who they have a structural relationship with
+            children = graph.successors(node)
+            structural_children = [c for c in children if 'structure' in
+                                   graph.get_edge_data(node, c)['type']]
 
-            # *********
-            # Calculate proportion of child's requested quantities that come from node. Record these
-            # as well.
-            # *********
-            try:
-                child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                if child_total_quantity_provided == 0:
-                    # If the child doesn't provide any quantities, move onto the next child without
-                    # updating the node's quantity requested.
-                    continue
+            # For each structural child, add it's provided quantities to the region/root
+            for child in structural_children:
+                child_requested_quant = self.get_param("requested_quantities",
+                                                       child, year).get_total_quantities_requested()
+                for child_rq_node, child_rq_amount in child_requested_quant.items():
+                    requested_quantity.record_requested_quantity(child_rq_node,
+                                                                 child,
+                                                                 child_rq_amount)
+
+        else:
+            # Find the node's children, who they have a request/provide relationship with
+            children = graph.successors(node)
+            req_prov_children = [c for c in children if 'request_provide' in
+                                 graph.get_edge_data(node, c)['type']]
+
+            # For each child, calculate how much of each service has been requested
+            for child in req_prov_children:
+                # *********
+                # Add the quantity requested of the child by node (if child is a fuel)
+                # *********
+                child_provided_quant = self.get_param("provided_quantities", child, year)
+                child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
+                if child in self.fuels:
+                    requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+
+                # *********
+                # Calculate proportion of child's requested quantities that come from node. Record these
+                # as well.
+                # *********
                 else:
-                    # Otherwise, find out what proportion of the child's requested can be traced
-                    # back to node
-                    proportion = child_quantity_provided_to_node / child_total_quantity_provided
+                    try:
+                        child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                        if child_total_quantity_provided == 0:
+                            # If the child doesn't provide any quantities, move onto the next child without
+                            # updating the node's quantity requested.
+                            continue
+                        else:
+                            # Otherwise, find out what proportion of the child's requested can be traced
+                            # back to node
+                            proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                    child_requested_quant = self.get_param("requested_quantities", child, year)
-                    for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
-                        requested_quantity.record_requested_quantity(child_rq_node,
-                                                                     child,
-                                                                     proportion * child_rq_amount)
-            except KeyError:
-                # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
-                # broken for the base year.
-                continue
+                            child_requested_quant = self.get_param("requested_quantities", child, year)
+                            for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+                                requested_quantity.record_requested_quantity(child_rq_node,
+                                                                             child,
+                                                                             proportion * child_rq_amount)
+                    except KeyError:
+                        # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                        # broken for the base year.
+                        continue
 
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
+<<<<<<< HEAD
                                                                                        param_source='calculation')
                                                                                        
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
@@ -1434,3 +1484,6 @@ def load_model(model_file):
     f = open(model_file,'rb')
     model = pickle.load(f)
     return model
+=======
+                                                                                       param_source='calculation')
+>>>>>>> ae975f771b01f039a004684f9a2988a75f9dae18
