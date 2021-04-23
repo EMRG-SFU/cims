@@ -1829,18 +1829,6 @@ pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Electricity,2035,,Tax,CO
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Electricity,2040,,Tax,CO2,0.0,50.0
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Electricity,2045,,Tax,CO2,0.0,50.0
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Electricity,2050,,Tax,CO2,0.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2025,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2030,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2035,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2040,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2045,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Ethanol,2050,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2025,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2030,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2035,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2040,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2045,,Tax,CO2,50.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Biodiesel,2050,,Tax,CO2,50.0,50.0
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2000,,Heterogeneity,,10.0,0.6
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2005,,Heterogeneity,,10.0,0.6
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Coal Mining.Pumping.Precision.Small,2010,,Heterogeneity,,10.0,0.6
