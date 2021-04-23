@@ -8,7 +8,7 @@ from . import utils
 # **************************
 # 1- Perform action in graph
 # **************************
-def find_value(graph, node, parameter, year=None):
+def _find_value_in_ancestors(graph, node, parameter, year=None):
     """
     Find a parameter's value at a given node or its structural ancestors.
 
@@ -51,9 +51,10 @@ def find_value(graph, node, parameter, year=None):
 
     # Look at the Parent
     if parent:
-        return find_value(graph, parent, parameter, year)
+        return _find_value_in_ancestors(graph, parent, parameter, year)
 
     # Worst Case, return None
+
 
 def parent_name(curr_node, return_empty=False):
     """
@@ -161,7 +162,10 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
         else:
             warnings.warn("Found a Loop -- ")
             # Resolve a loop
-            candidates = {n: dist_from_root[n] for n in sg_cur}
+            cycles = nx.simple_cycles(sg_cur)
+            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
+
+            # candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
@@ -218,8 +222,10 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
         else:
             warnings.warn("Found a Loop")
             # Resolve a loop
-            candidates = {n: dist_from_root[n] for n in sg_cur}
+            cycles = nx.simple_cycles(sg_cur)
+            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
             n_cur = max(candidates, key=lambda x: candidates[x])
+
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
@@ -256,8 +262,9 @@ def add_node_data(graph, current_node, node_dfs):
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
         # If type isn't in the node's df, try to find it in the ancestors
-        val = find_value(graph, current_node, 'type')
+        val = _find_value_in_ancestors(graph, current_node, 'type')
         graph.nodes[current_node]['type'] = val if val else 'standard'
+
     # Drop Demand row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'Node type']
 
@@ -282,7 +289,8 @@ def add_node_data(graph, current_node, node_dfs):
             dct = {'source': src,
                    'branch': branch,
                    'unit': unit,
-                   'year_value': year_value}
+                   'year_value': year_value,
+                   'param_source': 'model'}
 
             if param in year_dict.keys():
                 pass
@@ -334,7 +342,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'source': source,
                    'branch': branch,
                    'unit': unit,
-                   'year_value': year_value}
+                   'year_value': year_value,
+                   'param_source': 'model'}
 
             if parameter in year_dict.keys():
                 if isinstance(year_dict[parameter], list):
