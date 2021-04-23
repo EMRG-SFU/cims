@@ -1041,7 +1041,6 @@ class Model:
 
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
-<<<<<<< HEAD
                                                                                        param_source='calculation')
                                                                                        
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
@@ -1484,6 +1483,3 @@ def load_model(model_file):
     f = open(model_file,'rb')
     model = pickle.load(f)
     return model
-=======
-                                                                                       param_source='calculation')
->>>>>>> ae975f771b01f039a004684f9a2988a75f9dae18
