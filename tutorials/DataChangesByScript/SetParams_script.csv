@@ -3,7 +3,6 @@ pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,In
 pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,CFL,,==,2000,==,0.2,,,,False
 pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Recent Car,>=,2000,==,0.7,,,,False
 pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Old Truck,>=,2000,==,0.3,,,,False
-pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,,Heterogeneity,,,>=,2000,==,25,,,,False
 .*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector,False
 .*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector no tech,False
 .*,,Tax,,CO2,>=,2025,>=,50,competition type,==,sector,True
