@@ -1,6 +1,6 @@
 import pandas as pd
 import warnings
-from pyCIMS.model import NodeQuantity
+from pyCIMS.model import ProvidedQuantity, RequestedQuantity
 
 
 def has_techs(node_year_data):
@@ -23,8 +23,42 @@ def log_bool(val):
     return [(None, None, val)]
 
 
-def log_NodeQuantity(val):
+def log_ProvidedQuantity(val):
     return [(None, None, float(val.get_total_quantity()))]
+
+
+def log_RequestedQuantity(val):
+    """
+    Examines the RequestedQuantity object and provides a list of tuples to be used in the logger.
+
+    Parameters
+    ----------
+    val : pyCIMS.RequestedQuantity
+        The RequestedQuantity object containing the record of all requested quantities which can be
+        traced back to a node, from either it's own requested services, or those of it's successors.
+
+    Returns
+    -------
+    list of tuples
+        Returns a list of tuples, where each tuple contains context, unit, and value for a specific
+        service being requested by the node.
+    """
+    rqs = []
+
+    # Log quantities per tech
+    for k, v in val.get_total_quantities_requested().items():
+        context = k
+        unit = None
+        value = v
+        rqs.append((context, unit, value))
+
+    # Log total quantities
+    context = 'total'
+    unit = None
+    value = val.sum_requested_quantities()
+    rqs.append((context, unit, value))
+
+    return rqs
 
 
 def log_list(val):
@@ -54,6 +88,12 @@ def log_dict(val):
 
         if year_value is None:
             return [(context, unit, None)]
+        elif isinstance(year_value, ProvidedQuantity):
+            return log_ProvidedQuantity(year_value)
+        elif isinstance(year_value, RequestedQuantity):
+            return log_RequestedQuantity(year_value)
+        elif isinstance(year_value, dict):
+            return log_dict(year_value)
         else:
             return [(context, unit, float(year_value))]
     else:
@@ -95,7 +135,8 @@ def slimlist(default_list):
 def add_log_item(all_logs, log_tuple):
     log_func = {int: log_int,
                 float: log_float,
-                NodeQuantity: log_NodeQuantity,
+                ProvidedQuantity: log_ProvidedQuantity,
+                RequestedQuantity: log_RequestedQuantity,
                 list: log_list,
                 dict: log_dict,
                 str: log_str,
