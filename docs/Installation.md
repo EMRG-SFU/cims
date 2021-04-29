@@ -24,11 +24,9 @@ All three can be installed by following the instructions found on the Software C
     * Select the **write_repository** scope
     * Click the **Create personal access** token button.
     * Save the personal access token somewhere safe. Once you leave or refresh the page, you won't be able to access it again.
-
 2. **Open the command line**
-On Linux or Mac machines, open Terminal (pre-installed). On Windows, open GitBash. If you do not have Git Bash installed, you can install it from [here](https://gitforwindows.org/). Other command line programs such as Bash can work, but may involve extra configuring.   
-
-5. **Clone the Git Repository using HTTPS**
+On Linux or Mac machines, open Terminal (pre-installed). On Windows, open GitBash. If you do not have Git Bash installed, you can install it from [here](https://gitforwindows.org/). Other command line programs such as Bash can work, but may involve extra configuring.
+3. **Clone the Git Repository using HTTPS**
     * Change the current working directory to the location where you want the cloned directory to be made. 
     * Paste the following command into the command line
     ```
