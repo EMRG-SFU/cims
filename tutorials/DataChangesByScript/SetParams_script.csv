@@ -1,12 +1,11 @@
-node,node_regex,param,tech,sub_param,year_operator,year,val_operator,val,search_param,search_operator,search_pattern
-pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,Incandescent,,==,2000,==,0.8,,,
-pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,CFL,,==,2000,==,0.2,,,
-pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Recent Car,>=,2000,==,0.7,,,
-pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Old Truck,>=,2000,==,0.3,,,
-pyCIMS.Canada.Alberta.Transportation Personal.Transit.Public Bus.Standard Emissions,,Heterogeneity,,,>=,2000,==,25,,,
-.*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector
-.*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector no tech
-.*,,Tax,,CO2,>=,2025,>=,50,competition type,==,sector
-,.*Pumping\.Precision\.Small$,Heterogeneity,,,>=,2000,==,0.6,,,
-,^pyCIMS\.Canada\.Alberta\.Residential\.Buildings\.Floorspace\..*,Heterogeneity,,,==,2000,==,1.3,,,
-,.+\.Residential\.Buildings\.Floorspace\..+,Heterogeneity,,,==,2010,==,1.2,,,
+node,node_regex,param,tech,sub_param,year_operator,year,val_operator,val,search_param,search_operator,search_pattern,create_if_missing
+pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,Incandescent,,==,2000,==,0.8,,,,False
+pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,,Market share,CFL,,==,2000,==,0.2,,,,False
+pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Recent Car,>=,2000,==,0.7,,,,False
+pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,,Service requested,,Old Truck,>=,2000,==,0.3,,,,False
+.*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector,False
+.*,,Price Multiplier,,.*,>=,2000,==,3,competition type,==,sector no tech,False
+.*,,Tax,,CO2,>=,2025,>=,50,competition type,==,sector,True
+,.*Pumping\.Precision\.Small$,Heterogeneity,,,>=,2000,==,0.6,,,,False
+,^pyCIMS\.Canada\.Alberta\.Residential\.Buildings\.Floorspace\..*,Heterogeneity,,,==,2000,==,1.3,,,,False
+,.+\.Residential\.Buildings\.Floorspace\..+,Heterogeneity,,,==,2010,==,1.2,,,,False

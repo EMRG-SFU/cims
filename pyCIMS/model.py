@@ -11,6 +11,7 @@ import operator
 from . import graph_utils
 from . import utils
 from . import lcc_calculation
+from . import stock_allocation
 
 from .utils import create_value_dict
 
@@ -65,6 +66,15 @@ class RequestedQuantity:
                 total_service += quantity
             total_quants[service] = total_service
         return total_quants
+
+    def sum_requested_quantities(self):
+        total_quantity = 0
+        for fuel in self.requested_quantities:
+            fuel_rq = self.requested_quantities[fuel]
+            for source in fuel_rq:
+                total_quantity += fuel_rq[source]
+
+        return total_quantity
 
 
 class Model:
@@ -143,7 +153,7 @@ class Model:
         self.fuels = graph_utils.get_fuels(graph)
         self.graph = graph
 
-    def run(self, equilibrium_threshold=0.005, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -436,7 +446,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)[fuel_name]['year_value']
+                        last_year_value = self.get_param('Life Cycle Cost',
+                                                         node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -453,6 +464,7 @@ class Model:
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
+
             self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
 
@@ -631,37 +643,35 @@ class Model:
                         tech_lcc = self.get_param('Life Cycle Cost', node, year, t)
                         total_lcc_v = self.get_param('total_lcc_v', node, year)
 
-                        if tech_lcc == 0:
-                            # TODO: Address the problem of a 0 Life Cycle Cost properly
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a Life Cycle Cost=0".format(t, node))
-                            tech_lcc = 0.0001
-                        if tech_lcc < 0:
-                            if self.show_run_warnings:
-                                warnings.warn("Technology {} @ node {} has a negative Life Cycle Cost".format(t, node))
-                            tech_lcc = 0.0001
-                        try:
-                            new_market_share = tech_lcc ** (-1 * v) / total_lcc_v
-                        except OverflowError:
-                            if self.show_run_warnings:
-                                warnings.warn("Overflow Error when calculating new marketshare for "
-                                              "tech {} @ node {}".format(t, node))
+                        # TODO: Instead of calculating this in 2 places, set this value in
+                        #  lcc_calculation.py. Or here. Not both.
+                        if tech_lcc < 0.01:
+                            # When lcc < 0.01, we will approximate it's weight using a TREND line
+                            w1 = 0.1 ** (-1 * v)
+                            w2 = 0.01 ** (-1 * v)
+                            slope = (w2 - w1) / (0.01 - 0.1)
+                            weight = slope * tech_lcc + (w1 - slope * 0.1)
+                        else:
+                            weight = tech_lcc ** (-1 * v)
+
+                        new_market_share = weight / total_lcc_v
 
                 self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(0, param_source='initialization')
                 self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(0, param_source='initialization')
 
                 new_market_shares_per_tech[t] = new_market_share
-                if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][t]['base_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                      param_source ='calculation')
-                else:
-                    self.graph.nodes[node][year]['technologies'][t]['new_stock'] = create_value_dict(new_stock_demanded * new_market_share,
-                                                                                                     param_source='calculation')
 
-                self.graph.nodes[node][year]['technologies'][t]['new_market_share'] = create_value_dict(new_market_share,
-                                                                                                        param_source='calculation')
+            # Min/Max New Marketshare Limit
+            # *****************************
+            # Apply Min/Max limits to calculated New Market Share percentages and adjust final
+            # percentages to comply with limits.
+            adjusted_new_ms = stock_allocation.apply_min_max_limits(self,
+                                                                    node,
+                                                                    year,
+                                                                    new_market_shares_per_tech)
 
             # Calculate Total Market shares -- remaining + new stock
+            # *****************************
             total_market_shares_by_tech = {}
             for t in node_year_data['technologies']:
                 try:
@@ -669,7 +679,7 @@ class Model:
                 except KeyError:
                     existing_stock = 0
 
-                tech_total_stock = existing_stock + new_market_shares_per_tech[t] * new_stock_demanded
+                tech_total_stock = existing_stock + adjusted_new_ms[t] * new_stock_demanded
 
                 # TODO: Deal with assessed_demand == 0
                 # TODO: WARN when assessed_demand is 0. Assign a total marketshare of 0. Might need
@@ -682,8 +692,25 @@ class Model:
                     total_market_share = tech_total_stock / assessed_demand
 
                 total_market_shares_by_tech[t] = total_market_share
-                self.graph.nodes[node][year]['technologies'][t]['total_market_share'] = create_value_dict(total_market_share,
-                                                                                                          param_source='calculation')
+
+
+
+            # Record Values in Model -- market shares & stocks
+            # **********************
+            for tech in node_year_data['technologies']:
+                # New Market Share
+                nms = adjusted_new_ms[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = create_value_dict(nms, param_source='calculation')
+
+                # Total Market Share -- THIS WORKS (i.e. matches previous iterations #s)
+                tms = total_market_shares_by_tech[tech]
+                self.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = create_value_dict(tms, param_source='calculation')
+
+                # New Stock & Base Stock
+                if int(year) == self.base_year:
+                    self.graph.nodes[node][year]['technologies'][tech]['base_stock'] = create_value_dict(new_stock_demanded * nms, param_source ='calculation')
+                else:
+                    self.graph.nodes[node][year]['technologies'][tech]['new_stock'] = create_value_dict(new_stock_demanded * nms, param_source='calculation')
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
@@ -799,7 +826,7 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False):
         """
         Gets a parameter's value from the model, given a specific context (node, year, technology,
         and sub-parameter).
@@ -830,6 +857,9 @@ class Model:
             provided as a `sub_param`
         return_source : bool, default=False
             Whether or not to return the method by which this value was originally obtained.
+        check_exist : bool, default=False
+            Whether or not to check that the parameter exists as is given the context (without calculation, 
+            inheritance, or checking past years)
 
         Returns
         -------
@@ -849,12 +879,12 @@ class Model:
         if tech:
             param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
                                              return_source=return_source,
-                                             retrieve_only=True)
+                                             retrieve_only=True, check_exist=check_exist)
 
         else:
             param_val = utils.get_node_param(param, self, node, year, sub_param=sub_param,
                                              return_source=return_source,
-                                             retrieve_only=True)
+                                             retrieve_only=True, check_exist=check_exist)
 
         return param_val
 
@@ -924,11 +954,15 @@ class Model:
         Calculates the quantities which have been requested by a node in the specified year and
         records this in the Model. This calculates all quantities that can be traced back to this
         node. In other words, this will not only include the services that the node requests, but
-        also any quantities requested by it's successors (children, grandchildren, etc)
+        also any quantities requested by it's successors (children, grandchildren, etc).
 
         This method was built to be used with the bottom up traversal method
         (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
         all its children have been visited (except when it needs to break a loop).
+
+        Important things to note:
+           * Fuel nodes pass along quantities requested by their successors via their structural
+             parent rather than through request/provide parents.
 
         Parameters
         ----------
@@ -948,44 +982,62 @@ class Model:
         # Create an empty RequestedQuantity object to fill
         requested_quantity = RequestedQuantity()
 
-        # Find the node's children, who they have a request/provide relationship with
-        children = graph.successors(node)
-        req_prov_children = [c for c in children if 'request_provide' in
-                             graph.get_edge_data(node, c)['type']]
-        # For each child, calculate how much of each service has been requested
-        for child in req_prov_children:
-            # *********
-            # Add the quantity requested of the child by node (if child is a fuel)
-            # *********
-            child_provided_quant = self.get_param("provided_quantities", child, year)
-            child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-            if child in self.fuels:
-                requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+        if self.get_param("competition type", node) in ['root', 'region']:
+            # Find the node's children, who they have a structural relationship with
+            children = graph.successors(node)
+            structural_children = [c for c in children if 'structure' in
+                                   graph.get_edge_data(node, c)['type']]
 
-            # *********
-            # Calculate proportion of child's requested quantities that come from node. Record these
-            # as well.
-            # *********
-            try:
-                child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                if child_total_quantity_provided == 0:
-                    # If the child doesn't provide any quantities, move onto the next child without
-                    # updating the node's quantity requested.
-                    continue
+            # For each structural child, add it's provided quantities to the region/root
+            for child in structural_children:
+                child_requested_quant = self.get_param("requested_quantities",
+                                                       child, year).get_total_quantities_requested()
+                for child_rq_node, child_rq_amount in child_requested_quant.items():
+                    requested_quantity.record_requested_quantity(child_rq_node,
+                                                                 child,
+                                                                 child_rq_amount)
+
+        else:
+            # Find the node's children, who they have a request/provide relationship with
+            children = graph.successors(node)
+            req_prov_children = [c for c in children if 'request_provide' in
+                                 graph.get_edge_data(node, c)['type']]
+
+            # For each child, calculate how much of each service has been requested
+            for child in req_prov_children:
+                # *********
+                # Add the quantity requested of the child by node (if child is a fuel)
+                # *********
+                child_provided_quant = self.get_param("provided_quantities", child, year)
+                child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
+                if child in self.fuels:
+                    requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+
+                # *********
+                # Calculate proportion of child's requested quantities that come from node. Record these
+                # as well.
+                # *********
                 else:
-                    # Otherwise, find out what proportion of the child's requested can be traced
-                    # back to node
-                    proportion = child_quantity_provided_to_node / child_total_quantity_provided
+                    try:
+                        child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                        if child_total_quantity_provided == 0:
+                            # If the child doesn't provide any quantities, move onto the next child without
+                            # updating the node's quantity requested.
+                            continue
+                        else:
+                            # Otherwise, find out what proportion of the child's requested can be traced
+                            # back to node
+                            proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                    child_requested_quant = self.get_param("requested_quantities", child, year)
-                    for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
-                        requested_quantity.record_requested_quantity(child_rq_node,
-                                                                     child,
-                                                                     proportion * child_rq_amount)
-            except KeyError:
-                # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
-                # broken for the base year.
-                continue
+                            child_requested_quant = self.get_param("requested_quantities", child, year)
+                            for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+                                requested_quantity.record_requested_quantity(child_rq_node,
+                                                                             child,
+                                                                             proportion * child_rq_amount)
+                    except KeyError:
+                        # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                        # broken for the base year.
+                        continue
 
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
@@ -1027,16 +1079,20 @@ class Model:
         if isinstance(val, list) or isinstance(year, list):
             if not isinstance(val, list):
                 print('Values must be entered as a list.')
+                return
             elif not isinstance(year, list):
                 print('Years must be entered as a list.')
+                return
             elif len(val) != len(year):
                 print('The number of values does not match the number of years. No changes were made.')
-        else:
+                return
+        else: 
+            # changing years and vals to lists
             year = [year]
             val = [val]
         for i in range(len(year)):
             try:
-                self.get_param(param, node, year[i], tech, sub_param)
+                self.get_param(param, node, year[i], tech, sub_param, check_exist=True)
             except:
                 print('Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(year[i]) + ', ' + str(tech) + ', ' + str(sub_param) + ')')
                 print('Corresponding value was not set to ' + str(val[i]) + '\n')
@@ -1082,6 +1138,7 @@ class Model:
             if re.search(node_regex, node) != None:
                 self.set_param(val, param, node, year, tech, sub_param, save)
 
+    
     def set_param_file(self, filepath):
         """
         Sets parameters' values, for all context (node, year, technology, and
@@ -1100,7 +1157,7 @@ class Model:
 
         df = pd.read_csv(filepath, delimiter=',')
         df = df.fillna('None')
-        
+
         ops = {
             '>' : operator.gt,
             '>=' : operator.ge,
@@ -1110,7 +1167,9 @@ class Model:
         }
 
         for index, row in df.iterrows():
-            # set necessary variables from dataframe row
+            # *********
+            # Set necessary variables from dataframe row
+            # *********
             node = row['node'] if row['node'] != 'None' else None
             node_regex = row['node_regex'] if row['node_regex'] != "None" else None
             param = row['param'] if row['param'] != 'None' else None
@@ -1123,8 +1182,11 @@ class Model:
             search_param = row['search_param'] if row['search_param'] != 'None' else None
             search_operator = row['search_operator'] if row['search_operator'] != 'None' else None
             search_pattern = row['search_pattern'] if row['search_pattern'] != 'None' else None
-            
-            # changing years and vals to lists
+            create_missing = row['create_if_missing'] if row['create_if_missing'] != 'None' else None
+
+            # *********
+            # Changing years and vals to lists
+            # *********
             if year:
                 year_int = int(year)
                 years = [x for x in self.years if ops[year_operator](int(x),year_int)]
@@ -1133,7 +1195,9 @@ class Model:
                 years = [year]
                 vals = [val]
 
-            # initial checks of the data
+            # *********
+            # Intial checks on the data
+            # *********
             if node == None:
                 if node_regex == None:
                     print("Row " + str(index) + ": neither node or node_regex values were indicated. Skipping this row.")
@@ -1155,31 +1219,37 @@ class Model:
             if search_operator not in [None, '==']:
                 print("Row " + str(index) + ": search_operator value must be either empty or ==. Skipping this row.")
                 continue
-
+            if create_missing == None:
+                print('Row ' + str(index) + ': create_if_missing is empty. This value must be either True or False. Skipping this row.')
+                continue
+            
+            # *********
+            # Check the node type ('.*', None, or otherwise) and search through corresponding nodes if necessary
+            # *********
             if node == '.*':
                 # check if node satisfies search_param, search_operator, search_pattern conditions
                 for node_tmp in self.graph.nodes:
                     if self.get_param(search_param, node_tmp).lower() == search_pattern.lower():
                         for idx, year in enumerate(years):
                             val_tmp = vals[idx]
-                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, index)
+                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, create_missing, index)
             elif node == None:
                 # check if node satisfies node_regex conditions
                 for node_tmp in self.graph.nodes:
                     if re.search(node_regex, node_tmp) != None:
                         for idx, year in enumerate(years):
                             val_tmp = vals[idx]
-                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, index)
+                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator, create_missing, index)
             else:
                 # node is exactly specified so use as is
                 for idx, year in enumerate(years):
                     val_tmp = vals[idx]
-                    self.set_param_search(val_tmp, param, node, year, tech, sub_param, val_operator, index)
-    
-    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None, val_operator='==', row_index=None):
+                    self.set_param_search(val_tmp, param, node, year, tech, sub_param, val_operator, create_missing, index)
+        
+    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None, val_operator='==', create_missing=False, row_index=None):
         """
         Sets parameter values, for all context (node, year, technology, and
-        sub-parameter), searching through tech and sub_param keys if necessary.
+        sub-parameter), searching through all tech and sub_param keys if necessary.
 
         Parameters
         ----------
@@ -1211,16 +1281,22 @@ class Model:
             The index of the current row of the CSV. This is used to print the row number in error messages.
         """
 
-        def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index):
+        def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
             try:
-                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, sub_param=sub_param)
+                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, sub_param=sub_param, check_exist=True)
+                if val_operator == '>=':
+                    val = max(val, prev_val)
+                elif val_operator == '<=':
+                    val = min(val, prev_val)
             except Exception as e:
-                print("Row " + str(row_index + 1) + ': Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(sub_param) + '). Corresponding value was not set to ' + str(val) + ".")
-                return None
-            if val_operator == '>=':
-                val = max(val, prev_val)
-            elif val_operator == '<=':
-                val = min(val, prev_val)
+                if create_missing:
+                    print("Row " + str(row_index + 1) + ': Creating parameter at (' + str(param) + ', ' + str(node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(sub_param) + ').')
+                    tmp = self.create_param(val=val, param=param, node=node, year=year, tech=tech, sub_param=sub_param, row_index=row_index)
+                    if not tmp:
+                        return None
+                else:
+                    print("Row " + str(row_index + 1) + ': Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(sub_param) + '). Corresponding value was not set to ' + str(val) + ".")
+                    return None
             return val
 
         if tech == '.*':
@@ -1237,14 +1313,14 @@ class Model:
                     except: 
                         continue
                     for sub_param_tmp in sub_params:
-                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param_tmp, val_operator, row_index)
-                        if val_tmp:
+                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param_tmp, val_operator, row_index, create_missing)
+                        if val_tmp: 
                             self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param_tmp)
                 # use sub_param as is if it is not .*
                 else:
-                    val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param, val_operator, row_index)
+                    val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param, val_operator, row_index, create_missing)
                     if val_tmp:
-                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param)
+                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp, sub_param=sub_param)              
         else:
             if sub_param == '.*':
                 try:
@@ -1253,14 +1329,104 @@ class Model:
                 except: 
                     return
                 for sub_param_tmp in sub_params:
-                    val_tmp = get_val_operated(val, param, node, year, tech, sub_param_tmp, val_operator, row_index)
+                    val_tmp = get_val_operated(val, param, node, year, tech, sub_param_tmp, val_operator, row_index, create_missing)
                     if val_tmp:
                         self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param_tmp)
             # use sub_param as is if it is not .*
             else:
-                val_tmp = get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index)
+                val_tmp = get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing)
                 if val_tmp:
                     self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param)
+        
+    def create_param(self, val, param, node, year=None, tech=None, sub_param=None, row_index=None):
+        """
+        Creates parameter in graph, for given context (node, year, technology, and sub-parameter),
+        and sets the value to val. Returns True if param was created successfully and False otherwise.
+
+        Parameters
+        ----------
+        val : any
+            The new value to be set at the specified `param` at `node`, given the context provided by 
+            `year`, `tech` and `sub_param`.
+        param : str
+            The name of the parameter whose value is being set.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in matching.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            "competition type" can be retreived without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
+            specified node, param, and year.
+        sub_param : str, optional
+            This is a rarely used parameter for specifying a nested key. Most commonly used when
+            `get_param()` would otherwise return a dictionary where a nested value contains the
+            parameter value of interest. In this case, the key corresponding to that value can be
+            provided as a `sub_param`. If sub_param is `.*`, all possible sub_param keys will be searched at the
+            specified node, param, tech, and year.
+        row_index : int, optional
+            The index of the current row of the CSV. This is used to print the row number in error messages.
+
+        Returns
+        -------
+        Boolean
+        """
+        # Print error message and return False if node not found
+        if node not in self.graph.nodes:
+            print("Row " + str(row_index + 1) + ': Unable to access node ' + str(node) + '. Corresponding value was not set to ' + str(val) + ".")
+            return False
+
+        if year:
+            if year not in self.graph.nodes[node]:
+                self.graph.nodes[node][year] = {}
+            data = self.graph.nodes[node][year]
+        else:
+            data = self.graph.nodes[node]
+
+        val_dict = create_value_dict(val, param_source='model')
+
+        # *********
+        # If there is a tech specified, check if it exists and create context (tech, param, sub-param) accordingly
+        # *********
+        if tech:
+            # add technology if it does not exist
+            if tech not in data: 
+                if sub_param:
+                    sub_param_dict = {sub_param: val_dict}
+                    param_dict = {param: sub_param_dict}
+                else:
+                    param_dict = {param: val_dict}
+                data['technologies'][tech] = param_dict
+            # add param if it does not exist
+            elif param not in data['technologies'][tech]:
+                if sub_param:
+                    sub_param_dict = {sub_param: val_dict}
+                    data['technologies'][tech][param] = sub_param_dict
+                else:
+                    data['technologies'][tech][param] = val_dict
+            # add sub-param if it does not exist
+            elif sub_param not in data['technologies'][tech][param]: 
+                data['technologies'][tech][param][sub_param] = val_dict
+
+        # *********
+        # Check if param exists and create context (param, sub-param) accordingly
+        # *********
+        elif param not in data:
+            if sub_param:
+                sub_param_dict = {sub_param: val_dict}
+                data[param] = sub_param_dict
+            else:
+                data[param] = val_dict
+        
+        # *********
+        # Check if sub-param exists and create context (param, sub-param) accordingly
+        # *********
+        elif sub_param not in data[param]:
+            data[param][sub_param] = val_dict
+        return True
 
 
     def set_param_log(self, output_file=''):

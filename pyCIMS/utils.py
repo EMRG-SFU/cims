@@ -79,6 +79,12 @@ def dict_has_None_year_value(dictionary):
     return has_none_year_value
 
 
+def is_param_exogenous(model, param, node, year, tech=None):
+    val, source = model.get_param(param, node, year, tech, return_source=True)
+    ms_exogenous = source == 'model'
+    return ms_exogenous
+
+
 # ******************
 # Parameter Fetching
 # ******************
@@ -96,7 +102,7 @@ inheritable_params = []
 
 
 def get_node_param(param, model, node, year, sub_param=None,
-                   return_source=False, retrieve_only=False):
+                   return_source=False, retrieve_only=False, check_exist=False):
     """
     Queries the model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
@@ -123,6 +129,9 @@ def get_node_param(param, model, node, year, sub_param=None,
         If True the function will only retrieve the value using the current value in the model,
         inheritance, default, or the previous year's value. It will _not_ calculate the parameter
         value. If False, calculation is allowed.
+    check_exist : bool, default=False
+        Whether or not to check that the parameter exists as is given the context (without calculation, 
+        inheritance, or checking past years)
 
     Returns
     -------
@@ -171,6 +180,11 @@ def get_node_param(param, model, node, year, sub_param=None,
                     return val, param_source
                 else:
                     return val
+    
+    # If check_exist is True, raise an Exception if val has not yet been returned, which means
+    # the value at the current context could not be found as is.
+    if check_exist: 
+        raise Exception
 
     # Calculate Parameter Value
     # ******************************
@@ -214,7 +228,7 @@ def get_node_param(param, model, node, year, sub_param=None,
 
 
 def get_tech_param(param, model, node, year, tech, sub_param=None,
-                   return_source=False, retrieve_only=False):
+                   return_source=False, retrieve_only=False, check_exist=False):
     """
     Queries a model to retrieve a parameter value at a given node & technology, given a specified
     context (year & sub-parameter).
@@ -244,6 +258,9 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
         If True the function will only retrieve the value using the current value in the model,
         inheritance, default, or the previous year's value. It will _not_ calculate the parameter
         value. If False, calculation is allowed.
+    check_exist : bool, default=False
+        Whether or not to check that the parameter exists as is given the context (without calculation, 
+        inheritance, or checking past years)
 
     Returns
     -------
@@ -285,6 +302,11 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
                     return val, param_source
                 else:
                     return val
+    
+    # If check_exist is True, raise an Exception if val has not yet been returned, which means
+    # the value at the current context could not be found as is.
+    if check_exist: 
+        raise Exception
 
     # Calculate Parameter Value
     # ******************************
@@ -403,6 +425,8 @@ def set_node_param(new_val, param, model, node, year, sub_param=None, save=True)
             filename = model.model_description_file.split('/')[-1].split('.')[0]
             change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': None, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
             model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+    else:
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
 
 
 def set_tech_param(new_val, param, model, node, year, tech, sub_param=None, save=True):
@@ -475,3 +499,5 @@ def set_tech_param(new_val, param, model, node, year, tech, sub_param=None, save
             filename = model.model_description_file.split('/')[-1].split('.')[0]
             change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': tech, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
             model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+    else:
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
