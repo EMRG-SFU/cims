@@ -51,19 +51,22 @@ class TestModel:
                 assert model.get_param(param, node, year) == val
 
     @pytest.mark.parametrize("val, param, node, year, tech, sub_param, val_operator, create_missing, row_index",
-    [(50, 'Tax', 'pyCIMS.Canada.Alberta.Residential', '2025', None, 'CO2', '>=', True, None)])
+    [(50, 'Tax', 'pyCIMS.Canada.Alberta.Residential', '2025', None, 'CO2', '>=', True, None),
+    (0.2, 'Market share', 'pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting', '2000', 'CFL', None, '==', False, None)])
     def test_set_param_search(self, create_model, val, param, node, year, tech, sub_param, val_operator, create_missing, row_index):
         model = create_model
         model.set_param_search(val, param, node, year, tech, sub_param, val_operator, create_missing, row_index)
-        assert model.get_param(param, node, year, tech, sub_param) >= val
+        assert eval("model.get_param(param, node, year, tech, sub_param)" + val_operator + "val")
     
     @pytest.mark.parametrize("val, param, node, year, tech, sub_param, row_index", 
     [(50, 'Tax', 'pyCIMS.Canada.Alberta.Ethanol', '2025', None, 'CO2', None),
-    (30, 'Tax', 'pyCIMS.Canada.Alberta.Biodiesel', '2050', None, 'CO2', 1)])
+    (30, 'Tax', 'pyCIMS.Canada.Alberta.Biodiesel', '2050', None, 'CO2', 1),
+    (20, 'Tax', 'pyCIMS.Canada.Alberta.Residential', '2030', None, 'CO2', None)])
     def test_create_param(self, create_model, val, param, node, year, tech, sub_param, row_index):
         model = create_model
         model.create_param(val, param, node, year, tech, sub_param, row_index)
-        assert model.get_param(param, node, year, tech, sub_param)
+        model.get_param(param, node, year, tech, sub_param) # test that this runs without error
+        assert True
 
     def test_set_param_file(self, create_model, set_params_file):
         model = create_model

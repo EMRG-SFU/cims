@@ -22,14 +22,17 @@ class TestUtils:
     
     @pytest.mark.parametrize("new_val, param, node, year, sub_param, save", 
     [(0.7, 'Service requested', 'pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing', '2000', 'Recent Car', False),
-    (3.0, 'Price Multiplier', 'pyCIMS.Canada.Alberta.Transportation Personal', '2040', 'Heavy Fuel Oil', False)])
+    (3.0, 'Price Multiplier', 'pyCIMS.Canada.Alberta.Transportation Personal', '2040', 'Heavy Fuel Oil', False),
+    (50, 'Tax', 'pyCIMS.Canada.Alberta.Transportation Freight', '2040', 'CO2', False),
+    (1.3, 'Heterogeneity', 'pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Solar Electricity', '2000', None, False)])
     def test_set_node_param(self, create_model, new_val, param, node, year, sub_param, save):
         model = create_model
         pyCIMS.utils.set_node_param(new_val, param, model, node, year, sub_param, save)
         assert model.get_param(param, node, year, sub_param=sub_param) == new_val
 
     @pytest.mark.parametrize("new_val, param, node, year, tech, sub_param, save", 
-    [(0.8, 'Market share', 'pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting', '2000', 'Incandescent', None, False)])
+    [(0.8, 'Market share', 'pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting', '2000', 'Incandescent', None, False),
+    (0.2, 'Market share', 'pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting', '2000', 'CFL', None, False),])
     def test_set_tech_param(self, create_model, new_val, param, node, year, tech, sub_param, save):
         model = create_model
         pyCIMS.utils.set_tech_param(new_val, param, model, node, year, tech, sub_param, save)

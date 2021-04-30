@@ -5,8 +5,9 @@ pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Industrial Minerals.Pump
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Chemical Products.Pumping.Precision.Small,2020,,Heterogeneity,,0.4,0.6
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Pulp and Paper.Pumping.Precision.Small,2020,,Heterogeneity,,10.0,0.6
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Residential,2025,,Tax,CO2,0.0,50.0
-pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,Incandescent,Market share,,0.8,0.8
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,CFL,Market share,,0.08,0.2
+pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,Incandescent,Market share,,0.8,0.8
+pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Residential.Buildings.Floorspace.Lighting,2000,CFL,Market share,,0.2,0.2
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2000,,Service requested,Recent Car,0.7,0.7
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2005,,Service requested,Recent Car,0.642948225,0.7
 pyCIMS_model_description_AB_value,pyCIMS.Canada.Alberta.Transportation Personal.Passenger Vehicles.Existing,2010,,Service requested,Recent Car,0.642948225,0.7
