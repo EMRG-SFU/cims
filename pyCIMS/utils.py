@@ -1,5 +1,6 @@
 import re
 from . import lcc_calculation
+import pandas as pd
 
 
 def is_year(cn: str or int) -> bool:
@@ -50,11 +51,12 @@ def search_nodes(search_term, g):
     return [n for n in g.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, branch=None, unit=None):
+def create_value_dict(year_val, source=None, branch=None, unit=None, param_source=None):
     value_dictionary = {'source': source,
                         'branch': branch,
                         'unit': unit,
-                        'year_value': year_val
+                        'year_value': year_val,
+                        'param_source': param_source
                         }
 
     return value_dictionary
@@ -77,6 +79,12 @@ def dict_has_None_year_value(dictionary):
     return has_none_year_value
 
 
+def is_param_exogenous(model, param, node, year, tech=None):
+    val, source = model.get_param(param, node, year, tech, return_source=True)
+    ms_exogenous = source == 'model'
+    return ms_exogenous
+
+
 # ******************
 # Parameter Fetching
 # ******************
@@ -93,9 +101,10 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
 inheritable_params = []
 
 
-def get_node_param(param, model, node, year, sub_param=None):
+def get_node_param(param, model, node, year, sub_param=None,
+                   return_source=False, retrieve_only=False, check_exist=False):
     """
-    Queries a model to retrieve a parameter value at a given node, given a specified context
+    Queries the model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
 
     Parameters
@@ -114,14 +123,27 @@ def get_node_param(param, model, node, year, sub_param=None):
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    return_source : bool, default=False
+        Whether or not to return the method by which this value was originally obtained.
+    retrieve_only : bool, default=False
+        If True the function will only retrieve the value using the current value in the model,
+        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+        value. If False, calculation is allowed.
+    check_exist : bool, default=False
+        Whether or not to check that the parameter exists as is given the context (without calculation, 
+        inheritance, or checking past years)
 
     Returns
     -------
     any :
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
+    str :
+        If return_source is `True`, will return a string indicating how the parameter's value
+        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+        default, or previous_year}.
     """
-    val = None
+    is_exogenous = True
 
     # Get Parameter from Description
     # ******************************
@@ -131,6 +153,7 @@ def get_node_param(param, model, node, year, sub_param=None):
         data = model.graph.nodes[node][year]
     else:
         data = model.graph.nodes[node]
+
     if param in data:
         val = data[param]
         # If the value is a dictionary, check if a base value (float, string, etc) has been nested.
@@ -142,19 +165,36 @@ def get_node_param(param, model, node, year, sub_param=None):
             elif len(val.keys()) == 1:
                 val = list(val.values())[0]
             if 'year_value' in val:
+                param_source = val['param_source']
+                is_exogenous = param_source in ['model', 'initialization']
                 val = val['year_value']
-        # As long as the value has been specified, return it.
+
+        # Choose which values to return
         if val is not None:
-            return val
+            if retrieve_only:
+                if return_source:
+                    return val, param_source
+                return val
+            elif is_exogenous:
+                if return_source:
+                    return val, param_source
+                else:
+                    return val
+    
+    # If check_exist is True, raise an Exception if val has not yet been returned, which means
+    # the value at the current context could not be found as is.
+    if check_exist: 
+        raise Exception
 
     # Calculate Parameter Value
     # ******************************
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if param in calculation_directory:
+    if (param in calculation_directory) & (not retrieve_only):
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year)
+        param_source = 'calculation'
 
     # Inherit Parameter Value
     # ******************************
@@ -164,32 +204,38 @@ def get_node_param(param, model, node, year, sub_param=None):
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
         val = get_node_param(param, model, parent, year=year)
+        param_source = 'inheritance'
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
     elif param in model.node_defaults:
         val = model.get_node_parameter_default(param)
+        param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     else:
         prev_year = str(int(year) - model.step)
-        if prev_year == str(model.base_year):
-            raise Exception()
         val = model.get_param(param, node, prev_year)
+        param_source = 'previous_year'
 
-    return val
+    if return_source:
+        return val, param_source
+    else:
+        return val
 
 
-def get_tech_param(param, model, node, year, tech, sub_param=None):
+def get_tech_param(param, model, node, year, tech, sub_param=None,
+                   return_source=False, retrieve_only=False, check_exist=False):
     """
     Queries a model to retrieve a parameter value at a given node & technology, given a specified
     context (year & sub-parameter).
 
     Parameters
     ----------
+
     param : str
         The name of the parameter whose value is being retrieved.
     model : pyCIMS.Model
@@ -206,15 +252,28 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    return_source : bool, default=False
+        Whether or not to return the method by which this value was originally obtained.
+    retrieve_only : bool, default=False
+        If True the function will only retrieve the value using the current value in the model,
+        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+        value. If False, calculation is allowed.
+    check_exist : bool, default=False
+        Whether or not to check that the parameter exists as is given the context (without calculation, 
+        inheritance, or checking past years)
 
     Returns
     -------
     any :
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
+    str :
+        If return_source is `True`, will return a string indicating how the parameter's value
+        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+        default, or previous_year}.
     """
     val = None
-
+    is_exogenous = None
     # Get Parameter from Description
     # ******************************
     # If the parameter's value is in the model description for that node, year, & technology, use it
@@ -228,10 +287,26 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
             elif None in val:
                 val = val[None]
             if isinstance(val, dict) and ('year_value' in val):
+                param_source = val['param_source']
+                is_exogenous = param_source in ['model', 'initialization']
                 val = val['year_value']
-        # As long as the value has been specified, return it.
+
+        # As long as the value has been specified, return it. & it is exogenously specified
         if val is not None:
-            return val
+            if retrieve_only:
+                if return_source:
+                    return val, param_source
+                return val
+            elif is_exogenous:
+                if return_source:
+                    return val, param_source
+                else:
+                    return val
+    
+    # If check_exist is True, raise an Exception if val has not yet been returned, which means
+    # the value at the current context could not be found as is.
+    if check_exist: 
+        raise Exception
 
     # Calculate Parameter Value
     # ******************************
@@ -241,6 +316,7 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
     if param in calculation_directory:
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year, tech)
+        param_source = 'calculation'
 
     # Inherit Parameter Value
     # ******************************
@@ -251,12 +327,14 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
         val = model.get_param(param, parent, year, tech, sub_param)
+        param_source = 'inheritance'
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
     elif param in model.technology_defaults:
         val = model.get_tech_parameter_default(param)
+        param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
@@ -265,5 +343,161 @@ def get_tech_param(param, model, node, year, tech, sub_param=None):
         prev_year = str(int(year) - model.step)
         if int(prev_year) >= model.base_year:
             val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
+            param_source = 'previous_year'
 
-    return val
+    if return_source:
+        return val, param_source
+    else:
+        return val
+
+def set_node_param(new_val, param, model, node, year, sub_param=None, save=True):
+    """
+    Queries a model to set a parameter value at a given node, given a specified context
+    (year & sub-parameter).
+
+    Parameters
+    ----------
+    new_val : any
+        The new value to be set at the specified `param` at `node`, given the context provided by 
+        `year` and `sub_param`.
+    param : str
+        The name of the parameter whose value is being set.
+    model : pyCIMS.Model
+        The model containing the parameter value of interest.
+    node : str
+        The name of the node (branch format) whose parameter you are interested in set.
+    year : str
+        The year which you are interested in. `year` must be provided for all parameters stored at
+        the technology level, even if the parameter doesn't change year to year.
+    sub_param : str, optional
+        This is a rarely used parameter for specifying a nested key. Most commonly used when
+        `get_param()` would otherwise return a dictionary where a nested value contains the
+        parameter value of interest. In this case, the key corresponding to that value can be
+        provided as a `sub_param`
+    save : bool, optional
+        This specifies whether the change should be saved in the change_log csv where True means
+        the change will be saved and False means it will not be saved
+    """
+    # Set Parameter from Description
+    # ******************************
+    # If the parameter's value is in the model description for that node & year (if the year has
+    # been defined), use it.
+    if year:
+        data = model.graph.nodes[node][year]
+    else:
+        data = model.graph.nodes[node]
+    if param in data:
+        val =  data[param]
+        # If the value is a dictionary, use its nested result       
+        if isinstance(val, dict):
+            if sub_param:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if isinstance(val[sub_param], dict) and 'year_value' in val[sub_param]:
+                    prev_val = val[sub_param]['year_value']
+                    val[sub_param]['year_value'] = new_val
+                else: 
+                    prev_val = val[sub_param]
+                    val[sub_param] = new_val
+            elif None in val:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if isinstance(val[None], dict) and 'year_value' in val[None]:
+                    prev_val = val[None]['year_value']
+                    val[None]['year_value'] = new_val
+                else:
+                    prev_val = val[None]
+                    val[None] = new_val
+            elif len(val.keys()) == 1:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if 'year_value' in val[list(val.keys())[0]]:
+                    prev_val = val[list(val.keys())[0]]['year_value']
+                    val[list(val.keys())[0]]['year_value'] = new_val
+                else:
+                    prev_val = val[list(val.keys())[0]]
+                    val[list(val.keys())[0]] = new_val
+        else:
+            prev_val = data[param]
+            data[param] = new_val
+        
+        # Save Change
+        # ******************************
+        # Append the change made to model.change_history DataFrame if save is set to True
+        if save:
+            filename = model.model_description_file.split('/')[-1].split('.')[0]
+            change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': None, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+            model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+    else:
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
+
+
+def set_tech_param(new_val, param, model, node, year, tech, sub_param=None, save=True):
+    """
+    Queries a model to set a parameter value at a given node & technology, given a specified
+    context (year & sub_param).
+
+    Parameters
+    ----------
+    new_val : any
+        The new value to be set at the specified `param` at `node`, given the context provided by 
+        `year`, `tech` and `sub_param`.
+    param : str
+        The name of the parameter whose value is being set.
+    model : pyCIMS.Model
+        The model containing the parameter value of interest.
+    node : str
+        The name of the node (branch format) whose parameter you are interested in set.
+    year : str
+        The year which you are interested in. `year` must be provided for all parameters stored at
+        the technology level, even if the parameter doesn't change year to year.
+    tech : str
+        The name of the technology you are interested in.
+    sub_param : str, optional
+        This is a rarely used parameter for specifying a nested key. Most commonly used when
+        `get_param()` would otherwise return a dictionary where a nested value contains the
+        parameter value of interest. In this case, the key corresponding to that value can be
+        provided as a `sub_param`
+    save : bool, optional
+        This specifies whether the change should be saved in the change_log csv where True means
+        the change will be saved and False means it will not be saved
+    """
+    # Set Parameter from Description
+    # ******************************
+    # If the parameter's value is in the model description for that node, year, & technology, use it
+    data = model.graph.nodes[node][year]['technologies'][tech]
+    if param in data:
+        val = data[param]
+        # If the value is a dictionary, use its nested result   
+        if isinstance(val, dict):
+            if sub_param:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if isinstance(val[sub_param], dict) and ('year_value' in val[sub_param]):
+                    prev_val = val[sub_param]['year_value']
+                    val[sub_param]['year_value'] = new_val
+                else:
+                    prev_val = val[sub_param]
+                    val[sub_param] = new_val
+            elif None in val:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if isinstance(val[None], dict) and ('year_value' in val[None]):
+                    prev_val = val[None]['year_value']
+                    val[None]['year_value'] = new_val
+                else:
+                    prev_val = val[None]
+                    val[None] = new_val
+            else:
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if 'year_value' in val:
+                    prev_val = data[param]['year_value']
+                    data[param]['year_value'] = new_val
+        else:
+            prev_val = data[param]
+            data[param] = new_val
+        
+        # Save Change
+        # ******************************
+        # Append the change made to model.change_history DataFrame if save is set to True
+        if save:
+            filename = model.model_description_file.split('/')[-1].split('.')[0]
+            change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': tech, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+            model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+    else:
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
