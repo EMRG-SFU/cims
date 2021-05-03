@@ -4,7 +4,8 @@ economic climate model.
 
 Written for Dr. Bradford Griffin by developers from Simon Fraser
 University's Big Data Initiative. Major contributions have been made by Maude 
-Lachaine, Daisy Yu, Jillian Anderson, and Dr. Steven Bergner. 
+Lachaine, Daisy Yu, Kacy Wu, Adriena Wong, Jillian Anderson, and Dr. Steven 
+Bergner. 
 
 # CIMS Background
 CIMS is a simulation model for economy, energy and materials. The goal of CIMS 
