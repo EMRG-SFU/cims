@@ -117,7 +117,7 @@ def get_subgraph(graph, node_types):
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs):
+def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -127,12 +127,16 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
 
     Parameters
     ----------
-    sub_graph : networkx.DiGraph
-        The graph to be traversed.
+    graph : networkx.DiGraph
+        The graph to use to find the root (if not provided) and the distance from the root
 
     node_process_func : function (nx.DiGraph, str) -> None
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
+
+    node_types : list of str -> None
+        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
+        'standard'. If not provided, traverse the original graph.
 
     Returns
     -------
@@ -141,14 +145,18 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
     """
     # Find the root of the sub-graph
     if not root:
-        possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+        possible_roots = [n for n, d in graph.in_degree() if d == 0]
         possible_roots.sort(key=lambda n: len(n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
-    dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
+    dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
+    if not node_types:
+        sub_graph = graph
+    else:
+        sub_graph = get_subgraph(graph, node_types)
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
@@ -173,7 +181,7 @@ def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs)
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs):
+def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -187,12 +195,16 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
 
     Parameters
     ----------
-    sub_graph : networkx.DiGraph
-        The graph to be traversed.
+    graph : networkx.DiGraph
+        The graph to use to find the root (if not provided) and the distance from the root
 
     node_process_func : function (nx.DiGraph, str) -> None
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
+
+    node_types : list of str -> None
+        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
+        'standard'. If not provided, traverse the original graph.
 
     Returns
     -------
@@ -202,21 +214,27 @@ def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs
 
     # If root hasn't been provided, find the sub-graph's root
     if not root:
-        possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
+        possible_roots = [n for n, d in graph.in_degree() if d == 0]
         possible_roots.sort(key=lambda n: len(n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
-    dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
+    dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
+    if not node_types:
+        sub_graph = graph
+    else:
+        sub_graph = get_subgraph(graph, node_types)
     sg_cur = sub_graph.copy()
+
     while len(sg_cur.nodes) > 0:
         active_front = [n for n, d in sg_cur.out_degree if d == 0]
 
         if len(active_front) > 0:
             # Choose a node on the active front
             n_cur = active_front[0]
+
             # Process the node
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:

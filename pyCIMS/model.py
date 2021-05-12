@@ -182,11 +182,9 @@ class Model:
         """
         self.show_run_warnings = show_warnings
 
-        # Find the demand subtree
-        g_demand = graph_utils.get_subgraph(self.graph, ['demand', 'standard'])
-
-        # Find the supply subtree
-        g_supply = graph_utils.get_subgraph(self.graph, ['supply', 'standard'])
+        # Make a subgraph based on the type of node
+        demand_nodes = ['demand', 'standard']
+        supply_nodes = ['supply', 'standard']
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -212,47 +210,53 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate Life Cycle Cost values on demand side
-                graph_utils.bottom_up_traversal(g_demand,
+                graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self)
+                                                self,
+                                                node_types=demand_nodes)
 
                 for _ in range(4):
                     # Calculate Quantities (Total Stock Needed)
-                    graph_utils.top_down_traversal(g_demand,
+                    graph_utils.top_down_traversal(self.graph,
                                                    self.stock_retirement_and_allocation,
-                                                   year)
+                                                   year,
+                                                   node_types=demand_nodes)
 
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Demand Side
-                    graph_utils.bottom_up_traversal(g_demand,
+                    graph_utils.bottom_up_traversal(self.graph,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self)
+                                                    self,
+                                                    node_types=demand_nodes)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(g_supply,
+                graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self)
+                                                self,
+                                                node_types=supply_nodes)
                 for _ in range(4):
                     # Calculate Fuel Quantities
-                    graph_utils.top_down_traversal(g_supply,
+                    graph_utils.top_down_traversal(self.graph,
                                                    self.stock_retirement_and_allocation,
-                                                   year)
+                                                   year,
+                                                   node_types=supply_nodes)
 
                     if int(year) == self.base_year:
                         break
 
                     # Calculate Service Costs on Supply Side
-                    graph_utils.bottom_up_traversal(g_supply,
+                    graph_utils.bottom_up_traversal(self.graph,
                                                     lcc_calculation.lcc_calculation,
                                                     year,
-                                                    self)
+                                                    self,
+                                                    node_types=supply_nodes)
 
                 # Check for an Equilibrium
                 # ************************
@@ -262,7 +266,6 @@ class Model:
                 # Go get all the new prices
                 new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
                               for fuel in self.fuels}
-
 
                 equilibrium = (int(year) == self.base_year) or \
                               self.check_equilibrium(prev_prices,
