@@ -79,8 +79,9 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 # TODO: replace with a Model.set_param() function (similar to Model.get_param())
                 tech_data = model.graph.nodes[node][year]["technologies"][tech]
                 if 'Service cost' in tech_data:
-                    tech_data['Service cost']['year_value'] = annual_service_cost
-                    tech_data['Service cost']['param_source'] = sc_source
+                    # tech_data['Service cost']['year_value'] = annual_service_cost
+                    # tech_data['Service cost']['param_source'] = sc_source
+                    model.set_param_internal()
                 else:
                     add_tech_param(model.graph, node, year, tech,
                                    'Service cost', annual_service_cost,
