@@ -543,6 +543,7 @@ class Model:
                 existing_stock_per_tech[t] = t_existing
 
             # Retrofit
+            # *****************************
             # TODO: Much later we will add this
 
             # Assessment of capital stock availability
@@ -730,9 +731,260 @@ class Model:
                 services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
                 helper_quantity_from_services(services_being_requested, assessed_demand)
 
+        def node_tech_compete_allocation():
+            # Demand Assessment
+            # *****************
+            # Count demanded provided_quantities from above nodes or technologies (for the top node,
+            # derive demand provided_quantities external to the sector).
+            assessed_demand = self.get_param('provided_quantities', node, year).get_total_quantity()
+
+            # Existing Tech Specific Stocks
+            # *****************************
+            # Retrieve existing technology specific stock quantities from child nodes (quantities
+            # from after vintage-specific retirements)
+            parent_year_data = self.graph.nodes[node][year]
+            existing_stock_per_child = {}
+            for child in parent_year_data['technologies']:
+                existing_stock_per_child[child] = {}
+                child_node = self.get_param('Service requested',
+                                              node, year, child,
+                                              sub_param='branch')
+                child_year_data = self.graph.nodes[child_node][year]
+                for tech in child_year_data['technologies']:
+                    t_existing = self.calc_existing_stock(sub_graph, child_node, year, tech)
+                    existing_stock_per_child[child][tech] = t_existing
+
+            # Retrofits
+            # *****************************
+            # TODO: To be implemented later
+
+            # Assessment of capital stock availability
+            # ****************************************
+            # At the parent node level subtract sum of total remaining stock for each technology,
+            # after natural retirements, from provided_quantities to determine how much new stock
+            # must be allocated through competition.
+            new_stock_demanded = copy.copy(assessed_demand)
+            for child in existing_stock_per_child:
+                for tech, existing_stock in existing_stock_per_child[child].items():
+                    new_stock_demanded -= existing_stock
+
+            # Surplus retirement (aka early retirement, aka forced retirement)
+            if new_stock_demanded < 0:
+                surplus = -1 * new_stock_demanded
+
+                # Base Stock Retirement
+                total_base_stock = 0
+                for child in existing_stock_per_child:
+                    for tech in existing_stock_per_child[child]:
+                        tech_base_stock = self.get_param('base_stock_remaining', node, year, tech)
+                        total_base_stock += tech_base_stock
+                if total_base_stock != 0:
+                    retirement_proportion = max(0, min(surplus / total_base_stock, 1))
+                    for child in existing_stock_per_child:
+                        for tech in existing_stock_per_child[child]:
+                            tech_base_stock = self.get_param('base_stock_remaining',
+                                                             node, year, tech)
+                            amount_tech_to_retire = tech_base_stock * retirement_proportion
+
+                            # Remove from existing stock
+                            existing_stock_per_child[child][tech] -= amount_tech_to_retire
+
+                            # Remove from surplus and new stock demanded
+                            surplus -= amount_tech_to_retire
+                            new_stock_demanded += amount_tech_to_retire
+
+                            # Note new stock remaining (post surplus) in the model
+                            self.graph.nodes[node][year]['technologies'][child]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
+                            self.graph.nodes[child][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
+
+                # New Stock Retirement
+                possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
+                                                                    (int(y) < int(year))]
+                for purchase_year in possible_purchase_years:
+                    total_new_stock_remaining_pre_surplus = 0
+                    if surplus > 0:
+                        for child in existing_stock_per_child:
+                            for tech in existing_stock_per_child[child]:
+                                tech_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
+                                                                                node, year, tech)[purchase_year]
+                                total_new_stock_remaining_pre_surplus += tech_rem_new_stock_pre_surplus
+
+                    # Calculate retirement proportion
+                    if total_new_stock_remaining_pre_surplus == 0:
+                        retirement_proportion = 0
+                    else:
+                        retirement_proportion = max(0, min(surplus/total_new_stock_remaining_pre_surplus, 1))
+
+                    #
+                    for child in existing_stock_per_child:
+                        for tech in existing_stock_per_child[child]:
+                            tech_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
+                                                                            node, year, tech)[purchase_year]
+                            amount_tech_to_retire = tech_rem_new_stock_pre_surplus * retirement_proportion
+
+                            # Remove from existing stock
+                            existing_stock_per_child[child][tech] -= amount_tech_to_retire
+                            # Remove from surplus & new stock demanded
+                            surplus -= amount_tech_to_retire
+                            new_stock_demanded += amount_tech_to_retire
+                            # Note new stock remaining (post surplus) in the model
+                            self.graph.nodes[node][year]['technologies'][child]['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
+                            self.graph.nodes[child][year]['technologies'][tech]['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
+
+            # New Tech Competition
+            # ********************
+            # Calculate “New Market Share” percentages to allocate new service stocks to meet
+            # demand. Apply CIMS market share algorithm using LCC values associated with
+            # technologies from the child nodes retrieved from the LCC Calculation Module and other
+            # technology associated parameters contained in the model description to calculate new
+            # market share percentages. The new market share percentages across all technologies
+            # would add up to 100%.
+
+            # Group and sum individual technology market shares by service according to which
+            # technology belongs to each child node.  The new market share percentages across all
+            # parent node services would still add up to 100%
+
+            # Find LCCs and calculate the total weight across all technologies
+            tech_weights = {}
+            total_lcc_v = total_weight = 0
+            v = self.get_param('Heterogeneity', node, year)
+            for child in parent_year_data['technologies']:
+                child_node = self.get_param('Service requested',
+                                            node, year, child,
+                                            sub_param='branch')
+                tech_weights[child] = {}
+                child_techs = self.graph.nodes[child_node][year]['technologies']
+                for tech in child_techs:
+                    first_year_available = self.get_param('Available', child_node,
+                                                          str(self.base_year), tech)
+                    first_year_unavailable = self.get_param('Unavailable', child_node,
+                                                            str(self.base_year), tech)
+                    if first_year_available <= int(year) < first_year_unavailable:
+                        tech_lcc = self.get_param('Life Cycle Cost', child_node, year, tech)
+                        if tech_lcc < 0.01:
+                            # When lcc < 0.01, we approximate it's weight using a TREND line
+                            w1 = 0.1 ** (-1 * v)
+                            w2 = 0.01 ** (-1 * v)
+                            slope = (w2 - w1) / (0.01 - 0.1)
+                            weight = slope * tech_lcc + (w1 - slope * 0.1)
+                        else:
+                            weight = tech_lcc ** (-1 * v)
+
+                        tech_weights[child][tech] = weight
+                        total_weight += weight
+
+            # Find the new market shares per technology
+            new_market_shares_per_child = {}
+            for child in tech_weights:
+                new_market_shares_per_child[child] = 0
+                child_node = self.get_param('Service requested',
+                                            node, year, child,
+                                            sub_param='branch')
+
+                ms, ms_source = self.get_param('Market share',
+                                               node, year, child,
+                                               return_source=True)
+                ms_exogenous = ms_source == 'model'
+                if ms_exogenous:
+                    new_market_shares_per_child[child] = ms
+
+                else:
+                    for tech in tech_weights[child]:
+                        ms, ms_source = self.get_param('Market share',
+                                                       child_node, year, tech,
+                                                       return_source=True)
+                        ms_exogenous = ms_source == 'model'
+                        if ms_exogenous:
+                            new_market_share = ms
+                        else:
+                            new_market_share = tech_weights[child][tech] / total_weight
+
+                        new_market_shares_per_child[child] += new_market_share
+
+                self.graph.nodes[node][year]['technologies'][child]['base_stock'] = create_value_dict(0, param_source='initialization')
+                self.graph.nodes[node][year]['technologies'][child]['new_stock'] = create_value_dict(0, param_source='initialization')
+
+            # Min/Max New Marketshare Limit
+            # *****************************
+            # Apply Min/Max limits to calculated New Market Shares of each parent node service and
+            # adjust final percentages to comply with limits.
+            adjusted_new_ms = stock_allocation.apply_min_max_limits(self,
+                                                                    node,
+                                                                    year,
+                                                                    new_market_shares_per_child)
+
+            # Calculate Total Market shares -- remaining + new stock
+            # *****************************
+            # Calculate and record Total Market Shares percentages by determining the relative
+            # percentages of remaining + new stock quantities for each service in parent node. New
+            # stock quantities of each service are calculated by multiplying the service new market
+            # share percentages by total new stock. Remaining stock quantities of each service are
+            # calculated summing the remaining stock quantities of individual technologies according
+            # to which technology belongs to each child node.  The recorded total market shares by
+            # service should be saved in the bottom up LCC Calculation Module at a corresponding
+            # node. LCC Calculation Module node should only reflect the percentages of the defined
+            # services in the parent node, not the individual technologies of the child nodes.
+            total_market_shares_by_child = {}
+            for child in parent_year_data['technologies']:
+                child_existing_stock = 0
+                for tech in parent_year_data['technologies'][child]:
+                    try:
+                        existing_stock = existing_stock_per_child[child][tech]
+                    except KeyError:
+                        existing_stock = 0
+                    child_existing_stock += existing_stock
+
+                # TODO: Where does adjusted_new_ms come from??
+                child_total_stock = child_existing_stock + adjusted_new_ms[child] * new_stock_demanded
+
+                if assessed_demand == 0:
+                    if self.show_run_warnings:
+                        warnings.warn(f"Assessed Demand is 0 for {node}[{child}]")
+                    total_market_share = 0
+                else:
+                    total_market_share = child_total_stock / assessed_demand
+
+                total_market_shares_by_child[child] = total_market_share
+
+            # Record Values in Model -- market shares & stocks
+            # **********************
+            for child in parent_year_data['technologies']:
+                # New Market Share
+                nms = adjusted_new_ms[child]
+                self.graph.nodes[node][year]['technologies'][child]['new_market_share'] = create_value_dict(nms, param_source='calculation')
+
+                # Total Market Share
+                tms = total_market_shares_by_child[child]
+                self.graph.nodes[node][year]['technologies'][child]['total_market_share'] = create_value_dict(tms, param_source='calculation')
+
+                # New Stock & Base Stock
+                if int(year) == self.base_year:
+                    self.graph.nodes[node][year]['technologies'][child]['base_stock'] = create_value_dict(new_stock_demanded * nms, param_source='calculation')
+                else:
+                    self.graph.nodes[node][year]['technologies'][child]['new_stock'] = create_value_dict(new_stock_demanded * nms, param_source='calculation')
+
+            # Send Demand Quantities Below
+            # ****************************
+            # Send total stock values (new + remaining stock) for each service to each child node as
+            # demand values multiplied by their respective “Service Requested Line” values. Service
+            # request line values for each service would always be set to ‘1’ in node-tech-compete
+            # nodes.
+            for child, child_data in parent_year_data['technologies'].items():
+                if 'Service requested' in child_data.keys():
+                    services_being_requested = child_data['Service requested']
+                    # Calculate the provided_quantities for each service
+                    tech_ms = total_market_shares_by_child[child]
+                    helper_quantity_from_services(services_being_requested,
+                                                  assessed_demand,
+                                                  technology=child,
+                                                  technology_market_share=tech_ms)
+
         # Move into the proper allocation function
         if self.get_param('competition type', node) == 'tech compete':
             tech_compete_allocation()
+        elif self.get_param('competition type', node) == 'node tech compete':
+            # tech_compete_allocation()
+            node_tech_compete_allocation()
         else:
             general_allocation()
 
@@ -1138,7 +1390,7 @@ class Model:
             if re.search(node_regex, node) != None:
                 self.set_param(val, param, node, year, tech, sub_param, save)
 
-    
+
     def set_param_file(self, filepath):
         """
         Sets parameters' values, for all context (node, year, technology, and
