@@ -541,6 +541,7 @@ def set_node_param2(new_vals, param, model, node, year, sub_param=None, save=Tru
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
     # been defined), use it.
+    print('im working')
     if year:
         data = model.graph.nodes[node][year]
     else:
@@ -645,11 +646,11 @@ def set_tech_param2(new_vals, param, model, node, year, tech, sub_param=None, sa
         # Save Change
         # ******************************
         # Append the change made to model.change_history DataFrame if save is set to True
-        if save:
-            filename = model.model_description_file.split('/')[-1].split('.')[0]
-            change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
-                          'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
-            model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+        # if save:
+        #     filename = model.model_description_file.split('/')[-1].split('.')[0]
+        #     change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
+        #                   'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_vals}
+        #     model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
     else:
         print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
             year) + '. No new value was set for this.')

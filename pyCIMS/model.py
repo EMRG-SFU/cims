@@ -1170,10 +1170,10 @@ class Model:
                 print('Corresponding value was not set to ' + str(val[i]) + '\n')
                 continue
             if tech:
-                utils.set_tech_param(val[i], param, self, node, year[i], tech, sub_param, save)
+                utils.set_tech_param2(val[i], param, self, node, year[i], tech, sub_param, save)
 
             else:
-                utils.set_node_param(val[i], param, self, node, year[i], sub_param, save)
+                utils.set_node_param2(val[i], param, self, node, year[i], sub_param, save)
 
     def set_param_wildcard(self, val, param, node_regex, year, tech=None, sub_param=None, save=True):
         """
