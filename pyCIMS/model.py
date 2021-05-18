@@ -1056,7 +1056,8 @@ class Model:
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
         Sets a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter).
+        sub-parameter). This is intended for when you are using this function outside of model.run to
+        make single changes to the model dscription
 
         Parameters
         ----------
@@ -1084,7 +1085,163 @@ class Model:
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
         """
-        # Checks whether year or val is a list. If either of them is a list, the other must also be a list 
+
+        def set_node_param_script(new_val, param, model, node, year, sub_param=None, save=True):
+            """
+            Queries a model to set a parameter value at a given node, given a specified context
+            (year & sub-parameter).
+
+            Parameters
+            ----------
+            new_val : any
+                The new value to be set at the specified `param` at `node`, given the context provided by
+                `year` and `sub_param`.
+            param : str
+                The name of the parameter whose value is being set.
+            model : pyCIMS.Model
+                The model containing the parameter value of interest.
+            node : str
+                The name of the node (branch format) whose parameter you are interested in set.
+            year : str
+                The year which you are interested in. `year` must be provided for all parameters stored at
+                the technology level, even if the parameter doesn't change year to year.
+            sub_param : str, optional
+                This is a rarely used parameter for specifying a nested key. Most commonly used when
+                `get_param()` would otherwise return a dictionary where a nested value contains the
+                parameter value of interest. In this case, the key corresponding to that value can be
+                provided as a `sub_param`
+            save : bool, optional
+                This specifies whether the change should be saved in the change_log csv where True means
+                the change will be saved and False means it will not be saved
+            """
+            # Set Parameter from Description
+            # ******************************
+            # If the parameter's value is in the model description for that node & year (if the year has
+            # been defined), use it.
+            if year:
+                data = model.graph.nodes[node][year]
+            else:
+                data = model.graph.nodes[node]
+            if param in data:
+                val = data[param]
+                # If the value is a dictionary, use its nested result
+                if isinstance(val, dict):
+                    if sub_param:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if isinstance(val[sub_param], dict) and 'year_value' in val[sub_param]:
+                            prev_val = val[sub_param]['year_value']
+                            val[sub_param]['year_value'] = new_val
+                        else:
+                            prev_val = val[sub_param]
+                            val[sub_param] = new_val
+                    elif None in val:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if isinstance(val[None], dict) and 'year_value' in val[None]:
+                            prev_val = val[None]['year_value']
+                            val[None]['year_value'] = new_val
+                        else:
+                            prev_val = val[None]
+                            val[None] = new_val
+                    elif len(val.keys()) == 1:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if 'year_value' in val[list(val.keys())[0]]:
+                            prev_val = val[list(val.keys())[0]]['year_value']
+                            val[list(val.keys())[0]]['year_value'] = new_val
+                        else:
+                            prev_val = val[list(val.keys())[0]]
+                            val[list(val.keys())[0]] = new_val
+                else:
+                    prev_val = data[param]
+                    data[param] = new_val
+
+                # Save Change
+                # ******************************
+                # Append the change made to model.change_history DataFrame if save is set to True
+                if save:
+                    filename = model.model_description_file.split('/')[-1].split('.')[0]
+                    change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': None,
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                    model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+            else:
+                print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
+                    year) + '. No new value was set for this.')
+
+        def set_tech_param_script(new_val, param, model, node, year, tech, sub_param=None, save=True):
+            """
+            Queries a model to set a parameter value at a given node & technology, given a specified
+            context (year & sub_param).
+
+            Parameters
+            ----------
+            new_val : any
+                The new value to be set at the specified `param` at `node`, given the context provided by
+                `year`, `tech` and `sub_param`.
+            param : str
+                The name of the parameter whose value is being set.
+            model : pyCIMS.Model
+                The model containing the parameter value of interest.
+            node : str
+                The name of the node (branch format) whose parameter you are interested in set.
+            year : str
+                The year which you are interested in. `year` must be provided for all parameters stored at
+                the technology level, even if the parameter doesn't change year to year.
+            tech : str
+                The name of the technology you are interested in.
+            sub_param : str, optional
+                This is a rarely used parameter for specifying a nested key. Most commonly used when
+                `get_param()` would otherwise return a dictionary where a nested value contains the
+                parameter value of interest. In this case, the key corresponding to that value can be
+                provided as a `sub_param`
+            save : bool, optional
+                This specifies whether the change should be saved in the change_log csv where True means
+                the change will be saved and False means it will not be saved
+            """
+            # Set Parameter from Description
+            # ******************************
+            # If the parameter's value is in the model description for that node, year, & technology, use it
+            data = model.graph.nodes[node][year]['technologies'][tech]
+            if param in data:
+                val = data[param]
+                # If the value is a dictionary, use its nested result
+                if isinstance(val, dict):
+                    if sub_param:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if isinstance(val[sub_param], dict) and ('year_value' in val[sub_param]):
+                            prev_val = val[sub_param]['year_value']
+                            val[sub_param]['year_value'] = new_val
+                        else:
+                            prev_val = val[sub_param]
+                            val[sub_param] = new_val
+                    elif None in val:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if isinstance(val[None], dict) and ('year_value' in val[None]):
+                            prev_val = val[None]['year_value']
+                            val[None]['year_value'] = new_val
+                        else:
+                            prev_val = val[None]
+                            val[None] = new_val
+                    else:
+                        # If the value is a dictionary, check if 'year_value' can be accessed.
+                        if 'year_value' in val:
+                            prev_val = data[param]['year_value']
+                            data[param]['year_value'] = new_val
+                else:
+                    prev_val = data[param]
+                    data[param] = new_val
+
+                # Save Change
+                # ******************************
+                # Append the change made to model.change_history DataFrame if save is set to True
+                if save:
+                    filename = model.model_description_file.split('/')[-1].split('.')[0]
+                    change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                    model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+            else:
+                print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
+                    year) + '. No new value was set for this.')
+
+        # Checks whether year or val is a list. If either of them is a list, the other must also be a list
         # of the same length
         if isinstance(val, list) or isinstance(year, list):
             if not isinstance(val, list):
@@ -1109,15 +1266,16 @@ class Model:
                 print('Corresponding value was not set to ' + str(val[i]) + '\n')
                 continue
             if tech:
-                utils.set_tech_param(val[i], param, self, node, year[i], tech, sub_param, save)
+                set_tech_param_script(val[i], param, self, node, year[i], tech, sub_param, save)
 
             else:
-                utils.set_node_param(val[i], param, self, node, year[i], sub_param, save)
+                set_node_param_script(val[i], param, self, node, year[i], sub_param, save)
 
     def set_param_internal(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
         Sets a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter).
+        sub-parameter). This is used from within the model.run function and is not intended to make
+        changes to the model description externally (see `set_param`).
 
         Parameters
         ----------
@@ -1167,10 +1325,10 @@ class Model:
             tech_data = self.graph.nodes[node][year[i]]["technologies"][tech]
             if param in tech_data:
                 if tech:
-                    utils.set_tech_param2(val[i], param, self, node, year[i], tech, sub_param, save)
+                    utils.set_tech_param(val[i], param, self, node, year[i], tech, sub_param)
 
                 else:
-                    utils.set_node_param2(val[i], param, self, node, year[i], sub_param, save)
+                    utils.set_node_param(val[i], param, self, node, year[i], sub_param)
             else:
                 val[i]['branch'] = str(node)
                 self.graph.nodes[node][year[i]]["technologies"][tech].update({str(param): val[i]})
