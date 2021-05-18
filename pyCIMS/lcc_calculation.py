@@ -3,19 +3,6 @@ from . import utils
 import math
 
 
-# TODO: See if I can get rid of this function or replace with a Model.set_param() method
-def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None, param_source=None):
-    """
-    Include a new set of parameter: {values} as a nested dict
-
-    """
-    g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
-                                                                   "branch": str(node),
-                                                                   "source": source,
-                                                                   "unit": unit,
-                                                                   "param_source": param_source}})
-
-
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
@@ -76,40 +63,25 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 annual_service_cost, sc_source = model.get_or_calc_param('Service cost',
                                                                          node, year, tech,
                                                                          return_source=True)
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'Service cost' in tech_data:
-                    val_dict = {'year_value': annual_service_cost, 'param_source': sc_source}
-                    model.set_param_internal(val_dict, 'Service cost', node, year, tech)
 
-                else:
-                    add_tech_param(model.graph, node, year, tech,
-                                   'Service cost', annual_service_cost,
-                                   param_source=sc_source)
+                val_dict = {'year_value': annual_service_cost, "branch": str(node), 'param_source': sc_source}
+                model.set_param_internal(val_dict, 'Service cost', node, year, tech)
 
                 # CRF
                 # ************
-                crf, crf_source = model.get_or_calc_param("CRF", node, year, tech, return_source=True)
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'CRF' in tech_data:
-                    val_dict = {'year_value': crf, 'param_source': crf_source}
-                    model.set_param_internal(val_dict, 'CRF', node, year, tech)
-
-                else:
-                    add_tech_param(model.graph, node, year, tech, 'CRF', crf, param_source=crf_source)
+                crf, crf_source = model.get_or_calc_param("CRF",
+                                                          node, year, tech,
+                                                          return_source=True)
+                val_dict = {'year_value': crf, 'param_source': crf_source}
+                model.set_param_internal(val_dict, 'CRF', node, year, tech)
 
                 # LCC
                 # ************
                 lcc, lcc_source = model.get_or_calc_param('Life Cycle Cost',
                                                           node, year, tech,
                                                           return_source=True)
-
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'Life Cycle Cost' in tech_data:
-                    val_dict = {'year_value': lcc, 'param_source': lcc_source}
-                    model.set_param_internal(val_dict, 'Life Cycle Cost', node, year, tech)
-                else:
-                    add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc,
-                                   param_source=lcc_source)
+                val_dict = {'year_value': lcc, 'param_source': lcc_source}
+                model.set_param_internal(val_dict, 'Life Cycle Cost', node, year, tech)
 
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:

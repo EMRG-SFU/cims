@@ -1121,7 +1121,7 @@ class Model:
 
         Parameters
         ----------
-        val : any or list of any
+        val : dict
             The new value(s) to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech` and `sub_param`.
         param : str
@@ -1145,6 +1145,7 @@ class Model:
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
         """
+
         # Checks whether year or val is a list. If either of them is a list, the other must also be a list
         # of the same length
         if isinstance(val, list) or isinstance(year, list):
@@ -1162,18 +1163,17 @@ class Model:
             year = [year]
             val = [val]
         for i in range(len(year)):
-            try:
-                self.get_param(param, node, year[i], tech, sub_param, check_exist=True)
-            except:
-                print('Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(
-                    year[i]) + ', ' + str(tech) + ', ' + str(sub_param) + ')')
-                print('Corresponding value was not set to ' + str(val[i]) + '\n')
-                continue
-            if tech:
-                utils.set_tech_param2(val[i], param, self, node, year[i], tech, sub_param, save)
 
+            tech_data = self.graph.nodes[node][year[i]]["technologies"][tech]
+            if param in tech_data:
+                if tech:
+                    utils.set_tech_param2(val[i], param, self, node, year[i], tech, sub_param, save)
+
+                else:
+                    utils.set_node_param2(val[i], param, self, node, year[i], sub_param, save)
             else:
-                utils.set_node_param2(val[i], param, self, node, year[i], sub_param, save)
+                val[i]['branch'] = str(node)
+                self.graph.nodes[node][year[i]]["technologies"][tech].update({str(param): val[i]})
 
     def set_param_wildcard(self, val, param, node_regex, year, tech=None, sub_param=None, save=True):
         """
