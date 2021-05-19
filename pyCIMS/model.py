@@ -749,6 +749,8 @@ class Model:
                 child_node = self.get_param('Service requested',
                                               node, year, child,
                                               sub_param='branch')
+                # Get existing child stock to initialize the remaining stock dictionaries
+                child_existing = self.calc_existing_stock(sub_graph, node, year, child)
                 child_year_data = self.graph.nodes[child_node][year]
                 for tech in child_year_data['technologies']:
                     t_existing = self.calc_existing_stock(sub_graph, child_node, year, tech)
@@ -775,15 +777,21 @@ class Model:
                 # Base Stock Retirement
                 total_base_stock = 0
                 for child in existing_stock_per_child:
+                    child_node = self.get_param('Service requested', node, year, child,
+                                                sub_param='branch')
                     for tech in existing_stock_per_child[child]:
-                        tech_base_stock = self.get_param('base_stock_remaining', node, year, tech)
+                        tech_base_stock = self.get_param('base_stock_remaining',
+                                                         child_node, year, tech)
                         total_base_stock += tech_base_stock
+
                 if total_base_stock != 0:
                     retirement_proportion = max(0, min(surplus / total_base_stock, 1))
                     for child in existing_stock_per_child:
+                        child_node = self.get_param('Service requested', node, year, child,
+                                                    sub_param='branch')
                         for tech in existing_stock_per_child[child]:
                             tech_base_stock = self.get_param('base_stock_remaining',
-                                                             node, year, tech)
+                                                             child_node, year, tech)
                             amount_tech_to_retire = tech_base_stock * retirement_proportion
 
                             # Remove from existing stock
@@ -795,7 +803,7 @@ class Model:
 
                             # Note new stock remaining (post surplus) in the model
                             self.graph.nodes[node][year]['technologies'][child]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
-                            self.graph.nodes[child][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
+                            self.graph.nodes[child_node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= amount_tech_to_retire
 
                 # New Stock Retirement
                 possible_purchase_years = [y for y in self.years if (int(y) > self.base_year) &
@@ -804,9 +812,11 @@ class Model:
                     total_new_stock_remaining_pre_surplus = 0
                     if surplus > 0:
                         for child in existing_stock_per_child:
+                            child_node = self.get_param('Service requested', node, year, child,
+                                                        sub_param='branch')
                             for tech in existing_stock_per_child[child]:
                                 tech_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                                node, year, tech)[purchase_year]
+                                                                                child_node, year, tech)[purchase_year]
                                 total_new_stock_remaining_pre_surplus += tech_rem_new_stock_pre_surplus
 
                     # Calculate retirement proportion
@@ -817,9 +827,11 @@ class Model:
 
                     #
                     for child in existing_stock_per_child:
+                        child_node = self.get_param('Service requested', node, year, child,
+                                                    sub_param='branch')
                         for tech in existing_stock_per_child[child]:
                             tech_rem_new_stock_pre_surplus = self.get_param('new_stock_remaining_pre_surplus',
-                                                                            node, year, tech)[purchase_year]
+                                                                            child_node, year, tech)[purchase_year]
                             amount_tech_to_retire = tech_rem_new_stock_pre_surplus * retirement_proportion
 
                             # Remove from existing stock
@@ -829,7 +841,7 @@ class Model:
                             new_stock_demanded += amount_tech_to_retire
                             # Note new stock remaining (post surplus) in the model
                             self.graph.nodes[node][year]['technologies'][child]['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
-                            self.graph.nodes[child][year]['technologies'][tech]['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
+                            self.graph.nodes[child_node][year]['technologies'][tech]['new_stock_remaining']['year_value'][purchase_year] -= amount_tech_to_retire
 
             # New Tech Competition
             # ********************
@@ -1034,7 +1046,7 @@ class Model:
 
             return purchased_stock_remaining
 
-        if self.get_param('competition type', node) != 'tech compete':
+        if self.get_param('competition type', node) not in ['tech compete', 'node tech compete']:
             # we don't care about existing stock for non-tech compete nodes
             return 0
 

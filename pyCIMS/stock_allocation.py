@@ -167,9 +167,13 @@ def adjust_new_market_shares(new_market_shares, limit_adjusted_techs):
 
     sum_msj = sum([new_market_shares[t] for t in remaining_techs])
     sum_msl = sum([new_market_shares[t] for t in limit_adjusted_techs])
+    adjust_amount = 1 - sum_msl
     for remaining_tech in remaining_techs:
-        new_market_share_h = new_market_shares[remaining_tech]
-        anms_h = (new_market_share_h / sum_msj) * (1 - sum_msl)
+        if adjust_amount > 0:
+            new_market_share_h = new_market_shares[remaining_tech]
+            anms_h = (new_market_share_h / sum_msj) * (1 - sum_msl)
+        else:
+            anms_h = 0
         new_market_shares[remaining_tech] = anms_h
 
     return new_market_shares
