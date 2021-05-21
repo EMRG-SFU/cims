@@ -750,10 +750,9 @@ class Model:
                                               node, year, child,
                                               sub_param='branch')
                 # Get existing child stock to initialize the remaining stock dictionaries
-                child_existing = self.calc_existing_stock(sub_graph, node, year, child)
                 child_year_data = self.graph.nodes[child_node][year]
                 for tech in child_year_data['technologies']:
-                    t_existing = self.calc_existing_stock(sub_graph, child_node, year, tech)
+                    t_existing = self.calc_existing_stock(sub_graph, child_node, year, tech, called_from_node_tech_compete=True)
                     existing_stock_per_child[child][tech] = t_existing
 
             # Retrofits
@@ -946,7 +945,6 @@ class Model:
                         existing_stock = 0
                     child_existing_stock += existing_stock
 
-                # TODO: Where does adjusted_new_ms come from??
                 child_total_stock = child_existing_stock + adjusted_new_ms[child] * new_stock_demanded
 
                 if assessed_demand == 0:
@@ -1000,7 +998,7 @@ class Model:
         else:
             general_allocation()
 
-    def calc_existing_stock(self, graph, node, year, tech):
+    def calc_existing_stock(self, graph, node, year, tech, called_from_node_tech_compete=False):
         def base_stock_retirement(base_stock, initial_year, current_year, lifespan=10):
             # How much base stock remains if only natural retirements have occurred?
             naturally_unretired_base_stock = base_stock * (1 - (int(current_year) - int(initial_year)) / lifespan)
@@ -1075,6 +1073,7 @@ class Model:
             remaining_new_stock_pre_surplus[y] = remain_new_stock
             existing_stock += remain_new_stock
 
+        # Save to Graph
         graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = create_value_dict(remaining_base_stock,
                                                                                                   param_source='calculation')
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = create_value_dict(remaining_new_stock_pre_surplus,
@@ -1082,6 +1081,32 @@ class Model:
         # Note: retired stock will be removed later from ['new_stock_remaining']
         graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = create_value_dict(remaining_new_stock_pre_surplus,
                                                                                                  param_source='calculation')
+
+        if called_from_node_tech_compete:
+            parent = '.'.join(node.split('.')[:-1])
+            child = node.split('.')[-1]
+
+            # TODO: change to set_param()
+            if 'base_stock_remaining' in graph.nodes[parent][year]['technologies'][child].keys():
+                graph.nodes[parent][year]['technologies'][child]['base_stock_remaining']['year_value'] += remaining_base_stock
+            else:
+                graph.nodes[parent][year]['technologies'][child]['base_stock_remaining'] = create_value_dict(remaining_base_stock, param_source='calculation')
+
+            # TODO: change to set_param()
+            if 'new_stock_remaining_pre_surplus' in graph.nodes[parent][year]['technologies'][child].keys():
+                for vintage_year in remaining_new_stock_pre_surplus:
+                    graph.nodes[parent][year]['technologies'][child]['new_stock_remaining_pre_surplus']['year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
+            else:
+                graph.nodes[parent][year]['technologies'][child]['new_stock_remaining_pre_surplus'] = create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+
+            # TODO: change to set_param()
+            # Note: retired stock will be removed later from ['new_stock_remaining']
+            if 'new_stock_remaining' in graph.nodes[parent][year]['technologies'][child].keys():
+                for vintage_year in remaining_new_stock_pre_surplus:
+                    graph.nodes[parent][year]['technologies'][child]['new_stock_remaining']['year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
+            else:
+                graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'] = create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+
         return existing_stock
 
     def get_tech_parameter_default(self, parameter):
