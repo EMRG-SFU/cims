@@ -456,13 +456,56 @@ class Model:
                     else:
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
 
+        def init_tax_emissions(graph, node, year):
+            """
+            Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
+            function assumes all of node's parents have already had their price multipliers
+            initialized.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
+            """
+
+            # If current node already has Tax, do nothing
+            if 'Tax' in graph.nodes[node][year]:
+                return None
+
+            # Retrieve price multipliers from the parents (if they exist)
+            parents = list(graph.predecessors(node))
+            parent_tax = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'Tax' in graph.nodes[parent][year]:
+                    tax_rate = self.get_param('Tax', parent, year)
+                    parent_tax.update(tax_rate)
+
+            # Set Price Multiplier of node in the graph
+            graph.nodes[node][year]['Tax'] = parent_tax
+
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
+                                       year)
+
+        graph_utils.top_down_traversal(graph,
+                                       init_tax_emissions,
                                        year)
 
         graph_utils.bottom_up_traversal(graph,
                                         init_fuel_lcc,
                                         year)
+
+
 
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
