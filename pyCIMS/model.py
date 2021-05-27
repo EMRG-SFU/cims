@@ -707,21 +707,23 @@ class Model:
             for tech in node_year_data['technologies']:
                 # New Market Share
                 nms = adjusted_new_ms[tech]
-                self.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = create_value_dict(nms,
-                                                                                                           param_source='calculation')
+                self.set_param_internal(create_value_dict(nms, param_source='calculation'),
+                                        'new_market_share', node, year, tech)
 
                 # Total Market Share -- THIS WORKS (i.e. matches previous iterations #s)
                 tms = total_market_shares_by_tech[tech]
-                self.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = create_value_dict(tms,
-                                                                                                             param_source='calculation')
+                self.set_param_internal(create_value_dict(tms, param_source='calculation'),
+                                        'total_market_share', node, year, tech)
 
                 # New Stock & Base Stock
                 if int(year) == self.base_year:
-                    self.graph.nodes[node][year]['technologies'][tech]['base_stock'] = create_value_dict(
-                        new_stock_demanded * nms, param_source='calculation')
+                    self.set_param_internal(create_value_dict(new_stock_demanded * nms,
+                                                              param_source='calculation'),
+                                            'base_stock', node, year, tech)
                 else:
-                    self.graph.nodes[node][year]['technologies'][tech]['new_stock'] = create_value_dict(
-                        new_stock_demanded * nms, param_source='calculation')
+                    self.set_param_internal(create_value_dict(new_stock_demanded * nms,
+                                                              param_source='calculation'),
+                                            'new_stock', node, year, tech)
 
             # Send demand provided_quantities to services below
             # Based on what this node needs to provide, find out how much it must request from
@@ -1265,9 +1267,9 @@ class Model:
             try:
                 self.get_param(param, node, year[i], tech, sub_param, check_exist=True)
             except:
-                print('Unable to access parameter at get_param(' + str(param) + ', ' + str(node) + ', ' + str(
-                    year[i]) + ', ' + str(tech) + ', ' + str(sub_param) + ')')
-                print('Corresponding value was not set to ' + str(val[i]) + '\n')
+                print(f"Unable to access parameter at "
+                      f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
+                      f"Corresponding value was not set to {val[i]}.")
                 continue
             if tech:
                 set_tech_param_script(val[i], param, self, node, year[i], tech, sub_param, save)
@@ -1433,31 +1435,33 @@ class Model:
             # *********
             if node == None:
                 if node_regex == None:
-                    print(
-                        "Row " + str(index) + ": neither node or node_regex values were indicated. Skipping this row.")
+                    print(f"Row {index}: : neither node or node_regex values were indicated. "
+                          f"Skipping this row.")
                     continue
             elif node == '.*':
                 if search_param == None or search_operator == None or search_pattern == None:
-                    print("Row " + str(
-                        index) + ": since node = '.*', search_param, search_operator, and search_pattern must not be empty. Skipping this row.")
+                    print(f"Row {index}: since node = '.*', search_param, search_operator, and "
+                          f"search_pattern must not be empty. Skipping this row.")
                     continue
             else:
                 if node_regex:
-                    print("Row " + str(
-                        index) + ": both node and node_regex values were indicated. Please specify only one. Skipping this row.")
+                    print(f"Row index: both node and node_regex values were indicated. Please "
+                          f"specify only one. Skipping this row.")
                     continue
             if year_operator not in list(ops.keys()):
-                print("Row " + str(index) + ": year_operator value not one of >, >=, <, <=, ==. Skipping this row.")
+                print(f"Row {index}: year_operator value not one of >, >=, <, <=, ==. Skipping this"
+                      f"row.")
                 continue
             if val_operator not in ['>=', '<=', '==']:
-                print("Row " + str(index) + ": val_operator value not one of >=, <=, ==. Skipping this row.")
+                print(f"Row {index}: val_operator value not one of >=, <=, ==. Skipping this row.")
                 continue
             if search_operator not in [None, '==']:
-                print("Row " + str(index) + ": search_operator value must be either empty or ==. Skipping this row.")
+                print(f"Row {index}: search_operator value must be either empty or ==. Skipping "
+                      f"this row.")
                 continue
             if create_missing == None:
-                print('Row ' + str(
-                    index) + ': create_if_missing is empty. This value must be either True or False. Skipping this row.')
+                print(f"Row {index}: create_if_missing is empty. This value must be either True or"
+                      f"False. Skipping this row.")
                 continue
 
             # *********
@@ -1516,6 +1520,8 @@ class Model:
             parameter value of interest. In this case, the key corresponding to that value can be
             provided as a `sub_param`. If sub_param is `.*`, all possible sub_param keys will be searched at the
             specified node, param, tech, and year.
+        create_missing : bool, optional
+            Will create a new parameter in the model if it is missing. Defaults to False.
         val_operator : str, optional
             This specifies how the value should be set. The possible values are '>=', '<=' and '=='.
         row_index : int, optional
@@ -1532,16 +1538,16 @@ class Model:
                     val = min(val, prev_val)
             except Exception as e:
                 if create_missing:
-                    print("Row " + str(row_index + 1) + ': Creating parameter at (' + str(param) + ', ' + str(
-                        node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(sub_param) + ').')
+                    print(f"Row {row_index + 1}: Creating parameter at ({param}, {node}, {year}, "
+                          f"{tech}, {sub_param}).")
                     tmp = self.create_param(val=val, param=param, node=node, year=year, tech=tech, sub_param=sub_param,
                                             row_index=row_index)
                     if not tmp:
                         return None
                 else:
-                    print("Row " + str(row_index + 1) + ': Unable to access parameter at get_param(' + str(
-                        param) + ', ' + str(node) + ', ' + str(year) + ', ' + str(tech) + ', ' + str(
-                        sub_param) + '). Corresponding value was not set to ' + str(val) + ".")
+                    print(f"Row {row_index + 1}: Unable to access parameter at get_param({param}, "
+                          f"{node}, {year}, {tech}, {sub_param}). Corresponding value was not set"
+                          f"to {val}.")
                     return None
             return val
 

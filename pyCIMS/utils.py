@@ -352,14 +352,14 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
         return val
 
 
-def set_node_param(new_vals, param, model, node, year, sub_param=None):
+def set_node_param(new_value, param, model, node, year, sub_param=None):
     """
     Queries a model to set a parameter value at a given node, given a specified context
     (year & sub-parameter).
 
     Parameters
     ----------
-    new_vals : dict
+    new_value : dict
         The new value to be set at the specified `param` at `node`, given the context provided by
         `year` and `sub_param`.
     param : str
@@ -385,37 +385,36 @@ def set_node_param(new_vals, param, model, node, year, sub_param=None):
         data = model.graph.nodes[node][year]
     else:
         data = model.graph.nodes[node]
-    prev_val = {}
+
     if param in data:
         val = data[param]
         # If the value is a dictionary, use its nested result
         if isinstance(val, dict):
             if sub_param:
-                val[sub_param].update(new_vals)
+                val[sub_param].update(new_value)
             elif None in val:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
                 if isinstance(val[None], dict):
-                    val[None].update(new_vals)
+                    val[None].update(new_value)
                 else:
-                    val[None].update(new_vals)
+                    val[None].update(new_value)
             elif len(val.keys()) == 1:
-                val[list(val.keys())[0]].update(new_vals)
+                val[list(val.keys())[0]].update(new_value)
         else:
-            data[param] = new_vals
+            data[param] = new_value
 
     else:
-        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
-            year) + '. No new value was set for this.')
+        print(f"No param {param} at node {node} for year {year}. No new value was set for this")
 
 
-def set_tech_param(new_vals, param, model, node, year, tech, sub_param=None):
+def set_tech_param(new_value, param, model, node, year, tech, sub_param=None):
     """
     Queries a model to set a parameter value at a given node & technology, given a specified
     context (year & sub_param).
 
     Parameters
     ----------
-    new_vals : dict
+    new_value : dict
         The new value to be set at the specified `param` at `node`, given the context provided by
         `year`, `tech` and `sub_param`.
     param : str
@@ -446,21 +445,19 @@ def set_tech_param(new_vals, param, model, node, year, tech, sub_param=None):
             if sub_param:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
                 if isinstance(val[sub_param], dict):
-                    val[sub_param].update(new_vals)
+                    val[sub_param].update(new_value)
                 else:
-                    val[sub_param].update(new_vals)
+                    val[sub_param].update(new_value)
             elif None in val:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
                 if isinstance(val[None], dict):
-                    val[None].update(new_vals)
+                    val[None].update(new_value)
                 else:
-                    val[None].update(new_vals)
+                    val[None].update(new_value)
             else:
-                data[param].update(new_vals)
+                data[param].update(new_value)
         else:
-            data[param] = new_vals
+            data[param] = new_value
 
     else:
-        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
-            year) + '. No new value was set for this.')
-
+        print(f"No param {param} at node {node} for year {year}. No new value was set for this")

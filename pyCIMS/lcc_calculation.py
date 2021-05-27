@@ -96,8 +96,8 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 total_lcc_v += weight
 
         # Set sum of Life Cycle Cost raised to negative variance
-        sub_graph.nodes[node][year]["total_lcc_v"] = utils.create_value_dict(total_lcc_v,
-                                                                             param_source='calculation')
+        val_dict = utils.create_value_dict(total_lcc_v, param_source='calculation')
+        sub_graph.nodes[node][year]["total_lcc_v"] = val_dict
 
         # Weighted Life Cycle Cost
         # ************************
@@ -114,10 +114,9 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             # Determine what market share to use for weighing Life Cycle Costs
             # If market share is exogenous, set new & total market share to exogenous value
             if ms_exogenous:
-                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = utils.create_value_dict(ms,
-                                                                                                                param_source='calculation')
-                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = utils.create_value_dict(ms,
-                                                                                                                  param_source='calculation')
+                val_dict = utils.create_value_dict(ms, param_source='calculation')
+                model.set_param_internal(val_dict, 'new_market_share', node, year, tech)
+                model.set_param_internal(val_dict, 'total_market_share', node, year, tech)
 
             market_share = model.get_param('total_market_share', node, year, tech)
 
