@@ -4,19 +4,6 @@ import math
 from . import graph_utils
 
 
-# TODO: See if I can get rid of this function or replace with a Model.set_param() method
-def add_tech_param(g, node, year, tech, param, value=0.0, source=None, unit=None, param_source=None):
-    """
-    Include a new set of parameter: {values} as a nested dict
-
-    """
-    g.nodes[node][year]["technologies"][tech].update({str(param): {"year_value": value,
-                                                                   "branch": str(node),
-                                                                   "source": source,
-                                                                   "unit": unit,
-                                                                   "param_source": param_source}})
-
-
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
@@ -77,43 +64,25 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 annual_service_cost, sc_source = model.get_or_calc_param('Service cost',
                                                                          node, year, tech,
                                                                          return_source=True)
-                # TODO: replace with a Model.set_param() function (similar to Model.get_param())
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'Service cost' in tech_data:
-                    tech_data['Service cost']['year_value'] = annual_service_cost
-                    tech_data['Service cost']['param_source'] = sc_source
-                else:
-                    add_tech_param(model.graph, node, year, tech,
-                                   'Service cost', annual_service_cost,
-                                   param_source=sc_source)
+
+                val_dict = {'year_value': annual_service_cost, "branch": str(node), 'param_source': sc_source}
+                model.set_param_internal(val_dict, 'Service cost', node, year, tech)
 
                 # CRF
                 # ************
-                crf, crf_source = model.get_or_calc_param("CRF", node, year, tech, return_source=True)
-                # TODO: replace with a Model.set_param() function (similar to Model.get_param())
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'CRF' in tech_data:
-                    tech_data['CRF']['year_value'] = crf
-                    tech_data['CRF']['param_source'] = crf_source
-
-                else:
-                    add_tech_param(model.graph, node, year, tech, 'CRF', crf, param_source=crf_source)
+                crf, crf_source = model.get_or_calc_param("CRF",
+                                                          node, year, tech,
+                                                          return_source=True)
+                val_dict = {'year_value': crf, 'param_source': crf_source}
+                model.set_param_internal(val_dict, 'CRF', node, year, tech)
 
                 # LCC
                 # ************
                 lcc, lcc_source = model.get_or_calc_param('Life Cycle Cost',
                                                           node, year, tech,
                                                           return_source=True)
-                if node == 'pyCIMS.Canada.Alberta.Electricity':
-                    print(lcc, lcc_source)
-                # TODO: replace with a Model.set_param() function (similar to Model.get_param())
-                tech_data = model.graph.nodes[node][year]["technologies"][tech]
-                if 'Life Cycle Cost' in tech_data:
-                    tech_data['Life Cycle Cost']['year_value'] = lcc
-                    tech_data['Life Cycle Cost']['param_source'] = lcc_source
-                else:
-                    add_tech_param(model.graph, node, year, tech, 'Life Cycle Cost', lcc,
-                                   param_source=lcc_source)
+                val_dict = {'year_value': lcc, 'param_source': lcc_source}
+                model.set_param_internal(val_dict, 'Life Cycle Cost', node, year, tech)
 
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:
@@ -128,8 +97,8 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
                 total_lcc_v += weight
 
         # Set sum of Life Cycle Cost raised to negative variance
-        sub_graph.nodes[node][year]["total_lcc_v"] = utils.create_value_dict(total_lcc_v,
-                                                                             param_source='calculation')
+        val_dict = utils.create_value_dict(total_lcc_v, param_source='calculation')
+        sub_graph.nodes[node][year]["total_lcc_v"] = val_dict
 
         # Weighted Life Cycle Cost
         # ************************
@@ -146,10 +115,9 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             # Determine what market share to use for weighing Life Cycle Costs
             # If market share is exogenous, set new & total market share to exogenous value
             if ms_exogenous:
-                sub_graph.nodes[node][year]['technologies'][tech]['new_market_share'] = utils.create_value_dict(ms,
-                                                                                                                param_source='calculation')
-                sub_graph.nodes[node][year]['technologies'][tech]['total_market_share'] = utils.create_value_dict(ms,
-                                                                                                                  param_source='calculation')
+                val_dict = utils.create_value_dict(ms, param_source='calculation')
+                model.set_param_internal(val_dict, 'new_market_share', node, year, tech)
+                model.set_param_internal(val_dict, 'total_market_share', node, year, tech)
 
             market_share = model.get_param('total_market_share', node, year, tech)
 
@@ -194,8 +162,7 @@ def calc_lcc(model, node, year, tech):
     upfront_cost = model.get_or_calc_param('Upfront cost', node, year, tech)
     annual_cost = model.get_or_calc_param('Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
-    emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
+    lcc = upfront_cost + annual_cost + annual_service_cost
     return lcc
 
 
