@@ -481,7 +481,7 @@ class Model:
             if 'Tax' in graph.nodes[node][year]:
                 return None
 
-            # Retrieve price multipliers from the parents (if they exist)
+            # Retrieve tax from the parents (if they exist)
             parents = list(graph.predecessors(node))
             parent_tax = {}
             if len(parents) > 0:
@@ -490,8 +490,9 @@ class Model:
                     tax_rate = self.get_param('Tax', parent, year)
                     parent_tax.update(tax_rate)
 
-            # Set Price Multiplier of node in the graph
-            graph.nodes[node][year]['Tax'] = parent_tax
+            # Set Price Multiplier of node in the graph if there is a tax
+            if parent_tax:
+                graph.nodes[node][year]['Tax'] = parent_tax
 
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
