@@ -303,9 +303,10 @@ def add_node_data(graph, current_node, node_dfs):
     for year in years:
         year_df = current_node_df[non_years + [year]]
         year_dict = {}
-        for param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for param, sub_param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': src,
                    'branch': branch,
+                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
@@ -355,10 +356,11 @@ def add_tech_data(graph, node, tech_dfs, tech):
         year_df = t_df[non_years + [year]]
         year_dict = {}
 
-        for parameter, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for parameter, sub_param, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'value': value,
                    'source': source,
                    'branch': branch,
+                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
