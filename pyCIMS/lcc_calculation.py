@@ -162,7 +162,8 @@ def calc_lcc(model, node, year, tech):
     upfront_cost = model.get_or_calc_param('Upfront cost', node, year, tech)
     annual_cost = model.get_or_calc_param('Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost
+    emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
+    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
     return lcc
 
 
@@ -171,14 +172,11 @@ def emissions_cost(model, node, year, tech):
     if 'Tax' not in model.graph.nodes[node][year]:
         return 0
 
-    if node == 'pyCIMS.Canada.Alberta.Coal Mining.Coal.Raw Product.Extraction':
-        rashid = 1
-
     emissions = 0
     # First check if the node produces any emissions
-    if 'Process Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
+    if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
         emission_val = {}
-        data = model.graph.nodes[node][year]['technologies'][tech]['Process Emissions']
+        data = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
 
         # Check if more than 1 emission
         if isinstance(data, list):
