@@ -412,10 +412,9 @@ class Model:
                                                                                  param_source='initialization')
 
     def stock_retirement_and_allocation(self, sub_graph, node, year):
-        if self.get_param('competition type', node) == 'tech compete':
-            stock_allocation.tech_compete_allocation(self, sub_graph, node, year)
-        elif self.get_param('competition type', node) == 'node tech compete':
-            stock_allocation.node_tech_compete_allocation(self, sub_graph, node, year)
+        comp_type = self.get_param('competition type', node)
+        if comp_type in ['tech compete', 'node tech compete']:
+            stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
             stock_allocation.general_allocation(self, node, year)
 
