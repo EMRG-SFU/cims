@@ -2,6 +2,7 @@ import warnings
 from . import utils
 import math
 from . import graph_utils
+from copy import deepcopy
 
 
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
@@ -172,63 +173,123 @@ def emissions_cost(model, node, year, tech):
     if 'Tax' not in model.graph.nodes[node][year]:
         return 0
 
+    # Initialize all taxes to 0
+    tax_rates = {}
+    for fuel_name in ['CO2', 'CH4', 'N2O']:
+        tax_rates[fuel_name] = {}
+        for sub_name in ['Process', 'Fugitive', 'Combustion']:
+            tax_rates[fuel_name][sub_name] = 0
+
+    # Grab correct tax values
+    all_taxes = model.get_param('Tax', node, year)  # returns a dict
+    for tax, tax_dict in all_taxes.items():
+        # example of item in tax_rates -> 'CO2': {'Combustion': 5}
+        tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
+
+    # --------- EMISSIONS ------------
     emissions = 0
     # First check if the node produces any emissions
+    emission_val = {}
+    removal_rates = {}
+    total = 0
+
     if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
-        emission_val = {}
+        emission_val[tech] = {}
         data = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
 
-        # Check if more than 1 emission
-        if isinstance(data, list):
-            # There are multiple emissions
-            for em in data:
-                tax = model.get_param('Tax', node, year, sub_param=em['value'])
-                emission_val[em['value']] = em['year_value'] * tax
+        # If only 1 emission, put it in a list
+        if isinstance(data, dict):
+            data = [data]
 
-        elif isinstance(data, dict):
-            # There is a single emission
-            tax = model.get_param('Tax', node, year, sub_param=data['value'])
-            emission_val[data['value']] = data['year_value'] * tax
-        else:
-            print('error in emissions cost')
+        for em in data:
+            if em['value'] not in emission_val[tech]:
+                emission_val[tech][em['value']] = {}
+            emission_val[tech][em['value']][em['sub_param']] = em['year_value']
 
-        # TEMPORARY
-        emissions += sum(emission_val.values())
+    # EMISSIONS REMOVAL tech level
+    if 'Emissions removal' in model.graph.nodes[node][year]:
+        removal_dict = model.graph.nodes[node][year]['Emissions removal']
+        for removal_name, removal_data in removal_dict.items():
+            removal_rates[removal_name] = {removal_data['sub_param']: removal_data['year_value']}
 
     fuels = graph_utils.get_fuels(model.graph)
-
     # Check if any children produce emissions
+    # TODO: Update get_param() so that this if statement is fixed
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
-        req_dict = {}
-        data = model.get_param('Service requested', node, year, tech)
-        # TODO: Update get_param() so that this if/else logic isn't needed
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
-        if isinstance(data, list):
-            # There is more than 1 service request
-            for children in data:
-                req_val = children['year_value']
-                child_node = children['branch']
+        if isinstance(data, dict):
+            # Wrap the single request in a list to work with below code
+            data = [data]
 
-                # Requested service should be a fuel
-                if 'GHG content' in model.graph.nodes[child_node][year] and child_node in fuels:
-                    # Only want CO2 (assumption, need to double check)
-                    fuel_amount = model.get_param('GHG content', child_node, year, sub_param='CO2')
-                    tax = model.get_param('Tax', node, year, sub_param='CO2')
-                    req_dict[children['value']] = req_val * fuel_amount * tax
+        # EMISSIONS
+        for children in data:
+            req_val = children['year_value']
+            child_node = children['branch']
+            if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
+                fuel_emissions = model.get_param('Emissions', child_node, year)
+                emission_val[child_node] = {}
+                for fuel_name, fuel_data in fuel_emissions.items():
+                    if fuel_name not in emission_val[child_node]:
+                        emission_val[child_node][fuel_name] = {}
+                    emission_val[child_node][fuel_name][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
-            emissions += sum(req_dict.values())
-        else:
-            # there is only 1 service request
-            data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
-            req_val = data['year_value']
-            child_node = data['branch']
+        gross_val = deepcopy(emission_val)
+        for children in data:
+            req_val = children['year_value']
+            child_node = children['branch']
 
-            if 'GHG content' in model.graph.nodes[child_node][year] and child_node in fuels:
-                # Only want CO2 (assumption, need to double check)
-                fuel_amount = model.get_param('GHG content', child_node, year, sub_param='CO2')
-                emissions += req_val * fuel_amount
+            # GROSS EMISSIONS
+            if 'Gross Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
+                gross_dict = model.graph.nodes[child_node][year]['Gross Emissions']
+                for gross_name, gross_data in gross_dict.items():
+                    gross_val[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
 
-    return emissions
+            # EMISSIONS REMOVAL child level
+            if 'technologies' in model.graph.nodes[child_node][year]:
+
+                if tech == 'Extraction of coal Biodiesel':
+                    rashid = 1
+
+                child_techs = model.graph.nodes[child_node][year]['technologies']
+                for _, tech_data in child_techs.items():
+                    if 'Emissions removal' in tech_data:
+                        removal_dict = tech_data['Emissions removal']
+                        removal_rates[removal_dict['value']] = {removal_dict['sub_param']: removal_dict['year_value']}
+
+        # CAPTURED EMISSIONS
+        captured_val = deepcopy(gross_val)
+        for node_name in captured_val:
+            for fuel_name in captured_val[node_name]:
+                if fuel_name in removal_rates:
+                    for sub_name in captured_val[node_name][fuel_name]:
+                        if sub_name in removal_rates[fuel_name]:
+                            em_removed = 1 - removal_rates[fuel_name][sub_name]
+                            captured_val[node_name][fuel_name][sub_name] *= em_removed
+
+        # NET EMISSIONS
+        net_val = deepcopy(emission_val)
+        for node_name in net_val:
+            for fuel_name in net_val[node_name]:
+                for sub_name in net_val[node_name][fuel_name]:
+                    net_val[node_name][fuel_name][sub_name] -= captured_val[node_name][fuel_name][sub_name]
+
+        # EMISSIONS COST
+        emissions_cost = deepcopy(net_val)
+        for node_name in emissions_cost:
+            for fuel_name in emissions_cost[node_name]:
+                for sub_name in emissions_cost[node_name][fuel_name]:
+                    tax = tax_rates[fuel_name][sub_name]
+                    emissions_cost[node_name][fuel_name][sub_name] *= tax
+
+        # Add everything in nested dictionary together
+
+        for node_name in emissions_cost:
+            for fuel_name in emissions_cost[node_name]:
+                for _, cost in emissions_cost[node_name][fuel_name].items():
+                    total += cost
+
+    return total
 
 
 def calc_upfront_cost(model, node, year, tech):
@@ -429,7 +490,7 @@ def calc_annual_service_cost(model, node, year, tech=None):
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = \
-                model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
+                    model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
             else:
                 # Encountering a non-visited node
                 service_requested_lcc = 1
