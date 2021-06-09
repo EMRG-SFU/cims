@@ -173,12 +173,14 @@ def emissions_cost(model, node, year, tech):
     if 'Tax' not in model.graph.nodes[node][year]:
         return 0
 
-    # Initialize all taxes to 0
+    # Initialize all taxes and emission removal rates to 0
     tax_rates = {}
     for fuel_name in ['CO2', 'CH4', 'N2O']:
         tax_rates[fuel_name] = {}
         for sub_name in ['Process', 'Fugitive', 'Combustion']:
             tax_rates[fuel_name][sub_name] = 0
+
+    removal_rates = deepcopy(tax_rates)
 
     # Grab correct tax values
     all_taxes = model.get_param('Tax', node, year)  # returns a dict
@@ -187,12 +189,9 @@ def emissions_cost(model, node, year, tech):
         tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
 
     # --------- EMISSIONS ------------
-    emissions = 0
     # First check if the node produces any emissions
     emission_val = {}
-    removal_rates = {}
     total = 0
-
     if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
         emission_val[tech] = {}
         data = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
@@ -210,7 +209,7 @@ def emissions_cost(model, node, year, tech):
     if 'Emissions removal' in model.graph.nodes[node][year]:
         removal_dict = model.graph.nodes[node][year]['Emissions removal']
         for removal_name, removal_data in removal_dict.items():
-            removal_rates[removal_name] = {removal_data['sub_param']: removal_data['year_value']}
+            removal_rates[removal_name][removal_data['sub_param']] = removal_data['year_value']
 
     fuels = graph_utils.get_fuels(model.graph)
     # Check if any children produce emissions
@@ -255,17 +254,15 @@ def emissions_cost(model, node, year, tech):
                 for _, tech_data in child_techs.items():
                     if 'Emissions removal' in tech_data:
                         removal_dict = tech_data['Emissions removal']
-                        removal_rates[removal_dict['value']] = {removal_dict['sub_param']: removal_dict['year_value']}
+                        removal_rates[removal_dict['value']][removal_dict['sub_param']] = removal_dict['year_value']
 
         # CAPTURED EMISSIONS
         captured_val = deepcopy(gross_val)
         for node_name in captured_val:
             for fuel_name in captured_val[node_name]:
-                if fuel_name in removal_rates:
-                    for sub_name in captured_val[node_name][fuel_name]:
-                        if sub_name in removal_rates[fuel_name]:
-                            em_removed = 1 - removal_rates[fuel_name][sub_name]
-                            captured_val[node_name][fuel_name][sub_name] *= em_removed
+                for sub_name in captured_val[node_name][fuel_name]:
+                    em_removed = removal_rates[fuel_name][sub_name]
+                    captured_val[node_name][fuel_name][sub_name] *= em_removed
 
         # NET EMISSIONS
         net_val = deepcopy(emission_val)
@@ -283,7 +280,6 @@ def emissions_cost(model, node, year, tech):
                     emissions_cost[node_name][fuel_name][sub_name] *= tax
 
         # Add everything in nested dictionary together
-
         for node_name in emissions_cost:
             for fuel_name in emissions_cost[node_name]:
                 for _, cost in emissions_cost[node_name][fuel_name].items():
