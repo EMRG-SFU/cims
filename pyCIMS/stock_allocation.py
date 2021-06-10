@@ -358,7 +358,6 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             parent = '.'.join(node.split('.')[:-1])
             child = node.split('.')[-1]
 
-            # TODO: change to set_param()
             child_tech_keys = model.graph.nodes[parent][year]['technologies'][child].keys()
             if 'base_stock_remaining' in child_tech_keys:
                 model.graph.nodes[parent][year]['technologies'][child]['base_stock_remaining'][
@@ -368,7 +367,6 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
                     'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
                                                                       param_source='calculation')
 
-            # TODO: change to set_param()
             if 'new_stock_remaining_pre_surplus' in child_tech_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
                     model.graph.nodes[parent][year]['technologies'][child][
@@ -379,7 +377,6 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
                     'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
                     remaining_new_stock_pre_surplus, param_source='calculation')
 
-            # TODO: change to set_param()
             if 'new_stock_remaining' in child_tech_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
                     model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'][
@@ -1189,24 +1186,26 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
     """
     for tech in adjusted_new_ms:
         # New Market Shares
-        model.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = \
-            utils.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
+        new_ms_dict = utils.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
+        model.set_param_internal(new_ms_dict, 'new_market_share', node, year, tech)
 
         # Base Stock
         if int(year) == model.base_year:
-            model.graph.nodes[node][year]['technologies'][tech]['base_stock'] = \
-                utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
-                                        param_source='calculation')
+            base_stock_dict = utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+                                                      param_source='calculation')
+            model.set_param_internal(base_stock_dict, 'base_stock', node, year, tech)
+
         # New Stock
         else:
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock'] = \
-                utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
-                                        param_source='calculation')
+            new_stock_dict = utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+                                                     param_source='calculation')
+            model.set_param_internal(new_stock_dict, 'new_stock', node, year, tech)
 
     # Record Total Market Share
     for tech in total_market_shares:
-        model.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = \
-            utils.create_value_dict(total_market_shares[tech], param_source='calculation')
+        total_ms_dict = utils.create_value_dict(total_market_shares[tech],
+                                                param_source='calculation')
+        model.set_param_internal(total_ms_dict, 'total_market_share', node, year, tech)
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
