@@ -163,7 +163,7 @@ class Model:
                 for _ in range(4):
                     # Calculate Quantities (Total Stock Needed)
                     graph_utils.top_down_traversal(g_demand,
-                                                   self.stock_retirement_and_allocation,
+                                                   self.stock_allocation_and_retirement,
                                                    year)
 
                     if int(year) == self.base_year:
@@ -185,7 +185,7 @@ class Model:
                 for _ in range(4):
                     # Calculate Fuel Quantities
                     graph_utils.top_down_traversal(g_supply,
-                                                   self.stock_retirement_and_allocation,
+                                                   self.stock_allocation_and_retirement,
                                                    year)
 
                     if int(year) == self.base_year:
@@ -411,7 +411,28 @@ class Model:
             self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
 
-    def stock_retirement_and_allocation(self, sub_graph, node, year):
+    def stock_allocation_and_retirement(self, sub_graph, node, year):
+        """
+        Provided to `graph_utils.top_down_traversal()` by `Model.run()` as the processing function
+        for stock allocation and retirement.
+        Parameters
+        ----------
+        sub_graph: any
+            This is not used in this function, but is a required parameter for any function used by
+            `graph_utils.top_down_traversal()`.
+
+        node: str
+            The name of the node (in branch form) where stock stock retirement and allocation will
+            be performed.
+
+        year: str
+            The year to perform stock retirement and allocation.
+
+        Returns
+        -------
+            Nothing is returned. `self` will be updated to reflect the results of stock retirement
+            and new stock competitions.
+        """
         comp_type = self.get_param('competition type', node)
         if comp_type in ['tech compete', 'node tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)

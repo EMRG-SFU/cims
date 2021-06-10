@@ -1,3 +1,7 @@
+"""
+Stock retirement and allocation module. Contains all the core logic for retiring stock (vintage &
+surplus) and allocating new stock through a market share competition between technologies.
+"""
 import math
 
 from .quantities import ProvidedQuantity
@@ -8,6 +12,31 @@ from . import utils
 # Stock Allocation
 #############################
 def all_tech_compete_allocation(model, node, year):
+    """
+    Performs stock retirement and allocation for "tech compete" and "node tech compete" nodes,
+    updating the model data to reflect the results.
+
+    Stock retirement and allocation performs (1) Vintage-based requirements, (2) Surplus stock
+    retirement, (3) New stock competition between technologies, (4) Market share limit adjustments,
+    and (5) Total market share calculations.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to stock retirement and
+        allocation.
+
+    node: str
+        The name of the node (in branch form) where stock retirement and allocation is performed.
+
+    year: str
+        The year to perform stock retirement and allocation.
+
+    Returns
+    -------
+        Nothing is returned. `model` will be updated to reflect the results of stock retirement and
+        new stock competitions.
+    """
     comp_type = model.get_param('competition type', node)
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
@@ -40,16 +69,35 @@ def all_tech_compete_allocation(model, node, year):
                                                                   existing_stock,
                                                                   adjusted_new_ms)
 
-    # TODO: put this back in place and make sure it's working properly
-    # assert(round(sum(list(total_market_shares_per_tech.values())), 4) == 1)
-
     # Record Values in Model
-    _record_allocation_results(model, node, year, adjusted_new_ms,
-                               total_market_shares_per_tech, new_stock_demanded,
-                               assessed_demand)
+    _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares_per_tech,
+                               assessed_demand, new_stock_demanded)
 
 
 def general_allocation(model, node, year):
+    """
+    Performs stock retirement and allocation for non tech competition nodes. This includes
+    'fixed ratio', 'region', 'sector', 'sector no tech', and 'root' competition types.
+
+    No competition is required for any of these types. Instead, any demand is automatically filled
+    according to exogenously defined paramters.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to stock retirement and
+        allocation.
+
+    node: str
+        The name of the node (in branch form) where stock retirement and allocation is performed.
+
+    year: str
+        The year to perform stock retirement and allocation.
+
+    Returns
+    -------
+        Nothing is returned. `model` will be updated to reflect the amounts provided by the node.
+    """
     node_year_data = model.graph.nodes[node][year]
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
@@ -64,28 +112,54 @@ def general_allocation(model, node, year):
             if 'Service requested' in tech_data.keys():
                 services_being_requested = tech_data['Service requested']
                 t_ms = tech_data['Market share']
-                _record_provided_quantities(services_being_requested,
-                                            assessed_demand,
-                                            model, node, year,
-                                            tech=tech,
-                                            market_share=t_ms)
+                _record_provided_quantities(model, node, year, services_being_requested,
+                                            assessed_demand, tech=tech, market_share=t_ms)
 
     elif 'Service requested' in node_year_data:
         # Calculate the provided_quantities being requested for each of the services
         services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
-        _record_provided_quantities(services_being_requested, assessed_demand, model, node, year)
+        _record_provided_quantities(model, node, year, services_being_requested, assessed_demand)
 
 
 #############################
 # Stock Calculation
 #############################
 def _get_existing_stock(model, node, year, comp_type):
+    """
+    Find the amount of stock remaining after vintage specific retirements for each technology
+    competing for market share at the node.
+
+    For tech compete nodes, this will be for each technology present at the node. For "node tech
+    compete" nodes, this will include all the technologies of services directly requested by the
+    node.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to vintage specific retirement
+    node : str
+        Name of the node (branch notation) to query for existing stock
+    year : str
+        The year to calculate stock for.
+    comp_type : str
+        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}
+
+    Returns
+    -------
+        A dictionary mapping competing technologies to the amount of their stock remaining at node
+        in the given year.
+
+        The dictionary will follow the structure of `{("parent_node", "tech"): float}`, where each
+        (parent_node, tech) tuple corresponds to a competing technology. For a 'tech compete',
+        parent_node will be the same for each tech while for 'node tech compete', parent_node will
+        correspond to the parent service of the competing technology.
+    """
     node_year_data = model.graph.nodes[node][year]
     existing_stock = {}
 
     if comp_type == 'tech compete':
         for tech in node_year_data['technologies']:
-            t_existing = _retire_old_stock(model, node, year, tech)
+            t_existing = _do_natural_retirement(model, node, year, tech, comp_type)
             existing_stock[(node, tech)] = t_existing
 
     elif comp_type == 'node tech compete':
@@ -93,13 +167,27 @@ def _get_existing_stock(model, node, year, comp_type):
             child_node = model.get_param('Service requested', node, year, child, sub_param='branch')
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
-                t_existing = _retire_old_stock(model, child_node, year, tech)
+                t_existing = _do_natural_retirement(model, child_node, year, tech, comp_type)
                 existing_stock[(child_node, tech)] = t_existing
 
     return existing_stock
 
 
 def _calc_new_stock_demanded(demand, existing_stock):
+    """
+    Calculate amount of new stock that will be demanded by subtracting all existing stock from the
+    total amount of stock being demanded.
+
+    Parameters
+    ----------
+    demand : int
+    existing_stock : dict
+        The existing_stock dictionary returned from _get_existing_stock()
+
+    Returns
+    -------
+        The amount of new stock demanded.
+    """
     for e_stocks in existing_stock.values():
         demand -= e_stocks
     return demand
@@ -108,9 +196,35 @@ def _calc_new_stock_demanded(demand, existing_stock):
 #############################
 # Retirement
 #############################
-def _base_stock_retirement(model, node, tech, base_stock, initial_year, current_year, lifespan):
+def _base_stock_retirement(model, node, tech, initial_year, current_year):
+    """
+    Calculate the amount of base stock (adopted in initial_year) remaining in current_year, after
+    natural retirements.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model used for retrieving data relevant to base stock retirement.
+    node : str
+        The name of the node (in branch form) for which base stock retirement will be calculated.
+    tech : str
+        The name of the technology to calculate base stock retirement.
+    initial_year : str
+        The vintage of base stock being retired.
+    current_year : str
+        The year in which we want to determine how much base stock is remaining.
+
+    Returns
+    -------
+    float :
+        The amount of base stock adopted in initial_year which remains in current_year, after
+        natural retirements are performed.
+    """
+    lifetime = model.get_param('Lifetime', node, initial_year, tech)
+    base_stock = model.get_param('base_stock', node, initial_year, tech)
+
     # Calculate amount of remaining base stock after natural retirements
-    remaining_rate = 1 - (int(current_year) - int(initial_year)) / lifespan
+    remaining_rate = 1 - (int(current_year) - int(initial_year)) / lifetime
     naturally_unretired_base_stock = base_stock * remaining_rate
 
     # Retrieve amount of base stock in the previous year, after surplus retirement
@@ -127,21 +241,48 @@ def _base_stock_retirement(model, node, tech, base_stock, initial_year, current_
     return base_stock_remaining
 
 
-def _purchased_stock_retirement(model, node, tech, purchased_stock, purchased_year, current_year,
-                                lifespan, intercept=-11.513):
+def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
+                                intercept=-11.513):
+    """
+    Calculate the amount of new stock (adopted in purchased_year) remaining in current_year, after
+    natural retirements.
+
+    New stock retirement follows the function
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model used for retrieving data relevant to new stock retirement.
+    node : str
+        The name of the node (in branch form) for which new stock retirement will be calculated.
+    tech : str
+        The name of the technology to calculate new stock retirement for.
+    purchased_year : str
+        The vintage of new stock being retired.
+    current_year : str
+        The year in which we want to determine how much new stock is remaining.
+    intercept
+
+    Returns
+    -------
+    float :
+        The amount of new stock adopted in purchased_year which remains in current_year, after
+        natural retirements are performed.
+    """
+    lifetime = model.get_param('Lifetime', node, purchased_year, tech)
+    purchased_stock = model.get_param('new_stock', node, purchased_year, tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
-    prev_y_exponent = intercept * (1 - (int(prev_year) - int(purchased_year)) / lifespan)
+    prev_y_exponent = intercept * (1 - (int(prev_year) - int(purchased_year)) / lifetime)
     prev_y_fictional_purchased_stock_remain = purchased_stock / (1 + math.exp(prev_y_exponent))
 
     # Calculate Adjustment Multiplier
     adj_multiplier = 1
 
     if int(prev_year) > int(purchased_year):
-        prev_y_unretired_new_stock = \
-        model.get_param('new_stock_remaining', node, prev_year, tech)[
-            purchased_year]
+        prev_y_unretired_new_stock = model.get_param('new_stock_remaining', node,
+                                                     prev_year, tech)[purchased_year]
 
         if prev_y_fictional_purchased_stock_remain > 0:
             adj_multiplier = prev_y_unretired_new_stock / \
@@ -154,99 +295,153 @@ def _purchased_stock_retirement(model, node, tech, purchased_stock, purchased_ye
     tech_data['adjustment_multiplier'][purchased_year] = adj_multiplier
 
     # Calculate the remaining purchased stock
-    exponent = intercept * (1 - (int(current_year) - int(purchased_year)) / lifespan)
+    exponent = intercept * (1 - (int(current_year) - int(purchased_year)) / lifetime)
     purchased_stock_remaining = purchased_stock / (1 + math.exp(exponent)) * adj_multiplier
 
     return purchased_stock_remaining
 
 
-def _retire_old_stock(model, node, year, tech):
+def _do_natural_retirement(model, node, year, tech, competition_type):
+    """
+    Performs natural retirement of tech stock (base & new) at node prior to year.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model used for retrieving and storing data relevant to natural retirement.
+    node : str
+        The name of the node (in branch form) containing the technology to be retired.
+    year : str
+        The year to calculate natural retirements up to.
+    tech : str
+        The name of technology whose stock is being retired.
+    competition_type : str
+        One of {"tech compete", "node tech compete"}. If "node tech compete", retirement results are
+        saved at the parent node.
+
+    Returns
+    -------
+    float :
+        Amount of existing tech stock remaining at a node after natural retirements are performed
+        over all years prior.
+    """
     earlier_years = [y for y in model.years if int(y) < int(year)]
-    if len(earlier_years) == 0:
-        return 0
-
-    # Means we are not on the initial year & we need to calculate remaining base and new stock
-    # (existing)
     existing_stock = 0
-    remaining_base_stock = 0
-    remaining_new_stock_pre_surplus = {}
-    for earlier_year in earlier_years:
-        tech_lifespan = model.get_param('Lifetime', node, earlier_year, tech)
 
-        # Base Stock
-        tech_base_stock_y = model.get_param('base_stock', node, earlier_year, tech)
-        remain_base_stock_vintage_y = _base_stock_retirement(model, node, tech,
-                                                             tech_base_stock_y, earlier_year, year,
-                                                             tech_lifespan)
-        remaining_base_stock += remain_base_stock_vintage_y
-        existing_stock += remain_base_stock_vintage_y
+    if len(earlier_years) != 0:
+        # When we are not on the initial year, calculate remaining base and remaining new stock
+        remaining_base_stock = 0
+        remaining_new_stock_pre_surplus = {}
+        for earlier_year in earlier_years:
+            # Base Stock
+            remain_base_stock_vintage_y = _base_stock_retirement(model, node, tech,
+                                                                 earlier_year, year)
+            remaining_base_stock += remain_base_stock_vintage_y
+            existing_stock += remain_base_stock_vintage_y
 
-        # New Stock
-        tech_new_stock_y = model.get_param('new_stock', node, earlier_year, tech)
-        remain_new_stock = _purchased_stock_retirement(model, node, tech,
-                                                       tech_new_stock_y,
-                                                       earlier_year, year,
-                                                       tech_lifespan)
-        remaining_new_stock_pre_surplus[earlier_year] = remain_new_stock
-        existing_stock += remain_new_stock
+            # New Stock
+            remain_new_stock = _purchased_stock_retirement(model, node, tech, earlier_year, year)
+            remaining_new_stock_pre_surplus[earlier_year] = remain_new_stock
+            existing_stock += remain_new_stock
 
-    # Save to Graph
-    model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = \
-        utils.create_value_dict(remaining_base_stock, param_source='calculation')
-    model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = \
-        utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
-    # Note: retired stock will be removed later from ['new_stock_remaining']
-    model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = \
-        utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
-
-    if model.get_param('competition type', node) == 'node tech compete':
-        parent = '.'.join(node.split('.')[:-1])
-        child = node.split('.')[-1]
-
-        # TODO: change to set_param()
-        if 'base_stock_remaining' in model.graph.nodes[parent][year]['technologies'][child].keys():
-            model.graph.nodes[parent][year]['technologies'][child]['base_stock_remaining'][
-                'year_value'] += remaining_base_stock
-        else:
-            model.graph.nodes[parent][year]['technologies'][child][
-                'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
-                                                                  param_source='calculation')
-
-        # TODO: change to set_param()
-        if 'new_stock_remaining_pre_surplus' in model.graph.nodes[parent][year]['technologies'][
-            child].keys():
-            for vintage_year in remaining_new_stock_pre_surplus:
-                model.graph.nodes[parent][year]['technologies'][child][
-                    'new_stock_remaining_pre_surplus']['year_value'][vintage_year] += \
-                    remaining_new_stock_pre_surplus[vintage_year]
-        else:
-            model.graph.nodes[parent][year]['technologies'][child][
-                'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
-                remaining_new_stock_pre_surplus, param_source='calculation')
-
-        # TODO: change to set_param()
+        # Save to Graph
+        model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = \
+            utils.create_value_dict(remaining_base_stock, param_source='calculation')
+        model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = \
+            utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
         # Note: retired stock will be removed later from ['new_stock_remaining']
-        if 'new_stock_remaining' in model.graph.nodes[parent][year]['technologies'][child].keys():
-            for vintage_year in remaining_new_stock_pre_surplus:
-                model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'][
-                    'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
-        else:
-            model.graph.nodes[parent][year]['technologies'][child][
-                'new_stock_remaining'] = utils.create_value_dict(remaining_new_stock_pre_surplus,
-                                                                 param_source='calculation')
+        model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = \
+            utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+
+        if competition_type == 'node tech compete':
+            # Add stock data @ parent for "node tech compete" nodes
+            parent = '.'.join(node.split('.')[:-1])
+            child = node.split('.')[-1]
+
+            # TODO: change to set_param()
+            child_tech_keys = model.graph.nodes[parent][year]['technologies'][child].keys()
+            if 'base_stock_remaining' in child_tech_keys:
+                model.graph.nodes[parent][year]['technologies'][child]['base_stock_remaining'][
+                    'year_value'] += remaining_base_stock
+            else:
+                model.graph.nodes[parent][year]['technologies'][child][
+                    'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
+                                                                      param_source='calculation')
+
+            # TODO: change to set_param()
+            if 'new_stock_remaining_pre_surplus' in child_tech_keys:
+                for vintage_year in remaining_new_stock_pre_surplus:
+                    model.graph.nodes[parent][year]['technologies'][child][
+                        'new_stock_remaining_pre_surplus']['year_value'][vintage_year] += \
+                        remaining_new_stock_pre_surplus[vintage_year]
+            else:
+                model.graph.nodes[parent][year]['technologies'][child][
+                    'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
+                    remaining_new_stock_pre_surplus, param_source='calculation')
+
+            # TODO: change to set_param()
+            if 'new_stock_remaining' in child_tech_keys:
+                for vintage_year in remaining_new_stock_pre_surplus:
+                    model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'][
+                        'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
+            else:
+                model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'] = \
+                    utils.create_value_dict(remaining_new_stock_pre_surplus,
+                                            param_source='calculation')
 
     return existing_stock
 
 
-def _calc_surplus_retirement_proportion(surplus, vintage_specific_existing_stock):
-    if vintage_specific_existing_stock <= 0:
+def _calc_surplus_retirement_proportion(surplus, existing_stock):
+    """
+    Calculate the proportion of existing_stock to be retired, given the amount of surplus stock.
+
+    Parameters
+    ----------
+    surplus : float
+        The amount of surplus stock
+
+    existing_stock : float
+        The amount of existing (aka remaining) stock
+
+    Returns
+    -------
+    float
+        The proportion of stock to be retired to reduce the amount of surplus stock
+    """
+    if existing_stock <= 0:
         retirement_proportion = 0
     else:
-        retirement_proportion = max(0, min(surplus / vintage_specific_existing_stock, 1))
+        retirement_proportion = max(0, min(surplus / existing_stock, 1))
     return retirement_proportion
 
 
 def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
+    """
+    Called by `_retire_surplus_stock()` to conduct base-stock specific surplus retirements.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to surplus retirements
+    node : str
+        Name of the node (branch notation) where surplus stock will be retired from.
+    year : str
+        The year in which to retire surplus stock.
+    existing_stock : dict
+        A dictionary returned from _get_existing_stock() containing the amount of existing stock
+        for each technology competing for marketshare at `node`.
+    surplus : float
+        The amount of surplus stock that currently exists at `node` in the given `year`.
+
+    Returns
+    -------
+    float
+        The amount of surplus base stock left to retire after the provided existing stock (or some
+        portion of it) was retired.
+    dict
+        An updated version of existing_stock where any retired stocks have been deducted.
+    """
     total_base_stock = 0
     amount_surplus_to_retire = 0
     for node_branch, tech in existing_stock:
@@ -272,10 +467,35 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
                 model.graph.nodes[node][year]['technologies'][child]['base_stock_remaining'][
                     'year_value'] -= amount_tech_to_retire
 
-    return amount_surplus_to_retire
+    return amount_surplus_to_retire, existing_stock
 
 
 def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
+    """
+    Called by `_retire_surplus_stock()` to conduct new-stock surplus retirements.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to surplus retirements
+    node : str
+        Name of the node (branch notation) where surplus stock will be retired from.
+    year : str
+        The year in which to retire surplus stock.
+    existing_stock : dict
+        A dictionary returned from _get_existing_stock() containing the amount of existing stock
+        for each technology competing for marketshare at `node`.
+    surplus : float
+        The amount of surplus stock that currently exists at `node` in the given `year`.
+
+    Returns
+    -------
+    float
+        The amount of surplus new stock left to retire after the provided existing stock (or some
+        portion of it) was retired.
+    dict
+        An updated version of existing_stock where any retired stocks have been deducted.
+    """
     possible_purchase_years = [y for y in model.years if (int(y) > model.base_year) &
                                                          (int(y) < int(year))]
     amount_surplus_to_retire = 0
@@ -311,23 +531,51 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
                 model.graph.nodes[node][year]['technologies'][child]['new_stock_remaining'][
                     'year_value'][purchase_year] -= amount_tech_to_retire
 
-    return amount_surplus_to_retire
+    return amount_surplus_to_retire, existing_stock
 
 
 def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock):
+    """
+    Retires surplus stock, starting with the oldest existing stock first. There is surplus stock if
+    fewer than 0 units of new stock have been demanded.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving and storing data relevant to surplus retirements
+    node : str
+        Name of the node (branch notation) where surplus stock will be retired from.
+    year : str
+        The year in which to retire surplus stock.
+    new_stock_demanded : float
+        The amount of new stock demanded of `node` in the given `year`.
+    existing_stock : dict
+        A dictionary returned from _get_existing_stock() containing the amount of existing stock
+        for each technology competing for marketshare at `node`.
+
+    Returns
+    -------
+    float
+        The amount of surplus new stock left to retire after the provided existing stock (or some
+        portion of it) was retired.
+    dict
+        An updated version of existing_stock where any retired stocks have been deducted.
+    """
     surplus = -1 * new_stock_demanded
 
     # Base Stock Retirement
-    base_stock_to_retire = _retire_surplus_base_stock(model, node, year, existing_stock,
-                                                      new_stock_demanded)
+    base_stock_to_retire, existing_stock = _retire_surplus_base_stock(model, node, year,
+                                                                      existing_stock,
+                                                                      surplus)
     surplus -= base_stock_to_retire
     new_stock_demanded += base_stock_to_retire
 
     # New Stock Retirement
-    new_stock_to_retire = _retire_surplus_new_stock(model, node, year, existing_stock, surplus)
+    new_stock_to_retire, existing_stock = _retire_surplus_new_stock(model, node, year,
+                                                                    existing_stock,
+                                                                    surplus)
     surplus -= new_stock_to_retire
     new_stock_demanded += new_stock_to_retire
-
     return new_stock_demanded, existing_stock
 
 
@@ -335,19 +583,56 @@ def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock)
 # Market Share Calculations
 #############################
 def _calculate_lcc_weight(tech_lcc, heterogeneity):
+    """
+    A helper function of _find_competing_weights() that calculates the weight a technology will be
+    assigned during market share competition.
+
+    If the technology's lcc is less than 0.01, we will approximate weight using a calculation
+    equivalent to Excel's TREND() function.
+
+    Parameters
+    ----------
+    tech_lcc : float
+        The life cycle cost associated with a specific technology.
+
+    heterogeneity : float
+        The heterogeneity value the technology's node will use during market share competition.
+
+    Returns
+    -------
+    float :
+        The weight a technology will have during market share competition.
+    """
     if tech_lcc < 0.01:
-        # When lcc < 0.01, we will approximate it's weight using a TREND line
         weight_1 = 0.1 ** (-1 * heterogeneity)
         weight_2 = 0.01 ** (-1 * heterogeneity)
         slope = (weight_2 - weight_1) / (0.01 - 0.1)
         weight = slope * tech_lcc + (weight_1 - slope * 0.1)
     else:
         weight = tech_lcc ** (-1 * heterogeneity)
-
     return weight
 
 
 def _find_exogenous_market_shares(model, node, year):
+    """
+    A helper function used by _calculate_new_market_shares() to find exogenously defined market
+    shares at a given node in a given year.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving exogenous market shares.
+    node :
+        The name of the node (branch notation) to query for exogenous market shares.
+    year : str
+        The year in which to query.
+
+    Returns
+    -------
+    dict :
+        A dictionary mapping technologies (str) to exogenouos market shares (float). Only
+        technologies with exogenously defined market shares are included in the dictionary.
+    """
     node_year_data = model.graph.nodes[node][year]
     exo_market_shares = {}
     for tech in node_year_data['technologies']:
@@ -358,15 +643,31 @@ def _find_exogenous_market_shares(model, node, year):
     return exo_market_shares
 
 
-def _initialize_stocks(model, node, year, tech):
-    model.graph.nodes[node][year]['technologies'][tech]['base_stock'] = \
-        utils.create_value_dict(0, param_source='initialization')
-    model.graph.nodes[node][year]['technologies'][tech]['new_stock'] = \
-        utils.create_value_dict(0, param_source='initialization')
+def _find_competing_techs(model, node, comp_type):
+    """
+    A helper function used by _calculate_new_market_shares() to find all the technologies competing
+    for marketshare at a given node & year.
 
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving data.
+    node : str
+        Name of the node (branch notation) whose competing technologies we want to find.
+    comp_type : str
+        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
 
-def _find_competing_techs(model, node, year, comp_type):
-    node_year_data = model.graph.nodes[node][year]
+    Returns
+    -------
+    list :
+        The list of technologies competing for market share at `node`.
+        If comp_type is Tech Compete, this will simply be the technologies defined at the node. If
+        comp_type is Node Tech Compete, this will include the technologies of the services requested
+        by node. This does not verify the technology is available in the given year.
+
+    """
+    base_year = str(model.base_year)
+    node_year_data = model.graph.nodes[node][base_year]
     competing_technologies = []
 
     if comp_type == 'tech compete':
@@ -375,14 +676,39 @@ def _find_competing_techs(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node, year, child, sub_param='branch')
-            for tech in model.graph.nodes[child_node][year]['technologies']:
+            child_node = model.get_param('Service requested', node, base_year, child,
+                                         sub_param='branch')
+            for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
     return competing_technologies
 
 
 def _find_competing_weights(model, year, competing_techs, heterogeneity):
+    """
+    A helper function called by _calculate_new_market_shares() to find the total weight and
+    technology-specific weights used during market share competition.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving values relevant to weight calculation.
+    year : str
+        The year of interest.
+    competing_techs : list
+        A list returned from _find_competing_techs() that includes all of the technologies competing
+        for market share at the given node.
+    heterogeneity : float
+        The heterogeneity value used during market share competition.
+
+    Returns
+    -------
+    float :
+        The total weight across all competing_technologies.
+    dict :
+        A dictionary mapping each technology (represented by a `(node_branch, tech)`) to the weight
+        it will have during market share competition.
+    """
     total_weight = 0
     weights = {}
 
@@ -399,10 +725,34 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
 
 
 def _calculate_new_market_shares(model, node, year, comp_type):
+    """
+    A helper function called by `all_tech_compete_allocation()` to calculate the new market shares
+    for the technologies or services at the specified node. This is where the market share
+    competition occurs.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving values relevant to weight calculation.
+    node
+        The name of the node (branch notation) whose technologies' will compete for market share.
+    year : str
+        The year to calculate new market share for.
+    comp_type : str
+        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
+
+    Returns
+    -------
+    dict :
+        A dictionary mapping the technologies or services within node to their new market shares.
+        Note that while market share competition occurs across all competing technologies (includes
+        techs @ services for Node Tech Compete), new market shares are agregated to the tech/service
+        specified at `node` before being returned as a dictionary.
+    """
     heterogeneity = model.get_param('Heterogeneity', node, year)
 
     # Find each of the technologies which will be competed for
-    competing_techs = _find_competing_techs(model, node, year, comp_type)
+    competing_techs = _find_competing_techs(model, node, comp_type)
 
     # Find the weights that we will be using to calculate market share
     total_weight, tech_weights = _find_competing_weights(model, year, competing_techs,
@@ -430,14 +780,44 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     else:
                         new_market_share = child_new_market_shares[tech]
                     new_market_shares[tech_child] += new_market_share
-        _initialize_stocks(model, node, year, tech_child)
+        # Initialize stocks in the Model
+        model.graph.nodes[node][year]['technologies'][tech_child]['base_stock'] = \
+            utils.create_value_dict(0, param_source='initialization')
+        model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
+            utils.create_value_dict(0, param_source='initialization')
 
     return new_market_shares
 
 
 def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
                                    existing_stock, adjusted_new_ms):
+    """
+    A helper function called by `all_tech_compete_allocation()` to calculate total market shares
+    for all technologies competing at the specified node. This is where the market share competition
+    happens.
 
+    Parameters
+    ----------
+    node : str
+        The name of the node (branch notation) whose technologies/services we want to calculate
+        total market share for.
+    assessed_demand : float
+        The total quantity demanded of `node` (includes existing stock).
+    new_stock_demanded : float
+        The amount of new stock demanded of `node`.
+    existing_stock : dict
+        A dictionary mapping each competing technology to the amount of previously adopted stock
+        that remains at the node.
+    adjusted_new_ms : dict
+        Min/Max market share compatible new market shares for each technology or service defined at
+        `node`.
+
+    Returns
+    -------
+    dict :
+        A dictionary mapping the technologies or services within `node` to their total market
+        shares.
+    """
     # Initialize Total Stock
     total_stocks = {t: 0 for t in adjusted_new_ms}
     # Add existing stocks
@@ -736,8 +1116,35 @@ def _apply_min_max_limits(model, node, year, new_market_shares):
 #############################
 # Record Values
 #############################
-def _record_provided_quantities(requested_services, assessed_demand, model, node, year,
-                                tech=None, market_share=1):
+def _record_provided_quantities(model, node, year, requested_services, assessed_demand, tech=None,
+                                market_share=1):
+    """
+    A helper function used by `all_tech_compete_allocation()` and `general_allocation()` to record
+    the quantities provided by down-tree services (nodes requested by node) to `node` in `year`.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model where provided quantities will be recorded.
+    node : str
+        The node which requests the quantities.
+    year : str
+        The year in which the quantities are being requested.
+    requested_services : list or dict
+        The services being requested by the given node/tech.
+    assessed_demand : float
+        The total quantity demanded by node (across all technologies).
+    tech : str, optional
+        The technology which requests the quantities. Defaults to None.
+    market_share : float, optional
+        The ratio [0, 1] of assessed demand attributed to the requesting node/technology. Defaults
+        to 1.
+
+    Returns
+    -------
+    None :
+        Nothing is returned. Instead, the model is updated with the provided quantities.
+    """
     if isinstance(requested_services, dict):
         requested_services = [requested_services]
 
@@ -753,8 +1160,33 @@ def _record_provided_quantities(requested_services, assessed_demand, model, node
                                                                         requesting_technology=tech)
 
 
-def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares_per_tech,
-                               new_stock_demanded, assessed_demand):
+def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares,
+                               assessed_demand, new_stock_demanded):
+    """
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model where the results of stock allocation (new stock, market shares, etc).
+    node : str
+        The name of the node (branch form) whose results are being recorded.
+    year : str
+        The year in which to record results.
+    adjusted_new_ms : dict
+        The dictionary containing min/max limit compliant new market shares for each of the node's
+        technologies/services.
+    total_market_shares : dict
+        The dictionary containing total market shares for each of the node's technologies/services.
+    assessed_demand : float
+        The total amount of stock demanded of `node` in the given `year`, including existing stock.
+    new_stock_demanded :
+        The amount of new stock demanded of `node` in the given `year`.
+
+    Returns
+    -------
+    None :
+        Nothing is returned. Instead, the model is updated with the results of stock allocation.
+    """
     for tech in adjusted_new_ms:
         # New Market Shares
         model.graph.nodes[node][year]['technologies'][tech]['new_market_share'] = \
@@ -772,15 +1204,15 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
                                         param_source='calculation')
 
     # Record Total Market Share
-    for tech in total_market_shares_per_tech:
+    for tech in total_market_shares:
         model.graph.nodes[node][year]['technologies'][tech]['total_market_share'] = \
-            utils.create_value_dict(total_market_shares_per_tech[tech], param_source='calculation')
+            utils.create_value_dict(total_market_shares[tech], param_source='calculation')
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
         if 'Service requested' in tech_data.keys():
             services_being_requested = tech_data['Service requested']
             # Calculate the provided_quantities being for each of the services
-            t_ms = total_market_shares_per_tech[tech]
-            _record_provided_quantities(services_being_requested, assessed_demand,
-                                        model, node, year, tech=tech, market_share=t_ms)
+            t_ms = total_market_shares[tech]
+            _record_provided_quantities(model, node, year, services_being_requested,
+                                        assessed_demand, tech=tech, market_share=t_ms)
