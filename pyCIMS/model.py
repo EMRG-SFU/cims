@@ -127,13 +127,14 @@ class Model:
         self.prices = {}
 
         self.build_graph()
+        self.dcc_classes = self._dcc_classes()
 
         self.show_run_warnings = True
 
         self.model_description_file = model_reader.infile
         self.change_history = pd.DataFrame(
-            columns=['base_model_description', 'node', 'year', 'technology', 'parameter', 'sub_parameter', 'old_value',
-                     'new_value'])
+            columns=['base_model_description', 'node', 'year', 'technology', 'parameter',
+                     'sub_parameter', 'old_value', 'new_value'])
 
     def build_graph(self):
         """
@@ -155,6 +156,34 @@ class Model:
 
         self.fuels = graph_utils.get_fuels(graph)
         self.graph = graph
+
+    def _dcc_classes(self):
+        """
+        Iterate through each node and technology in self to create a dictionary mapping Declining
+        Capital Cost (DCC) Classes to a list of nodes that belong to that class.
+
+        Returns
+        -------
+        dict {str: [str]}:
+            Dictionary where keys are declining capital cost classes (str) and values are lists of
+            nodes (str) belonging to that class.
+        """
+        dcc_classes = {}
+
+        nodes = self.graph.nodes
+        base_year = str(self.base_year)
+        for node in nodes:
+            if 'technologies' in nodes[node][base_year]:
+                for tech in nodes[node][base_year]['technologies']:
+                    dccc = self.get_param('Capital cost_declining_Class', node, base_year, tech,
+                                          sub_param='value')
+                    if dccc is not None:
+                        if dccc in dcc_classes:
+                            dcc_classes[dccc].append((node, tech))
+                        else:
+                            dcc_classes[dccc] = [(node, tech)]
+
+        return dcc_classes
 
     def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
         """
