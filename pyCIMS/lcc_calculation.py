@@ -169,8 +169,22 @@ def calc_lcc(model, node, year, tech):
 
 
 def emissions_cost(model, node, year, tech):
+    """
+    Returns the emission cost at that node for the following parameters. First calculate total emissions, gross
+    emissions, captured emissions, net emissions, and then the final emission cost. Returns the sum of all emission
+    costs. To see how the calculation works,
+    see the file 'Emissions_tax_example.xlsx': https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
 
-    if 'Tax' not in model.graph.nodes[node][year]:
+    :param pyCIMS.model.Model model:
+    :param str node: The name of the node whose parameters we are calculating.
+    :param str year: The year for which we are calculating parameters.
+    :param str tech: The tech from the node we're doing the calculation on
+    :return: (float) the total emission cost
+    """
+
+    fuels = graph_utils.get_fuels(model.graph)
+    if 'Tax' not in model.graph.nodes[node][year] or node in fuels:
+        # No emissions cost
         return 0
 
     # Initialize all taxes and emission removal rates to 0
@@ -188,7 +202,6 @@ def emissions_cost(model, node, year, tech):
         # example of item in tax_rates -> 'CO2': {'Combustion': 5}
         tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
 
-    # --------- EMISSIONS ------------
     # First check if the node produces any emissions
     emission_val = {}
     total = 0
@@ -211,7 +224,6 @@ def emissions_cost(model, node, year, tech):
         for removal_name, removal_data in removal_dict.items():
             removal_rates[removal_name][removal_data['sub_param']] = removal_data['year_value']
 
-    fuels = graph_utils.get_fuels(model.graph)
     # Check if any children produce emissions
     # TODO: Update get_param() so that this if statement is fixed
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
