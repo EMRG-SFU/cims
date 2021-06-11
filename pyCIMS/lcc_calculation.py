@@ -216,7 +216,7 @@ def calc_declining_cc(model, node, year, tech):
                                         tech)  # capital cost adjusted for cumulative stock in all other countries
 
         # Cumulative New Stock summed over all techs in DCC Class
-        dcc_class_techs = techs_in_dcc_class(model, dcc_class, year)
+        dcc_class_techs = model.dcc_classes[dcc_class]
         cns_sum = 0
         for node_k, tech_k in dcc_class_techs:
             cns_k = model.get_param('Capital cost_declining_cumulative new stock', node_k, year, tech_k)
@@ -224,7 +224,7 @@ def calc_declining_cc(model, node, year, tech):
 
         # New Stock summed over all techs in DCC class and over all previous years
         # (excluding base year)
-        dcc_class_techs = techs_in_dcc_class(model, dcc_class, year)
+        dcc_class_techs = model.dcc_classes[dcc_class]
         ns_sum = 0
         for node_k, tech_k in dcc_class_techs:
             year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
@@ -396,14 +396,3 @@ def calc_annual_service_cost(model, node, year, tech=None):
 
     return total_service_cost
 
-
-def techs_in_dcc_class(model, dcc_class, year):
-    tech_list = []
-    nodes = model.graph.nodes
-    for node in nodes:
-        if 'technologies' in nodes[node][year]:
-            for tech in nodes[node][year]['technologies']:
-                dccc = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='value')
-                if dccc == dcc_class:
-                    tech_list.append((node, tech))
-    return tech_list
