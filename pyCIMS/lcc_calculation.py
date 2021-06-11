@@ -179,7 +179,7 @@ def emissions_cost(model, node, year, tech):
     :param str node: The name of the node whose parameters we are calculating.
     :param str year: The year for which we are calculating parameters.
     :param str tech: The tech from the node we're doing the calculation on
-    :return: (float) the total emission cost
+    :return: the total emission cost (float)
     """
 
     fuels = graph_utils.get_fuels(model.graph)
@@ -189,6 +189,10 @@ def emissions_cost(model, node, year, tech):
 
     # Initialize all taxes and emission removal rates to 0
     tax_rates = {}
+
+    if tech == 'Extraction of coal Biodiesel':
+        rashid = 1
+
     for fuel_name in ['CO2', 'CH4', 'N2O']:
         tax_rates[fuel_name] = {}
         for sub_name in ['Process', 'Fugitive', 'Combustion']:
@@ -202,21 +206,21 @@ def emissions_cost(model, node, year, tech):
         # example of item in tax_rates -> 'CO2': {'Combustion': 5}
         tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
 
-    # First check if the node produces any emissions
-    emission_val = {}
+    # EMISSIONS tech level
+    total_emissions = {}
     total = 0
     if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
-        emission_val[tech] = {}
+        total_emissions[tech] = {}
         data = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
 
         # If only 1 emission, put it in a list
         if isinstance(data, dict):
             data = [data]
 
-        for em in data:
-            if em['value'] not in emission_val[tech]:
-                emission_val[tech][em['value']] = {}
-            emission_val[tech][em['value']][em['sub_param']] = em['year_value']
+        for fuel_info in data:
+            if fuel_info['value'] not in total_emissions[tech]:
+                total_emissions[tech][fuel_info['value']] = {}
+            total_emissions[tech][fuel_info['value']][fuel_info['sub_param']] = fuel_info['year_value']
 
     # EMISSIONS REMOVAL tech level
     if 'Emissions removal' in model.graph.nodes[node][year]:
@@ -224,7 +228,7 @@ def emissions_cost(model, node, year, tech):
         for removal_name, removal_data in removal_dict.items():
             removal_rates[removal_name][removal_data['sub_param']] = removal_data['year_value']
 
-    # Check if any children produce emissions
+    # Check all services requested for
     # TODO: Update get_param() so that this if statement is fixed
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
@@ -233,69 +237,72 @@ def emissions_cost(model, node, year, tech):
             # Wrap the single request in a list to work with below code
             data = [data]
 
-        # EMISSIONS
-        for children in data:
-            req_val = children['year_value']
-            child_node = children['branch']
+        # EMISSIONS child level
+        for child_info in data:
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
             if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
                 fuel_emissions = model.get_param('Emissions', child_node, year)
-                emission_val[child_node] = {}
+                total_emissions[child_node] = {}
                 for fuel_name, fuel_data in fuel_emissions.items():
-                    if fuel_name not in emission_val[child_node]:
-                        emission_val[child_node][fuel_name] = {}
-                    emission_val[child_node][fuel_name][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
+                    if fuel_name not in total_emissions[child_node]:
+                        total_emissions[child_node][fuel_name] = {}
+                    total_emissions[child_node][fuel_name][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
-        gross_val = deepcopy(emission_val)
-        for children in data:
-            req_val = children['year_value']
-            child_node = children['branch']
+    gross_emissions = deepcopy(total_emissions)
+
+    if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+        if isinstance(data, dict):
+            data = [data]
+
+        for child_info in data:
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
 
             # GROSS EMISSIONS
             if 'Gross Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
                 gross_dict = model.graph.nodes[child_node][year]['Gross Emissions']
                 for gross_name, gross_data in gross_dict.items():
-                    gross_val[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
+                    gross_emissions[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
 
             # EMISSIONS REMOVAL child level
             if 'technologies' in model.graph.nodes[child_node][year]:
-
-                if tech == 'Extraction of coal Biodiesel':
-                    rashid = 1
-
                 child_techs = model.graph.nodes[child_node][year]['technologies']
                 for _, tech_data in child_techs.items():
                     if 'Emissions removal' in tech_data:
                         removal_dict = tech_data['Emissions removal']
                         removal_rates[removal_dict['value']][removal_dict['sub_param']] = removal_dict['year_value']
 
-        # CAPTURED EMISSIONS
-        captured_val = deepcopy(gross_val)
-        for node_name in captured_val:
-            for fuel_name in captured_val[node_name]:
-                for sub_name in captured_val[node_name][fuel_name]:
-                    em_removed = removal_rates[fuel_name][sub_name]
-                    captured_val[node_name][fuel_name][sub_name] *= em_removed
+    # CAPTURED EMISSIONS
+    captured_emissions = deepcopy(gross_emissions)
+    for node_name in captured_emissions:
+        for fuel_name in captured_emissions[node_name]:
+            for sub_name in captured_emissions[node_name][fuel_name]:
+                em_removed = removal_rates[fuel_name][sub_name]
+                captured_emissions[node_name][fuel_name][sub_name] *= em_removed
 
-        # NET EMISSIONS
-        net_val = deepcopy(emission_val)
-        for node_name in net_val:
-            for fuel_name in net_val[node_name]:
-                for sub_name in net_val[node_name][fuel_name]:
-                    net_val[node_name][fuel_name][sub_name] -= captured_val[node_name][fuel_name][sub_name]
+    # NET EMISSIONS
+    net_emissions = deepcopy(total_emissions)
+    for node_name in net_emissions:
+        for fuel_name in net_emissions[node_name]:
+            for sub_name in net_emissions[node_name][fuel_name]:
+                net_emissions[node_name][fuel_name][sub_name] -= captured_emissions[node_name][fuel_name][sub_name]
 
-        # EMISSIONS COST
-        emissions_cost = deepcopy(net_val)
-        for node_name in emissions_cost:
-            for fuel_name in emissions_cost[node_name]:
-                for sub_name in emissions_cost[node_name][fuel_name]:
-                    tax = tax_rates[fuel_name][sub_name]
-                    emissions_cost[node_name][fuel_name][sub_name] *= tax
+    # EMISSIONS COST
+    emissions_cost = deepcopy(net_emissions)
+    for node_name in emissions_cost:
+        for fuel_name in emissions_cost[node_name]:
+            for sub_name in emissions_cost[node_name][fuel_name]:
+                tax = tax_rates[fuel_name][sub_name]
+                emissions_cost[node_name][fuel_name][sub_name] *= tax
 
-        # Add everything in nested dictionary together
-        for node_name in emissions_cost:
-            for fuel_name in emissions_cost[node_name]:
-                for _, cost in emissions_cost[node_name][fuel_name].items():
-                    total += cost
+    # Add everything in nested dictionary together
+    for node_name in emissions_cost:
+        for fuel_name in emissions_cost[node_name]:
+            for _, cost in emissions_cost[node_name][fuel_name].items():
+                total += cost
 
     return total
 
