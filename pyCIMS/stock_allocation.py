@@ -38,9 +38,6 @@ def all_tech_compete_allocation(model, node, year):
         new stock competitions.
     """
 
-    if node == 'pyCIMS.Canada.Alberta.Petroleum Crude.Still Gas.Steam':
-        rashid = 1
-
     comp_type = model.get_param('competition type', node)
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
