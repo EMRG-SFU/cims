@@ -37,9 +37,14 @@ def all_tech_compete_allocation(model, node, year):
         Nothing is returned. `model` will be updated to reflect the results of stock retirement and
         new stock competitions.
     """
+
+    if node == 'pyCIMS.Canada.Alberta.Petroleum Crude.Still Gas.Steam':
+        rashid = 1
+
     comp_type = model.get_param('competition type', node)
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
+    # TODO: get_param should return a dictionary instead of a class for easier reading
     assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement

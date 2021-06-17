@@ -1,3 +1,4 @@
+# TODO: make quantity classes into a superclass with methods on dictionaries
 class ProvidedQuantity:
     def __init__(self):
         self.provided_quantities = {}
