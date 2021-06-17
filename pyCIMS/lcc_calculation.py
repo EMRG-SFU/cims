@@ -43,7 +43,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             return
 
     # Check if the node is a tech compete node:
-    if model.get_param('competition type', node) in ["tech compete"]:
+    if model.get_param('competition type', node) in ["tech compete", "node tech compete"]:
         total_lcc_v = 0.0
         v = model.get_param('Heterogeneity', node, year)
 
