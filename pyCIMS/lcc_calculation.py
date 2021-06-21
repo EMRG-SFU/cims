@@ -182,28 +182,23 @@ def emissions_cost(model, node, year, tech):
     :return: the total emission cost (float)
     """
 
-    fuels = graph_utils.get_fuels(model.graph)
+    if node == 'pyCIMS.Canada.Alberta.Coal Mining.Coal.Raw Product.Extraction':
+        rashid = 1
+
+    fuels = model.fuels
+
+    # No tax rate at all or node is a fuel
     if 'Tax' not in model.graph.nodes[node][year] or node in fuels:
-        # No emissions cost
         return 0
 
     # Initialize all taxes and emission removal rates to 0
-    tax_rates = {}
-
-    if tech == 'Extraction of coal Biodiesel':
-        rashid = 1
-
-    for fuel_name in ['CO2', 'CH4', 'N2O']:
-        tax_rates[fuel_name] = {}
-        for sub_name in ['Process', 'Fugitive', 'Combustion']:
-            tax_rates[fuel_name][sub_name] = 0
-
+    # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
+    tax_rates = {ghg: {em_type: 0 for em_type in model.emission_types} for ghg in model.GHGs}
     removal_rates = deepcopy(tax_rates)
 
     # Grab correct tax values
     all_taxes = model.get_param('Tax', node, year)  # returns a dict
     for tax, tax_dict in all_taxes.items():
-        # example of item in tax_rates -> 'CO2': {'Combustion': 5}
         tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
 
     # EMISSIONS tech level
@@ -244,10 +239,10 @@ def emissions_cost(model, node, year, tech):
             if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
                 fuel_emissions = model.get_param('Emissions', child_node, year)
                 total_emissions[child_node] = {}
-                for fuel_name, fuel_data in fuel_emissions.items():
-                    if fuel_name not in total_emissions[child_node]:
-                        total_emissions[child_node][fuel_name] = {}
-                    total_emissions[child_node][fuel_name][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
+                for GHG, fuel_data in fuel_emissions.items():
+                    if GHG not in total_emissions[child_node]:
+                        total_emissions[child_node][GHG] = {}
+                    total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
     gross_emissions = deepcopy(total_emissions)
 
@@ -278,30 +273,30 @@ def emissions_cost(model, node, year, tech):
     # CAPTURED EMISSIONS
     captured_emissions = deepcopy(gross_emissions)
     for node_name in captured_emissions:
-        for fuel_name in captured_emissions[node_name]:
-            for sub_name in captured_emissions[node_name][fuel_name]:
-                em_removed = removal_rates[fuel_name][sub_name]
-                captured_emissions[node_name][fuel_name][sub_name] *= em_removed
+        for GHG in captured_emissions[node_name]:
+            for emission_category in captured_emissions[node_name][GHG]:
+                em_removed = removal_rates[GHG][emission_category]
+                captured_emissions[node_name][GHG][emission_category] *= em_removed
 
     # NET EMISSIONS
     net_emissions = deepcopy(total_emissions)
     for node_name in net_emissions:
-        for fuel_name in net_emissions[node_name]:
-            for sub_name in net_emissions[node_name][fuel_name]:
-                net_emissions[node_name][fuel_name][sub_name] -= captured_emissions[node_name][fuel_name][sub_name]
+        for GHG in net_emissions[node_name]:
+            for emission_category in net_emissions[node_name][GHG]:
+                net_emissions[node_name][GHG][emission_category] -= captured_emissions[node_name][GHG][emission_category]
 
     # EMISSIONS COST
     emissions_cost = deepcopy(net_emissions)
     for node_name in emissions_cost:
-        for fuel_name in emissions_cost[node_name]:
-            for sub_name in emissions_cost[node_name][fuel_name]:
-                tax = tax_rates[fuel_name][sub_name]
-                emissions_cost[node_name][fuel_name][sub_name] *= tax
+        for GHG in emissions_cost[node_name]:
+            for emission_category in emissions_cost[node_name][GHG]:
+                tax = tax_rates[GHG][emission_category]
+                emissions_cost[node_name][GHG][emission_category] *= tax
 
     # Add everything in nested dictionary together
     for node_name in emissions_cost:
-        for fuel_name in emissions_cost[node_name]:
-            for _, cost in emissions_cost[node_name][fuel_name].items():
+        for GHG in emissions_cost[node_name]:
+            for _, cost in emissions_cost[node_name][GHG].items():
                 total += cost
 
     return total

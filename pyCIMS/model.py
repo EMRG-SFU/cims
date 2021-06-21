@@ -121,6 +121,8 @@ class Model:
         self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
+        self.GHGs = []
+        self.emission_types = []
         self.years = model_reader.get_years()
         self.base_year = int(self.years[0])
 
@@ -154,6 +156,7 @@ class Model:
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
         self.fuels = graph_utils.get_fuels(graph)
+        self.GHGs, self.emission_types = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
 
     def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
@@ -509,8 +512,6 @@ class Model:
         graph_utils.bottom_up_traversal(graph,
                                         init_fuel_lcc,
                                         year)
-
-
 
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
@@ -1210,7 +1211,8 @@ class Model:
                 if save:
                     filename = model.model_description_file.split('/')[-1].split('.')[0]
                     change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': None,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
+                                  'new_value': new_val}
                     model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
             else:
                 print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
@@ -1285,7 +1287,8 @@ class Model:
                 if save:
                     filename = model.model_description_file.split('/')[-1].split('.')[0]
                     change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
+                                  'new_value': new_val}
                     model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
             else:
                 print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
