@@ -198,8 +198,9 @@ def emissions_cost(model, node, year, tech):
 
     # Grab correct tax values
     all_taxes = model.get_param('Tax', node, year)  # returns a dict
-    for tax, tax_dict in all_taxes.items():
-        tax_rates[tax][tax_dict['sub_param']] = tax_dict['year_value']
+    for tax_name, tax_list in all_taxes.items():
+        for tax_dict in tax_list:
+            tax_rates[tax_name][tax_dict['sub_param']] = tax_dict['year_value']
 
     # EMISSIONS tech level
     total_emissions = {}
@@ -239,10 +240,11 @@ def emissions_cost(model, node, year, tech):
             if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
                 fuel_emissions = model.get_param('Emissions', child_node, year)
                 total_emissions[child_node] = {}
-                for GHG, fuel_data in fuel_emissions.items():
-                    if GHG not in total_emissions[child_node]:
-                        total_emissions[child_node][GHG] = {}
-                    total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
+                for GHG, fuel_list in fuel_emissions.items():
+                    for fuel_data in fuel_list:
+                        if GHG not in total_emissions[child_node]:
+                            total_emissions[child_node][GHG] = {}
+                        total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
     gross_emissions = deepcopy(total_emissions)
 
@@ -259,8 +261,9 @@ def emissions_cost(model, node, year, tech):
             # GROSS EMISSIONS
             if 'Gross Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
                 gross_dict = model.graph.nodes[child_node][year]['Gross Emissions']
-                for gross_name, gross_data in gross_dict.items():
-                    gross_emissions[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
+                for gross_name, gross_list in gross_dict.items():
+                    for gross_data in gross_list:
+                        gross_emissions[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
 
             # EMISSIONS REMOVAL child level
             if 'technologies' in model.graph.nodes[child_node][year]:
@@ -290,8 +293,8 @@ def emissions_cost(model, node, year, tech):
     for node_name in emissions_cost:
         for GHG in emissions_cost[node_name]:
             for emission_category in emissions_cost[node_name][GHG]:
-                tax = tax_rates[GHG][emission_category]
-                emissions_cost[node_name][GHG][emission_category] *= tax
+                tax_name = tax_rates[GHG][emission_category]
+                emissions_cost[node_name][GHG][emission_category] *= tax_name
 
     # Add everything in nested dictionary together
     for node_name in emissions_cost:

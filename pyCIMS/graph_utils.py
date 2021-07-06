@@ -354,7 +354,14 @@ def add_node_data(graph, current_node, node_dfs):
                 pass
             else:
                 year_dict[param] = {}
-            year_dict[param][val] = dct
+
+            if sub_param:
+                if val not in year_dict[param]:
+                    year_dict[param][val] = [dct]
+                else:
+                    year_dict[param][val].append(dct)
+            else:
+                year_dict[param][val] = dct
 
         # Add data to node
         graph.nodes[current_node][year] = year_dict

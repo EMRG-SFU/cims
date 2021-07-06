@@ -151,7 +151,6 @@ class Model:
         graph = nx.DiGraph()
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
-
         graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
@@ -484,22 +483,26 @@ class Model:
             Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
             """
 
-            # If current node already has Tax, do nothing
-            if 'Tax' in graph.nodes[node][year]:
-                return None
-
             # Retrieve tax from the parents (if they exist)
             parents = list(graph.predecessors(node))
             parent_tax = {}
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Tax' in graph.nodes[parent][year]:
-                    tax_rate = self.get_param('Tax', parent, year)
-                    parent_tax.update(tax_rate)
+                    parent_dict = self.get_param('Tax', parent, year)
+                    parent_tax.update(parent_dict)
 
-            # Set Price Multiplier of node in the graph if there is a tax
+            # Set the oldest tax first then re-update the taxes with the node's own tax
             if parent_tax:
+                node_tax = {}
+                if 'Tax' in graph.nodes[node][year]:
+                    node_tax = graph.nodes[node][year]['Tax']
+
                 graph.nodes[node][year]['Tax'] = parent_tax
+
+                # If current node already has Tax, overwrite the parent tax with matching name+param
+                if node_tax:
+                    graph.nodes[node][year]['Tax'].update(node_tax)
 
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
