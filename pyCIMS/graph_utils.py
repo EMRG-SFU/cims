@@ -160,12 +160,8 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
-        active_front = [n for n, d in sg_cur.in_degree if d == 0]
-
-        if len(active_front) > 0:
-            # Choose a node on the active front
-            n_cur = active_front[0]
-            # Process that node in the sub-graph
+        n_cur = find_next_node(sg_cur.in_degree)
+        if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop -- ")
@@ -229,13 +225,8 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
-        active_front = [n for n, d in sg_cur.out_degree if d == 0]
-
-        if len(active_front) > 0:
-            # Choose a node on the active front
-            n_cur = active_front[0]
-
-            # Process the node
+        n_cur = find_next_node(sg_cur.out_degree)
+        if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop")
@@ -248,6 +239,12 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         sg_cur.remove_node(n_cur)
+
+
+def find_next_node(degrees):
+    for node, degree in degrees:
+        if degree == 0:
+            return node
 
 
 # **************************
