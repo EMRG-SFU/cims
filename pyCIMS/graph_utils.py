@@ -297,23 +297,20 @@ def add_node_data(graph, current_node, node_dfs):
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
+    non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
-        year_df = current_node_df[non_years + [year]]
+        current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
-        for param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
+        for param, val, branch, src, unit, _, year_value in zip(*current_year_data):
             dct = {'source': src,
                    'branch': branch,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                pass
-            else:
+            if param not in year_dict.keys():
                 year_dict[param] = {}
             year_dict[param][val] = dct
-
-        # Add data to node
         graph.nodes[current_node][year] = year_dict
 
     # 7 Return the new graph
@@ -348,25 +345,25 @@ def add_tech_data(graph, node, tech_dfs, tech):
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
+    non_year_data = [t_df[c] for c in non_years]
     for year in years:
-        year_df = t_df[non_years + [year]]
+        current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
-
-        for parameter, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
-            dct = {'value': value,
+        for param, val, branch, source, unit, _, year_value in zip(*current_year_data):
+            dct = {'value': val,
                    'source': source,
                    'branch': branch,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if parameter in year_dict.keys():
-                if isinstance(year_dict[parameter], list):
-                    year_dict[parameter].append(dct)
+            if param in year_dict.keys():
+                if isinstance(year_dict[param], list):
+                    year_dict[param].append(dct)
                 else:
-                    year_dict[parameter] = [year_dict[parameter], dct]
+                    year_dict[param] = [year_dict[param], dct]
             else:
-                year_dict[parameter] = dct
+                year_dict[param] = dct
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
