@@ -182,9 +182,6 @@ def emissions_cost(model, node, year, tech):
     :return: the total emission cost (float)
     """
 
-    if node == 'pyCIMS.Canada.Alberta.Coal Mining.Coal.Raw Product.Extraction':
-        rashid = 1
-
     fuels = model.fuels
 
     # No tax rate at all or node is a fuel
