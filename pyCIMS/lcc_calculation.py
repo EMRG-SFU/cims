@@ -198,9 +198,9 @@ def emissions_cost(model, node, year, tech):
 
     # Grab correct tax values
     all_taxes = model.get_param('Tax', node, year)  # returns a dict
-    for tax_name, tax_list in all_taxes.items():
+    for ghg, tax_list in all_taxes.items():
         for tax_dict in tax_list:
-            tax_rates[tax_name][tax_dict['sub_param']] = tax_dict['year_value']
+            tax_rates[ghg][tax_dict['sub_param']] = tax_dict['year_value']
 
     # EMISSIONS tech level
     total_emissions = {}

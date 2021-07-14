@@ -465,8 +465,7 @@ class Model:
         def init_tax_emissions(graph, node, year):
             """
             Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
-            function assumes all of node's parents have already had their price multipliers
-            initialized.
+            function assumes all of node's parents have already had their tax emissions initialized.
 
             Parameters
             ----------
@@ -492,17 +491,26 @@ class Model:
                     parent_dict = self.get_param('Tax', parent, year)
                     parent_tax.update(parent_dict)
 
-            # Set the oldest tax first then re-update the taxes with the node's own tax
-            if parent_tax:
-                node_tax = {}
-                if 'Tax' in graph.nodes[node][year]:
-                    node_tax = graph.nodes[node][year]['Tax']
+            # Store away tax at current node to overwrite parent tax later
+            node_tax = {}
+            if 'Tax' in graph.nodes[node][year]:
+                node_tax = graph.nodes[node][year]['Tax']
 
-                graph.nodes[node][year]['Tax'] = parent_tax
+            # Make final dict where we prioritize keeping node_tax and only unique parent taxes
+            final_tax = copy.deepcopy(node_tax)
+            for ghg_name, ghg_list in parent_tax.items():
+                for ghg_dict in ghg_list:
+                    if ghg_name in final_tax:
+                        add_dict = True
+                        for final_dict in final_tax[ghg_name]:
+                            if ghg_dict['sub_param'] == final_dict['sub_param']:
+                                add_dict = False
+                        if add_dict:
+                            final_tax[ghg_name].append(ghg_dict)
+                    else:   # New tax GHG that is at the parent but not at current node
+                        final_tax[ghg_name] = [ghg_dict]
 
-                # If current node already has Tax, overwrite the parent tax with matching name+param
-                if node_tax:
-                    graph.nodes[node][year]['Tax'].update(node_tax)
+            graph.nodes[node][year]['Tax'] = final_tax
 
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
