@@ -61,6 +61,8 @@ class Model:
         self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
+        self.GHGs = []
+        self.emission_types = []
         self.years = model_reader.get_years()
         self.base_year = int(self.years[0])
 
@@ -90,11 +92,11 @@ class Model:
         graph = nx.DiGraph()
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
-
         graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
         self.fuels = graph_utils.get_fuels(graph)
+        self.GHGs, self.emission_types = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
 
     def _dcc_classes(self):
@@ -429,8 +431,62 @@ class Model:
                     else:
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
 
+        def init_tax_emissions(graph, node, year):
+            """
+            Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
+            function assumes all of node's parents have already had their tax emissions initialized.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
+            """
+
+            # Retrieve tax from the parents (if they exist)
+            parents = list(graph.predecessors(node))
+            parent_tax = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'Tax' in graph.nodes[parent][year]:
+                    parent_dict = self.get_param('Tax', parent, year)
+                    parent_tax.update(parent_dict)
+
+            # Store away tax at current node to overwrite parent tax later
+            node_tax = {}
+            if 'Tax' in graph.nodes[node][year]:
+                node_tax = graph.nodes[node][year]['Tax']
+
+            # Make final dict where we prioritize keeping node_tax and only unique parent taxes
+            final_tax = copy.deepcopy(node_tax)
+            for ghg_name, ghg_list in parent_tax.items():
+                for ghg_dict in ghg_list:
+                    if ghg_name in final_tax:
+                        add_dict = True
+                        for final_dict in final_tax[ghg_name]:
+                            if ghg_dict['sub_param'] == final_dict['sub_param']:
+                                add_dict = False
+                        if add_dict:
+                            final_tax[ghg_name].append(ghg_dict)
+                    else:   # New tax GHG that is at the parent but not at current node
+                        final_tax[ghg_name] = [ghg_dict]
+
+            graph.nodes[node][year]['Tax'] = final_tax
+
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
+                                       year)
+
+        graph_utils.top_down_traversal(graph,
+                                       init_tax_emissions,
                                        year)
 
         graph_utils.bottom_up_traversal(graph,
@@ -801,7 +857,8 @@ class Model:
                 if save:
                     filename = model.model_description_file.split('/')[-1].split('.')[0]
                     change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': None,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
+                                  'new_value': new_val}
                     model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
             else:
                 print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
@@ -876,7 +933,8 @@ class Model:
                 if save:
                     filename = model.model_description_file.split('/')[-1].split('.')[0]
                     change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
+                                  'new_value': new_val}
                     model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
             else:
                 print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
