@@ -168,7 +168,7 @@ def calc_lcc(model, node, year, tech):
     return lcc
 
 
-def emissions_cost(model, node, year, tech):
+def calc_emissions_cost(model, node, year, tech):
     """
     Returns the emission cost at that node for the following parameters. First calculate total emissions, gross
     emissions, captured emissions, net emissions, and then the final emission cost. Returns the sum of all emission

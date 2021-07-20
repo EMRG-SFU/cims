@@ -106,10 +106,6 @@ def get_GHG_and_Emissions(graph, year):
         if 'technologies' in data[year]:
             techs = data[year]['technologies']
             for tech in techs:
-
-                if tech == 'Extraction of coal':
-                    rashid = 1
-
                 tech_data = data[year]['technologies'][tech]
                 if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
                     if 'Emissions' in tech_data:
@@ -125,8 +121,6 @@ def get_GHG_and_Emissions(graph, year):
 
                     ghg = list(set(ghg + node_ghg))
                     emission_type = list(set(emission_type + node_emission_type))
-
-    rashid = 1
 
     return ghg, emission_type
 
