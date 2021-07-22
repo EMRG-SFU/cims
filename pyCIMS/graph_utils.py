@@ -92,6 +92,39 @@ def get_fuels(graph):
     return fuels
 
 
+def get_GHG_and_Emissions(graph, year):
+    """
+    Return 2 lists consisting of all the GHGs (CO2, CH4, etc.) and all the emission types (Process, Fugitive, etc.)
+    :param DiGraph graph: graph to search for all emissions
+    :param str year: year to find emissions, will likely be base year
+    :return: list of GHGs and a list of emission types
+    """
+
+    ghg = []
+    emission_type = []
+    for node, data in graph.nodes(data=True):
+        if 'technologies' in data[year]:
+            techs = data[year]['technologies']
+            for tech in techs:
+                tech_data = data[year]['technologies'][tech]
+                if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
+                    if 'Emissions' in tech_data:
+                        ghg_list = data[year]['technologies'][tech]['Emissions']
+                    else:
+                        ghg_list = data[year]['technologies'][tech]['Emissions removal']
+
+                    if isinstance(ghg_list, dict):
+                        ghg_list = [ghg_list]
+
+                    node_ghg = [ghg['value'] for ghg in ghg_list]
+                    node_emission_type = [ghg['sub_param'] for ghg in ghg_list]
+
+                    ghg = list(set(ghg + node_ghg))
+                    emission_type = list(set(emission_type + node_emission_type))
+
+    return ghg, emission_type
+
+
 def get_subgraph(graph, node_types):
     """
     Find the sub-graph of `graph` that only includes nodes whose type is in `node_types`.
@@ -301,16 +334,26 @@ def add_node_data(graph, current_node, node_dfs):
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
-        for param, val, branch, src, unit, _, year_value in zip(*current_year_data):
+        for param, sub_param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': src,
                    'branch': branch,
+                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
             if param not in year_dict.keys():
                 year_dict[param] = {}
-            year_dict[param][val] = dct
+
+            if sub_param:
+                if val not in year_dict[param]:
+                    year_dict[param][val] = [dct]
+                else:
+                    year_dict[param][val].append(dct)
+            else:
+                year_dict[param][val] = dct
+
+        # Add data to node
         graph.nodes[current_node][year] = year_dict
 
     # 7 Return the new graph
@@ -349,10 +392,12 @@ def add_tech_data(graph, node, tech_dfs, tech):
     for year in years:
         current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
-        for param, val, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'value': val,
+
+        for parameter, sub_param, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
+            dct = {'value': value,
                    'source': source,
                    'branch': branch,
+                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}

@@ -1,6 +1,8 @@
 import warnings
 from . import utils
 import math
+from . import graph_utils
+from copy import deepcopy
 
 
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
@@ -43,7 +45,7 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             return
 
     # Check if the node is a tech compete node:
-    if model.get_param('competition type', node) in ["tech compete"]:
+    if model.get_param('competition type', node) in ["tech compete", "node tech compete"]:
         total_lcc_v = 0.0
         v = model.get_param('Heterogeneity', node, year)
 
@@ -161,8 +163,143 @@ def calc_lcc(model, node, year, tech):
     upfront_cost = model.get_or_calc_param('Upfront cost', node, year, tech)
     annual_cost = model.get_or_calc_param('Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost
+    emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
+    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
     return lcc
+
+
+def calc_emissions_cost(model, node, year, tech):
+    """
+    Returns the emission cost at that node for the following parameters. First calculate total emissions, gross
+    emissions, captured emissions, net emissions, and then the final emission cost. Returns the sum of all emission
+    costs. To see how the calculation works,
+    see the file 'Emissions_tax_example.xlsx': https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
+
+    :param pyCIMS.model.Model model:
+    :param str node: The name of the node whose parameters we are calculating.
+    :param str year: The year for which we are calculating parameters.
+    :param str tech: The tech from the node we're doing the calculation on
+    :return: the total emission cost (float)
+    """
+
+    fuels = model.fuels
+
+    # No tax rate at all or node is a fuel
+    if 'Tax' not in model.graph.nodes[node][year] or node in fuels:
+        return 0
+
+    # Initialize all taxes and emission removal rates to 0
+    # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
+    tax_rates = {ghg: {em_type: 0 for em_type in model.emission_types} for ghg in model.GHGs}
+    removal_rates = deepcopy(tax_rates)
+
+    # Grab correct tax values
+    all_taxes = model.get_param('Tax', node, year)  # returns a dict
+    for ghg, tax_list in all_taxes.items():
+        for tax_dict in tax_list:
+            tax_rates[ghg][tax_dict['sub_param']] = tax_dict['year_value']
+
+    # EMISSIONS tech level
+    total_emissions = {}
+    total = 0
+    if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
+        total_emissions[tech] = {}
+        data = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
+
+        # If only 1 emission, put it in a list
+        if isinstance(data, dict):
+            data = [data]
+
+        for fuel_info in data:
+            if fuel_info['value'] not in total_emissions[tech]:
+                total_emissions[tech][fuel_info['value']] = {}
+            total_emissions[tech][fuel_info['value']][fuel_info['sub_param']] = fuel_info['year_value']
+
+    # EMISSIONS REMOVAL tech level
+    if 'Emissions removal' in model.graph.nodes[node][year]:
+        removal_dict = model.graph.nodes[node][year]['Emissions removal']
+        for removal_name, removal_data in removal_dict.items():
+            removal_rates[removal_name][removal_data['sub_param']] = removal_data['year_value']
+
+    # Check all services requested for
+    # TODO: Update get_param() so that this if statement is fixed
+    if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+        if isinstance(data, dict):
+            # Wrap the single request in a list to work with below code
+            data = [data]
+
+        # EMISSIONS child level
+        for child_info in data:
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
+            if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
+                fuel_emissions = model.get_param('Emissions', child_node, year)
+                total_emissions[child_node] = {}
+                for GHG, fuel_list in fuel_emissions.items():
+                    for fuel_data in fuel_list:
+                        if GHG not in total_emissions[child_node]:
+                            total_emissions[child_node][GHG] = {}
+                        total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
+
+    gross_emissions = deepcopy(total_emissions)
+
+    if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+        if isinstance(data, dict):
+            data = [data]
+
+        for child_info in data:
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
+
+            # GROSS EMISSIONS
+            if 'Gross Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
+                gross_dict = model.graph.nodes[child_node][year]['Gross Emissions']
+                for gross_name, gross_list in gross_dict.items():
+                    for gross_data in gross_list:
+                        gross_emissions[child_node][gross_name][gross_data['sub_param']] = gross_data['year_value'] * req_val
+
+            # EMISSIONS REMOVAL child level
+            if 'technologies' in model.graph.nodes[child_node][year]:
+                child_techs = model.graph.nodes[child_node][year]['technologies']
+                for _, tech_data in child_techs.items():
+                    if 'Emissions removal' in tech_data:
+                        removal_dict = tech_data['Emissions removal']
+                        removal_rates[removal_dict['value']][removal_dict['sub_param']] = removal_dict['year_value']
+
+    # CAPTURED EMISSIONS
+    captured_emissions = deepcopy(gross_emissions)
+    for node_name in captured_emissions:
+        for GHG in captured_emissions[node_name]:
+            for emission_category in captured_emissions[node_name][GHG]:
+                em_removed = removal_rates[GHG][emission_category]
+                captured_emissions[node_name][GHG][emission_category] *= em_removed
+
+    # NET EMISSIONS
+    net_emissions = deepcopy(total_emissions)
+    for node_name in net_emissions:
+        for GHG in net_emissions[node_name]:
+            for emission_category in net_emissions[node_name][GHG]:
+                net_emissions[node_name][GHG][emission_category] -= captured_emissions[node_name][GHG][emission_category]
+
+    # EMISSIONS COST
+    emissions_cost = deepcopy(net_emissions)
+    for node_name in emissions_cost:
+        for GHG in emissions_cost[node_name]:
+            for emission_category in emissions_cost[node_name][GHG]:
+                tax_name = tax_rates[GHG][emission_category]
+                emissions_cost[node_name][GHG][emission_category] *= tax_name
+
+    # Add everything in nested dictionary together
+    for node_name in emissions_cost:
+        for GHG in emissions_cost[node_name]:
+            for _, cost in emissions_cost[node_name][GHG].items():
+                total += cost
+
+    return total
 
 
 def calc_upfront_cost(model, node, year, tech):
@@ -363,7 +500,7 @@ def calc_annual_service_cost(model, node, year, tech=None):
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = \
-                model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
+                    model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
             else:
                 # Encountering a non-visited node
                 service_requested_lcc = 1

@@ -52,9 +52,10 @@ def search_nodes(search_term, g):
     return [n for n in g.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, branch=None, unit=None, param_source=None):
+def create_value_dict(year_val, source=None, branch=None, sub_param=None, unit=None, param_source=None):
     value_dictionary = {'source': source,
                         'branch': branch,
+                        'sub_param': sub_param,
                         'unit': unit,
                         'year_value': year_val,
                         'param_source': param_source
@@ -97,6 +98,7 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
                          'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
                          'Annual cost': lcc_calculation.calc_annual_cost,
                          'Service cost': lcc_calculation.calc_annual_service_cost,
+                         'Emissions cost': lcc_calculation.calc_emissions_cost,
                          'Life Cycle Cost': lcc_calculation.calc_lcc}
 
 inheritable_params = []
