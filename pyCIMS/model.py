@@ -191,7 +191,7 @@ class Model:
 
                 # Calculate Quantities (Total Stock Needed)
                 graph_utils.top_down_traversal(self.graph,
-                                               self.stock_retirement_and_allocation,
+                                               self.stock_allocation_and_retirement,
                                                year,
                                                node_types=demand_nodes)
 
@@ -213,7 +213,7 @@ class Model:
                                                 node_types=supply_nodes)
                 # Calculate Fuel Quantities
                 graph_utils.top_down_traversal(self.graph,
-                                               self.stock_retirement_and_allocation,
+                                               self.stock_allocation_and_retirement,
                                                year,
                                                node_types=supply_nodes)
 
