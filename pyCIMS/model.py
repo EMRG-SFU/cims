@@ -177,7 +177,6 @@ class Model:
                     warnings.warn("Max iterations reached for year {}. "
                                   "Continuing to next year.".format(year))
                     break
-
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
@@ -190,16 +189,13 @@ class Model:
                                                 self,
                                                 node_types=demand_nodes)
 
-                for _ in range(4):
-                    # Calculate Quantities (Total Stock Needed)
-                    graph_utils.top_down_traversal(self.graph,
-                                                   self.stock_allocation_and_retirement,
-                                                   year,
-                                                   node_types=demand_nodes)
+                # Calculate Quantities (Total Stock Needed)
+                graph_utils.top_down_traversal(self.graph,
+                                               self.stock_retirement_and_allocation,
+                                               year,
+                                               node_types=demand_nodes)
 
-                    if int(year) == self.base_year:
-                        break
-
+                if int(year) != self.base_year:
                     # Calculate Service Costs on Demand Side
                     graph_utils.bottom_up_traversal(self.graph,
                                                     lcc_calculation.lcc_calculation,
@@ -215,16 +211,13 @@ class Model:
                                                 year,
                                                 self,
                                                 node_types=supply_nodes)
-                for _ in range(4):
-                    # Calculate Fuel Quantities
-                    graph_utils.top_down_traversal(self.graph,
-                                                   self.stock_allocation_and_retirement,
-                                                   year,
-                                                   node_types=supply_nodes)
+                # Calculate Fuel Quantities
+                graph_utils.top_down_traversal(self.graph,
+                                               self.stock_retirement_and_allocation,
+                                               year,
+                                               node_types=supply_nodes)
 
-                    if int(year) == self.base_year:
-                        break
-
+                if int(year) != self.base_year:
                     # Calculate Service Costs on Supply Side
                     graph_utils.bottom_up_traversal(self.graph,
                                                     lcc_calculation.lcc_calculation,
