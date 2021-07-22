@@ -1203,11 +1203,16 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
                                                      param_source='calculation')
             model.set_param_internal(new_stock_dict, 'new_stock', node, year, tech)
 
-    # Record Total Market Share
     for tech in total_market_shares:
+        # Record Total Market Shares
         total_ms_dict = utils.create_value_dict(total_market_shares[tech],
                                                 param_source='calculation')
         model.set_param_internal(total_ms_dict, 'total_market_share', node, year, tech)
+
+        # Total Stock
+        total_stock_dict = utils.create_value_dict(assessed_demand * total_market_shares[tech],
+                                                  param_source='calculation')
+        model.set_param_internal(total_stock_dict, 'total_stock', node, year, tech)
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
