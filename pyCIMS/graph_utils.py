@@ -193,12 +193,8 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
-        active_front = [n for n, d in sg_cur.in_degree if d == 0]
-
-        if len(active_front) > 0:
-            # Choose a node on the active front
-            n_cur = active_front[0]
-            # Process that node in the sub-graph
+        n_cur = find_next_node(sg_cur.in_degree)
+        if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop -- ")
@@ -262,13 +258,8 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
-        active_front = [n for n, d in sg_cur.out_degree if d == 0]
-
-        if len(active_front) > 0:
-            # Choose a node on the active front
-            n_cur = active_front[0]
-
-            # Process the node
+        n_cur = find_next_node(sg_cur.out_degree)
+        if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop")
@@ -281,6 +272,12 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         sg_cur.remove_node(n_cur)
+
+
+def find_next_node(degrees):
+    for node, degree in degrees:
+        if degree == 0:
+            return node
 
 
 # **************************
@@ -333,8 +330,9 @@ def add_node_data(graph, current_node, node_dfs):
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
+    non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
-        year_df = current_node_df[non_years + [year]]
+        current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
         for param, sub_param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': src,
@@ -344,9 +342,7 @@ def add_node_data(graph, current_node, node_dfs):
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                pass
-            else:
+            if param not in year_dict.keys():
                 year_dict[param] = {}
 
             if sub_param:
@@ -392,8 +388,9 @@ def add_tech_data(graph, node, tech_dfs, tech):
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
+    non_year_data = [t_df[c] for c in non_years]
     for year in years:
-        year_df = t_df[non_years + [year]]
+        current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
 
         for parameter, sub_param, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
@@ -405,13 +402,13 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if parameter in year_dict.keys():
-                if isinstance(year_dict[parameter], list):
-                    year_dict[parameter].append(dct)
+            if param in year_dict.keys():
+                if isinstance(year_dict[param], list):
+                    year_dict[param].append(dct)
                 else:
-                    year_dict[parameter] = [year_dict[parameter], dct]
+                    year_dict[param] = [year_dict[param], dct]
             else:
-                year_dict[parameter] = dct
+                year_dict[param] = dct
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
