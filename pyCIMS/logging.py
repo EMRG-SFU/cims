@@ -53,7 +53,7 @@ def log_RequestedQuantity(val):
         rqs.append((context, unit, value))
 
     # Log total quantities
-    context = 'total'
+    context = 'Total'
     unit = None
     value = val.sum_requested_quantities()
     rqs.append((context, unit, value))
