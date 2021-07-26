@@ -127,7 +127,7 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10, show_warnings=True):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -138,6 +138,10 @@ class Model:
             The largest relative difference between prices allowed for an equilibrium to be reached.
             Must be between [0, 1]. Relative difference is calculated as the absolute difference
             between two prices, divided by the first price. Defaults to 0.05.
+
+        min_iterations : int, optional
+            The minimum number of times to iterate between supply and demand in an attempt to reach
+            an equilibrium.
 
         max_iterations : int, optional
             The maximum number of times to iterate between supply and demand in an attempt to reach
@@ -165,7 +169,7 @@ class Model:
 
             # Initialize Basic Variables
             equilibrium = False
-            iteration = 0
+            iteration = 1
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
@@ -234,10 +238,12 @@ class Model:
                 new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
                               for fuel in self.fuels}
 
-                equilibrium = (int(year) == self.base_year) or \
-                              self.check_equilibrium(prev_prices,
-                                                     new_prices,
-                                                     equilibrium_threshold)
+                equilibrium = min_iterations <= iteration and \
+                              (int(year) == self.base_year or
+                               self.check_equilibrium(prev_prices,
+                                                      new_prices,
+                                                      equilibrium_threshold))
+
                 self.prices = new_prices
 
                 # Next Iteration
