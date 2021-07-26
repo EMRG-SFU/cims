@@ -169,7 +169,7 @@ class Model:
 
             # Initialize Basic Variables
             equilibrium = False
-            iteration = 0
+            iteration = 1
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
@@ -238,7 +238,7 @@ class Model:
                 new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
                               for fuel in self.fuels}
 
-                equilibrium = min_iterations - 1 <= iteration and \
+                equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
                                self.check_equilibrium(prev_prices,
                                                       new_prices,
