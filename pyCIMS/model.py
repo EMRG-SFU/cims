@@ -522,6 +522,11 @@ class Model:
             and new stock competitions.
         """
         comp_type = self.get_param('competition type', node)
+
+        # Market acts the same as tech compete
+        if comp_type == 'market':
+            comp_type = 'tech compete'
+
         if comp_type in ['tech compete', 'node tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
