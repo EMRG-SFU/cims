@@ -1,5 +1,6 @@
 # from ModelValidator import ModelValidator
-from .model import Model, ProvidedQuantity, RequestedQuantity
+from .model import Model
+from .quantities import ProvidedQuantity, RequestedQuantity
 from .model import load_model
 from .reader import ModelReader
 from .ModelValidator import ModelValidator

@@ -53,7 +53,7 @@ def log_RequestedQuantity(val):
         rqs.append((context, unit, value))
 
     # Log total quantities
-    context = 'total'
+    context = 'Total'
     unit = None
     value = val.sum_requested_quantities()
     rqs.append((context, unit, value))
@@ -83,7 +83,12 @@ def log_dict(val):
 
     # Check if base dictionary
     if 'year_value' in val.keys():
-        unit = val['unit']
+        # Check if there is a unit
+        if 'unit' in val.keys():
+            unit = val['unit']
+        else:
+            unit = None
+
         year_value = val['year_value']
 
         if year_value is None:
@@ -214,7 +219,6 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
     # if no argument chosen or defualt_list = 'all', return all parameters
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
-
         data_tuples = []
         for node in model.graph.nodes:
             # Log Year Agnostic Values
@@ -235,7 +239,6 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     else:
                         log = node, year, None, param, val
                         add_log_item(data_tuples, log)
-
 
     else:
         # path argument exist

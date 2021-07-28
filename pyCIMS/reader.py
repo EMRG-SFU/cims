@@ -64,14 +64,12 @@ class ModelReader:
         self.tech_dfs = {}
 
     def _get_model_df(self):
-
         # Read model_description from excel
-        mxl = pd.read_excel(self.infile,
-                            sheet_name=None,
-                            header=1,
-                            engine=self.excel_engine)
+        model_df = pd.read_excel(self.infile,
+                                 sheet_name=self.sheet_map['model'],
+                                 header=1,
+                                 engine=self.excel_engine).replace({np.nan: None})
 
-        model_df = mxl[self.sheet_map['model']].replace({np.nan: None})  # Read the model sheet into a dataframe
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
@@ -137,20 +135,18 @@ class ModelReader:
         # Read in the data
         # ------------------------
         # Read model_description from excel
-        mxl = pd.read_excel(self.infile,
-                            sheet_name=None,
-                            engine=self.excel_engine)
-        inc_df = mxl[self.sheet_map['incompatible']].replace({np.nan: None})  # Read the model sheet into a DataFrame
+        inc_df = pd.read_excel(self.infile,
+                               sheet_name=self.sheet_map['incompatible'],
+                               engine=self.excel_engine).replace({np.nan: None})
         inc_df = inc_df.dropna(axis=1)
         return inc_df
 
     def get_default_tech_params(self):
         # Read model_description from excel
-        mxl = pd.read_excel(self.infile,
-                            sheet_name=None,
-                            header=0,
-                            engine=self.excel_engine)
-        df = mxl[self.sheet_map['default_tech']].replace({np.nan: None})
+        df = pd.read_excel(self.infile,
+                           sheet_name=self.sheet_map['default_tech'],
+                           header=0,
+                           engine=self.excel_engine).replace({np.nan: None})
 
         # Remove empty rows
         df = df.dropna(axis=0, how="all")
