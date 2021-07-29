@@ -84,12 +84,26 @@ def get_fuels(graph):
         A list containing the names of nodes which supply fuels.
     """
     fuels = []
+    remove_fuels = []
     for node, data in graph.nodes(data=True):
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        if is_supply & is_sector:
+        is_market = 'market' in data['competition type'].lower()
+
+        if is_market:
             fuels.append(node)
-    return fuels
+            # Check all the service requested to remove them from the fuels list later
+            for param in data.keys():
+                # checking if param is a year
+                if param.isdigit():
+                    techs = data[param]['technologies']
+                    for _, tech_dict in techs.items():
+                        child = tech_dict['Service requested']
+                        remove_fuels.append(child['branch'])
+                    break
+        elif is_supply & is_sector:
+            fuels.append(node)
+    return [fuel for fuel in fuels if fuel not in remove_fuels]
 
 
 def get_GHG_and_Emissions(graph, year):

@@ -173,7 +173,7 @@ class Model:
             while not equilibrium:
                 print('iter {}'.format(iteration))
                 # Early exit if we reach the maximum number of iterations
-                if iteration > max_iterations:
+                if iteration >= max_iterations:
                     warnings.warn("Max iterations reached for year {}. "
                                   "Continuing to next year.".format(year))
                     break
