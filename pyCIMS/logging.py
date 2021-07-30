@@ -3,28 +3,39 @@ import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
 
 
+class ValueLog:
+    def __init__(self, sub_param=None, context=None, unit=None, value=None):
+        self.sub_param = sub_param
+        self.context = context
+        self.unit = unit
+        self.value = value
+
+    def tuple(self):
+        return self.sub_param, self.context,  self.unit,  self.value
+
+
 def has_techs(node_year_data):
     return 'technologies' in node_year_data.keys()
 
 
 def log_int(val):
-    return [(None, None, float(val))]
+    return [ValueLog(value=float(val))]
 
 
 def log_float(val):
-    return [(None, None, val)]
+    return [ValueLog(value=val)]
 
 
 def log_str(val):
-    return [(None, None, val)]
+    return [ValueLog(value=val)]
 
 
 def log_bool(val):
-    return [(None, None, val)]
+    return [ValueLog(value=val)]
 
 
 def log_ProvidedQuantity(val):
-    return [(None, None, float(val.get_total_quantity()))]
+    return [ValueLog(value=float(val.get_total_quantity()))]
 
 
 def log_RequestedQuantity(val):
@@ -47,16 +58,14 @@ def log_RequestedQuantity(val):
 
     # Log quantities per tech
     for k, v in val.get_total_quantities_requested().items():
-        context = k
-        unit = None
-        value = v
-        rqs.append((context, unit, value))
+        rqs.append(ValueLog(context=k,
+                            value=v
+                            ))
 
     # Log total quantities
-    context = 'Total'
-    unit = None
-    value = val.sum_requested_quantities()
-    rqs.append((context, unit, value))
+    rqs.append(ValueLog(context='Total',
+                        value=val.sum_requested_quantities()
+                        ))
 
     return rqs
 
@@ -65,34 +74,30 @@ def log_list(val):
     """ List of dictionaries. For each item, extract the value and year_value"""
     val_pairs = []
     for entry in val:
-        value = entry['value']
-        year_value = entry['year_value']
-        unit = entry['unit']
-        val_pairs.append((value, unit, year_value))
+        val_log = ValueLog()
+        val_log.context = entry['value']
+        val_log.context = entry['unit'] if 'unit' in entry.keys() else None
+        val_log.context = entry['value'] if 'value' in entry.keys() else None
+
+        val_pairs.append(val_log)
 
     return val_pairs
 
 
 def log_dict(val):
     """ Dictionary. May be base or be a dictionary containing base dictionaries"""
-    # Check if there is a value to use for context
-    if 'value' in val.keys():
-        context = val['value']
-    else:
-        context = None
-
     # Check if base dictionary
+    val_log = ValueLog()
+
     if 'year_value' in val.keys():
-        # Check if there is a unit
-        if 'unit' in val.keys():
-            unit = val['unit']
-        else:
-            unit = None
+        val_log.sub_param = val['sub_param'] if 'sub_param' in val.keys() else None
+        val_log.context = val['value'] if 'value' in val.keys() else None
+        val_log.unit = val['unit'] if 'unit' in val.keys() else None
 
         year_value = val['year_value']
 
         if year_value is None:
-            return [(context, unit, None)]
+            return [val_log]
         elif isinstance(year_value, ProvidedQuantity):
             return log_ProvidedQuantity(year_value)
         elif isinstance(year_value, RequestedQuantity):
@@ -100,16 +105,22 @@ def log_dict(val):
         elif isinstance(year_value, dict):
             return log_dict(year_value)
         else:
-            return [(context, unit, float(year_value))]
+            val_log.value = float(year_value)
+            return [val_log]
     else:
         val_pairs = []
         for k, v in val.items():
+            val_log.context = k
+
             if isinstance(v, dict):
-                year_value = v['year_value']
-                unit = v['unit']
-                val_pairs.append((k, unit, year_value))
+                val_log.sub_param = v['sub_param'] if 'sub_param' in v.keys() else None
+                val_log.unit = v['unit'] if 'unit' in v.keys() else None
+                val_log.value = v['year_value']
+                val_pairs.append(val_log)
             elif isinstance(v, int) or isinstance(v, float):
-                val_pairs.append((k, None, float(v)))
+                val_log.value = float(v)
+                val_pairs.append(val_log)
+
         return val_pairs
 
 
@@ -154,7 +165,7 @@ def add_log_item(all_logs, log_tuple):
     except KeyError:
         prepped_val = val
 
-        # Log
+    # Log
     if isinstance(prepped_val, list):
         for val in prepped_val:
             log = node, year, tech, param, val
@@ -219,13 +230,13 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
     # if no argument chosen or defualt_list = 'all', return all parameters
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
-        data_tuples = []
+        all_logs = []
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for param, val in model.graph.nodes[node].items():
                 if param not in model.years:
                     log = node, None, None, param, val
-                    add_log_item(data_tuples, log)
+                    add_log_item(all_logs, log)
 
             # Log Year Specific Values
             for year in model.years:
@@ -235,10 +246,10 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
                                 log = node, year, tech, tech_param, tech_val
-                                add_log_item(data_tuples, log)
+                                add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        add_log_item(data_tuples, log)
+                        add_log_item(all_logs, log)
 
     else:
         # path argument exist
@@ -260,7 +271,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
             return
 
         l = len(p_list)
-        data_tuples = []
+        all_logs = []
         total_parameter_list = model_parameter(model)
 
         for node in model.graph.nodes:
@@ -275,7 +286,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     if param == p_list[i]:
                         if param not in model.years:
                             log = node, None, None, param, val
-                            add_log_item(data_tuples, log)
+                            add_log_item(all_logs, log)
 
                 # Log Year Specific Values
                 for year in model.years:
@@ -287,18 +298,19 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                                 for tech_param, tech_val in tech_data.items():
                                     if tech_param == p_list[i]:
                                         log = node, year, tech, tech_param, tech_val
-                                        add_log_item(data_tuples, log)
+                                        add_log_item(all_logs, log)
                         else:
                             if param == p_list[i]:
                                 log = node, year, None, param, val
-                                add_log_item(data_tuples, log)
+                                add_log_item(all_logs, log)
 
-    log_df = pd.DataFrame(data_tuples)
+    # data_tuples = [log.tuple() for log in all_logs]
+    log_df = pd.DataFrame(all_logs)
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
-    # Split tupled values
-    log_df[['context', 'unit', 'value']] = pd.DataFrame(log_df['value'].to_list())
-    log_df = log_df[['node', 'year', 'technology', 'parameter', 'context', 'unit', 'value']]
+    # Split Value Log values
+    log_df[['sub_parameter', 'context', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
+    log_df = log_df[['node', 'year', 'technology', 'parameter', 'sub_parameter', 'context', 'unit', 'value']]
 
     # Write to file
     log_df.to_csv(output_file, index=False)
