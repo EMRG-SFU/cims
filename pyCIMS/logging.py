@@ -76,8 +76,9 @@ def log_list(val):
     for entry in val:
         val_log = ValueLog()
         val_log.context = entry['value']
-        val_log.context = entry['unit'] if 'unit' in entry.keys() else None
-        val_log.context = entry['value'] if 'value' in entry.keys() else None
+        val_log.sub_param = entry['sub_param'] if 'sub_param' in entry.keys() else None
+        val_log.unit = entry['unit'] if 'unit' in entry.keys() else None
+        val_log.value = entry['year_value']
 
         val_pairs.append(val_log)
 
@@ -90,8 +91,8 @@ def log_dict(val):
     val_log = ValueLog()
 
     if 'year_value' in val.keys():
-        val_log.sub_param = val['sub_param'] if 'sub_param' in val.keys() else None
         val_log.context = val['value'] if 'value' in val.keys() else None
+        val_log.sub_param = val['sub_param'] if 'sub_param' in val.keys() else None
         val_log.unit = val['unit'] if 'unit' in val.keys() else None
 
         year_value = val['year_value']
