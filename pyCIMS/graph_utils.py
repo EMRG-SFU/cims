@@ -92,39 +92,6 @@ def get_fuels(graph):
     return fuels
 
 
-def get_GHG_and_Emissions(graph, year):
-    """
-    Return 2 lists consisting of all the GHGs (CO2, CH4, etc.) and all the emission types (Process, Fugitive, etc.)
-    :param DiGraph graph: graph to search for all emissions
-    :param str year: year to find emissions, will likely be base year
-    :return: list of GHGs and a list of emission types
-    """
-
-    ghg = []
-    emission_type = []
-    for node, data in graph.nodes(data=True):
-        if 'technologies' in data[year]:
-            techs = data[year]['technologies']
-            for tech in techs:
-                tech_data = data[year]['technologies'][tech]
-                if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
-                    if 'Emissions' in tech_data:
-                        ghg_list = data[year]['technologies'][tech]['Emissions']
-                    else:
-                        ghg_list = data[year]['technologies'][tech]['Emissions removal']
-
-                    if isinstance(ghg_list, dict):
-                        ghg_list = [ghg_list]
-
-                    node_ghg = [ghg['value'] for ghg in ghg_list]
-                    node_emission_type = [ghg['sub_param'] for ghg in ghg_list]
-
-                    ghg = list(set(ghg + node_ghg))
-                    emission_type = list(set(emission_type + node_emission_type))
-
-    return ghg, emission_type
-
-
 def get_subgraph(graph, node_types):
     """
     Find the sub-graph of `graph` that only includes nodes whose type is in `node_types`.
@@ -150,7 +117,7 @@ def get_subgraph(graph, node_types):
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def top_down_traversal(sub_graph, node_process_func, *args, root=None, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -160,16 +127,12 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
 
     Parameters
     ----------
-    graph : networkx.DiGraph
-        The graph to use to find the root (if not provided) and the distance from the root
+    sub_graph : networkx.DiGraph
+        The graph to be traversed.
 
     node_process_func : function (nx.DiGraph, str) -> None
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
-
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
 
     Returns
     -------
@@ -178,23 +141,23 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
     """
     # Find the root of the sub-graph
     if not root:
-        possible_roots = [n for n, d in graph.in_degree() if d == 0]
+        possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
         possible_roots.sort(key=lambda n: len(n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
-    dist_from_root = nx.single_source_shortest_path_length(graph, root)
+    dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
-        n_cur = find_next_node(sg_cur.in_degree)
-        if n_cur is not None:
+        active_front = [n for n, d in sg_cur.in_degree if d == 0]
+
+        if len(active_front) > 0:
+            # Choose a node on the active front
+            n_cur = active_front[0]
+            # Process that node in the sub-graph
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop -- ")
@@ -210,7 +173,7 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def bottom_up_traversal(sub_graph, node_process_func, *args, root=None, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -224,16 +187,12 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
 
     Parameters
     ----------
-    graph : networkx.DiGraph
-        The graph to use to find the root (if not provided) and the distance from the root
+    sub_graph : networkx.DiGraph
+        The graph to be traversed.
 
     node_process_func : function (nx.DiGraph, str) -> None
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
-
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
 
     Returns
     -------
@@ -243,23 +202,22 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
 
     # If root hasn't been provided, find the sub-graph's root
     if not root:
-        possible_roots = [n for n, d in graph.in_degree() if d == 0]
+        possible_roots = [n for n, d in sub_graph.in_degree() if d == 0]
         possible_roots.sort(key=lambda n: len(n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
-    dist_from_root = nx.single_source_shortest_path_length(graph, root)
+    dist_from_root = nx.single_source_shortest_path_length(sub_graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
     sg_cur = sub_graph.copy()
-
     while len(sg_cur.nodes) > 0:
-        n_cur = find_next_node(sg_cur.out_degree)
-        if n_cur is not None:
+        active_front = [n for n, d in sg_cur.out_degree if d == 0]
+
+        if len(active_front) > 0:
+            # Choose a node on the active front
+            n_cur = active_front[0]
+            # Process the node
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
             warnings.warn("Found a Loop")
@@ -272,12 +230,6 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         sg_cur.remove_node(n_cur)
-
-
-def find_next_node(degrees):
-    for node, degree in degrees:
-        if degree == 0:
-            return node
 
 
 # **************************
@@ -330,28 +282,21 @@ def add_node_data(graph, current_node, node_dfs):
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
-    non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
-        current_year_data = non_year_data + [current_node_df[year]]
+        year_df = current_node_df[non_years + [year]]
         year_dict = {}
-        for param, sub_param, val, branch, src, unit, _, year_value in zip(*current_year_data):
+        for param, val, branch, src, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'source': src,
                    'branch': branch,
-                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param not in year_dict.keys():
-                year_dict[param] = {}
-
-            if sub_param:
-                if val not in year_dict[param]:
-                    year_dict[param][val] = [dct]
-                else:
-                    year_dict[param][val].append(dct)
+            if param in year_dict.keys():
+                pass
             else:
-                year_dict[param][val] = dct
+                year_dict[param] = {}
+            year_dict[param][val] = dct
 
         # Add data to node
         graph.nodes[current_node][year] = year_dict
@@ -388,27 +333,25 @@ def add_tech_data(graph, node, tech_dfs, tech):
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
 
-    non_year_data = [t_df[c] for c in non_years]
     for year in years:
-        current_year_data = non_year_data + [t_df[year]]
+        year_df = t_df[non_years + [year]]
         year_dict = {}
 
-        for param, sub_param, value, branch, source, unit, _, year_value in zip(*current_year_data):
+        for parameter, value, branch, source, unit, _, year_value in zip(*[year_df[c] for c in year_df.columns]):
             dct = {'value': value,
                    'source': source,
                    'branch': branch,
-                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                if isinstance(year_dict[param], list):
-                    year_dict[param].append(dct)
+            if parameter in year_dict.keys():
+                if isinstance(year_dict[parameter], list):
+                    year_dict[parameter].append(dct)
                 else:
-                    year_dict[param] = [year_dict[param], dct]
+                    year_dict[parameter] = [year_dict[parameter], dct]
             else:
-                year_dict[param] = dct
+                year_dict[parameter] = dct
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
