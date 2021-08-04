@@ -43,7 +43,6 @@ def search_nodes(search_term, g):
     list [str]
         A list of node names (branch format) whose last component contains `search_term`.
     """
-
     def search(name):
         components = name.split('.')
         last_comp = components[-1]
@@ -52,10 +51,9 @@ def search_nodes(search_term, g):
     return [n for n in g.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, branch=None, sub_param=None, unit=None, param_source=None):
+def create_value_dict(year_val, source=None, branch=None, unit=None, param_source=None):
     value_dictionary = {'source': source,
                         'branch': branch,
-                        'sub_param': sub_param,
                         'unit': unit,
                         'year_value': year_val,
                         'param_source': param_source
@@ -98,7 +96,6 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
                          'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
                          'Annual cost': lcc_calculation.calc_annual_cost,
                          'Service cost': lcc_calculation.calc_annual_service_cost,
-                         'Emissions cost': lcc_calculation.calc_emissions_cost,
                          'Life Cycle Cost': lcc_calculation.calc_lcc}
 
 inheritable_params = []
@@ -183,10 +180,10 @@ def get_node_param(param, model, node, year, sub_param=None,
                     return val, param_source
                 else:
                     return val
-
+    
     # If check_exist is True, raise an Exception if val has not yet been returned, which means
     # the value at the current context could not be found as is.
-    if check_exist:
+    if check_exist: 
         raise Exception
 
     # Calculate Parameter Value
@@ -305,10 +302,10 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
                     return val, param_source
                 else:
                     return val
-
+    
     # If check_exist is True, raise an Exception if val has not yet been returned, which means
     # the value at the current context could not be found as is.
-    if check_exist:
+    if check_exist: 
         raise Exception
 
     # Calculate Parameter Value
@@ -353,16 +350,15 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
     else:
         return val
 
-
-def set_node_param(new_value, param, model, node, year, sub_param=None):
+def set_node_param(new_val, param, model, node, year, sub_param=None, save=True):
     """
     Queries a model to set a parameter value at a given node, given a specified context
     (year & sub-parameter).
 
     Parameters
     ----------
-    new_value : dict
-        The new value to be set at the specified `param` at `node`, given the context provided by
+    new_val : any
+        The new value to be set at the specified `param` at `node`, given the context provided by 
         `year` and `sub_param`.
     param : str
         The name of the parameter whose value is being set.
@@ -378,6 +374,9 @@ def set_node_param(new_value, param, model, node, year, sub_param=None):
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    save : bool, optional
+        This specifies whether the change should be saved in the change_log csv where True means
+        the change will be saved and False means it will not be saved
     """
     # Set Parameter from Description
     # ******************************
@@ -387,37 +386,58 @@ def set_node_param(new_value, param, model, node, year, sub_param=None):
         data = model.graph.nodes[node][year]
     else:
         data = model.graph.nodes[node]
-
     if param in data:
-        val = data[param]
-        # If the value is a dictionary, use its nested result
+        val =  data[param]
+        # If the value is a dictionary, use its nested result       
         if isinstance(val, dict):
             if sub_param:
-                val[sub_param].update(new_value)
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if isinstance(val[sub_param], dict) and 'year_value' in val[sub_param]:
+                    prev_val = val[sub_param]['year_value']
+                    val[sub_param]['year_value'] = new_val
+                else: 
+                    prev_val = val[sub_param]
+                    val[sub_param] = new_val
             elif None in val:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
-                if isinstance(val[None], dict):
-                    val[None].update(new_value)
+                if isinstance(val[None], dict) and 'year_value' in val[None]:
+                    prev_val = val[None]['year_value']
+                    val[None]['year_value'] = new_val
                 else:
-                    val[None].update(new_value)
+                    prev_val = val[None]
+                    val[None] = new_val
             elif len(val.keys()) == 1:
-                val[list(val.keys())[0]].update(new_value)
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if 'year_value' in val[list(val.keys())[0]]:
+                    prev_val = val[list(val.keys())[0]]['year_value']
+                    val[list(val.keys())[0]]['year_value'] = new_val
+                else:
+                    prev_val = val[list(val.keys())[0]]
+                    val[list(val.keys())[0]] = new_val
         else:
-            data[param] = new_value
-
+            prev_val = data[param]
+            data[param] = new_val
+        
+        # Save Change
+        # ******************************
+        # Append the change made to model.change_history DataFrame if save is set to True
+        if save:
+            filename = model.model_description_file.split('/')[-1].split('.')[0]
+            change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': None, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+            model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
     else:
-        print(f"No param {param} at node {node} for year {year}. No new value was set for this")
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
 
 
-def set_tech_param(new_value, param, model, node, year, tech, sub_param=None):
+def set_tech_param(new_val, param, model, node, year, tech, sub_param=None, save=True):
     """
     Queries a model to set a parameter value at a given node & technology, given a specified
     context (year & sub_param).
 
     Parameters
     ----------
-    new_value : dict
-        The new value to be set at the specified `param` at `node`, given the context provided by
+    new_val : any
+        The new value to be set at the specified `param` at `node`, given the context provided by 
         `year`, `tech` and `sub_param`.
     param : str
         The name of the parameter whose value is being set.
@@ -435,6 +455,9 @@ def set_tech_param(new_value, param, model, node, year, tech, sub_param=None):
         `get_param()` would otherwise return a dictionary where a nested value contains the
         parameter value of interest. In this case, the key corresponding to that value can be
         provided as a `sub_param`
+    save : bool, optional
+        This specifies whether the change should be saved in the change_log csv where True means
+        the change will be saved and False means it will not be saved
     """
     # Set Parameter from Description
     # ******************************
@@ -442,24 +465,39 @@ def set_tech_param(new_value, param, model, node, year, tech, sub_param=None):
     data = model.graph.nodes[node][year]['technologies'][tech]
     if param in data:
         val = data[param]
-        # If the value is a dictionary, use its nested result
+        # If the value is a dictionary, use its nested result   
         if isinstance(val, dict):
             if sub_param:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
-                if isinstance(val[sub_param], dict):
-                    val[sub_param].update(new_value)
+                if isinstance(val[sub_param], dict) and ('year_value' in val[sub_param]):
+                    prev_val = val[sub_param]['year_value']
+                    val[sub_param]['year_value'] = new_val
                 else:
-                    val[sub_param].update(new_value)
+                    prev_val = val[sub_param]
+                    val[sub_param] = new_val
             elif None in val:
                 # If the value is a dictionary, check if 'year_value' can be accessed.
-                if isinstance(val[None], dict):
-                    val[None].update(new_value)
+                if isinstance(val[None], dict) and ('year_value' in val[None]):
+                    prev_val = val[None]['year_value']
+                    val[None]['year_value'] = new_val
                 else:
-                    val[None].update(new_value)
+                    prev_val = val[None]
+                    val[None] = new_val
             else:
-                data[param].update(new_value)
+                # If the value is a dictionary, check if 'year_value' can be accessed.
+                if 'year_value' in val:
+                    prev_val = data[param]['year_value']
+                    data[param]['year_value'] = new_val
         else:
-            data[param] = new_value
-
+            prev_val = data[param]
+            data[param] = new_val
+        
+        # Save Change
+        # ******************************
+        # Append the change made to model.change_history DataFrame if save is set to True
+        if save:
+            filename = model.model_description_file.split('/')[-1].split('.')[0]
+            change_log = {'base_model_description':filename, 'node': node, 'year': year, 'technology': tech, 'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val, 'new_value': new_val}
+            model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
     else:
-        print(f"No param {param} at node {node} for year {year}. No new value was set for this")
+        print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(year) + '. No new value was set for this.')
