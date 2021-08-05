@@ -80,8 +80,9 @@ def get_fuels(graph):
 
     Returns
     -------
-    list of str
-        A list containing the names of nodes which supply fuels.
+    tuple of two lists
+        The first output is a list containing the names of nodes which supply fuels and markets.
+        The first output is a list containing fuels and markets, excluding children of markets.
     """
     fuels = []
     remove_fuels = []
@@ -103,7 +104,8 @@ def get_fuels(graph):
                     break
         elif is_supply & is_sector:
             fuels.append(node)
-    return [fuel for fuel in fuels if fuel not in remove_fuels]
+    equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
+    return fuels, equilibrium_fuels
 
 
 def get_GHG_and_Emissions(graph, year):

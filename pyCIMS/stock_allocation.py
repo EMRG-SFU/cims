@@ -39,6 +39,8 @@ def all_tech_compete_allocation(model, node, year):
     """
 
     comp_type = model.get_param('competition type', node)
+    if comp_type == 'market':
+        comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
     # TODO: get_param should return a dictionary instead of a class for easier reading
