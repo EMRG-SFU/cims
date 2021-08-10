@@ -103,6 +103,8 @@ def get_GHG_and_Emissions(graph, year):
     ghg = []
     emission_type = []
     for node, data in graph.nodes(data=True):
+
+        # Emissions from a node with technologies
         if 'technologies' in data[year]:
             techs = data[year]['technologies']
             for tech in techs:
@@ -121,6 +123,19 @@ def get_GHG_and_Emissions(graph, year):
 
                     ghg = list(set(ghg + node_ghg))
                     emission_type = list(set(emission_type + node_emission_type))
+
+        # Emissions from a supply node
+        elif 'Emissions' in data[year] or 'Emissions Removal' in data[year]:
+            if 'Emissions' in data[year]:
+                ghg_dict = data[year]['Emissions']
+            else:
+                ghg_dict = data[year]['Emissions removal']
+
+            node_ghg = [ghg for ghg in ghg_dict.keys()]
+            node_emission_type = [ghg[0]['sub_param'] for ghg in ghg_dict.values()]
+
+            ghg = list(set(ghg + node_ghg))
+            emission_type = list(set(emission_type + node_emission_type))
 
     return ghg, emission_type
 

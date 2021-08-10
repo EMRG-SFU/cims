@@ -235,7 +235,7 @@ def calc_emissions_cost(model, node, year, tech):
             req_val = child_info['year_value']
             child_node = child_info['branch']
             if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
-                fuel_emissions = model.get_param('Emissions', child_node, year)
+                fuel_emissions = model.graph.nodes[child_node][year]['Emissions']
                 total_emissions[child_node] = {}
                 for GHG, fuel_list in fuel_emissions.items():
                     for fuel_data in fuel_list:
