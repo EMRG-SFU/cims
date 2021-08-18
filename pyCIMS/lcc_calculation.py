@@ -2,6 +2,7 @@ import warnings
 from . import utils
 import math
 from . import graph_utils
+from .emissions import Emissions, EmissionRates
 from copy import deepcopy
 
 
@@ -304,13 +305,13 @@ def calc_emissions_cost(model, node, year, tech):
                             total_emissions[child_node][GHG] = {}
                         total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
-    # Save total emissions to the model
-    if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
-        emission_list = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
-    else:
-        emission_list = []
-    emissions_for_model = _prep_emissions_to_save(total_emissions, emission_list)
-    model.graph.nodes[node][year]['technologies'][tech]['Emissions'] = emissions_for_model
+    # # Save total emissions to the model
+    # if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
+    #     emission_list = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
+    # else:
+    #     emission_list = []
+    # emissions_for_model = _prep_emissions_to_save(total_emissions, emission_list)
+    # model.graph.nodes[node][year]['technologies'][tech]['Emissions'] = emissions_for_model
 
     gross_emissions = deepcopy(total_emissions)
 
@@ -367,6 +368,12 @@ def calc_emissions_cost(model, node, year, tech):
         for GHG in emissions_cost[node_name]:
             for _, cost in emissions_cost[node_name][GHG].items():
                 total += cost
+
+    # Record emission rates
+    emission_rates = EmissionRates()
+    emission_rates.net_emission_rates = net_emissions
+    emission_rates.removed_emission_rates = captured_emissions
+    model.graph.nodes[node][year]['technologies'][tech]['emission_rates'] = emission_rates
 
     return total
 

@@ -14,6 +14,7 @@ from . import lcc_calculation
 from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
+from .emissions import Emissions, EmissionRates
 from .utils import create_value_dict
 
 
@@ -253,6 +254,10 @@ class Model:
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
             graph_utils.bottom_up_traversal(self.graph,
                                             self.calc_requested_quantities,
+                                            year)
+
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self.aggregate_emissions,
                                             year)
 
     def check_equilibrium(self, prev, new, threshold):
@@ -720,8 +725,8 @@ class Model:
                     requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
 
                 # *********
-                # Calculate proportion of child's requested quantities that come from node. Record these
-                # as well.
+                # Calculate proportion of child's requested quantities that come from node. Record
+                # these as well.
                 # *********
                 else:
                     try:
@@ -748,6 +753,100 @@ class Model:
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
                                                                                        param_source='calculation')
+
+    def aggregate_emissions(self, graph, node, year):
+        if node == 'pyCIMS.Canada.Alberta.Residential.Buildings.Ranges':
+            jillian = 1
+        # Create an empty Emissions object
+        emissions = Emissions()
+        total_units = self.get_param("provided_quantities", node, year).get_total_quantity()
+
+        if 'technologies' in graph.nodes[node][year]:
+            for tech in graph.nodes[node][year]['technologies']:
+                tech_emission_rates = self.get_param("emission_rates", node, year, tech)
+                if tech_emission_rates is not None:
+                    tech_market_share = self.get_param('total_market_share', node, year, tech)
+                    tech_units = tech_market_share * total_units
+                    tech_emissions = Emissions()
+                    tech_emissions.net_emissions, tech_emissions.removed_emissions = \
+                        tech_emission_rates.multiply_rates(tech_units)
+                    emissions += tech_emissions
+
+        else:
+            if 'emission_rates' in self.graph.nodes[node][year]:
+                emission_rates = self.get_param("emission_rates", node, year)
+            else:
+                emission_rates = EmissionRates()
+
+            total_units = self.get_param("provided_quantities", node, year)
+
+            emissions = Emissions()
+            total_net_emissions, total_removed_emissions = emission_rates.multiply_rates(total_units)
+            emissions.net_emissions = total_net_emissions
+            emissions.removed_emissions = total_removed_emissions
+
+
+
+        # if self.get_param("competition type", node) in ['root', 'region']:
+        #     # Find the node's children, who they have a structural relationship with
+        #     children = graph.successors(node)
+        #     structural_children = [c for c in children if 'structure' in
+        #                            graph.get_edge_data(node, c)['type']]
+        #
+        #     # For each structural child, add it's emissions to the region/root
+        #     for child in structural_children:
+        #         child_emissions = self.get_param("emission_totals", child, year)
+        #         for child_emission_type, child_emission_amount in child_emissions.items():
+        #             emissions.record_emissions(child_emission_type,
+        #                                        child,
+        #                                        child_emission_amount)
+        #
+        # else:
+        #     # Find the node's children, who they have a request/provide relationship with
+        #     children = graph.successors(node)
+        #     req_prov_children = [c for c in children if 'request_provide' in
+        #                          graph.get_edge_data(node, c)['type']]
+        #
+        #     # For each child, calculate how much of each service has been requested
+        #     for child in req_prov_children:
+        #         # *********
+        #         # Add the emissions used by the child of node
+        #         # *********
+        #         child_emissions = self.get_param("emission_totals", child, year)
+        #         for child_emission_type, child_emission_amount in child_emissions.items():
+        #             emissions.record_emissions(child_emission_type,
+        #                                        child,
+        #                                        child_emission_amount)
+        #
+        #         # *********
+        #         # Calculate proportion of child's requested quantities that come from node. Record
+        #         # these as well.
+        #         # *********
+        #         else:
+        #             try:
+        #                 child_total_quantity_provided = child_provided_quant.get_total_quantity()
+        #                 if child_total_quantity_provided == 0:
+        #                     # If the child doesn't provide any quantities, move onto the next child without
+        #                     # updating the node's quantity requested.
+        #                     continue
+        #                 else:
+        #                     # Otherwise, find out what proportion of the child's requested can be traced
+        #                     # back to node
+        #                     proportion = child_quantity_provided_to_node / child_total_quantity_provided
+        #
+        #                     child_requested_quant = self.get_param("requested_quantities", child, year)
+        #                     for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+        #                         requested_quantity.record_requested_quantity(child_rq_node,
+        #                                                                      child,
+        #                                                                      proportion * child_rq_amount)
+        #             except KeyError:
+        #                 # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+        #                 # broken for the base year.
+        #                 continue
+
+        # Save the emissions to the node's data
+        self.graph.nodes[node][year]["total_emissions"] = \
+            utils.create_value_dict(emissions, param_source='calculation')
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
