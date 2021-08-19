@@ -65,10 +65,23 @@ class ModelReader:
 
     def _get_model_df(self):
         # Read model_description from excel
-        model_df = pd.read_excel(self.infile,
-                                 sheet_name=self.sheet_map['model'],
-                                 header=1,
-                                 engine=self.excel_engine).replace({np.nan: None})
+        if isinstance(self.sheet_map['model'], list):
+            # There are multiple sheets, likely one sheet per province
+            appended_data = []
+            for sheet in self.sheet_map['model']:
+                sheet_df = pd.read_excel(self.infile,
+                                         sheet_name=sheet,
+                                         header=1,
+                                         engine=self.excel_engine).replace({np.nan: None})
+                appended_data.append(sheet_df)
+
+            model_df = pd.concat(appended_data, ignore_index=True)
+        else:
+            # There is only one sheet to read in
+            model_df = pd.read_excel(self.infile,
+                                     sheet_name=self.sheet_map['model'],
+                                     header=1,
+                                     engine=self.excel_engine).replace({np.nan: None})
 
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
