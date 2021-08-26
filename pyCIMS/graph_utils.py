@@ -80,16 +80,32 @@ def get_fuels(graph):
 
     Returns
     -------
-    list of str
-        A list containing the names of nodes which supply fuels.
+    tuple of two lists
+        The first output is a list containing the names of nodes which supply fuels and markets.
+        The first output is a list containing fuels and markets, excluding children of markets.
     """
     fuels = []
+    remove_fuels = []
     for node, data in graph.nodes(data=True):
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        if is_supply & is_sector:
+        is_market = 'market' in data['competition type'].lower()
+
+        if is_market:
             fuels.append(node)
-    return fuels
+            # Check all the service requested to remove them from the fuels list later
+            for param in data.keys():
+                # checking if param is a year
+                if param.isdigit():
+                    techs = data[param]['technologies']
+                    for _, tech_dict in techs.items():
+                        child = tech_dict['Service requested']
+                        remove_fuels.append(child['branch'])
+                    break
+        elif is_supply & is_sector:
+            fuels.append(node)
+    equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
+    return fuels, equilibrium_fuels
 
 
 def get_GHG_and_Emissions(graph, year):
@@ -103,6 +119,8 @@ def get_GHG_and_Emissions(graph, year):
     ghg = []
     emission_type = []
     for node, data in graph.nodes(data=True):
+
+        # Emissions from a node with technologies
         if 'technologies' in data[year]:
             techs = data[year]['technologies']
             for tech in techs:
@@ -121,6 +139,19 @@ def get_GHG_and_Emissions(graph, year):
 
                     ghg = list(set(ghg + node_ghg))
                     emission_type = list(set(emission_type + node_emission_type))
+
+        # Emissions from a supply node
+        elif 'Emissions' in data[year] or 'Emissions Removal' in data[year]:
+            if 'Emissions' in data[year]:
+                ghg_dict = data[year]['Emissions']
+            else:
+                ghg_dict = data[year]['Emissions removal']
+
+            node_ghg = [ghg for ghg in ghg_dict.keys()]
+            node_emission_type = [ghg[0]['sub_param'] for ghg in ghg_dict.values()]
+
+            ghg = list(set(ghg + node_ghg))
+            emission_type = list(set(emission_type + node_emission_type))
 
     return ghg, emission_type
 

@@ -62,6 +62,7 @@ class Model:
         self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
+        self.equilibrium_fuels = []
         self.GHGs = []
         self.emission_types = []
         self.years = model_reader.get_years()
@@ -96,7 +97,7 @@ class Model:
         graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels = graph_utils.get_fuels(graph)
+        self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
         self.GHGs, self.emission_types = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
 
@@ -237,7 +238,7 @@ class Model:
 
                 # Go get all the new prices
                 new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
-                              for fuel in self.fuels}
+                              for fuel in self.equilibrium_fuels}
 
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
@@ -526,6 +527,11 @@ class Model:
             and new stock competitions.
         """
         comp_type = self.get_param('competition type', node)
+
+        # Market acts the same as tech compete
+        if comp_type == 'market':
+            comp_type = 'tech compete'
+
         if comp_type in ['tech compete', 'node tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
