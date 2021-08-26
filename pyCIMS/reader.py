@@ -64,12 +64,23 @@ class ModelReader:
         self.tech_dfs = {}
 
     def _get_model_df(self):
-        # Read model_description from excel
-        model_df = pd.read_excel(self.infile,
+        # Read in list of sheets from 'Lists' sheet in model description
+        sheet_df = pd.read_excel(self.infile,
                                  sheet_name=self.sheet_map['model'],
-                                 header=1,
-                                 engine=self.excel_engine).replace({np.nan: None})
+                                 engine=self.excel_engine)
 
+        # Remove nans from list
+        sheet_list = [sheet for sheet in sheet_df['Model sheets'] if not pd.isna(sheet)]
+
+        appended_data = []
+        for sheet in sheet_list:
+            sheet_df = pd.read_excel(self.infile,
+                                     sheet_name=sheet,
+                                     header=1,
+                                     engine=self.excel_engine).replace({np.nan: None})
+            appended_data.append(sheet_df)
+
+        model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
