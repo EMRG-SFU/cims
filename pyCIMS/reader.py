@@ -66,10 +66,11 @@ class ModelReader:
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
         sheet_df = pd.read_excel(self.infile,
-                                 sheet_name='Lists',
+                                 sheet_name=self.sheet_map['model'],
                                  engine=self.excel_engine)
 
-        sheet_list = [sheet for sheet in list(sheet_df['Model sheets']) if str(sheet) != 'nan']  # Remove nans from list
+        # Remove nans from list
+        sheet_list = [sheet for sheet in sheet_df['Model sheets'] if not pd.isna(sheet)]
 
         appended_data = []
         for sheet in sheet_list:
