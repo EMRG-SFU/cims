@@ -1,158 +1,114 @@
+"""
+Module containing the custom Emission and EmissionRates classes used during emission aggregation.
+"""
 import copy
 
 
 class EmissionRates:
-    def __init__(self):
-        self.net_emission_rates = {}
-        self.removed_emission_rates = {}
+    """Class for storing the emission rates of technologies. An emission rate is the amount of
+       emissions per unit of a technology."""
+    def __init__(self, emission_rates=None):
+        self.emission_rates = emission_rates if emission_rates is not None else {}
 
     def multiply_rates(self, amount):
-        net_emission_totals = copy.deepcopy(self.net_emission_rates)
-        for source_branch in net_emission_totals:
-            for ghg in net_emission_totals[source_branch]:
-                for emission_type in net_emission_totals[source_branch][ghg]:
-                    net_emission_totals[source_branch][ghg][emission_type] *= amount
+        """
+        Multiply, each emission rate in self.emission_rates by amount. Amount will usually be the
+        total number of units of a given tech. Then rate * units will give the total emissions for
+        that tech.
 
-        removed_emission_totals = copy.deepcopy(self.removed_emission_rates)
-        for source_branch in removed_emission_totals:
-            for ghg in removed_emission_totals[source_branch]:
-                for emission_type in removed_emission_totals[source_branch][ghg]:
-                    removed_emission_totals[source_branch][ghg][emission_type] *= amount
+        Parameters
+        ----------
+        amount : float or int
+            The value to multiply each emission rate by.
 
-        return net_emission_totals, removed_emission_totals
+        Returns
+        -------
+        dict :
+            Returns a dictionary where each emission rate has been multiplied by amount.
+        """
+        emission_totals = copy.deepcopy(self.emission_rates)
+        for source_branch in emission_totals:
+            for ghg in emission_totals[source_branch]:
+                for emission_type in emission_totals[source_branch][ghg]:
+                    emission_totals[source_branch][ghg][emission_type] *= amount
+
+        return emission_totals
+
+    def summarize_rates(self):
+        """
+        Sum emission rates across GHG/Emission Type pairs. This removes the differentiation between
+        which node an emission rate originated from.
+
+        Returns
+        -------
+        dict :
+            Returns a dictionary containing the summarized version of self.emission_rates. This
+            summary dictionary will follow the form {GHG: {Emission Type: rate}}.
+        """
+        summary_rates = {}
+        for source in self.emission_rates:
+            for ghg in self.emission_rates[source]:
+                if ghg not in summary_rates:
+                    summary_rates[ghg] = {}
+                for emission_type in self.emission_rates[source][ghg]:
+                    if emission_type not in summary_rates[ghg]:
+                        summary_rates[ghg][emission_type] = 0
+                    summary_rates[ghg][emission_type] += \
+                        self.emission_rates[source][ghg][emission_type]
+        return summary_rates
 
 
 class Emissions:
-    def __init__(self):
-        # self.gross_emissions_per_unit = {}
-        # self.net_emissions_per_unit = {}
-        # self.removed_emissions_per_unit = {}
-        #
-        # self.number_of_units = 0
-        # self.gross_emissions = {}
-        self.net_emissions = {}
-        self.removed_emissions = {}
+    """Class for """
+    def __init__(self, emissions=None):
+        self.emissions = emissions if emissions is not None else {}
 
     def __add__(self, other):
-        result = self
+        result = copy.deepcopy(self)
 
-        for source_branch in other.net_emissions:
-            for ghg in other.net_emissions[source_branch]:
-                for emission_type in other.net_emissions[source_branch][ghg]:
-                    amount = other.net_emissions[source_branch][ghg][emission_type]
-                    if source_branch not in result.net_emissions:
-                        result.net_emissions[source_branch] = {}
-                    if ghg not in result.net_emissions[source_branch]:
-                        result.net_emissions[source_branch][ghg] = {}
-                    if emission_type not in result.net_emissions[source_branch][ghg]:
-                        result.net_emissions[source_branch][ghg][emission_type] = amount
-                    else:
-                        result.net_emissions[source_branch][ghg][emission_type] += amount
-
-        for source_branch in other.removed_emissions:
-            for ghg in other.removed_emissions[source_branch]:
-                for emission_type in other.removed_emissions[source_branch][ghg]:
-                    amount = other.removed_emissions[source_branch][ghg][emission_type]
-                    if source_branch not in result.removed_emissions:
-                        result.removed_emissions[source_branch] = {}
-                    if ghg not in result.removed_emissions[source_branch]:
-                        result.removed_emissions[source_branch][ghg] = {}
-                    if emission_type not in result.removed_emissions[source_branch][ghg]:
-                        result.removed_emissions[source_branch][ghg][emission_type] = amount
-                    else:
-                        result.removed_emissions[source_branch][ghg][emission_type] += amount
+        for source_branch in other.emissions:
+            if source_branch not in result.emissions:
+                result.emissions[source_branch] = {}
+            for ghg in other.emissions[source_branch]:
+                if ghg not in result.emissions[source_branch]:
+                    result.emissions[source_branch][ghg] = {}
+                for emission_type in other.emissions[source_branch][ghg]:
+                    if emission_type not in result.emissions[source_branch][ghg]:
+                        result.emissions[source_branch][ghg][emission_type] = 0
+                    amount = other.emissions[source_branch][ghg][emission_type]
+                    result.emissions[source_branch][ghg][emission_type] += amount
 
         return result
 
-    # def check_emission_exists(self, ghg, emission_type):
-    #     if ghg not in self.gross_emissions_per_unit:
-    #         self.gross_emissions_per_unit[ghg] = {}
-    #         self.net_emissions_per_unit[ghg] = {}
-    #         self.removed_emissions_per_unit[ghg] = {}
-    #     if emission_type not in self.gross_emissions_per_unit:
-    #         self.gross_emissions_per_unit[ghg][emission_type] = 0
-    #         self.net_emissions_per_unit[ghg][emission_type] = 0
-    #         self.removed_emissions_per_unit[ghg][emission_type] = 0
+    def __mul__(self, other):
+        result = copy.deepcopy(self)
+        for source_branch in self.emissions:
+            for ghg in self.emissions[source_branch]:
+                for emission_type in self.emissions[source_branch][ghg]:
+                    result.emissions[source_branch][ghg][emission_type] *= other
 
-    # def add_emissions(self, ghg, emission_type, amount):
-    #     self.check_emission_exists(ghg, emission_type)
-    #     self.gross_emissions_per_unit[ghg][emission_type] += amount
-    #     self.net_emissions_per_unit[ghg][emission_type] += amount
-    #
-    # def remove_emissions(self, ghg, emission_type, amount):
-    #     self.check_emission_exists(ghg, emission_type)
-    #     self.net_emissions_per_unit[ghg][emission_type] -= amount
-    #     self.removed_emissions_per_unit[ghg][emission_type] += amount
+        return result
 
-    def calculate_total_emissions(self):
-        self.gross_emissions = copy.deepcopy(self.gross_emissions_per_unit)
-        self.net_emissions = copy.deepcopy(self.net_emissions_per_unit)
-        self.removed_emissions = copy.deepcopy(self.removed_emissions_per_unit)
+    def summarize_emissions(self):
+        """
+        Sum emissions across GHG/Emission Type pairs. This removes the  differentiation between
+        which node an emission originated from.
 
-        for emission_dict in [self.gross_emissions, self.net_emissions, self.removed_emissions]:
-            for ghg in emission_dict:
-                for emission_type in emission_dict:
-                    emission_dict[ghg][emission_type] *= self.number_of_units
+        Returns
+        -------
+        dict :
+            Returns a dictionary containing the summarized version of self.emissions. This summary
+            dictionary will follow the form {GHG: {Emission Type: X1}}.
+        """
+        summary_emissions = {}
+        for source in self.emissions:
+            for ghg in self.emissions[source]:
+                if ghg not in summary_emissions:
+                    summary_emissions[ghg] = {}
+                for emission_type in self.emissions[source][ghg]:
+                    if emission_type not in summary_emissions[ghg]:
+                        summary_emissions[ghg][emission_type] = 0
+                    summary_emissions[ghg][emission_type] += \
+                        self.emissions[source][ghg][emission_type]
 
-
-
-def _prep_emissions_to_save(calculated_emissions, model_emissions):
-    """
-    Transform the nested emissions dictionary used during calc_emission_cost() into a dictionary
-    ready to be saved in the model.
-
-    Parameters
-    ----------
-    calculated_emissions : dict
-        The emissions dictionary created in the calc_emission_cost() function.
-        e.g. {'pyCIMS.Canada.Alberta.Natural Gas': {'CO2': {'Combustion': 0.2,
-                                                            'Process': 0.087}}}
-
-    model_emissions : list or dict
-        The dictionary (or list of dictionaries) containing the emissions that already exist in the
-        model.
-
-    Returns
-    -------
-        list or dict :
-        A version of the calculated_emissions dictionary that matches the dictionary format used
-        throughout the model. e.g. [{'branch': None,
-                                     'param_source': 'calculation',
-                                     'source': None,
-                                     'sub_param': 'Combustion',
-                                     'unit': None,
-                                     'value': 'CO2',
-                                     'year_value': 0.2}]
-    """
-    if isinstance(model_emissions, dict):
-        model_emissions = [model_emissions]
-
-    for branch in calculated_emissions:
-        for ghg in calculated_emissions[branch]:
-            for emission_type in calculated_emissions[branch][ghg]:
-                val = calculated_emissions[branch][ghg][emission_type]
-                ghg_type_emissions = [e for e in model_emissions if
-                                      (e['value'] == ghg) & (e['sub_param'] == emission_type)]
-                model_emissions = [e for e in model_emissions if
-                                   not ((e['value'] == ghg) & (e['sub_param'] == emission_type))]
-                if len(ghg_type_emissions) < 1:
-                    model_emissions.append({'value': ghg,
-                                            'source': None,
-                                            'branch': None,
-                                            'sub_param': emission_type,
-                                            'unit': None,
-                                            'year_value': val,
-                                            'param_source': 'calculation'})
-                elif len(ghg_type_emissions) == 1:
-                    entry_to_update = ghg_type_emissions[0]
-                    entry_to_update['year_value'] += val
-                    entry_to_update['param_source'] = 'calculation'
-                    model_emissions.append(entry_to_update)
-                elif len(ghg_type_emissions) > 1:
-                    raise ValueError
-
-    # Return the result
-    if len(model_emissions) == 1:
-        return model_emissions[0]
-    else:
-        return model_emissions
+        return summary_emissions

@@ -213,10 +213,11 @@ def _prep_emissions_to_save(calculated_emissions, model_emissions):
 
 def calc_emissions_cost(model, node, year, tech):
     """
-    Returns the emission cost at that node for the following parameters. First calculate total emissions, gross
-    emissions, captured emissions, net emissions, and then the final emission cost. Returns the sum of all emission
-    costs. To see how the calculation works,
-    see the file 'Emissions_tax_example.xlsx': https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
+    Returns the emission cost at that node for the following parameters. First calculate total
+    emissions, gross emissions, captured emissions, net emissions, and then the final emission cost.
+    Returns the sum of all emission costs. To see how the calculation works, see the file
+    'Emissions_tax_example.xlsx':
+    https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
 
     :param pyCIMS.model.Model model:
     :param str node: The name of the node whose parameters we are calculating.
@@ -285,14 +286,6 @@ def calc_emissions_cost(model, node, year, tech):
                             total_emissions[child_node][GHG] = {}
                         total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
 
-    # # Save total emissions to the model
-    # if 'Emissions' in model.graph.nodes[node][year]['technologies'][tech]:
-    #     emission_list = model.graph.nodes[node][year]['technologies'][tech]['Emissions']
-    # else:
-    #     emission_list = []
-    # emissions_for_model = _prep_emissions_to_save(total_emissions, emission_list)
-    # model.graph.nodes[node][year]['technologies'][tech]['Emissions'] = emissions_for_model
-
     gross_emissions = deepcopy(total_emissions)
 
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
@@ -350,10 +343,10 @@ def calc_emissions_cost(model, node, year, tech):
                 total += cost
 
     # Record emission rates
-    emission_rates = EmissionRates()
-    emission_rates.net_emission_rates = net_emissions
-    emission_rates.removed_emission_rates = captured_emissions
-    model.graph.nodes[node][year]['technologies'][tech]['emission_rates'] = emission_rates
+    model.graph.nodes[node][year]['technologies'][tech]['net_emission_rates'] = \
+        EmissionRates(emission_rates=net_emissions)
+    model.graph.nodes[node][year]['technologies'][tech]['captured_emission_rates'] = \
+        EmissionRates(emission_rates=captured_emissions)
 
     return total
 
