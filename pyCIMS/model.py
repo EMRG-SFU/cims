@@ -14,8 +14,8 @@ from . import lcc_calculation
 from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
+from .emissions import Emissions, EmissionRates
 from .utils import create_value_dict
-
 
 
 class Model:
@@ -254,6 +254,10 @@ class Model:
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
             graph_utils.bottom_up_traversal(self.graph,
                                             self.calc_requested_quantities,
+                                            year)
+
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self.aggregate_emissions,
                                             year)
 
     def check_equilibrium(self, prev, new, threshold):
@@ -726,8 +730,8 @@ class Model:
                     requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
 
                 # *********
-                # Calculate proportion of child's requested quantities that come from node. Record these
-                # as well.
+                # Calculate proportion of child's requested quantities that come from node. Record
+                # these as well.
                 # *********
                 else:
                     try:
@@ -754,6 +758,118 @@ class Model:
         # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
                                                                                        param_source='calculation')
+
+    def aggregate_emissions(self, graph, node, year):
+        """
+        Calculates the net and captured emissions which have been incurred by a node in the
+        specified year. This value is then recorded in the model.
+
+        This will calculate all emissions that can be traced back to this node. In other words, this
+        will include not only the emissions that the node creates itself, but also any emissions its
+        successors create.
+
+        >Important note:
+        >Any emissions incurred during fuel production are aggregated via the producing fuel's
+         structural parent rather than through its request/provide parents.
+        >For example, suppose that some amount of electricity is created by using natural gas. The
+         electricity node will have CO2 emissions associated with it's natural gas usage. However,
+         those emissions will not be passed to the users of electricity (e.g. Lighting), instead
+         these will be passed to the structural parents of the electricity node (e.g. Alberta).
+
+        This method was built to be used with the bottom up traversal method
+        (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
+        all its children have been visited (except when it needs to break a loop).
+
+        Parameters
+        ----------
+        graph : networkX.Graph
+            The graph containing node & it's children.
+        node : str
+            The name of the node (in branch/path notation) for which the net and captured emissions
+            will be calculated.
+        year : str
+            The year of interest.
+
+
+        Returns
+        -------
+        Nothing. Does set the net_emissions and captured_emissions parameters in the Model according
+        to the emissions produced by node & all it's successors.
+        """
+        # Find the total number of units the node provides
+        total_units = self.get_param("provided_quantities", node, year).get_total_quantity()
+
+        # Create empty Emissions objects
+        net_emissions = Emissions()
+        cap_emissions = Emissions()
+
+        # Add emissions which originate at the node
+        if 'technologies' in graph.nodes[node][year]:
+            for tech in graph.nodes[node][year]['technologies']:
+                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech)
+                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech)
+                if tech_net_emission_rates is not None:
+                    tech_market_share = self.get_param('total_market_share', node, year, tech)
+                    tech_units = tech_market_share * total_units
+
+                    tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
+                    tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
+
+                    net_emissions += tech_net_emissions
+                    cap_emissions += tech_cap_emissions
+        else:
+            if 'emission_rates' in self.graph.nodes[node][year]:
+                net_emission_rates = self.get_param('net_emission_rates', node, year)
+                cap_emission_rates = self.get_param('captured_emission_rates', node, year)
+            else:
+                net_emission_rates = EmissionRates()
+                cap_emission_rates = EmissionRates()
+            total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
+            net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
+            cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
+
+        # Add emissions from children of the node (originate at some descendant)
+        if self.get_param("competition type", node) in ['root', 'region']:
+            # Find the node's structural children
+            children = graph.successors(node)
+            structural_children = [c for c in children if 'structure' in
+                                   graph.get_edge_data(node, c)['type']]
+
+            # For each structural child, add its emissions to the region/root
+            for child in structural_children:
+                child_net_emissions = self.get_param("net_emissions", child, year)
+                child_cap_emissions = self.get_param("captured_emissions", child, year)
+                net_emissions += child_net_emissions
+                cap_emissions += child_cap_emissions
+        else:
+            # Find the node's req/prov children
+            children = self.graph.successors(node)
+            req_prov_children = [c for c in children if 'request_provide' in
+                                 graph.get_edge_data(node, c)['type']]
+
+            # For each child
+            for child in req_prov_children:
+                if child not in self.fuels:
+                    child_quantities = self.get_param('provided_quantities', child, year)
+                    child_total_quantity = child_quantities.get_total_quantity()
+                    if child_total_quantity == 0:
+                        continue
+                    else:
+                        child_net_emissions = self.get_param("net_emissions", child, year)
+                        child_cap_emissions = self.get_param("captured_emissions", child, year)
+                        proportion = child_quantities.get_quantity_provided_to_node(node) / \
+                                     child_total_quantity
+                        proportional_child_net_emissions = child_net_emissions * proportion
+                        proportional_child_cap_emissions = child_cap_emissions * proportion
+                        net_emissions += proportional_child_net_emissions
+                        cap_emissions += proportional_child_cap_emissions
+
+        # Save the emissions to the node's data
+        self.graph.nodes[node][year]['net_emissions'] = \
+            utils.create_value_dict(net_emissions, param_source='calculation')
+
+        self.graph.nodes[node][year]['captured_emissions'] = \
+            utils.create_value_dict(cap_emissions, param_source='calculation')
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
