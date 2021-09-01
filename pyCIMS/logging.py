@@ -1,6 +1,7 @@
 import pandas as pd
 import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
+from pyCIMS.emissions import Emissions, EmissionRates
 
 
 class ValueLog:
@@ -70,6 +71,33 @@ def log_RequestedQuantity(val):
     return rqs
 
 
+def log_Emissions(val):
+    result = []
+
+    emissions = val.summarize_emissions()
+    for ghg in emissions:
+        for emission_type in emissions[ghg]:
+            val = emissions[ghg][emission_type]
+            result.append(ValueLog(sub_param=emission_type,
+                                   context=ghg,
+                                   value=val))
+
+    return result
+
+
+def log_EmissionRates(val):
+    result = []
+
+    rates = val.summarize_rates()
+    for ghg in rates:
+        for emission_type in rates[ghg]:
+            val = rates[ghg][emission_type]
+            result.append(ValueLog(sub_param=emission_type,
+                                   context=ghg,
+                                   value=val))
+    return result
+
+
 def log_list(val):
     """ List of dictionaries. For each item, extract the value and year_value"""
     val_pairs = []
@@ -103,6 +131,10 @@ def log_dict(val):
             return log_ProvidedQuantity(year_value)
         elif isinstance(year_value, RequestedQuantity):
             return log_RequestedQuantity(year_value)
+        elif isinstance(year_value, Emissions):
+            return log_Emissions(year_value)
+        elif isinstance(year_value, EmissionRates):
+            return log_EmissionRates(year_value)
         elif isinstance(year_value, dict):
             return log_dict(year_value)
         else:
@@ -154,6 +186,8 @@ def add_log_item(all_logs, log_tuple):
                 float: log_float,
                 ProvidedQuantity: log_ProvidedQuantity,
                 RequestedQuantity: log_RequestedQuantity,
+                Emissions: log_Emissions,
+                EmissionRates: log_EmissionRates,
                 list: log_list,
                 dict: log_dict,
                 str: log_str,
