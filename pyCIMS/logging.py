@@ -1,11 +1,8 @@
 import pandas as pd
 import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
-<<<<<<< Updated upstream
 from pyCIMS.emissions import Emissions, EmissionRates
-=======
 from copy import deepcopy
->>>>>>> Stashed changes
 
 
 class ValueLog:
