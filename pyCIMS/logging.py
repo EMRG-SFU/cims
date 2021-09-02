@@ -1,18 +1,23 @@
 import pandas as pd
 import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
+<<<<<<< Updated upstream
 from pyCIMS.emissions import Emissions, EmissionRates
+=======
+from copy import deepcopy
+>>>>>>> Stashed changes
 
 
 class ValueLog:
-    def __init__(self, sub_param=None, context=None, unit=None, value=None):
+    def __init__(self, sub_param=None, context=None, branch=None, unit=None, value=None):
         self.sub_param = sub_param
         self.context = context
+        self.branch = branch
         self.unit = unit
         self.value = value
 
     def tuple(self):
-        return self.sub_param, self.context,  self.unit,  self.value
+        return self.sub_param, self.context,  self.branch, self.unit,  self.value
 
 
 def has_techs(node_year_data):
@@ -59,7 +64,7 @@ def log_RequestedQuantity(val):
 
     # Log quantities per tech
     for k, v in val.get_total_quantities_requested().items():
-        rqs.append(ValueLog(context=k,
+        rqs.append(ValueLog(branch=k,
                             value=v
                             ))
 
@@ -103,12 +108,13 @@ def log_list(val):
     val_pairs = []
     for entry in val:
         val_log = ValueLog()
-        val_log.context = entry['value']
         val_log.sub_param = entry['sub_param'] if 'sub_param' in entry.keys() else None
+        val_log.context = entry['value'] if 'value' in entry.keys() else None
+        val_log.branch = entry['branch']
         val_log.unit = entry['unit'] if 'unit' in entry.keys() else None
         val_log.value = entry['year_value']
 
-        val_pairs.append(val_log)
+        val_pairs.append(deepcopy(val_log))
 
     return val_pairs
 
@@ -119,8 +125,9 @@ def log_dict(val):
     val_log = ValueLog()
 
     if 'year_value' in val.keys():
-        val_log.context = val['value'] if 'value' in val.keys() else None
         val_log.sub_param = val['sub_param'] if 'sub_param' in val.keys() else None
+        val_log.context = val['value'] if 'value' in val.keys() else None
+        val_log.branch = val['branch'] if 'branch' in val.keys() else None
         val_log.unit = val['unit'] if 'unit' in val.keys() else None
 
         year_value = val['year_value']
@@ -147,12 +154,13 @@ def log_dict(val):
 
             if isinstance(v, dict):
                 val_log.sub_param = v['sub_param'] if 'sub_param' in v.keys() else None
+                val_log.branch = v['branch'] if 'branch' in v.keys() else None
                 val_log.unit = v['unit'] if 'unit' in v.keys() else None
                 val_log.value = v['year_value']
-                val_pairs.append(val_log)
             elif isinstance(v, int) or isinstance(v, float):
                 val_log.value = float(v)
-                val_pairs.append(val_log)
+
+            val_pairs.append(deepcopy(val_log))
 
         return val_pairs
 
@@ -344,8 +352,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
     # Split Value Log values
-    log_df[['sub_parameter', 'context', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
-    log_df = log_df[['node', 'year', 'technology', 'parameter', 'sub_parameter', 'context', 'unit', 'value']]
+    log_df[['sub_parameter', 'context', 'branch', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
+    log_df = log_df[['node', 'year', 'technology', 'parameter', 'sub_parameter', 'context', 'branch', 'unit', 'value']]
 
     # Write to file
     log_df.to_csv(output_file, index=False)
