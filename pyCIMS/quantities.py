@@ -24,6 +24,13 @@ class ProvidedQuantity:
                 total_provided_to_node += self.provided_quantities[pq]
         return total_provided_to_node
 
+    def get_quantity_provided_to_tech(self, node, tech):
+        node_tech = '{}[{}]'.format(node, tech)
+
+        if node_tech in self.provided_quantities:
+            return self.provided_quantities[node_tech]
+        else:
+            return 0
 
 class RequestedQuantity:
     def __init__(self):
