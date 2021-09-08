@@ -7,31 +7,49 @@ from .utils import is_year
 
 
 class ModelValidator:
-    def __init__(self, xl_file, node_col='Node'):
-        self.xl_file = xl_file
+    def __init__(self, infile, sheet_map, node_col):
+        self.infile = infile
+        excel_engine_map = {'.xlsb': 'pyxlsb',
+                            '.xlsm': 'xlrd'}
+        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+
+        self.sheet_map = sheet_map
         self.node_col = node_col
+
+        self.model_df = self._get_model_df()
 
         self.warnings = {}
 
-        # Turn Excel file into Dataframe
-        excel_engine_map = {'.xlsb': 'pyxlsb',
-                            '.xlsm': 'xlrd'}
-        excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
-        mxl = pd.read_excel(xl_file, sheet_name=None, header=1, engine=excel_engine)
-        model_df = mxl['Model'].replace({np.nan: None})  # Read the model sheet into a dataframe
-        model_df.index += 3  # Adjust index to correspond to Excel line numbers
-        # +1: 0 vs 1 origin, +1: header skip, +1: column headers
-        model_df.columns = [str(c) for c in
-                            model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df,
-                                       'Node')  # Find columns, separated year cols from non-year cols
-        all_cols = np.concatenate((n_cols, y_cols))
-        mdf = model_df.loc[1:,
-              all_cols]  # Create df, drop irrelevant columns & skip first, empty row
-
-        self.model_df = mdf
         self.index2node_map = self.model_df[self.node_col].ffill()
         self.index2node_index_map = self._create_index_to_node_index_map()
+
+    def _get_model_df(self):
+        # Read in list of sheets from 'Lists' sheet in model description
+        sheet_df = pd.read_excel(self.infile,
+                                 sheet_name=self.sheet_map['model'],
+                                 engine=self.excel_engine)
+
+        # Remove nans from list
+        sheet_list = [sheet for sheet in sheet_df['Model sheets'] if not pd.isna(sheet)]
+
+        appended_data = []
+        for sheet in sheet_list:
+            sheet_df = pd.read_excel(self.infile,
+                                     sheet_name=sheet,
+                                     header=1,
+                                     engine=self.excel_engine).replace({np.nan: None})
+            appended_data.append(sheet_df)
+
+        model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
+        model_df.index += 3  # Adjust index to correspond to Excel line numbers
+        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
+        model_df.columns = [str(c) for c in
+                            model_df.columns]  # Convert all column names to strings (years were ints)
+        n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
+        all_cols = np.concatenate((n_cols, y_cols))
+        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+
+        return mdf
 
     def find_roots(self):
         root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
@@ -73,6 +91,7 @@ class ModelValidator:
                                'Sector',
                                'Sector No Tech',
                                'Tech Compete',
+                               'Node Tech Compete',
                                'Fixed Ratio']
 
             invalid_nodes = []
@@ -401,62 +420,62 @@ class ModelValidator:
                     w = ("{} {}".format(info, more_info if len(nodes_techs_no_serv_req) else ""))
                     warnings.warn(w)
 
-        def discrepencies_in_model_and_tree():
-            """
-            Determine whether there are any discrepancies in the Model Description Excel file between 
-            the Model and Tree sheet, in terms of structure and order. 
-            
-            Parameters
-            ----------
-            None
-
-            Returns
-            -------
-            None
-            """
-            excel_engine_map = {'.xlsb': 'pyxlsb',
-                                '.xlsm': 'xlrd'}
-            excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
-            mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=3, engine=excel_engine)
-
-            tree_df = mxl_tree.replace({np.nan: None})
-            tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
-
-            d = self.model_df
-            p = d[d['Parameter'] == 'Service provided']['Branch']
-            model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
-
-            nodes_with_discrepencies = []
-            for i, n in tree_sheet.iteritems():
-                discrepancy = False
-                if n not in list(model_sheet):
-                    discrepancy = True
-                    model_order = None
-                else:
-                    if i != model_sheet[model_sheet == n].index[0]:
-                        discrepancy = True
-                        model_order = model_sheet[model_sheet == n].index[0]
-                if discrepancy:
-                    nodes_with_discrepencies.append((i, model_order, n))
-
-            if len(nodes_with_discrepencies) > 0:
-                self.warnings['discrepencies_in_model_and_tree'] = nodes_with_discrepencies
-
-            # Print Problems
-            if verbose:
-                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
-                            "more info."
-                print("{} nodes have been defined in a different order between the model and tree "
-                      "sheets. {}".format(len(nodes_with_discrepencies),
-                                          more_info if len(nodes_with_discrepencies) else ""))
-            # Raise Warnings
-            if raise_warnings:
-                more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
-                            "more info."
-                w = "{} nodes have been defined in a different order between the model and tree" \
-                    "sheets. {}".format(len(nodes_with_discrepencies),
-                                        more_info if len(nodes_with_discrepencies) else "")
-                warnings.warn(w)
+        # def discrepencies_in_model_and_tree():
+        #     """
+        #     Determine whether there are any discrepancies in the Model Description Excel file between
+        #     the Model and Tree sheet, in terms of structure and order.
+        #
+        #     Parameters
+        #     ----------
+        #     None
+        #
+        #     Returns
+        #     -------
+        #     None
+        #     """
+        #     excel_engine_map = {'.xlsb': 'pyxlsb',
+        #                         '.xlsm': 'xlrd'}
+        #     excel_engine = excel_engine_map[os.path.splitext(self.xl_file)[1]]
+        #     mxl_tree = pd.read_excel(self.xl_file, sheet_name='Tree', header=3, engine=excel_engine)
+        #
+        #     tree_df = mxl_tree.replace({np.nan: None})
+        #     tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
+        #
+        #     d = self.model_df
+        #     p = d[d['Parameter'] == 'Service provided']['Branch']
+        #     model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
+        #
+        #     nodes_with_discrepencies = []
+        #     for i, n in tree_sheet.iteritems():
+        #         discrepancy = False
+        #         if n not in list(model_sheet):
+        #             discrepancy = True
+        #             model_order = None
+        #         else:
+        #             if i != model_sheet[model_sheet == n].index[0]:
+        #                 discrepancy = True
+        #                 model_order = model_sheet[model_sheet == n].index[0]
+        #         if discrepancy:
+        #             nodes_with_discrepencies.append((i, model_order, n))
+        #
+        #     if len(nodes_with_discrepencies) > 0:
+        #         self.warnings['discrepencies_in_model_and_tree'] = nodes_with_discrepencies
+        #
+        #     # Print Problems
+        #     if verbose:
+        #         more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
+        #                     "more info."
+        #         print("{} nodes have been defined in a different order between the model and tree "
+        #               "sheets. {}".format(len(nodes_with_discrepencies),
+        #                                   more_info if len(nodes_with_discrepencies) else ""))
+        #     # Raise Warnings
+        #     if raise_warnings:
+        #         more_info = "See ModelValidator.warnings['discrepencies_in_model_and_tree'] for " \
+        #                     "more info."
+        #         w = "{} nodes have been defined in a different order between the model and tree" \
+        #             "sheets. {}".format(len(nodes_with_discrepencies),
+        #                                 more_info if len(nodes_with_discrepencies) else "")
+        #         warnings.warn(w)
 
         def nodes_with_zero_output():
             """
@@ -471,7 +490,7 @@ class ModelValidator:
             -------
             None
             """
-            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:, 7:18]
+            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:, 8:19]
             zero_output_nodes = []
             for i in range(output.shape[0]):
                 if output.iloc[i, 0:12].eq(0).any():
@@ -507,8 +526,7 @@ class ModelValidator:
             -------
             None
             """
-            d = self.model_df[self.model_df['Parameter'] == 'Node type'][
-                    'Value'].str.lower() == 'supply'
+            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
@@ -520,7 +538,7 @@ class ModelValidator:
                     if 'Life Cycle Cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 7:18]
+                        prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 8:19]
                         if prod_cost.iloc[0].isnull().any():
                             no_prod_cost.append((node.index[0], n))
 
@@ -796,7 +814,7 @@ class ModelValidator:
 
             # Identify rows that have 0's or missing values
             rows_nan_zero = year_values.replace(0, np.nan).isna().sum(axis=1)
-            row_has_bad_values = rows_nan_zero > 0
+            row_has_bad_values = rows_nan_zero == len(year_cols)
             rows_with_bad_values = services_req[row_has_bad_values]
 
             # Create our Warning information
@@ -807,7 +825,7 @@ class ModelValidator:
                 self.warnings['bad_service_req'] = bad_service_req
 
             if verbose or raise_warnings:
-                info = "{} nodes/technologies contain 0's or are missing values in service " \
+                info = "{} nodes/technologies contain only 0's or are missing values in service " \
                        "request rows.".format(len(bad_service_req))
                 more_info = "See ModelValidator.warnings['bad_service_req'] for more info."
 
@@ -890,7 +908,7 @@ class ModelValidator:
         invalid_competition_type()
         nodes_requesting_self(providers, requested)
         nodes_no_requested_service()
-        discrepencies_in_model_and_tree()
+        # discrepencies_in_model_and_tree()
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
         nodes_no_capital_cost()
