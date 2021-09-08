@@ -23,7 +23,6 @@ class ModelValidator:
         self.index2node_map = self.model_df[self.node_col].ffill()
         self.index2node_index_map = self._create_index_to_node_index_map()
 
-
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
         sheet_df = pd.read_excel(self.infile,
@@ -51,7 +50,6 @@ class ModelValidator:
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         return mdf
-
 
     def find_roots(self):
         root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
@@ -816,7 +814,7 @@ class ModelValidator:
 
             # Identify rows that have 0's or missing values
             rows_nan_zero = year_values.replace(0, np.nan).isna().sum(axis=1)
-            row_has_bad_values = rows_nan_zero == 11
+            row_has_bad_values = rows_nan_zero == len(year_cols)
             rows_with_bad_values = services_req[row_has_bad_values]
 
             # Create our Warning information
