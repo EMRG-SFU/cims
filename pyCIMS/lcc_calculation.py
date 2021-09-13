@@ -241,6 +241,9 @@ def calc_emissions_cost(model, node, year, tech):
     for ghg, tax_list in all_taxes.items():
         for tax_dict in tax_list:
             tax_rates[ghg][tax_dict['sub_param']] = tax_dict['year_value']
+    # for ghg in all_taxes:
+    #     for emission_type in all_taxes[ghg]:
+    #         tax_rates[ghg][emission_type] = all_taxes[ghg][emission_type]['year_value']
 
     # EMISSIONS tech level
     total_emissions = {}
@@ -285,6 +288,11 @@ def calc_emissions_cost(model, node, year, tech):
                         if GHG not in total_emissions[child_node]:
                             total_emissions[child_node][GHG] = {}
                         total_emissions[child_node][GHG][fuel_data['sub_param']] = fuel_data['year_value'] * req_val
+                # for GHG in fuel_emissions:
+                #     if GHG not in total_emissions[child_node]:
+                #         total_emissions[child_node][GHG] = {}
+                #     for emission_type in fuel_emissions[GHG]:
+                #         total_emissions[child_node][GHG][emission_type] = fuel_emissions[GHG][emission_type]['year_value'] * req_val
 
     gross_emissions = deepcopy(total_emissions)
 

@@ -118,8 +118,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    dccc = self.get_param('Capital cost_declining_Class', node, base_year, tech,
-                                          sub_param='value')
+                    dccc = self.get_param('Capital cost_declining_Class', node, base_year, tech)
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -456,7 +455,7 @@ class Model:
             """
 
             # Retrieve tax from the parents (if they exist)
-            parents = list(graph.predecessors(node))
+            parents = list(graph.predecessors(node))  # TODO: I think we need to make sure this is a structural parent -- not a req/provide parent
             parent_tax = {}
             if len(parents) > 0:
                 parent = parents[0]
@@ -471,17 +470,12 @@ class Model:
 
             # Make final dict where we prioritize keeping node_tax and only unique parent taxes
             final_tax = copy.deepcopy(node_tax)
-            for ghg_name, ghg_list in parent_tax.items():
-                for ghg_dict in ghg_list:
-                    if ghg_name in final_tax:
-                        add_dict = True
-                        for final_dict in final_tax[ghg_name]:
-                            if ghg_dict['sub_param'] == final_dict['sub_param']:
-                                add_dict = False
-                        if add_dict:
-                            final_tax[ghg_name].append(ghg_dict)
-                    else:   # New tax GHG that is at the parent but not at current node
-                        final_tax[ghg_name] = [ghg_dict]
+            for ghg in parent_tax:
+                if ghg not in final_tax:
+                    final_tax[ghg] = {}
+                for emission_type in parent_tax[ghg]:
+                    if emission_type not in final_tax[ghg]:
+                        final_tax[ghg][emission_type] = parent_tax[ghg][emission_type]
 
             graph.nodes[node][year]['Tax'] = final_tax
 

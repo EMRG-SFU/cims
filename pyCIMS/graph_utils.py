@@ -119,26 +119,23 @@ def get_GHG_and_Emissions(graph, year):
     ghg = []
     emission_type = []
     for node, data in graph.nodes(data=True):
-
         # Emissions from a node with technologies
         if 'technologies' in data[year]:
             techs = data[year]['technologies']
             for tech in techs:
                 tech_data = data[year]['technologies'][tech]
-                if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
+                if 'Emissions' in tech_data or 'Emissions Removal' in tech_data:
                     if 'Emissions' in tech_data:
                         ghg_list = data[year]['technologies'][tech]['Emissions']
-                    else:
+                    elif 'Emissions removal' in tech_data:
                         ghg_list = data[year]['technologies'][tech]['Emissions removal']
 
-                    if isinstance(ghg_list, dict):
-                        ghg_list = [ghg_list]
+                    node_ghg = [ghg for ghg in ghg_list]
+                    node_emission_type = [emission_type for emission_record in ghg_list.values() for
+                                          emission_type in emission_record]
 
-                    node_ghg = [ghg['value'] for ghg in ghg_list]
-                    node_emission_type = [ghg['sub_param'] for ghg in ghg_list]
-
-                    ghg = list(set(ghg + node_ghg))
-                    emission_type = list(set(emission_type + node_emission_type))
+                    ghg = list(set(node_ghg))
+                    emission_type = list(set(node_emission_type))
 
         # Emissions from a supply node
         elif 'Emissions' in data[year] or 'Emissions Removal' in data[year]:
@@ -148,10 +145,11 @@ def get_GHG_and_Emissions(graph, year):
                 ghg_dict = data[year]['Emissions removal']
 
             node_ghg = [ghg for ghg in ghg_dict.keys()]
-            node_emission_type = [ghg[0]['sub_param'] for ghg in ghg_dict.values()]
+            # node_emission_type = [ghg[0]['sub_param'] for ghg in ghg_dict.values()]
+            node_emission_type = [emission_type for emission_record in ghg_dict.values() for emission_type in emission_record]
 
-            ghg = list(set(ghg + node_ghg))
-            emission_type = list(set(emission_type + node_emission_type))
+            ghg = list(set(node_ghg))
+            emission_type = list(set(node_emission_type))
 
     return ghg, emission_type
 
@@ -365,24 +363,24 @@ def add_node_data(graph, current_node, node_dfs):
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
-        for param, sub_param, val, branch, src, unit, _, year_value in zip(*current_year_data):
+        for param, sub_param, context, branch, src, unit, _, year_value in zip(*current_year_data):
             dct = {'source': src,
                    'branch': branch,
+                   # 'context': context,
                    'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param not in year_dict.keys():
+            if param not in year_dict:
                 year_dict[param] = {}
 
             if sub_param:
-                if val not in year_dict[param]:
-                    year_dict[param][val] = [dct]
-                else:
-                    year_dict[param][val].append(dct)
+                if context not in year_dict[param]:
+                    year_dict[param][context] = {}
             else:
-                year_dict[param][val] = dct
+                dct['value'] = context
+                year_dict[param] = dct
 
         # Add data to node
         graph.nodes[current_node][year] = year_dict
@@ -424,22 +422,43 @@ def add_tech_data(graph, node, tech_dfs, tech):
         current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
 
-        for param, sub_param, value, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'value': value,
-                   'source': source,
+        for param, sub_param, context, branch, source, unit, _, year_value in zip(*current_year_data):
+            dct = {'source': source,
                    'branch': branch,
-                   'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                if isinstance(year_dict[param], list):
-                    year_dict[param].append(dct)
-                else:
-                    year_dict[param] = [year_dict[param], dct]
+            if param not in year_dict:
+                year_dict[param] = {}
+
+            if sub_param:
+                if context not in year_dict[param]:
+                    year_dict[param][context] = {}
+                year_dict[param][context][sub_param] = dct
             else:
+                dct['value'] = context
                 year_dict[param] = dct
+
+            # if param in year_dict.keys():
+            #     if isinstance(year_dict[param], list):
+            #         year_dict[param].append(dct)
+            #     else:
+            #         year_dict[param] = [year_dict[param], dct]
+            # else:
+            #     year_dict[param] = dct
+
+            # if param not in year_dict.keys():
+            #     year_dict[param] = {}
+            #
+            # if
+            # if sub_param:
+            #     if value not in year_dict[param]:
+            #         year_dict[param][value] = {}
+            #     year_dict[param][value][sub_param] = dct
+            # else:
+            #     year_dict[param][value] = dct
+
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():

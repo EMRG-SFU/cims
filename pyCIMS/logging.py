@@ -162,6 +162,13 @@ def log_dict(val):
         return val_pairs
 
 
+def dict_depth(dic, level=1):
+    if not isinstance(dic, dict) or not dic:
+        return level
+    return max(dict_depth(dic[key], level + 1)
+               for key in dic)
+
+
 # helper function for opening txt file
 def openfile(path):
     with open(path) as f:
@@ -199,6 +206,8 @@ def add_log_item(all_logs, log_tuple):
                 bool: log_bool}
 
     node, year, tech, param, val = log_tuple
+    if param in ['Emissions']:
+        jillian = 1
     # Process the value & year value
     try:
         prepped_val = log_func[type(val)](val)
@@ -261,7 +270,7 @@ def search_parameter(model, search: [str] = None):
     return search_list
 
 
-def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
+def log_model(model, output_file=None, parameter_list: [str] = None, path: str = None, default_list: str = None):
     '''
     parameter_list: a list of string such as ['aa', 'bb','cc']
     path: str path of the txt file such as 'test.txt'
