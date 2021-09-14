@@ -116,6 +116,8 @@ class Model:
         nodes = self.graph.nodes
         base_year = str(self.base_year)
         for node in nodes:
+            if node == 'pyCIMS.Canada.British Columbia.Natural Gas Extraction.CCS':
+                jillian = 1
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
                     dccc = self.get_param('Capital cost_declining_Class', node, base_year, tech)

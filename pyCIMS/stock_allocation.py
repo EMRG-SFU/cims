@@ -121,7 +121,8 @@ def general_allocation(model, node, year):
 
     elif 'Service requested' in node_year_data:
         # Calculate the provided_quantities being requested for each of the services
-        services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
+        # services_being_requested = [v for k, v in node_year_data['Service requested'].items()]
+        services_being_requested = node_year_data['Service requested']
         _record_provided_quantities(model, node, year, services_being_requested, assessed_demand)
 
 
@@ -168,7 +169,7 @@ def _get_existing_stock(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node, year, child, sub_param='branch')
+            child_node = model.get_param('Service requested', node, year, child)[child]['branch']
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
                 t_existing = _do_natural_retirement(model, child_node, year, tech, comp_type)
@@ -677,8 +678,7 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node, base_year, child,
-                                         sub_param='branch')
+            child_node = model.get_param('Service requested', node, base_year, child)[child]['branch']
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
@@ -770,8 +770,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node, year, tech_child,
-                                             sub_param='branch')
+                child_node = model.get_param('Service requested', node, year, tech_child)[tech_child]['branch']
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 
@@ -1146,10 +1145,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
     None :
         Nothing is returned. Instead, the model is updated with the provided quantities.
     """
-    if isinstance(requested_services, dict):
-        requested_services = [requested_services]
-
-    for service_data in requested_services:
+    for service, service_data in requested_services.items():
         service_req_ratio = service_data['year_value']
         quant_requested = market_share * service_req_ratio * assessed_demand
         year_node = model.graph.nodes[service_data['branch']][year]
