@@ -214,8 +214,6 @@ def add_log_item(all_logs, log_tuple):
                 bool: log_bool}
 
     node, year, tech, param, val = log_tuple
-    if param in ['Emissions']:
-        jillian = 1
     # Process the value & year value
     try:
         prepped_val = log_func[type(val)](val)
