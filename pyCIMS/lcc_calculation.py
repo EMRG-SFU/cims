@@ -215,9 +215,8 @@ def calc_emissions_cost(model, node, year, tech):
                     for emission_type in fuel_emissions[ghg]:
                         if ghg not in total_emissions[child_node]:
                             total_emissions[child_node][ghg] = {}
-                        total_emissions[child_node][ghg][emission_type] = fuel_emissions[ghg][emission_type]
+                        total_emissions[child_node][ghg][emission_type] = deepcopy(fuel_emissions[ghg][emission_type])
                         total_emissions[child_node][ghg][emission_type]['year_value'] *= req_val
-
 
     gross_emissions = deepcopy(total_emissions)
 

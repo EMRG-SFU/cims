@@ -452,7 +452,6 @@ class Model:
             -------
             Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
             """
-
             # Retrieve tax from the parents (if they exist)
             parents = list(graph.predecessors(node))  # TODO: I think we need to make sure this is a structural parent -- not a req/provide parent
             parent_tax = {}
@@ -757,7 +756,7 @@ class Model:
         cap_emissions = Emissions()
 
         # get emissions that originate at the node
-        if 'emission_rates' in self.graph.nodes[node][year]:
+        if 'net_emission_rates' in self.graph.nodes[node][year]:
             net_emission_rates = self.get_param('net_emission_rates', node, year)
             cap_emission_rates = self.get_param('captured_emission_rates', node, year)
         else:
