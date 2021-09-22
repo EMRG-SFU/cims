@@ -119,26 +119,23 @@ def get_GHG_and_Emissions(graph, year):
     ghg = []
     emission_type = []
     for node, data in graph.nodes(data=True):
-
         # Emissions from a node with technologies
         if 'technologies' in data[year]:
             techs = data[year]['technologies']
             for tech in techs:
                 tech_data = data[year]['technologies'][tech]
-                if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
+                if 'Emissions' in tech_data or 'Emissions Removal' in tech_data:
                     if 'Emissions' in tech_data:
                         ghg_list = data[year]['technologies'][tech]['Emissions']
-                    else:
+                    elif 'Emissions removal' in tech_data:
                         ghg_list = data[year]['technologies'][tech]['Emissions removal']
 
-                    if isinstance(ghg_list, dict):
-                        ghg_list = [ghg_list]
+                    node_ghg = [ghg for ghg in ghg_list]
+                    node_emission_type = [emission_type for emission_record in ghg_list.values() for
+                                          emission_type in emission_record]
 
-                    node_ghg = [ghg['value'] for ghg in ghg_list]
-                    node_emission_type = [ghg['sub_param'] for ghg in ghg_list]
-
-                    ghg = list(set(ghg + node_ghg))
-                    emission_type = list(set(emission_type + node_emission_type))
+                    ghg += list(set(node_ghg))
+                    emission_type += list(set(node_emission_type))
 
         # Emissions from a supply node
         elif 'Emissions' in data[year] or 'Emissions Removal' in data[year]:
@@ -148,12 +145,12 @@ def get_GHG_and_Emissions(graph, year):
                 ghg_dict = data[year]['Emissions removal']
 
             node_ghg = [ghg for ghg in ghg_dict.keys()]
-            node_emission_type = [ghg[0]['sub_param'] for ghg in ghg_dict.values()]
+            node_emission_type = [emission_type for emission_record in ghg_dict.values() for emission_type in emission_record]
 
-            ghg = list(set(ghg + node_ghg))
-            emission_type = list(set(emission_type + node_emission_type))
+            ghg += list(set(node_ghg))
+            emission_type += list(set(node_emission_type))
 
-    return ghg, emission_type
+    return list(set(ghg)), list(set(emission_type))
 
 
 def get_subgraph(graph, node_types):
@@ -232,8 +229,6 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
             # Resolve a loop
             cycles = nx.simple_cycles(sg_cur)
             candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
-
-            # candidates = {n: dist_from_root[n] for n in sg_cur}
             n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
@@ -345,7 +340,7 @@ def add_node_data(graph, current_node, node_dfs):
         graph.nodes[current_node]['type'] = val if val else 'standard'
 
     # Drop Demand row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'Node type']
+    current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
@@ -365,24 +360,45 @@ def add_node_data(graph, current_node, node_dfs):
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
-        for param, sub_param, val, branch, src, unit, _, year_value in zip(*current_year_data):
+        for param, sub_param, context, branch, src, unit, _, year_value in zip(*current_year_data):
             dct = {'source': src,
                    'branch': branch,
+                   # 'context': context,
                    'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param not in year_dict.keys():
+            if param not in year_dict:
                 year_dict[param] = {}
 
-            if sub_param:
-                if val not in year_dict[param]:
-                    year_dict[param][val] = [dct]
+            # If a Context value is present, there are 3 possibilities for what needs to happen
+            if context:
+                # 1. We need to place our information in a nested dictionary, keyed by the context
+                #    and the sub-parameter.
+                if sub_param:
+                    if context not in year_dict[param]:
+                        year_dict[param][context] = {}
+                    year_dict[param][context][sub_param] = dct
+
+                # 2. We need to place the information in a dictionary, keyed by only context. In
+                #    these cases, sub_parameter isn't defined, but there will be values in year_
+                #    value that we need to record.
+                elif year_value is not None:
+                    year_dict[param][context] = dct
+
+                # 3. Context contains the value we actually want to record. Additionally, this value
+                #    will remain constant across all years.
                 else:
-                    year_dict[param][val].append(dct)
+                    if context in year_dict[param]:
+                        raise ValueError(f'Multiple values have been set for {param}. Please rectify'
+                                         f'this.')
+                    # 1. year_value isn't present, so context is the actual value we want to record.
+                    dct['value'] = context
+                    year_dict[param] = dct
             else:
-                year_dict[param][val] = dct
+                year_dict[param] = dct
+
 
         # Add data to node
         graph.nodes[current_node][year] = year_dict
@@ -424,20 +440,43 @@ def add_tech_data(graph, node, tech_dfs, tech):
         current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
 
-        for param, sub_param, value, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'value': value,
-                   'source': source,
+        for param, sub_param, context, branch, source, unit, _, year_value in zip(*current_year_data):
+            dct = {'source': source,
                    'branch': branch,
+                   # 'value': context,
                    'sub_param': sub_param,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                if isinstance(year_dict[param], list):
-                    year_dict[param].append(dct)
+            # If the parameter isn't in the year_dict yet, add it
+            if param not in year_dict:
+                year_dict[param] = {}
+
+            # If a Context value is present, there are 3 possibilities for what needs to happen
+            if context:
+                # 1. We need to place our information in a nested dictionary, keyed by the context
+                #    and the sub-parameter.
+                if sub_param:
+                    if context not in year_dict[param]:
+                        year_dict[param][context] = {}
+                    year_dict[param][context][sub_param] = dct
+
+                # 2. We need to place the information in a dictionary, keyed by only context. In
+                #    these cases, sub_parameter isn't defined, but there will be values in year_
+                #    value that we need to record.
+                elif year_value is not None:
+                    year_dict[param][context] = dct
+                # 3. Context contains the value we actually want to record. Additionally, this value
+                #    will remain constant across all years.
+
                 else:
-                    year_dict[param] = [year_dict[param], dct]
+                    if context in year_dict[param]:
+                        raise ValueError(f'Multiple values have been set for {param}. Please rectify'
+                                         f'this.')
+                    # 1. year_value isn't present, so context is the actual value we want to record.
+                    dct['value'] = context
+                    year_dict[param] = dct
             else:
                 year_dict[param] = dct
 

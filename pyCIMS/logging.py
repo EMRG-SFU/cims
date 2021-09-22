@@ -150,16 +150,31 @@ def log_dict(val):
             val_log.context = k
 
             if isinstance(v, dict):
-                val_log.sub_param = v['sub_param'] if 'sub_param' in v.keys() else None
-                val_log.branch = v['branch'] if 'branch' in v.keys() else None
-                val_log.unit = v['unit'] if 'unit' in v.keys() else None
-                val_log.value = v['year_value']
+                if 'year_value' in v:
+                    val_log.sub_param = v['sub_param'] if 'sub_param' in v.keys() else None
+                    val_log.branch = v['branch'] if 'branch' in v.keys() else None
+                    val_log.unit = v['unit'] if 'unit' in v.keys() else None
+                    val_log.value = v['year_value']
+                else:
+                    for sub_param, base_val in v.items():
+                        val_log.sub_param = sub_param
+                        val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
+                        val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
+                        val_log.value = base_val['year_value']
+
             elif isinstance(v, int) or isinstance(v, float):
                 val_log.value = float(v)
 
             val_pairs.append(deepcopy(val_log))
 
         return val_pairs
+
+
+def dict_depth(dic, level=1):
+    if not isinstance(dic, dict) or not dic:
+        return level
+    return max(dict_depth(dic[key], level + 1)
+               for key in dic)
 
 
 # helper function for opening txt file
@@ -261,7 +276,7 @@ def search_parameter(model, search: [str] = None):
     return search_list
 
 
-def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
+def log_model(model, output_file=None, parameter_list: [str] = None, path: str = None, default_list: str = None):
     '''
     parameter_list: a list of string such as ['aa', 'bb','cc']
     path: str path of the txt file such as 'test.txt'

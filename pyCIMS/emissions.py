@@ -2,6 +2,7 @@
 Module containing the custom Emission and EmissionRates classes used during emission aggregation.
 """
 import copy
+from . import utils
 
 
 class EmissionRates:
@@ -30,7 +31,7 @@ class EmissionRates:
         for source_branch in emission_totals:
             for ghg in emission_totals[source_branch]:
                 for emission_type in emission_totals[source_branch][ghg]:
-                    emission_totals[source_branch][ghg][emission_type] *= amount
+                    emission_totals[source_branch][ghg][emission_type]['year_value'] *= amount
 
         return emission_totals
 
@@ -54,7 +55,7 @@ class EmissionRates:
                     if emission_type not in summary_rates[ghg]:
                         summary_rates[ghg][emission_type] = 0
                     summary_rates[ghg][emission_type] += \
-                        self.emission_rates[source][ghg][emission_type]
+                        self.emission_rates[source][ghg][emission_type]['year_value']
         return summary_rates
 
 
@@ -74,9 +75,9 @@ class Emissions:
                     result.emissions[source_branch][ghg] = {}
                 for emission_type in other.emissions[source_branch][ghg]:
                     if emission_type not in result.emissions[source_branch][ghg]:
-                        result.emissions[source_branch][ghg][emission_type] = 0
+                        result.emissions[source_branch][ghg][emission_type] = utils.create_value_dict(0)
                     amount = other.emissions[source_branch][ghg][emission_type]
-                    result.emissions[source_branch][ghg][emission_type] += amount
+                    result.emissions[source_branch][ghg][emission_type]['year_value'] += amount['year_value']
 
         return result
 
@@ -85,7 +86,7 @@ class Emissions:
         for source_branch in self.emissions:
             for ghg in self.emissions[source_branch]:
                 for emission_type in self.emissions[source_branch][ghg]:
-                    result.emissions[source_branch][ghg][emission_type] *= other
+                    result.emissions[source_branch][ghg][emission_type]['year_value'] *= other
 
         return result
 
@@ -109,6 +110,6 @@ class Emissions:
                     if emission_type not in summary_emissions[ghg]:
                         summary_emissions[ghg][emission_type] = 0
                     summary_emissions[ghg][emission_type] += \
-                        self.emissions[source][ghg][emission_type]
+                        self.emissions[source][ghg][emission_type]['year_value']
 
         return summary_emissions
