@@ -206,12 +206,12 @@ def calc_emissions_cost(model, node, year, tech):
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
-        if isinstance(data, dict):
-            # Wrap the single request in a list to work with below code
-            data = [data]
+        # if isinstance(data, dict):
+        #     # Wrap the single request in a list to work with below code
+        #     data = [data]
 
         # EMISSIONS child level
-        for child_info in data:
+        for child, child_info in data.items():
             req_val = child_info['year_value']
             child_node = child_info['branch']
             if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels:
@@ -228,10 +228,7 @@ def calc_emissions_cost(model, node, year, tech):
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
-        if isinstance(data, dict):
-            data = [data]
-
-        for child_info in data:
+        for child, child_info in data.items():
             req_val = child_info['year_value']
             child_node = child_info['branch']
 

@@ -141,7 +141,7 @@ def get_GHG_and_Emissions(graph, year):
                     emission_type = list(set(emission_type + node_emission_type))
 
         # Emissions from a supply node
-        elif 'Emissions' in data[year] or 'Emissions Removal' in data[year]:
+        elif 'Emissions' in data[year] or 'Emissions removal' in data[year]:
             if 'Emissions' in data[year]:
                 ghg_dict = data[year]['Emissions']
             else:
@@ -345,7 +345,7 @@ def add_node_data(graph, current_node, node_dfs):
         graph.nodes[current_node]['type'] = val if val else 'standard'
 
     # Drop Demand row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'Node type']
+    current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
@@ -373,16 +373,48 @@ def add_node_data(graph, current_node, node_dfs):
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param not in year_dict.keys():
-                year_dict[param] = {}
+            if param == 'Service requested':
+                if param not in year_dict:
+                    year_dict[param] = {}
 
-            if sub_param:
-                if val not in year_dict[param]:
-                    year_dict[param][val] = [dct]
+                # If a Context value is present, there are 3 possibilities for what needs to happen
+                if val:
+                    # 1. We need to place our information in a nested dictionary, keyed by the
+                    # context and the sub-parameter.
+                    if sub_param:
+                        if val not in year_dict[param]:
+                            year_dict[param][val] = {}
+                        year_dict[param][val][sub_param] = dct
+
+                    # 2. We need to place the information in a dictionary, keyed by only context. In
+                    #    these cases, sub_parameter isn't defined, but there will be values in year_
+                    #    value that we need to record.
+                    elif year_value is not None:
+                        year_dict[param][val] = dct
+
+                    # 3. Context contains the value we actually want to record. Additionally, this
+                    # value will remain constant across all years.
+                    else:
+                        if val in year_dict[param]:
+                            raise ValueError(
+                                f'Multiple values have been set for {param}. Please rectify'
+                                f'this.')
+                        # 1. year_value isn't present, so context is the actual value we want to
+                        # record.
+                        dct['value'] = val
+                        year_dict[param] = dct
                 else:
-                    year_dict[param][val].append(dct)
+                    year_dict[param] = dct
             else:
-                year_dict[param][val] = dct
+                if param not in year_dict.keys():
+                    year_dict[param] = {}
+                if sub_param:
+                    if val not in year_dict[param]:
+                        year_dict[param][val] = [dct]
+                    else:
+                        year_dict[param][val].append(dct)
+                else:
+                    year_dict[param][val] = dct
 
         # Add data to node
         graph.nodes[current_node][year] = year_dict
@@ -433,13 +465,45 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param in year_dict.keys():
-                if isinstance(year_dict[param], list):
-                    year_dict[param].append(dct)
-                else:
-                    year_dict[param] = [year_dict[param], dct]
+            if param == 'Service requested':
+                # If the parameter isn't in the year_dict yet, add it
+                if param not in year_dict:
+                    year_dict[param] = {}
+
+                # If a Context value is present, there are 3 possibilities for what needs to happen
+                if value:
+                    # 1. We need to place our information in a nested dictionary, keyed by the
+                    # context and the sub-parameter.
+                    if sub_param:
+                        if value not in year_dict[param]:
+                            year_dict[param][value] = {}
+                        year_dict[param][value][sub_param] = dct
+
+                    # 2. We need to place the information in a dictionary, keyed by only context. In
+                    #    these cases, sub_parameter isn't defined, but there will be values in year_
+                    #    value that we need to record.
+                    elif year_value is not None:
+                        year_dict[param][value] = dct
+                    # 3. Context contains the value we actually want to record. Additionally, this
+                    # value will remain constant across all years.
+                    else:
+                        if value in year_dict[param]:
+                            raise ValueError(
+                                f'Multiple values have been set for {param}. Please rectify'
+                                f'this.')
+                        dct['value'] = value
+                        year_dict[param] = dct
+
             else:
-                year_dict[param] = dct
+                if param in year_dict.keys():
+                    if param not in ['Emissions', 'Service requested']:
+                        print(param)
+                    if isinstance(year_dict[param], list):
+                        year_dict[param].append(dct)
+                    else:
+                        year_dict[param] = [year_dict[param], dct]
+                else:
+                    year_dict[param] = dct
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
