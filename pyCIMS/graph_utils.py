@@ -480,46 +480,6 @@ def add_tech_data(graph, node, tech_dfs, tech):
             else:
                 year_dict[param] = dct
 
-        # if context:
-            #     if context not in year_dict[param]:
-            #         year_dict[param][context] = dct
-            #
-            #     if sub_param:
-            #         year_dict[param][context][sub_param] = dct
-            #     else:
-            #         year_dict[param][context] = dct
-            # else:
-            #     year_dict[param] = dct
-
-
-            # if sub_param:
-            #     if context not in year_dict[param]:
-            #         year_dict[param][context] = {}
-            #     year_dict[param][context][sub_param] = dct
-            # else:
-            #     dct['value'] = context
-            #     year_dict[param] = dct
-
-            # if param in year_dict.keys():
-            #     if isinstance(year_dict[param], list):
-            #         year_dict[param].append(dct)
-            #     else:
-            #         year_dict[param] = [year_dict[param], dct]
-            # else:
-            #     year_dict[param] = dct
-
-            # if param not in year_dict.keys():
-            #     year_dict[param] = {}
-            #
-            # if
-            # if sub_param:
-            #     if value not in year_dict[param]:
-            #         year_dict[param][value] = {}
-            #     year_dict[param][value][sub_param] = dct
-            # else:
-            #     year_dict[param][value] = dct
-
-
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
             graph.nodes[node][year]['technologies'] = {}
