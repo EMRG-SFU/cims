@@ -372,8 +372,7 @@ def add_node_data(graph, current_node, node_dfs):
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
-
-            if param == 'Service requested':
+            if param in ['Service requested', 'Tax']:
                 if param not in year_dict:
                     year_dict[param] = {}
 
@@ -406,6 +405,8 @@ def add_node_data(graph, current_node, node_dfs):
                 else:
                     year_dict[param] = dct
             else:
+                if val:
+                    print(param)
                 if param not in year_dict.keys():
                     year_dict[param] = {}
                 if sub_param:
@@ -465,7 +466,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'year_value': year_value,
                    'param_source': 'model'}
 
-            if param == 'Service requested':
+            if param in ['Service requested', 'Tax']:
                 # If the parameter isn't in the year_dict yet, add it
                 if param not in year_dict:
                     year_dict[param] = {}
