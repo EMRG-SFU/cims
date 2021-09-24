@@ -118,8 +118,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    dccc = self.get_param('Capital cost_declining_Class', node, base_year, tech,
-                                          sub_param='value')
+                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class']['value']
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -476,7 +475,7 @@ class Model:
                 for emission_type in parent_tax[ghg]:
                     if emission_type not in final_tax[ghg]:
                         final_tax[ghg][emission_type] = parent_tax[ghg][emission_type]
-            return (final_tax)
+
             graph.nodes[node][year]['Tax'] = final_tax
 
         graph_utils.top_down_traversal(graph,
@@ -756,7 +755,7 @@ class Model:
         cap_emissions = Emissions()
 
         # get emissions that originate at the node
-        if 'emission_rates' in self.graph.nodes[node][year]:
+        if 'net_emission_rates' in self.graph.nodes[node][year]:
             net_emission_rates = self.get_param('net_emission_rates', node, year)
             cap_emission_rates = self.get_param('captured_emission_rates', node, year)
         else:

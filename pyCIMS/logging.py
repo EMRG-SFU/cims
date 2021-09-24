@@ -229,7 +229,6 @@ def model_parameter(model):
 
     for node in model.graph.nodes:
         for param, val in model.graph.nodes[node].items():
-            # print(param)
             if param not in model_list:
                 model_list.append(param)
 
