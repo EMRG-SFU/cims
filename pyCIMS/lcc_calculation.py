@@ -506,17 +506,8 @@ def calc_annual_service_cost(model, node, year, tech=None):
 
     if 'Service requested' in data:
         service_req = data['Service requested']
-        if isinstance(service_req, dict):
-            if 'year_value' in service_req:
-                total_service_cost += do_sc_calculation(service_req)
-            else:
-                for req in service_req.values():
-                    total_service_cost += do_sc_calculation(req)
-        elif isinstance(service_req, list):
-            for req in service_req:
-                total_service_cost += do_sc_calculation(req)
-        else:
-            print(f"type for service requested? {type(service_req)}")
+        for req in service_req.values():
+            total_service_cost += do_sc_calculation(req)
 
     return total_service_cost
 
