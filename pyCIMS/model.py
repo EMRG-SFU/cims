@@ -356,10 +356,10 @@ class Model:
                 price_multipliers = self.get_param('Price Multiplier', node, year)
                 node_price_multipliers.update(price_multipliers)
 
-            # Multiply the node's price multipliers by its parents' price multipliers
+            # Replace the parent price multipliers by the node's price multipliers
             for fuel, mult in node_price_multipliers.items():
                 if fuel in parent_price_multipliers:
-                    parent_price_multipliers[fuel]['year_value'] *= mult['year_value']
+                    parent_price_multipliers[fuel]['year_value'] = mult['year_value']
                 else:
                     parent_price_multipliers[fuel] = mult
 
