@@ -350,21 +350,14 @@ class Model:
                     price_multipliers = self.get_param('Price Multiplier', parent, year)
                     parent_price_multipliers.update(price_multipliers)
 
-            # Grab the price multiplier from the current node (if they exist)
-            node_price_multipliers = {}
+            # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
+            node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year)
+                price_multipliers = self.get_param('Price Multiplier', node, year, return_keys=True)
                 node_price_multipliers.update(price_multipliers)
 
-            # Multiply the node's price multipliers by its parents' price multipliers
-            for fuel, mult in node_price_multipliers.items():
-                if fuel in parent_price_multipliers:
-                    parent_price_multipliers[fuel]['year_value'] *= mult['year_value']
-                else:
-                    parent_price_multipliers[fuel] = mult
-
             # Set Price Multiplier of node in the graph
-            graph.nodes[node][year]['Price Multiplier'] = parent_price_multipliers
+            graph.nodes[node][year]['Price Multiplier'] = node_price_multipliers
 
         def init_fuel_lcc(graph, node, year, step=5):
             """
@@ -533,7 +526,7 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False, return_keys=False):
         """
         Gets a parameter's value from the model, given a specific context (node, year, technology,
         and sub-parameter).
@@ -591,7 +584,7 @@ class Model:
         else:
             param_val = utils.get_node_param(param, self, node, year, sub_param=sub_param,
                                              return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
+                                             retrieve_only=True, check_exist=check_exist, return_keys=return_keys)
 
         return param_val
 
