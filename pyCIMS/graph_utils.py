@@ -111,6 +111,7 @@ def get_fuels(graph):
 def get_GHG_and_Emissions(graph, year):
     """
     Return 2 lists consisting of all the GHGs (CO2, CH4, etc.) and all the emission types (Process, Fugitive, etc.)
+    Return 1 dictionary containing the GHGs as keys and GWPs as values
     :param DiGraph graph: graph to search for all emissions
     :param str year: year to find emissions, will likely be base year
     :return: list of GHGs and a list of emission types
@@ -118,6 +119,7 @@ def get_GHG_and_Emissions(graph, year):
 
     ghg = []
     emission_type = []
+    gwp = {}
     for node, data in graph.nodes(data=True):
 
         # Emissions from a node with technologies
@@ -153,7 +155,12 @@ def get_GHG_and_Emissions(graph, year):
             ghg = list(set(ghg + node_ghg))
             emission_type = list(set(emission_type + node_emission_type))
 
-    return ghg, emission_type
+        #GWP from pyCIMS node
+        if 'Emissions GWP' in data[year]:
+            for ghg2 in data[year]['Emissions GWP']:
+                gwp[ghg2] = data[year]['Emissions GWP'][ghg2]['year_value']
+
+    return ghg, emission_type, gwp
 
 
 def get_subgraph(graph, node_types):
