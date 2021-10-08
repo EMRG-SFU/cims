@@ -595,6 +595,21 @@ class Model:
 
         return param_val
 
+
+    def get_param_test(self, param, node, year, context=None, sub_param=None, tech=False,
+                       return_source=False, check_exist=False):
+        if tech:
+            param_val = utils.get_tech_param_test(param, self, node, year, tech=context, sub_param=sub_param,
+                                             return_source=return_source,
+                                             retrieve_only=True, check_exist=check_exist)
+
+        else:
+            param_val = utils.get_node_param_test(param, self, node, year, context=context, sub_param=sub_param,
+                                             return_source=return_source,
+                                             retrieve_only=True, check_exist=check_exist)
+
+        return param_val
+
     def get_or_calc_param(self, param, node, year=None, tech=None, sub_param=None,
                           return_source=False):
         """
