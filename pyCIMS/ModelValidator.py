@@ -53,7 +53,7 @@ class ModelValidator:
 
     def find_roots(self):
         root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
-                                 (self.model_df['Value'] == 'Root')].index
+                                 (self.model_df['Context'] == 'Root')].index
         root_nodes = set([self.index2node_map[ri] for ri in root_idx])
 
         return root_nodes
@@ -96,7 +96,7 @@ class ModelValidator:
 
             invalid_nodes = []
             comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
-            for index, value in zip(comp_types.index, comp_types['Value']):
+            for index, value in zip(comp_types.index, comp_types['Context']):
                 if value not in valid_comp_type:
                     invalid_nodes.append((index, self.index2node_map[index]))
 
@@ -370,7 +370,7 @@ class ModelValidator:
             # Add a Column w/ Technology Name
             node_names = data['Node']
             node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
-            techs = data[data['Parameter'] == "Technology"]['Value']
+            techs = data[data['Parameter'] == "Technology"]['Context']
             node_boundaries.update(techs)
             tech_names = node_boundaries.ffill()
             data['tech'] = tech_names
@@ -526,14 +526,14 @@ class ModelValidator:
             -------
             None
             """
-            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Value'].str.lower() == 'supply'
+            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Context'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
             for n in supply_nodes:
                 node = self.index2node_map[self.index2node_map == n]
                 dat = self.model_df.loc[node.index, :]
-                s = dat[dat['Parameter'] == 'Competition type']['Value'].str.lower()
+                s = dat[dat['Parameter'] == 'Competition type']['Context'].str.lower()
                 if 'sector no tech' in s.to_string():
                     if 'Life Cycle Cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
@@ -585,13 +585,13 @@ class ModelValidator:
                 end_index = nodes.index[i + 1]
                 dat = self.model_df.loc[start_index:end_index]
                 tech_nodes = dat[dat['Parameter'] == 'Competition type'][
-                                 'Value'].str.lower() == 'tech compete'
+                                 'Context'].str.lower() == 'tech compete'
                 if tech_nodes.iloc[0]:
                     if 'Technology' not in list(dat['Parameter']):
                         if 'Capital cost_overnight' not in list(dat['Parameter']):
                             no_cap_cost.append((node_index, node_name))
                     else:
-                        techs = dat[dat['Parameter'] == 'Technology']['Value']
+                        techs = dat[dat['Parameter'] == 'Technology']['Context']
                         end = pd.Series(['None'], index=[dat.index.max()])
                         techs = techs.append(end)
                         for i in range(techs.shape[0] - 1):
@@ -687,7 +687,7 @@ class ModelValidator:
             data = self.model_df
 
             # Add a Column w/ Technology Name
-            techs = data[data['Parameter'] == "Technology"]['Value']
+            techs = data[data['Parameter'] == "Technology"]['Context']
             data['Tech'] = techs
             data['Tech'] = data['Tech'].ffill()
 
@@ -740,7 +740,7 @@ class ModelValidator:
             # Add a Column w/ Technology Name
             node_names = data['Node']
             node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
-            techs = data[data['Parameter'] == "Technology"]['Value']
+            techs = data[data['Parameter'] == "Technology"]['Context']
             node_boundaries.update(techs)
             tech_names = node_boundaries.ffill()
             data['tech'] = tech_names
@@ -865,7 +865,7 @@ class ModelValidator:
             data['node_id'] = data['node_id'].ffill()
 
             # Add a Column w/ Competition Type
-            comp_types = data[data['Parameter'] == "Competition type"][['node_id', 'Value']]
+            comp_types = data[data['Parameter'] == "Competition type"][['node_id', 'Context']]
             comp_types.columns = ['node_id', 'comp_type']
             data = data.merge(comp_types, on='node_id')
 

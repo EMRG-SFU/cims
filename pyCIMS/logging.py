@@ -6,15 +6,15 @@ from copy import deepcopy
 
 
 class ValueLog:
-    def __init__(self, sub_param=None, context=None, branch=None, unit=None, value=None):
-        self.sub_param = sub_param
+    def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
         self.context = context
+        self.sub_context = sub_context
         self.branch = branch
         self.unit = unit
         self.value = value
 
     def tuple(self):
-        return self.sub_param, self.context,  self.branch, self.unit,  self.value
+        return self.context,  self.sub_context, self.branch, self.unit,  self.value
 
 
 def has_techs(node_year_data):
@@ -80,8 +80,8 @@ def log_Emissions(val):
     for ghg in emissions:
         for emission_type in emissions[ghg]:
             val = emissions[ghg][emission_type]
-            result.append(ValueLog(sub_param=emission_type,
-                                   context=ghg,
+            result.append(ValueLog(context=ghg,
+                                   sub_context=emission_type,
                                    value=val))
 
     return result
@@ -94,8 +94,8 @@ def log_EmissionRates(val):
     for ghg in rates:
         for emission_type in rates[ghg]:
             val = rates[ghg][emission_type]
-            result.append(ValueLog(sub_param=emission_type,
-                                   context=ghg,
+            result.append(ValueLog(context=ghg,
+                                   sub_context=emission_type,
                                    value=val))
     return result
 
@@ -105,9 +105,9 @@ def log_list(val):
     val_pairs = []
     for entry in val:
         val_log = ValueLog()
-        val_log.sub_param = entry['sub_param'] if 'sub_param' in entry.keys() else None
-        val_log.context = entry['value'] if 'value' in entry.keys() else None
-        val_log.branch = entry['branch']
+        val_log.context = entry['context'] if 'context' in entry.keys() else None
+        val_log.sub_context = entry['sub_context'] if 'sub_context' in entry.keys() else None
+        val_log.branch = entry['branch'] if 'branch' in entry.keys() else None
         val_log.unit = entry['unit'] if 'unit' in entry.keys() else None
         val_log.value = entry['year_value']
 
@@ -122,8 +122,8 @@ def log_dict(val):
     val_log = ValueLog()
 
     if 'year_value' in val.keys():
-        val_log.sub_param = val['sub_param'] if 'sub_param' in val.keys() else None
-        val_log.context = val['value'] if 'value' in val.keys() else None
+        val_log.context = val['context'] if 'context' in val.keys() else None
+        val_log.sub_context = val['sub_context'] if 'sub_context' in val.keys() else None
         val_log.branch = val['branch'] if 'branch' in val.keys() else None
         val_log.unit = val['unit'] if 'unit' in val.keys() else None
 
@@ -151,13 +151,13 @@ def log_dict(val):
 
             if isinstance(v, dict):
                 if 'year_value' in v:
-                    val_log.sub_param = v['sub_param'] if 'sub_param' in v.keys() else None
+                    val_log.sub_context = v['sub_context'] if 'sub_context' in v.keys() else None
                     val_log.branch = v['branch'] if 'branch' in v.keys() else None
                     val_log.unit = v['unit'] if 'unit' in v.keys() else None
                     val_log.value = v['year_value']
                 else:
-                    for sub_param, base_val in v.items():
-                        val_log.sub_param = sub_param
+                    for sub_context, base_val in v.items():
+                        val_log.sub_context = sub_context
                         val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
@@ -355,8 +355,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
     # Split Value Log values
-    log_df[['sub_parameter', 'context', 'branch', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
-    log_df = log_df[['node', 'year', 'technology', 'parameter', 'sub_parameter', 'context', 'branch', 'unit', 'value']]
+    log_df[['context', 'sub_context', 'branch', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
+    log_df = log_df[['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'branch', 'unit', 'value']]
 
     # Write to file
     log_df.to_csv(output_file, index=False)
