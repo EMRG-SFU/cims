@@ -332,7 +332,6 @@ class Model:
                 A graph object containing the node of interest.
             node : str
                 Name of the node to be initialized.
-
             year: str
                 The string representing the current simulation year (e.g. "2005").
 
@@ -347,13 +346,13 @@ class Model:
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Price Multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = self.get_param('Price Multiplier', parent, year)
+                    price_multipliers = copy.deepcopy(self.graph.nodes[parent][year]['Price Multiplier'])
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multiplier from the current node (if they exist)
             node_price_multipliers = {}
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year)
+                price_multipliers = self.graph.nodes[node][year]['Price Multiplier']
                 node_price_multipliers.update(price_multipliers)
 
             # Replace the parent price multipliers by the node's price multipliers
