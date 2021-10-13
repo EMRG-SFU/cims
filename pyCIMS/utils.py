@@ -105,7 +105,7 @@ inheritable_params = []
 
 
 def get_node_param(param, model, node, year, sub_param=None,
-                   return_source=False, retrieve_only=False, check_exist=False):
+                   return_source=False, retrieve_only=False, check_exist=False, return_keys=False):
     """
     Queries the model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
@@ -166,7 +166,9 @@ def get_node_param(param, model, node, year, sub_param=None,
             elif None in val:
                 val = val[None]
             elif len(val.keys()) == 1:
-                val = list(val.values())[0]
+                if return_keys == False:
+                    val = list(val.values())[0]
+
             if 'year_value' in val:
                 param_source = val['param_source']
                 is_exogenous = param_source in ['model', 'initialization']
