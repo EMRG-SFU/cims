@@ -52,10 +52,10 @@ def search_nodes(search_term, g):
     return [n for n in g.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, branch=None, sub_param=None, unit=None, param_source=None):
-    value_dictionary = {'source': source,
+def create_value_dict(year_val, source=None, sub_context=None, branch=None, unit=None, param_source=None):
+    value_dictionary = {'sub_context': sub_context,
                         'branch': branch,
-                        'sub_param': sub_param,
+                        'source': source,
                         'unit': unit,
                         'year_value': year_val,
                         'param_source': param_source

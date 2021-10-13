@@ -336,7 +336,7 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Value'])
+    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'])
     if len(typ) > 0:
         graph.nodes[current_node]['type'] = typ[0].lower()
     else:
@@ -348,7 +348,7 @@ def add_node_data(graph, current_node, node_dfs):
     current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
 
     # 4 Find node's competition type. (If there is one)
-    comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Value'])
+    comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Context'])
     if len(set(comp_list)) == 1:
         comp_type = comp_list[0]
         graph.nodes[current_node]['competition type'] = comp_type.lower()
@@ -365,10 +365,10 @@ def add_node_data(graph, current_node, node_dfs):
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
-        for param, sub_param, val, branch, src, unit, _, year_value in zip(*current_year_data):
-            dct = {'source': src,
+        for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
+            dct = {'sub_context': sub_context,
                    'branch': branch,
-                   'sub_param': sub_param,
+                   'source': source,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
@@ -377,30 +377,30 @@ def add_node_data(graph, current_node, node_dfs):
                 year_dict[param] = {}
 
             # If a Context value is present, there are 3 possibilities for what needs to happen
-            if val:
+            if context:
                 # 1. We need to place our information in a nested dictionary, keyed by the
-                # context and the sub-parameter.
-                if sub_param:
-                    if val not in year_dict[param]:
-                        year_dict[param][val] = {}
-                    year_dict[param][val][sub_param] = dct
+                # context and the sub-context.
+                if sub_context:
+                    if context not in year_dict[param]:
+                        year_dict[param][context] = {}
+                    year_dict[param][context][sub_context] = dct
 
                 # 2. We need to place the information in a dictionary, keyed by only context. In
-                #    these cases, sub_parameter isn't defined, but there will be values in year_
+                #    these cases, sub_context isn't defined, but there will be values in year_
                 #    value that we need to record.
                 elif year_value is not None:
-                    year_dict[param][val] = dct
+                    year_dict[param][context] = dct
 
                 # 3. Context contains the value we actually want to record. Additionally, this
                 # value will remain constant across all years.
                 else:
-                    if val in year_dict[param]:
+                    if context in year_dict[param]:
                         raise ValueError(
                             f'Multiple values have been set for {param}. Please rectify'
                             f'this.')
                     # 1. year_value isn't present, so context is the actual value we want to
                     # record.
-                    dct['value'] = val
+                    dct['context'] = context
                     year_dict[param] = dct
             else:
                 year_dict[param] = dct
@@ -445,11 +445,11 @@ def add_tech_data(graph, node, tech_dfs, tech):
         current_year_data = non_year_data + [t_df[year]]
         year_dict = {}
 
-        for param, sub_param, value, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'value': value,
-                   'source': source,
+        for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
+            dct = {'context': context,
+                   'sub_context': sub_context,
                    'branch': branch,
-                   'sub_param': sub_param,
+                   'source': source,
                    'unit': unit,
                    'year_value': year_value,
                    'param_source': 'model'}
@@ -458,28 +458,28 @@ def add_tech_data(graph, node, tech_dfs, tech):
             if param not in year_dict:
                 year_dict[param] = {}
 
-            # If a Context value is present, there are 3 possibilities for what needs to happen
-            if value:
+            # If Context is present, there are 3 possibilities for what needs to happen
+            if context:
                 # 1. We need to place our information in a nested dictionary, keyed by the
-                # context and the sub-parameter.
-                if sub_param:
-                    if value not in year_dict[param]:
-                        year_dict[param][value] = {}
-                    year_dict[param][value][sub_param] = dct
+                # context and the sub-context.
+                if sub_context:
+                    if context not in year_dict[param]:
+                        year_dict[param][context] = {}
+                    year_dict[param][context][sub_context] = dct
 
                 # 2. We need to place the information in a dictionary, keyed by only context. In
-                #    these cases, sub_parameter isn't defined, but there will be values in year_
+                #    these cases, sub_context isn't defined, but there will be values in year_
                 #    value that we need to record.
                 elif year_value is not None:
-                    year_dict[param][value] = dct
+                    year_dict[param][context] = dct
                 # 3. Context contains the value we actually want to record. Additionally, this
                 # value will remain constant across all years.
                 else:
-                    if value in year_dict[param]:
+                    if context in year_dict[param]:
                         raise ValueError(
                             f'Multiple values have been set for {param}. Please rectify'
                             f'this.')
-                    dct['value'] = value
+                    dct['context'] = context
                     year_dict[param] = dct
             else:
                 year_dict[param] = dct

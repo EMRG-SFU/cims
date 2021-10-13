@@ -328,7 +328,7 @@ def calc_capital_cost(model, node, year, tech):
 
 
 def calc_declining_cc(model, node, year, tech):
-    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='value')
+    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='context')
 
     if dcc_class is None:
         cc_declining = None
@@ -442,13 +442,13 @@ def calc_declining_aic(model, node, year, tech):
 
 def calc_crf(model, node, year, tech):
     finance_discount = model.get_param('Discount rate_Financial', node, year, tech)
-    lifespan = model.get_param('Lifetime', node, year, tech)
+    payback_period = model.get_param('Capital recovery', node, year, tech)
 
     if finance_discount == 0:
         warnings.warn('Discount rate_Financial has value of 0 at {} -- {}'.format(node, tech))
         finance_discount = model.get_tech_parameter_default('Discount rate_Financial')
 
-    crf = finance_discount / (1 - (1 + finance_discount) ** (-1.0 * lifespan))
+    crf = finance_discount / (1 - (1 + finance_discount) ** (-1.0 * payback_period))
 
     return crf
 
