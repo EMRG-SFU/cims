@@ -126,7 +126,7 @@ class ModelReader:
                 tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
                 for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
                     tech_df = ndf.loc[trs:tre]
-                    tech_name = tech_df.iloc[0].Value
+                    tech_name = tech_df.iloc[0].Context
                     tdfs[tech_name] = tech_df
                 tech_dfs[nn] = tdfs
                 node_dfs[nn] = ndf.loc[:tech_rows[0] - 1]
