@@ -64,6 +64,7 @@ class Model:
         self.equilibrium_fuels = []
         self.GHGs = []
         self.emission_types = []
+        self.gwp = {}
         self.years = model_reader.get_years()
         self.base_year = int(self.years[0])
 
@@ -97,7 +98,7 @@ class Model:
         graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
 
         self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
-        self.GHGs, self.emission_types = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
 
     def _dcc_classes(self):
@@ -425,6 +426,54 @@ class Model:
                     else:
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
 
+        def init_convert_to_CO2e(graph, node, year, gwp):
+            """
+            Function for initializing all Emissions as tCO2e (instead of tCH4, tN2O, etc).
+            This function assumes all of node's children have already been processed by this function.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            gwp: dict
+                The dictionary containing the GHGs (keys) and GWPs (values).
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Emissions.
+            """
+
+            # Emissions from a node with technologies
+            if 'technologies' in graph.nodes[node][year]:
+                techs = graph.nodes[node][year]['technologies']
+                for tech in techs:
+                    tech_data = techs[tech]
+                    if 'Emissions' in tech_data:
+                        emission_data = tech_data['Emissions']
+                        for ghg in emission_data:
+                            for emission_type in emission_data[ghg]:
+                                try:
+                                    emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                                except KeyError:
+                                    continue
+
+            # Emissions from a node
+            elif 'Emissions' in graph.nodes[node][year]:
+                emission_data = graph.nodes[node][year]['Emissions']
+                for ghg in emission_data:
+                    for emission_type in emission_data[ghg]:
+                        try:
+                            emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                        except KeyError:
+                            continue
+
         def init_tax_emissions(graph, node, year):
             """
             Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
@@ -473,6 +522,10 @@ class Model:
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
                                        year)
+        graph_utils.top_down_traversal(graph,
+                                       init_convert_to_CO2e,
+                                       year,
+                                       self.gwp)
         graph_utils.top_down_traversal(graph,
                                        init_tax_emissions,
                                        year)
