@@ -434,53 +434,53 @@ class Model:
                     else:
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
 
-    def init_convert_to_CO2e(graph, node, year, gwp):
-        """
-        Function for initializing all Emissions as tCO2e (instead of tCH4, tN2O, etc).
-        This function assumes all of node's children have already been processed by this function.
+        def init_convert_to_CO2e(graph, node, year, gwp):
+            """
+            Function for initializing all Emissions as tCO2e (instead of tCH4, tN2O, etc).
+            This function assumes all of node's children have already been processed by this function.
 
-        Parameters
-        ----------
-        graph : NetworkX.DiGraph
-            A graph object containing the node of interest.
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
 
-        node : str
-            Name of the node to be initialized.
+            node : str
+                Name of the node to be initialized.
 
-        year: str
-            The string representing the current simulation year (e.g. "2005").
+            year: str
+                The string representing the current simulation year (e.g. "2005").
 
-        gwp: dict
-            The dictionary containing the GHGs (keys) and GWPs (values).
+            gwp: dict
+                The dictionary containing the GHGs (keys) and GWPs (values).
 
-        Returns
-        -------
-        Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Emissions.
-        """
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Emissions.
+            """
 
-        # Emissions from a node with technologies
-        if 'technologies' in graph.nodes[node][year]:
-            techs = graph.nodes[node][year]['technologies']
-            for tech in techs:
-                tech_data = techs[tech]
-                if 'Emissions' in tech_data:
-                    emission_data = tech_data['Emissions']
-                    for ghg in emission_data:
-                        for emission_type in emission_data[ghg]:
-                            try:
-                                emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
-                            except KeyError:
-                                continue
+            # Emissions from a node with technologies
+            if 'technologies' in graph.nodes[node][year]:
+                techs = graph.nodes[node][year]['technologies']
+                for tech in techs:
+                    tech_data = techs[tech]
+                    if 'Emissions' in tech_data:
+                        emission_data = tech_data['Emissions']
+                        for ghg in emission_data:
+                            for emission_type in emission_data[ghg]:
+                                try:
+                                    emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                                except KeyError:
+                                    continue
 
-        # Emissions from a node
-        elif 'Emissions' in graph.nodes[node][year]:
-            emission_data = graph.nodes[node][year]['Emissions']
-            for ghg in emission_data:
-                for emission_type in emission_data[ghg]:
-                    try:
-                        emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
-                    except KeyError:
-                        continue
+            # Emissions from a node
+            elif 'Emissions' in graph.nodes[node][year]:
+                emission_data = graph.nodes[node][year]['Emissions']
+                for ghg in emission_data:
+                    for emission_type in emission_data[ghg]:
+                        try:
+                            emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                        except KeyError:
+                            continue
 
         def init_tax_emissions(graph, node, year):
             """
