@@ -751,39 +751,37 @@ class Model:
                     # *********
                     child_provided_quant = self.get_param("provided_quantities", child, year)
                     quant_provided_to_tech = child_provided_quant.get_quantity_provided_to_tech(node, tech)
-                    if child in self.fuels:
-                        tech_requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
-                        requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
+                    if quant_provided_to_tech > 0:
+                        if child in self.fuels:
+                            tech_requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
+                            requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
 
-                    # *********
-                    # Calculate proportion of child's requested quantities that come from tech.
-                    # Record these as well.
-                    # *********
-                    else:
-                        try:
-                            child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                            if child_total_quantity_provided == 0:
+                        # *********
+                        # Calculate proportion of child's requested quantities that come from tech.
+                        # Record these as well.
+                        # *********
+                        else:
+                            try:
+                                child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                                if child_total_quantity_provided == 0:
+                                    continue
+                                else:
+                                    proportion = quant_provided_to_tech / child_total_quantity_provided
+                                    child_requested_quant = self.get_param("requested_quantities",
+                                                                           child, year)
+                                    for child_rq_node, amount in child_requested_quant.get_total_quantities_requested().items():
+                                        tech_requested_quantity.record_requested_quantity(child_rq_node,
+                                                                                          child,
+                                                                                          proportion * amount)
+                                        requested_quantity.record_requested_quantity(child_rq_node,
+                                                                                     child,
+                                                                                     proportion * amount)
+                            except KeyError:
+                                print(f"Continuing b/c of a loop -- {node}")
                                 continue
-                            else:
-                                proportion = quant_provided_to_tech / child_total_quantity_provided
-                                child_requested_quant = self.get_param("requested_quantities",
-                                                                       child, year)
-                                for child_rq_node, amount in child_requested_quant.get_total_quantities_requested().items():
-                                    tech_requested_quantity.record_requested_quantity(child_rq_node,
-                                                                                      child,
-                                                                                      proportion * amount)
-                                    requested_quantity.record_requested_quantity(child_rq_node,
-                                                                                 child,
-                                                                                 proportion * amount)
-                        except KeyError:
-                            print(f"Continuing b/c of a loop -- {node}")
-                            continue
 
                 # Save the tech requested quantities
                 self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = tech_requested_quantity
-
-            # Save the requested quantities to the node's data
-            self.graph.nodes[node]["requested_quantities"] = tech_requested_quantity
 
         elif self.get_param("competition type", node) in ['root', 'region']:
             # Find the node's children, who they have a structural relationship with
@@ -813,38 +811,37 @@ class Model:
                 # *********
                 child_provided_quant = self.get_param("provided_quantities", child, year)
                 child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-                if child in self.fuels:
-                    requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+                if child_quantity_provided_to_node > 0:
+                    if child in self.fuels:
+                        requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
 
+                    # *********
+                    # Calculate proportion of child's requested quantities that come from node. Record
+                    # these as well.
+                    # *********
+                    else:
+                        try:
+                            child_total_quantity_provided = child_provided_quant.get_total_quantity()
+                            if child_total_quantity_provided == 0:
+                                # If the child doesn't provide any quantities, move onto the next child without
+                                # updating the node's quantity requested.
+                                continue
+                            else:
+                                # Otherwise, find out what proportion of the child's requested can be traced
+                                # back to node
+                                proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                # *********
-                # Calculate proportion of child's requested quantities that come from node. Record
-                # these as well.
-                # *********
-                else:
-                    try:
-                        child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                        if child_total_quantity_provided == 0:
-                            # If the child doesn't provide any quantities, move onto the next child without
-                            # updating the node's quantity requested.
+                                child_requested_quant = self.get_param("requested_quantities", child, year)
+                                for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
+                                    requested_quantity.record_requested_quantity(child_rq_node,
+                                                                                 child,
+                                                                                 proportion * child_rq_amount)
+                        except KeyError:
+                            # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
+                            # broken for the base year.
                             continue
-                        else:
-                            # Otherwise, find out what proportion of the child's requested can be traced
-                            # back to node
-                            proportion = child_quantity_provided_to_node / child_total_quantity_provided
 
-                            child_requested_quant = self.get_param("requested_quantities", child, year)
-                            for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
-                                requested_quantity.record_requested_quantity(child_rq_node,
-                                                                             child,
-                                                                             proportion * child_rq_amount)
-                    except KeyError:
-                        # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
-                        # broken for the base year.
-                        print(f"Continuing b/c of a loop -- {node}")
-                        continue
-
-        # Save the requested quantities to the node's data
+            # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
                                                                                        param_source='calculation')
 
