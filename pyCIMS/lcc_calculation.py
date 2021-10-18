@@ -153,6 +153,7 @@ def calc_emissions_cost(model, node, year, tech):
     """
     Returns the emission cost at that node for the following parameters. First calculate total
     emissions, gross emissions, captured emissions, net emissions, and then the final emission cost.
+    Also calculate biomass emission rates to be aggregated later.
     Returns the sum of all emission costs. To see how the calculation works, see the file
     'Emissions_tax_example.xlsx':
     https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
@@ -280,11 +281,46 @@ def calc_emissions_cost(model, node, year, tech):
             for emission_type in emissions_cost[node_name][ghg]:
                 total += emissions_cost[node_name][ghg][emission_type]['year_value']
 
+    # BIO EMISSIONS tech level
+    bio_emissions = {}
+    total = 0
+    if 'Emissions biomass' in model.graph.nodes[node][year]['technologies'][tech]:
+        bio_emissions[tech] = {}
+        bio_emission_data = model.graph.nodes[node][year]['technologies'][tech]['Emissions biomass']
+
+        for ghg in bio_emission_data:
+            for emission_type in bio_emission_data[ghg]:
+                if ghg not in bio_emissions[tech]:
+                    bio_emissions[tech][ghg] = {}
+                bio_emissions[tech][ghg][emission_type] = utils.create_value_dict(
+                    bio_emission_data[ghg][emission_type]['year_value'])
+
+    # Check all services requested for
+    # TODO: Update get_param() so that this if statement is fixed
+    if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+        # BIO EMISSIONS child level
+        for child, child_info in data.items():
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
+            if 'Emissions biomass' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
+                fuel_emissions = model.graph.nodes[child_node][year]['Emissions biomass']
+                bio_emissions[child_node] = {}
+                for ghg in fuel_emissions:
+                    for emission_type in fuel_emissions[ghg]:
+                        if ghg not in bio_emissions[child_node]:
+                            bio_emissions[child_node][ghg] = {}
+                        bio_emissions[child_node][ghg][emission_type] = \
+                            utils.create_value_dict(fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emission_rates'] = \
         EmissionRates(emission_rates=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['captured_emission_rates'] = \
         EmissionRates(emission_rates=captured_emissions)
+    model.graph.nodes[node][year]['technologies'][tech]['bio_emission_rates'] = \
+        EmissionRates(emission_rates=bio_emissions)
 
     return total
 
