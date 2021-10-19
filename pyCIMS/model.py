@@ -474,26 +474,26 @@ class Model:
                         except KeyError:
                             continue
 
-        def init_occupancy(graph, node, year):
+        def init_load_factor(graph, node, year):
             #
-            if 'Occupancy' not in graph.nodes[node][year]:
+            if 'Load Factor' not in graph.nodes[node][year]:
                 parents = list(graph.predecessors(node))
                 if len(parents) > 0:
                     parent = parents[0]
-                    if 'Occupancy' in graph.nodes[parent][year]:
-                        val = graph.nodes[parent][year]['Occupancy']['year_value']
-                        units = graph.nodes[parent][year]['Occupancy']['unit']
-                        graph.nodes[node][year]['Occupancy'] = utils.create_value_dict(val, unit=units,
+                    if 'Load Factor' in graph.nodes[parent][year]:
+                        val = graph.nodes[parent][year]['Load Factor']['year_value']
+                        units = graph.nodes[parent][year]['Load Factor']['unit']
+                        graph.nodes[node][year]['Load Factor'] = utils.create_value_dict(val, unit=units,
                                                                                        param_source='inheritance')
 
-            if 'Occupancy' in graph.nodes[node][year]:
+            if 'Load Factor' in graph.nodes[node][year]:
                 if 'technologies' in graph.nodes[node][year]:
                     tech_data = graph.nodes[node][year]['technologies']
                     for tech in tech_data:
-                        if 'Occupancy' not in tech_data[tech]:
-                            val = graph.nodes[node][year]['Occupancy']['year_value']
-                            units = graph.nodes[node][year]['Occupancy']['unit']
-                            tech_data[tech]['Occupancy'] = utils.create_value_dict(val, unit=units,
+                        if 'Load Factor' not in tech_data[tech]:
+                            val = graph.nodes[node][year]['Load Factor']['year_value']
+                            units = graph.nodes[node][year]['Load Factor']['unit']
+                            tech_data[tech]['Load Factor'] = utils.create_value_dict(val, unit=units,
                                                                                    param_source='inheritance')
 
         def init_tax_emissions(graph, node, year):
@@ -549,7 +549,7 @@ class Model:
                                        year,
                                        self.gwp)
         graph_utils.top_down_traversal(graph,
-                                       init_occupancy,
+                                       init_load_factor,
                                        year)
         graph_utils.top_down_traversal(graph,
                                        init_tax_emissions,

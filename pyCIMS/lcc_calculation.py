@@ -343,7 +343,7 @@ def calc_declining_cc(model, node, year, tech):
 
         # Cumulative New Stock in DCC Class
         # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param('Occupancy', node, year, tech)
+        unit_convert = model.get_param('Load Factor', node, year, tech)
         if unit_convert is None:
             unit_convert = 1
         cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech) / unit_convert
@@ -353,7 +353,7 @@ def calc_declining_cc(model, node, year, tech):
         for node_k, tech_k in dcc_class_techs:
             bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
             # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param('Occupancy', node_k, str(model.base_year), tech_k)
+            unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech_k)
             if unit_convert is None:
                 unit_convert = 1
             if bs_k is not None:
@@ -366,7 +366,7 @@ def calc_declining_cc(model, node, year, tech):
             year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
 
             # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param('Occupancy', node_k, year, tech_k)
+            unit_convert = model.get_param('Load Factor', node_k, year, tech_k)
             if unit_convert is None:
                 unit_convert = 1
 
