@@ -1032,6 +1032,9 @@ class Model:
                         else:
                             prev_val = val[sub_param]
                             val[sub_param] = new_val
+                    elif 'year_value' in val:
+                        prev_val = val['year_value']
+                        val['year_value'] = new_val
                     elif None in val:
                         # If the value is a dictionary, check if 'year_value' can be accessed.
                         if isinstance(val[None], dict) and 'year_value' in val[None]:
