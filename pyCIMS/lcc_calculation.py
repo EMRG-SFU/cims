@@ -283,7 +283,6 @@ def calc_emissions_cost(model, node, year, tech):
 
     # BIO EMISSIONS tech level
     bio_emissions = {}
-    total = 0
     if 'Emissions biomass' in model.graph.nodes[node][year]['technologies'][tech]:
         bio_emissions[tech] = {}
         bio_emission_data = model.graph.nodes[node][year]['technologies'][tech]['Emissions biomass']
