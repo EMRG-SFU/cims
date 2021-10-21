@@ -22,6 +22,7 @@ class ModelValidator:
 
         self.index2node_map = self.model_df[self.node_col].ffill()
         self.index2node_index_map = self._create_index_to_node_index_map()
+        self.index2branch_map = self._create_index_to_branch_map()
 
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
@@ -72,6 +73,11 @@ class ModelValidator:
 
         return index_to_node_index_map
 
+    def _create_index_to_branch_map(self):
+        all_services_provided = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
+        node_index_2_branch_map = {int(self.index2node_index_map[i]): b for i, b in all_services_provided.items()}
+        return {i: node_index_2_branch_map[ni] for i, ni in self.index2node_index_map.items()}
+
     def validate(self, verbose=True, raise_warnings=False):
         def invalid_competition_type():
             """
@@ -92,7 +98,8 @@ class ModelValidator:
                                'Sector No Tech',
                                'Tech Compete',
                                'Node Tech Compete',
-                               'Fixed Ratio']
+                               'Fixed Ratio',
+                               'Market']
 
             invalid_nodes = []
             comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
@@ -897,6 +904,41 @@ class ModelValidator:
                     w = ("{} {}".format(info, more_info if len(tc_nodes_no_techs) else ""))
                     warnings.warn(w)
 
+        def market_child_requested():
+            """
+            Identify any requests for fuel which are made to nodes which are part of a Market.
+            """
+            data = self.model_df
+
+            # Find Markets
+            markets = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
+                                    (self.model_df['Context'] == 'Market')]
+            market_node_idxs = [self.index2node_index_map[i] for i in markets.index]
+
+            # Find Nodes that are children of a market
+            all_service_req = data[data['Parameter'] == 'Service requested']['Branch']
+            market_children = [b for i, b in all_service_req.items()
+                               if self.index2node_index_map[i] in market_node_idxs]
+
+            # Find Service Requests for Market Children
+            market_children_requests = [(i, self.index2branch_map[i], b) for i, b in all_service_req.items()
+                                        if (b in market_children) and
+                                        (self.index2node_index_map[i] not in market_node_idxs)]
+
+            if len(market_children_requests) > 0:
+                self.warnings['market_child_requested'] = market_children_requests
+
+            if verbose or raise_warnings:
+                info = f"{len(market_children_requests)} nodes/technologies requested services " \
+                       f"from nodes which are part of a market."
+                more_info = "See ModelValidator.warnings['market_child_requested'] for more info."
+
+                if verbose:
+                    print(f"{info} {more_info if len(market_children_requests) else ''}")
+                if raise_warnings:
+                    w = f"{info} {more_info if len(market_children_requests) else ''}"
+                    warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
         roots = self.find_roots()
@@ -917,3 +959,4 @@ class ModelValidator:
         duplicate_service_requests()
         bad_service_req()
         tech_compete_nodes_no_techs()
+        market_child_requested()
