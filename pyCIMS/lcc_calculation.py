@@ -342,34 +342,24 @@ def calc_declining_cc(model, node, year, tech):
         dcc_class_techs = model.dcc_classes[dcc_class]
 
         # Cumulative New Stock in DCC Class
-        # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param('Load Factor', node, year, tech)
-        if unit_convert is None:
-            unit_convert = 1
-        cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech) / unit_convert
+        #'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
+        cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech)
 
-        # Base Stock summed over all techs in DCC class (base year only)
         bs_sum = 0
+        ns_sum = 0
         for node_k, tech_k in dcc_class_techs:
-            bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
             # Need to convert stocks for transportation techs to common vkt unit
             unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech_k)
             if unit_convert is None:
                 unit_convert = 1
+
+            # Base Stock summed over all techs in DCC class (base year only)
+            bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
             if bs_k is not None:
                 bs_sum += bs_k / unit_convert
 
-        # New Stock summed over all techs in DCC class and over all previous years
-        # (excluding base year)
-        ns_sum = 0
-        for node_k, tech_k in dcc_class_techs:
+            # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
             year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
-
-            # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param('Load Factor', node_k, year, tech_k)
-            if unit_convert is None:
-                unit_convert = 1
-
             for j in year_list:
                 ns_jk = model.get_param('new_stock', node_k, j, tech_k)
                 ns_sum += ns_jk / unit_convert
