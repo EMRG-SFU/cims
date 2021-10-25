@@ -292,11 +292,13 @@ def calc_emissions_cost(model, node, year, tech):
 def calc_upfront_cost(model, node, year, tech):
     crf = model.get_or_calc_param("CRF", node, year, tech)
     capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
+    allocated_cost = model.get_or_calc_param('Allocated cost', node, year, tech)
     fixed_uic = model.get_or_calc_param('Upfront intangible cost_fixed', node, year, tech)
     declining_uic = calc_declining_uic(model, node, year, tech)
     output = model.get_param('Output', node, year, tech)
 
-    uc = (capital_cost +
+    uc = (capital_cost -
+          allocated_cost +
           fixed_uic +
           declining_uic) / output * crf
 
