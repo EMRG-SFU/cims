@@ -394,30 +394,13 @@ def calc_declining_uic(model, node, year, tech):
         except OverflowError:
             print(node, year, shape_constant, rate_constant, prev_nms)
             raise OverflowError
-        uic_declining = initial_uic / denominator
+
+        prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
+        uic_declining = min(prev_uic_declining, initial_uic / denominator)
+
         return_uic = uic_declining
 
     return return_uic
-
-
-def calc_declining_aic(sub_graph, node, tech, year, model):
-    # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('Annual intangible cost_declining_initial', node, year, tech)
-    rate_constant = model.get_param('Annual intangible cost_declining_rate', node, year, tech)
-    shape_constant = model.get_param('Annual intangible cost_declining_shape', node, year, tech)
-
-    # Calculate Declining AIC
-    if int(year) == int(model.base_year):
-        return_val = initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech)
-
-        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        aic_declining = initial_aic / denominator
-        return_val = aic_declining
-
-    return return_val
 
 
 def calc_declining_aic(model, node, year, tech):
@@ -433,8 +416,15 @@ def calc_declining_aic(model, node, year, tech):
         prev_year = str(int(year) - model.step)
         prev_nms = model.get_param('new_market_share', node, prev_year, tech)
 
-        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        aic_declining = initial_aic / denominator
+        try:
+            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
+        except OverflowError:
+            print(node, year, shape_constant, rate_constant, prev_nms)
+            raise OverflowError
+
+        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
+        aic_declining = min(prev_aic_declining, initial_aic / denominator)
+
         return_val = aic_declining
 
     return return_val
