@@ -153,6 +153,7 @@ def calc_emissions_cost(model, node, year, tech):
     """
     Returns the emission cost at that node for the following parameters. First calculate total
     emissions, gross emissions, captured emissions, net emissions, and then the final emission cost.
+    Also calculate biomass emission rates to be aggregated later.
     Returns the sum of all emission costs. To see how the calculation works, see the file
     'Emissions_tax_example.xlsx':
     https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
@@ -280,11 +281,45 @@ def calc_emissions_cost(model, node, year, tech):
             for emission_type in emissions_cost[node_name][ghg]:
                 total += emissions_cost[node_name][ghg][emission_type]['year_value']
 
+    # BIO EMISSIONS tech level
+    bio_emissions = {}
+    if 'Emissions biomass' in model.graph.nodes[node][year]['technologies'][tech]:
+        bio_emissions[tech] = {}
+        bio_emission_data = model.graph.nodes[node][year]['technologies'][tech]['Emissions biomass']
+
+        for ghg in bio_emission_data:
+            for emission_type in bio_emission_data[ghg]:
+                if ghg not in bio_emissions[tech]:
+                    bio_emissions[tech][ghg] = {}
+                bio_emissions[tech][ghg][emission_type] = utils.create_value_dict(
+                    bio_emission_data[ghg][emission_type]['year_value'])
+
+    # Check all services requested for
+    # TODO: Update get_param() so that this if statement is fixed
+    if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
+        data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
+
+        # BIO EMISSIONS child level
+        for child, child_info in data.items():
+            req_val = child_info['year_value']
+            child_node = child_info['branch']
+            if 'Emissions biomass' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
+                fuel_emissions = model.graph.nodes[child_node][year]['Emissions biomass']
+                bio_emissions[child_node] = {}
+                for ghg in fuel_emissions:
+                    for emission_type in fuel_emissions[ghg]:
+                        if ghg not in bio_emissions[child_node]:
+                            bio_emissions[child_node][ghg] = {}
+                        bio_emissions[child_node][ghg][emission_type] = \
+                            utils.create_value_dict(fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emission_rates'] = \
         EmissionRates(emission_rates=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['captured_emission_rates'] = \
         EmissionRates(emission_rates=captured_emissions)
+    model.graph.nodes[node][year]['technologies'][tech]['bio_emission_rates'] = \
+        EmissionRates(emission_rates=bio_emissions)
 
     return total
 
@@ -292,11 +327,13 @@ def calc_emissions_cost(model, node, year, tech):
 def calc_upfront_cost(model, node, year, tech):
     crf = model.get_or_calc_param("CRF", node, year, tech)
     capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
+    allocated_cost = model.get_param('Allocated cost', node, year, tech)
     fixed_uic = model.get_or_calc_param('Upfront intangible cost_fixed', node, year, tech)
     declining_uic = calc_declining_uic(model, node, year, tech)
     output = model.get_param('Output', node, year, tech)
 
-    uc = (capital_cost +
+    uc = (capital_cost -
+          allocated_cost +
           fixed_uic +
           declining_uic) / output * crf
 
@@ -339,25 +376,33 @@ def calc_declining_cc(model, node, year, tech):
         gcc_t = model.get_or_calc_param('GCC_t', node, year,
                                         tech)  # capital cost adjusted for cumulative stock in all other countries
 
-        # Cumulative New Stock summed over all techs in DCC Class
         dcc_class_techs = model.dcc_classes[dcc_class]
-        cns_sum = 0
-        for node_k, tech_k in dcc_class_techs:
-            cns_k = model.get_param('Capital cost_declining_cumulative new stock', node_k, year, tech_k)
-            cns_sum += cns_k
 
-        # New Stock summed over all techs in DCC class and over all previous years
-        # (excluding base year)
-        dcc_class_techs = model.dcc_classes[dcc_class]
+        # Cumulative New Stock in DCC Class
+        #'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
+        cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech)
+
+        bs_sum = 0
         ns_sum = 0
         for node_k, tech_k in dcc_class_techs:
+            # Need to convert stocks for transportation techs to common vkt unit
+            unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech_k)
+            if unit_convert is None:
+                unit_convert = 1
+
+            # Base Stock summed over all techs in DCC class (base year only)
+            bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
+            if bs_k is not None:
+                bs_sum += bs_k / unit_convert
+
+            # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
             year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
             for j in year_list:
                 ns_jk = model.get_param('new_stock', node_k, j, tech_k)
-                ns_sum += ns_jk
+                ns_sum += ns_jk / unit_convert
 
         # Calculate Declining Capital Cost
-        inner_sums = (cns_sum + ns_sum) / cns_sum
+        inner_sums = (cns + bs_sum + ns_sum) / (cns + bs_sum)
         cc_declining = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
 
     return cc_declining
@@ -394,30 +439,13 @@ def calc_declining_uic(model, node, year, tech):
         except OverflowError:
             print(node, year, shape_constant, rate_constant, prev_nms)
             raise OverflowError
-        uic_declining = initial_uic / denominator
+
+        prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
+        uic_declining = min(prev_uic_declining, initial_uic / denominator)
+
         return_uic = uic_declining
 
     return return_uic
-
-
-def calc_declining_aic(sub_graph, node, tech, year, model):
-    # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('Annual intangible cost_declining_initial', node, year, tech)
-    rate_constant = model.get_param('Annual intangible cost_declining_rate', node, year, tech)
-    shape_constant = model.get_param('Annual intangible cost_declining_shape', node, year, tech)
-
-    # Calculate Declining AIC
-    if int(year) == int(model.base_year):
-        return_val = initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech)
-
-        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        aic_declining = initial_aic / denominator
-        return_val = aic_declining
-
-    return return_val
 
 
 def calc_declining_aic(model, node, year, tech):
@@ -433,8 +461,15 @@ def calc_declining_aic(model, node, year, tech):
         prev_year = str(int(year) - model.step)
         prev_nms = model.get_param('new_market_share', node, prev_year, tech)
 
-        denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        aic_declining = initial_aic / denominator
+        try:
+            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
+        except OverflowError:
+            print(node, year, shape_constant, rate_constant, prev_nms)
+            raise OverflowError
+
+        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
+        aic_declining = min(prev_aic_declining, initial_aic / denominator)
+
         return_val = aic_declining
 
     return return_val

@@ -131,3 +131,8 @@ dmypy.json
 .idea/pycims_prototype.iml
 .idea/vcs.xml
 .idea/inspectionProfiles/Project_Default.xml
+
+# Tutorial generated data
+tutorials/ResultLogger/sample_output/*
+tutorials/DataChangesByScript/change_log.csv
+tutorials/DataChangesByScript/*.pkl

@@ -474,6 +474,52 @@ class Model:
                         except KeyError:
                             continue
 
+        def init_load_factor(graph, node, year):
+            """
+            Initialize the load factor for nodes & technologies using inheritence from either the
+            node's parent or the technology's node.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing. Will update graph.nodes[node][year] with the initialized value of `Load Factor`
+            (if there is one).
+            """
+            if 'Load Factor' not in graph.nodes[node][year]:
+                # Check if a load factor was defined at the node's structural parent (its first
+                # parent). If so, use this load factor for the node.
+                parents = list(graph.predecessors(node))
+                if len(parents) > 0:
+                    parent = parents[0]
+                    if 'Load Factor' in graph.nodes[parent][year]:
+                        val = graph.nodes[parent][year]['Load Factor']['year_value']
+                        units = graph.nodes[parent][year]['Load Factor']['unit']
+                        graph.nodes[node][year]['Load Factor'] = utils.create_value_dict(val,
+                                                                                         unit=units,
+                                                                                         param_source='inheritance')
+
+            if 'Load Factor' in graph.nodes[node][year]:
+                # Ensure this load factor is recorded at each of the technologies within the node.
+                if 'technologies' in graph.nodes[node][year]:
+                    tech_data = graph.nodes[node][year]['technologies']
+                    for tech in tech_data:
+                        if 'Load Factor' not in tech_data[tech]:
+                            val = graph.nodes[node][year]['Load Factor']['year_value']
+                            units = graph.nodes[node][year]['Load Factor']['unit']
+                            tech_data[tech]['Load Factor'] = utils.create_value_dict(val,
+                                                                                     unit=units,
+                                                                                     param_source='inheritance')
+
         def init_tax_emissions(graph, node, year):
             """
             Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
@@ -526,6 +572,9 @@ class Model:
                                        init_convert_to_CO2e,
                                        year,
                                        self.gwp)
+        graph_utils.top_down_traversal(graph,
+                                       init_load_factor,
+                                       year)
         graph_utils.top_down_traversal(graph,
                                        init_tax_emissions,
                                        year)
@@ -848,6 +897,7 @@ class Model:
     def aggregate_emissions(self, graph, node, year):
         net_emissions = Emissions()
         cap_emissions = Emissions()
+        bio_emissions = Emissions()
 
         # get emissions that originate at the node
         if 'net_emission_rates' in self.graph.nodes[node][year]:
@@ -856,9 +906,16 @@ class Model:
         else:
             net_emission_rates = EmissionRates()
             cap_emission_rates = EmissionRates()
+
+        if 'bio_emission_rates' in self.graph.nodes[node][year]:
+            bio_emission_rates = self.get_param('bio_emission_rates', node, year)
+        else:
+            bio_emission_rates = EmissionRates()
+
         total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
         net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
         cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
+        bio_emissions += Emissions(bio_emission_rates.multiply_rates(total_units))
 
         # Get Other Emissions
         if 'technologies' in graph.nodes[node][year]:
@@ -866,18 +923,24 @@ class Model:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_net_emissions = Emissions()
                 tech_cap_emissions = Emissions()
+                tech_bio_emissions = Emissions()
 
                 # Get emissions originating at the technology
                 tech_market_share = self.get_param('total_market_share', node, year, tech)
                 tech_units = tech_market_share * total_units
                 tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech)
                 tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech)
+                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech)
+
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
-
                     net_emissions += tech_net_emissions
                     cap_emissions += tech_cap_emissions
+
+                if tech_bio_emission_rates is not None:
+                    tech_bio_emissions = Emissions(tech_bio_emission_rates.multiply_rates(tech_units))
+                    bio_emissions += tech_bio_emissions
 
                 # Get emissions originating from the technology's request/provide children
                 node_children = self.graph.successors(node)
@@ -889,19 +952,26 @@ class Model:
                         child_total_quantity = child_quantities.get_total_quantity()
                         if child_total_quantity != 0:
                             child_net_emissions = self.get_param("net_emissions", child, year)
-                            child_cap_emissions = self.get_param("captured_emissions", child,
-                                                                 year)
-                            proportion = child_quantities.get_quantity_provided_to_tech(node,
-                                                                                        tech) / \
-                                         child_total_quantity
-                            proportional_child_net_emissions = child_net_emissions * proportion
-                            proportional_child_cap_emissions = child_cap_emissions * proportion
+                            child_cap_emissions = self.get_param("captured_emissions", child, year)
+                            child_bio_emissions = self.get_param("bio_emissions", child, year)
 
-                            net_emissions += proportional_child_net_emissions
-                            cap_emissions += proportional_child_cap_emissions
+                            quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
+                            if quant_provided_to_tech > 0:
+                                proportion = quant_provided_to_tech / child_total_quantity
 
-                            tech_net_emissions += proportional_child_net_emissions
-                            tech_cap_emissions += proportional_child_cap_emissions
+                                proportional_child_net_emissions = child_net_emissions * proportion
+                                proportional_child_cap_emissions = child_cap_emissions * proportion
+
+                                net_emissions += proportional_child_net_emissions
+                                cap_emissions += proportional_child_cap_emissions
+
+                                tech_net_emissions += proportional_child_net_emissions
+                                tech_cap_emissions += proportional_child_cap_emissions
+
+                                if child_bio_emissions is not None:
+                                    proportional_child_bio_emissions = child_bio_emissions * proportion
+                                    bio_emissions += proportional_child_bio_emissions
+                                    tech_bio_emissions += proportional_child_bio_emissions
 
                 # Save tech-specific emissions to the model
                 self.graph.nodes[node][year]['technologies'][tech]['net_emissions'] = \
@@ -909,6 +979,9 @@ class Model:
 
                 self.graph.nodes[node][year]['technologies'][tech]['captured_emissions'] = \
                     utils.create_value_dict(tech_cap_emissions, param_source='calculation')
+
+                self.graph.nodes[node][year]['technologies'][tech]['bio_emissions'] = \
+                    utils.create_value_dict(tech_bio_emissions, param_source='calculation')
 
         elif self.get_param("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
@@ -920,6 +993,7 @@ class Model:
             for child in structural_children:
                 net_emissions += self.get_param("net_emissions", child, year)
                 cap_emissions += self.get_param("captured_emissions", child, year)
+                bio_emissions += self.get_param("bio_emissions", child, year)
 
         else:
             # Get emissions from req/provide children
@@ -934,12 +1008,21 @@ class Model:
                     if child_total_quantity != 0:
                         child_net_emissions = self.get_param("net_emissions", child, year)
                         child_cap_emissions = self.get_param("captured_emissions", child, year)
-                        proportion = child_quantities.get_quantity_provided_to_node(node) / \
-                                     child_total_quantity
-                        proportional_child_net_emissions = child_net_emissions * proportion
-                        proportional_child_cap_emissions = child_cap_emissions * proportion
-                        net_emissions += proportional_child_net_emissions
-                        cap_emissions += proportional_child_cap_emissions
+                        child_bio_emissions = self.get_param("bio_emissions", child, year)
+
+                        quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
+                        if quant_provided_to_node > 0:
+                            proportion = quant_provided_to_node / child_total_quantity
+
+                            proportional_child_net_emissions = child_net_emissions * proportion
+                            proportional_child_cap_emissions = child_cap_emissions * proportion
+
+                            net_emissions += proportional_child_net_emissions
+                            cap_emissions += proportional_child_cap_emissions
+
+                            if child_bio_emissions is not None:
+                                proportional_child_bio_emissions = child_bio_emissions * proportion
+                                bio_emissions += proportional_child_bio_emissions
 
         # Save the emissions to the node's data
         self.graph.nodes[node][year]['net_emissions'] = \
@@ -947,6 +1030,9 @@ class Model:
 
         self.graph.nodes[node][year]['captured_emissions'] = \
             utils.create_value_dict(cap_emissions, param_source='calculation')
+
+        self.graph.nodes[node][year]['bio_emissions'] = \
+            utils.create_value_dict(bio_emissions, param_source='calculation')
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
@@ -1029,6 +1115,9 @@ class Model:
                         else:
                             prev_val = val[sub_param]
                             val[sub_param] = new_val
+                    elif 'year_value' in val:
+                        prev_val = val['year_value']
+                        val['year_value'] = new_val
                     elif None in val:
                         # If the value is a dictionary, check if 'year_value' can be accessed.
                         if isinstance(val[None], dict) and 'year_value' in val[None]:
