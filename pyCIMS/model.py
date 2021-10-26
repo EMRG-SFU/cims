@@ -475,26 +475,50 @@ class Model:
                             continue
 
         def init_load_factor(graph, node, year):
-            #
+            """
+            Initialize the load factor for nodes & technologies using inheritence from either the
+            node's parent or the technology's node.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing. Will update graph.nodes[node][year] with the initialized value of `Load Factor`
+            (if there is one).
+            """
             if 'Load Factor' not in graph.nodes[node][year]:
+                # Check if a load factor was defined at the node's structural parent (its first
+                # parent). If so, use this load factor for the node.
                 parents = list(graph.predecessors(node))
                 if len(parents) > 0:
                     parent = parents[0]
                     if 'Load Factor' in graph.nodes[parent][year]:
                         val = graph.nodes[parent][year]['Load Factor']['year_value']
                         units = graph.nodes[parent][year]['Load Factor']['unit']
-                        graph.nodes[node][year]['Load Factor'] = utils.create_value_dict(val, unit=units,
-                                                                                       param_source='inheritance')
+                        graph.nodes[node][year]['Load Factor'] = utils.create_value_dict(val,
+                                                                                         unit=units,
+                                                                                         param_source='inheritance')
 
             if 'Load Factor' in graph.nodes[node][year]:
+                # Ensure this load factor is recorded at each of the technologies within the node.
                 if 'technologies' in graph.nodes[node][year]:
                     tech_data = graph.nodes[node][year]['technologies']
                     for tech in tech_data:
                         if 'Load Factor' not in tech_data[tech]:
                             val = graph.nodes[node][year]['Load Factor']['year_value']
                             units = graph.nodes[node][year]['Load Factor']['unit']
-                            tech_data[tech]['Load Factor'] = utils.create_value_dict(val, unit=units,
-                                                                                   param_source='inheritance')
+                            tech_data[tech]['Load Factor'] = utils.create_value_dict(val,
+                                                                                     unit=units,
+                                                                                     param_source='inheritance')
 
         def init_tax_emissions(graph, node, year):
             """
