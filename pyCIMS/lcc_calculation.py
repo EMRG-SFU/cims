@@ -3,7 +3,6 @@ from . import utils
 import math
 from . import graph_utils
 from .emissions import Emissions, EmissionRates
-from copy import deepcopy
 
 
 def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
@@ -164,6 +163,31 @@ def calc_emissions_cost(model, node, year, tech):
     :param str tech: The tech from the node we're doing the calculation on
     :return: the total emission cost (float)
     """
+    def duplicate_tax_dict(d):
+        new_dict = {}
+        for ghg in d:
+            if ghg not in new_dict:
+                new_dict[ghg] = {}
+            for emission_type in d[ghg]:
+                original_val = d[ghg][emission_type]['year_value']
+                new_dict[ghg][emission_type] = utils.create_value_dict(original_val)
+        return new_dict
+
+    def duplicate_emissions_dict(d):
+        new_dict = {}
+
+        for source_branch in d:
+            if source_branch not in new_dict:
+                new_dict[source_branch] = {}
+            for ghg in d[source_branch]:
+                if ghg not in new_dict[source_branch]:
+                    new_dict[source_branch][ghg] = {}
+                for emission_type in d[source_branch][ghg]:
+                    original_val = d[source_branch][ghg][emission_type]['year_value']
+                    new_dict[source_branch][ghg][emission_type] = \
+                        utils.create_value_dict(original_val)
+        return new_dict
+
     fuels = model.fuels
 
     # No tax rate at all or node is a fuel
@@ -173,7 +197,7 @@ def calc_emissions_cost(model, node, year, tech):
     # Initialize all taxes and emission removal rates to 0
     # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
     tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for ghg in model.GHGs}
-    removal_rates = deepcopy(tax_rates)
+    removal_rates = duplicate_tax_dict(tax_rates)
 
     # Grab correct tax values
     all_taxes = model.get_param('Tax', node, year)  # returns a dict
@@ -224,7 +248,7 @@ def calc_emissions_cost(model, node, year, tech):
                         total_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(fuel_emissions[ghg][emission_type]['year_value'] * req_val)
 
-    gross_emissions = deepcopy(total_emissions)
+    gross_emissions = duplicate_emissions_dict(total_emissions)
 
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
@@ -253,7 +277,7 @@ def calc_emissions_cost(model, node, year, tech):
                                     utils.create_value_dict(removal_dict[ghg][emission_type]['year_value'])
 
     # CAPTURED EMISSIONS
-    captured_emissions = deepcopy(gross_emissions)
+    captured_emissions = duplicate_emissions_dict(gross_emissions)
     for node_name in captured_emissions:
         for ghg in captured_emissions[node_name]:
             for emission_type in captured_emissions[node_name][ghg]:
@@ -261,14 +285,14 @@ def calc_emissions_cost(model, node, year, tech):
                 captured_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed['year_value']
 
     # NET EMISSIONS
-    net_emissions = deepcopy(total_emissions)
+    net_emissions = duplicate_emissions_dict(total_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
                 net_emissions[node_name][ghg][emission_type]['year_value'] -= captured_emissions[node_name][ghg][emission_type]['year_value']
 
     # EMISSIONS COST
-    emissions_cost = deepcopy(net_emissions)
+    emissions_cost = duplicate_emissions_dict(net_emissions)
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:

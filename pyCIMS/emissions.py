@@ -27,11 +27,17 @@ class EmissionRates:
         dict :
             Returns a dictionary where each emission rate has been multiplied by amount.
         """
-        emission_totals = copy.deepcopy(self.emission_rates)
-        for source_branch in emission_totals:
-            for ghg in emission_totals[source_branch]:
-                for emission_type in emission_totals[source_branch][ghg]:
-                    emission_totals[source_branch][ghg][emission_type]['year_value'] *= amount
+
+        emission_totals = {}
+        for source_branch in self.emission_rates:
+            if source_branch not in emission_totals:
+                emission_totals[source_branch] = {}
+            for ghg in self.emission_rates[source_branch]:
+                if ghg not in emission_totals[source_branch]:
+                    emission_totals[source_branch][ghg] = {}
+                for emission_type in self.emission_rates[source_branch][ghg]:
+                    prev_val = self.emission_rates[source_branch][ghg][emission_type]['year_value']
+                    emission_totals[source_branch][ghg][emission_type] = utils.create_value_dict(prev_val*amount)
 
         return emission_totals
 
@@ -65,8 +71,20 @@ class Emissions:
         self.emissions = emissions if emissions is not None else {}
 
     def __add__(self, other):
-        result = copy.deepcopy(self)
+        result = Emissions()
 
+        # Start by recording all the emissions from self in our result
+        for source_branch in self.emissions:
+            if source_branch not in result.emissions:
+                result.emissions[source_branch] = {}
+            for ghg in self.emissions[source_branch]:
+                if ghg not in result.emissions[source_branch]:
+                    result.emissions[source_branch][ghg] = {}
+                for emission_type in self.emissions[source_branch][ghg]:
+                    emission_amount = self.emissions[source_branch][ghg][emission_type]['year_value']
+                    result.emissions[source_branch][ghg][emission_type] = utils.create_value_dict(emission_amount)
+
+        # Then, go through each of the emissions in other and add those to the result
         for source_branch in other.emissions:
             if source_branch not in result.emissions:
                 result.emissions[source_branch] = {}
@@ -75,19 +93,25 @@ class Emissions:
                     result.emissions[source_branch][ghg] = {}
                 for emission_type in other.emissions[source_branch][ghg]:
                     if emission_type not in result.emissions[source_branch][ghg]:
-                        result.emissions[source_branch][ghg][emission_type] = \
-                            utils.create_value_dict(0)
-                    amount = other.emissions[source_branch][ghg][emission_type]
-                    result.emissions[source_branch][ghg][emission_type]['year_value'] += amount['year_value']
+                        result.emissions[source_branch][ghg][emission_type] = utils.create_value_dict(0)
+                    emission_amount = other.emissions[source_branch][ghg][emission_type]['year_value']
+                    result.emissions[source_branch][ghg][emission_type]['year_value'] += emission_amount
 
         return result
 
     def __mul__(self, other):
-        result = copy.deepcopy(self)
+        result = Emissions()
+
+        # Start by recording all the emissions from self in our result
         for source_branch in self.emissions:
+            if source_branch not in result.emissions:
+                result.emissions[source_branch] = {}
             for ghg in self.emissions[source_branch]:
+                if ghg not in result.emissions[source_branch]:
+                    result.emissions[source_branch][ghg] = {}
                 for emission_type in self.emissions[source_branch][ghg]:
-                    result.emissions[source_branch][ghg][emission_type]['year_value'] *= other
+                    emission_amount = self.emissions[source_branch][ghg][emission_type]['year_value'] * other
+                    result.emissions[source_branch][ghg][emission_type] = utils.create_value_dict(emission_amount)
 
         return result
 
