@@ -16,7 +16,7 @@ from . import stock_allocation
 from .quantities import ProvidedQuantity, RequestedQuantity
 from .emissions import Emissions, EmissionRates
 from .utils import create_value_dict
-from .quantity_aggregation import find_children, find_indirect_quantities, get_quantities_to_record
+from .quantity_aggregation import find_children, get_quantities_to_record
 
 
 class Model:
@@ -753,10 +753,13 @@ class Model:
 
     def calc_requested_quantities(self, graph, node, year):
         """
-        Calculates the quantities which have been requested by a node in the specified year and
-        records this in the Model. This calculates all quantities that can be traced back to this
-        node. In other words, this will not only include the services that the node requests, but
-        also any quantities requested by it's successors (children, grandchildren, etc).
+        Calculates and records fuel quantities requested by a node in the specified year.
+
+        This includes fuel quantities directly requested of the node (e.g. a Lighting requests
+        services directly from Electricity) and fuel quantities that are indirectly requested, but
+        can be attributed to the node (e.g. Alberta indirectly requests Electricity via its
+        children). In other words, this not only includes quantities a node requests, but also
+        quantities requested by it's successors (children, grandchildren, etc).
 
         This method was built to be used with the bottom up traversal method
         (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
@@ -769,7 +772,7 @@ class Model:
         Parameters
         ----------
         graph : networkX.Graph
-            The graph containing node & it's children.
+            The graph containing node & its children.
         node : str
             The name of the node (in branch/path notation) for which the total requested quantities
             will be calculated.
@@ -784,7 +787,7 @@ class Model:
         requested_quantity = RequestedQuantity()
 
         if self.get_param("competition type", node) in ['root', 'region']:
-            structural_children = find_children(graph, node, types='structural')
+            structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param("requested_quantities",
@@ -798,7 +801,7 @@ class Model:
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
-                req_prov_children = find_children(graph, node, year, tech, types='request_provide')
+                req_prov_children = find_children(graph, node, year, tech, request_provide=True)
                 for child in req_prov_children:
                     quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
 
@@ -811,10 +814,11 @@ class Model:
                                                                      child,
                                                                      attributable_amount)
                 # Save the tech requested quantities
-                self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = tech_requested_quantity
+                self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = \
+                    tech_requested_quantity
 
         else:
-            req_prov_children = find_children(graph, node, year, types='request_provide')
+            req_prov_children = find_children(graph, node, year, request_provide=True)
             for child in req_prov_children:
                 quantities_to_record = get_quantities_to_record(self, child, node, year)
 
@@ -824,8 +828,8 @@ class Model:
                                                                  child,
                                                                  attributable_amount)
 
-        self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
-                                                                                       param_source='calculation')
+        self.graph.nodes[node][year]["requested_quantities"] = \
+            utils.create_value_dict(requested_quantity, param_source='calculation')
 
     def aggregate_emissions(self, graph, node, year):
         net_emissions = Emissions()
@@ -876,7 +880,7 @@ class Model:
                     bio_emissions += tech_bio_emissions
 
                 # Get emissions originating from the technology's request/provide children
-                req_prov_children = find_children(graph, node, year, types='request_provide')
+                req_prov_children = find_children(graph, node, year, request_provide=True)
 
                 for child in req_prov_children:
                     if child not in self.fuels:
@@ -917,7 +921,7 @@ class Model:
 
         elif self.get_param("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
-            structural_children = find_children(graph, node, types='structural')
+            structural_children = find_children(graph, node, structural=True)
 
             # For each structural child, add its emissions to the region/root
             for child in structural_children:
@@ -927,7 +931,7 @@ class Model:
 
         else:
             # Get emissions from req/provide children
-            req_prov_children = find_children(graph, node, year, types='request_provide')
+            req_prov_children = find_children(graph, node, year, request_provide=True)
 
             for child in req_prov_children:
                 if child not in self.fuels:
