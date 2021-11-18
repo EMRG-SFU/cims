@@ -16,6 +16,7 @@ from . import stock_allocation
 from .quantities import ProvidedQuantity, RequestedQuantity
 from .emissions import Emissions, EmissionRates
 from .utils import create_value_dict
+from .quantity_aggregation import find_children, find_indirect_quantities, get_quantities_to_record
 
 
 class Model:
@@ -780,117 +781,49 @@ class Model:
         Nothing. Does set the requested_quantities parameter in the Model according to the
         quantities requested of node & all it's successors.
         """
-        # Create an empty RequestedQuantity object to fill
         requested_quantity = RequestedQuantity()
 
-        if 'technologies' in graph.nodes[node][year]:
-            for tech in graph.nodes[node][year]['technologies']:
-                tech_requested_quantity = RequestedQuantity()
-
-                # Find the nodes which tech requests services from
-                req_prov_children = []
-                if 'Service requested' in graph.nodes[node][year]['technologies'][tech]:
-                    services = graph.nodes[node][year]['technologies'][tech]['Service requested']
-                    req_prov_children = [data['branch'] for data in services.values()]
-
-                # For each requested node, calculate how much of each service has been requested
-                for child in req_prov_children:
-                    # *********
-                    # Add the quantity requested of the child by node (if child is a fuel)
-                    # *********
-                    child_provided_quant = self.get_param("provided_quantities", child, year)
-                    quant_provided_to_tech = child_provided_quant.get_quantity_provided_to_tech(node, tech)
-                    if quant_provided_to_tech > 0:
-                        if child in self.fuels:
-                            tech_requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
-                            requested_quantity.record_requested_quantity(child, child, quant_provided_to_tech)
-
-                        # *********
-                        # Calculate proportion of child's requested quantities that come from tech.
-                        # Record these as well.
-                        # *********
-                        else:
-                            try:
-                                child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                                if child_total_quantity_provided == 0:
-                                    continue
-                                else:
-                                    proportion = quant_provided_to_tech / child_total_quantity_provided
-                                    child_requested_quant = self.get_param("requested_quantities",
-                                                                           child, year)
-                                    for child_rq_node, amount in child_requested_quant.get_total_quantities_requested().items():
-                                        tech_requested_quantity.record_requested_quantity(child_rq_node,
-                                                                                          child,
-                                                                                          proportion * amount)
-                                        requested_quantity.record_requested_quantity(child_rq_node,
-                                                                                     child,
-                                                                                     proportion * amount)
-                            except KeyError:
-                                print(f"Continuing b/c of a loop -- {node}")
-                                continue
-
-                # Save the tech requested quantities
-                self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = tech_requested_quantity
-
-        elif self.get_param("competition type", node) in ['root', 'region']:
-            # Find the node's children, who they have a structural relationship with
-            children = graph.successors(node)
-            structural_children = [c for c in children if 'structure' in
-                                   graph.get_edge_data(node, c)['type']]
-
-            # For each structural child, add it's provided quantities to the region/root
+        if self.get_param("competition type", node) in ['root', 'region']:
+            structural_children = find_children(graph, node, types='structural')
             for child in structural_children:
+                # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param("requested_quantities",
                                                        child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
+                    # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
                                                                  child,
                                                                  child_rq_amount)
 
+        elif 'technologies' in graph.nodes[node][year]:
+            for tech in graph.nodes[node][year]['technologies']:
+                tech_requested_quantity = RequestedQuantity()
+                req_prov_children = find_children(graph, node, year, tech, types='request_provide')
+                for child in req_prov_children:
+                    quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
+
+                    # Record requested quantities
+                    for providing_node, child, attributable_amount in quantities_to_record:
+                        tech_requested_quantity.record_requested_quantity(providing_node,
+                                                                          child,
+                                                                          attributable_amount)
+                        requested_quantity.record_requested_quantity(providing_node,
+                                                                     child,
+                                                                     attributable_amount)
+                # Save the tech requested quantities
+                self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = tech_requested_quantity
+
         else:
-            # Find the node's children, who they have a request/provide relationship with
-            children = graph.successors(node)
-            req_prov_children = [c for c in children if 'request_provide' in
-                                 graph.get_edge_data(node, c)['type']]
-
-            # For each child, calculate how much of each service has been requested
+            req_prov_children = find_children(graph, node, year, types='request_provide')
             for child in req_prov_children:
-                # *********
-                # Add the quantity requested of the child by node (if child is a fuel)
-                # *********
-                child_provided_quant = self.get_param("provided_quantities", child, year)
-                child_quantity_provided_to_node = child_provided_quant.get_quantity_provided_to_node(node)
-                if child_quantity_provided_to_node > 0:
-                    if child in self.fuels:
-                        requested_quantity.record_requested_quantity(child, child, child_quantity_provided_to_node)
+                quantities_to_record = get_quantities_to_record(self, child, node, year)
 
-                    # *********
-                    # Calculate proportion of child's requested quantities that come from node. Record
-                    # these as well.
-                    # *********
-                    else:
-                        try:
-                            child_total_quantity_provided = child_provided_quant.get_total_quantity()
-                            if child_total_quantity_provided == 0:
-                                # If the child doesn't provide any quantities, move onto the next child without
-                                # updating the node's quantity requested.
-                                continue
-                            else:
-                                # Otherwise, find out what proportion of the child's requested can be traced
-                                # back to node
-                                proportion = child_quantity_provided_to_node / child_total_quantity_provided
+                # Record requested quantities
+                for providing_node, child, attributable_amount in quantities_to_record:
+                    requested_quantity.record_requested_quantity(providing_node,
+                                                                 child,
+                                                                 attributable_amount)
 
-                                child_requested_quant = self.get_param("requested_quantities", child, year)
-                                for child_rq_node, child_rq_amount in child_requested_quant.get_total_quantities_requested().items():
-                                    requested_quantity.record_requested_quantity(child_rq_node,
-                                                                                 child,
-                                                                                 proportion * child_rq_amount)
-                        except KeyError:
-                            # Occurs when a requested quantity value doesn't exist yet b/c a loop has been
-                            # broken for the base year.
-                            continue
-
-            # Save the requested quantities to the node's data
         self.graph.nodes[node][year]["requested_quantities"] = utils.create_value_dict(requested_quantity,
                                                                                        param_source='calculation')
 
@@ -943,9 +876,8 @@ class Model:
                     bio_emissions += tech_bio_emissions
 
                 # Get emissions originating from the technology's request/provide children
-                node_children = self.graph.successors(node)
-                req_prov_children = [c for c in node_children if 'request_provide' in
-                                     graph.get_edge_data(node, c)['type']]
+                req_prov_children = find_children(graph, node, year, types='request_provide')
+
                 for child in req_prov_children:
                     if child not in self.fuels:
                         child_quantities = self.get_param('provided_quantities', child, year)
@@ -985,9 +917,7 @@ class Model:
 
         elif self.get_param("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
-            children = graph.successors(node)
-            structural_children = [c for c in children if 'structure' in
-                                   graph.get_edge_data(node, c)['type']]
+            structural_children = find_children(graph, node, types='structural')
 
             # For each structural child, add its emissions to the region/root
             for child in structural_children:
@@ -997,9 +927,7 @@ class Model:
 
         else:
             # Get emissions from req/provide children
-            children = self.graph.successors(node)
-            req_prov_children = [c for c in children if 'request_provide' in
-                                 graph.get_edge_data(node, c)['type']]
+            req_prov_children = find_children(graph, node, year, types='request_provide')
 
             for child in req_prov_children:
                 if child not in self.fuels:

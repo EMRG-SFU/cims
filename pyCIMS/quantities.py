@@ -32,6 +32,7 @@ class ProvidedQuantity:
         else:
             return 0
 
+
 class RequestedQuantity:
     def __init__(self):
         self.requested_quantities = {}
