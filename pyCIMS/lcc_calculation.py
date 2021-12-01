@@ -187,7 +187,6 @@ def calc_emissions_cost(model, node, year, tech):
                     new_dict[source_branch][ghg][emission_type] = \
                         utils.create_value_dict(original_val)
         return new_dict
-
     fuels = model.fuels
 
     # No tax rate at all or node is a fuel
@@ -344,6 +343,10 @@ def calc_emissions_cost(model, node, year, tech):
         EmissionRates(emission_rates=captured_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emission_rates'] = \
         EmissionRates(emission_rates=bio_emissions)
+
+    # Record emission costs
+    val_dict = utils.create_value_dict(year_val=total, param_source='calculation')
+    model.set_param_internal(val_dict, 'Emissions cost', node, year, tech)
 
     return total
 
