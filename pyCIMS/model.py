@@ -835,6 +835,7 @@ class Model:
         net_emissions = Emissions()
         cap_emissions = Emissions()
         bio_emissions = Emissions()
+        total_emissions_cost = 0
 
         # get emissions that originate at the node
         if 'net_emission_rates' in self.graph.nodes[node][year]:
@@ -849,10 +850,16 @@ class Model:
         else:
             bio_emission_rates = EmissionRates()
 
+        if 'Emissions cost' in self.graph.nodes[node][year]:
+            emissions_cost = self.get_param('Emissions cost', node, year)
+        else:
+            emissions_cost = 0
+
         total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
         net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
         cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
         bio_emissions += Emissions(bio_emission_rates.multiply_rates(total_units))
+        total_emissions_cost += emissions_cost * total_units
 
         # Get Other Emissions
         if 'technologies' in graph.nodes[node][year]:
@@ -861,6 +868,7 @@ class Model:
                 tech_net_emissions = Emissions()
                 tech_cap_emissions = Emissions()
                 tech_bio_emissions = Emissions()
+                tech_total_emissions_cost = 0
 
                 # Get emissions originating at the technology
                 tech_market_share = self.get_param('total_market_share', node, year, tech)
@@ -868,7 +876,7 @@ class Model:
                 tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech)
                 tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech)
                 tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech)
-
+                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -878,6 +886,10 @@ class Model:
                 if tech_bio_emission_rates is not None:
                     tech_bio_emissions = Emissions(tech_bio_emission_rates.multiply_rates(tech_units))
                     bio_emissions += tech_bio_emissions
+
+                if tech_emissions_cost is not None:
+                    tech_total_emissions_cost = tech_emissions_cost * tech_units
+                    total_emissions_cost += tech_total_emissions_cost
 
                 # Get emissions originating from the technology's request/provide children
                 req_prov_children = find_children(graph, node, year, request_provide=True)
@@ -890,6 +902,7 @@ class Model:
                             child_net_emissions = self.get_param("net_emissions", child, year)
                             child_cap_emissions = self.get_param("captured_emissions", child, year)
                             child_bio_emissions = self.get_param("bio_emissions", child, year)
+                            child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
 
                             quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
                             if quant_provided_to_tech > 0:
@@ -897,12 +910,15 @@ class Model:
 
                                 proportional_child_net_emissions = child_net_emissions * proportion
                                 proportional_child_cap_emissions = child_cap_emissions * proportion
+                                proportional_child_total_emissions_cost = child_total_emissions_cost * proportion
 
                                 net_emissions += proportional_child_net_emissions
                                 cap_emissions += proportional_child_cap_emissions
+                                total_emissions_cost += proportional_child_total_emissions_cost
 
                                 tech_net_emissions += proportional_child_net_emissions
                                 tech_cap_emissions += proportional_child_cap_emissions
+                                tech_total_emissions_cost += proportional_child_total_emissions_cost
 
                                 if child_bio_emissions is not None:
                                     proportional_child_bio_emissions = child_bio_emissions * proportion
@@ -919,6 +935,9 @@ class Model:
                 self.graph.nodes[node][year]['technologies'][tech]['bio_emissions'] = \
                     utils.create_value_dict(tech_bio_emissions, param_source='calculation')
 
+                self.graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = \
+                    utils.create_value_dict(tech_total_emissions_cost, param_source='calculation')
+
         elif self.get_param("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
             structural_children = find_children(graph, node, structural=True)
@@ -928,7 +947,7 @@ class Model:
                 net_emissions += self.get_param("net_emissions", child, year)
                 cap_emissions += self.get_param("captured_emissions", child, year)
                 bio_emissions += self.get_param("bio_emissions", child, year)
-
+                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
         else:
             # Get emissions from req/provide children
             req_prov_children = find_children(graph, node, year, request_provide=True)
@@ -941,6 +960,7 @@ class Model:
                         child_net_emissions = self.get_param("net_emissions", child, year)
                         child_cap_emissions = self.get_param("captured_emissions", child, year)
                         child_bio_emissions = self.get_param("bio_emissions", child, year)
+                        child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
 
                         quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
                         if quant_provided_to_node > 0:
@@ -948,9 +968,11 @@ class Model:
 
                             proportional_child_net_emissions = child_net_emissions * proportion
                             proportional_child_cap_emissions = child_cap_emissions * proportion
+                            proportional_child_total_emissions_cost = child_total_emissions_cost * proportion
 
                             net_emissions += proportional_child_net_emissions
                             cap_emissions += proportional_child_cap_emissions
+                            total_emissions_cost += proportional_child_total_emissions_cost
 
                             if child_bio_emissions is not None:
                                 proportional_child_bio_emissions = child_bio_emissions * proportion
@@ -965,6 +987,9 @@ class Model:
 
         self.graph.nodes[node][year]['bio_emissions'] = \
             utils.create_value_dict(bio_emissions, param_source='calculation')
+
+        self.graph.nodes[node][year]['total_emissions_cost'] = \
+            utils.create_value_dict(total_emissions_cost, param_source='calculation')
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """
