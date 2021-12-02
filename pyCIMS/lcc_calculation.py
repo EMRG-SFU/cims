@@ -381,69 +381,64 @@ def calc_annual_cost(model, node, year, tech):
 
 def calc_capital_cost(model, node, year, tech):
     cc_overnight = model.get_param('Capital cost_overnight', node, year, tech)
-    declining_cc_limit = model.get_param('Capital cost_declining_limit', node, year, tech)
-    declining_cc = model.get_or_calc_param("Capital cost_declining", node, year, tech)
+    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='context')
 
-    if declining_cc is None:
+    if dcc_class is None or int(year) == int(model.base_year):
         cc = cc_overnight
     else:
+        declining_cc_limit = model.get_param('Capital cost_declining_limit', node, year, tech)
+        declining_cc = model.get_or_calc_param('Capital cost_declining', node, year, tech)
         cc = max(declining_cc, cc_overnight * declining_cc_limit)
     return cc
 
 
 def calc_declining_cc(model, node, year, tech):
     dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='context')
+    dcc_class_techs = model.dcc_classes[dcc_class]
 
-    if dcc_class is None:
-        cc_declining = None
+    # Cumulative New Stock in DCC Class
+    #'Capital cost_declining_cumul stock' already given in vkt, so no need to convert
+    cns = model.get_param('Capital cost_declining_cumul stock', node, year, tech)
 
-    else:
-        # Progress Ratio
-        progress_ratio = model.get_param('Capital cost_declining_Progress Ratio', node, year, tech)
-        gcc_t = model.get_or_calc_param('GCC_t', node, year,
-                                        tech)  # capital cost adjusted for cumulative stock in all other countries
+    bs_sum = 0
+    ns_sum = 0
+    for node_k, tech_k in dcc_class_techs:
+        # Need to convert stocks for transportation techs to common vkt unit
+        unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech_k)
+        if unit_convert is None:
+            unit_convert = 1
 
-        dcc_class_techs = model.dcc_classes[dcc_class]
+        # Base Stock summed over all techs in DCC class (base year only)
+        bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
+        if bs_k is not None:
+            bs_sum += bs_k / unit_convert
 
-        # Cumulative New Stock in DCC Class
-        #'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
-        cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech)
+        # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
+        year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
+        for j in year_list:
+            ns_jk = model.get_param('new_stock', node_k, j, tech_k)
+            ns_sum += ns_jk / unit_convert
 
-        bs_sum = 0
-        ns_sum = 0
-        for node_k, tech_k in dcc_class_techs:
-            # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech_k)
-            if unit_convert is None:
-                unit_convert = 1
+    # Progress Ratio
+    progress_ratio = model.get_param('Capital cost_declining_Progress Ratio', node, year, tech)
 
-            # Base Stock summed over all techs in DCC class (base year only)
-            bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech_k)
-            if bs_k is not None:
-                bs_sum += bs_k / unit_convert
+    # Capital cost adjusted for cumulative stock in all other countries
+    gcc_t = model.get_or_calc_param('GCC_t', node, year, tech)
 
-            # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
-            year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
-            for j in year_list:
-                ns_jk = model.get_param('new_stock', node_k, j, tech_k)
-                ns_sum += ns_jk / unit_convert
-
-        # Calculate Declining Capital Cost
-        inner_sums = (cns + bs_sum + ns_sum) / (cns + bs_sum)
-        cc_declining = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
+    # Calculate Declining Capital Cost
+    inner_sums = (cns + bs_sum + ns_sum) / cns
+    cc_declining = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
 
     return cc_declining
 
 
 def calc_gcc(model, node, year, tech):
-    previous_year = str(int(year) - model.step)
-    if previous_year in model.years:
-        aeei = model.get_param('Capital cost_declining_AEEI', node, year, tech)
-        gcc = ((1 - aeei) ** model.step) * \
-              calc_gcc(model, node, previous_year, tech)
+    if year == str(model.base_year):
+        gcc = model.get_param('Capital cost_overnight', node, year, tech)
     else:
-        cc_overnight = model.get_param('Capital cost_overnight', node, year, tech)
-        gcc = cc_overnight
+        previous_year = str(int(year) - model.step)
+        aeei = model.get_param('Capital cost_declining_AEEI', node, year, tech)
+        gcc = ((1 - aeei) ** model.step) * calc_gcc(model, node, previous_year, tech)
 
     return gcc
 
