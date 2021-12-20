@@ -72,13 +72,21 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             val_dict = {'year_value': crf, 'param_source': crf_source}
             model.set_param_internal(val_dict, 'CRF', node, year, tech)
 
-            # LCC
+            # LCC (financial)
             # ************
             lcc, lcc_source = model.get_or_calc_param('Life Cycle Cost',
                                                       node, year, tech,
                                                       return_source=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'Life Cycle Cost', node, year, tech)
+
+            # Complete LCC
+            # ************
+            complete_lcc, complete_lcc_source = model.get_or_calc_param('Complete Life Cycle Cost',
+                                                                        node, year, tech,
+                                                                        return_source=True)
+            val_dict = {'year_value': complete_lcc, 'param_source': complete_lcc_source}
+            model.set_param_internal(val_dict, 'Complete Life Cycle Cost', node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
             first_year_available = model.get_param('Available', node, str(model.base_year), tech)
@@ -139,13 +147,24 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             service_name: utils.create_value_dict(service_cost, param_source=sc_source)}
 
 
-def calc_lcc(model, node, year, tech):
-    upfront_cost = model.get_or_calc_param('Upfront cost', node, year, tech)
-    annual_cost = model.get_or_calc_param('Annual cost', node, year, tech)
+def calc_financial_lcc(model, node, year, tech):
+    upfront_cost = model.get_or_calc_param('Financial Upfront cost', node, year, tech)
+    annual_cost = model.get_or_calc_param('Financial Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
     emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
     lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
     return lcc
+
+
+def calc_complete_lcc(model, node, year, tech):
+    complete_upfront_cost = model.get_or_calc_param('Complete Upfront cost', node, year, tech)
+    complete_annual_cost = model.get_or_calc_param('Complete Annual cost', node, year, tech)
+    annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
+    emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
+
+    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + emissions_cost
+
+    return complete_lcc
 
 
 def calc_emissions_cost(model, node, year, tech):
@@ -351,7 +370,7 @@ def calc_emissions_cost(model, node, year, tech):
     return total
 
 
-def calc_upfront_cost(model, node, year, tech):
+def calc_complete_upfront_cost(model, node, year, tech):
     crf = model.get_or_calc_param("CRF", node, year, tech)
     capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
     allocated_cost = model.get_param('Allocated cost', node, year, tech)
@@ -367,15 +386,35 @@ def calc_upfront_cost(model, node, year, tech):
     return uc
 
 
-def calc_annual_cost(model, node, year, tech):
+def calc_financial_upfront_cost(model, node, year, tech):
+    crf = model.get_or_calc_param("CRF", node, year, tech)
+    capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
+    allocated_cost = model.get_param('Allocated cost', node, year, tech)
+    output = model.get_param('Output', node, year, tech)
+
+    financial_uc = (capital_cost -
+                    allocated_cost) / output * crf
+
+    return financial_uc
+
+
+def calc_complete_annual_cost(model, node, year, tech):
     output = model.get_param('Output', node, year, tech)
     operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech)
     fixed_aic = model.get_param('Annual intangible cost_fixed', node, year, tech)
     declining_aic = model.get_or_calc_param('Annual intangible cost_declining', node, year, tech)
 
-    ac = (operating_maintenance_cost +
-          fixed_aic +
-          declining_aic) / output
+    complete_ac = (operating_maintenance_cost +
+                   fixed_aic +
+                   declining_aic) / output
+
+    return complete_ac
+
+
+def calc_financial_annual_cost(model, node, year, tech):
+    output = model.get_param('Output', node, year, tech)
+    operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech)
+    ac = operating_maintenance_cost / output
     return ac
 
 

@@ -94,12 +94,20 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
                          'Capital cost_declining': lcc_calculation.calc_declining_cc,
                          'Capital cost': lcc_calculation.calc_capital_cost,
                          'CRF': lcc_calculation.calc_crf,
-                         'Upfront cost': lcc_calculation.calc_upfront_cost,
+                         # 'Upfront cost': lcc_calculation.calc_upfront_cost,
+                         'Financial Upfront cost': lcc_calculation.calc_financial_upfront_cost,
+                         'Complete Upfront cost': lcc_calculation.calc_complete_upfront_cost,
+
                          'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
-                         'Annual cost': lcc_calculation.calc_annual_cost,
+
+                         # 'Annual cost': lcc_calculation.calc_annual_cost,
+                         'Financial Annual cost': lcc_calculation.calc_financial_annual_cost,
+                         'Complete Annual cost': lcc_calculation.calc_complete_annual_cost,
+
                          'Service cost': lcc_calculation.calc_annual_service_cost,
                          'Emissions cost': lcc_calculation.calc_emissions_cost,
-                         'Life Cycle Cost': lcc_calculation.calc_lcc}
+                         'Life Cycle Cost': lcc_calculation.calc_financial_lcc,
+                         'Complete Life Cycle Cost': lcc_calculation.calc_complete_lcc}
 
 inheritable_params = []
 
