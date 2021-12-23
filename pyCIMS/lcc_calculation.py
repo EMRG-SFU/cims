@@ -4,7 +4,8 @@ This module contains the functions for LCC Calculations for the pyCIMS model.
 import warnings
 import math
 from .emissions import EmissionRates
-from . import Model, utils
+from . import utils
+from typing import TYPE_CHECKING
 
 
 def lcc_calculation(sub_graph, node, year, model):
@@ -150,7 +151,7 @@ def lcc_calculation(sub_graph, node, year, model):
             service_name: utils.create_value_dict(service_cost, param_source=sc_source)}
 
 
-def calc_financial_lcc(model: Model, node: str, year: str, tech: str) -> float:
+def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
     Calculate the Financial Life Cycle Cost (called "Life Cycle Cost" in the model & model
     description). This LCC does not contain intangible costs.
@@ -178,7 +179,7 @@ def calc_financial_lcc(model: Model, node: str, year: str, tech: str) -> float:
     return lcc
 
 
-def calc_complete_lcc(model: Model, node: str, year: str, tech: str) -> float:
+def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
     Calculate Complete Life Cycle Cost. This LCC includes intangible costs.
 
@@ -208,7 +209,7 @@ def calc_complete_lcc(model: Model, node: str, year: str, tech: str) -> float:
     return complete_lcc
 
 
-def calc_emissions_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates the emission cost at a node.
 
@@ -432,7 +433,7 @@ def calc_emissions_cost(model: Model, node: str, year: str, tech: str) -> float:
     return total
 
 
-def calc_complete_upfront_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates complete upfront cost, which includes intangible costs.
 
@@ -464,7 +465,7 @@ def calc_complete_upfront_cost(model: Model, node: str, year: str, tech: str) ->
     return complete_uc
 
 
-def calc_financial_upfront_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_financial_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates financial upfront cost, which does not include intangible costs.
 
@@ -494,7 +495,7 @@ def calc_financial_upfront_cost(model: Model, node: str, year: str, tech: str) -
     return financial_uc
 
 
-def calc_complete_annual_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates complete annual cost, which includes intangible costs.
 
@@ -525,7 +526,7 @@ def calc_complete_annual_cost(model: Model, node: str, year: str, tech: str) -> 
     return complete_ac
 
 
-def calc_financial_annual_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates financial annual cost, which includes intangible costs.
 
@@ -551,7 +552,7 @@ def calc_financial_annual_cost(model: Model, node: str, year: str, tech: str) ->
     return financial_ac
 
 
-def calc_capital_cost(model: Model, node: str, year: str, tech: str) -> float:
+def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates capital cost.
 
@@ -578,7 +579,7 @@ def calc_capital_cost(model: Model, node: str, year: str, tech: str) -> float:
     return capital_cost
 
 
-def calc_declining_cc(model: Model, node: str, year: str, tech: str) -> float:
+def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates declining capital cost.
 
@@ -638,7 +639,7 @@ def calc_declining_cc(model: Model, node: str, year: str, tech: str) -> float:
     return cc_declining
 
 
-def calc_gcc(model: Model, node: str, year: str, tech: str) -> float:
+def calc_gcc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate GCC, which is the capital cost adjusted for cumulative stock in other countries.
 
@@ -666,7 +667,7 @@ def calc_gcc(model: Model, node: str, year: str, tech: str) -> float:
     return gcc
 
 
-def calc_declining_uic(model: Model, node: str, year: str, tech: str) -> float:
+def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate Upfront Declining Intangible Cost (UIC_declining).
 
@@ -707,7 +708,7 @@ def calc_declining_uic(model: Model, node: str, year: str, tech: str) -> float:
     return return_uic
 
 
-def calc_declining_aic(model: Model, node: str, year: str, tech: str) -> float:
+def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate Annual Declining Intangible Cost (declining AIC).
 
@@ -748,7 +749,7 @@ def calc_declining_aic(model: Model, node: str, year: str, tech: str) -> float:
     return return_val
 
 
-def calc_crf(model: Model, node: str, year: str, tech: str) -> float:
+def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate the Capital Recovery Factor (CRF).
 
@@ -775,7 +776,7 @@ def calc_crf(model: Model, node: str, year: str, tech: str) -> float:
     return crf
 
 
-def calc_annual_service_cost(model: Model, node: str, year: str, tech: str = None) -> float:
+def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.
 
