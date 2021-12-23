@@ -1,11 +1,13 @@
+"""
+This module contains the functions for LCC Calculations for the pyCIMS model.
+"""
 import warnings
-from . import utils
 import math
-from . import graph_utils
-from .emissions import Emissions, EmissionRates
+from .emissions import EmissionRates
+from . import Model, utils
 
 
-def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
+def lcc_calculation(sub_graph, node, year, model):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
     at the appropriate node. Specifically,
@@ -89,9 +91,9 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
             model.set_param_internal(val_dict, 'Complete Life Cycle Cost', node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
-            first_year_available = model.get_param('Available', node, str(model.base_year), tech)
-            first_year_unavailable = model.get_param('Unavailable', node, str(model.base_year), tech)
-            if first_year_available <= int(year) < first_year_unavailable:
+            first_year_avail= model.get_param('Available', node, str(model.base_year), tech)
+            first_year_unavail = model.get_param('Unavailable', node, str(model.base_year), tech)
+            if first_year_avail <= int(year) < first_year_unavail:
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:
                     # When lcc < 0.01, we will approximate it's weight using a TREND line
@@ -141,13 +143,33 @@ def lcc_calculation(sub_graph, node, year, model, show_warnings=False):
         # line value. Sometimes, the Service Requested line values act as percent shares that add up
         # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
         # Requested Line values sum to numbers greater or less than 1.
-        service_cost, sc_source = model.get_or_calc_param('Service cost', node, year, return_source=True)
+        service_cost, sc_source = model.get_or_calc_param('Service cost', node, year,
+                                                          return_source=True)
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {
             service_name: utils.create_value_dict(service_cost, param_source=sc_source)}
 
 
-def calc_financial_lcc(model, node, year, tech):
+def calc_financial_lcc(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate the Financial Life Cycle Cost (called "Life Cycle Cost" in the model & model
+    description). This LCC does not contain intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of financial LCC.
+    node : The name of the node for which financial LCC will be calculated.
+    year : The year to calculate financial LCC for.
+    tech : The technology to calculate financial LCC for.
+
+    Returns
+    -------
+    float : The financial LCC, calculated as fLCC = fUC + fAC + SC + EC
+
+    See Also
+    --------
+    calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
+    """
     upfront_cost = model.get_or_calc_param('Financial Upfront cost', node, year, tech)
     annual_cost = model.get_or_calc_param('Financial Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
@@ -156,56 +178,84 @@ def calc_financial_lcc(model, node, year, tech):
     return lcc
 
 
-def calc_complete_lcc(model, node, year, tech):
+def calc_complete_lcc(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate Complete Life Cycle Cost. This LCC includes intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of complete LCC.
+    node : The name of the node for which complete LCC will be calculated.
+    year : The year to calculate complete LCC for.
+    tech : The technology to calculate complete LCC for.
+
+    Returns
+    -------
+    float : The complete LCC, calculated as cLCC = cUC + cAC + SC + EC
+
+    See Also
+    --------
+    calc_financial_lcc: Calculates financial LCC, which does not include intangible costs.
+    """
     complete_upfront_cost = model.get_or_calc_param('Complete Upfront cost', node, year, tech)
     complete_annual_cost = model.get_or_calc_param('Complete Annual cost', node, year, tech)
     annual_service_cost = model.get_or_calc_param('Service cost', node, year, tech)
     emissions_cost = model.get_or_calc_param('Emissions cost', node, year, tech)
 
-    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + emissions_cost
+    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
+                   emissions_cost
 
     return complete_lcc
 
 
-def calc_emissions_cost(model, node, year, tech):
+def calc_emissions_cost(model: Model, node: str, year: str, tech: str) -> float:
     """
-    Returns the emission cost at that node for the following parameters. First calculate total
-    emissions, gross emissions, captured emissions, net emissions, and then the final emission cost.
-    Also calculate biomass emission rates to be aggregated later.
-    Returns the sum of all emission costs. To see how the calculation works, see the file
-    'Emissions_tax_example.xlsx':
+    Calculates the emission cost at a node.
+
+    Total, gross, captured, and net emissions are all calculated and combined to find the final
+    emission cost. This total emissions cost is returned by the function and stored in the model.
+    Net, captured, and biomass emission rates are also stored in the model.
+
+    To see how the calculation works, see the file 'Emissions_tax_example.xlsx':
     https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
 
-    :param pyCIMS.model.Model model:
-    :param str node: The name of the node whose parameters we are calculating.
-    :param str year: The year for which we are calculating parameters.
-    :param str tech: The tech from the node we're doing the calculation on
-    :return: the total emission cost (float)
+    Parameters
+    ----------
+    model : The model containing all values needed for calculating emissions cost.
+    node : The node to calculate emissions cost for.
+    year : The year to calculate emissions cost for.
+    tech : The technology to calculate emissions cost for.
+
+    Returns
+    -------
+    float : the total emission cost. Has the side effect of updating the Emissions Cost,
+            net_emission_rates, captured_emission_rates, and bio_emission_rates in the model.
     """
-    def duplicate_tax_dict(d):
+    def duplicate_tax_dict(dct):
         new_dict = {}
-        for ghg in d:
+        for ghg in dct:
             if ghg not in new_dict:
                 new_dict[ghg] = {}
-            for emission_type in d[ghg]:
-                original_val = d[ghg][emission_type]['year_value']
+            for emission_type in dct[ghg]:
+                original_val = dct[ghg][emission_type]['year_value']
                 new_dict[ghg][emission_type] = utils.create_value_dict(original_val)
         return new_dict
 
-    def duplicate_emissions_dict(d):
+    def duplicate_emissions_dict(dct):
         new_dict = {}
 
-        for source_branch in d:
+        for source_branch in dct:
             if source_branch not in new_dict:
                 new_dict[source_branch] = {}
-            for ghg in d[source_branch]:
+            for ghg in dct[source_branch]:
                 if ghg not in new_dict[source_branch]:
                     new_dict[source_branch][ghg] = {}
-                for emission_type in d[source_branch][ghg]:
-                    original_val = d[source_branch][ghg][emission_type]['year_value']
+                for emission_type in dct[source_branch][ghg]:
+                    original_val = dct[source_branch][ghg][emission_type]['year_value']
                     new_dict[source_branch][ghg][emission_type] = \
                         utils.create_value_dict(original_val)
         return new_dict
+
     fuels = model.fuels
 
     # No tax rate at all or node is a fuel
@@ -214,7 +264,8 @@ def calc_emissions_cost(model, node, year, tech):
 
     # Initialize all taxes and emission removal rates to 0
     # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
-    tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for ghg in model.GHGs}
+    tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for
+                 ghg in model.GHGs}
     removal_rates = duplicate_tax_dict(tax_rates)
 
     # Grab correct tax values
@@ -223,7 +274,8 @@ def calc_emissions_cost(model, node, year, tech):
         for emission_type in all_taxes[ghg]:
             if ghg not in tax_rates:
                 tax_rates[ghg] = {}
-            tax_rates[ghg][emission_type] = utils.create_value_dict(all_taxes[ghg][emission_type]['year_value'])
+            tax_rates[ghg][emission_type] = utils.create_value_dict(
+                all_taxes[ghg][emission_type]['year_value'])
 
     # EMISSIONS tech level
     total_emissions = {}
@@ -236,7 +288,8 @@ def calc_emissions_cost(model, node, year, tech):
             for emission_type in emission_data[ghg]:
                 if ghg not in total_emissions[tech]:
                     total_emissions[tech][ghg] = {}
-                total_emissions[tech][ghg][emission_type] = utils.create_value_dict(emission_data[ghg][emission_type]['year_value'])
+                total_emissions[tech][ghg][emission_type] = utils.create_value_dict(
+                    emission_data[ghg][emission_type]['year_value'])
 
     # EMISSIONS REMOVAL tech level
     if 'Emissions removal' in model.graph.nodes[node][year]:
@@ -245,18 +298,19 @@ def calc_emissions_cost(model, node, year, tech):
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
                     removal_rates[ghg] = {}
-                removal_rates[ghg][emission_type] = utils.create_value_dict(removal_dict[ghg][emission_type]['year_value'])
+                removal_rates[ghg][emission_type] = utils.create_value_dict(
+                    removal_dict[ghg][emission_type]['year_value'])
 
     # Check all services requested for
-    # TODO: Update get_param() so that this if statement is fixed
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
         # EMISSIONS child level
-        for child, child_info in data.items():
+        for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
-            if 'Emissions' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
+            if 'Emissions' in model.graph.nodes[child_node][
+                year] and child_node in fuels and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['Emissions']
                 total_emissions[child_node] = {}
                 for ghg in fuel_emissions:
@@ -264,24 +318,27 @@ def calc_emissions_cost(model, node, year, tech):
                         if ghg not in total_emissions[child_node]:
                             total_emissions[child_node][ghg] = {}
                         total_emissions[child_node][ghg][emission_type] = \
-                            utils.create_value_dict(fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+                            utils.create_value_dict(
+                                fuel_emissions[ghg][emission_type]['year_value'] * req_val)
 
     gross_emissions = duplicate_emissions_dict(total_emissions)
 
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
-        for child, child_info in data.items():
+        for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
 
             # GROSS EMISSIONS
-            if 'Emissions biomass' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
+            if 'Emissions biomass' in model.graph.nodes[child_node][
+                year] and child_node in fuels and req_val > 0:
                 gross_dict = model.graph.nodes[child_node][year]['Emissions biomass']
                 for ghg in gross_dict:
                     for emission_type in gross_dict[ghg]:
                         gross_emissions[child_node][ghg][emission_type] = \
-                            utils.create_value_dict(gross_dict[ghg][emission_type]['year_value'] * req_val)
+                            utils.create_value_dict(
+                                gross_dict[ghg][emission_type]['year_value'] * req_val)
 
             # EMISSIONS REMOVAL child level
             if 'technologies' in model.graph.nodes[child_node][year]:
@@ -292,7 +349,8 @@ def calc_emissions_cost(model, node, year, tech):
                         for ghg in removal_dict:
                             for emission_type in removal_dict[ghg]:
                                 removal_rates[ghg][emission_type] = \
-                                    utils.create_value_dict(removal_dict[ghg][emission_type]['year_value'])
+                                    utils.create_value_dict(
+                                        removal_dict[ghg][emission_type]['year_value'])
 
     # CAPTURED EMISSIONS
     captured_emissions = duplicate_emissions_dict(gross_emissions)
@@ -300,14 +358,16 @@ def calc_emissions_cost(model, node, year, tech):
         for ghg in captured_emissions[node_name]:
             for emission_type in captured_emissions[node_name][ghg]:
                 em_removed = removal_rates[ghg][emission_type]
-                captured_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed['year_value']
+                captured_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed[
+                    'year_value']
 
     # NET EMISSIONS
     net_emissions = duplicate_emissions_dict(total_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
-                net_emissions[node_name][ghg][emission_type]['year_value'] -= captured_emissions[node_name][ghg][emission_type]['year_value']
+                net_emissions[node_name][ghg][emission_type]['year_value'] -= \
+                    captured_emissions[node_name][ghg][emission_type]['year_value']
 
     # EMISSIONS COST
     emissions_cost = duplicate_emissions_dict(net_emissions)
@@ -315,7 +375,8 @@ def calc_emissions_cost(model, node, year, tech):
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
                 tax_name = tax_rates[ghg][emission_type]
-                emissions_cost[node_name][ghg][emission_type]['year_value'] *= tax_name['year_value']
+                emissions_cost[node_name][ghg][emission_type]['year_value'] *= tax_name[
+                    'year_value']
 
     # Add everything in nested dictionary together
     for node_name in emissions_cost:
@@ -337,15 +398,15 @@ def calc_emissions_cost(model, node, year, tech):
                     bio_emission_data[ghg][emission_type]['year_value'])
 
     # Check all services requested for
-    # TODO: Update get_param() so that this if statement is fixed
     if 'Service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['Service requested']
 
         # BIO EMISSIONS child level
-        for child, child_info in data.items():
+        for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
-            if 'Emissions biomass' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
+            if 'Emissions biomass' in model.graph.nodes[child_node][
+                year] and child_node in fuels and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['Emissions biomass']
                 bio_emissions[child_node] = {}
                 for ghg in fuel_emissions:
@@ -353,7 +414,8 @@ def calc_emissions_cost(model, node, year, tech):
                         if ghg not in bio_emissions[child_node]:
                             bio_emissions[child_node][ghg] = {}
                         bio_emissions[child_node][ghg][emission_type] = \
-                            utils.create_value_dict(fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+                            utils.create_value_dict(
+                                fuel_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emission_rates'] = \
@@ -370,7 +432,26 @@ def calc_emissions_cost(model, node, year, tech):
     return total
 
 
-def calc_complete_upfront_cost(model, node, year, tech):
+def calc_complete_upfront_cost(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates complete upfront cost, which includes intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of complete upfront cost.
+    node : The node to calculate complete upfront cost for.
+    year : The year to calculate complete upfront cost for.
+    tech : The technology to calculate complete upfront cost for.
+
+    Returns
+    -------
+    float : The complete upfront cost, defined as
+            cUC = (CC - AllocC, + UIC_fixed + UIC_declining) / output * CRF
+
+    See Also
+    --------
+    calc_financial_upfront_cost
+    """
     crf = model.get_or_calc_param("CRF", node, year, tech)
     capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
     allocated_cost = model.get_param('Allocated cost', node, year, tech)
@@ -378,27 +459,60 @@ def calc_complete_upfront_cost(model, node, year, tech):
     declining_uic = calc_declining_uic(model, node, year, tech)
     output = model.get_param('Output', node, year, tech)
 
-    uc = (capital_cost -
-          allocated_cost +
-          fixed_uic +
-          declining_uic) / output * crf
+    complete_uc = (capital_cost - allocated_cost + fixed_uic + declining_uic) / output * crf
 
-    return uc
+    return complete_uc
 
 
-def calc_financial_upfront_cost(model, node, year, tech):
+def calc_financial_upfront_cost(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates financial upfront cost, which does not include intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of financial upfront cost.
+    node : The node to calculate financial upfront cost for.
+    year : The year to calculate financial upfront cost for.
+    tech : The technology to calculate financial upfront cost for.
+
+    Returns
+    -------
+    float : The financial upfront cost, defined as fUC = (CC - AllocC) / output * CRF
+
+    See Also
+    --------
+    calc_complete_upfront_cost
+    """
+
     crf = model.get_or_calc_param("CRF", node, year, tech)
     capital_cost = model.get_or_calc_param('Capital cost', node, year, tech)
     allocated_cost = model.get_param('Allocated cost', node, year, tech)
     output = model.get_param('Output', node, year, tech)
 
-    financial_uc = (capital_cost -
-                    allocated_cost) / output * crf
+    financial_uc = (capital_cost - allocated_cost) / output * crf
 
     return financial_uc
 
 
-def calc_complete_annual_cost(model, node, year, tech):
+def calc_complete_annual_cost(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates complete annual cost, which includes intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of complete annual cost.
+    node : The node to calculate complete annual cost for.
+    year : The year to calculate complete annual cost for.
+    tech : The technology to calculate complete annual cost for.
+
+    Returns
+    -------
+    float : The complete annual cost, defined as cAC = (OM + AIC_fixed + AIC_declining) / output
+
+    See Also
+    --------
+    calc_financial_annual_cost
+    """
     output = model.get_param('Output', node, year, tech)
     operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech)
     fixed_aic = model.get_param('Annual intangible cost_fixed', node, year, tech)
@@ -411,27 +525,76 @@ def calc_complete_annual_cost(model, node, year, tech):
     return complete_ac
 
 
-def calc_financial_annual_cost(model, node, year, tech):
+def calc_financial_annual_cost(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates financial annual cost, which includes intangible costs.
+
+    Parameters
+    ----------
+    model : The model containing component parts of financial annual cost.
+    node : The node to calculate financial annual cost for.
+    year : The year to calculate financial annual cost for.
+    tech : The technology to calculate financial annual cost for.
+
+    Returns
+    -------
+    float : The financial annual cost, defined as fAC = OM / output
+
+    See Also
+    --------
+    calc_complete_annual_cost
+    """
+
     output = model.get_param('Output', node, year, tech)
     operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech)
-    ac = operating_maintenance_cost / output
-    return ac
+    financial_ac = operating_maintenance_cost / output
+    return financial_ac
 
 
-def calc_capital_cost(model, node, year, tech):
+def calc_capital_cost(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates capital cost.
+
+    Parameters
+    ----------
+    model : The model containing component parts of capital cost.
+    node : The node to calculate capital cost for.
+    year : The year to calculate capital cost for.
+    tech : The technology to calculate capital cost for.
+
+    Returns
+    -------
+    float : Capital cost, defined as CC = max{CC_declining, CC_overnight * CC_declining_limit}.
+    """
+
     cc_overnight = model.get_param('Capital cost_overnight', node, year, tech)
     declining_cc_limit = model.get_param('Capital cost_declining_limit', node, year, tech)
     declining_cc = model.get_or_calc_param("Capital cost_declining", node, year, tech)
 
     if declining_cc is None:
-        cc = cc_overnight
+        capital_cost = cc_overnight
     else:
-        cc = max(declining_cc, cc_overnight * declining_cc_limit)
-    return cc
+        capital_cost = max(declining_cc, cc_overnight * declining_cc_limit)
+    return capital_cost
 
 
-def calc_declining_cc(model, node, year, tech):
-    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech, sub_param='context')
+def calc_declining_cc(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculates declining capital cost.
+
+    Parameters
+    ----------
+    model : The model containing component parts of declining capital cost.
+    node : The node to calculate declining capital cost for.
+    year : The year to calculate declining capital cost for.
+    tech : The technology to calculate declining capital cost for.
+
+    Returns
+    -------
+    float : The declining capital cost.
+    """
+    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech,
+                                sub_param='context')
 
     if dcc_class is None:
         cc_declining = None
@@ -439,13 +602,12 @@ def calc_declining_cc(model, node, year, tech):
     else:
         # Progress Ratio
         progress_ratio = model.get_param('Capital cost_declining_Progress Ratio', node, year, tech)
-        gcc_t = model.get_or_calc_param('GCC_t', node, year,
-                                        tech)  # capital cost adjusted for cumulative stock in all other countries
+        gcc_t = model.get_or_calc_param('GCC_t', node, year, tech)
 
         dcc_class_techs = model.dcc_classes[dcc_class]
 
         # Cumulative New Stock in DCC Class
-        #'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
+        # 'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
         cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech)
 
         bs_sum = 0
@@ -461,8 +623,10 @@ def calc_declining_cc(model, node, year, tech):
             if bs_k is not None:
                 bs_sum += bs_k / unit_convert
 
-            # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
-            year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
+            # New Stock summed over all techs in DCC class and over all previous years
+            # (excluding base year)
+            year_list = [str(x) for x in
+                         range(int(model.base_year) + int(model.step), int(year), int(model.step))]
             for j in year_list:
                 ns_jk = model.get_param('new_stock', node_k, j, tech_k)
                 ns_sum += ns_jk / unit_convert
@@ -474,7 +638,22 @@ def calc_declining_cc(model, node, year, tech):
     return cc_declining
 
 
-def calc_gcc(model, node, year, tech):
+def calc_gcc(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate GCC, which is the capital cost adjusted for cumulative stock in other countries.
+
+    Parameters
+    ----------
+    model : The model containing component parts of GCC.
+    node : The node to calculate GCC for.
+    year : The year to calculate GCC for.
+    tech : The technology to calculate GCC for.
+
+    Returns
+    -------
+    float : The GCC. If year is the base year, GCC = CC_overnight. Otherwise,
+            GCC_t = GCC_(t-5) * (1 - AEEI)^5.
+    """
     previous_year = str(int(year) - model.step)
     if previous_year in model.years:
         aeei = model.get_param('Capital cost_declining_AEEI', node, year, tech)
@@ -487,7 +666,21 @@ def calc_gcc(model, node, year, tech):
     return gcc
 
 
-def calc_declining_uic(model, node, year, tech):
+def calc_declining_uic(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate Upfront Declining Intangible Cost (UIC_declining).
+
+    Parameters
+    ----------
+    model : The model containing component parts of declining UIC.
+    node : The node to calculate declining UIC for.
+    year : The year to calculate declining UIC for.
+    tech : The technology to calculate declining UIC for.
+
+    Returns
+    -------
+    float : The declining UIC.
+    """
     # Retrieve Exogenous Terms from Model Description
     initial_uic = model.get_param('Upfront intangible cost_declining_initial', node, year, tech)
     rate_constant = model.get_param('Upfront intangible cost_declining_rate', node, year, tech)
@@ -502,9 +695,9 @@ def calc_declining_uic(model, node, year, tech):
 
         try:
             denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError:
+        except OverflowError as overflow:
             print(node, year, shape_constant, rate_constant, prev_nms)
-            raise OverflowError
+            raise overflow
 
         prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
         uic_declining = min(prev_uic_declining, initial_uic / denominator)
@@ -514,7 +707,21 @@ def calc_declining_uic(model, node, year, tech):
     return return_uic
 
 
-def calc_declining_aic(model, node, year, tech):
+def calc_declining_aic(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate Annual Declining Intangible Cost (declining AIC).
+
+    Parameters
+    ----------
+    model : The model containing component parts of declining AIC.
+    node : The node to calculate declining AIC for.
+    year : The year to calculate declining AIC for.
+    tech : The technology to calculate declining AIC for.
+
+    Returns
+    -------
+    float : The declining AIC.
+    """
     # Retrieve Exogenous Terms from Model Description
     initial_aic = model.get_param('Annual intangible cost_declining_initial', node, year, tech)
     rate_constant = model.get_param('Annual intangible cost_declining_rate', node, year, tech)
@@ -529,9 +736,9 @@ def calc_declining_aic(model, node, year, tech):
 
         try:
             denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError:
+        except OverflowError as overflow:
             print(node, year, shape_constant, rate_constant, prev_nms)
-            raise OverflowError
+            raise overflow
 
         prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
         aic_declining = min(prev_aic_declining, initial_aic / denominator)
@@ -541,7 +748,21 @@ def calc_declining_aic(model, node, year, tech):
     return return_val
 
 
-def calc_crf(model, node, year, tech):
+def calc_crf(model: Model, node: str, year: str, tech: str) -> float:
+    """
+    Calculate the Capital Recovery Factor (CRF).
+
+    Parameters
+    ----------
+    model : The model containing component parts of CRF.
+    node : The node to calculate CRF for.
+    year : The year to calculate CRF for.
+    tech : The technology to calculate CRF for.
+
+    Returns
+    -------
+    float : The CRF, defined as CRF = discount_rate / (1-(1+discount_rate)^-lifespan)
+    """
     finance_discount = model.get_param('Discount rate_Financial', node, year, tech)
     payback_period = model.get_param('Capital recovery', node, year, tech)
 
@@ -554,15 +775,25 @@ def calc_crf(model, node, year, tech):
     return crf
 
 
-def calc_annual_service_cost(model, node, year, tech=None):
+def calc_annual_service_cost(model: Model, node: str, year: str, tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.
 
-    1. For each service being requested:
-            i) If the service is a fuel, find the fuel price (Life Cycle Cost) and add it to the
-               service cost. If the fuel doesn't have a fuel price,
-           ii) Otherwise, use the service's Life Cycle Cost which was calculated already.
-    2. Return the service cost (currently assumes that there can only be one
+    For each service being requested:
+        i) If the service is a fuel, find the fuel price (Life Cycle Cost) and add it to the
+           service cost.
+       ii) Otherwise, use the service's financial Life Cycle Cost (already calculated).
+
+    Parameters
+    ----------
+    model : The model containing component parts of service cost.
+    node : The node to calculate service cost for.
+    year : The year to calculate service cost for.
+    tech : The technology to calculate service cost for.
+
+    Returns
+    -------
+    float : The service cost, defined as SC = SUM_over_services(fLCC * request_amount)
     """
 
     def do_sc_calculation(service_requested):
@@ -573,13 +804,15 @@ def calc_annual_service_cost(model, node, year, tech=None):
 
             if 'Life Cycle Cost' in model.graph.nodes[fuel_branch][year]:
                 fuel_name = list(model.graph.nodes[fuel_branch][year]['Life Cycle Cost'].keys())[0]
-                service_requested_lcc = model.graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
+                service_requested_lcc = \
+                    model.graph.nodes[fuel_branch][year]['Life Cycle Cost'][fuel_name]['year_value']
             else:
                 service_requested_lcc = model.get_node_parameter_default('Life Cycle Cost',
                                                                          'sector')
             try:
                 fuel_name = fuel_branch.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['Price Multiplier'][fuel_name]['year_value']
+                price_multiplier = model.graph.nodes[node][year]['Price Multiplier'][fuel_name][
+                    'year_value']
             except KeyError:
                 price_multiplier = 1
             service_requested_lcc *= price_multiplier
@@ -588,7 +821,8 @@ def calc_annual_service_cost(model, node, year, tech=None):
             if 'Life Cycle Cost' in model.graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = \
-                    model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][service_name]['year_value']
+                    model.graph.nodes[service_requested_branch][year]['Life Cycle Cost'][
+                        service_name]['year_value']
             else:
                 # Encountering a non-visited node
                 service_requested_lcc = 1
@@ -611,4 +845,3 @@ def calc_annual_service_cost(model, node, year, tech=None):
             total_service_cost += do_sc_calculation(req)
 
     return total_service_cost
-
