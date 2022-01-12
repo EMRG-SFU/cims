@@ -5,7 +5,6 @@ import warnings
 import math
 from .emissions import EmissionRates
 from . import utils
-from typing import TYPE_CHECKING
 
 
 def lcc_calculation(sub_graph, node, year, model):
@@ -776,7 +775,8 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     return crf
 
 
-def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str = None) -> float:
+def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
+                             tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.
 

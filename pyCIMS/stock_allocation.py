@@ -43,7 +43,6 @@ def all_tech_compete_allocation(model, node, year):
         comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    # TODO: get_param should return a dictionary instead of a class for easier reading
     assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
@@ -677,7 +676,8 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node, base_year, child)[child]['branch']
+            child_node = model.get_param('Service requested', node,
+                                         base_year, child)[child]['branch']
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
@@ -769,7 +769,8 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node, year, tech_child)[tech_child]['branch']
+                child_node = model.get_param('Service requested', node, year,
+                                             tech_child)[tech_child]['branch']
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 
@@ -1144,7 +1145,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
     None :
         Nothing is returned. Instead, the model is updated with the provided quantities.
     """
-    for service, service_data in requested_services.items():
+    for service_data in requested_services.values():
         service_req_ratio = service_data['year_value']
         quant_requested = market_share * service_req_ratio * assessed_demand
         year_node = model.graph.nodes[service_data['branch']][year]

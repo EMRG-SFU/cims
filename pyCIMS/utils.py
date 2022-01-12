@@ -1,20 +1,23 @@
+"""
+This module contains utility functions used throughout the pyCIMS package.
+"""
 import re
 from . import lcc_calculation
-import pandas as pd
 
 
-def is_year(cn: str or int) -> bool:
+def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
 
     Parameters
     ----------
-    cn : int or str
+    val : int or str
         The value to check to determine if it is a year.
 
     Returns
     -------
     bool
-        True if `cn` is made entirely of digits [0-9] and is 4 characters in length. False otherwise.
+        True if `cn` is made entirely of digits [0-9] and is 4 characters in length. False
+        otherwise.
 
     Examples
     --------
@@ -25,13 +28,13 @@ def is_year(cn: str or int) -> bool:
     True
     """
     re_year = re.compile(r'^[0-9]{4}$')
-    return bool(re_year.match(str(cn)))
+    return bool(re_year.match(str(val)))
 
 
-def search_nodes(search_term, g):
+def search_nodes(search_term, graph):
     """
-    Search `graph` to find the nodes which contain `search_term` in the node name's final component. Not case
-    sensitive.
+    Search `graph` to find the nodes which contain `search_term` in the node name's final component.
+    Not case sensitive.
 
     Parameters
     ----------
@@ -49,10 +52,14 @@ def search_nodes(search_term, g):
         last_comp = components[-1]
         return search_term.lower() in last_comp.lower()
 
-    return [n for n in g.nodes if search(n)]
+    return [n for n in graph.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, sub_context=None, branch=None, unit=None, param_source=None):
+def create_value_dict(year_val, source=None, sub_context=None, branch=None, unit=None,
+                      param_source=None):
+    """
+    Creates a standard value dictionary from the inner values.
+    """
     value_dictionary = {'sub_context': sub_context,
                         'branch': branch,
                         'source': source,
@@ -64,7 +71,7 @@ def create_value_dict(year_val, source=None, sub_context=None, branch=None, unit
     return value_dictionary
 
 
-def dict_has_None_year_value(dictionary):
+def dict_has_none_year_value(dictionary):
     """
     Given a dictionary, check if it has a year_value key in any level where the value for the
     year_value key is  None.
@@ -75,14 +82,15 @@ def dict_has_None_year_value(dictionary):
         if year_value is None:
             has_none_year_value = True
     else:
-        for v in dictionary.values():
-            if isinstance(v, dict):
-                has_none_year_value = has_none_year_value or dict_has_None_year_value(v)
+        for value in dictionary.values():
+            if isinstance(value, dict):
+                has_none_year_value = has_none_year_value or dict_has_none_year_value(value)
     return has_none_year_value
 
 
 def is_param_exogenous(model, param, node, year, tech=None):
-    val, source = model.get_param(param, node, year, tech, return_source=True)
+    """Checks if a parameter is exogenously defined"""
+    _, source = model.get_param(param, node, year, tech, return_source=True)
     ms_exogenous = source == 'model'
     return ms_exogenous
 
@@ -94,16 +102,11 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
                          'Capital cost_declining': lcc_calculation.calc_declining_cc,
                          'Capital cost': lcc_calculation.calc_capital_cost,
                          'CRF': lcc_calculation.calc_crf,
-                         # 'Upfront cost': lcc_calculation.calc_upfront_cost,
                          'Financial Upfront cost': lcc_calculation.calc_financial_upfront_cost,
                          'Complete Upfront cost': lcc_calculation.calc_complete_upfront_cost,
-
                          'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
-
-                         # 'Annual cost': lcc_calculation.calc_annual_cost,
                          'Financial Annual cost': lcc_calculation.calc_financial_annual_cost,
                          'Complete Annual cost': lcc_calculation.calc_complete_annual_cost,
-
                          'Service cost': lcc_calculation.calc_annual_service_cost,
                          'Emissions cost': lcc_calculation.calc_emissions_cost,
                          'Life Cycle Cost': lcc_calculation.calc_financial_lcc,
@@ -141,8 +144,8 @@ def get_node_param(param, model, node, year, sub_param=None,
         inheritance, default, or the previous year's value. It will _not_ calculate the parameter
         value. If False, calculation is allowed.
     check_exist : bool, default=False
-        Whether or not to check that the parameter exists as is given the context (without calculation, 
-        inheritance, or checking past years)
+        Whether or not to check that the parameter exists as is given the context (without
+        calculation, inheritance, or checking past years)
 
     Returns
     -------
@@ -174,7 +177,7 @@ def get_node_param(param, model, node, year, sub_param=None,
             elif None in val:
                 val = val[None]
             elif len(val.keys()) == 1:
-                if return_keys == False:
+                if not return_keys:
                     val = list(val.values())[0]
 
             if 'year_value' in val:
@@ -213,7 +216,8 @@ def get_node_param(param, model, node, year, sub_param=None,
     # ******************************
     # If the value has been defined at a structural parent node for that year, use that value.
     elif param in inheritable_params:
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
+        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True)
+                            if 'structure' in d['type']]
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
         val = get_node_param(param, model, parent, year=year)
@@ -272,8 +276,8 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
         inheritance, default, or the previous year's value. It will _not_ calculate the parameter
         value. If False, calculation is allowed.
     check_exist : bool, default=False
-        Whether or not to check that the parameter exists as is given the context (without calculation, 
-        inheritance, or checking past years)
+        Whether or not to check that the parameter exists as is given the context (without
+        calculation, inheritance, or checking past years)
 
     Returns
     -------
