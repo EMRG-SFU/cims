@@ -137,6 +137,12 @@ def lcc_calculation(sub_graph, node, year, model):
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {
             service_name: utils.create_value_dict(weighted_lccs, param_source='calculation')}
 
+    elif 'cost curve' in model.get_param('competition type', node):
+        lcc = calc_cost_curve_lcc(model, node, year)
+        service_name = node.split('.')[-1]
+        sub_graph.nodes[node][year]["Life Cycle Cost"] = {
+            service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
+
     else:
         # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
         # rule, multiply the Life Cycle Costs of the service required by its "Service Requested"
@@ -148,6 +154,32 @@ def lcc_calculation(sub_graph, node, year, model):
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {
             service_name: utils.create_value_dict(service_cost, param_source=sc_source)}
+
+
+def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
+    comp_type = model.get_param('competition type', node)
+    if comp_type == 'fuel - cost curve annual':
+        min_year = year
+        max_year = year
+    elif comp_type == 'fuel - cost curve cumulative':
+        min_year = model.base_year
+        max_year = year
+    else:
+        raise ValueError("Unrecognized cost curve calculation competition type")
+
+    quantity = calc_cost_curve_quantity(model, node, min_year, max_year)
+    cc_func = model.get_param('cost_curve_function', node)
+    lcc = float(cc_func(quantity))
+
+    return lcc
+
+
+def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, min_year: str, max_year: str):
+    total_quantity = 0
+    for year in range(int(min_year), int(max_year)+1, model.step):
+        year_provided_quant =  model.get_param('provided_quantities', node, str(year))
+        total_quantity += year_provided_quant.get_total_quantity()
+    return total_quantity
 
 
 def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:

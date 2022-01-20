@@ -2,6 +2,7 @@
 This module contains utility functions used throughout the pyCIMS package.
 """
 import re
+from scipy.interpolate import interp1d
 from . import lcc_calculation
 
 
@@ -94,6 +95,13 @@ def is_param_exogenous(model, param, node, year, tech=None):
     ms_exogenous = source == 'model'
     return ms_exogenous
 
+
+def create_cost_curve_func(quantities, prices):
+    qp_pairs = list(set(zip(quantities, prices)))
+    qp_pairs.sort(key=lambda x: x[0])
+    quantities, prices = zip(*qp_pairs)
+
+    return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
 
 # ******************
 # Parameter Fetching
