@@ -382,7 +382,7 @@ def add_node_data(graph, current_node, node_dfs):
 
         # Get rid of cost curve rows
         cost_curve_params = ['Cost curve quantity', 'Cost curve price']
-        current_node_df = current_node_df[current_node_df['Parameter'].isin(cost_curve_params)]
+        current_node_df = current_node_df[~current_node_df['Parameter'].isin(cost_curve_params)]
 
     # 6 For the remaining data, group by year.
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
