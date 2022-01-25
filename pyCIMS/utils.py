@@ -2,6 +2,7 @@
 This module contains utility functions used throughout the pyCIMS package.
 """
 import re
+from typing import List
 from scipy.interpolate import interp1d
 from . import lcc_calculation
 
@@ -96,7 +97,20 @@ def is_param_exogenous(model, param, node, year, tech=None):
     return ms_exogenous
 
 
-def create_cost_curve_func(quantities, prices):
+def create_cost_curve_func(quantities: List[float], prices: List[float]):
+    """
+    Build an interpolator that uses quantity to interpolate price.
+    To be used for cost curve LCC calculations.
+
+    Parameters
+    ----------
+    quantities : list of quantities.
+    prices : list of prices. The length of prices must be equal to the length of quantities.
+
+    Returns
+    -------
+    scipy.interpolate.interp1d : A 1d interpolator that consumes a quantity to interpolate price.
+    """
     qp_pairs = list(set(zip(quantities, prices)))
     qp_pairs.sort(key=lambda x: x[0])
     quantities, prices = zip(*qp_pairs)
