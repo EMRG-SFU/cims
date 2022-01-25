@@ -81,8 +81,7 @@ class ModelValidator:
     def validate(self, verbose=True, raise_warnings=False):
         def invalid_competition_type():
             """
-            Identify any nodes which use a competition type that is not one of the "Root", "Region",
-            "Sector", "Sector No Tech", "Tech Compete", and "Fixed Ratio". 
+            Identify any nodes which use an invalid competition type.
     
             Parameters
             ----------
@@ -95,11 +94,14 @@ class ModelValidator:
             valid_comp_type = ['Root',
                                'Region',
                                'Sector',
-                               'Sector No Tech',
                                'Tech Compete',
                                'Node Tech Compete',
                                'Fixed Ratio',
-                               'Market']
+                               'Market',
+                               'Fuel - Fixed price',
+                               'Fuel - Cost Curve Annual',
+                               'Fuel - Cost Curve Cumulative',
+                               ]
 
             invalid_nodes = []
             comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
@@ -541,7 +543,7 @@ class ModelValidator:
                 node = self.index2node_map[self.index2node_map == n]
                 dat = self.model_df.loc[node.index, :]
                 s = dat[dat['Parameter'] == 'Competition type']['Context'].str.lower()
-                if 'sector no tech' in s.to_string():
+                if 'fuel - fixed price' in s.to_string():
                     if 'Life Cycle Cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
                     else:
