@@ -98,7 +98,7 @@ class ModelValidator:
                                'Node Tech Compete',
                                'Fixed Ratio',
                                'Market',
-                               'Fuel - Fixed price',
+                               'Fuel - Fixed Price',
                                'Fuel - Cost Curve Annual',
                                'Fuel - Cost Curve Cumulative',
                                ]
