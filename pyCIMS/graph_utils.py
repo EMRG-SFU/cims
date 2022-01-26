@@ -73,10 +73,14 @@ def parent_name(curr_node, return_empty=False):
 
 
 def get_fuels(graph):
-    """ Find the names of nodes supplying fuel.
+    """
+    Find the names of nodes supplying fuel.
 
-    This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
-    Sector (either Sector or Sector No Tech).
+    A fuel is any node which meets one of the following criteria:
+    * The node is a market node.
+    * The node is a supply node, whose competition type is Sector.
+    * The node is a supply node, whose competition type begins with Fuel (i.e. Fuel - Fixed Price,
+      Fuel - Cost Curve Annual, Fuel - Cost Curve Cumulative).
 
     Returns
     -------
@@ -87,10 +91,10 @@ def get_fuels(graph):
     fuels = []
     remove_fuels = []
     for node, data in graph.nodes(data=True):
+        is_market = 'market' in data['competition type'].lower()
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        is_market = 'market' in data['competition type'].lower()
-
+        starts_with_fuel = data['competition type'].startswith('fuel')
         if is_market:
             fuels.append(node)
             # Check all the service requested to remove them from the fuels list later
@@ -103,6 +107,8 @@ def get_fuels(graph):
                         remove_fuels.append(child['branch'])
                     break
         elif is_supply & is_sector:
+            fuels.append(node)
+        elif is_supply & starts_with_fuel:
             fuels.append(node)
     equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
     return fuels, equilibrium_fuels

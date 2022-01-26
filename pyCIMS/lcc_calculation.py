@@ -210,8 +210,9 @@ def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, min_year: str, ma
     """
     total_quantity = 0
     for year in range(int(min_year), int(max_year)+1, model.step):
-        year_provided_quant =  model.get_param('provided_quantities', node, str(year))
-        total_quantity += year_provided_quant.get_total_quantity()
+        if 'provided_quantities' in model.graph.nodes[node][str(year)]:
+            year_provided_quant = model.get_param('provided_quantities', node, str(year))
+            total_quantity += year_provided_quant.get_total_quantity()
     return total_quantity
 
 

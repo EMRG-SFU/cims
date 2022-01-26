@@ -406,14 +406,7 @@ class Model:
                                                 root=node)
 
             if node in self.fuels:
-                if "Life Cycle Cost" not in graph.nodes[node][year]:
-                    # Life Cycle Cost needs to be calculated from children
-                    calc_lcc_from_children()
-                    lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
-                    fuel_name = list(lcc_dict.keys())[0]
-                    lcc_dict[fuel_name]['to_estimate'] = True
-
-                else:
+                if "Life Cycle Cost" in graph.nodes[node][year]:
                     lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
 
                     fuel_name = list(lcc_dict.keys())[0]
@@ -426,6 +419,18 @@ class Model:
 
                     else:
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
+                elif 'cost_curve_function' in graph.nodes[node]:
+                    lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
+                    service_name = node.split('.')[-1]
+                    graph.nodes[node][year]["Life Cycle Cost"] = {
+                        service_name: utils.create_value_dict(lcc,
+                                                              param_source='initialization')}
+                else:
+                    # Life Cycle Cost needs to be calculated from children
+                    calc_lcc_from_children()
+                    lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
+                    fuel_name = list(lcc_dict.keys())[0]
+                    lcc_dict[fuel_name]['to_estimate'] = True
 
         def init_convert_to_CO2e(graph, node, year, gwp):
             """
