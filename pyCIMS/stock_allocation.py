@@ -80,7 +80,7 @@ def all_tech_compete_allocation(model, node, year):
 def general_allocation(model, node, year):
     """
     Performs stock retirement and allocation for non tech competition nodes. This includes
-    'fixed ratio', 'region', 'sector', 'sector no tech', and 'root' competition types.
+    'fixed ratio', 'region', 'sector', 'fuel - fixed price', and 'root' competition types.
 
     No competition is required for any of these types. Instead, any demand is automatically filled
     according to exogenously defined paramters.

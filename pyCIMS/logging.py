@@ -3,7 +3,7 @@ import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
 from pyCIMS.emissions import Emissions, EmissionRates
 from copy import deepcopy
-
+from scipy.interpolate import interp1d
 
 class ValueLog:
     def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
@@ -169,6 +169,11 @@ def log_dict(val):
         return val_pairs
 
 
+def do_not_log(val):
+    """A placeholder function to take care of types we don't want to be logged"""
+    return []
+
+
 # helper function for opening txt file
 def openfile(path):
     with open(path) as f:
@@ -203,7 +208,8 @@ def add_log_item(all_logs, log_tuple):
                 list: log_list,
                 dict: log_dict,
                 str: log_str,
-                bool: log_bool}
+                bool: log_bool,
+                interp1d: do_not_log}
 
     node, year, tech, param, val = log_tuple
     # Process the value & year value
