@@ -73,10 +73,14 @@ def parent_name(curr_node, return_empty=False):
 
 
 def get_fuels(graph):
-    """ Find the names of nodes supplying fuel.
+    """
+    Find the names of nodes supplying fuel.
 
-    This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
-    Sector (either Sector or Sector No Tech).
+    A fuel is any node which meets one of the following criteria:
+    * The node is a market node.
+    * The node is a supply node, whose competition type is Sector.
+    * The node is a supply node, whose competition type begins with Fuel (i.e. Fuel - Fixed Price,
+      Fuel - Cost Curve Annual, Fuel - Cost Curve Cumulative).
 
     Returns
     -------
@@ -87,10 +91,10 @@ def get_fuels(graph):
     fuels = []
     remove_fuels = []
     for node, data in graph.nodes(data=True):
+        is_market = 'market' in data['competition type'].lower()
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        is_market = 'market' in data['competition type'].lower()
-
+        starts_with_fuel = data['competition type'].startswith('fuel')
         if is_market:
             fuels.append(node)
             # Check all the service requested to remove them from the fuels list later
@@ -103,6 +107,8 @@ def get_fuels(graph):
                         remove_fuels.append(child['branch'])
                     break
         elif is_supply & is_sector:
+            fuels.append(node)
+        elif is_supply & starts_with_fuel:
             fuels.append(node)
     equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
     return fuels, equilibrium_fuels
@@ -351,7 +357,7 @@ def add_node_data(graph, current_node, node_dfs):
         val = _find_value_in_ancestors(graph, current_node, 'type')
         graph.nodes[current_node]['type'] = val if val else 'standard'
 
-    # Drop Demand row
+    # Drop node type row
     current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
 
     # 4 Find node's competition type. (If there is one)
@@ -364,7 +370,27 @@ def add_node_data(graph, current_node, node_dfs):
     # Get rid of competition type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'Competition type']
 
-    # 5 For the remaining data, group by year.
+    # 5 Find the cost curve function
+    if comp_type in ['Fuel - Cost Curve Annual', 'Fuel - Cost Curve Cumulative']:
+        years = [c for c in current_node_df.columns if utils.is_year(c)]
+
+        # Get quantities
+        cc_quant_line = current_node_df[current_node_df['Parameter'] == 'Cost curve quantity']
+        cc_quants = [cc_quant_line[y].iloc[0] for y in years]
+
+        # Get prices
+        cc_price_line = current_node_df[current_node_df['Parameter'] == 'Cost curve price']
+        cc_prices = [cc_price_line[y].iloc[0] for y in years]
+
+        # Create interpolator
+        cc_func = utils.create_cost_curve_func(cc_quants, cc_prices)
+        graph.nodes[current_node]['cost_curve_function'] = cc_func
+
+        # Get rid of cost curve rows
+        cost_curve_params = ['Cost curve quantity', 'Cost curve price']
+        current_node_df = current_node_df[~current_node_df['Parameter'].isin(cost_curve_params)]
+
+    # 6 For the remaining data, group by year.
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
@@ -412,7 +438,7 @@ def add_node_data(graph, current_node, node_dfs):
             else:
                 year_dict[param] = dct
 
-        # Add data to node
+        # 6 Add data to node
         graph.nodes[current_node][year] = year_dict
 
     # 7 Return the new graph
