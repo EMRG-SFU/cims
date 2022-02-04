@@ -455,28 +455,28 @@ class Model:
 
             # Retrieve tax from the parents (if they exist)
             parents = list(graph.predecessors(node))
-            parent_tax = {}
+            parent_dict = {}
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Tax' in graph.nodes[parent][year]:
-                    parent_dict = self.get_param('Tax', parent, year)
-                    parent_tax.update(parent_dict)
+                    parent_dict = graph.nodes[parent][year]['Tax']
 
             # Store away tax at current node to overwrite parent tax later
-            node_tax = {}
+            node_dict = {}
             if 'Tax' in graph.nodes[node][year]:
-                node_tax = graph.nodes[node][year]['Tax']
+                node_dict = graph.nodes[node][year]['Tax']
 
-            # Make final dict where we prioritize keeping node_tax and only unique parent taxes
-            final_tax = copy.deepcopy(node_tax)
-            for ghg in parent_tax:
+            # Make final dict where we prioritize keeping node_dict and only unique parent taxes
+            final_tax = copy.deepcopy(node_dict)
+            for ghg in parent_dict:
                 if ghg not in final_tax:
                     final_tax[ghg] = {}
-                for emission_type in parent_tax[ghg]:
+                for emission_type in parent_dict[ghg]:
                     if emission_type not in final_tax[ghg]:
-                        final_tax[ghg][emission_type] = parent_tax[ghg][emission_type]
+                        final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
-            graph.nodes[node][year]['Tax'] = final_tax
+            if final_tax:
+                graph.nodes[node][year]['Tax'] = final_tax
 
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
@@ -594,7 +594,6 @@ class Model:
                                              retrieve_only=True, check_exist=check_exist)
 
         return param_val
-
 
     def get_param_test(self, param, node, year, context=None, sub_param=None, tech=False,
                        return_source=False, check_exist=False):
