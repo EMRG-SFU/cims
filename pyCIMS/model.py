@@ -236,7 +236,7 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
+                new_prices = {fuel: self.get_param_test('Life Cycle Cost', fuel, year)
                               for fuel in self.equilibrium_fuels}
 
                 equilibrium = min_iterations <= iteration and \
@@ -354,7 +354,7 @@ class Model:
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year, return_keys=True)
+                price_multipliers = self.get_param_test('Price Multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -625,7 +625,7 @@ class Model:
             Nothing is returned. `self` will be updated to reflect the results of stock retirement
             and new stock competitions.
         """
-        comp_type = self.get_param('competition type', node)
+        comp_type = self.get_param_test('competition type', node)
 
         # Market acts the same as tech compete
         if comp_type == 'market':
@@ -704,31 +704,12 @@ class Model:
 
         return param_val
 
-    def get_param_test(self, param, node, year, context=None, sub_param=None, tech=False,
-                       return_source=False, check_exist=False):
-        if tech:
-            param_val = utils.get_tech_param_test(param, self, node, year, tech=context, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
+    def get_param_test(self, param, node, year=None, context=None, sub_context=None, tech=False,
+                       return_source=False, check_exist=False, return_keys=False, dict_expected=False):
 
-        else:
-            param_val = utils.get_node_param_test(param, self, node, year, context=context, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
-
-        return param_val
-
-    def get_param_test(self, param, node, year, context=None, sub_param=None, tech=False,
-                       return_source=False, check_exist=False):
-        if tech:
-            param_val = utils.get_tech_param_test(param, self, node, year, tech=context, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
-
-        else:
-            param_val = utils.get_node_param_test(param, self, node, year, context=context, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
+        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context, tech=tech,
+                                              return_source=return_source,
+                                              retrieve_only=True, check_exist=check_exist, dict_expected=dict_expected)
 
         return param_val
 
@@ -828,11 +809,11 @@ class Model:
         """
         requested_quantity = RequestedQuantity()
 
-        if self.get_param("competition type", node) in ['root', 'region']:
+        if self.get_param_test("competition type", node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                child_requested_quant = self.get_param("requested_quantities",
+                child_requested_quant = self.get_param_test("requested_quantities",
                                                        child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
@@ -897,7 +878,7 @@ class Model:
         else:
             emissions_cost = 0
 
-        total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
+        total_units = self.get_param_test('provided_quantities', node, year).get_total_quantity()
         net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
         cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
         bio_emissions += Emissions(bio_emission_rates.multiply_rates(total_units))
@@ -913,12 +894,12 @@ class Model:
                 tech_total_emissions_cost = 0
 
                 # Get emissions originating at the technology
-                tech_market_share = self.get_param('total_market_share', node, year, tech)
+                tech_market_share = self.get_param_test('total_market_share', node, year, tech=tech)
                 tech_units = tech_market_share * total_units
-                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech)
-                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech)
-                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech)
-                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech)
+                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
+                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
+                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
+                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech=tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -938,13 +919,13 @@ class Model:
 
                 for child in req_prov_children:
                     if child not in self.fuels:
-                        child_quantities = self.get_param('provided_quantities', child, year)
+                        child_quantities = self.get_param_test('provided_quantities', child, year)
                         child_total_quantity = child_quantities.get_total_quantity()
                         if child_total_quantity != 0:
-                            child_net_emissions = self.get_param("net_emissions", child, year)
-                            child_cap_emissions = self.get_param("captured_emissions", child, year)
-                            child_bio_emissions = self.get_param("bio_emissions", child, year)
-                            child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
+                            child_net_emissions = self.get_param_test("net_emissions", child, year)
+                            child_cap_emissions = self.get_param_test("captured_emissions", child, year)
+                            child_bio_emissions = self.get_param_test("bio_emissions", child, year)
+                            child_total_emissions_cost = self.get_param_test("total_emissions_cost", child, year)
 
                             quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
                             if quant_provided_to_tech > 0:
@@ -980,29 +961,29 @@ class Model:
                 self.graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = \
                     utils.create_value_dict(tech_total_emissions_cost, param_source='calculation')
 
-        elif self.get_param("competition type", node) in ['root', 'region']:
+        elif self.get_param_test("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
             structural_children = find_children(graph, node, structural=True)
 
             # For each structural child, add its emissions to the region/root
             for child in structural_children:
-                net_emissions += self.get_param("net_emissions", child, year)
-                cap_emissions += self.get_param("captured_emissions", child, year)
-                bio_emissions += self.get_param("bio_emissions", child, year)
-                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
+                net_emissions += self.get_param_test("net_emissions", child, year)
+                cap_emissions += self.get_param_test("captured_emissions", child, year)
+                bio_emissions += self.get_param_test("bio_emissions", child, year)
+                total_emissions_cost += self.get_param_test('total_emissions_cost', child, year)
         else:
             # Get emissions from req/provide children
             req_prov_children = find_children(graph, node, year, request_provide=True)
 
             for child in req_prov_children:
                 if child not in self.fuels:
-                    child_quantities = self.get_param('provided_quantities', child, year)
+                    child_quantities = self.get_param_test('provided_quantities', child, year)
                     child_total_quantity = child_quantities.get_total_quantity()
                     if child_total_quantity != 0:
-                        child_net_emissions = self.get_param("net_emissions", child, year)
-                        child_cap_emissions = self.get_param("captured_emissions", child, year)
-                        child_bio_emissions = self.get_param("bio_emissions", child, year)
-                        child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
+                        child_net_emissions = self.get_param_test("net_emissions", child, year)
+                        child_cap_emissions = self.get_param_test("captured_emissions", child, year)
+                        child_bio_emissions = self.get_param_test("bio_emissions", child, year)
+                        child_total_emissions_cost = self.get_param_test("total_emissions_cost", child, year)
 
                         quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
                         if quant_provided_to_node > 0:

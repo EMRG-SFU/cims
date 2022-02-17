@@ -172,10 +172,10 @@ def get_node_param(param, model, node, year, sub_param=None,
 
     Returns
     -------
-    any :
+    int
         The value of the specified `param` at `node`, given the context provided by `year` and
         `tech`.
-    str :
+    str
         If return_source is `True`, will return a string indicating how the parameter's value
         was originally obtained. Can be one of {model, initialization, inheritance, calculation,
         default, or previous_year}.
@@ -202,12 +202,10 @@ def get_node_param(param, model, node, year, sub_param=None,
             elif len(val.keys()) == 1:
                 if not return_keys:
                     val = list(val.values())[0]
-
             if 'year_value' in val:
                 param_source = val['param_source']
                 is_exogenous = param_source in ['model', 'initialization']
                 val = val['year_value']
-
         # Choose which values to return
         if val is not None:
             if retrieve_only:
@@ -267,9 +265,45 @@ def get_node_param(param, model, node, year, sub_param=None,
         return val
 
 
+def get_node_param_test(model, param, node, year=None, context=None, sub_context=None, tech=None,
+                        return_source=False, retrieve_only=False, check_exist=False, dict_expected=False):
+    """
+    Queries the model to retrieve a parameter value at a given node, given a specified context
+    (year & sub-parameter).
 
-def get_node_param_test(param, model, node, year, context=None, sub_param=None,
-                   return_source=False, retrieve_only=False, check_exist=False):
+    Parameters
+    ----------
+    param : str
+        The name of the parameter whose value is being retrieved.
+    model : pyCIMS.Model
+        The model containing the parameter value of interest.
+    node : str
+        The name of the node (branch format) whose parameter you are interested in retrieving.
+    year : str
+        The year which you are interested in. `year` must be provided for all parameters stored at
+        the technology level, even if the parameter doesn't change year to year.
+    sub_param : str, optional
+        This is a rarely used parameter for specifying a nested key. Most commonly used when
+        `get_param()` would otherwise return a dictionary where a nested value contains the
+        parameter value of interest. In this case, the key corresponding to that value can be
+        provided as a `sub_param`
+    return_source : bool, default=False
+        Whether or not to return the method by which this value was originally obtained.
+    retrieve_only : bool, default=False
+        If True the function will only retrieve the value using the current value in the model,
+        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+        value. If False, calculation is allowed.
+    check_exist : bool, default=False
+        Whether or not to check that the parameter exists as is given the context (without
+        calculation, inheritance, or checking past years)
+    dict_expected : bool, default=False
+        Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+        (float, str, etc.). If the user knows it expects a dict, then this flag is used.
+
+    Returns
+    -------
+
+    """
 
     is_exogenous = True
     # Get Parameter from Description
@@ -278,26 +312,33 @@ def get_node_param_test(param, model, node, year, context=None, sub_param=None,
     # been defined), use it.
     data = model.graph.nodes[node]
     if year:
-        data = model.graph.nodes[node][year]
+        data = data[year]
+        if tech:  # assumption: any tech node always requires a year
+            data = data['technologies'][tech]
+
+    # Val can be the final return result (float, string, etc) or a dict, check for other params
     val = data[param]
-
-    if context in val:
-        val = val[context]
-
-    # If the value is a dictionary, check if a base value (float, string, etc) has been nested.
     if isinstance(val, dict):
-        if sub_param:
-            val = val[sub_param]
+        if context:
+            val = val[context]
+            if sub_context:
+                val = val[sub_context]
         elif None in val:
             val = val[None]
-        if 'year_value' in val:
-            param_source = val['param_source']
-            is_exogenous = param_source in ['model', 'initialization']
-            val = val['year_value']
+        elif len(val.keys()) == 1:
+            val = list(val.values())[0]
 
-    # Choose which values to return
-    if isinstance(val,dict):
-        warnings.warn("Returning a dict, considering using one of the dict keys for the sub_param arg")
+    # Grab the year_value in the dictionary if exists
+    if isinstance(val, dict) and ('year_value' in val):
+        param_source = val['param_source']
+        is_exogenous = param_source in ['model', 'initialization']
+        val = val['year_value']
+
+    # Raise warning if user isn't using get_param correctly
+    if isinstance(val, dict) and not dict_expected:
+        warnings.warn("Get Param is returning a dict, considering using more parameters in get_param. If a dict was the"
+                      " expected return type, see the 'dict_expected' param")
+
     if val is not None:
         if retrieve_only:
             if return_source:
@@ -357,49 +398,7 @@ def get_node_param_test(param, model, node, year, context=None, sub_param=None,
 
 def get_tech_param(param, model, node, year, tech, sub_param=None,
                    return_source=False, retrieve_only=False, check_exist=False):
-    """
-    Queries a model to retrieve a parameter value at a given node & technology, given a specified
-    context (year & sub-parameter).
 
-    Parameters
-    ----------
-
-    param : str
-        The name of the parameter whose value is being retrieved.
-    model : pyCIMS.Model
-        The model containing the parameter value of interest.
-    node : str
-        The name of the node (branch format) whose parameter you are interested in retrieving.
-    year : str
-        The year which you are interested in. `year` must be provided for all parameters stored at
-        the technology level, even if the parameter doesn't change year to year.
-    tech : str
-        The name of the technology you are interested in.
-    sub_param : str, optional
-        This is a rarely used parameter for specifying a nested key. Most commonly used when
-        `get_param()` would otherwise return a dictionary where a nested value contains the
-        parameter value of interest. In this case, the key corresponding to that value can be
-        provided as a `sub_param`
-    return_source : bool, default=False
-        Whether or not to return the method by which this value was originally obtained.
-    retrieve_only : bool, default=False
-        If True the function will only retrieve the value using the current value in the model,
-        inheritance, default, or the previous year's value. It will _not_ calculate the parameter
-        value. If False, calculation is allowed.
-    check_exist : bool, default=False
-        Whether or not to check that the parameter exists as is given the context (without
-        calculation, inheritance, or checking past years)
-
-    Returns
-    -------
-    any :
-        The value of the specified `param` at `node`, given the context provided by `year` and
-        `tech`.
-    str :
-        If return_source is `True`, will return a string indicating how the parameter's value
-        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
-        default, or previous_year}.
-    """
     val = None
     is_exogenous = None
     # Get Parameter from Description
@@ -468,97 +467,6 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
     # ******************************
     # Otherwise, use the value from the previous year.
     else:
-        prev_year = str(int(year) - model.step)
-        if int(prev_year) >= model.base_year:
-            val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
-            param_source = 'previous_year'
-
-    if return_source:
-        return val, param_source
-    else:
-        return val
-
-
-def get_tech_param_test(param, model, node, year, tech, sub_param=None,
-                   return_source=False, retrieve_only=False, check_exist=False):
-
-    print('tech test')
-    val = None
-    is_exogenous = None
-    # Get Parameter from Description
-    # ******************************
-    # If the parameter's value is in the model description for that node, year, & technology, use it
-    data = model.graph.nodes[node][year]['technologies']
-    val = data[tech][param]
-
-    # If the value is a dictionary, check if a base value (float, str, etc) has been nested
-    if sub_param:
-        val = val[sub_param]
-    elif None in val:
-        val = val[None]
-    if isinstance(val, dict) and ('year_value' in val):
-        param_source = val['param_source']
-        is_exogenous = param_source in ['model', 'initialization']
-        val = val['year_value']
-
-    # As long as the value has been specified, return it. & it is exogenously specified
-    if val is not None:
-        if isinstance(val,dict):
-            warnings.warn("Returning a dict, considering using one of the dict keys for the sub_param arg")
-        print('case 2')
-        if retrieve_only:
-            print('case 2.1')
-            if return_source:
-                return val, param_source
-            return val
-        elif is_exogenous:
-            print('case 2.2')
-            if return_source:
-                return val, param_source
-            else:
-                return val
-
-    # If check_exist is True, raise an Exception if val has not yet been returned, which means
-    # the value at the current context could not be found as is.
-    if check_exist:
-        raise Exception
-
-    # Calculate Parameter Value
-    # ******************************
-    # If there is a calculation for the parameter & the arguments for that calculation are present
-    # in the model description for that node & year, calculate the parameter value using this
-    # calculation.
-    if param in calculation_directory:
-        print('case 3')
-        param_calculator = calculation_directory[param]
-        val = param_calculator(model, node, year, tech)
-        param_source = 'calculation'
-
-    # Inherit Parameter Value
-    # ******************************
-    # If the value has been defined at a structural parent node for that year, use this value.
-    elif param in inheritable_params:
-        print('case 4')
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True)
-                            if 'structure' in d['type']]
-        g_structure_edges = model.graph.edge_subgraph(structured_edges)
-        parent = g_structure_edges.predecessors(node)[0]
-        val = model.get_param(param, parent, year, tech, sub_param)
-        param_source = 'inheritance'
-
-    # Use a Default Parameter Value
-    # ******************************
-    # If there is a default value defined, use this value
-    elif param in model.technology_defaults:
-        print('case 5')
-        val = model.get_tech_parameter_default(param)
-        param_source = 'default'
-
-    # Use Last Year's Value
-    # ******************************
-    # Otherwise, use the value from the previous year.
-    else:
-        print('case 6')
         prev_year = str(int(year) - model.step)
         if int(prev_year) >= model.base_year:
             val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
