@@ -120,7 +120,8 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class']['context']
+                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class'][
+                        'context']
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -413,8 +414,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost',
-                                                         node, last_year)[fuel_name]['year_value']
+                        last_year_value = self.get_param_test('Life Cycle Cost',
+                                                              node, year=last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -429,7 +430,7 @@ class Model:
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
+                        last_year_value = self.get_param_test('Life Cycle Cost', node, year=last_year)
                         graph.nodes[node][year]["Life Cycle Cost"] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
@@ -642,7 +643,8 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False, return_keys=False):
+    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False,
+                  return_keys=False):
         """
         Gets a parameter's value from the model, given a specific context (node, year, technology,
         and sub-parameter).
@@ -707,7 +709,8 @@ class Model:
     def get_param_test(self, param, node, year=None, context=None, sub_context=None, tech=False,
                        return_source=False, check_exist=False, return_keys=False, dict_expected=False):
 
-        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context, tech=tech,
+        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context,
+                                              tech=tech,
                                               return_source=return_source,
                                               retrieve_only=True, check_exist=check_exist, dict_expected=dict_expected)
 
@@ -814,7 +817,7 @@ class Model:
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param_test("requested_quantities",
-                                                       child, year).get_total_quantities_requested()
+                                                            child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
@@ -862,19 +865,19 @@ class Model:
 
         # get emissions that originate at the node
         if 'net_emission_rates' in self.graph.nodes[node][year]:
-            net_emission_rates = self.get_param('net_emission_rates', node, year)
-            cap_emission_rates = self.get_param('captured_emission_rates', node, year)
+            net_emission_rates = self.get_param_test('net_emission_rates', node, year)
+            cap_emission_rates = self.get_param_test('captured_emission_rates', node, year)
         else:
             net_emission_rates = EmissionRates()
             cap_emission_rates = EmissionRates()
 
         if 'bio_emission_rates' in self.graph.nodes[node][year]:
-            bio_emission_rates = self.get_param('bio_emission_rates', node, year)
+            bio_emission_rates = self.get_param_test('bio_emission_rates', node, year)
         else:
             bio_emission_rates = EmissionRates()
 
         if 'Emissions cost' in self.graph.nodes[node][year]:
-            emissions_cost = self.get_param('Emissions cost', node, year)
+            emissions_cost = self.get_param_test('Emissions cost', node, year)
         else:
             emissions_cost = 0
 
@@ -896,10 +899,10 @@ class Model:
                 # Get emissions originating at the technology
                 tech_market_share = self.get_param_test('total_market_share', node, year, tech=tech)
                 tech_units = tech_market_share * total_units
-                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
-                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
-                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
-                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech=tech)
+                tech_net_emission_rates = self.get_param_test("net_emission_rates", node, year, tech=tech)
+                tech_cap_emission_rates = self.get_param_test("captured_emission_rates", node, year, tech=tech)
+                tech_bio_emission_rates = self.get_param_test("bio_emission_rates", node, year, tech=tech)
+                tech_emissions_cost = self.get_param_test("Emissions cost", node, year, tech=tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -1225,7 +1228,7 @@ class Model:
             val = [val]
         for i in range(len(year)):
             try:
-                self.get_param(param, node, year[i], tech, sub_param, check_exist=True)
+                self.get_param_test(param, node, year=year[i], context=sub_param, tech=tech, check_exist=True)
             except:
                 print(f"Unable to access parameter at "
                       f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
@@ -1429,7 +1432,7 @@ class Model:
             if node == '.*':
                 # check if node satisfies search_param, search_operator, search_pattern conditions
                 for node_tmp in self.graph.nodes:
-                    if self.get_param(search_param, node_tmp).lower() == search_pattern.lower():
+                    if self.get_param_test(search_param, node_tmp).lower() == search_pattern.lower():
                         for idx, year in enumerate(years):
                             val_tmp = vals[idx]
                             self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator,
@@ -1489,8 +1492,8 @@ class Model:
 
         def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
             try:
-                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, sub_param=sub_param,
-                                          check_exist=True)
+                prev_val = self.get_param_test(param=param, node=node, year=year, tech=tech, context=sub_param,
+                                               check_exist=True)
                 if val_operator == '>=':
                     val = max(val, prev_val)
                 elif val_operator == '<=':
@@ -1520,7 +1523,7 @@ class Model:
                 if sub_param == '.*':
                     try:
                         # search through all sub_parameters in node given tech
-                        sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech_tmp).keys())
+                        sub_params = list(self.get_param_test(param=param, node=node, year=year, tech=tech_tmp).keys())
                     except:
                         continue
                     for sub_param_tmp in sub_params:
@@ -1540,7 +1543,7 @@ class Model:
             if sub_param == '.*':
                 try:
                     # search through all sub_parameters in node given tech
-                    sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech).keys())
+                    sub_params = list(self.get_param_test(param=param, node=node, year=year, tech=tech).keys())
                 except:
                     return
                 for sub_param_tmp in sub_params:
