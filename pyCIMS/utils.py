@@ -282,11 +282,14 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
     year : str
         The year which you are interested in. `year` must be provided for all parameters stored at
         the technology level, even if the parameter doesn't change year to year.
-    sub_param : str, optional
-        This is a rarely used parameter for specifying a nested key. Most commonly used when
-        `get_param()` would otherwise return a dictionary where a nested value contains the
-        parameter value of interest. In this case, the key corresponding to that value can be
-        provided as a `sub_param`
+    context : str, optional
+        Used when there is context available in the node. Analogous to the 'context' column in the model description
+    sub_context : str, optional
+        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+    tech : str, optional
+        The name of the technology you are interested in. `tech` is not required for parameters
+        that are specified at the node level. `tech` is required to get any parameter that is
+        stored within a technology.
     return_source : bool, default=False
         Whether or not to return the method by which this value was originally obtained.
     retrieve_only : bool, default=False
@@ -302,7 +305,13 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
 
     Returns
     -------
-
+    int
+        The value of the specified `param` at `node`, given the context provided by `year` and
+        `tech`.
+    str
+        If return_source is `True`, will return a string indicating how the parameter's value
+        was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+        default, or previous_year}.
     """
 
     is_exogenous = True
