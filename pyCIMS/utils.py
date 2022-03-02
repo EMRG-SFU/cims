@@ -334,8 +334,6 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
                 val = val[sub_context]
         elif None in val:
             val = val[None]
-        elif len(val.keys()) == 1:
-            val = list(val.values())[0]
 
     # Grab the year_value in the dictionary if exists
     if isinstance(val, dict) and ('year_value' in val):

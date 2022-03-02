@@ -237,8 +237,8 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param_test('Life Cycle Cost', fuel, year)
-                              for fuel in self.equilibrium_fuels}
+                new_prices = {fuel: self.get_param_test('Life Cycle Cost', fuel, year, context=fuel.split('.')[-1])
+                              for fuel in self.equilibrium_fuels}  # context is str of fuel
 
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
