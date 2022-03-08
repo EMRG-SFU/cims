@@ -266,7 +266,7 @@ def get_node_param(param, model, node, year, sub_param=None,
 
 
 def get_node_param_test(model, param, node, year=None, context=None, sub_context=None, tech=None,
-                        return_source=False, retrieve_only=False, check_exist=False, dict_expected=False):
+                        return_source=False, do_calc=False, check_exist=False, dict_expected=False):
     """
     Queries the model to retrieve a parameter value at a given node, given a specified context
     (year & sub-parameter).
@@ -313,8 +313,8 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
         was originally obtained. Can be one of {model, initialization, inheritance, calculation,
         default, or previous_year}.
     """
-
-    is_exogenous = True
+    val = None
+    is_exogenous = None
     # Get Parameter from Description
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
@@ -326,14 +326,15 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
             data = data['technologies'][tech]
 
     # Val can be the final return result (float, string, etc) or a dict, check for other params
-    val = data[param]
-    if isinstance(val, dict):
-        if context:
-            val = val[context]
-            if sub_context:
-                val = val[sub_context]
-        elif None in val:
-            val = val[None]
+    if param in data:
+        val = data[param]
+        if isinstance(val, dict):
+            if context:
+                val = val[context]
+                if sub_context:
+                    val = val[sub_context]
+            elif None in val:
+                val = val[None]
 
     # Grab the year_value in the dictionary if exists
     if isinstance(val, dict) and ('year_value' in val):
@@ -347,12 +348,13 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
                       " expected return type, see the 'dict_expected' param")
 
     if val is not None:
-        if retrieve_only:
+        if not do_calc:
             if return_source:
                 return val, param_source
             return val
         elif is_exogenous:
             if return_source:
+                rashid=1
                 return val, param_source
             else:
                 return val
@@ -367,9 +369,9 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if (param in calculation_directory) & (not retrieve_only):
+    if (param in calculation_directory) & do_calc:
         param_calculator = calculation_directory[param]
-        val = param_calculator(model, node, year)
+        val = param_calculator(model, node, year, tech)
         param_source = 'calculation'
 
     # Inherit Parameter Value
@@ -386,7 +388,14 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
     # ******************************
     # If there is a default value defined, use this value
     elif param in model.node_defaults:
-        val = model.get_node_parameter_default(param)
+        val = model.get_node_parameter_default(param)  # This produces an error, missing comp_type
+        param_source = 'default'
+
+    # Use a Default Parameter Value (tech)
+    # ******************************
+    # If there is a default value defined, use this value
+    elif param in model.technology_defaults:
+        val = model.get_tech_parameter_default(param)
         param_source = 'default'
 
     # Use Last Year's Value
@@ -394,8 +403,13 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     else:
         prev_year = str(int(year) - model.step)
-        val = model.get_param(param, node, prev_year)
-        param_source = 'previous_year'
+        if int(prev_year) >= model.base_year:
+            val = model.get_param_test(param, node,
+                                       year=prev_year,
+                                       context=context,
+                                       sub_context=sub_context,
+                                       tech=tech)
+            param_source = 'previous_year'
 
     if return_source:
         return val, param_source

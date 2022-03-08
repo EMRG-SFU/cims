@@ -706,25 +706,17 @@ class Model:
 
         return param_val
 
-    def get_param_test(self, param, node, year=None, context=None, sub_context=None, tech=False,
-                       return_source=False, check_exist=False, return_keys=False, dict_expected=False):
+    def get_param_test(self, param, node, year=None, context=None, sub_context=None, tech=None,
+                       return_source=False, do_calc=False, check_exist=False, dict_expected=False):
 
-        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context,
-                                              tech=tech,
-                                              return_source=return_source,
-                                              retrieve_only=True, check_exist=check_exist, dict_expected=dict_expected)
-
-        return param_val
-
-    def get_or_calc_param(self, param, node, year=None, tech=None, sub_param=None,
-                          return_source=False):
         """
-        Gets a parameter's value from the model, given a specific context (node, year, technology,
-        and sub-parameter), calculating the parameter's value if needed.
+        Gets a parameter's value from the model, given a specific context (node, year, context, sub-context, and tech),
+        calculating the parameter's value if needed.
 
-        If return_source is True,
-        this function will also, return how this value was originally obtained (e.g. via
-        calculation)
+        This will not re-calculate the parameter's value, but will only retrieve
+        values which are already stored in the model or obtained via inheritance, default values,
+        or estimation using the previous year's value. If return_source is True, this function will
+        also, return how this value was originally obtained (e.g. via calculation)
 
         Parameters
         ----------
@@ -740,40 +732,41 @@ class Model:
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
         return_source : bool, default=False
             Whether or not to return the method by which this value was originally obtained.
+        do_calc : bool, default=False
+            If False, the function will only retrieve the value using the current value in the model,
+            inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+            value. If True, calculation is allowed.
+        check_exist : bool, default=False
+            Whether or not to check that the parameter exists as is given the context (without calculation,
+            inheritance, or checking past years)
+        dict_expected : bool, default=False
+            Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+            (float, str, etc.). If the user knows it expects a dict, then this flag is used.
 
         Returns
         -------
         any :
             The value of the specified `param` at `node`, given the context provided by `year` and
-            `tech` and potentially using a calculator function if the parameter's value was not
-             exogenously defined.
+            `tech`.
         str :
             If return_source is `True`, will return a string indicating how the parameter's value
             was originally obtained. Can be one of {model, initialization, inheritance, calculation,
             default, or previous_year}.
 
-        See Also
-        --------
-        Model.get_param : Gets a parameter's value from the model, given a specific context (node,
-        year, technology, and sub-parameter).
         """
 
-        if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source,
-                                             retrieve_only=False)
-
-        else:
-            param_val = utils.get_node_param(param, self, node, year,
-                                             return_source=return_source,
-                                             retrieve_only=False)
+        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context,
+                                              tech=tech,
+                                              return_source=return_source,
+                                              do_calc=do_calc,
+                                              check_exist=check_exist,
+                                              dict_expected=dict_expected)
 
         return param_val
 
