@@ -3,7 +3,6 @@ Stock retirement and allocation module. Contains all the core logic for retiring
 surplus) and allocating new stock through a market share competition between technologies.
 """
 import math
-import copy
 from quantities import ProvidedQuantity
 from pyCIMS import utils
 from .retrofits import calc_retrofits
@@ -732,10 +731,10 @@ def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
     # Add retrofit stocks
     for node_branch, tech in retrofit_stock:
         if node_branch == node:
-            total_stocks[tech] += existing_stock[(node_branch, tech)]
+            total_stocks[tech] += retrofit_stock[(node_branch, tech)]
         else:
             child = node_branch.split('.')[-1]
-            total_stocks[child] += existing_stock[(node_branch, tech)]
+            total_stocks[child] += retrofit_stock[(node_branch, tech)]
 
     # Add new stocks
     for tech_child in adjusted_new_ms:

@@ -640,10 +640,8 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     if declining_cc is None:
         capital_cost = cc_overnight
     else:
-        try:
-          capital_cost = max(declining_cc, cc_overnight * declining_cc_limit)
-        except:
-           jillian = 1
+        capital_cost = max(declining_cc, cc_overnight * declining_cc_limit)
+
     return capital_cost
 
 

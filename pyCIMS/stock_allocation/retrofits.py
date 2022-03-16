@@ -53,7 +53,7 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
     return retrofit_market_shares
 
 
-def _foo(model, year, existing_tech, retrofit_market_shares):
+def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_shares):
     if len(retrofit_market_shares) == 0:
         return retrofit_market_shares
 
@@ -105,9 +105,6 @@ def calc_retrofits(model, node, year, existing_stock):
     In: the existing stock dictionary. {fuel: existing stock}
     Out:
     """
-    if node == 'pyCIMS.Canada.British Columbia.Coal Mining.Coal.Raw Product.Transportation':
-        if year == '2020':
-            jillian = 1
     comp_type = model.get_param('competition type', node)
     heterogeneity = model.get_param('Heterogeneity', node, year)
     retrofit_stocks = {}
@@ -140,7 +137,8 @@ def calc_retrofits(model, node, year, existing_stock):
                                                         retrofit_market_shares)
 
         # Adjust market shares based on limits of techs being retrofitted to
-        retrofit_market_shares = _foo(model, year, existing_tech, retrofit_market_shares)
+        retrofit_market_shares = _adjust_retrofit_marketshares(model, year, existing_tech,
+                                                               retrofit_market_shares)
 
         # Adjust stocks based on retrofit market shares
         for tech, ms in retrofit_market_shares.items():
@@ -153,100 +151,3 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # Apply to the existing stock
     return existing_stock, retrofit_stocks
-
-
-def _apply_retrofits_to_stocks(existing_stock, retrofit_stock, market_shares, original_tech, total_stock):
-    existing_stock[original_tech] = total_stock * market_shares.pop(original_tech)
-
-    for tech, ms in market_shares:
-        retrofit_stock[tech] += total_stock * ms
-
-    return existing_stock, retrofit_stock
-
-
-def _find_retrofit_competing_techs():
-    return {}
-
-
-def _find_retrofit_competing_weights(model, year, competing_techs, ):
-    return {}
-
-
-def _apply_min_max_retrofit_marketshares(market_shares):
-    return market_shares
-
-
-def _calculate_retrofit_market_shares(model, node, year, comp_type):
-    heterogeneity = model.get_param('Heterogeneity', node, year)
-
-    # Find each of the technologies which will be competed for
-    competing_techs = _find_competing_techs(model, node, comp_type)
-
-    # Find the weights that we will be using to calculate market share
-    total_weight, tech_weights = _find_competing_weights(model, year, competing_techs,
-                                                         heterogeneity)
-
-    # Find the new market shares for each tech
-    new_market_shares = _find_exogenous_market_shares(model, node, year)
-    for tech_child in model.graph.nodes[node][year]['technologies']:
-        if tech_child not in new_market_shares:
-            new_market_shares[tech_child] = 0
-
-            if comp_type == 'tech compete':
-                if (node, tech_child) in tech_weights:
-                    new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
-
-            elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node, year,
-                                             tech_child)[tech_child]['branch']
-                child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
-                child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
-
-                for tech in child_weights:
-                    if tech not in child_new_market_shares:
-                        new_market_share = child_weights[tech] / total_weight
-                    else:
-                        new_market_share = child_new_market_shares[tech]
-                    new_market_shares[tech_child] += new_market_share
-        # Initialize stocks in the Model
-        # model.graph.nodes[node][year]['technologies'][tech_child]['base_stock'] = \
-        #     utils.create_value_dict(0, param_source='initialization')
-        # model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
-        #     utils.create_value_dict(0, param_source='initialization')
-
-    return new_market_shares
-
-
-def do_market_competition(model, node, year, total_weight, tech_weights):
-    comp_type = model.get_param('competition type', node)
-    new_market_shares = _find_exogenous_market_shares(model, node, year)
-
-    for tech_child in model.graph.nodes[node][year]['technologies']:
-        if tech_child not in new_market_shares:
-            new_market_shares[tech_child] = 0
-
-            if comp_type == 'tech compete':
-                if (node, tech_child) in tech_weights:
-                    new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
-
-            elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node, year,
-                                             tech_child)[tech_child]['branch']
-                child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
-                child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
-
-                for tech in child_weights:
-                    if tech not in child_new_market_shares:
-                        new_market_share = child_weights[tech] / total_weight
-                    else:
-                        new_market_share = child_new_market_shares[tech]
-                    new_market_shares[tech_child] += new_market_share
-
-        # Initialize stocks in the Model
-        # model.graph.nodes[node][year]['technologies'][tech_child]['base_stock'] = \
-        #     utils.create_value_dict(0, param_source='initialization')
-        # model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
-        #     utils.create_value_dict(0, param_source='initialization')
-
-    return new_market_shares
-
