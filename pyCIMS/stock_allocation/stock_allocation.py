@@ -50,18 +50,17 @@ def all_tech_compete_allocation(model, node, year):
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
     existing_stock = _get_existing_stock(model, node, year, comp_type)
 
-    # Retrofits -- TODO (Will be implemented later)
-    existing_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
-    # retrofit_stock = {}
-
     # Capital Stock Availability -- Find how much new stock must be adopted to meet demand
-    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock, retrofit_stock)
+    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock)
 
     # Surplus Retirement
     if new_stock_demanded < 0:
         new_stock_demanded, existing_stock = _retire_surplus_stock(model, node, year,
                                                                    new_stock_demanded,
                                                                    existing_stock)
+
+    # Retrofits
+    existing_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
 
     # New Tech Competition
     new_market_shares = _calculate_new_market_shares(model, node, year, comp_type)
@@ -181,7 +180,7 @@ def _get_existing_stock(model, node, year, comp_type):
     return existing_stock
 
 
-def _calc_new_stock_demanded(demand, existing_stock, retrofit_stock):
+def _calc_new_stock_demanded(demand, existing_stock):
     """
     Calculate amount of new stock that will be demanded by subtracting all existing stock from the
     total amount of stock being demanded.
@@ -198,9 +197,6 @@ def _calc_new_stock_demanded(demand, existing_stock, retrofit_stock):
     """
     for e_stocks in existing_stock.values():
         demand -= e_stocks
-
-    for r_stocks in retrofit_stock.values():
-        demand -= r_stocks
 
     return demand
 
@@ -850,10 +846,29 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
                                                   param_source='calculation')
         model.set_param_internal(total_stock_dict, 'total_stock', node, year, tech)
 
-    for _, tech in retrofit_stocks:
-        retrofit_stock_dict = utils.create_value_dict(retrofit_stocks[(node, tech)],
+    # Retrofit Stock
+    comp_type = model.get_param('competition type', node)
+
+    for n, t in retrofit_stocks:
+        retrofit_stock_dict = utils.create_value_dict(retrofit_stocks[(n, t)],
                                                       param_source='calculation')
-        model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, tech)
+        model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', n, year, t)
+
+    if comp_type == 'node tech compete':
+        # We need to also store summary retrofit information at the Node Tech Compete parent node
+        # Create Summary Retrofit Dictionary
+        summary_retrofit_stocks = {}
+        for n, t in retrofit_stocks:
+            child_service = n.split('.')[-1]
+            if child_service not in summary_retrofit_stocks:
+                summary_retrofit_stocks[child_service] = 0
+            summary_retrofit_stocks[child_service] += retrofit_stocks[(n, t)]
+
+        # Save the info to the model
+        for child_service in summary_retrofit_stocks:
+            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_service],
+                                                          param_source='calculation')
+            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_service)
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():

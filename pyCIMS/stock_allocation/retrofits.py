@@ -129,8 +129,8 @@ def calc_retrofits(model, node, year, existing_stock):
             for tech in competing_weights:
                 retrofit_market_shares[tech] = competing_weights[tech] / total_weight
         elif comp_type == 'node tech compete':
-            # TODO: Add logic for node tech compete
-            pass
+            for tech in competing_weights:
+                retrofit_market_shares[tech] = competing_weights[tech] / total_weight
 
         # Adjust based on limits of existing technology
         retrofit_market_shares = _apply_retrofit_limits(model, year, existing_tech,
