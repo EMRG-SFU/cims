@@ -168,6 +168,11 @@ class Model:
         supply_nodes = ['supply', 'standard']
 
         for year in self.years:
+            graph_utils.bottom_up_traversal(self.graph,
+                                            init_tax_emissions,
+                                            year)
+
+        for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
 
             # Initialize Basic Variables
@@ -303,6 +308,51 @@ class Model:
 
         # Otherwise, an equilibrium has been reached
         return True
+
+    def init_tax_emissions(self, node, year):
+        """
+        Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
+        function assumes all of node's parents have already had their tax emissions initialized.
+
+        Parameters
+        ----------
+        self :
+            A graph object containing the node of interest.
+        node : str
+            Name of the node to be initialized.
+
+        year: str
+            The string representing the current simulation year (e.g. "2005").
+
+        Returns
+        -------
+        Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
+        """
+
+        # Retrieve tax from the parents (if they exist)
+        parents = list(graph.predecessors(node))
+        parent_dict = {}
+        if len(parents) > 0:
+            parent = parents[0]
+            if 'Tax' in graph.nodes[parent][year]:
+                parent_dict = self.graph.nodes[parent][year]['Tax']
+
+        # Store away tax at current node to overwrite parent tax later
+        node_dict = {}
+        if 'Tax' in graph.nodes[node][year]:
+            node_dict = self.graph.nodes[node][year]['Tax']
+
+        # Make final dict where we prioritize keeping node_dict and only unique parent taxes
+        final_tax = copy.deepcopy(node_dict)
+        for ghg in parent_dict:
+            if ghg not in final_tax:
+                final_tax[ghg] = {}
+            for emission_type in parent_dict[ghg]:
+                if emission_type not in final_tax[ghg]:
+                    final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
+
+        if final_tax:
+            self.graph.nodes[node][year]['Tax'] = final_tax
 
     def initialize_graph(self, graph, year):
         """
@@ -536,51 +586,6 @@ class Model:
                                                                                      unit=units,
                                                                                      param_source='inheritance')
 
-        def init_tax_emissions(graph, node, year):
-            """
-            Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
-            function assumes all of node's parents have already had their tax emissions initialized.
-
-            Parameters
-            ----------
-            graph : NetworkX.DiGraph
-                A graph object containing the node of interest.
-            node : str
-                Name of the node to be initialized.
-
-            year: str
-                The string representing the current simulation year (e.g. "2005").
-
-            Returns
-            -------
-            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
-            """
-
-            # Retrieve tax from the parents (if they exist)
-            parents = list(graph.predecessors(node))
-            parent_dict = {}
-            if len(parents) > 0:
-                parent = parents[0]
-                if 'Tax' in graph.nodes[parent][year]:
-                    parent_dict = graph.nodes[parent][year]['Tax']
-
-            # Store away tax at current node to overwrite parent tax later
-            node_dict = {}
-            if 'Tax' in graph.nodes[node][year]:
-                node_dict = graph.nodes[node][year]['Tax']
-
-            # Make final dict where we prioritize keeping node_dict and only unique parent taxes
-            final_tax = copy.deepcopy(node_dict)
-            for ghg in parent_dict:
-                if ghg not in final_tax:
-                    final_tax[ghg] = {}
-                for emission_type in parent_dict[ghg]:
-                    if emission_type not in final_tax[ghg]:
-                        final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
-
-            if final_tax:
-                graph.nodes[node][year]['Tax'] = final_tax
-
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
                                        year)
@@ -590,9 +595,6 @@ class Model:
                                        self.gwp)
         graph_utils.top_down_traversal(graph,
                                        init_load_factor,
-                                       year)
-        graph_utils.top_down_traversal(graph,
-                                       init_tax_emissions,
                                        year)
         graph_utils.bottom_up_traversal(graph,
                                         init_fuel_lcc,
