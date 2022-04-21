@@ -8,6 +8,7 @@ from pyCIMS import utils
 from .retrofits import calc_retrofits
 from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import _apply_min_max_limits
+import copy
 
 
 #############################
@@ -39,7 +40,6 @@ def all_tech_compete_allocation(model, node, year):
         Nothing is returned. `model` will be updated to reflect the results of stock retirement and
         new stock competitions.
     """
-
     comp_type = model.get_param('competition type', node)
     if comp_type == 'market':
         comp_type = 'tech compete'
@@ -50,17 +50,17 @@ def all_tech_compete_allocation(model, node, year):
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
     existing_stock = _get_existing_stock(model, node, year, comp_type)
 
+    # Retrofits
+    existing_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
+
     # Capital Stock Availability -- Find how much new stock must be adopted to meet demand
-    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock)
+    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock, retrofit_stock)
 
     # Surplus Retirement
     if new_stock_demanded < 0:
-        new_stock_demanded, existing_stock = _retire_surplus_stock(model, node, year,
-                                                                   new_stock_demanded,
-                                                                   existing_stock)
-
-    # Retrofits
-    existing_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
+        new_stock_demanded, existing_stock, retrofit_stock = \
+            _retire_surplus_stock(model, node, year,
+                                  new_stock_demanded, existing_stock, retrofit_stock)
 
     # New Tech Competition
     new_market_shares = _calculate_new_market_shares(model, node, year, comp_type)
@@ -75,6 +75,7 @@ def all_tech_compete_allocation(model, node, year):
                                                                   existing_stock,
                                                                   retrofit_stock,
                                                                   adjusted_new_ms)
+
 
     # Record Values in Model
     _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares_per_tech,
@@ -180,7 +181,7 @@ def _get_existing_stock(model, node, year, comp_type):
     return existing_stock
 
 
-def _calc_new_stock_demanded(demand, existing_stock):
+def _calc_new_stock_demanded(demand, existing_stock, retrofit_stock):
     """
     Calculate amount of new stock that will be demanded by subtracting all existing stock from the
     total amount of stock being demanded.
@@ -197,6 +198,9 @@ def _calc_new_stock_demanded(demand, existing_stock):
     """
     for e_stocks in existing_stock.values():
         demand -= e_stocks
+
+    for r_stocks in retrofit_stock.values():
+        demand -= r_stocks
 
     return demand
 
@@ -279,6 +283,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
     """
     lifetime = model.get_param('Lifetime', node, purchased_year, tech)
     purchased_stock = model.get_param('new_stock', node, purchased_year, tech)
+    purchased_stock += model.get_param('retrofit_stock', node, purchased_year, tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
@@ -347,7 +352,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             remaining_base_stock += remain_base_stock_vintage_y
             existing_stock += remain_base_stock_vintage_y
 
-            # New Stock
+            # New Stock (Including Previous Years' Retrofitted Stock)
             remain_new_stock = _purchased_stock_retirement(model, node, tech, earlier_year, year)
             remaining_new_stock_pre_surplus[earlier_year] = remain_new_stock
             existing_stock += remain_new_stock
@@ -359,7 +364,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
         # Note: retired stock will be removed later from ['new_stock_remaining']
         model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = \
-            utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+            utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
         if competition_type == 'node tech compete':
             # Add stock data @ parent for "node tech compete" nodes
@@ -383,7 +388,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             else:
                 model.graph.nodes[parent][year]['technologies'][child][
                     'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
-                    remaining_new_stock_pre_surplus, param_source='calculation')
+                    copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
             if 'new_stock_remaining' in child_tech_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
@@ -391,7 +396,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
                         'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
             else:
                 model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'] = \
-                    utils.create_value_dict(remaining_new_stock_pre_surplus,
+                    utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus),
                                             param_source='calculation')
 
     return existing_stock
@@ -539,7 +544,25 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
     return amount_surplus_to_retire, existing_stock
 
 
-def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock):
+def _retire_surplus_retrofit_stock(model, node, year, retrofit_stock, surplus):
+    total_retrofit_stock = sum(retrofit_stock.values())
+    amount_surplus_to_retire = 0
+    if total_retrofit_stock != 0:
+        retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_retrofit_stock)
+        for node_branch, tech in retrofit_stock:
+            tech_retrofit_stock = retrofit_stock[(node_branch, tech)]
+            amount_tech_to_retire = tech_retrofit_stock * retirement_proportion
+
+            # Remove from retrofit stock
+            retrofit_stock[(node_branch, tech)] -= amount_tech_to_retire
+
+            # Add to stock to retire
+            amount_surplus_to_retire += amount_tech_to_retire
+
+    return amount_surplus_to_retire, retrofit_stock
+
+
+def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock, retrofit_stock):
     """
     Retires surplus stock, starting with the oldest existing stock first. There is surplus stock if
     fewer than 0 units of new stock have been demanded.
@@ -569,19 +592,27 @@ def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock)
     surplus = -1 * new_stock_demanded
 
     # Base Stock Retirement
-    base_stock_to_retire, existing_stock = _retire_surplus_base_stock(model, node, year,
-                                                                      existing_stock,
-                                                                      surplus)
+    base_stock_to_retire, existing_stock = \
+        _retire_surplus_base_stock(model, node, year, existing_stock, surplus)
     surplus -= base_stock_to_retire
     new_stock_demanded += base_stock_to_retire
 
     # New Stock Retirement
-    new_stock_to_retire, existing_stock = _retire_surplus_new_stock(model, node, year,
-                                                                    existing_stock,
-                                                                    surplus)
+    new_stock_to_retire, existing_stock = \
+        _retire_surplus_new_stock(model, node, year, existing_stock, surplus)
     surplus -= new_stock_to_retire
     new_stock_demanded += new_stock_to_retire
-    return new_stock_demanded, existing_stock
+
+    # Retrofit Stock Retirement
+    retrofit_stock_to_retire, retrofit_stock = \
+        _retire_surplus_retrofit_stock(model, node, year, retrofit_stock, surplus)
+
+    surplus -= retrofit_stock_to_retire
+    new_stock_demanded += retrofit_stock_to_retire
+
+    assert(round(new_stock_demanded) >= 0)
+
+    return new_stock_demanded, existing_stock, retrofit_stock
 
 
 #############################
@@ -679,6 +710,8 @@ def _calculate_new_market_shares(model, node, year, comp_type):
         model.graph.nodes[node][year]['technologies'][tech_child]['base_stock'] = \
             utils.create_value_dict(0, param_source='initialization')
         model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
+            utils.create_value_dict(0, param_source='initialization')
+        model.graph.nodes[node][year]['technologies'][tech_child]['retrofit_stock'] = \
             utils.create_value_dict(0, param_source='initialization')
 
     return new_market_shares
