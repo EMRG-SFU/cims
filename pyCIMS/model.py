@@ -168,8 +168,28 @@ class Model:
         supply_nodes = ['supply', 'standard']
 
         for year in self.years:
+            # Pass tax to all children for carbon cost
             graph_utils.top_down_traversal(self.graph,
                                            self.init_tax_emissions,
+                                           year)
+
+            # Pass foresite methods to all children nodes
+            sec_list = [node for node, data in self.graph.nodes(data=True)
+                        if 'sector' in data['competition type'].lower()]
+
+            foresite_context = self.get_param_test('Foresite method', 'pyCIMS', year=year, dict_expected=True)
+            for ghg, sectors in foresite_context.items():
+                for node in sec_list:
+                    sector = node.split('.')[-1]
+                    if sector in sectors:
+                        # Initialize Foresite method
+                        if 'Foresite method' not in self.graph.nodes[node][year]:
+                            self.graph.nodes[node][year]['Foresite method'] = {}
+
+                        self.graph.nodes[node][year]['Foresite method'][ghg] = sectors[sector]
+
+            graph_utils.top_down_traversal(self.graph,
+                                           self.init_foresite,
                                            year)
 
         for year in self.years:
@@ -353,6 +373,22 @@ class Model:
 
         if final_tax:
             graph.nodes[node][year]['Tax'] = final_tax
+
+    def init_foresite(self, graph, node, year):
+
+        # Find all sectors
+        # sec_list = [node for node, data in graph.nodes(data=True)
+        #             if 'sector' in data['competition type'].lower()]
+
+        parents = list(graph.predecessors(node))
+        parent_dict = {}
+        if len(parents) > 0:
+            parent = parents[0]
+            if 'Foresite method' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['Foresite method']
+
+        if parent_dict:
+            graph.nodes[node][year]['Foresite method'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """
