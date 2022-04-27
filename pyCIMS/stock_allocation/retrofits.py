@@ -77,14 +77,15 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
         percent_differences = _get_percent_differences(retrofit_market_shares,
                                                        limits,
                                                        return_sorted=True)
-        largest_violator = percent_differences[0]
-        violator_name = largest_violator[0]
+        largest_violator_name = percent_differences[0][0]
 
-        retrofit_market_shares[violator_name] = _make_ms_min_max_compliant(retrofit_market_shares[violator_name],
-                                                                           limits[violator_name])
-        limit_adjusted_techs.append(violator_name)
+        retrofit_market_shares[largest_violator_name] = \
+            _make_ms_min_max_compliant(retrofit_market_shares[largest_violator_name],
+                                       limits[largest_violator_name])
+        limit_adjusted_techs.append(largest_violator_name)
 
-        retrofit_market_shares = _adjust_new_market_shares(retrofit_market_shares, limit_adjusted_techs)
+        retrofit_market_shares = _adjust_new_market_shares(retrofit_market_shares,
+                                                           limit_adjusted_techs)
 
     return retrofit_market_shares
 
@@ -130,14 +131,14 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     # For each newly adopted retrofit technology, calculate its relative market share
     adopting_tech_market_shares = {}
     adopting_tech_ms_limits = {}
-    for (node, tech), ms in retrofit_market_shares.items():
+    for (node, tech), market_share in retrofit_market_shares.items():
         if (node, tech) == existing_tech:
             pass
         else:
             ms_retrofit_min = model.get_param('Market share retro_Min', node, year, tech)
             ms_retrofit_max = model.get_param('Market share retro_Max', node, year, tech)
             adopting_tech_ms_limits[(node, tech)] = (ms_retrofit_min, ms_retrofit_max)
-            adopting_tech_market_shares[(node, tech)] = ms / ms_of_all_adopting_techs
+            adopting_tech_market_shares[(node, tech)] = market_share / ms_of_all_adopting_techs
 
     # Adjust market shares until they are compliant
     limit_adjusted_techs = []
@@ -145,12 +146,12 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
         percent_differences = _get_percent_differences(adopting_tech_market_shares,
                                                        adopting_tech_ms_limits,
                                                        return_sorted=True)
-        largest_violator = percent_differences[0]
-        violator_name = largest_violator[0]
+        largest_violator_name = percent_differences[0][0]
 
-        adopting_tech_market_shares[violator_name] = _make_ms_min_max_compliant(adopting_tech_market_shares[violator_name],
-                                                                                adopting_tech_ms_limits[violator_name])
-        limit_adjusted_techs.append(violator_name)
+        adopting_tech_market_shares[largest_violator_name] = \
+            _make_ms_min_max_compliant(adopting_tech_market_shares[largest_violator_name],
+                                       adopting_tech_ms_limits[largest_violator_name])
+        limit_adjusted_techs.append(largest_violator_name)
 
         adopting_tech_market_shares = _adjust_new_market_shares(adopting_tech_market_shares,
                                                                 limit_adjusted_techs)
@@ -200,12 +201,12 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
     # New Stock
     if retrofit_amount > 0:
         new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech)
-        for y in new_stock_remaining:
-            y_ns_remaining = new_stock_remaining[y]
+        for prev_year in new_stock_remaining:
+            y_ns_remaining = new_stock_remaining[prev_year]
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)
             retrofit_amount -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining']['year_value'][y] -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus']['year_value'][y] -= y_ns_retrofitted
+            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining']['year_value'][prev_year] -= y_ns_retrofitted
+            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus']['year_value'][prev_year] -= y_ns_retrofitted
 
 
 def calc_retrofits(model, node, year, existing_stock):
@@ -274,21 +275,21 @@ def calc_retrofits(model, node, year, existing_stock):
                                                                retrofit_market_shares)
 
         # Adjust stocks based on retrofit market shares
-        for tech, ms in retrofit_market_shares.items():
+        for tech, market_share in retrofit_market_shares.items():
             if tech == existing_node_tech:
-                pre_retrofit_existing_stock = existing_stock[existing_node_tech]
-                post_retrofit_existing_stock = ms * pre_retrofit_existing_stock
-                existing_stock[existing_node_tech] = post_retrofit_existing_stock
+                pre_retro_existing_stock = existing_stock[existing_node_tech]
+                post_retro_existing_stock = market_share * pre_retro_existing_stock
+                existing_stock[existing_node_tech] = post_retro_existing_stock
                 _record_retrofitted_stock(model, existing_node, year, existing_tech,
-                                          pre_retrofit_existing_stock - post_retrofit_existing_stock)
+                                          pre_retro_existing_stock - post_retro_existing_stock)
                 if comp_type == 'node tech compete':
                     _record_retrofitted_stock(model, node, year, existing_node.split('.')[-1],
-                                              pre_retrofit_existing_stock - post_retrofit_existing_stock)
+                                              pre_retro_existing_stock - post_retro_existing_stock)
 
             else:
                 if tech not in retrofit_stocks:
                     retrofit_stocks[tech] = 0
-                retrofit_stocks[tech] += existing_stock[existing_node_tech] * ms
+                retrofit_stocks[tech] += existing_stock[existing_node_tech] * market_share
 
         # note the remaining stock in the model
     return existing_stock, retrofit_stocks
