@@ -173,23 +173,23 @@ class Model:
                                            self.init_tax_emissions,
                                            year)
 
-            # Pass foresite methods to all children nodes
+            # Pass foresight methods to all children nodes
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresite_context = self.get_param_test('Foresite method', 'pyCIMS', year=year, dict_expected=True)
-            for ghg, sectors in foresite_context.items():
+            foresight_context = self.get_param_test('Foresight method', 'pyCIMS', year=year, dict_expected=True)
+            for ghg, sectors in foresight_context.items():
                 for node in sec_list:
                     sector = node.split('.')[-1]
                     if sector in sectors:
-                        # Initialize Foresite method
-                        if 'Foresite method' not in self.graph.nodes[node][year]:
-                            self.graph.nodes[node][year]['Foresite method'] = {}
+                        # Initialize foresight method
+                        if 'Foresight method' not in self.graph.nodes[node][year]:
+                            self.graph.nodes[node][year]['Foresight method'] = {}
 
-                        self.graph.nodes[node][year]['Foresite method'][ghg] = sectors[sector]
+                        self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
 
             graph_utils.top_down_traversal(self.graph,
-                                           self.init_foresite,
+                                           self.init_foresight,
                                            year)
 
         for year in self.years:
@@ -374,21 +374,17 @@ class Model:
         if final_tax:
             graph.nodes[node][year]['Tax'] = final_tax
 
-    def init_foresite(self, graph, node, year):
-
-        # Find all sectors
-        # sec_list = [node for node, data in graph.nodes(data=True)
-        #             if 'sector' in data['competition type'].lower()]
+    def init_foresight(self, graph, node, year):
 
         parents = list(graph.predecessors(node))
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'Foresite method' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['Foresite method']
+            if 'Foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['Foresight method']
 
         if parent_dict:
-            graph.nodes[node][year]['Foresite method'] = parent_dict
+            graph.nodes[node][year]['Foresight method'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """

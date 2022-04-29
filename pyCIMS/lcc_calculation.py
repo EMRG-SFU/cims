@@ -277,9 +277,7 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
     annual_service_cost = model.get_param_test('Service cost', node, year=year, tech=tech, do_calc=True)
     emissions_cost = model.get_param_test('Emissions cost', node, year=year, tech=tech, do_calc=True)
 
-    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
-                   emissions_cost
-
+    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + emissions_cost
     return complete_lcc
 
 
@@ -425,9 +423,42 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
-                tax_name = tax_rates[ghg][emission_type]
-                emissions_cost[node_name][ghg][emission_type]['year_value'] *= tax_name[
-                    'year_value']
+                #  Dict to check if emission_type exists in taxes
+                tax_check = model.get_param_test('Tax', node, year='2010', context=ghg, dict_expected=True)
+
+                # Use foresight method to calculate tax
+                Expected_EC = 0
+                method_dict = model.get_param_test('Foresite method', node, year=year, dict_expected=True)
+
+                # Replace current tax with foresight method
+                if method_dict and ghg in method_dict:
+                    method = method_dict[ghg]['year_value']
+                    if method == 'Myopic' or method is None or emission_type not in tax_check:
+                        Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
+
+                    elif method == 'Discounted':
+                        rashid = 1
+                        N = int(model.get_param_test('Lifetime', node))
+                        r_k = model.get_param_test('Discount rate_Financial', node, year=year)
+                        Expected_EC = sum(
+                            [model.get_param_test('Tax', node, year=str(n), context=ghg, sub_context=emission_type) /
+                             (1+r_k)**(n-int(year)+1)
+                             for n in range(int(year), int(year)+N+1, model.step)]
+                        )
+                        Expected_EC *= r_k / (1 - (1+r_k)**(-N))
+
+                    elif method == 'Average':
+                        ian = 1
+                        N = int(model.get_param_test('Lifetime', node))
+                        Expected_EC = sum(
+                            [model.get_param_test('Tax', node, year=str(n), context=ghg, sub_context=emission_type)
+                             for n in range(int(year), int(year)+N+1, model.step)]
+                        )
+                        Expected_EC = Expected_EC/N
+                    else:
+                        raise ValueError('Foresight method not identified, use Myopic, Discounted, or Average')
+
+                emissions_cost[node_name][ghg][emission_type]['year_value'] *= Expected_EC
 
     # Add everything in nested dictionary together
     for node_name in emissions_cost:
@@ -456,8 +487,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
         for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
-            if 'Emissions biomass' in model.graph.nodes[child_node][
-                year] and child_node in fuels and req_val > 0:
+            if 'Emissions biomass' in model.graph.nodes[child_node][year] and child_node in fuels and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['Emissions biomass']
                 bio_emissions[child_node] = {}
                 for ghg in fuel_emissions:
