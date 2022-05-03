@@ -139,8 +139,6 @@ calculation_directory = {
 
 inheritable_params = [
     'Price Multiplier',
-    'Retrofit_Min',
-    'Retrofit_Max',
 ]
 
 
