@@ -400,7 +400,7 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
     if param_source is None:
         prev_year = str(int(year) - model.step)
         if prev_year >= str(model.base_year):
-            val = model.get_param(param, node, prev_year)
+            val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
             param_source = 'previous_year'
         else:
             val = None
