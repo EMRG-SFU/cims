@@ -6,6 +6,7 @@ import math
 from .emissions import EmissionRates
 from . import utils
 from copy import deepcopy
+from numpy import linspace
 
 
 def lcc_calculation(sub_graph, node, year, model):
@@ -426,7 +427,9 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
 
                 # Use foresight method to calculate tax
                 Expected_EC = 0
-                method_dict = model.get_param_test('Foresite method', node, year=year, dict_expected=True)
+                if 'Coal Mining' in node:
+                    rashid = 2
+                method_dict = model.get_param_test('Foresight method', node, year=year, dict_expected=True)
 
                 # Replace current tax with foresight method
                 if method_dict and ghg in method_dict:
@@ -440,19 +443,22 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
                         r_k = model.get_param_test('Discount rate_Financial', node, year=year)
                         Expected_EC = sum(
                             [model.get_param_test('Tax', node, year=str(n), context=ghg, sub_context=emission_type) /
-                             (1+r_k)**(n-int(year)+1)
-                             for n in range(int(year), int(year)+N+1, model.step)]
+                             (1 + r_k) ** (n - int(year) + 1)
+                             for n in range(int(year), int(year) + N + 1, model.step)]
                         )
-                        Expected_EC *= r_k / (1 - (1+r_k)**(-N))
+                        Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
 
                     elif method == 'Average':
                         ian = 1
                         N = int(model.get_param_test('Lifetime', node))
-                        Expected_EC = sum(
-                            [model.get_param_test('Tax', node, year=str(n), context=ghg, sub_context=emission_type)
-                             for n in range(int(year), int(year)+N+1, model.step)]
-                        )
-                        Expected_EC = Expected_EC/N
+                        tax_vals = []
+                        for n in range(int(year), int(year) + N, model.step):
+                            cur_tax = model.get_param_test('Tax', node, year=str(n),
+                                                           context=ghg, sub_context=emission_type)
+                            next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
+                                                            context=ghg, sub_context=emission_type)
+                            tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
+                        Expected_EC = sum(tax_vals) / N
                     else:
                         raise ValueError('Foresight method not identified, use Myopic, Discounted, or Average')
 
