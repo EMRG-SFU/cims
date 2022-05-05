@@ -93,7 +93,7 @@ def dict_has_none_year_value(dictionary):
 
 def is_param_exogenous(model, param, node, year, tech=None):
     """Checks if a parameter is exogenously defined"""
-    _, source = model.get_param(param, node, year, tech, return_source=True)
+    _, source = model.get_param_test(param, node, year=year, tech=tech, return_source=True)
     ms_exogenous = source == 'model'
     return ms_exogenous
 
@@ -117,6 +117,7 @@ def create_cost_curve_func(quantities: List[float], prices: List[float]):
     quantities, prices = zip(*qp_pairs)
 
     return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
+
 
 # ******************
 # Parameter Fetching

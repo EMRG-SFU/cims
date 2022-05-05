@@ -52,7 +52,7 @@ def find_indirect_quantities(model, child, node, year, tech=None):
     """
     quantities_to_record = []
 
-    child_provided_quantities = model.get_param('provided_quantities', child, year)
+    child_provided_quantities = model.get_param_test('provided_quantities', child, year=year)
 
     if tech is None:
         quantity_provided_to_node_tech = \
@@ -65,7 +65,7 @@ def find_indirect_quantities(model, child, node, year, tech=None):
         child_total_quantity_provided = child_provided_quantities.get_total_quantity()
         if child_total_quantity_provided != 0:
             proportion = quantity_provided_to_node_tech / child_total_quantity_provided
-            child_requested_quant = model.get_param('requested_quantities', child, year)
+            child_requested_quant = model.get_param_test('requested_quantities', child, year=year)
             quantities_requested = child_requested_quant.get_total_quantities_requested()
             for child_rq_node, amount in quantities_requested.items():
                 quantities_to_record.append((child_rq_node, child, proportion*amount))
@@ -80,7 +80,7 @@ def get_quantities_to_record(model, child, node, year, tech=None):
     Find the list of quantities to be recorded for a node/tech based on it's request for services
     from child.
     """
-    child_provided_quant = model.get_param("provided_quantities", child, year)
+    child_provided_quant = model.get_param_test("provided_quantities", child, year=year)
     quantities_to_record = []
 
     # Find the quantities provided by child to the node/tech

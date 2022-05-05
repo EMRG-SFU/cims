@@ -821,7 +821,7 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     finance_discount = model.get_param_test('Discount rate_Financial', node, year=year, tech=tech)
     if finance_discount is None:
         rashid = 1
-    payback_period = model.get_param('Capital recovery', node, year=year, tech=tech)
+    payback_period = model.get_param_test('Capital recovery', node, year=year, tech=tech)
 
     if finance_discount == 0:
         warnings.warn('Discount rate_Financial has value of 0 at {} -- {}'.format(node, tech))
