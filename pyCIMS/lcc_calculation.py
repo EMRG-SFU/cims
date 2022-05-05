@@ -133,8 +133,6 @@ def lcc_calculation(sub_graph, node, year, model):
                 model.set_param_internal(val_dict, 'new_market_share', node, year, tech)
                 model.set_param_internal(val_dict, 'total_market_share', node, year, tech)
 
-            if node == 'pyCIMS.Canada.British Columbia.Electricity.Transmission Losses':
-                rashid = 1
             market_share = model.get_param_test('total_market_share', node, year=year, tech=tech)
 
             # Weight Life Cycle Cost and Add to Node Total
@@ -671,8 +669,6 @@ def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
                 unit_convert = 1
 
             # Base Stock summed over all techs in DCC class (base year only)
-            if node_k == 'pyCIMS.Canada.British Columbia.Natural Gas Extraction.CCS':
-                rashid = 1
             bs_k = model.get_param_test('base_stock', node_k, year=str(model.base_year), tech=tech_k)
             if bs_k is not None:
                 bs_sum += bs_k / unit_convert
@@ -819,8 +815,6 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
 
     finance_discount = model.get_param_test('Discount rate_Financial', node, year=year, tech=tech)
-    if finance_discount is None:
-        rashid = 1
     payback_period = model.get_param_test('Capital recovery', node, year=year, tech=tech)
 
     if finance_discount == 0:

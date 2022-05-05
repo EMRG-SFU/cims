@@ -2,12 +2,12 @@
 This module contains utility functions used throughout the pyCIMS package.
 """
 import re
+import warnings
 from typing import List
 from scipy.interpolate import interp1d
+
 from . import lcc_calculation
 
-import pandas as pd
-import warnings
 
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
@@ -355,7 +355,6 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
             return val
         elif is_exogenous:
             if return_source:
-                rashid=1
                 return val, param_source
             else:
                 return val
@@ -529,7 +528,6 @@ def set_node_param(new_value, param, model, node, year, sub_param=None, save=Tru
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
     # been defined), use it.
-    print('node test')
     if year:
         data = model.graph.nodes[node][year]
     else:
