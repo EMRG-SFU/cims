@@ -306,9 +306,9 @@ def get_node_param_test(model, param, node, year=None, context=None, sub_context
 
     Returns
     -------
-    int
-        The value of the specified `param` at `node`, given the context provided by `year` and
-        `tech`.
+    any
+        The value of the specified `param` at `node`, given the context provided by `year`, `tech`, 'context', and
+        'sub_context'.
     str
         If return_source is `True`, will return a string indicating how the parameter's value
         was originally obtained. Can be one of {model, initialization, inheritance, calculation,
