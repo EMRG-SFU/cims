@@ -178,7 +178,8 @@ class Model:
                         if 'sector' in data['competition type'].lower()]
 
             foresight_context = self.get_param_test('Foresight method', 'pyCIMS', year=year, dict_expected=True)
-            for ghg, sectors in foresight_context.items():
+            if foresight_context is not None:
+                for ghg, sectors in foresight_context.items():
                 for node in sec_list:
                     sector = node.split('.')[-1]
                     if sector in sectors:
