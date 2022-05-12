@@ -38,13 +38,13 @@ def all_tech_compete_allocation(model, node, year):
         new stock competitions.
     """
 
-    comp_type = model.get_param_test('competition type', node)
+    comp_type = model.get_param('competition type', node)
 
     if comp_type == 'market':
         comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    assessed_demand = model.get_param_test('provided_quantities', node, year=year).get_total_quantity()
+    assessed_demand = model.get_param('provided_quantities', node, year=year).get_total_quantity()
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
     existing_stock = _get_existing_stock(model, node, year, comp_type)
@@ -105,10 +105,10 @@ def general_allocation(model, node, year):
     node_year_data = model.graph.nodes[node][year]
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    if model.get_param_test('competition type', node) == 'root':
+    if model.get_param('competition type', node) == 'root':
         assessed_demand = 1
     else:
-        assessed_demand = model.get_param_test('provided_quantities', node, year=year).get_total_quantity()
+        assessed_demand = model.get_param('provided_quantities', node, year=year).get_total_quantity()
 
     # Based on assessed demand, determine the amount this node requests from other services
     if 'technologies' in node_year_data:
@@ -168,7 +168,10 @@ def _get_existing_stock(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param_test('Service requested', node, year=year, tech=child)[child]['branch']
+            child_node = model.get_param('Service requested', node,
+                                         year=year,
+                                         tech=child,
+                                         dict_expected=True)[child]['branch']
 
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
@@ -225,8 +228,8 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
         The amount of base stock adopted in initial_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param_test('Lifetime', node, year=initial_year, tech=tech)
-    base_stock = model.get_param_test('base_stock', node, year=initial_year, tech=tech)
+    lifetime = model.get_param('Lifetime', node, year=initial_year, tech=tech)
+    base_stock = model.get_param('base_stock', node, year=initial_year, tech=tech)
 
     # Calculate amount of remaining base stock after natural retirements
     remaining_rate = 1 - (int(current_year) - int(initial_year)) / lifetime
@@ -235,11 +238,11 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
     # Retrieve amount of base stock in the previous year, after surplus retirement
     prev_year = str(int(current_year) - model.step)
     if int(prev_year) == int(initial_year):
-        prev_year_unretired_base_stock = model.get_param_test('base_stock', node,
-                                                              year=prev_year, tech=tech)
+        prev_year_unretired_base_stock = model.get_param('base_stock', node,
+                                                         year=prev_year, tech=tech)
     else:
-        prev_year_unretired_base_stock = model.get_param_test('base_stock_remaining', node,
-                                                              year=prev_year, tech=tech)
+        prev_year_unretired_base_stock = model.get_param('base_stock_remaining', node,
+                                                         year=prev_year, tech=tech)
 
     base_stock_remaining = max(min(naturally_unretired_base_stock,
                                    prev_year_unretired_base_stock), 0)
@@ -275,8 +278,8 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
         The amount of new stock adopted in purchased_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param_test('Lifetime', node, year=purchased_year, tech=tech)
-    purchased_stock = model.get_param_test('new_stock', node, year=purchased_year, tech=tech)
+    lifetime = model.get_param('Lifetime', node, year=purchased_year, tech=tech)
+    purchased_stock = model.get_param('new_stock', node, year=purchased_year, tech=tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
@@ -287,8 +290,8 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
     adj_multiplier = 1
 
     if int(prev_year) > int(purchased_year):
-        prev_y_unretired_new_stock = model.get_param_test('new_stock_remaining', node,
-                                                          year=prev_year, tech=tech)[purchased_year]
+        prev_y_unretired_new_stock = model.get_param('new_stock_remaining', node,
+                                                     year=prev_year, tech=tech, dict_expected=True)[purchased_year]
 
         if prev_y_fictional_purchased_stock_remain > 0:
             adj_multiplier = prev_y_unretired_new_stock / \
@@ -448,12 +451,12 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
     total_base_stock = 0
     amount_surplus_to_retire = 0
     for node_branch, tech in existing_stock:
-        tech_base_stock = model.get_param_test('base_stock_remaining', node_branch, year=year, tech=tech)
+        tech_base_stock = model.get_param('base_stock_remaining', node_branch, year=year, tech=tech)
         total_base_stock += tech_base_stock
     if total_base_stock != 0:
         retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_base_stock)
         for node_branch, tech in existing_stock:
-            tech_base_stock = model.get_param_test('base_stock_remaining', node_branch, year=year, tech=tech)
+            tech_base_stock = model.get_param('base_stock_remaining', node_branch, year=year, tech=tech)
             amount_tech_to_retire = tech_base_stock * retirement_proportion
 
             # Remove from existing stock
@@ -507,16 +510,22 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
         if surplus > 0:
             for node_branch, tech in existing_stock:
                 tech_rem_new_stock_pre_surplus = \
-                    model.get_param_test('new_stock_remaining_pre_surplus',
-                                         node_branch, year=year, tech=tech)[purchase_year]
+                    model.get_param('new_stock_remaining_pre_surplus',
+                                    node_branch,
+                                    year=year,
+                                    tech=tech,
+                                    dict_expected=True)[purchase_year]
                 total_new_stock_pre_surplus += tech_rem_new_stock_pre_surplus
 
         retirement_proportion = _calc_surplus_retirement_proportion(surplus,
                                                                     total_new_stock_pre_surplus)
 
         for node_branch, tech in existing_stock:
-            t_rem_new_stock_pre_surplus = model.get_param_test('new_stock_remaining_pre_surplus',
-                                                          node_branch, year=year, tech=tech)[purchase_year]
+            t_rem_new_stock_pre_surplus = model.get_param('new_stock_remaining_pre_surplus',
+                                                          node_branch,
+                                                          year=year,
+                                                          tech=tech,
+                                                          dict_expected=True)[purchase_year]
             amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
 
             # Remove from existing stock
@@ -639,8 +648,8 @@ def _find_exogenous_market_shares(model, node, year):
     node_year_data = model.graph.nodes[node][year]
     exo_market_shares = {}
     for tech in node_year_data['technologies']:
-        market_share, ms_source = model.get_param_test('Market share', node, year=year, tech=tech,
-                                                       return_source=True)
+        market_share, ms_source = model.get_param('Market share', node, year=year, tech=tech,
+                                                  return_source=True)
         if ms_source == 'model':  # model --> exogenous
             exo_market_shares[tech] = market_share
     return exo_market_shares
@@ -679,8 +688,10 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param_test('Service requested', node,
-                                              year=base_year, tech=child)[child]['branch']
+            child_node = model.get_param('Service requested', node,
+                                         year=base_year,
+                                         tech=child,
+                                         dict_expected=True)[child]['branch']
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
@@ -716,13 +727,13 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
     weights = {}
 
     for node_branch, tech in competing_techs:
-        year_avail = model.get_param_test('Available', node_branch, year=str(model.base_year),
-                                          tech=tech)
-        year_unavail = model.get_param_test('Unavailable', node_branch, year=str(model.base_year),
-                                            tech=tech)
+        year_avail = model.get_param('Available', node_branch, year=str(model.base_year),
+                                     tech=tech)
+        year_unavail = model.get_param('Unavailable', node_branch, year=str(model.base_year),
+                                       tech=tech)
         if year_avail <= int(year) < year_unavail:
-            tech_lcc = model.get_param_test('Complete Life Cycle Cost', node_branch, year=year,
-                                            tech=tech)
+            tech_lcc = model.get_param('Complete Life Cycle Cost', node_branch, year=year,
+                                       tech=tech)
             weight = _calculate_lcc_weight(tech_lcc, heterogeneity)
             weights[(node_branch, tech)] = weight
             total_weight += weight
@@ -755,7 +766,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
         techs @ services for Node Tech Compete), new market shares are agregated to the tech/service
         specified at `node` before being returned as a dictionary.
     """
-    heterogeneity = model.get_param_test('Heterogeneity', node, year=year)
+    heterogeneity = model.get_param('Heterogeneity', node, year=year)
 
     # Find each of the technologies which will be competed for
     competing_techs = _find_competing_techs(model, node, comp_type)
@@ -775,8 +786,10 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param_test('Service requested', node, year=year,
-                                                  tech=tech_child)[tech_child]['branch']
+                child_node = model.get_param('Service requested', node,
+                                             year=year,
+                                             tech=tech_child,
+                                             dict_expected=True)[tech_child]['branch']
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 
@@ -874,8 +887,8 @@ def _get_min_max_limits(model, node, year):
     techs = model.graph.nodes[node][year]['technologies']
     min_max_limits = {}
     for tech in techs:
-        min_nms = model.get_param_test('Market share new_Min', node, year=year, tech=tech)
-        max_nms = model.get_param_test('Market share new_Max', node, year=year, tech=tech)
+        min_nms = model.get_param('Market share new_Min', node, year=year, tech=tech)
+        max_nms = model.get_param('Market share new_Max', node, year=year, tech=tech)
         min_max_limits[tech] = (min_nms, max_nms)
     return min_max_limits
 
@@ -1057,8 +1070,8 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
     for tech in new_market_shares:
         is_exogenous = utils.is_param_exogenous(model, 'Market share', node, year, tech)
 
-        first_year_available = model.get_param_test('Available', node, year=year, tech=tech)
-        first_year_unavailable = model.get_param_test('Unavailable', node, year=year, tech=tech)
+        first_year_available = model.get_param('Available', node, year=year, tech=tech)
+        first_year_unavailable = model.get_param('Unavailable', node, year=year, tech=tech)
         is_available = first_year_available <= int(year) < first_year_unavailable
 
         if (not is_exogenous) and is_available:
