@@ -442,16 +442,23 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
                         # interpolate all tax values
                         tax_vals = []
                         for n in range(int(year), int(year) + N, model.step):
-                            cur_tax = model.get_param_test('Tax', node, year=str(n),
-                                                           context=ghg, sub_context=emission_type)
-                            next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
-                                                            context=ghg, sub_context=emission_type)
+                            if n in model.years:  # go back one step if current year isn't in range
+                                cur_tax = model.get_param_test('Tax', node, year=str(n),
+                                                               context=ghg, sub_context=emission_type)
+                            else:
+                                cur_tax = model.get_param_test('Tax', node, year=str(n - model.step),
+                                                               context=ghg, sub_context=emission_type)
+                            if n in model.years:  # when future years are out of range
+                                next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
+                                                                context=ghg, sub_context=emission_type)
+                            else:
+                                next_tax = cur_tax
                             tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
 
                         # calculate discounted tax using formula
                         Expected_EC = sum(
-                            [tax/(1 + r_k) ** (n - int(year) + 1)
-                             for tax, n in zip(tax_vals, range(int(year), int(year)+N))]
+                            [tax / (1 + r_k) ** (n - int(year) + 1)
+                             for tax, n in zip(tax_vals, range(int(year), int(year) + N))]
                         )
                         Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
 
@@ -461,10 +468,17 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
                         # interpolate tax values
                         tax_vals = []
                         for n in range(int(year), int(year) + N, model.step):
-                            cur_tax = model.get_param_test('Tax', node, year=str(n),
-                                                           context=ghg, sub_context=emission_type)
-                            next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
-                                                            context=ghg, sub_context=emission_type)
+                            if n in model.years:  # go back one step if current year isn't in range
+                                cur_tax = model.get_param_test('Tax', node, year=str(n),
+                                                               context=ghg, sub_context=emission_type)
+                            else:
+                                cur_tax = model.get_param_test('Tax', node, year=str(n - model.step),
+                                                               context=ghg, sub_context=emission_type)
+                            if n + model.step in model.years:  # when future years are out of range
+                                next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
+                                                                context=ghg, sub_context=emission_type)
+                            else:
+                                next_tax = cur_tax
                             tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
                         Expected_EC = sum(tax_vals) / N  # take average of all taxes
                     else:
