@@ -120,7 +120,8 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class']['context']
+                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class'][
+                        'context']
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -236,8 +237,8 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year)
-                              for fuel in self.equilibrium_fuels}
+                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year, context=fuel.split('.')[-1])
+                              for fuel in self.equilibrium_fuels}  # context is str of fuel
 
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
@@ -354,7 +355,7 @@ class Model:
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year, return_keys=True)
+                price_multipliers = self.get_param('Price Multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -414,7 +415,7 @@ class Model:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
                         last_year_value = self.get_param('Life Cycle Cost',
-                                                         node, last_year)[fuel_name]['year_value']
+                                                         node, year=last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -429,7 +430,7 @@ class Model:
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
+                        last_year_value = self.get_param('Life Cycle Cost', node, year=last_year)
                         graph.nodes[node][year]["Life Cycle Cost"] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
@@ -557,28 +558,28 @@ class Model:
 
             # Retrieve tax from the parents (if they exist)
             parents = list(graph.predecessors(node))
-            parent_tax = {}
+            parent_dict = {}
             if len(parents) > 0:
                 parent = parents[0]
                 if 'Tax' in graph.nodes[parent][year]:
-                    parent_dict = self.get_param('Tax', parent, year)
-                    parent_tax.update(parent_dict)
+                    parent_dict = graph.nodes[parent][year]['Tax']
 
             # Store away tax at current node to overwrite parent tax later
-            node_tax = {}
+            node_dict = {}
             if 'Tax' in graph.nodes[node][year]:
-                node_tax = graph.nodes[node][year]['Tax']
+                node_dict = graph.nodes[node][year]['Tax']
 
-            # Make final dict where we prioritize keeping node_tax and only unique parent taxes
-            final_tax = copy.deepcopy(node_tax)
-            for ghg in parent_tax:
+            # Make final dict where we prioritize keeping node_dict and only unique parent taxes
+            final_tax = copy.deepcopy(node_dict)
+            for ghg in parent_dict:
                 if ghg not in final_tax:
                     final_tax[ghg] = {}
-                for emission_type in parent_tax[ghg]:
+                for emission_type in parent_dict[ghg]:
                     if emission_type not in final_tax[ghg]:
-                        final_tax[ghg][emission_type] = parent_tax[ghg][emission_type]
+                        final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
-            graph.nodes[node][year]['Tax'] = final_tax
+            if final_tax:
+                graph.nodes[node][year]['Tax'] = final_tax
 
         graph_utils.top_down_traversal(graph,
                                        init_node_price_multipliers,
@@ -642,10 +643,12 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False, return_keys=False):
+    def get_param(self, param, node, year=None, context=None, sub_context=None, tech=None,
+                  return_source=False, do_calc=False, check_exist=False, dict_expected=False):
+
         """
-        Gets a parameter's value from the model, given a specific context (node, year, technology,
-        and sub-parameter).
+        Gets a parameter's value from the model, given a specific context (node, year, context, sub-context, and tech),
+        calculating the parameter's value if needed.
 
         This will not re-calculate the parameter's value, but will only retrieve
         values which are already stored in the model or obtained via inheritance, default values,
@@ -666,16 +669,22 @@ class Model:
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
         return_source : bool, default=False
             Whether or not to return the method by which this value was originally obtained.
+        do_calc : bool, default=False
+            If False, the function will only retrieve the value using the current value in the model,
+            inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+            value. If True, calculation is allowed.
         check_exist : bool, default=False
-            Whether or not to check that the parameter exists as is given the context (without calculation, 
+            Whether or not to check that the parameter exists as is given the context (without calculation,
             inheritance, or checking past years)
+        dict_expected : bool, default=False
+            Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+            (float, str, etc.). If the user knows it expects a dict, then this flag is used.
 
         Returns
         -------
@@ -687,81 +696,15 @@ class Model:
             was originally obtained. Can be one of {model, initialization, inheritance, calculation,
             default, or previous_year}.
 
-        See Also
-        --------
-        Model.get_or_calc_param :  Gets a parameter's value from the model, given a specific context
-        (node, year, technology, and sub-parameter), calculating the parameter's value if needed.
-        """
-        if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
-
-        else:
-            param_val = utils.get_node_param(param, self, node, year, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist, return_keys=return_keys)
-
-        return param_val
-
-    def get_or_calc_param(self, param, node, year=None, tech=None, sub_param=None,
-                          return_source=False):
-        """
-        Gets a parameter's value from the model, given a specific context (node, year, technology,
-        and sub-parameter), calculating the parameter's value if needed.
-
-        If return_source is True,
-        this function will also, return how this value was originally obtained (e.g. via
-        calculation)
-
-        Parameters
-        ----------
-        param : str
-            The name of the parameter whose value is being retrieved.
-        node : str
-            The name of the node (branch format) whose parameter you are interested in retrieving.
-        year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
-        tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
-        return_source : bool, default=False
-            Whether or not to return the method by which this value was originally obtained.
-
-        Returns
-        -------
-        any :
-            The value of the specified `param` at `node`, given the context provided by `year` and
-            `tech` and potentially using a calculator function if the parameter's value was not
-             exogenously defined.
-        str :
-            If return_source is `True`, will return a string indicating how the parameter's value
-            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
-            default, or previous_year}.
-
-        See Also
-        --------
-        Model.get_param : Gets a parameter's value from the model, given a specific context (node,
-        year, technology, and sub-parameter).
         """
 
-        if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source,
-                                             retrieve_only=False)
-
-        else:
-            param_val = utils.get_node_param(param, self, node, year,
-                                             return_source=return_source,
-                                             retrieve_only=False)
+        param_val = utils.get_param(self, param, node, year=year, context=context,
+                                    sub_context=sub_context,
+                                    tech=tech,
+                                    return_source=return_source,
+                                    do_calc=do_calc,
+                                    check_exist=check_exist,
+                                    dict_expected=dict_expected)
 
         return param_val
 
@@ -885,12 +828,12 @@ class Model:
                 tech_total_emissions_cost = 0
 
                 # Get emissions originating at the technology
-                tech_market_share = self.get_param('total_market_share', node, year, tech)
+                tech_market_share = self.get_param('total_market_share', node, year, tech=tech)
                 tech_units = tech_market_share * total_units
-                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech)
-                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech)
-                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech)
-                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech)
+                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
+                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
+                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
+                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech=tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -1216,7 +1159,7 @@ class Model:
             val = [val]
         for i in range(len(year)):
             try:
-                self.get_param(param, node, year[i], tech, sub_param, check_exist=True)
+                self.get_param(param, node, year=year[i], context=sub_param, tech=tech, check_exist=True)
             except:
                 print(f"Unable to access parameter at "
                       f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
@@ -1480,7 +1423,7 @@ class Model:
 
         def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
             try:
-                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, sub_param=sub_param,
+                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, context=sub_param,
                                           check_exist=True)
                 if val_operator == '>=':
                     val = max(val, prev_val)
