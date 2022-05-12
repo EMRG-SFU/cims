@@ -180,14 +180,14 @@ class Model:
             foresight_context = self.get_param_test('Foresight method', 'pyCIMS', year=year, dict_expected=True)
             if foresight_context is not None:
                 for ghg, sectors in foresight_context.items():
-                for node in sec_list:
-                    sector = node.split('.')[-1]
-                    if sector in sectors:
-                        # Initialize foresight method
-                        if 'Foresight method' not in self.graph.nodes[node][year]:
-                            self.graph.nodes[node][year]['Foresight method'] = {}
+                    for node in sec_list:
+                        sector = node.split('.')[-1]
+                        if sector in sectors:
+                            # Initialize foresight method
+                            if 'Foresight method' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['Foresight method'] = {}
 
-                        self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
+                            self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
 
             graph_utils.top_down_traversal(self.graph,
                                            self.init_foresight,
