@@ -139,7 +139,7 @@ calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
 inheritable_params = []
 
 
-def get_node_param(model, param, node, year=None, context=None, sub_context=None, tech=None,
+def get_param(model, param, node, year=None, context=None, sub_context=None, tech=None,
                    return_source=False, do_calc=False, check_exist=False, dict_expected=False):
     """
     Queries the model to retrieve a parameter value at a given node, given a specified context
@@ -251,7 +251,7 @@ def get_node_param(model, param, node, year=None, context=None, sub_context=None
         structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True) if 'structure' in d['type']]
         g_structure_edges = model.graph.edge_subgraph(structured_edges)
         parent = g_structure_edges.predecessors(node)[0]
-        val = get_node_param(model, param, parent, year=year)
+        val = get_param(model, param, parent, year=year)
         param_source = 'inheritance'
 
     # Use a Default Parameter Value

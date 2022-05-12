@@ -698,12 +698,13 @@ class Model:
 
         """
 
-        param_val = utils.get_node_param(self, param, node, year=year, context=context, sub_context=sub_context,
-                                         tech=tech,
-                                         return_source=return_source,
-                                         do_calc=do_calc,
-                                         check_exist=check_exist,
-                                         dict_expected=dict_expected)
+        param_val = utils.get_param(self, param, node, year=year, context=context,
+                                    sub_context=sub_context,
+                                    tech=tech,
+                                    return_source=return_source,
+                                    do_calc=do_calc,
+                                    check_exist=check_exist,
+                                    dict_expected=dict_expected)
 
         return param_val
 
