@@ -448,7 +448,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
                             else:
                                 cur_tax = model.get_param_test('Tax', node, year=str(n - model.step),
                                                                context=ghg, sub_context=emission_type)
-                            if n in model.years:  # when future years are out of range
+                            if n + model.step in model.years:  # when future years are out of range
                                 next_tax = model.get_param_test('Tax', node, year=str(n + model.step),
                                                                 context=ghg, sub_context=emission_type)
                             else:
