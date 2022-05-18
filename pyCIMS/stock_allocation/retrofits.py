@@ -27,9 +27,12 @@ def _retrofit_lcc(model, node, year, existing_tech):
     float :
         The LCC to use for the current technology during a retrofit competition.
     """
-    complete_annual_cost = model.get_or_calc_param('Complete Annual cost', node, year, existing_tech)
-    annual_service_cost = model.get_or_calc_param('Service cost', node, year, existing_tech)
-    emissions_cost = model.get_or_calc_param('Emissions cost', node, year, existing_tech)
+    complete_annual_cost = model.get_param('Complete Annual cost', node, year,
+                                           tech=existing_tech, do_calc=True)
+    annual_service_cost = model.get_param('Service cost', node, year,
+                                          tech=existing_tech, do_calc=True)
+    emissions_cost = model.get_param('Emissions cost', node, year,
+                                     tech=existing_tech, do_calc=True)
     retrofit_complete_lcc = complete_annual_cost + annual_service_cost + emissions_cost
     return retrofit_complete_lcc
 
@@ -64,9 +67,9 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
                 # There are no technologies competing to retrofit, limits don't apply
                 limits[(node, tech)] = (0, 1)
             else:
-                min_retrofit = model.get_param('Retrofit_Min', node, year, tech)
+                min_retrofit = model.get_param('Retrofit_Min', node, year, tech=tech)
                 existing_tech_max_ms = 1 - min_retrofit
-                max_retrofit = model.get_param('Retrofit_Max', node, year, tech)
+                max_retrofit = model.get_param('Retrofit_Max', node, year, tech=tech)
                 existing_tech_min_ms = 1 - max_retrofit
                 limits[(node, tech)] = (existing_tech_min_ms, existing_tech_max_ms)
         else:
@@ -135,8 +138,8 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
         if (node, tech) == existing_tech:
             pass
         else:
-            ms_retrofit_min = model.get_param('Market share retro_Min', node, year, tech)
-            ms_retrofit_max = model.get_param('Market share retro_Max', node, year, tech)
+            ms_retrofit_min = model.get_param('Market share retro_Min', node, year, tech=tech)
+            ms_retrofit_max = model.get_param('Market share retro_Max', node, year, tech=tech)
             adopting_tech_ms_limits[(node, tech)] = (ms_retrofit_min, ms_retrofit_max)
             adopting_tech_market_shares[(node, tech)] = market_share / ms_of_all_adopting_techs
 
@@ -193,14 +196,14 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
         return
 
     # Base stock
-    base_stock_remaining = model.get_param('base_stock_remaining', node, year, tech)
+    base_stock_remaining = model.get_param('base_stock_remaining', node, year, tech=tech)
     base_stock_retrofitted = min(base_stock_remaining, retrofit_amount)
     retrofit_amount -= base_stock_retrofitted
     model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= base_stock_retrofitted
 
     # New Stock
     if retrofit_amount > 0:
-        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech)
+        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech)
         for prev_year in new_stock_remaining:
             y_ns_remaining = new_stock_remaining[prev_year]
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)
@@ -246,8 +249,7 @@ def calc_retrofits(model, node, year, existing_stock):
         # Find Other Competing
         other_competing_techs = _find_competing_techs(model, node, comp_type)
         other_competing_techs.remove(existing_node_tech)
-        total_weight, competing_weights = _find_competing_weights(model,
-                                                                  year,
+        total_weight, competing_weights = _find_competing_weights(model, year,
                                                                   other_competing_techs,
                                                                   heterogeneity)
 

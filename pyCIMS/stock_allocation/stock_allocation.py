@@ -41,6 +41,7 @@ def all_tech_compete_allocation(model, node, year):
         new stock competitions.
     """
     comp_type = model.get_param('competition type', node)
+
     if comp_type == 'market':
         comp_type = 'tech compete'
 
@@ -172,7 +173,11 @@ def _get_existing_stock(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node, year, child)[child]['branch']
+            child_node = model.get_param('Service requested', node,
+                                         year=year,
+                                         tech=child,
+                                         dict_expected=True)[child]['branch']
+
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
                 t_existing = _do_natural_retirement(model, child_node, year, tech, comp_type)
@@ -232,8 +237,8 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
         The amount of base stock adopted in initial_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('Lifetime', node, initial_year, tech)
-    base_stock = model.get_param('base_stock', node, initial_year, tech)
+    lifetime = model.get_param('Lifetime', node, initial_year, tech=tech)
+    base_stock = model.get_param('base_stock', node, initial_year, tech=tech)
 
     # Calculate amount of remaining base stock after natural retirements
     remaining_rate = 1 - (int(current_year) - int(initial_year)) / lifetime
@@ -242,10 +247,11 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
     # Retrieve amount of base stock in the previous year, after surplus retirement
     prev_year = str(int(current_year) - model.step)
     if int(prev_year) == int(initial_year):
-        prev_year_unretired_base_stock = model.get_param('base_stock', node, prev_year, tech)
+        prev_year_unretired_base_stock = model.get_param('base_stock', node,
+                                                         year=prev_year, tech=tech)
     else:
         prev_year_unretired_base_stock = model.get_param('base_stock_remaining', node,
-                                                         prev_year, tech)
+                                                         year=prev_year, tech=tech)
 
     base_stock_remaining = max(min(naturally_unretired_base_stock,
                                    prev_year_unretired_base_stock), 0)
@@ -281,9 +287,9 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
         The amount of new stock adopted in purchased_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('Lifetime', node, purchased_year, tech)
-    purchased_stock = model.get_param('new_stock', node, purchased_year, tech)
-    purchased_stock += model.get_param('retrofit_stock', node, purchased_year, tech)
+    lifetime = model.get_param('Lifetime', node, purchased_year, tech=tech)
+    purchased_stock = model.get_param('new_stock', node,purchased_year, tech=tech)
+    purchased_stock += model.get_param('retrofit_stock', node, purchased_year, tech=tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
@@ -295,7 +301,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
 
     if int(prev_year) > int(purchased_year):
         prev_y_unretired_new_stock = model.get_param('new_stock_remaining', node,
-                                                     prev_year, tech)[purchased_year]
+                                                     year=prev_year, tech=tech, dict_expected=True)[purchased_year]
 
         if prev_y_fictional_purchased_stock_remain > 0:
             adj_multiplier = prev_y_unretired_new_stock / \
@@ -455,12 +461,12 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
     total_base_stock = 0
     amount_surplus_to_retire = 0
     for node_branch, tech in existing_stock:
-        tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech)
+        tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech=tech)
         total_base_stock += tech_base_stock
     if total_base_stock != 0:
         retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_base_stock)
         for node_branch, tech in existing_stock:
-            tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech)
+            tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech=tech)
             amount_tech_to_retire = tech_base_stock * retirement_proportion
 
             # Remove from existing stock
@@ -515,7 +521,10 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
             for node_branch, tech in existing_stock:
                 tech_rem_new_stock_pre_surplus = \
                     model.get_param('new_stock_remaining_pre_surplus',
-                                    node_branch, year, tech)[purchase_year]
+                                    node_branch,
+                                    year=year,
+                                    tech=tech,
+                                    dict_expected=True)[purchase_year]
                 total_new_stock_pre_surplus += tech_rem_new_stock_pre_surplus
 
         retirement_proportion = _calc_surplus_retirement_proportion(surplus,
@@ -523,7 +532,10 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
 
         for node_branch, tech in existing_stock:
             t_rem_new_stock_pre_surplus = model.get_param('new_stock_remaining_pre_surplus',
-                                                          node_branch, year, tech, )[purchase_year]
+                                                          node_branch,
+                                                          year=year,
+                                                          tech=tech,
+                                                          dict_expected=True)[purchase_year]
             amount_tech_to_retire = t_rem_new_stock_pre_surplus * retirement_proportion
 
             # Remove from existing stock
@@ -643,7 +655,7 @@ def _find_exogenous_market_shares(model, node, year):
     node_year_data = model.graph.nodes[node][year]
     exo_market_shares = {}
     for tech in node_year_data['technologies']:
-        market_share, ms_source = model.get_param('Market share', node, year, tech,
+        market_share, ms_source = model.get_param('Market share', node, year, tech=tech,
                                                   return_source=True)
         if ms_source == 'model':  # model --> exogenous
             exo_market_shares[tech] = market_share
@@ -695,8 +707,10 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node, year,
-                                             tech_child)[tech_child]['branch']
+                child_node = model.get_param('Service requested', node,
+                                             year=year,
+                                             tech=tech_child,
+                                             dict_expected=True)[tech_child]['branch']
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 

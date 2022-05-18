@@ -31,8 +31,7 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node,
-                                         base_year, child)[child]['branch']
+            child_node = model.graph.nodes[node][base_year]['technologies'][child]['Service requested'][child]['branch']
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
@@ -68,10 +67,10 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
     weights = {}
 
     for node_branch, tech in competing_techs:
-        year_avail = model.get_param('Available', node_branch, str(model.base_year), tech)
-        year_unavail = model.get_param('Unavailable', node_branch, str(model.base_year), tech)
+        year_avail = model.get_param('Available', node_branch, str(model.base_year), tech=tech)
+        year_unavail = model.get_param('Unavailable', node_branch, str(model.base_year), tech=tech)
         if year_avail <= int(year) < year_unavail:
-            tech_lcc = model.get_param('Complete Life Cycle Cost', node_branch, year, tech)
+            tech_lcc = model.get_param('Complete Life Cycle Cost', node_branch, year, tech=tech)
             weight = _calculate_lcc_weight(tech_lcc, heterogeneity)
             weights[(node_branch, tech)] = weight
             total_weight += weight

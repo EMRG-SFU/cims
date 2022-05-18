@@ -27,8 +27,8 @@ def _get_min_max_limits(model, node, year):
     techs = model.graph.nodes[node][year]['technologies']
     min_max_limits = {}
     for tech in techs:
-        min_nms = model.get_param('Market share new_Min', node, year, tech)
-        max_nms = model.get_param('Market share new_Max', node, year, tech)
+        min_nms = model.get_param('Market share new_Min', node, year=year, tech=tech)
+        max_nms = model.get_param('Market share new_Max', node, year=year, tech=tech)
         min_max_limits[tech] = (min_nms, max_nms)
     return min_max_limits
 
@@ -211,10 +211,10 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
     """
     eligible_market_shares = {}
     for tech in new_market_shares:
-        is_exogenous = utils.is_param_exogenous(model, 'Market share', node, year, tech)
+        is_exogenous = utils.is_param_exogenous(model, 'Market share', node, year=year, tech=tech)
 
-        first_year_available = model.get_param('Available', node, year, tech)
-        first_year_unavailable = model.get_param('Unavailable', node, year, tech)
+        first_year_available = model.get_param('Available', node, year=year, tech=tech)
+        first_year_unavailable = model.get_param('Unavailable', node, year=year, tech=tech)
         is_available = first_year_available <= int(year) < first_year_unavailable
 
         if (not is_exogenous) and is_available:
