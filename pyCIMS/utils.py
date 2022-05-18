@@ -346,6 +346,7 @@ def set_node_param(new_value, param, model, node, year, sub_param=None, save=Tru
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
     # been defined), use it.
+    print('node test')
     if year:
         data = model.graph.nodes[node][year]
     else:

@@ -73,6 +73,7 @@ class Model:
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
         self._inherit_parameter_values()
+        self._initialize_model()
 
         self.show_run_warnings = True
 
@@ -101,6 +102,33 @@ class Model:
         self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
+
+    def _initialize_model(self):
+        for year in self.years:
+            # Pass tax to all children for carbon cost
+            graph_utils.top_down_traversal(self.graph,
+                                           self._init_tax_emissions,
+                                           year)
+
+            # Pass foresight methods to all children nodes
+            sec_list = [node for node, data in self.graph.nodes(data=True)
+                        if 'sector' in data['competition type'].lower()]
+
+            foresight_context = self.get_param('Foresight method', 'pyCIMS', year, dict_expected=True)
+            if foresight_context is not None:
+                for ghg, sectors in foresight_context.items():
+                    for node in sec_list:
+                        sector = node.split('.')[-1]
+                        if sector in sectors:
+                            # Initialize foresight method
+                            if 'Foresight method' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['Foresight method'] = {}
+
+                            self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
+
+            graph_utils.top_down_traversal(self.graph,
+                                           self._init_foresight,
+                                           year)
 
     def _dcc_classes(self):
         """
@@ -166,6 +194,7 @@ class Model:
         # Make a subgraph based on the type of node
         demand_nodes = ['demand', 'standard']
         supply_nodes = ['supply', 'standard']
+
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -304,6 +333,61 @@ class Model:
         # Otherwise, an equilibrium has been reached
         return True
 
+    def _init_tax_emissions(self, graph, node, year):
+        """
+        Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
+        function assumes all of node's parents have already had their tax emissions initialized.
+
+        Parameters
+        ----------
+        self :
+            A graph object containing the node of interest.
+        node : str
+            Name of the node to be initialized.
+
+        year: str
+            The string representing the current simulation year (e.g. "2005").
+
+        Returns
+        -------
+        Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
+        """
+
+        # Retrieve tax from the parents (if they exist)
+        parents = list(graph.predecessors(node))
+        parent_dict = {}
+        if len(parents) > 0:
+            parent = parents[0]
+            if 'Tax' in graph.nodes[parent][year]:
+                parent_dict = graph.nodes[parent][year]['Tax']
+
+        # Store away tax at current node to overwrite parent tax later
+        node_dict = {}
+        if 'Tax' in graph.nodes[node][year]:
+            node_dict = graph.nodes[node][year]['Tax']
+
+        # Make final dict where we prioritize keeping node_dict and only unique parent taxes
+        final_tax = copy.deepcopy(node_dict)
+        for ghg in parent_dict:
+            if ghg not in final_tax:
+                final_tax[ghg] = {}
+            for emission_type in parent_dict[ghg]:
+                if emission_type not in final_tax[ghg]:
+                    final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
+
+        if final_tax:
+            graph.nodes[node][year]['Tax'] = final_tax
+
+    def _init_foresight(self, graph, node, year):
+        parents = list(graph.predecessors(node))
+        parent_dict = {}
+        if len(parents) > 0:
+            parent = parents[0]
+            if 'Foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['Foresight method']
+        if parent_dict:
+            graph.nodes[node][year]['Foresight method'] = parent_dict
+
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
@@ -415,7 +499,7 @@ class Model:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
                         last_year_value = self.get_param('Life Cycle Cost',
-                                                         node, year=last_year)[fuel_name]['year_value']
+                                                         node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -430,7 +514,7 @@ class Model:
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('Life Cycle Cost', node, year=last_year)
+                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
                         graph.nodes[node][year]["Life Cycle Cost"] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
@@ -581,15 +665,13 @@ class Model:
             if final_tax:
                 graph.nodes[node][year]['Tax'] = final_tax
 
+
         graph_utils.top_down_traversal(graph,
                                        init_convert_to_CO2e,
                                        year,
                                        self.gwp)
         graph_utils.top_down_traversal(graph,
                                        init_load_factor,
-                                       year)
-        graph_utils.top_down_traversal(graph,
-                                       init_tax_emissions,
                                        year)
         graph_utils.bottom_up_traversal(graph,
                                         init_fuel_lcc,
@@ -650,7 +732,6 @@ class Model:
 
     def get_param(self, param, node, year=None, context=None, sub_context=None, tech=None,
                   return_source=False, do_calc=False, check_exist=False, dict_expected=False):
-
         """
         Gets a parameter's value from the model, given a specific context (node, year, context, sub-context, and tech),
         calculating the parameter's value if needed.
@@ -700,10 +781,9 @@ class Model:
             If return_source is `True`, will return a string indicating how the parameter's value
             was originally obtained. Can be one of {model, initialization, inheritance, calculation,
             default, or previous_year}.
-
         """
 
-        param_val = utils.get_param(self, param, node, year=year, context=context,
+        param_val = utils.get_param(self, param, node, year, context=context,
                                     sub_context=sub_context,
                                     tech=tech,
                                     return_source=return_source,
@@ -753,7 +833,7 @@ class Model:
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param("requested_quantities",
-                                                       child, year).get_total_quantities_requested()
+                                                            child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
@@ -1164,7 +1244,7 @@ class Model:
             val = [val]
         for i in range(len(year)):
             try:
-                self.get_param(param, node, year=year[i], context=sub_param, tech=tech, check_exist=True)
+                self.get_param(param, node, year[i], context=sub_param, tech=tech, check_exist=True)
             except:
                 print(f"Unable to access parameter at "
                       f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
@@ -1428,7 +1508,7 @@ class Model:
 
         def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
             try:
-                prev_val = self.get_param(param=param, node=node, year=year, tech=tech, context=sub_param,
+                prev_val = self.get_param(param, node, year, tech=tech, context=sub_param,
                                           check_exist=True)
                 if val_operator == '>=':
                     val = max(val, prev_val)
@@ -1459,7 +1539,7 @@ class Model:
                 if sub_param == '.*':
                     try:
                         # search through all sub_parameters in node given tech
-                        sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech_tmp).keys())
+                        sub_params = list(self.get_param(param, node, year, tech=tech_tmp).keys())
                     except:
                         continue
                     for sub_param_tmp in sub_params:
@@ -1479,7 +1559,7 @@ class Model:
             if sub_param == '.*':
                 try:
                     # search through all sub_parameters in node given tech
-                    sub_params = list(self.get_param(param=param, node=node, year=year, tech=tech).keys())
+                    sub_params = list(self.get_param(param, node, year, tech=tech).keys())
                 except:
                     return
                 for sub_param_tmp in sub_params:
