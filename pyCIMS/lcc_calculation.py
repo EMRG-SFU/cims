@@ -241,7 +241,7 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     upfront_cost = model.get_param('Financial Upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('Financial Annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('Service cost', node, year, tech=tech, do_calc=True)
-    emissions_cost = model.get_param('Emissions cost', node, year, tech=tech, do_calc=True)
+    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
     lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
     return lcc
 
@@ -268,16 +268,16 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
     complete_upfront_cost = model.get_param('Complete Upfront cost', node, year, tech=tech, do_calc=True)
     complete_annual_cost = model.get_param('Complete Annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('Service cost', node, year, tech=tech, do_calc=True)
-    emissions_cost = model.get_param('Emissions cost', node, year, tech=tech, do_calc=True)
+    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=True)
 
     complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
                    emissions_cost
 
-    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + emissions_cost
     return complete_lcc
 
 
-def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
+                        allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
 
@@ -294,7 +294,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
     node : The node to calculate emissions cost for.
     year : The year to calculate emissions cost for.
     tech : The technology to calculate emissions cost for.
-
+    allow_foresight : Whether or not to allow non-myopic carbon cost foresight methods.
     Returns
     -------
     float : the total emission cost. Has the side effect of updating the Emissions Cost,
@@ -429,7 +429,8 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) 
                 # Replace current tax with foresight method
                 if method_dict and ghg in method_dict:
                     method = method_dict[ghg]['year_value']
-                    if method == 'Myopic' or method is None or emission_type not in tax_check:
+                    if (method == 'Myopic') or (method is None) or \
+                            (emission_type not in tax_check) or (not allow_foresight):
                         Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
                     elif method == 'Discounted':
