@@ -73,6 +73,7 @@ class Model:
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
         self._inherit_parameter_values()
+        self._initialize_model()
 
         self.show_run_warnings = True
 
@@ -101,6 +102,33 @@ class Model:
         self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
         self.graph = graph
+
+    def _initialize_model(self):
+        for year in self.years:
+            # Pass tax to all children for carbon cost
+            graph_utils.top_down_traversal(self.graph,
+                                           self._init_tax_emissions,
+                                           year)
+
+            # Pass foresight methods to all children nodes
+            sec_list = [node for node, data in self.graph.nodes(data=True)
+                        if 'sector' in data['competition type'].lower()]
+
+            foresight_context = self.get_param('Foresight method', 'pyCIMS', year, dict_expected=True)
+            if foresight_context is not None:
+                for ghg, sectors in foresight_context.items():
+                    for node in sec_list:
+                        sector = node.split('.')[-1]
+                        if sector in sectors:
+                            # Initialize foresight method
+                            if 'Foresight method' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['Foresight method'] = {}
+
+                            self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
+
+            graph_utils.top_down_traversal(self.graph,
+                                           self._init_foresight,
+                                           year)
 
     def _dcc_classes(self):
         """
@@ -167,31 +195,6 @@ class Model:
         demand_nodes = ['demand', 'standard']
         supply_nodes = ['supply', 'standard']
 
-        for year in self.years:
-            # Pass tax to all children for carbon cost
-            graph_utils.top_down_traversal(self.graph,
-                                           self.init_tax_emissions,
-                                           year)
-
-            # Pass foresight methods to all children nodes
-            sec_list = [node for node, data in self.graph.nodes(data=True)
-                        if 'sector' in data['competition type'].lower()]
-
-            foresight_context = self.get_param('Foresight method', 'pyCIMS', year, dict_expected=True)
-            if foresight_context is not None:
-                for ghg, sectors in foresight_context.items():
-                    for node in sec_list:
-                        sector = node.split('.')[-1]
-                        if sector in sectors:
-                            # Initialize foresight method
-                            if 'Foresight method' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['Foresight method'] = {}
-
-                            self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
-
-            graph_utils.top_down_traversal(self.graph,
-                                           self.init_foresight,
-                                           year)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -330,7 +333,7 @@ class Model:
         # Otherwise, an equilibrium has been reached
         return True
 
-    def init_tax_emissions(self, graph, node, year):
+    def _init_tax_emissions(self, graph, node, year):
         """
         Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
         function assumes all of node's parents have already had their tax emissions initialized.
@@ -375,15 +378,13 @@ class Model:
         if final_tax:
             graph.nodes[node][year]['Tax'] = final_tax
 
-    def init_foresight(self, graph, node, year):
-
+    def _init_foresight(self, graph, node, year):
         parents = list(graph.predecessors(node))
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
             if 'Foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
                 parent_dict = graph.nodes[parent][year]['Foresight method']
-
         if parent_dict:
             graph.nodes[node][year]['Foresight method'] = parent_dict
 
