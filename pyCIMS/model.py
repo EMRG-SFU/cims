@@ -1,5 +1,4 @@
 import copy
-import math
 import warnings
 import networkx as nx
 import pandas as pd
@@ -15,7 +14,7 @@ from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
 from .emissions import Emissions, EmissionRates
-from .utils import create_value_dict
+from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record
 
 
@@ -73,6 +72,7 @@ class Model:
 
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
+        self._inherit_parameter_values()
 
         self.show_run_warnings = True
 
@@ -177,7 +177,7 @@ class Model:
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresight_context = self.get_param_test('Foresight method', 'pyCIMS', year=year, dict_expected=True)
+            foresight_context = self.get_param('Foresight method', 'pyCIMS', year, dict_expected=True)
             if foresight_context is not None:
                 for ghg, sectors in foresight_context.items():
                     for node in sec_list:
@@ -263,7 +263,7 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param_test('Life Cycle Cost', fuel, year, context=fuel.split('.')[-1])
+                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year, context=fuel.split('.')[-1])
                               for fuel in self.equilibrium_fuels}  # context is str of fuel
 
                 equilibrium = min_iterations <= iteration and \
@@ -438,7 +438,7 @@ class Model:
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param_test('Price Multiplier', node, year, dict_expected=True)
+                price_multipliers = self.get_param('Price Multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -497,8 +497,8 @@ class Model:
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param_test('Life Cycle Cost',
-                                                              node, year=last_year)[fuel_name]['year_value']
+                        last_year_value = self.get_param('Life Cycle Cost',
+                                                         node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
@@ -513,7 +513,7 @@ class Model:
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param_test('Life Cycle Cost', node, year=last_year)
+                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
                         graph.nodes[node][year]["Life Cycle Cost"] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
@@ -619,9 +619,52 @@ class Model:
                                                                                      unit=units,
                                                                                      param_source='inheritance')
 
-        graph_utils.top_down_traversal(graph,
-                                       init_node_price_multipliers,
-                                       year)
+        def init_tax_emissions(graph, node, year):
+            """
+            Function for initializing the tax values (to multiply against emissions) for a given node in a graph. This
+            function assumes all of node's parents have already had their tax emissions initialized.
+
+            Parameters
+            ----------
+            graph : NetworkX.DiGraph
+                A graph object containing the node of interest.
+            node : str
+                Name of the node to be initialized.
+
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized tax emission values.
+            """
+
+            # Retrieve tax from the parents (if they exist)
+            parents = list(graph.predecessors(node))
+            parent_dict = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'Tax' in graph.nodes[parent][year]:
+                    parent_dict = graph.nodes[parent][year]['Tax']
+
+            # Store away tax at current node to overwrite parent tax later
+            node_dict = {}
+            if 'Tax' in graph.nodes[node][year]:
+                node_dict = graph.nodes[node][year]['Tax']
+
+            # Make final dict where we prioritize keeping node_dict and only unique parent taxes
+            final_tax = copy.deepcopy(node_dict)
+            for ghg in parent_dict:
+                if ghg not in final_tax:
+                    final_tax[ghg] = {}
+                for emission_type in parent_dict[ghg]:
+                    if emission_type not in final_tax[ghg]:
+                        final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
+
+            if final_tax:
+                graph.nodes[node][year]['Tax'] = final_tax
+
+
         graph_utils.top_down_traversal(graph,
                                        init_convert_to_CO2e,
                                        year,
@@ -638,6 +681,14 @@ class Model:
         for n in self.graph.nodes():
             self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
+
+    def _inherit_parameter_values(self):
+        def inherit_function(graph, node, year):
+            for param in inheritable_params:
+                inherit_parameter(graph, node, year, param)
+
+        for year in self.years:
+            graph_utils.top_down_traversal(self.graph, inherit_function, year)
 
     def stock_allocation_and_retirement(self, sub_graph, node, year):
         """
@@ -661,7 +712,7 @@ class Model:
             Nothing is returned. `self` will be updated to reflect the results of stock retirement
             and new stock competitions.
         """
-        comp_type = self.get_param_test('competition type', node)
+        comp_type = self.get_param('competition type', node)
 
         # Market acts the same as tech compete
         if comp_type == 'market':
@@ -678,72 +729,8 @@ class Model:
     def get_node_parameter_default(self, parameter, competition_type):
         return self.node_defaults[competition_type][parameter]
 
-    def get_param(self, param, node, year=None, tech=None, sub_param=None, return_source=False, check_exist=False,
-                  return_keys=False):
-        """
-        Gets a parameter's value from the model, given a specific context (node, year, technology,
-        and sub-parameter).
-
-        This will not re-calculate the parameter's value, but will only retrieve
-        values which are already stored in the model or obtained via inheritance, default values,
-        or estimation using the previous year's value. If return_source is True, this function will
-        also, return how this value was originally obtained (e.g. via calculation)
-
-        Parameters
-        ----------
-        param : str
-            The name of the parameter whose value is being retrieved.
-        node : str
-            The name of the node (branch format) whose parameter you are interested in retrieving.
-        year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
-        tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
-        return_source : bool, default=False
-            Whether or not to return the method by which this value was originally obtained.
-        check_exist : bool, default=False
-            Whether or not to check that the parameter exists as is given the context (without calculation, 
-            inheritance, or checking past years)
-
-        Returns
-        -------
-        any :
-            The value of the specified `param` at `node`, given the context provided by `year` and
-            `tech`.
-        str :
-            If return_source is `True`, will return a string indicating how the parameter's value
-            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
-            default, or previous_year}.
-
-        See Also
-        --------
-        Model.get_or_calc_param :  Gets a parameter's value from the model, given a specific context
-        (node, year, technology, and sub-parameter), calculating the parameter's value if needed.
-        """
-        if tech:
-            param_val = utils.get_tech_param(param, self, node, year, tech, sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist)
-
-        else:
-            param_val = utils.get_node_param(param, self, node, year, sub_param=sub_param,
-                                             return_source=return_source,
-                                             retrieve_only=True, check_exist=check_exist, return_keys=return_keys)
-
-        return param_val
-
-    def get_param_test(self, param, node, year=None, context=None, sub_context=None, tech=None,
-                       return_source=False, do_calc=False, check_exist=False, dict_expected=False):
-
+    def get_param(self, param, node, year=None, context=None, sub_context=None, tech=None,
+                  return_source=False, do_calc=False, check_exist=False, dict_expected=False):
         """
         Gets a parameter's value from the model, given a specific context (node, year, context, sub-context, and tech),
         calculating the parameter's value if needed.
@@ -793,15 +780,15 @@ class Model:
             If return_source is `True`, will return a string indicating how the parameter's value
             was originally obtained. Can be one of {model, initialization, inheritance, calculation,
             default, or previous_year}.
-
         """
 
-        param_val = utils.get_node_param_test(self, param, node, year=year, context=context, sub_context=sub_context,
-                                              tech=tech,
-                                              return_source=return_source,
-                                              do_calc=do_calc,
-                                              check_exist=check_exist,
-                                              dict_expected=dict_expected)
+        param_val = utils.get_param(self, param, node, year, context=context,
+                                    sub_context=sub_context,
+                                    tech=tech,
+                                    return_source=return_source,
+                                    do_calc=do_calc,
+                                    check_exist=check_exist,
+                                    dict_expected=dict_expected)
 
         return param_val
 
@@ -840,11 +827,11 @@ class Model:
         """
         requested_quantity = RequestedQuantity()
 
-        if self.get_param_test("competition type", node) in ['root', 'region']:
+        if self.get_param("competition type", node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                child_requested_quant = self.get_param_test("requested_quantities",
+                child_requested_quant = self.get_param("requested_quantities",
                                                             child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
@@ -893,23 +880,23 @@ class Model:
 
         # get emissions that originate at the node
         if 'net_emission_rates' in self.graph.nodes[node][year]:
-            net_emission_rates = self.get_param_test('net_emission_rates', node, year)
-            cap_emission_rates = self.get_param_test('captured_emission_rates', node, year)
+            net_emission_rates = self.get_param('net_emission_rates', node, year)
+            cap_emission_rates = self.get_param('captured_emission_rates', node, year)
         else:
             net_emission_rates = EmissionRates()
             cap_emission_rates = EmissionRates()
 
         if 'bio_emission_rates' in self.graph.nodes[node][year]:
-            bio_emission_rates = self.get_param_test('bio_emission_rates', node, year)
+            bio_emission_rates = self.get_param('bio_emission_rates', node, year)
         else:
             bio_emission_rates = EmissionRates()
 
         if 'Emissions cost' in self.graph.nodes[node][year]:
-            emissions_cost = self.get_param_test('Emissions cost', node, year)
+            emissions_cost = self.get_param('Emissions cost', node, year)
         else:
             emissions_cost = 0
 
-        total_units = self.get_param_test('provided_quantities', node, year).get_total_quantity()
+        total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
         net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
         cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
         bio_emissions += Emissions(bio_emission_rates.multiply_rates(total_units))
@@ -925,12 +912,12 @@ class Model:
                 tech_total_emissions_cost = 0
 
                 # Get emissions originating at the technology
-                tech_market_share = self.get_param_test('total_market_share', node, year, tech=tech)
+                tech_market_share = self.get_param('total_market_share', node, year, tech=tech)
                 tech_units = tech_market_share * total_units
-                tech_net_emission_rates = self.get_param_test("net_emission_rates", node, year, tech=tech)
-                tech_cap_emission_rates = self.get_param_test("captured_emission_rates", node, year, tech=tech)
-                tech_bio_emission_rates = self.get_param_test("bio_emission_rates", node, year, tech=tech)
-                tech_emissions_cost = self.get_param_test("Emissions cost", node, year, tech=tech)
+                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
+                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
+                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
+                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech=tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -950,13 +937,13 @@ class Model:
 
                 for child in req_prov_children:
                     if child not in self.fuels:
-                        child_quantities = self.get_param_test('provided_quantities', child, year)
+                        child_quantities = self.get_param('provided_quantities', child, year)
                         child_total_quantity = child_quantities.get_total_quantity()
                         if child_total_quantity != 0:
-                            child_net_emissions = self.get_param_test("net_emissions", child, year)
-                            child_cap_emissions = self.get_param_test("captured_emissions", child, year)
-                            child_bio_emissions = self.get_param_test("bio_emissions", child, year)
-                            child_total_emissions_cost = self.get_param_test("total_emissions_cost", child, year)
+                            child_net_emissions = self.get_param("net_emissions", child, year)
+                            child_cap_emissions = self.get_param("captured_emissions", child, year)
+                            child_bio_emissions = self.get_param("bio_emissions", child, year)
+                            child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
 
                             quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
                             if quant_provided_to_tech > 0:
@@ -992,29 +979,29 @@ class Model:
                 self.graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = \
                     utils.create_value_dict(tech_total_emissions_cost, param_source='calculation')
 
-        elif self.get_param_test("competition type", node) in ['root', 'region']:
+        elif self.get_param("competition type", node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
             structural_children = find_children(graph, node, structural=True)
 
             # For each structural child, add its emissions to the region/root
             for child in structural_children:
-                net_emissions += self.get_param_test("net_emissions", child, year)
-                cap_emissions += self.get_param_test("captured_emissions", child, year)
-                bio_emissions += self.get_param_test("bio_emissions", child, year)
-                total_emissions_cost += self.get_param_test('total_emissions_cost', child, year)
+                net_emissions += self.get_param("net_emissions", child, year)
+                cap_emissions += self.get_param("captured_emissions", child, year)
+                bio_emissions += self.get_param("bio_emissions", child, year)
+                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
         else:
             # Get emissions from req/provide children
             req_prov_children = find_children(graph, node, year, request_provide=True)
 
             for child in req_prov_children:
                 if child not in self.fuels:
-                    child_quantities = self.get_param_test('provided_quantities', child, year)
+                    child_quantities = self.get_param('provided_quantities', child, year)
                     child_total_quantity = child_quantities.get_total_quantity()
                     if child_total_quantity != 0:
-                        child_net_emissions = self.get_param_test("net_emissions", child, year)
-                        child_cap_emissions = self.get_param_test("captured_emissions", child, year)
-                        child_bio_emissions = self.get_param_test("bio_emissions", child, year)
-                        child_total_emissions_cost = self.get_param_test("total_emissions_cost", child, year)
+                        child_net_emissions = self.get_param("net_emissions", child, year)
+                        child_cap_emissions = self.get_param("captured_emissions", child, year)
+                        child_bio_emissions = self.get_param("bio_emissions", child, year)
+                        child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
 
                         quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
                         if quant_provided_to_node > 0:
@@ -1256,7 +1243,7 @@ class Model:
             val = [val]
         for i in range(len(year)):
             try:
-                self.get_param_test(param, node, year=year[i], context=sub_param, tech=tech, check_exist=True)
+                self.get_param(param, node, year[i], context=sub_param, tech=tech, check_exist=True)
             except:
                 print(f"Unable to access parameter at "
                       f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
@@ -1460,7 +1447,7 @@ class Model:
             if node == '.*':
                 # check if node satisfies search_param, search_operator, search_pattern conditions
                 for node_tmp in self.graph.nodes:
-                    if self.get_param_test(search_param, node_tmp).lower() == search_pattern.lower():
+                    if self.get_param(search_param, node_tmp).lower() == search_pattern.lower():
                         for idx, year in enumerate(years):
                             val_tmp = vals[idx]
                             self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator,
@@ -1520,8 +1507,8 @@ class Model:
 
         def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
             try:
-                prev_val = self.get_param_test(param=param, node=node, year=year, tech=tech, context=sub_param,
-                                               check_exist=True)
+                prev_val = self.get_param(param, node, year, tech=tech, context=sub_param,
+                                          check_exist=True)
                 if val_operator == '>=':
                     val = max(val, prev_val)
                 elif val_operator == '<=':
@@ -1551,7 +1538,7 @@ class Model:
                 if sub_param == '.*':
                     try:
                         # search through all sub_parameters in node given tech
-                        sub_params = list(self.get_param_test(param=param, node=node, year=year, tech=tech_tmp).keys())
+                        sub_params = list(self.get_param(param, node, year, tech=tech_tmp).keys())
                     except:
                         continue
                     for sub_param_tmp in sub_params:
@@ -1571,7 +1558,7 @@ class Model:
             if sub_param == '.*':
                 try:
                     # search through all sub_parameters in node given tech
-                    sub_params = list(self.get_param_test(param=param, node=node, year=year, tech=tech).keys())
+                    sub_params = list(self.get_param(param, node, year, tech=tech).keys())
                 except:
                     return
                 for sub_param_tmp in sub_params:
