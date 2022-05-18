@@ -1,5 +1,4 @@
 import copy
-import math
 import warnings
 import networkx as nx
 import pandas as pd
@@ -15,7 +14,7 @@ from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
 from .emissions import Emissions, EmissionRates
-from .utils import create_value_dict
+from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record
 
 
@@ -73,6 +72,7 @@ class Model:
 
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
+        self._inherit_parameter_values()
 
         self.show_run_warnings = True
 
@@ -322,44 +322,6 @@ class Model:
         Nothing is returned, but `self.graph` will be updated with the initialized nodes.
         """
 
-        def init_node_price_multipliers(graph, node, year):
-            """
-            Function for initializing the Price Multipler values for a given node in a graph. This
-            function assumes all of node's parents have already had their price multipliers
-            initialized.
-
-            Parameters
-            ----------
-            graph : NetworkX.DiGraph
-                A graph object containing the node of interest.
-            node : str
-                Name of the node to be initialized.
-            year: str
-                The string representing the current simulation year (e.g. "2005").
-
-            Returns
-            -------
-            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized price
-            multiplier values.
-            """
-            # Retrieve price multipliers from the parents (if they exist)
-            parents = list(graph.predecessors(node))
-            parent_price_multipliers = {}
-            if len(parents) > 0:
-                parent = parents[0]
-                if 'Price Multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = copy.deepcopy(self.graph.nodes[parent][year]['Price Multiplier'])
-                    parent_price_multipliers.update(price_multipliers)
-
-            # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
-            node_price_multipliers = copy.deepcopy(parent_price_multipliers)
-            if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year, return_keys=True)
-                node_price_multipliers.update(price_multipliers)
-
-            # Set Price Multiplier of node in the graph
-            graph.nodes[node][year]['Price Multiplier'] = node_price_multipliers
-
         def init_fuel_lcc(graph, node, year, step=5):
             """
             Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
@@ -581,9 +543,6 @@ class Model:
             graph.nodes[node][year]['Tax'] = final_tax
 
         graph_utils.top_down_traversal(graph,
-                                       init_node_price_multipliers,
-                                       year)
-        graph_utils.top_down_traversal(graph,
                                        init_convert_to_CO2e,
                                        year,
                                        self.gwp)
@@ -602,6 +561,14 @@ class Model:
         for n in self.graph.nodes():
             self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
+
+    def _inherit_parameter_values(self):
+        def inherit_function(graph, node, year):
+            for param in inheritable_params:
+                inherit_parameter(graph, node, year, param)
+
+        for year in self.years:
+            graph_utils.top_down_traversal(self.graph, inherit_function, year)
 
     def stock_allocation_and_retirement(self, sub_graph, node, year):
         """

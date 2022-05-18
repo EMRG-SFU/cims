@@ -2,10 +2,10 @@
 This module contains utility functions used throughout the pyCIMS package.
 """
 import re
+import copy
 from typing import List
 from scipy.interpolate import interp1d
 from . import lcc_calculation
-
 
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
@@ -117,24 +117,29 @@ def create_cost_curve_func(quantities: List[float], prices: List[float]):
 
     return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
 
+
 # ******************
 # Parameter Fetching
 # ******************
-calculation_directory = {'GCC_t': lcc_calculation.calc_gcc,
-                         'Capital cost_declining': lcc_calculation.calc_declining_cc,
-                         'Capital cost': lcc_calculation.calc_capital_cost,
-                         'CRF': lcc_calculation.calc_crf,
-                         'Financial Upfront cost': lcc_calculation.calc_financial_upfront_cost,
-                         'Complete Upfront cost': lcc_calculation.calc_complete_upfront_cost,
-                         'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
-                         'Financial Annual cost': lcc_calculation.calc_financial_annual_cost,
-                         'Complete Annual cost': lcc_calculation.calc_complete_annual_cost,
-                         'Service cost': lcc_calculation.calc_annual_service_cost,
-                         'Emissions cost': lcc_calculation.calc_emissions_cost,
-                         'Life Cycle Cost': lcc_calculation.calc_financial_lcc,
-                         'Complete Life Cycle Cost': lcc_calculation.calc_complete_lcc}
+calculation_directory = {
+    'GCC_t': lcc_calculation.calc_gcc,
+    'Capital cost_declining': lcc_calculation.calc_declining_cc,
+    'Capital cost': lcc_calculation.calc_capital_cost,
+    'CRF': lcc_calculation.calc_crf,
+    'Financial Upfront cost': lcc_calculation.calc_financial_upfront_cost,
+    'Complete Upfront cost': lcc_calculation.calc_complete_upfront_cost,
+    'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
+    'Financial Annual cost': lcc_calculation.calc_financial_annual_cost,
+    'Complete Annual cost': lcc_calculation.calc_complete_annual_cost,
+    'Service cost': lcc_calculation.calc_annual_service_cost,
+    'Emissions cost': lcc_calculation.calc_emissions_cost,
+    'Life Cycle Cost': lcc_calculation.calc_financial_lcc,
+    'Complete Life Cycle Cost': lcc_calculation.calc_complete_lcc,
+}
 
-inheritable_params = []
+inheritable_params = [
+    'Price Multiplier',
+]
 
 
 def get_node_param(param, model, node, year, sub_param=None,
@@ -224,6 +229,7 @@ def get_node_param(param, model, node, year, sub_param=None,
     if check_exist:
         raise Exception
 
+    param_source = None
     # Calculate Parameter Value
     # ******************************
     # If there is a calculation for the parameter & the arguments for that calculation are present
@@ -236,29 +242,37 @@ def get_node_param(param, model, node, year, sub_param=None,
 
     # Inherit Parameter Value
     # ******************************
-    # If the value has been defined at a structural parent node for that year, use that value.
-    elif param in inheritable_params:
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True)
-                            if 'structure' in d['type']]
-        g_structure_edges = model.graph.edge_subgraph(structured_edges)
-        parent = g_structure_edges.predecessors(node)[0]
-        val = get_node_param(param, model, parent, year=year)
-        param_source = 'inheritance'
+    # If the value has been defined at a structural parent node, it will be present at the node with
+    # param_source == "inheritance"
+    if (param_source is None) and (param in inheritable_params):
+        try:
+            val = model.graph.nodes[node][year][param]
+            if sub_param:
+                val = val[sub_param]
+            assert(val['param_source'] == 'inheritance')
+            param_source = val['param_source']
+        except KeyError:
+            pass
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
-    elif param in model.node_defaults:
+    comp_type = model.get_param('competition type', node)
+    if (param_source is None) and (comp_type in model.node_defaults) and (param in model.node_defaults[comp_type]):
         val = model.get_node_parameter_default(param)
         param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
-    else:
+    if param_source is None:
         prev_year = str(int(year) - model.step)
-        val = model.get_param(param, node, prev_year)
-        param_source = 'previous_year'
+        if prev_year >= str(model.base_year):
+            val = model.get_param(param, node, prev_year)
+            param_source = 'previous_year'
+        else:
+            val = None
+            param_source = None
 
     if return_source:
         return val, param_source
@@ -347,6 +361,7 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
     if check_exist:
         raise Exception
 
+    param_source = None
     # Calculate Parameter Value
     # ******************************
     # If there is a calculation for the parameter & the arguments for that calculation are present
@@ -360,29 +375,34 @@ def get_tech_param(param, model, node, year, tech, sub_param=None,
     # Inherit Parameter Value
     # ******************************
     # If the value has been defined at a structural parent node for that year, use this value.
-    elif param in inheritable_params:
-        structured_edges = [(s, t) for s, t, d in model.graph.edges(data=True)
-                            if 'structure' in d['type']]
-        g_structure_edges = model.graph.edge_subgraph(structured_edges)
-        parent = g_structure_edges.predecessors(node)[0]
-        val = model.get_param(param, parent, year, tech, sub_param)
-        param_source = 'inheritance'
+    if (param_source is None) and (param in inheritable_params):
+        # Look to the node
+        try:
+            val, source = model.get_param(param, node, year, sub_param=sub_param, return_source=True)
+            assert(source in ['inheritance', 'model'])
+            assert(val is not None)
+            param_source = source#
+        except AssertionError:
+            pass
 
     # Use a Default Parameter Value
     # ******************************
     # If there is a default value defined, use this value
-    elif param in model.technology_defaults:
+    if (param_source is None) and (param in model.technology_defaults):
         val = model.get_tech_parameter_default(param)
         param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
     # Otherwise, use the value from the previous year.
-    else:
+    if param_source is None:
         prev_year = str(int(year) - model.step)
-        if int(prev_year) >= model.base_year:
+        if prev_year >= str(model.base_year):
             val = model.get_param(param, node, prev_year, tech, sub_param=sub_param)
             param_source = 'previous_year'
+        else:
+            val = None
+            param_source = None
 
     if return_source:
         return val, param_source
@@ -499,3 +519,35 @@ def set_tech_param(new_value, param, model, node, year, tech, sub_param=None):
 
     else:
         print(f"No param {param} at node {node} for year {year}. No new value was set for this")
+
+
+def inherit_parameter(graph, node, year, param):
+    assert(param in inheritable_params)
+
+    parent = '.'.join(node.split('.')[:-1])
+
+    if parent:
+        parent_param_val = {}
+
+        if param in graph.nodes[parent][year]:
+            param_val = copy.deepcopy(graph.nodes[parent][year][param])
+            parent_param_val.update(param_val)
+
+        node_param_val = copy.deepcopy(parent_param_val)
+        if param in graph.nodes[node][year]:
+            param_val = graph.nodes[node][year][param]
+            node_param_val.update(param_val)
+
+        # Update Param Source
+        if 'param_source' in node_param_val:
+            node_param_val.update({'param_source': 'inheritance'})
+        else:
+            for context in node_param_val:
+                if 'param_source' in node_param_val[context]:
+                    node_param_val[context].update({'param_source': 'inheritance'})
+                else:
+                    for sub_context in node_param_val[context]:
+                        node_param_val[context][sub_context].updatet({'param_source': 'inheritance'})
+
+        if node_param_val:
+            graph.nodes[node][year][param] = node_param_val
