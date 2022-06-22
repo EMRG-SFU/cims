@@ -186,15 +186,8 @@ def calc_aggregate_emission_cost_rate(model, node, year, tech=None):
                                                   tech=technology, dict_expected=True)
             market_share = model.get_param('total_market_share', node, year, tech=technology)
 
-            for ghg in tech_emissions_cost:
-                if ghg not in agg_emissions_cost:
-                    agg_emissions_cost[ghg] = {}
-
-                for emission_type in tech_emissions_cost[ghg]:
-                    if emission_type not in agg_emissions_cost[ghg]:
-                        agg_emissions_cost[ghg][emission_type] = 0
-                    agg_emissions_cost[ghg][emission_type] += \
-                        tech_emissions_cost[ghg][emission_type] * market_share
+            agg_emissions_cost = _add_weighted_tech_emission_cost(tech_emissions_cost,
+                                                                  market_share, agg_emissions_cost)
 
     else:
         # (3) At a node without techs -- Emissions Cost from Non Fuel children
@@ -259,5 +252,19 @@ def _add_tech_emission_cost(tech_emissions_cost, agg_emissions_cost):
                     agg_emissions_cost[ghg][emission_type] = 0
                 agg_emissions_cost[ghg][emission_type] += \
                     tech_emissions_cost[e_node][ghg][emission_type]['year_value']
+
+    return agg_emissions_cost
+
+
+def _add_weighted_tech_emission_cost(tech_emissions_cost, market_share, agg_emissions_cost):
+    for ghg in tech_emissions_cost:
+        if ghg not in agg_emissions_cost:
+            agg_emissions_cost[ghg] = {}
+
+        for emission_type in tech_emissions_cost[ghg]:
+            if emission_type not in agg_emissions_cost[ghg]:
+                agg_emissions_cost[ghg][emission_type] = 0
+            agg_emissions_cost[ghg][emission_type] += \
+                tech_emissions_cost[ghg][emission_type] * market_share
 
     return agg_emissions_cost
