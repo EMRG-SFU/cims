@@ -7,6 +7,7 @@ from .emissions import EmissionRates
 from . import utils
 from copy import deepcopy
 from numpy import linspace
+from .revenue_recycling import calc_recycled_revenues
 
 
 def lcc_calculation(sub_graph, node, year, model):
@@ -135,9 +136,13 @@ def lcc_calculation(sub_graph, node, year, model):
             curr_lcc = model.get_param('Life Cycle Cost', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
+        # Subtract Recycled Revenues
+        recycled_revenues = calc_recycled_revenues(model, node, year)
+        lcc = weighted_lccs - recycled_revenues
+
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {
-            service_name: utils.create_value_dict(weighted_lccs, param_source='calculation')}
+            service_name: utils.create_value_dict(lcc, param_source='calculation')}
 
     elif 'cost curve' in model.get_param('competition type', node):
         lcc = calc_cost_curve_lcc(model, node, year)
@@ -153,9 +158,12 @@ def lcc_calculation(sub_graph, node, year, model):
         # Requested Line values sum to numbers greater or less than 1.
         service_cost, sc_source = model.get_param('Service cost', node, year,
                                                   return_source=True, do_calc=True)
+        recycled_revenues = calc_recycled_revenues(model, node, year)
+        lcc = service_cost - recycled_revenues
+
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]["Life Cycle Cost"] = {
-            service_name: utils.create_value_dict(service_cost, param_source=sc_source)}
+            service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
 
 def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
@@ -242,7 +250,8 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     annual_cost = model.get_param('Financial Annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('Service cost', node, year, tech=tech, do_calc=True)
     emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
-    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost
+    recycled_revenues = calc_recycled_revenues(model, node, year, tech)
+    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost - recycled_revenues
     return lcc
 
 
@@ -423,66 +432,66 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                 tax_check = model.get_param('Tax', node, year, context=ghg, dict_expected=True)
 
                 # Use foresight method to calculate tax
-                Expected_EC = 0
                 method_dict = model.get_param('Foresight method', node, year, dict_expected=True)
 
                 # Replace current tax with foresight method
+                method = None
                 if method_dict and ghg in method_dict:
                     method = method_dict[ghg]['year_value']
-                    if (method == 'Myopic') or (method is None) or \
-                            (emission_type not in tax_check) or (not allow_foresight):
-                        Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
-                    elif method == 'Discounted':
-                        N = int(model.get_param('Lifetime', node, year, tech=tech))
-                        r_k = model.get_param('Discount rate_Financial', node, year)
+                if (method == 'Myopic') or (method is None) or \
+                        (emission_type not in tax_check) or (not allow_foresight):
+                    Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
-                        # interpolate all tax values
-                        tax_vals = []
-                        for n in range(int(year), int(year) + N, model.step):
-                            if n in model.years:  # go back one step if current year isn't in range
-                                cur_tax = model.get_param('Tax', node, str(n),
-                                                          context=ghg, sub_context=emission_type)
-                            else:
-                                cur_tax = model.get_param('Tax', node, str(n - model.step),
-                                                          context=ghg, sub_context=emission_type)
-                            if n + model.step in model.years:  # when future years are out of range
-                                next_tax = model.get_param('Tax', node, str(n + model.step),
-                                                           context=ghg, sub_context=emission_type)
-                            else:
-                                next_tax = cur_tax
-                            tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
+                elif method == 'Discounted':
+                    N = int(model.get_param('Lifetime', node, year, tech=tech))
+                    r_k = model.get_param('Discount rate_Financial', node, year)
 
-                        # calculate discounted tax using formula
-                        Expected_EC = sum(
-                            [tax / (1 + r_k) ** (n - int(year) + 1)
-                             for tax, n in zip(tax_vals, range(int(year), int(year) + N))]
-                        )
-                        Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
+                    # interpolate all tax values
+                    tax_vals = []
+                    for n in range(int(year), int(year) + N, model.step):
+                        if n in model.years:  # go back one step if current year isn't in range
+                            cur_tax = model.get_param('Tax', node, str(n),
+                                                      context=ghg, sub_context=emission_type)
+                        else:
+                            cur_tax = model.get_param('Tax', node, str(n - model.step),
+                                                      context=ghg, sub_context=emission_type)
+                        if n + model.step in model.years:  # when future years are out of range
+                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                                                       context=ghg, sub_context=emission_type)
+                        else:
+                            next_tax = cur_tax
+                        tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
 
-                    elif method == 'Average':
-                        N = int(model.get_param('Lifetime', node, year, tech=tech))
+                    # calculate discounted tax using formula
+                    Expected_EC = sum(
+                        [tax / (1 + r_k) ** (n - int(year) + 1)
+                         for tax, n in zip(tax_vals, range(int(year), int(year) + N))]
+                    )
+                    Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
 
-                        if N + int(year) > 2050:
-                            jillian = 1
-                        # interpolate tax values
-                        tax_vals = []
-                        for n in range(int(year), int(year) + N, model.step):
-                            if str(n) <= max(model.years):  # go back one step if current year isn't in range
-                                cur_tax = model.get_param('Tax', node, str(n),
-                                                          context=ghg, sub_context=emission_type)
-                            else:
-                                cur_tax = model.get_param('Tax', node, max(model.years),
-                                                          context=ghg, sub_context=emission_type)
-                            if str(n + model.step) in model.years:  # when future years are out of range
-                                next_tax = model.get_param('Tax', node, str(n + model.step),
-                                                           context=ghg, sub_context=emission_type)
-                            else:
-                                next_tax = cur_tax
-                            tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
-                        Expected_EC = sum(tax_vals) / N  # take average of all taxes
-                    else:
-                        raise ValueError('Foresight method not identified, use Myopic, Discounted, or Average')
+                elif method == 'Average':
+                    N = int(model.get_param('Lifetime', node, year, tech=tech))
+
+                    # interpolate tax values
+                    tax_vals = []
+                    for n in range(int(year), int(year) + N, model.step):
+                        if str(n) <= max(model.years):  # go back one step if current year isn't in range
+                            cur_tax = model.get_param('Tax', node, str(n),
+                                                      context=ghg, sub_context=emission_type)
+                        else:
+                            cur_tax = model.get_param('Tax', node, max(model.years),
+                                                      context=ghg, sub_context=emission_type)
+                        if str(n + model.step) in model.years:  # when future years are out of range
+                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                                                       context=ghg, sub_context=emission_type)
+                        else:
+                            next_tax = cur_tax
+                        tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
+                    Expected_EC = sum(tax_vals) / N  # take average of all taxes
+
+                else:
+                    raise ValueError('Foresight method not identified, use Myopic, Discounted, or Average')
 
                 emissions_cost[node_name][ghg][emission_type]['year_value'] *= Expected_EC
 
@@ -536,6 +545,8 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     val_dict = utils.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, 'Emissions cost', node, year, tech)
 
+    model.set_param_internal(utils.create_value_dict(year_val=emissions_cost),
+                             'emissions_cost_dict', node, year, tech)
     return total
 
 
