@@ -228,14 +228,14 @@ def _add_emission_cost_from_non_fuel_children(model, year, services_requested, a
         child = req_data['branch']
         if child not in model.fuels:
             req_ratio = req_data['year_value']
-            something = model.get_param('aggregate_emissions_cost_rates', child, year)
-            for ghg in something:
+            child_emission_costs = model.get_param('aggregate_emissions_cost_rates', child, year)
+            for ghg in child_emission_costs:
                 if ghg not in agg_emissions_cost:
                     agg_emissions_cost[ghg] = {}
-                for emission_type in something[ghg]:
+                for emission_type in child_emission_costs[ghg]:
                     if emission_type not in agg_emissions_cost[ghg]:
                         agg_emissions_cost[ghg][emission_type] = 0
-                    agg_emissions_cost[ghg][emission_type] += something[ghg][
+                    agg_emissions_cost[ghg][emission_type] += child_emission_costs[ghg][
                                                                   emission_type] * req_ratio
 
     return agg_emissions_cost
