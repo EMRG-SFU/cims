@@ -3,7 +3,7 @@ Stock retirement and allocation module. Contains all the core logic for retiring
 surplus) and allocating new stock through a market share competition between technologies.
 """
 import math
-from quantities import ProvidedQuantity
+from ..quantities import ProvidedQuantity
 from pyCIMS import utils
 from .retrofits import calc_retrofits
 from .allocation_utils import _find_competing_techs, _find_competing_weights

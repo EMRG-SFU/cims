@@ -148,8 +148,11 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    dccc = self.graph.nodes[node][base_year]['technologies'][tech]['Capital cost_declining_Class'][
+                    try:
+                        dccc = self.graph.nodes[node][base_year]['technologies'][tech]['dcc_class'][
                         'context']
+                    except:
+                        dccc = None
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
