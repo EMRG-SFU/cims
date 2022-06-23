@@ -118,15 +118,15 @@ def general_allocation(model, node, year):
     # Based on assessed demand, determine the amount this node requests from other services
     if 'technologies' in node_year_data:
         for tech, tech_data in node_year_data['technologies'].items():
-            if 'Service requested' in tech_data.keys():
-                services_being_requested = tech_data['Service requested']
-                t_ms = tech_data['Market share']
+            if 'service requested' in tech_data.keys():
+                services_being_requested = tech_data['service requested']
+                t_ms = tech_data['market share']
                 _record_provided_quantities(model, node, year, services_being_requested,
                                             assessed_demand, tech=tech, market_share=t_ms)
 
-    elif 'Service requested' in node_year_data:
+    elif 'service requested' in node_year_data:
         # Calculate the provided_quantities being requested for each of the services
-        services_being_requested = node_year_data['Service requested']
+        services_being_requested = node_year_data['service requested']
         _record_provided_quantities(model, node, year, services_being_requested, assessed_demand)
 
 
@@ -173,7 +173,7 @@ def _get_existing_stock(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.get_param('Service requested', node,
+            child_node = model.get_param('service requested', node,
                                          year=year,
                                          tech=child,
                                          dict_expected=True)[child]['branch']
@@ -237,7 +237,7 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
         The amount of base stock adopted in initial_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('Lifetime', node, initial_year, tech=tech)
+    lifetime = model.get_param('lifetime', node, initial_year, tech=tech)
     base_stock = model.get_param('base_stock', node, initial_year, tech=tech)
 
     # Calculate amount of remaining base stock after natural retirements
@@ -287,7 +287,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
         The amount of new stock adopted in purchased_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('Lifetime', node, purchased_year, tech=tech)
+    lifetime = model.get_param('lifetime', node, purchased_year, tech=tech)
     purchased_stock = model.get_param('new_stock', node,purchased_year, tech=tech)
     purchased_stock += model.get_param('retrofit_stock', node, purchased_year, tech=tech)
     prev_year = str(int(current_year) - model.step)
@@ -655,7 +655,7 @@ def _find_exogenous_market_shares(model, node, year):
     node_year_data = model.graph.nodes[node][year]
     exo_market_shares = {}
     for tech in node_year_data['technologies']:
-        market_share, ms_source = model.get_param('Market share', node, year, tech=tech,
+        market_share, ms_source = model.get_param('market share', node, year, tech=tech,
                                                   return_source=True)
         if ms_source == 'model':  # model --> exogenous
             exo_market_shares[tech] = market_share
@@ -687,7 +687,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
         techs @ services for Node Tech Compete), new market shares are agregated to the tech/service
         specified at `node` before being returned as a dictionary.
     """
-    heterogeneity = model.get_param('Heterogeneity', node, year)
+    heterogeneity = model.get_param('heterogeneity', node, year)
 
     # Find each of the technologies which will be competed for
     competing_techs = _find_competing_techs(model, node, comp_type)
@@ -707,7 +707,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param('Service requested', node,
+                child_node = model.get_param('service requested', node,
                                              year=year,
                                              tech=tech_child,
                                              dict_expected=True)[tech_child]['branch']
@@ -919,8 +919,8 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
-        if 'Service requested' in tech_data.keys():
-            services_being_requested = tech_data['Service requested']
+        if 'service requested' in tech_data.keys():
+            services_being_requested = tech_data['service requested']
             # Calculate the provided_quantities being for each of the services
             t_ms = total_market_shares[tech]
             _record_provided_quantities(model, node, year, services_being_requested,

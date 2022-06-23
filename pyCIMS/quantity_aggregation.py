@@ -10,8 +10,8 @@ def find_req_prov_children(graph, node, year, tech=None):
     req_prov_children = []
 
     if tech:
-        if 'Service requested' in graph.nodes[node][year]['technologies'][tech]:
-            services = graph.nodes[node][year]['technologies'][tech]['Service requested']
+        if 'service requested' in graph.nodes[node][year]['technologies'][tech]:
+            services = graph.nodes[node][year]['technologies'][tech]['service requested']
             req_prov_children = [data['branch'] for data in services.values()]
     else:
         node_children = graph.successors(node)

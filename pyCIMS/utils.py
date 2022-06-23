@@ -124,22 +124,23 @@ def create_cost_curve_func(quantities: List[float], prices: List[float]):
 # ******************
 calculation_directory = {
     'GCC_t': lcc_calculation.calc_gcc,
-    'Capital cost_declining': lcc_calculation.calc_declining_cc,
-    'Capital cost': lcc_calculation.calc_capital_cost,
-    'CRF': lcc_calculation.calc_crf,
-    'Financial Upfront cost': lcc_calculation.calc_financial_upfront_cost,
-    'Complete Upfront cost': lcc_calculation.calc_complete_upfront_cost,
-    'Annual intangible cost_declining': lcc_calculation.calc_declining_aic,
-    'Financial Annual cost': lcc_calculation.calc_financial_annual_cost,
-    'Complete Annual cost': lcc_calculation.calc_complete_annual_cost,
-    'Service cost': lcc_calculation.calc_annual_service_cost,
-    'Emissions cost': lcc_calculation.calc_emissions_cost,
-    'Life Cycle Cost': lcc_calculation.calc_financial_lcc,
-    'Complete Life Cycle Cost': lcc_calculation.calc_complete_lcc,
+    'capital cost_declining': lcc_calculation.calc_declining_cc,
+    'capital cost': lcc_calculation.calc_capital_cost,
+    'crf': lcc_calculation.calc_crf,
+    'uic_declining': lcc_calculation.calc_declining_uic,
+    'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
+    'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
+    'aic_declining': lcc_calculation.calc_declining_aic,
+    'financial annual cost': lcc_calculation.calc_financial_annual_cost,
+    'complete annual cost': lcc_calculation.calc_complete_annual_cost,
+    'service cost': lcc_calculation.calc_annual_service_cost,
+    'emissions cost': lcc_calculation.calc_emissions_cost,
+    'life cycle cost': lcc_calculation.calc_financial_lcc,
+    'complete life cycle cost': lcc_calculation.calc_complete_lcc,
 }
 
 inheritable_params = [
-    'Price Multiplier',
+    'price multiplier',
 ]
 
 

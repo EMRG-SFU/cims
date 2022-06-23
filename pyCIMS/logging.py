@@ -188,8 +188,8 @@ def slimlist(default_list):
     # add more combinations to the list as we grow the default list
 
     if default_list == 'slim':
-        p_list = ['new_market_share', 'Life Cycle Cost', 'competition type',
-                    'Service requested', 'Capital cost_overnight']
+        p_list = ['new_market_share', 'life cycle cost', 'competition type',
+                    'service requested', 'capital cost_overnight']
 
     # this is for validating if we have defined the default name
     else:

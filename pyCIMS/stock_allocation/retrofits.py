@@ -27,11 +27,11 @@ def _retrofit_lcc(model, node, year, existing_tech):
     float :
         The LCC to use for the current technology during a retrofit competition.
     """
-    complete_annual_cost = model.get_param('Complete Annual cost', node, year,
+    complete_annual_cost = model.get_param('complete annual cost', node, year,
                                            tech=existing_tech, do_calc=True)
-    annual_service_cost = model.get_param('Service cost', node, year,
+    annual_service_cost = model.get_param('service cost', node, year,
                                           tech=existing_tech, do_calc=True)
-    emissions_cost = model.get_param('Emissions cost', node, year,
+    emissions_cost = model.get_param('emissions cost', node, year,
                                      tech=existing_tech, do_calc=True)
     retrofit_complete_lcc = complete_annual_cost + annual_service_cost + emissions_cost
     return retrofit_complete_lcc
@@ -241,7 +241,7 @@ def calc_retrofits(model, node, year, existing_stock):
         during the retrofit competition.
     """
     comp_type = model.get_param('competition type', node)
-    heterogeneity = model.get_param('Heterogeneity', node, year)
+    heterogeneity = model.get_param('heterogeneity', node, year)
     retrofit_stocks = {}
     for existing_node_tech in existing_stock.keys():
         existing_node, existing_tech = existing_node_tech
