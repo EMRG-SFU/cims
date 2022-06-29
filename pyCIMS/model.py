@@ -665,6 +665,13 @@ class Model:
             if final_tax:
                 graph.nodes[node][year]['Tax'] = final_tax
 
+        def init_agg_emissions_cost(graph):
+            # Reset the aggregate_emissions_cost at each node
+            for n in self.graph.nodes():
+                self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
+                    create_value_dict({}, param_source='initialization')
+
+        init_agg_emissions_cost(graph)
 
         graph_utils.top_down_traversal(graph,
                                        init_convert_to_CO2e,
