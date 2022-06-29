@@ -37,8 +37,8 @@ class Model:
 
     node_dfs : dict {str: pandas.DataFrame}
         Node names (branch form) are the keys in the dictionary. Associated DataFrames (specified in
-        the excel model description) are the values. DataFrames do not include 'Technology' or
-        'Service' information for a node.
+        the excel model description) are the values. DataFrames do not include 'technology' or
+        'service' information for a node.
 
     tech_dfs : dict {str: dict {str: pandas.DataFrame}}
         Technology & service information from the excel model description. Node names (branch form)
@@ -114,17 +114,17 @@ class Model:
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresight_context = self.get_param('Foresight method', 'pyCIMS', year, dict_expected=True)
+            foresight_context = self.get_param('foresight method', 'pyCIMS', year, dict_expected=True)
             if foresight_context is not None:
                 for ghg, sectors in foresight_context.items():
                     for node in sec_list:
                         sector = node.split('.')[-1]
                         if sector in sectors:
                             # Initialize foresight method
-                            if 'Foresight method' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['Foresight method'] = {}
+                            if 'foresight method' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['foresight method'] = {}
 
-                            self.graph.nodes[node][year]['Foresight method'][ghg] = sectors[sector]
+                            self.graph.nodes[node][year]['foresight method'][ghg] = sectors[sector]
 
             graph_utils.top_down_traversal(self.graph,
                                            self._init_foresight,
@@ -266,7 +266,7 @@ class Model:
                 prev_prices = self.prices
 
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('Life Cycle Cost', fuel, year, context=fuel.split('.')[-1])
+                new_prices = {fuel: self.get_param('life cycle cost', fuel, year, context=fuel.split('.')[-1])
                               for fuel in self.equilibrium_fuels}  # context is str of fuel
 
                 equilibrium = min_iterations <= iteration and \
@@ -319,7 +319,7 @@ class Model:
             if prev_fuel_price == 0:
                 if self.show_run_warnings:
                     warnings.warn("Previous fuel price is 0 for {}".format(fuel))
-                prev_fuel_price = self.get_node_parameter_default('Life Cycle Cost', 'sector')
+                prev_fuel_price = self.get_node_parameter_default('life cycle cost', 'sector')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
                 return False
@@ -358,13 +358,13 @@ class Model:
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'Tax' in graph.nodes[parent][year]:
-                parent_dict = graph.nodes[parent][year]['Tax']
+            if 'tax' in graph.nodes[parent][year]:
+                parent_dict = graph.nodes[parent][year]['tax']
 
         # Store away tax at current node to overwrite parent tax later
         node_dict = {}
-        if 'Tax' in graph.nodes[node][year]:
-            node_dict = graph.nodes[node][year]['Tax']
+        if 'tax' in graph.nodes[node][year]:
+            node_dict = graph.nodes[node][year]['tax']
 
         # Make final dict where we prioritize keeping node_dict and only unique parent taxes
         final_tax = copy.deepcopy(node_dict)
@@ -376,17 +376,17 @@ class Model:
                     final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
         if final_tax:
-            graph.nodes[node][year]['Tax'] = final_tax
+            graph.nodes[node][year]['tax'] = final_tax
 
     def _init_foresight(self, graph, node, year):
         parents = list(graph.predecessors(node))
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'Foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['Foresight method']
+            if 'foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['foresight method']
         if parent_dict:
-            graph.nodes[node][year]['Foresight method'] = parent_dict
+            graph.nodes[node][year]['foresight method'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """
@@ -432,18 +432,18 @@ class Model:
             parent_price_multipliers = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if 'Price Multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = copy.deepcopy(self.graph.nodes[parent][year]['Price Multiplier'])
+                if 'price multiplier' in graph.nodes[parent][year]:
+                    price_multipliers = copy.deepcopy(self.graph.nodes[parent][year]['price multiplier'])
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
-            if 'Price Multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('Price Multiplier', node, year, dict_expected=True)
+            if 'price multiplier' in graph.nodes[node][year]:
+                price_multipliers = self.get_param('price multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
-            graph.nodes[node][year]['Price Multiplier'] = node_price_multipliers
+            graph.nodes[node][year]['price multiplier'] = node_price_multipliers
 
         def init_fuel_lcc(graph, node, year, step=5):
             """
@@ -491,38 +491,38 @@ class Model:
                                                 root=node)
 
             if node in self.fuels:
-                if "Life Cycle Cost" in graph.nodes[node][year]:
-                    lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
+                if 'life cycle cost' in graph.nodes[node][year]:
+                    lcc_dict = graph.nodes[node][year]['life cycle cost']
 
                     fuel_name = list(lcc_dict.keys())[0]
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('Life Cycle Cost',
+                        last_year_value = self.get_param('life cycle cost',
                                                          node, last_year)[fuel_name]['year_value']
-                        graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['year_value'] = last_year_value
+                        graph.nodes[node][year]['life cycle cost'][fuel_name]['year_value'] = last_year_value
 
                     else:
-                        graph.nodes[node][year]['Life Cycle Cost'][fuel_name]['to_estimate'] = False
+                        graph.nodes[node][year]['life cycle cost'][fuel_name]['to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
                     if int(year) == self.base_year:
                         lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
                         service_name = node.split('.')[-1]
-                        graph.nodes[node][year]["Life Cycle Cost"] = {
+                        graph.nodes[node][year]['life cycle cost'] = {
                             service_name: utils.create_value_dict(lcc,
                                                                   param_source='initialization')}
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('Life Cycle Cost', node, last_year)
-                        graph.nodes[node][year]["Life Cycle Cost"] = {
+                        last_year_value = self.get_param('life cycle cost', node, last_year)
+                        graph.nodes[node][year]['life cycle cost'] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
 
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
-                    lcc_dict = graph.nodes[node][year]['Life Cycle Cost']
+                    lcc_dict = graph.nodes[node][year]['life cycle cost']
                     fuel_name = list(lcc_dict.keys())[0]
                     lcc_dict[fuel_name]['to_estimate'] = True
 
@@ -555,8 +555,8 @@ class Model:
                 techs = graph.nodes[node][year]['technologies']
                 for tech in techs:
                     tech_data = techs[tech]
-                    if 'Emissions' in tech_data:
-                        emission_data = tech_data['Emissions']
+                    if 'emissions' in tech_data:
+                        emission_data = tech_data['emissions']
                         for ghg in emission_data:
                             for emission_type in emission_data[ghg]:
                                 try:
@@ -565,8 +565,8 @@ class Model:
                                     continue
 
             # Emissions from a node
-            elif 'Emissions' in graph.nodes[node][year]:
-                emission_data = graph.nodes[node][year]['Emissions']
+            elif 'emissions' in graph.nodes[node][year]:
+                emission_data = graph.nodes[node][year]['emissions']
                 for ghg in emission_data:
                     for emission_type in emission_data[ghg]:
                         try:
@@ -595,28 +595,28 @@ class Model:
             Nothing. Will update graph.nodes[node][year] with the initialized value of `Load Factor`
             (if there is one).
             """
-            if 'Load Factor' not in graph.nodes[node][year]:
+            if 'load factor' not in graph.nodes[node][year]:
                 # Check if a load factor was defined at the node's structural parent (its first
                 # parent). If so, use this load factor for the node.
                 parents = list(graph.predecessors(node))
                 if len(parents) > 0:
                     parent = parents[0]
-                    if 'Load Factor' in graph.nodes[parent][year]:
-                        val = graph.nodes[parent][year]['Load Factor']['year_value']
-                        units = graph.nodes[parent][year]['Load Factor']['unit']
-                        graph.nodes[node][year]['Load Factor'] = utils.create_value_dict(val,
+                    if 'load factor' in graph.nodes[parent][year]:
+                        val = graph.nodes[parent][year]['load factor']['year_value']
+                        units = graph.nodes[parent][year]['load factor']['unit']
+                        graph.nodes[node][year]['load factor'] = utils.create_value_dict(val,
                                                                                          unit=units,
                                                                                          param_source='inheritance')
 
-            if 'Load Factor' in graph.nodes[node][year]:
+            if 'load factor' in graph.nodes[node][year]:
                 # Ensure this load factor is recorded at each of the technologies within the node.
                 if 'technologies' in graph.nodes[node][year]:
                     tech_data = graph.nodes[node][year]['technologies']
                     for tech in tech_data:
-                        if 'Load Factor' not in tech_data[tech]:
-                            val = graph.nodes[node][year]['Load Factor']['year_value']
-                            units = graph.nodes[node][year]['Load Factor']['unit']
-                            tech_data[tech]['Load Factor'] = utils.create_value_dict(val,
+                        if 'load factor' not in tech_data[tech]:
+                            val = graph.nodes[node][year]['load factor']['year_value']
+                            units = graph.nodes[node][year]['load factor']['unit']
+                            tech_data[tech]['load factor'] = utils.create_value_dict(val,
                                                                                      unit=units,
                                                                                      param_source='inheritance')
 
@@ -645,13 +645,13 @@ class Model:
             parent_dict = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if 'Tax' in graph.nodes[parent][year]:
-                    parent_dict = graph.nodes[parent][year]['Tax']
+                if 'tax' in graph.nodes[parent][year]:
+                    parent_dict = graph.nodes[parent][year]['tax']
 
             # Store away tax at current node to overwrite parent tax later
             node_dict = {}
-            if 'Tax' in graph.nodes[node][year]:
-                node_dict = graph.nodes[node][year]['Tax']
+            if 'tax' in graph.nodes[node][year]:
+                node_dict = graph.nodes[node][year]['tax']
 
             # Make final dict where we prioritize keeping node_dict and only unique parent taxes
             final_tax = copy.deepcopy(node_dict)
@@ -663,7 +663,7 @@ class Model:
                         final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
             if final_tax:
-                graph.nodes[node][year]['Tax'] = final_tax
+                graph.nodes[node][year]['tax'] = final_tax
 
         def init_agg_emissions_cost(graph):
             # Reset the aggregate_emissions_cost at each node
@@ -757,7 +757,7 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
@@ -835,11 +835,11 @@ class Model:
         """
         requested_quantity = RequestedQuantity()
 
-        if self.get_param("competition type", node) in ['root', 'region']:
+        if self.get_param('competition type', node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                child_requested_quant = self.get_param("requested_quantities",
+                child_requested_quant = self.get_param('requested_quantities',
                                                             child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
@@ -863,7 +863,7 @@ class Model:
                                                                      child,
                                                                      attributable_amount)
                 # Save the tech requested quantities
-                self.graph.nodes[node][year]['technologies'][tech]["requested_quantities"] = \
+                self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
                     tech_requested_quantity
 
         else:
@@ -877,7 +877,7 @@ class Model:
                                                                  child,
                                                                  attributable_amount)
 
-        self.graph.nodes[node][year]["requested_quantities"] = \
+        self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
     def aggregate_emissions(self, graph, node, year):
@@ -899,8 +899,8 @@ class Model:
         else:
             bio_emission_rates = EmissionRates()
 
-        if 'Emissions cost' in self.graph.nodes[node][year]:
-            emissions_cost = self.get_param('Emissions cost', node, year)
+        if 'emissions cost' in self.graph.nodes[node][year]:
+            emissions_cost = self.get_param('emissions cost', node, year)
         else:
             emissions_cost = 0
 
@@ -925,7 +925,7 @@ class Model:
                 tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
                 tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
                 tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
-                tech_emissions_cost = self.get_param("Emissions cost", node, year, tech=tech)
+                tech_emissions_cost = self.get_param('emissions cost', node, year, tech=tech)
                 if tech_net_emission_rates is not None:
                     tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
                     tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
@@ -987,7 +987,7 @@ class Model:
                 self.graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = \
                     utils.create_value_dict(tech_total_emissions_cost, param_source='calculation')
 
-        elif self.get_param("competition type", node) in ['root', 'region']:
+        elif self.get_param('competition type', node) in ['root', 'region']:
             # Retrieve emissions from the node's structural children
             structural_children = find_children(graph, node, structural=True)
 
@@ -1058,7 +1058,7 @@ class Model:
         year : str or list, optional
             The year(s) which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retreived without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
@@ -1281,7 +1281,7 @@ class Model:
         year : str or list, optional
             The year(s) which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retreived without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
@@ -1341,7 +1341,7 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retreived without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
@@ -1493,7 +1493,7 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retreived without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
@@ -1599,7 +1599,7 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            "competition type" can be retreived without specifying a year.
+            'competition type' can be retreived without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
