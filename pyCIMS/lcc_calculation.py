@@ -492,7 +492,6 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
                 else:
                     raise ValueError('Foresight method not identified, use Myopic, Discounted, or Average')
->>>>>>> pyCIMS/lcc_calculation.py
 
                 emissions_cost[node_name][ghg][emission_type]['year_value'] *= Expected_EC
 
