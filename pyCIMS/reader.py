@@ -108,8 +108,12 @@ class ModelReader:
         for s, e in node_start_ends:
             node_df = self.model_df.loc[s + 1:e - 1]
             node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
+
+            # Convert parameter strings to lower case
+            node_df['Parameter'] = node_df['Parameter'].str.lower()
+
             try:
-                node_name = list(node_df[node_df['Parameter'] == 'Service provided']['Branch'])[0]
+                node_name = list(node_df[node_df['Parameter'] == 'service provided']['Branch'])[0]
             except IndexError:
                 continue
             node_dfs[node_name] = node_df
@@ -120,10 +124,10 @@ class ModelReader:
         # Extract tech dfs from node df's and rewrite node df without techs
         tech_dfs = {}
         for nn, ndf in node_dfs.items():
-            if any(ndf.Parameter.isin(["Technology", "Service"])):  # Technologies can also be called Services
+            if any(ndf.Parameter.isin(['technology', 'service'])):  # Technologies can also be called Services
                 tdfs = {}
                 first_row, last_row = ndf.index[0], ndf.index[-1]
-                tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
+                tech_rows = ndf.loc[ndf.Parameter.isin(['technology', 'service'])].index
                 for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
                     tech_df = ndf.loc[trs:tre]
                     tech_name = tech_df.iloc[0].Context
@@ -164,6 +168,9 @@ class ModelReader:
 
         # Forward fill the parameter type
         df['Unnamed: 0'] = df['Unnamed: 0'].ffill()
+
+        # Convert parameter strings to lower case
+        df['Parameter'] = df['Parameter'].str.lower()
 
         # Technology Default Parameters
         technology_df = df[df['Unnamed: 0'] == 'Technology format']
