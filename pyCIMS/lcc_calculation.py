@@ -165,6 +165,7 @@ def lcc_calculation(sub_graph, node, year, model):
         sub_graph.nodes[node][year]['life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
+
 def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     """
     Calculate a node's LCC using its cost curve function (stored in the node level data).
@@ -444,20 +445,20 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                     Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
                 elif method == 'Discounted':
-                    N = int(model.get_param('Lifetime', node, year, tech=tech))
-                    r_k = model.get_param('Discount rate_Financial', node, year)
+                    N = int(model.get_param('lifetime', node, year, tech=tech))
+                    r_k = model.get_param('discount rate_financial', node, year)
 
                     # interpolate all tax values
                     tax_vals = []
                     for n in range(int(year), int(year) + N, model.step):
                         if n in model.years:  # go back one step if current year isn't in range
-                            cur_tax = model.get_param('Tax', node, str(n),
+                            cur_tax = model.get_param('tax', node, str(n),
                                                       context=ghg, sub_context=emission_type)
                         else:
-                            cur_tax = model.get_param('Tax', node, str(n - model.step),
+                            cur_tax = model.get_param('tax', node, str(n - model.step),
                                                       context=ghg, sub_context=emission_type)
                         if n + model.step in model.years:  # when future years are out of range
-                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                            next_tax = model.get_param('tax', node, str(n + model.step),
                                                        context=ghg, sub_context=emission_type)
                         else:
                             next_tax = cur_tax
@@ -471,19 +472,19 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                     Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
 
                 elif method == 'Average':
-                    N = int(model.get_param('Lifetime', node, year, tech=tech))
+                    N = int(model.get_param('lifetime', node, year, tech=tech))
 
                     # interpolate tax values
                     tax_vals = []
                     for n in range(int(year), int(year) + N, model.step):
                         if str(n) <= max(model.years):  # go back one step if current year isn't in range
-                            cur_tax = model.get_param('Tax', node, str(n),
+                            cur_tax = model.get_param('tax', node, str(n),
                                                       context=ghg, sub_context=emission_type)
                         else:
-                            cur_tax = model.get_param('Tax', node, max(model.years),
+                            cur_tax = model.get_param('tax', node, max(model.years),
                                                       context=ghg, sub_context=emission_type)
                         if str(n + model.step) in model.years:  # when future years are out of range
-                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                            next_tax = model.get_param('tax', node, str(n + model.step),
                                                        context=ghg, sub_context=emission_type)
                         else:
                             next_tax = cur_tax
@@ -570,12 +571,12 @@ def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     --------
     calc_financial_upfront_cost
     """
-    crf = model.get_param("CRF", node, year, tech=tech, do_calc=True)
-    capital_cost = model.get_param('Capital cost', node, year, tech=tech, do_calc=True)
-    allocated_cost = model.get_param('Allocated cost', node, year, tech=tech, do_calc=True)
-    fixed_uic = model.get_param('Upfront intangible cost_fixed', node, year, tech=tech, do_calc=True)
+    crf = model.get_param("crf", node, year, tech=tech, do_calc=True)
+    capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
+    allocated_cost = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
+    fixed_uic = model.get_param('uic_fixed', node, year, tech=tech, do_calc=True)
     declining_uic = calc_declining_uic(model, node, year, tech)
-    output = model.get_param('Output', node, year, tech=tech)
+    output = model.get_param('output', node, year, tech=tech)
 
     complete_uc = (capital_cost - allocated_cost + fixed_uic + declining_uic) / output * crf
 
@@ -601,10 +602,10 @@ def calc_financial_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tec
     --------
     calc_complete_upfront_cost
     """
-    crf = model.get_param("CRF", node, year, tech=tech, do_calc=True)
-    capital_cost = model.get_param('Capital cost', node, year, tech=tech, do_calc=True)
-    allocated_cost = model.get_param('Allocated cost', node, year, tech=tech)
-    output = model.get_param('Output', node, year, tech=tech)
+    crf = model.get_param("crf", node, year, tech=tech, do_calc=True)
+    capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
+    allocated_cost = model.get_param('subsidy', node, year, tech=tech)
+    output = model.get_param('output', node, year, tech=tech)
 
     financial_uc = (capital_cost - allocated_cost) / output * crf
 
@@ -630,10 +631,10 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     --------
     calc_financial_annual_cost
     """
-    output = model.get_param('Output', node, year, tech=tech)
-    operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech=tech)
-    fixed_aic = model.get_param('Annual intangible cost_fixed', node, year, tech=tech)
-    declining_aic = model.get_param('Annual intangible cost_declining', node, year, tech=tech, do_calc=True)
+    output = model.get_param('output', node, year, tech=tech)
+    operating_maintenance_cost = model.get_param('operating and maintenance', node, year, tech=tech)
+    fixed_aic = model.get_param('aic_fixed', node, year, tech=tech)
+    declining_aic = model.get_param('aic_declining', node, year, tech=tech, do_calc=True)
 
     complete_ac = (operating_maintenance_cost +
                    fixed_aic +
@@ -661,8 +662,8 @@ def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     --------
     calc_complete_annual_cost
     """
-    output = model.get_param('Output', node, year, tech=tech)
-    operating_maintenance_cost = model.get_param('Operating and maintenance cost', node, year, tech=tech)
+    output = model.get_param('output', node, year, tech=tech)
+    operating_maintenance_cost = model.get_param('operating and maintenance', node, year, tech=tech)
     financial_ac = operating_maintenance_cost / output
     return financial_ac
 
@@ -682,9 +683,9 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     -------
     float : Capital cost, defined as CC = max{CC_declining, CC_overnight * CC_declining_limit}.
     """
-    cc_overnight = model.get_param('Capital cost_overnight', node, year, tech=tech)
-    declining_cc_limit = model.get_param('Capital cost_declining_limit', node, year, tech=tech)
-    declining_cc = model.get_param("Capital cost_declining", node, year, tech=tech, do_calc=True)
+    cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
+    declining_cc_limit = model.get_param('capital cost_declining_limit', node, year, tech=tech)
+    declining_cc = model.get_param("capital cost_declining", node, year, tech=tech, do_calc=True)
 
     if declining_cc is None:
         capital_cost = cc_overnight
@@ -709,7 +710,7 @@ def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     -------
     float : The declining capital cost.
     """
-    dcc_class = model.get_param('Capital cost_declining_Class', node, year, tech=tech,
+    dcc_class = model.get_param('dcc_class', node, year, tech=tech,
                                 context='context')
 
     if dcc_class is None:
@@ -717,20 +718,21 @@ def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
 
     else:
         # Progress Ratio
-        progress_ratio = model.get_param('Capital cost_declining_Progress Ratio', node, year, tech=tech)
+        progress_ratio = model.get_param('dcc_progress ratio', node, year, tech=tech)
         gcc_t = model.get_param('GCC_t', node, year, tech=tech, do_calc=True)
 
         dcc_class_techs = model.dcc_classes[dcc_class]
 
         # Cumulative New Stock in DCC Class
         # 'Capital cost_declining_cumulative new stock' already given in vkt, so no need to convert
-        cns = model.get_param('Capital cost_declining_cumulative new stock', node, year, tech=tech)
+        cns = model.get_param('capital cost_declining_cumulative new stock', node, year, tech=tech) # TODO: This is to be replaced in upcoming merge requests
+        cns = 0
 
         bs_sum = 0
         ns_sum = 0
         for node_k, tech_k in dcc_class_techs:
             # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param('Load Factor', node_k, str(model.base_year), tech=tech_k)
+            unit_convert = model.get_param('load factor', node_k, str(model.base_year), tech=tech_k)
             if unit_convert is None:
                 unit_convert = 1
 
@@ -772,11 +774,11 @@ def calc_gcc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
     previous_year = str(int(year) - model.step)
     if previous_year in model.years:
-        aeei = model.get_param('Capital cost_declining_AEEI', node, year, tech=tech)
+        aeei = model.get_param('dcc_aeei', node, year, tech=tech)
         gcc = ((1 - aeei) ** model.step) * \
               calc_gcc(model, node, previous_year, tech)
     else:
-        cc_overnight = model.get_param('Capital cost_overnight', node, year, tech=tech)
+        cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
         gcc = cc_overnight
 
     return gcc
@@ -798,9 +800,9 @@ def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
     float : The declining UIC.
     """
     # Retrieve Exogenous Terms from Model Description
-    initial_uic = model.get_param('Upfront intangible cost_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('Upfront intangible cost_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('Upfront intangible cost_declining_shape', node, year, tech=tech)
+    initial_uic = model.get_param('uic_declining_initial', node, year, tech=tech)
+    rate_constant = model.get_param('uic_declining_rate', node, year, tech=tech)
+    shape_constant = model.get_param('uic_declining_shape', node, year, tech=tech)
 
     # Calculate Declining UIC
     if int(year) == int(model.base_year):
@@ -839,9 +841,9 @@ def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
     float : The declining AIC.
     """
     # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('Annual intangible cost_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('Annual intangible cost_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('Annual intangible cost_declining_shape', node, year, tech=tech)
+    initial_aic = model.get_param('aic_declining_initial', node, year, tech=tech)
+    rate_constant = model.get_param('aic_declining_rate', node, year, tech=tech)
+    shape_constant = model.get_param('aic_declining_shape', node, year, tech=tech)
 
     # Calculate Declining AIC
     if int(year) == int(model.base_year):

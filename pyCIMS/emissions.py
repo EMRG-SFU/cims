@@ -209,16 +209,16 @@ def calc_aggregate_emission_cost_rate(model, node, year, tech=None):
 
 def _get_services_requested(model, node, year, tech=None):
     if tech:
-        if 'Service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
+        if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
             services_requested = model.graph.nodes[node][year]['technologies'][tech][
-                'Service requested']
+                'service requested']
     else:
-        if 'Service requested' not in model.graph.nodes[node][year]:
+        if 'service requested' not in model.graph.nodes[node][year]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['Service requested']
+            services_requested = model.graph.nodes[node][year]['service requested']
 
     return services_requested
 
@@ -228,7 +228,8 @@ def _add_emission_cost_from_non_fuel_children(model, year, services_requested, a
         child = req_data['branch']
         if child not in model.fuels:
             req_ratio = req_data['year_value']
-            child_emission_costs = model.get_param('aggregate_emissions_cost_rates', child, year)
+            child_emission_costs = model.get_param('aggregate_emissions_cost_rates', child, year,
+                                                   dict_expected=True)
             for ghg in child_emission_costs:
                 if ghg not in agg_emissions_cost:
                     agg_emissions_cost[ghg] = {}
