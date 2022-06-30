@@ -67,9 +67,9 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
                 # There are no technologies competing to retrofit, limits don't apply
                 limits[(node, tech)] = (0, 1)
             else:
-                min_retrofit = model.get_param('Retrofit_Min', node, year, tech=tech)
+                min_retrofit = model.get_param('retrofit_existing_min', node, year, tech=tech)
                 existing_tech_max_ms = 1 - min_retrofit
-                max_retrofit = model.get_param('Retrofit_Max', node, year, tech=tech)
+                max_retrofit = model.get_param('retrofit_existing_max', node, year, tech=tech)
                 existing_tech_min_ms = 1 - max_retrofit
                 limits[(node, tech)] = (existing_tech_min_ms, existing_tech_max_ms)
         else:
@@ -138,8 +138,8 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
         if (node, tech) == existing_tech:
             pass
         else:
-            ms_retrofit_min = model.get_param('Market share retro_Min', node, year, tech=tech)
-            ms_retrofit_max = model.get_param('Market share retro_Max', node, year, tech=tech)
+            ms_retrofit_min = model.get_param('retrofit_new_min', node, year, tech=tech)
+            ms_retrofit_max = model.get_param('retrofit_new_max', node, year, tech=tech)
             adopting_tech_ms_limits[(node, tech)] = (ms_retrofit_min, ms_retrofit_max)
             adopting_tech_market_shares[(node, tech)] = market_share / ms_of_all_adopting_techs
 
@@ -203,7 +203,7 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
 
     # New Stock
     if retrofit_amount > 0:
-        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech)
+        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech, dict_expected=True)
         for prev_year in new_stock_remaining:
             y_ns_remaining = new_stock_remaining[prev_year]
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)

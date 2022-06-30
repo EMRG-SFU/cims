@@ -165,6 +165,7 @@ def lcc_calculation(sub_graph, node, year, model):
         sub_graph.nodes[node][year]['life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
+
 def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     """
     Calculate a node's LCC using its cost curve function (stored in the node level data).
@@ -444,20 +445,20 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                     Expected_EC = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
                 elif method == 'Discounted':
-                    N = int(model.get_param('Lifetime', node, year, tech=tech))
-                    r_k = model.get_param('Discount rate_Financial', node, year)
+                    N = int(model.get_param('lifetime', node, year, tech=tech))
+                    r_k = model.get_param('discount rate_financial', node, year)
 
                     # interpolate all tax values
                     tax_vals = []
                     for n in range(int(year), int(year) + N, model.step):
                         if n in model.years:  # go back one step if current year isn't in range
-                            cur_tax = model.get_param('Tax', node, str(n),
+                            cur_tax = model.get_param('tax', node, str(n),
                                                       context=ghg, sub_context=emission_type)
                         else:
-                            cur_tax = model.get_param('Tax', node, str(n - model.step),
+                            cur_tax = model.get_param('tax', node, str(n - model.step),
                                                       context=ghg, sub_context=emission_type)
                         if n + model.step in model.years:  # when future years are out of range
-                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                            next_tax = model.get_param('tax', node, str(n + model.step),
                                                        context=ghg, sub_context=emission_type)
                         else:
                             next_tax = cur_tax
@@ -471,19 +472,19 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                     Expected_EC *= r_k / (1 - (1 + r_k) ** (-N))
 
                 elif method == 'Average':
-                    N = int(model.get_param('Lifetime', node, year, tech=tech))
+                    N = int(model.get_param('lifetime', node, year, tech=tech))
 
                     # interpolate tax values
                     tax_vals = []
                     for n in range(int(year), int(year) + N, model.step):
                         if str(n) <= max(model.years):  # go back one step if current year isn't in range
-                            cur_tax = model.get_param('Tax', node, str(n),
+                            cur_tax = model.get_param('tax', node, str(n),
                                                       context=ghg, sub_context=emission_type)
                         else:
-                            cur_tax = model.get_param('Tax', node, max(model.years),
+                            cur_tax = model.get_param('tax', node, max(model.years),
                                                       context=ghg, sub_context=emission_type)
                         if str(n + model.step) in model.years:  # when future years are out of range
-                            next_tax = model.get_param('Tax', node, str(n + model.step),
+                            next_tax = model.get_param('tax', node, str(n + model.step),
                                                        context=ghg, sub_context=emission_type)
                         else:
                             next_tax = cur_tax

@@ -222,7 +222,14 @@ def get_param(model, param, node, year=None, context=None, sub_context=None, tec
 
     # Raise warning if user isn't using get_param correctly
     if isinstance(val, dict) and not dict_expected:
-        warnings.warn("Get Param is returning a dict, considering using more parameters in get_param.")
+        warning_message = ("Get Param is returning a dict, considering using more parameters in get_param." +
+                      "\nParameter: " + (param if param else "") +
+                      "\nNode: " + (node if node else "") +
+                      "\nYear: " + (year if year else "") +
+                      "\nContext: " + (context if context else "") +
+                      "\nSub-context: " + (sub_context if sub_context else "") +
+                      "\nTech: " + (tech if tech else ""))
+        warnings.warn(warning_message)
 
     if val is not None:
         if not do_calc:
