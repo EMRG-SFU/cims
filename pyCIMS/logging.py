@@ -161,10 +161,11 @@ def log_dict(val):
                         val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
+                        val_pairs.append(deepcopy(val_log))
+
             elif isinstance(v, int) or isinstance(v, float):
                 val_log.value = float(v)
-
-            val_pairs.append(deepcopy(val_log))
+                val_pairs.append(deepcopy(val_log))
 
         return val_pairs
 
@@ -297,11 +298,18 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     if param == 'technologies':
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
-                                log = node, year, tech, tech_param, tech_val
-                                add_log_item(all_logs, log)
+                                if tech_param not in ['emissions_cost_dict',
+                                                 'aggregate_emissions_cost_rates']:
+                                    if tech_param == 'tax':
+                                        jillian = 1
+                                    log = node, year, tech, tech_param, tech_val
+                                    add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        add_log_item(all_logs, log)
+                        if param == 'tax':
+                            jillian = 1
+                        if param not in ['emissions_cost_dict', 'aggregate_emissions_cost_rates']:
+                            add_log_item(all_logs, log)
 
     else:
         # path argument exist
