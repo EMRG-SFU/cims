@@ -5,6 +5,7 @@ from pyCIMS.emissions import Emissions, EmissionRates
 from copy import deepcopy
 from scipy.interpolate import interp1d
 
+
 class ValueLog:
     def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
         self.context = context
