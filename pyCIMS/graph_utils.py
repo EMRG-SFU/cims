@@ -399,7 +399,8 @@ def add_node_data(graph, current_node, node_dfs):
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'sub_context': sub_context,
+            dct = {'context': context,
+                   'sub_context': sub_context,
                    'branch': branch,
                    'source': source,
                    'unit': unit,
