@@ -141,6 +141,8 @@ calculation_directory = {
 
 inheritable_params = [
     'price multiplier',
+    'discount rate_financial',
+    'discount rate_retrofit',
 ]
 
 
