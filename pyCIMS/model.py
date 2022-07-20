@@ -13,7 +13,7 @@ from . import lcc_calculation
 from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
-from .emissions import Emissions, EmissionRates
+from .emissions import Emissions, EmissionRates, EmissionCosts
 from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record
 
@@ -198,7 +198,6 @@ class Model:
         demand_nodes = ['demand', 'standard']
         supply_nodes = ['supply', 'standard']
 
-
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
 
@@ -292,6 +291,8 @@ class Model:
             graph_utils.bottom_up_traversal(self.graph,
                                             self.aggregate_emissions,
                                             year)
+
+            self.new_aggregate_emissions(year)
 
     def check_equilibrium(self, prev, new, threshold):
         """
@@ -673,6 +674,8 @@ class Model:
             for n in self.graph.nodes():
                 self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
                     create_value_dict({}, param_source='initialization')
+                self.graph.nodes[n][year]['new_aggregate_emission_costs'] = \
+                    create_value_dict(EmissionCosts(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
 
@@ -1042,6 +1045,21 @@ class Model:
 
         self.graph.nodes[node][year]['total_emissions_cost'] = \
             utils.create_value_dict(total_emissions_cost, param_source='calculation')
+
+    def new_aggregate_emissions(self, year):
+        for node in self.graph.nodes():
+
+            if node == 'pyCIMS':
+                pq = 1
+            else:
+                pq = self.get_param('provided_quantities', node, year).get_total_quantity()
+
+            ec = self.get_param('new_aggregate_emission_costs', node, year)
+
+            tec = ec * pq
+            tec.num_units = pq
+            value_dict = create_value_dict(tec)
+            self.graph.nodes[node][year]['new_total_emissions_cost'] = value_dict
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """

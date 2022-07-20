@@ -1,7 +1,7 @@
 import pandas as pd
 import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
-from pyCIMS.emissions import Emissions, EmissionRates
+from pyCIMS.emissions import Emissions, EmissionRates, EmissionCosts
 from copy import deepcopy
 from scipy.interpolate import interp1d
 
@@ -100,6 +100,17 @@ def log_EmissionRates(val):
                                    value=val))
     return result
 
+def log_EmissionCosts(val):
+    result = []
+
+    rates = val.summarize()
+    for ghg in rates:
+        for emission_type in rates[ghg]:
+            val = rates[ghg][emission_type]
+            result.append(ValueLog(context=ghg,
+                                   sub_context=emission_type,
+                                   value=val))
+    return result
 
 def log_list(val):
     """ List of dictionaries. For each item, extract the value and year_value"""
@@ -140,6 +151,8 @@ def log_dict(val):
             return log_Emissions(year_value)
         elif isinstance(year_value, EmissionRates):
             return log_EmissionRates(year_value)
+        elif isinstance(year_value, EmissionCosts):
+            return log_EmissionCosts(year_value)
         elif isinstance(year_value, dict):
             return log_dict(year_value)
         else:
@@ -207,6 +220,7 @@ def add_log_item(all_logs, log_tuple):
                 RequestedQuantity: log_RequestedQuantity,
                 Emissions: log_Emissions,
                 EmissionRates: log_EmissionRates,
+                EmissionCosts: log_EmissionCosts,
                 list: log_list,
                 dict: log_dict,
                 str: log_str,
@@ -301,14 +315,10 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                             for tech_param, tech_val in tech_data.items():
                                 if tech_param not in ['emissions_cost_dict',
                                                  'aggregate_emissions_cost_rates']:
-                                    if tech_param == 'tax':
-                                        jillian = 1
                                     log = node, year, tech, tech_param, tech_val
                                     add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        if param == 'tax':
-                            jillian = 1
                         if param not in ['emissions_cost_dict', 'aggregate_emissions_cost_rates']:
                             add_log_item(all_logs, log)
 
