@@ -58,12 +58,13 @@ def search_nodes(search_term, graph):
     return [n for n in graph.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, sub_context=None, branch=None, unit=None,
+def create_value_dict(year_val, source=None, context=None, sub_context=None, branch=None, unit=None,
                       param_source=None):
     """
     Creates a standard value dictionary from the inner values.
     """
-    value_dictionary = {'sub_context': sub_context,
+    value_dictionary = {'context': context,
+                        'sub_context': sub_context,
                         'branch': branch,
                         'source': source,
                         'unit': unit,
