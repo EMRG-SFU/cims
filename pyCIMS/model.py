@@ -11,6 +11,7 @@ from . import graph_utils
 from . import utils
 from . import lcc_calculation
 from . import stock_allocation
+from . import loop_resolution
 
 from .quantities import ProvidedQuantity, RequestedQuantity
 from .emissions import Emissions, EmissionRates
@@ -287,11 +288,15 @@ class Model:
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
             graph_utils.bottom_up_traversal(self.graph,
                                             self.calc_requested_quantities,
-                                            year)
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self.aggregate_emissions,
-                                            year)
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
 
     def check_equilibrium(self, prev, new, threshold):
         """
@@ -803,7 +808,7 @@ class Model:
 
         return param_val
 
-    def calc_requested_quantities(self, graph, node, year):
+    def calc_requested_quantities(self, graph, node, year, **kwargs):
         """
         Calculates and records fuel quantities requested by a node in the specified year.
 
@@ -883,7 +888,7 @@ class Model:
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
-    def aggregate_emissions(self, graph, node, year):
+    def aggregate_emissions(self, graph, node, year, **kwargs):
         net_emissions = Emissions()
         cap_emissions = Emissions()
         bio_emissions = Emissions()
