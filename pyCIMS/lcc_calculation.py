@@ -136,6 +136,12 @@ def lcc_calculation(sub_graph, node, year, model):
             curr_lcc = model.get_param('life cycle cost', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
+        # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
+        # This issue affects endogenous fuels that are not used until later years (like hydrogen)
+        if weighted_lccs == 0 and int(year) != model.base_year:
+            prev_year = str(int(year) - model.step)
+            weighted_lccs = model.get_param('life cycle cost', node, prev_year, context=node.split('.')[-1])
+
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = weighted_lccs - recycled_revenues
