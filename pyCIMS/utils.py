@@ -297,7 +297,7 @@ def get_param(model, param, node, year=None, context=None, sub_context=None, tec
         else:
             comp_type = model.get_param('competition type', node)
             if (comp_type in model.node_defaults) and (param in model.node_defaults[comp_type]):
-                val = model.get_node_parameter_default(param)
+                val = model.get_node_parameter_default(param, comp_type)
                 param_source = 'default'
 
     # Use a Default Parameter Value (tech)
