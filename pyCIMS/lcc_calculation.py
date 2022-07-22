@@ -435,7 +435,10 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
                 #  Dict to check if emission_type exists in taxes
-                tax_check = model.get_param('tax', node, year, context=ghg, dict_expected=True)
+                if ghg in all_taxes:
+                    tax_check = model.get_param('tax', node, year, context=ghg, dict_expected=True)
+                else:
+                    tax_check = {}
 
                 # Use foresight method to calculate tax
                 Expected_EC = 0
