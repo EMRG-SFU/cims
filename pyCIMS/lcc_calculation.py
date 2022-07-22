@@ -879,9 +879,13 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     float : The CRF, defined as CRF = discount_rate / (1-(1+discount_rate)^-lifespan)
     """
 
-    finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
-    payback_period = model.get_param('capital recovery', node, year, tech=tech)
+    # Check if the node has an exogenously defined capital recovery, if not use lifetime
+    try:
+        payback_period = model.get_param('capital recovery', node, year, tech=tech, check_exist=True)
+    except:
+        payback_period = model.get_param('lifetime', node, year, tech=tech)
 
+    finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
     if finance_discount == 0:
         warnings.warn('Discount rate_financial has value of 0 at {} -- {}'.format(node, tech))
         finance_discount = model.get_tech_parameter_default('discount rate_financial')
