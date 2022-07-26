@@ -327,7 +327,14 @@ class Model:
             if (prev_fuel_price is None) or (new_fuel_price is None):
                 return False
             abs_diff = abs(new_fuel_price - prev_fuel_price)
-            rel_diff = abs_diff / prev_fuel_price
+
+            try:
+                rel_diff = abs_diff / prev_fuel_price
+            except:
+                # For endogenous fuel nodes that are not called in beginning years (e.g. Hydrogen)
+                if prev_fuel_price == 0:
+                    rel_diff = 0
+
             # If any fuel's relative difference exceeds the threshold, an equilibrium
             # has not been reached
             if rel_diff > threshold:
