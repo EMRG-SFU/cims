@@ -43,6 +43,9 @@ def lcc_calculation(sub_graph, node, year, model):
     -------
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
+    if node in model.fuels:
+        if year != '2000':
+            jillian = 1
     # Check if the node has an exogenously defined Life Cycle Cost
     if 'life cycle cost' in sub_graph.nodes[node][year]:
         lcc, lcc_source = model.get_param('life cycle cost', node, year, context=node.split('.')[-1],

@@ -12,10 +12,10 @@ from . import utils
 from . import lcc_calculation
 from . import stock_allocation
 
-from .quantities import ProvidedQuantity, RequestedQuantity
+from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionRates
 from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record
+from .quantity_aggregation import find_children, get_quantities_to_record, get_distributed_supply
 
 
 class Model:
@@ -197,7 +197,6 @@ class Model:
         # Make a subgraph based on the type of node
         demand_nodes = ['demand', 'standard']
         supply_nodes = ['supply', 'standard']
-
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -844,7 +843,9 @@ class Model:
         quantities requested of node & all it's successors.
         """
         requested_quantity = RequestedQuantity()
-
+        distributed_supply = DistributedSupply()
+        if node == 'pyCIMS.Canada.British Columbia.Pulp and Paper.Black Liquor Service.Concentrated Black Liquor':
+            jillian = 1
         if self.get_param('competition type', node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
@@ -860,10 +861,10 @@ class Model:
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
+                tech_distributed_supply = DistributedSupply()
                 req_prov_children = find_children(graph, node, year, tech, request_provide=True)
                 for child in req_prov_children:
                     quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
-
                     # Record requested quantities
                     for providing_node, child, attributable_amount in quantities_to_record:
                         tech_requested_quantity.record_requested_quantity(providing_node,
@@ -872,23 +873,40 @@ class Model:
                         requested_quantity.record_requested_quantity(providing_node,
                                                                      child,
                                                                      attributable_amount)
+
+                    distributed_supplies = get_distributed_supply(self, child, node, year, tech)
+                    for fuel, child, attributable_amount in distributed_supplies:
+                        tech_distributed_supply.record_distributed_supply(fuel, child,
+                                                                          attributable_amount)
+                        distributed_supply.record_distributed_supply(fuel, child,
+                                                                     attributable_amount)
+
                 # Save the tech requested quantities
                 self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
                     tech_requested_quantity
+                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
+                    tech_distributed_supply
 
         else:
             req_prov_children = find_children(graph, node, year, request_provide=True)
             for child in req_prov_children:
-                quantities_to_record = get_quantities_to_record(self, child, node, year)
-
                 # Record requested quantities
+                quantities_to_record = get_quantities_to_record(self, child, node, year)
                 for providing_node, child, attributable_amount in quantities_to_record:
                     requested_quantity.record_requested_quantity(providing_node,
                                                                  child,
                                                                  attributable_amount)
 
+                # Record distributed supplies
+                distributed_supplies = get_distributed_supply(self, child, node, year)
+                for fuel, child, attributable_amount in distributed_supplies:
+                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
+
+        self.graph.nodes[node][year]['distributed_supply'] = \
+            utils.create_value_dict(distributed_supply, param_source='calculation')
 
     def aggregate_emissions(self, graph, node, year):
         net_emissions = Emissions()

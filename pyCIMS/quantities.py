@@ -56,11 +56,37 @@ class RequestedQuantity:
             total_quants[service] = total_service
         return total_quants
 
-    def sum_requested_quantities(self):
-        total_quantity = 0
+    def summarize_distributed_supply(self):
+        distributed_supply = {}
         for fuel in self.requested_quantities:
-            fuel_rq = self.requested_quantities[fuel]
-            for source in fuel_rq:
-                total_quantity += fuel_rq[source]
+            fuel_distributed_supply = 0
+            for child, quantity in self.requested_quantities[fuel].items():
+                if quantity < 0:
+                    fuel_distributed_supply += quantity
+            distributed_supply[fuel] = fuel_distributed_supply
+        return distributed_supply
 
-        return total_quantity
+
+class DistributedSupply:
+    def __init__(self):
+        self.distributed_supply = {}
+
+    def record_distributed_supply(self, fuel, distributed_supply_node, amount):
+        if fuel in self.distributed_supply:
+            if distributed_supply_node in self.distributed_supply[fuel]:
+                self.distributed_supply[fuel][distributed_supply_node] += amount
+            else:
+                self.distributed_supply[fuel][distributed_supply_node] = amount
+
+        else:
+            self.distributed_supply[fuel] = {distributed_supply_node: amount}
+
+    def summarize_distributed_supply(self):
+        distributed_supply = {}
+        for fuel in self.distributed_supply:
+            fuel_distributed_supply = 0
+            for child, quantity in self.distributed_supply[fuel].items():
+                if quantity < 0:
+                    fuel_distributed_supply += quantity
+            distributed_supply[fuel] = fuel_distributed_supply
+        return distributed_supply

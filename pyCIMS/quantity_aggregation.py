@@ -101,3 +101,61 @@ def get_quantities_to_record(model, child, node, year, tech=None):
         quantities_to_record = find_indirect_quantities(model, child, node, year, tech)
 
     return quantities_to_record
+
+
+def get_distributed_supply(model, child, node, year, tech=None):
+    """
+    Find the list of distributed supplies to be recorded for a node/tech based on it's request for
+    services from child.
+    """
+    child_provided_quant = model.get_param("provided_quantities", child, year=year)
+    dist_supplies = []
+
+    # Find the quantities provided by child to the node/tech
+    if tech is None:
+        quantity_provided_to_node_tech = child_provided_quant.get_quantity_provided_to_node(node)
+    else:
+        quantity_provided_to_node_tech = child_provided_quant.get_quantity_provided_to_tech(node,
+                                                                                            tech)
+
+    # Return early if there isn't a negative quantity
+    if quantity_provided_to_node_tech >= 0:
+        return dist_supplies
+
+    if child in model.fuels:
+        # Record quantities provided directly to the node/tech from child
+        dist_supplies.append((child, child, quantity_provided_to_node_tech))
+    else:
+        # Record quantities provided indirectly to the node/tech from child
+        dist_supplies = find_indirect_distributed_supply(model, child, node, year, tech)
+
+    return dist_supplies
+
+
+def find_indirect_distributed_supply(model, child, node, year, tech=None):
+    """
+    Find the indirectly requested quantities attributable to node by way of its request of services
+    from child.
+    """
+    dist_supply_to_record = []
+    child_provided_quantities = model.get_param('provided_quantities', child, year=year)
+
+    if tech is None:
+        quantity_provided_to_node_tech = \
+            child_provided_quantities.get_quantity_provided_to_node(node)
+    else:
+        quantity_provided_to_node_tech = \
+            child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+
+    try:
+        child_total_quantity_provided = child_provided_quantities.get_total_quantity()
+        if child_total_quantity_provided != 0:
+            proportion = quantity_provided_to_node_tech / child_total_quantity_provided
+            child_dist_supply= model.get_param('distributed_supply', child, year=year)
+            distributed_supply = child_dist_supply.summarize_distributed_supply()
+            for child_rq_node, amount in distributed_supply.items():
+                dist_supply_to_record.append((child_rq_node, child, proportion*amount))
+    except KeyError:
+        print(f"Continuing b/c of a loop -- {node}")
+
+    return dist_supply_to_record
