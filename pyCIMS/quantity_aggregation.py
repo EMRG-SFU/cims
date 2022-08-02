@@ -119,12 +119,11 @@ def get_distributed_supply(model, child, node, year, tech=None):
                                                                                             tech)
 
     # Return early if there isn't a negative quantity
-    if quantity_provided_to_node_tech >= 0:
-        return dist_supplies
 
     if child in model.fuels:
-        # Record quantities provided directly to the node/tech from child
-        dist_supplies.append((child, child, quantity_provided_to_node_tech))
+        if quantity_provided_to_node_tech < 0:
+            # Record quantities provided directly to the node/tech from child
+            dist_supplies.append((child, child, quantity_provided_to_node_tech))
     else:
         # Record quantities provided indirectly to the node/tech from child
         dist_supplies = find_indirect_distributed_supply(model, child, node, year, tech)

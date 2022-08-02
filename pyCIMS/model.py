@@ -858,6 +858,14 @@ class Model:
                                                                  child,
                                                                  child_rq_amount)
 
+                # TODO: Should this be removed? Since we want to 0 out the distributed supply at the
+                #       sector level? An alternative could be to at the sector node, subtract
+                #       distributed supply from the quantities.
+                distributed_supplies = get_distributed_supply(self, child, node, year)
+                for fuel, child, attributable_amount in distributed_supplies:
+                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
@@ -1503,8 +1511,8 @@ class Model:
                     self.set_param_search(val_tmp, param, node, year, tech, sub_param, val_operator, create_missing,
                                           index)
 
-    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None, val_operator='==',
-                         create_missing=False, row_index=None):
+    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None,
+                         val_operator='==', create_missing=False, row_index=None):
         """
         Sets parameter values, for all context (node, year, technology, and
         sub-parameter), searching through all tech and sub_param keys if necessary.
