@@ -3,6 +3,7 @@ import warnings
 import networkx as nx
 
 from . import utils
+from . import loop_resolution
 
 
 # **************************
@@ -194,7 +195,8 @@ def get_subgraph(graph, node_types):
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None,
+                       loop_resolution_func=loop_resolution.min_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -244,17 +246,16 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
             warnings.warn("Found a Loop -- ")
             # Resolve a loop
             cycles = nx.simple_cycles(sg_cur)
-            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
+            n_cur = loop_resolution_func(cycles, dist_from_root)
 
-            # candidates = {n: dist_from_root[n] for n in sg_cur}
-            n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None,
+                        loop_resolution_func=loop_resolution.max_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -309,8 +310,7 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
             warnings.warn("Found a Loop")
             # Resolve a loop
             cycles = nx.simple_cycles(sg_cur)
-            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
-            n_cur = max(candidates, key=lambda x: candidates[x])
+            n_cur = loop_resolution_func(cycles, dist_from_root, **kwargs)
 
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
