@@ -735,7 +735,7 @@ class Model:
             Nothing is returned. `self` will be updated to reflect the results of stock retirement
             and new stock competitions.
         """
-        comp_type = self.get_param('competition type', node)
+        comp_type = self.get_param('competition type', node).lower()
 
         # Market acts the same as tech compete
         if comp_type == 'market':

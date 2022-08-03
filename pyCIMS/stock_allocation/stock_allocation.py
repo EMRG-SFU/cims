@@ -40,7 +40,7 @@ def all_tech_compete_allocation(model, node, year):
         Nothing is returned. `model` will be updated to reflect the results of stock retirement and
         new stock competitions.
     """
-    comp_type = model.get_param('competition type', node)
+    comp_type = model.get_param('competition type', node).lower()
 
     if comp_type == 'market':
         comp_type = 'tech compete'
