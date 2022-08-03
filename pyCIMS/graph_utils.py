@@ -371,7 +371,7 @@ def add_node_data(graph, current_node, node_dfs):
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
 
     # 5 Find the cost curve function
-    if comp_type in ['Fuel - Cost Curve Annual', 'Fuel - Cost Curve Cumulative']:
+    if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
         years = [c for c in current_node_df.columns if utils.is_year(c)]
 
         # Get quantities
