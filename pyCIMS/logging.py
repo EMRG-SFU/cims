@@ -1,9 +1,10 @@
 import pandas as pd
 import warnings
-from pyCIMS.model import ProvidedQuantity, RequestedQuantity
+from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from pyCIMS.emissions import Emissions, EmissionRates
 from copy import deepcopy
 from scipy.interpolate import interp1d
+
 
 class ValueLog:
     def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
@@ -73,6 +74,15 @@ def log_RequestedQuantity(val):
     return rqs
 
 
+def log_DistributedSupply(val):
+    distributed_supplies = []
+
+    for k, v in val.summarize_distributed_supply().items():
+        distributed_supplies.append(ValueLog(branch=k, value=v))
+
+    return distributed_supplies
+
+
 def log_Emissions(val):
     result = []
 
@@ -135,6 +145,8 @@ def log_dict(val):
             return log_ProvidedQuantity(year_value)
         elif isinstance(year_value, RequestedQuantity):
             return log_RequestedQuantity(year_value)
+        elif isinstance(year_value, DistributedSupply):
+            return log_DistributedSupply(year_value)
         elif isinstance(year_value, Emissions):
             return log_Emissions(year_value)
         elif isinstance(year_value, EmissionRates):
@@ -203,6 +215,7 @@ def add_log_item(all_logs, log_tuple):
                 float: log_float,
                 ProvidedQuantity: log_ProvidedQuantity,
                 RequestedQuantity: log_RequestedQuantity,
+                DistributedSupply: log_DistributedSupply,
                 Emissions: log_Emissions,
                 EmissionRates: log_EmissionRates,
                 list: log_list,
