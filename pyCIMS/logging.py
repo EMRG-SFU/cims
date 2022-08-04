@@ -311,10 +311,14 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
                                 log = node, year, tech, tech_param, tech_val
-                                add_log_item(all_logs, log)
+                                if tech_param not in ['aggregate_emissions_cost_rates', 'tax', 'emissions_cost_dict']:
+                                    print(tech_param)
+                                    add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        add_log_item(all_logs, log)
+                        if param not in ['aggregate_emissions_cost_rates', 'tax', 'emissions_cost_dict']:
+                            print(param)
+                            add_log_item(all_logs, log)
 
     else:
         # path argument exist
