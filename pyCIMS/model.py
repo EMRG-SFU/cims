@@ -844,32 +844,29 @@ class Model:
         """
         requested_quantity = RequestedQuantity()
         distributed_supply = DistributedSupply()
-        if node == 'pyCIMS.Canada.British Columbia.Pulp and Paper.Black Liquor Service.Concentrated Black Liquor':
-            jillian = 1
+
         if self.get_param('competition type', node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param('requested_quantities',
-                                                            child, year).get_total_quantities_requested()
+                                                       child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
                                                                  child,
                                                                  child_rq_amount)
 
-                # TODO: Should this be removed? Since we want to 0 out the distributed supply at the
-                #       sector level? An alternative could be to at the sector node, subtract
-                #       distributed supply from the quantities.
                 distributed_supplies = get_distributed_supply(self, child, node, year)
                 for fuel, child, attributable_amount in distributed_supplies:
-                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
                     distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
 
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
                 tech_distributed_supply = DistributedSupply()
+
+                # Aggregate Fuel Quantities
                 req_prov_children = find_children(graph, node, year, tech, request_provide=True)
                 for child in req_prov_children:
                     quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
@@ -882,6 +879,7 @@ class Model:
                                                                      child,
                                                                      attributable_amount)
 
+                    # Record distributed supplies
                     distributed_supplies = get_distributed_supply(self, child, node, year, tech)
                     for fuel, child, attributable_amount in distributed_supplies:
                         tech_distributed_supply.record_distributed_supply(fuel, child,
@@ -991,7 +989,7 @@ class Model:
 
                             quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
                             if quant_provided_to_tech > 0:
-                                proportion = quant_provided_to_tech / child_total_quantity
+                                proportion = child_quantities.calculate_proportion(node, tech)
 
                                 proportional_child_net_emissions = child_net_emissions * proportion
                                 proportional_child_cap_emissions = child_cap_emissions * proportion
@@ -1049,8 +1047,7 @@ class Model:
 
                         quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
                         if quant_provided_to_node > 0:
-                            proportion = quant_provided_to_node / child_total_quantity
-
+                            proportion = child_quantities.calculate_proportion(node)
                             proportional_child_net_emissions = child_net_emissions * proportion
                             proportional_child_cap_emissions = child_cap_emissions * proportion
                             proportional_child_total_emissions_cost = child_total_emissions_cost * proportion

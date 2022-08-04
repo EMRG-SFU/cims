@@ -64,7 +64,7 @@ def find_indirect_quantities(model, child, node, year, tech=None):
     try:
         child_total_quantity_provided = child_provided_quantities.get_total_quantity()
         if child_total_quantity_provided != 0:
-            proportion = quantity_provided_to_node_tech / child_total_quantity_provided
+            proportion = child_provided_quantities.calculate_proportion(node)
             child_requested_quant = model.get_param('requested_quantities', child, year=year)
             quantities_requested = child_requested_quant.get_total_quantities_requested()
             for child_rq_node, amount in quantities_requested.items():
@@ -118,12 +118,10 @@ def get_distributed_supply(model, child, node, year, tech=None):
         quantity_provided_to_node_tech = child_provided_quant.get_quantity_provided_to_tech(node,
                                                                                             tech)
 
-    # Return early if there isn't a negative quantity
-
     if child in model.fuels:
         if quantity_provided_to_node_tech < 0:
             # Record quantities provided directly to the node/tech from child
-            dist_supplies.append((child, child, quantity_provided_to_node_tech))
+            dist_supplies.append((child, child, -1 * quantity_provided_to_node_tech))
     else:
         # Record quantities provided indirectly to the node/tech from child
         dist_supplies = find_indirect_distributed_supply(model, child, node, year, tech)
@@ -149,8 +147,8 @@ def find_indirect_distributed_supply(model, child, node, year, tech=None):
     try:
         child_total_quantity_provided = child_provided_quantities.get_total_quantity()
         if child_total_quantity_provided != 0:
-            proportion = quantity_provided_to_node_tech / child_total_quantity_provided
-            child_dist_supply= model.get_param('distributed_supply', child, year=year)
+            proportion = child_provided_quantities.calculate_proportion(node)
+            child_dist_supply = model.get_param('distributed_supply', child, year=year)
             distributed_supply = child_dist_supply.summarize_distributed_supply()
             for child_rq_node, amount in distributed_supply.items():
                 dist_supply_to_record.append((child_rq_node, child, proportion*amount))

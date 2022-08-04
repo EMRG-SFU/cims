@@ -13,6 +13,24 @@ class ProvidedQuantity:
             total += amount
         return total
 
+    def calculate_proportion(self, node, tech=None):
+        proportion = 0
+
+        if tech is None:
+            total_provided_node_tech = self.get_quantity_provided_to_node(node)
+        else:
+            total_provided_node_tech = self.get_quantity_provided_to_tech(node, tech)
+
+        non_negative_total = 0
+        for amount in self.provided_quantities.values():
+            if amount > 0:
+                non_negative_total += amount
+
+        if total_provided_node_tech >= 0:
+            proportion = total_provided_node_tech / non_negative_total
+
+        return proportion
+
     def get_quantity_provided_to_node(self, node):
         """
         Find the quantity being provided to a specific node, across all it's technologies
@@ -61,10 +79,17 @@ class RequestedQuantity:
         for fuel in self.requested_quantities:
             fuel_distributed_supply = 0
             for child, quantity in self.requested_quantities[fuel].items():
-                if quantity < 0:
+                if quantity > 0:
                     fuel_distributed_supply += quantity
             distributed_supply[fuel] = fuel_distributed_supply
         return distributed_supply
+
+    def sum_requested_quantities(self):
+        total_quantity = 0
+        for fuel in self.requested_quantities:
+            fuel_rq = self.requested_quantities[fuel]
+            for source in fuel_rq:
+                total_quantity += fuel_rq[source]
 
 
 class DistributedSupply:
@@ -86,7 +111,6 @@ class DistributedSupply:
         for fuel in self.distributed_supply:
             fuel_distributed_supply = 0
             for child, quantity in self.distributed_supply[fuel].items():
-                if quantity < 0:
-                    fuel_distributed_supply += quantity
+                fuel_distributed_supply += quantity
             distributed_supply[fuel] = fuel_distributed_supply
         return distributed_supply
