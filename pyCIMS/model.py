@@ -1064,6 +1064,15 @@ class Model:
             total_emissions_cost = emissions_cost * pq
             total_emissions_cost.num_units = pq
 
+            if 'technologies' in graph.nodes[node][year]:
+                for tech in graph.nodes[node][year]['technologies']:
+                    ec = self.get_param('new_aggregate_emission_costs', node, year, tech=tech)
+                    ms = self.get_param('total_market_share', node, year, tech=tech)
+                    tech_total_emission_cost = ec * ms * pq
+                    tech_total_emission_cost.num_units = ms * pq
+                    value_dict = create_value_dict(tech_total_emission_cost)
+                    graph.nodes[node][year]['technologies'][tech]['new_total_emissions_cost'] = value_dict
+
         value_dict = create_value_dict(total_emissions_cost)
         graph.nodes[node][year]['new_total_emissions_cost'] = value_dict
 
