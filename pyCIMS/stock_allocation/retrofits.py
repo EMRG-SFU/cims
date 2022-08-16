@@ -240,7 +240,7 @@ def calc_retrofits(model, node, year, existing_stock):
         A new retrofit_stock dictionary that contains the amount of stock adopted by each technology
         during the retrofit competition.
     """
-    comp_type = model.get_param('competition type', node)
+    comp_type = model.get_param('competition type', node).lower()
     heterogeneity = model.get_param('heterogeneity', node, year)
     retrofit_stocks = {}
     for existing_node_tech in existing_stock.keys():

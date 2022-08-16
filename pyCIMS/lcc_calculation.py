@@ -136,6 +136,12 @@ def lcc_calculation(sub_graph, node, year, model):
             curr_lcc = model.get_param('life cycle cost', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
+        # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
+        # This issue affects endogenous fuels that are not used until later years (like hydrogen)
+        if weighted_lccs == 0 and int(year) != model.base_year:
+            prev_year = str(int(year) - model.step)
+            weighted_lccs = model.get_param('life cycle cost', node, prev_year, context=node.split('.')[-1])
+
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = weighted_lccs - recycled_revenues
@@ -283,8 +289,6 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
                    emissions_cost
 
     return complete_lcc
-
-
 
 
 def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
@@ -615,9 +619,13 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     float : The CRF, defined as CRF = discount_rate / (1-(1+discount_rate)^-lifespan)
     """
 
-    finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
-    payback_period = model.get_param('capital recovery', node, year, tech=tech)
+    # Check if the node has an exogenously defined capital recovery, if not use lifetime
+    try:
+        payback_period = model.get_param('capital recovery', node, year, tech=tech, check_exist=True)
+    except:
+        payback_period = model.get_param('lifetime', node, year, tech=tech)
 
+    finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
     if finance_discount == 0:
         warnings.warn('Discount rate_financial has value of 0 at {} -- {}'.format(node, tech))
         finance_discount = model.get_tech_parameter_default('discount rate_financial')

@@ -49,6 +49,7 @@ class ModelValidator:
         n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
         all_cols = np.concatenate((n_cols, y_cols))
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf['Parameter'] = mdf['Parameter'].str.lower()
 
         return mdf
 
@@ -956,7 +957,7 @@ class ModelValidator:
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
         nodes_no_capital_cost()
-        nodes_bad_total_market_share()
+        # nodes_bad_total_market_share()
         techs_no_base_market_share()
         duplicate_service_requests()
         bad_service_req()
