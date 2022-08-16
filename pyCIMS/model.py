@@ -870,9 +870,9 @@ class Model:
                 for tech in graph.nodes[node][year]['technologies']:
                     ec = self.get_param('per_unit_emissions_cost', node, year, tech=tech)
                     ms = self.get_param('total_market_share', node, year, tech=tech)
-                    tech_total_emission_cost = ec * ms * pq
-                    tech_total_emission_cost.num_units = ms * pq
-                    value_dict = create_value_dict(tech_total_emission_cost)
+                    tech_total_emissions_cost = ec * ms * pq
+                    tech_total_emissions_cost.num_units = ms * pq
+                    value_dict = create_value_dict(tech_total_emissions_cost)
                     graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = value_dict
 
         value_dict = create_value_dict(total_emissions_cost)

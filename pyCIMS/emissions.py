@@ -110,7 +110,7 @@ class EmissionsCost:
 
         return summary_rates
 
-    def total_emission_cost(self):
+    def total_emissions_cost(self):
         total = 0
 
         for source_branch in self.emissions_cost:
@@ -289,7 +289,7 @@ def calc_per_unit_emissions_cost(model, node, year, tech=None):
 
         # Emissions Cost from any non-fuel children
         services_requested = utils.get_services_requested(model, node, year, tech=tech)
-        agg_emissions_cost = _add_emission_cost_from_non_fuel_children(model, year,
+        agg_emissions_cost = _add_emissions_cost_from_non_fuel_children(model, year,
                                                                        services_requested,
                                                                        agg_emissions_cost)
 
@@ -309,7 +309,7 @@ def calc_per_unit_emissions_cost(model, node, year, tech=None):
         services_requested = utils.get_services_requested(model, node, year)
 
         # Emissions Cost from Non Fuel children
-        agg_emissions_cost = _add_emission_cost_from_non_fuel_children(model, year,
+        agg_emissions_cost = _add_emissions_cost_from_non_fuel_children(model, year,
                                                                        services_requested,
                                                                        agg_emissions_cost)
 
@@ -322,7 +322,7 @@ def calc_per_unit_emissions_cost(model, node, year, tech=None):
         model.graph.nodes[node][year]['per_unit_emissions_cost'] = new_val_dict
 
 
-def _add_emission_cost_from_non_fuel_children(model, year, services_requested, agg_emissions_cost):
+def _add_emissions_cost_from_non_fuel_children(model, year, services_requested, agg_emissions_cost):
     """
     Go through each of the requested services and find the emissions cost that can be attributed to
     the requesting node. Add these to agg_emissions_cost.
@@ -347,10 +347,10 @@ def _add_emission_cost_from_non_fuel_children(model, year, services_requested, a
         child = req_data['branch']
         if child not in model.fuels:
             req_ratio = max(req_data['year_value'], 0)
-            child_emission_costs = model.get_param('per_unit_emissions_cost', child, year,
+            child_emissions_cost = model.get_param('per_unit_emissions_cost', child, year,
                                                    dict_expected=True)
 
-            agg_emissions_cost = agg_emissions_cost + (child_emission_costs * req_ratio)
+            agg_emissions_cost = agg_emissions_cost + (child_emissions_cost * req_ratio)
 
     return agg_emissions_cost
 
