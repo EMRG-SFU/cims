@@ -1,7 +1,7 @@
 import pandas as pd
 import warnings
 from pyCIMS.model import ProvidedQuantity, RequestedQuantity
-from pyCIMS.emissions import Emissions, EmissionRates, EmissionCosts
+from pyCIMS.emissions import Emissions, EmissionRates, EmissionsCost
 from copy import deepcopy
 from scipy.interpolate import interp1d
 
@@ -151,7 +151,7 @@ def log_dict(val):
             return log_Emissions(year_value)
         elif isinstance(year_value, EmissionRates):
             return log_EmissionRates(year_value)
-        elif isinstance(year_value, EmissionCosts):
+        elif isinstance(year_value, EmissionsCost):
             return log_EmissionCosts(year_value)
         elif isinstance(year_value, dict):
             return log_dict(year_value)
@@ -220,7 +220,7 @@ def add_log_item(all_logs, log_tuple):
                 RequestedQuantity: log_RequestedQuantity,
                 Emissions: log_Emissions,
                 EmissionRates: log_EmissionRates,
-                EmissionCosts: log_EmissionCosts,
+                EmissionsCost: log_EmissionCosts,
                 list: log_list,
                 dict: log_dict,
                 str: log_str,

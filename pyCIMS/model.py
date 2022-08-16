@@ -13,7 +13,7 @@ from . import lcc_calculation
 from . import stock_allocation
 
 from .quantities import ProvidedQuantity, RequestedQuantity
-from .emissions import Emissions, EmissionRates, EmissionCosts
+from .emissions import Emissions, EmissionRates, EmissionsCost
 from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record
 
@@ -289,7 +289,7 @@ class Model:
                                             year)
 
             graph_utils.bottom_up_traversal(self.graph,
-                                            self.aggregate_emissions,
+                                            self._aggregate_emissions,
                                             year)
 
     def check_equilibrium(self, prev, new, threshold):
@@ -673,7 +673,7 @@ class Model:
                 self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
                     create_value_dict({}, param_source='initialization')
                 self.graph.nodes[n][year]['per_unit_emissions_cost'] = \
-                    create_value_dict(EmissionCosts(), param_source='initialization')
+                    create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
 
@@ -884,8 +884,32 @@ class Model:
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
-    def aggregate_emissions(self, graph, node, year):
-        total_emissions_cost = EmissionCosts()
+    def _aggregate_emissions(self, graph, node, year):
+        """
+        Calculates and records the total emissions cost for a particular node. This is done by
+        taking the per-unit emissions cost and multiplying it by the number of units provided by a
+        particular node or technology.
+
+        To be used as part of a bottom_up_traversal once an equilibrium has been reached.
+
+        Parameters
+        ----------
+        graph : NetworkX.Digraph
+            The graph being traversed.
+
+        node : str
+            The node whose total_emissions_cost is being calculated.
+
+        year : str
+            Tthe year of interest.
+
+        Returns
+        -------
+        None
+            Returns nothing but does record total_emissions_cost for the node (and any
+            technologies).
+        """
+        total_emissions_cost = EmissionsCost()
 
         comp_type = self.get_param('competition type', node)
         if comp_type in ['root', 'region']:

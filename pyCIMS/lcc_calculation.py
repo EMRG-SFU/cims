@@ -3,7 +3,7 @@ This module contains the functions for LCC Calculations for the pyCIMS model.
 """
 import warnings
 import math
-from .emissions import calc_emissions_cost, calc_aggregate_emission_cost_rate
+from .emissions import calc_emissions_cost, calc_per_unit_emissions_cost
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
 
@@ -47,7 +47,7 @@ def lcc_calculation(sub_graph, node, year, model):
                                           return_source=True)  # context is the fuel name
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
-            calc_aggregate_emission_cost_rate(model, node, year)
+            calc_per_unit_emissions_cost(model, node, year)
             return
 
     # Check if the node is a tech compete node:

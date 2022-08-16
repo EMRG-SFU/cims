@@ -467,3 +467,19 @@ def inherit_parameter(graph, node, year, param):
 
         if node_param_val:
             graph.nodes[node][year][param] = node_param_val
+
+
+def get_services_requested(model, node, year, tech=None):
+    if tech:
+        if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
+            services_requested = {}
+        else:
+            services_requested = model.graph.nodes[node][year]['technologies'][tech][
+                'service requested']
+    else:
+        if 'service requested' not in model.graph.nodes[node][year]:
+            services_requested = {}
+        else:
+            services_requested = model.graph.nodes[node][year]['service requested']
+
+    return services_requested
