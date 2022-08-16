@@ -43,7 +43,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
     # Retrieve the aggregate emissions cost at the node/tech
     calc_aggregate_emission_cost_rate(model, node, year, tech)
 
-    aggregate_emissions_cost = model.get_param('new_aggregate_emission_costs',
+    aggregate_emissions_cost = model.get_param('per_unit_emissions_cost',
                                                node, year, tech=tech, dict_expected=True)
 
     # Apply the recycling rates to the aggregate emissions to find the recycled revenues

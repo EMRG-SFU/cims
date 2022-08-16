@@ -292,10 +292,6 @@ class Model:
                                             self.aggregate_emissions,
                                             year)
 
-            graph_utils.bottom_up_traversal(self.graph,
-                                            self.new_aggregate_emissions,
-                                            year)
-
     def check_equilibrium(self, prev, new, threshold):
         """
         Return False unless an equilibrium has been reached.
@@ -676,7 +672,7 @@ class Model:
             for n in self.graph.nodes():
                 self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
                     create_value_dict({}, param_source='initialization')
-                self.graph.nodes[n][year]['new_aggregate_emission_costs'] = \
+                self.graph.nodes[n][year]['per_unit_emissions_cost'] = \
                     create_value_dict(EmissionCosts(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
@@ -889,166 +885,6 @@ class Model:
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
     def aggregate_emissions(self, graph, node, year):
-        net_emissions = Emissions()
-        cap_emissions = Emissions()
-        bio_emissions = Emissions()
-        total_emissions_cost = 0
-
-        # get emissions that originate at the node
-        if 'net_emission_rates' in self.graph.nodes[node][year]:
-            net_emission_rates = self.get_param('net_emission_rates', node, year)
-            cap_emission_rates = self.get_param('captured_emission_rates', node, year)
-        else:
-            net_emission_rates = EmissionRates()
-            cap_emission_rates = EmissionRates()
-
-        if 'bio_emission_rates' in self.graph.nodes[node][year]:
-            bio_emission_rates = self.get_param('bio_emission_rates', node, year)
-        else:
-            bio_emission_rates = EmissionRates()
-
-        if 'emissions cost' in self.graph.nodes[node][year]:
-            emissions_cost = self.get_param('emissions cost', node, year)
-        else:
-            emissions_cost = 0
-
-        total_units = self.get_param('provided_quantities', node, year).get_total_quantity()
-        net_emissions += Emissions(net_emission_rates.multiply_rates(total_units))
-        cap_emissions += Emissions(cap_emission_rates.multiply_rates(total_units))
-        bio_emissions += Emissions(bio_emission_rates.multiply_rates(total_units))
-        total_emissions_cost += emissions_cost * total_units
-
-        # Get Other Emissions
-        if 'technologies' in graph.nodes[node][year]:
-            # Get emissions from technologies
-            for tech in graph.nodes[node][year]['technologies']:
-                tech_net_emissions = Emissions()
-                tech_cap_emissions = Emissions()
-                tech_bio_emissions = Emissions()
-                tech_total_emissions_cost = 0
-
-                # Get emissions originating at the technology
-                tech_market_share = self.get_param('total_market_share', node, year, tech=tech)
-                tech_units = tech_market_share * total_units
-                tech_net_emission_rates = self.get_param("net_emission_rates", node, year, tech=tech)
-                tech_cap_emission_rates = self.get_param("captured_emission_rates", node, year, tech=tech)
-                tech_bio_emission_rates = self.get_param("bio_emission_rates", node, year, tech=tech)
-                tech_emissions_cost = self.get_param('emissions cost', node, year, tech=tech)
-                if tech_net_emission_rates is not None:
-                    tech_net_emissions = Emissions(tech_net_emission_rates.multiply_rates(tech_units))
-                    tech_cap_emissions = Emissions(tech_cap_emission_rates.multiply_rates(tech_units))
-                    net_emissions += tech_net_emissions
-                    cap_emissions += tech_cap_emissions
-
-                if tech_bio_emission_rates is not None:
-                    tech_bio_emissions = Emissions(tech_bio_emission_rates.multiply_rates(tech_units))
-                    bio_emissions += tech_bio_emissions
-
-                if tech_emissions_cost is not None:
-                    tech_total_emissions_cost = tech_emissions_cost * tech_units
-                    total_emissions_cost += tech_total_emissions_cost
-
-                # Get emissions originating from the technology's request/provide children
-                req_prov_children = find_children(graph, node, year, request_provide=True)
-
-                for child in req_prov_children:
-                    if child not in self.fuels:
-                        child_quantities = self.get_param('provided_quantities', child, year)
-                        child_total_quantity = child_quantities.get_total_quantity()
-                        if child_total_quantity != 0:
-                            child_net_emissions = self.get_param("net_emissions", child, year)
-                            child_cap_emissions = self.get_param("captured_emissions", child, year)
-                            child_bio_emissions = self.get_param("bio_emissions", child, year)
-                            child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
-
-                            quant_provided_to_tech = child_quantities.get_quantity_provided_to_tech(node, tech)
-                            if quant_provided_to_tech > 0:
-                                proportion = quant_provided_to_tech / child_total_quantity
-
-                                proportional_child_net_emissions = child_net_emissions * proportion
-                                proportional_child_cap_emissions = child_cap_emissions * proportion
-                                proportional_child_total_emissions_cost = child_total_emissions_cost * proportion
-
-                                net_emissions += proportional_child_net_emissions
-                                cap_emissions += proportional_child_cap_emissions
-                                total_emissions_cost += proportional_child_total_emissions_cost
-
-                                tech_net_emissions += proportional_child_net_emissions
-                                tech_cap_emissions += proportional_child_cap_emissions
-                                tech_total_emissions_cost += proportional_child_total_emissions_cost
-
-                                if child_bio_emissions is not None:
-                                    proportional_child_bio_emissions = child_bio_emissions * proportion
-                                    bio_emissions += proportional_child_bio_emissions
-                                    tech_bio_emissions += proportional_child_bio_emissions
-
-                # Save tech-specific emissions to the model
-                self.graph.nodes[node][year]['technologies'][tech]['net_emissions'] = \
-                    utils.create_value_dict(tech_net_emissions, param_source='calculation')
-
-                self.graph.nodes[node][year]['technologies'][tech]['captured_emissions'] = \
-                    utils.create_value_dict(tech_cap_emissions, param_source='calculation')
-
-                self.graph.nodes[node][year]['technologies'][tech]['bio_emissions'] = \
-                    utils.create_value_dict(tech_bio_emissions, param_source='calculation')
-
-                self.graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = \
-                    utils.create_value_dict(tech_total_emissions_cost, param_source='calculation')
-
-        elif self.get_param('competition type', node) in ['root', 'region']:
-            # Retrieve emissions from the node's structural children
-            structural_children = find_children(graph, node, structural=True)
-
-            # For each structural child, add its emissions to the region/root
-            for child in structural_children:
-                net_emissions += self.get_param("net_emissions", child, year)
-                cap_emissions += self.get_param("captured_emissions", child, year)
-                bio_emissions += self.get_param("bio_emissions", child, year)
-                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
-        else:
-            # Get emissions from req/provide children
-            req_prov_children = find_children(graph, node, year, request_provide=True)
-
-            for child in req_prov_children:
-                if child not in self.fuels:
-                    child_quantities = self.get_param('provided_quantities', child, year)
-                    child_total_quantity = child_quantities.get_total_quantity()
-                    if child_total_quantity != 0:
-                        child_net_emissions = self.get_param("net_emissions", child, year)
-                        child_cap_emissions = self.get_param("captured_emissions", child, year)
-                        child_bio_emissions = self.get_param("bio_emissions", child, year)
-                        child_total_emissions_cost = self.get_param("total_emissions_cost", child, year)
-
-                        quant_provided_to_node = child_quantities.get_quantity_provided_to_node(node)
-                        if quant_provided_to_node > 0:
-                            proportion = quant_provided_to_node / child_total_quantity
-
-                            proportional_child_net_emissions = child_net_emissions * proportion
-                            proportional_child_cap_emissions = child_cap_emissions * proportion
-                            proportional_child_total_emissions_cost = child_total_emissions_cost * proportion
-
-                            net_emissions += proportional_child_net_emissions
-                            cap_emissions += proportional_child_cap_emissions
-                            total_emissions_cost += proportional_child_total_emissions_cost
-
-                            if child_bio_emissions is not None:
-                                proportional_child_bio_emissions = child_bio_emissions * proportion
-                                bio_emissions += proportional_child_bio_emissions
-
-        # Save the emissions to the node's data
-        self.graph.nodes[node][year]['net_emissions'] = \
-            utils.create_value_dict(net_emissions, param_source='calculation')
-
-        self.graph.nodes[node][year]['captured_emissions'] = \
-            utils.create_value_dict(cap_emissions, param_source='calculation')
-
-        self.graph.nodes[node][year]['bio_emissions'] = \
-            utils.create_value_dict(bio_emissions, param_source='calculation')
-
-        self.graph.nodes[node][year]['total_emissions_cost'] = \
-            utils.create_value_dict(total_emissions_cost, param_source='calculation')
-
-    def new_aggregate_emissions(self, graph, node, year):
         total_emissions_cost = EmissionCosts()
 
         comp_type = self.get_param('competition type', node)
@@ -1056,25 +892,25 @@ class Model:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                total_emissions_cost += self.get_param('new_total_emissions_cost', child, year)
+                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
 
         else:
             pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-            emissions_cost = self.get_param('new_aggregate_emission_costs', node, year)
+            emissions_cost = self.get_param('per_unit_emissions_cost', node, year)
             total_emissions_cost = emissions_cost * pq
             total_emissions_cost.num_units = pq
 
             if 'technologies' in graph.nodes[node][year]:
                 for tech in graph.nodes[node][year]['technologies']:
-                    ec = self.get_param('new_aggregate_emission_costs', node, year, tech=tech)
+                    ec = self.get_param('per_unit_emissions_cost', node, year, tech=tech)
                     ms = self.get_param('total_market_share', node, year, tech=tech)
                     tech_total_emission_cost = ec * ms * pq
                     tech_total_emission_cost.num_units = ms * pq
                     value_dict = create_value_dict(tech_total_emission_cost)
-                    graph.nodes[node][year]['technologies'][tech]['new_total_emissions_cost'] = value_dict
+                    graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = value_dict
 
         value_dict = create_value_dict(total_emissions_cost)
-        graph.nodes[node][year]['new_total_emissions_cost'] = value_dict
+        graph.nodes[node][year]['total_emissions_cost'] = value_dict
 
     def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
         """

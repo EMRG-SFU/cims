@@ -246,8 +246,8 @@ def calc_aggregate_emission_cost_rate(model, node, year, tech=None):
         agg_emissions_cost = EmissionCosts()
 
         # Emission Cost @ Tech
-        if 'emissions_cost_dict_test' in model.graph.nodes[node][year]['technologies'][tech]:
-            tech_emissions_cost = model.get_param('emissions_cost_dict_test',
+        if 'emissions_cost_dict' in model.graph.nodes[node][year]['technologies'][tech]:
+            tech_emissions_cost = model.get_param('emissions_cost_dict',
                                                   node, year, tech=tech)
             agg_emissions_cost = agg_emissions_cost + tech_emissions_cost
 
@@ -262,7 +262,7 @@ def calc_aggregate_emission_cost_rate(model, node, year, tech=None):
         agg_emissions_cost = EmissionCosts()
         # Weighted emissions cost from techs
         for technology in model.graph.nodes[node][year]['technologies']:
-            tech_emissions_cost = model.get_param('new_aggregate_emission_costs', node, year,
+            tech_emissions_cost = model.get_param('per_unit_emissions_cost', node, year,
                                                   tech=technology, dict_expected=True)
             market_share = model.get_param('total_market_share', node, year, tech=technology)
             agg_emissions_cost = agg_emissions_cost + (tech_emissions_cost * market_share)
@@ -281,9 +281,9 @@ def calc_aggregate_emission_cost_rate(model, node, year, tech=None):
     new_val_dict = utils.create_value_dict(year_val=agg_emissions_cost, param_source='calculation')
 
     if tech:
-        model.set_param_internal(new_val_dict, 'new_aggregate_emission_costs', node, year, tech)
+        model.set_param_internal(new_val_dict, 'per_unit_emissions_cost', node, year, tech)
     else:
-        model.graph.nodes[node][year]['new_aggregate_emission_costs'] = new_val_dict
+        model.graph.nodes[node][year]['per_unit_emissions_cost'] = new_val_dict
 
 
 def _get_services_requested(model, node, year, tech=None):
@@ -307,7 +307,7 @@ def _add_emission_cost_from_non_fuel_children(model, year, services_requested, a
         child = req_data['branch']
         if child not in model.fuels:
             req_ratio = max(req_data['year_value'], 0)
-            child_emission_costs = model.get_param('new_aggregate_emission_costs', child, year,
+            child_emission_costs = model.get_param('per_unit_emissions_cost', child, year,
                                                    dict_expected=True)
 
             agg_emissions_cost = agg_emissions_cost + (child_emission_costs * req_ratio)
@@ -579,10 +579,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     val_dict = utils.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, 'emissions cost', node, year, tech)
 
-    model.set_param_internal(utils.create_value_dict(year_val=emissions_cost),
-                             'emissions_cost_dict', node, year, tech)
-
     model.set_param_internal(EmissionCosts(emissions_cost),
-                             'emissions_cost_dict_test', node, year, tech)
+                             'emissions_cost_dict', node, year, tech)
 
     return total
