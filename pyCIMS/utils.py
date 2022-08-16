@@ -11,6 +11,7 @@ import operator
 
 from . import lcc_calculation
 
+
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
 
@@ -122,6 +123,22 @@ def create_cost_curve_func(quantities: List[float], prices: List[float]):
     return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
 
 
+def get_services_requested(model, node, year, tech=None):
+    if tech:
+        if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
+            services_requested = {}
+        else:
+            services_requested = model.graph.nodes[node][year]['technologies'][tech][
+                'service requested']
+    else:
+        if 'service requested' not in model.graph.nodes[node][year]:
+            services_requested = {}
+        else:
+            services_requested = model.graph.nodes[node][year]['service requested']
+
+    return services_requested
+
+
 # ******************
 # Parameter Fetching
 # ******************
@@ -150,7 +167,7 @@ inheritable_params = [
 
 
 def inherit_parameter(graph, node, year, param):
-    assert (param in inheritable_params)
+    assert param in inheritable_params
 
     parent = '.'.join(node.split('.')[:-1])
 
