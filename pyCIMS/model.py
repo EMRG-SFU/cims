@@ -5,7 +5,6 @@ import pandas as pd
 import re
 import time
 import pickle
-import operator
 
 from . import graph_utils
 from . import utils
@@ -80,8 +79,8 @@ class Model:
 
         self.model_description_file = model_reader.infile
         self.change_history = pd.DataFrame(
-            columns=['base_model_description', 'node', 'year', 'technology', 'parameter',
-                     'sub_parameter', 'old_value', 'new_value'])
+            columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
+                     'context', 'sub_context', 'old_value', 'new_value'])
 
     def build_graph(self):
         """
@@ -746,74 +745,6 @@ class Model:
         else:
             stock_allocation.general_allocation(self, node, year)
 
-    def get_tech_parameter_default(self, parameter):
-        return self.technology_defaults[parameter]
-
-    def get_node_parameter_default(self, parameter, competition_type):
-        return self.node_defaults[competition_type][parameter]
-
-    def get_param(self, param, node, year=None, context=None, sub_context=None, tech=None,
-                  return_source=False, do_calc=False, check_exist=False, dict_expected=False):
-        """
-        Gets a parameter's value from the model, given a specific context (node, year, context, sub-context, and tech),
-        calculating the parameter's value if needed.
-
-        This will not re-calculate the parameter's value, but will only retrieve
-        values which are already stored in the model or obtained via inheritance, default values,
-        or estimation using the previous year's value. If return_source is True, this function will
-        also, return how this value was originally obtained (e.g. via calculation)
-
-        Parameters
-        ----------
-        param : str
-            The name of the parameter whose value is being retrieved.
-        node : str
-            The name of the node (branch format) whose parameter you are interested in retrieving.
-        year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
-        tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
-        context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
-        sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
-        return_source : bool, default=False
-            Whether or not to return the method by which this value was originally obtained.
-        do_calc : bool, default=False
-            If False, the function will only retrieve the value using the current value in the model,
-            inheritance, default, or the previous year's value. It will _not_ calculate the parameter
-            value. If True, calculation is allowed.
-        check_exist : bool, default=False
-            Whether or not to check that the parameter exists as is given the context (without calculation,
-            inheritance, or checking past years)
-        dict_expected : bool, default=False
-            Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
-            (float, str, etc.). If the user knows it expects a dict, then this flag is used.
-
-        Returns
-        -------
-        any :
-            The value of the specified `param` at `node`, given the context provided by `year` and
-            `tech`.
-        str :
-            If return_source is `True`, will return a string indicating how the parameter's value
-            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
-            default, or previous_year}.
-        """
-
-        param_val = utils.get_param(self, param, node, year, context=context,
-                                    sub_context=sub_context,
-                                    tech=tech,
-                                    return_source=return_source,
-                                    do_calc=do_calc,
-                                    check_exist=check_exist,
-                                    dict_expected=dict_expected)
-
-        return param_val
 
     def calc_requested_quantities(self, graph, node, year, **kwargs):
         """
@@ -1055,17 +986,92 @@ class Model:
         self.graph.nodes[node][year]['total_emissions_cost'] = \
             utils.create_value_dict(total_emissions_cost, param_source='calculation')
 
-    def set_param(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
+
+    def get_tech_parameter_default(self, parameter):
+        return self.technology_defaults[parameter]
+
+
+    def get_node_parameter_default(self, parameter, competition_type):
+        return self.node_defaults[competition_type][parameter]
+
+
+    def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
+                  return_source=False, do_calc=False, check_exist=False, dict_expected=False):
         """
-        Sets a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter). This is intended for when you are using this function outside of model.run to
-        make single changes to the model dscription
+        Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
+        calculating the parameter's value if needed.
+
+        This will not re-calculate the parameter's value, but will only retrieve
+        values which are already stored in the model or obtained via inheritance, default values,
+        or estimation using the previous year's value. If return_source is True, this function will
+        also, return how this value was originally obtained (e.g. via calculation)
+
+        Parameters
+        ----------
+        param : str
+            The name of the parameter whose value is being retrieved.
+        node : str
+            The name of the node (branch format) whose parameter you are interested in retrieving.
+        year : str, optional
+            The year which you are interested in. `year` is not required for parameters specified at
+            the node level and which by definition cannot change year to year. For example,
+            'competition type' can be retrieved without specifying a year.
+        tech : str, optional
+            The name of the technology you are interested in. `tech` is not required for parameters
+            that are specified at the node level. `tech` is required to get any parameter that is
+            stored within a technology.
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        return_source : bool, default=False
+            Whether or not to return the method by which this value was originally obtained.
+        do_calc : bool, default=False
+            If False, the function will only retrieve the value using the current value in the model,
+            inheritance, default, or the previous year's value. It will _not_ calculate the parameter
+            value. If True, calculation is allowed.
+        check_exist : bool, default=False
+            Whether or not to check that the parameter exists as is given the context (without calculation,
+            inheritance, or checking past years)
+        dict_expected : bool, default=False
+            Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+            (float, str, etc.). If the user knows it expects a dict, then this flag is used.
+
+        Returns
+        -------
+        any :
+            The value of the specified `param` at `node`, given the context provided by `year` and
+            `tech`.
+        str :
+            If return_source is `True`, will return a string indicating how the parameter's value
+            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
+            default, or previous_year}.
+        """
+
+        param_val = utils.get_param(self, param, node, year,
+                                    tech=tech,
+                                    context=context,
+                                    sub_context=sub_context,
+                                    return_source=return_source,
+                                    do_calc=do_calc,
+                                    check_exist=check_exist,
+                                    dict_expected=dict_expected)
+
+        return param_val
+
+
+    def set_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
+                  save=True):
+        """
+        Sets a parameter's value, given a specific context (node, year, tech, context, sub-context).
+        This is intended for when you are using this function outside of model.run to make single changes
+        to the model description.
 
         Parameters
         ----------
         val : any or list of any
             The new value(s) to be set at the specified `param` at `node`, given the context provided by 
-            `year`, `tech` and `sub_param`.
+            `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
@@ -1073,222 +1079,40 @@ class Model:
         year : str or list, optional
             The year(s) which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
         """
 
-        def set_node_param_script(new_val, param, model, node, year, sub_param=None, save=True):
-            """
-            Queries a model to set a parameter value at a given node, given a specified context
-            (year & sub-parameter).
+        param_val = utils.set_param(self, val, param, node, year,
+                                    tech=tech,
+                                    context=context,
+                                    sub_context=sub_context,
+                                    save=save)
 
-            Parameters
-            ----------
-            new_val : any
-                The new value to be set at the specified `param` at `node`, given the context provided by
-                `year` and `sub_param`.
-            param : str
-                The name of the parameter whose value is being set.
-            model : pyCIMS.Model
-                The model containing the parameter value of interest.
-            node : str
-                The name of the node (branch format) whose parameter you are interested in set.
-            year : str
-                The year which you are interested in. `year` must be provided for all parameters stored at
-                the technology level, even if the parameter doesn't change year to year.
-            sub_param : str, optional
-                This is a rarely used parameter for specifying a nested key. Most commonly used when
-                `get_param()` would otherwise return a dictionary where a nested value contains the
-                parameter value of interest. In this case, the key corresponding to that value can be
-                provided as a `sub_param`
-            save : bool, optional
-                This specifies whether the change should be saved in the change_log csv where True means
-                the change will be saved and False means it will not be saved
-            """
-            # Set Parameter from Description
-            # ******************************
-            # If the parameter's value is in the model description for that node & year (if the year has
-            # been defined), use it.
-            if year:
-                data = model.graph.nodes[node][year]
-            else:
-                data = model.graph.nodes[node]
-            if param in data:
-                val = data[param]
-                # If the value is a dictionary, use its nested result
-                if isinstance(val, dict):
-                    if sub_param:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[sub_param], dict) and 'year_value' in val[sub_param]:
-                            prev_val = val[sub_param]['year_value']
-                            val[sub_param]['year_value'] = new_val
-                        else:
-                            prev_val = val[sub_param]
-                            val[sub_param] = new_val
-                    elif 'year_value' in val:
-                        prev_val = val['year_value']
-                        val['year_value'] = new_val
-                    elif None in val:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[None], dict) and 'year_value' in val[None]:
-                            prev_val = val[None]['year_value']
-                            val[None]['year_value'] = new_val
-                        else:
-                            prev_val = val[None]
-                            val[None] = new_val
-                    elif len(val.keys()) == 1:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if 'year_value' in val[list(val.keys())[0]]:
-                            prev_val = val[list(val.keys())[0]]['year_value']
-                            val[list(val.keys())[0]]['year_value'] = new_val
-                        else:
-                            prev_val = val[list(val.keys())[0]]
-                            val[list(val.keys())[0]] = new_val
-                else:
-                    prev_val = data[param]
-                    data[param] = new_val
+        return param_val
 
-                # Save Change
-                # ******************************
-                # Append the change made to model.change_history DataFrame if save is set to True
-                if save:
-                    filename = model.model_description_file.split('/')[-1].split('.')[0]
-                    change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': None,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
-                                  'new_value': new_val}
-                    model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
-            else:
-                print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
-                    year) + '. No new value was set for this.')
 
-        def set_tech_param_script(new_val, param, model, node, year, tech, sub_param=None, save=True):
-            """
-            Queries a model to set a parameter value at a given node & technology, given a specified
-            context (year & sub_param).
-
-            Parameters
-            ----------
-            new_val : any
-                The new value to be set at the specified `param` at `node`, given the context provided by
-                `year`, `tech` and `sub_param`.
-            param : str
-                The name of the parameter whose value is being set.
-            model : pyCIMS.Model
-                The model containing the parameter value of interest.
-            node : str
-                The name of the node (branch format) whose parameter you are interested in set.
-            year : str
-                The year which you are interested in. `year` must be provided for all parameters stored at
-                the technology level, even if the parameter doesn't change year to year.
-            tech : str
-                The name of the technology you are interested in.
-            sub_param : str, optional
-                This is a rarely used parameter for specifying a nested key. Most commonly used when
-                `get_param()` would otherwise return a dictionary where a nested value contains the
-                parameter value of interest. In this case, the key corresponding to that value can be
-                provided as a `sub_param`
-            save : bool, optional
-                This specifies whether the change should be saved in the change_log csv where True means
-                the change will be saved and False means it will not be saved
-            """
-            # Set Parameter from Description
-            # ******************************
-            # If the parameter's value is in the model description for that node, year, & technology, use it
-            data = model.graph.nodes[node][year]['technologies'][tech]
-            if param in data:
-                val = data[param]
-                # If the value is a dictionary, use its nested result
-                if isinstance(val, dict):
-                    if sub_param:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[sub_param], dict) and ('year_value' in val[sub_param]):
-                            prev_val = val[sub_param]['year_value']
-                            val[sub_param]['year_value'] = new_val
-                        else:
-                            prev_val = val[sub_param]
-                            val[sub_param] = new_val
-                    elif None in val:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[None], dict) and ('year_value' in val[None]):
-                            prev_val = val[None]['year_value']
-                            val[None]['year_value'] = new_val
-                        else:
-                            prev_val = val[None]
-                            val[None] = new_val
-                    else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if 'year_value' in val:
-                            prev_val = data[param]['year_value']
-                            data[param]['year_value'] = new_val
-                else:
-                    prev_val = data[param]
-                    data[param] = new_val
-
-                # Save Change
-                # ******************************
-                # Append the change made to model.change_history DataFrame if save is set to True
-                if save:
-                    filename = model.model_description_file.split('/')[-1].split('.')[0]
-                    change_log = {'base_model_description': filename, 'node': node, 'year': year, 'technology': tech,
-                                  'parameter': param, 'sub_parameter': sub_param, 'old_value': prev_val,
-                                  'new_value': new_val}
-                    model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
-            else:
-                print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
-                    year) + '. No new value was set for this.')
-
-        # Checks whether year or val is a list. If either of them is a list, the other must also be a list
-        # of the same length
-        if isinstance(val, list) or isinstance(year, list):
-            if not isinstance(val, list):
-                print('Values must be entered as a list.')
-                return
-            elif not isinstance(year, list):
-                print('Years must be entered as a list.')
-                return
-            elif len(val) != len(year):
-                print('The number of values does not match the number of years. No changes were made.')
-                return
-        else:
-            # changing years and vals to lists
-            year = [year]
-            val = [val]
-        for i in range(len(year)):
-            try:
-                self.get_param(param, node, year[i], context=sub_param, tech=tech, check_exist=True)
-            except:
-                print(f"Unable to access parameter at "
-                      f"get_param({param}, {node}, {year}, {tech}, {sub_param}). \n"
-                      f"Corresponding value was not set to {val[i]}.")
-                continue
-            if tech:
-                set_tech_param_script(val[i], param, self, node, year[i], tech, sub_param, save)
-
-            else:
-                set_node_param_script(val[i], param, self, node, year[i], sub_param, save)
-
-    def set_param_internal(self, val, param, node, year=None, tech=None, sub_param=None, save=True):
+    def set_param_internal(self, val, param, node, year=None, tech=None, context=None, sub_context=None):
         """
-        Sets a parameter's value, given a specific context (node, year, technology, and
-        sub-parameter). This is used from within the model.run function and is not intended to make
-        changes to the model description externally (see `set_param`).
+        Sets a parameter's value, given a specific context (node, year, tech, context, sub_context).
+        This is used from within the model.run function and is not intended to make changes to the model
+        description externally (see `set_param`).
 
         Parameters
         ----------
         val : dict
             The new value(s) to be set at the specified `param` at `node`, given the context provided by
-            `year`, `tech` and `sub_param`.
+            `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
@@ -1296,59 +1120,39 @@ class Model:
         year : str or list, optional
             The year(s) which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
         """
 
-        # Checks whether year or val is a list. If either of them is a list, the other must also be a list
-        # of the same length
-        if isinstance(val, list) or isinstance(year, list):
-            if not isinstance(val, list):
-                print('Values must be entered as a list.')
-                return
-            elif not isinstance(year, list):
-                print('Years must be entered as a list.')
-                return
-            elif len(val) != len(year):
-                print('The number of values does not match the number of years. No changes were made.')
-                return
-        else:
-            # changing years and vals to lists
-            year = [year]
-            val = [val]
-        for i in range(len(year)):
+        param_val = utils.set_param_internal(self, val, param, node, year,
+                                             tech=tech,
+                                             context=context,
+                                             sub_context=sub_context)
 
-            tech_data = self.graph.nodes[node][year[i]]["technologies"][tech]
-            if param in tech_data:
-                if tech:
-                    utils.set_tech_param(val[i], param, self, node, year[i], tech, sub_param)
+        return param_val
 
-                else:
-                    utils.set_node_param(val[i], param, self, node, year[i], sub_param)
-            else:
-                self.graph.nodes[node][year[i]]["technologies"][tech].update({str(param): val[i]})
 
-    def set_param_wildcard(self, val, param, node_regex, year, tech=None, sub_param=None, save=True):
+    def set_param_wildcard(self, val, param, node_regex, year, tech=None, context=None, sub_context=None,
+                           save=True):
         """
-        Sets a parameter's value, for all context (node, year, technology, and
-        sub-parameter) that satisfy/matches the node_regex pattern
+        Sets a parameter's value, for all contexts (node, year, tech, context, sub_context)
+        that satisfy/match the node_regex pattern
 
         Parameters
         ----------
         val : any
             The new value to be set at the specified `param` at `node`, given the context provided by 
-            `year`, `tech` and `sub_param`.
+            `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node_regex : str
@@ -1356,28 +1160,28 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model description
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
         """
         for node in self.graph.nodes:
             if re.search(node_regex, node) != None:
-                self.set_param(val, param, node, year, tech, sub_param, save)
+                self.set_param(val, param, node, year, tech, context, sub_context, save)
+
 
     def set_param_file(self, filepath):
         """
-        Sets parameters' values, for all context (node, year, technology, and
-        sub-parameter) from the provided CSV file. See Data_Changes_Tutorial_by_CSV.ipynb for detailed
+        Sets parameters' values, for all context (node, year, context, sub_context, and technology)
+        from the provided CSV file. See Data_Changes_Tutorial_by_CSV.ipynb for detailed
         description of expected CSV file columns and values.
 
         Parameters
@@ -1386,121 +1190,22 @@ class Model:
             This is the path to the CSV file containing all context and value change information
         """
 
-        if not filepath.endswith('.csv'):
-            print('filepath must be in csv format')
-            return
+        param_val = utils.set_param_file(self, filepath)
 
-        df = pd.read_csv(filepath, delimiter=',')
-        df = df.fillna('None')
+        return param_val
 
-        ops = {
-            '>': operator.gt,
-            '>=': operator.ge,
-            '==': operator.eq,
-            '<': operator.lt,
-            '<=': operator.le
-        }
 
-        for index, row in df.iterrows():
-            # *********
-            # Set necessary variables from dataframe row
-            # *********
-            node = row['node'] if row['node'] != 'None' else None
-            node_regex = row['node_regex'] if row['node_regex'] != "None" else None
-            param = row['param'] if row['param'] != 'None' else None
-            tech = row['tech'] if row['tech'] != 'None' else None
-            sub_param = row['sub_param'] if row['sub_param'] != 'None' else None
-            year_operator = row['year_operator'] if row['year_operator'] != 'None' else None
-            year = row['year'] if row['year'] != 'None' else None
-            val_operator = row['val_operator'] if row['val_operator'] != 'None' else None
-            val = row['val'] if row['val'] != 'None' else None
-            search_param = row['search_param'] if row['search_param'] != 'None' else None
-            search_operator = row['search_operator'] if row['search_operator'] != 'None' else None
-            search_pattern = row['search_pattern'] if row['search_pattern'] != 'None' else None
-            create_missing = row['create_if_missing'] if row['create_if_missing'] != 'None' else None
-
-            # *********
-            # Changing years and vals to lists
-            # *********
-            if year:
-                year_int = int(year)
-                years = [x for x in self.years if ops[year_operator](int(x), year_int)]
-                vals = [val] * len(years)
-            else:
-                years = [year]
-                vals = [val]
-
-            # *********
-            # Intial checks on the data
-            # *********
-            if node == None:
-                if node_regex == None:
-                    print(f"Row {index}: : neither node or node_regex values were indicated. "
-                          f"Skipping this row.")
-                    continue
-            elif node == '.*':
-                if search_param == None or search_operator == None or search_pattern == None:
-                    print(f"Row {index}: since node = '.*', search_param, search_operator, and "
-                          f"search_pattern must not be empty. Skipping this row.")
-                    continue
-            else:
-                if node_regex:
-                    print(f"Row index: both node and node_regex values were indicated. Please "
-                          f"specify only one. Skipping this row.")
-                    continue
-            if year_operator not in list(ops.keys()):
-                print(f"Row {index}: year_operator value not one of >, >=, <, <=, ==. Skipping this"
-                      f"row.")
-                continue
-            if val_operator not in ['>=', '<=', '==']:
-                print(f"Row {index}: val_operator value not one of >=, <=, ==. Skipping this row.")
-                continue
-            if search_operator not in [None, '==']:
-                print(f"Row {index}: search_operator value must be either empty or ==. Skipping "
-                      f"this row.")
-                continue
-            if create_missing == None:
-                print(f"Row {index}: create_if_missing is empty. This value must be either True or"
-                      f"False. Skipping this row.")
-                continue
-
-            # *********
-            # Check the node type ('.*', None, or otherwise) and search through corresponding nodes if necessary
-            # *********
-            if node == '.*':
-                # check if node satisfies search_param, search_operator, search_pattern conditions
-                for node_tmp in self.graph.nodes:
-                    if self.get_param(search_param, node_tmp).lower() == search_pattern.lower():
-                        for idx, year in enumerate(years):
-                            val_tmp = vals[idx]
-                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator,
-                                                  create_missing, index)
-            elif node == None:
-                # check if node satisfies node_regex conditions
-                for node_tmp in self.graph.nodes:
-                    if re.search(node_regex, node_tmp) != None:
-                        for idx, year in enumerate(years):
-                            val_tmp = vals[idx]
-                            self.set_param_search(val_tmp, param, node_tmp, year, tech, sub_param, val_operator,
-                                                  create_missing, index)
-            else:
-                # node is exactly specified so use as is
-                for idx, year in enumerate(years):
-                    val_tmp = vals[idx]
-                    self.set_param_search(val_tmp, param, node, year, tech, sub_param, val_operator, create_missing,
-                                          index)
-
-    def set_param_search(self, val, param, node, year=None, tech=None, sub_param=None, val_operator='==',
-                         create_missing=False, row_index=None):
+    def set_param_search(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
+                         val_operator='==', create_missing=False, row_index=None):
         """
-        Sets parameter values, for all context (node, year, technology, and
-        sub-parameter), searching through all tech and sub_param keys if necessary.
+        Sets parameter values for all contexts (node, year, tech, context, sub_context),
+        searching through all tech, context, and sub_context keys if necessary.
 
         Parameters
         ----------
         val : any
             The new value to be set at the specified `param` at `node`, given the context provided by 
-            `year`, `tech` and `sub_param`.
+            `year`, `context, `sub_context`, and `tech`.
         param : str
             The name of the parameter whose value is being set.
         node : str
@@ -1508,18 +1213,20 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
-            specified node, param, and year.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`. If sub_param is `.*`, all possible sub_param keys will be searched at the
-            specified node, param, tech, and year.
+            specified node, param, year, context, and sub_context.
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model
+            description. If context is `.*`, all possible context keys will be searched at the specified node, param,
+            year, sub_context, and tech.
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+            If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
+            year, context, and tech.
         create_missing : bool, optional
             Will create a new parameter in the model if it is missing. Defaults to False.
         val_operator : str, optional
@@ -1528,85 +1235,28 @@ class Model:
             The index of the current row of the CSV. This is used to print the row number in error messages.
         """
 
-        def get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index, create_missing):
-            try:
-                prev_val = self.get_param(param, node, year, tech=tech, context=sub_param,
-                                          check_exist=True)
-                if val_operator == '>=':
-                    val = max(val, prev_val)
-                elif val_operator == '<=':
-                    val = min(val, prev_val)
-            except Exception as e:
-                if create_missing:
-                    print(f"Row {row_index + 1}: Creating parameter at ({param}, {node}, {year}, "
-                          f"{tech}, {sub_param}).")
-                    tmp = self.create_param(val=val, param=param, node=node, year=year, tech=tech, sub_param=sub_param,
-                                            row_index=row_index)
-                    if not tmp:
-                        return None
-                else:
-                    print(f"Row {row_index + 1}: Unable to access parameter at get_param({param}, "
-                          f"{node}, {year}, {tech}, {sub_param}). Corresponding value was not set"
-                          f"to {val}.")
-                    return None
-            return val
+        param_val = utils.set_param_search(self, val, param, node, year,
+                                           tech=tech,
+                                           context=context,
+                                           sub_context=sub_context,
+                                           val_operator=val_operator,
+                                           create_missing=create_missing,
+                                           row_index=row_index)
 
-        if tech == '.*':
-            try:
-                # search through all technologies in node
-                techs = list(self.graph.nodes[node][year]['technologies'].keys())
-            except:
-                return
-            for tech_tmp in techs:
-                if sub_param == '.*':
-                    try:
-                        # search through all sub_parameters in node given tech
-                        sub_params = list(self.get_param(param, node, year, tech=tech_tmp).keys())
-                    except:
-                        continue
-                    for sub_param_tmp in sub_params:
-                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param_tmp, val_operator,
-                                                   row_index, create_missing)
-                        if val_tmp:
-                            self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
-                                           sub_param=sub_param_tmp)
-                # use sub_param as is if it is not .*
-                else:
-                    val_tmp = get_val_operated(val, param, node, year, tech_tmp, sub_param, val_operator, row_index,
-                                               create_missing)
-                    if val_tmp:
-                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
-                                       sub_param=sub_param)
-        else:
-            if sub_param == '.*':
-                try:
-                    # search through all sub_parameters in node given tech
-                    sub_params = list(self.get_param(param, node, year, tech=tech).keys())
-                except:
-                    return
-                for sub_param_tmp in sub_params:
-                    val_tmp = get_val_operated(val, param, node, year, tech, sub_param_tmp, val_operator, row_index,
-                                               create_missing)
-                    if val_tmp:
-                        self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech,
-                                       sub_param=sub_param_tmp)
-            # use sub_param as is if it is not .*
-            else:
-                val_tmp = get_val_operated(val, param, node, year, tech, sub_param, val_operator, row_index,
-                                           create_missing)
-                if val_tmp:
-                    self.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech, sub_param=sub_param)
+        return param_val
 
-    def create_param(self, val, param, node, year=None, tech=None, sub_param=None, row_index=None):
+
+    def create_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
+                     row_index=None):
         """
-        Creates parameter in graph, for given context (node, year, technology, and sub-parameter),
+        Creates parameter in graph, for given context (node, year, tech, context, sub_context),
         and sets the value to val. Returns True if param was created successfully and False otherwise.
 
         Parameters
         ----------
         val : any
             The new value to be set at the specified `param` at `node`, given the context provided by 
-            `year`, `tech` and `sub_param`.
+            `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
@@ -1614,79 +1264,32 @@ class Model:
         year : str, optional
             The year which you are interested in. `year` is not required for parameters specified at
             the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retreived without specifying a year.
+            'competition type' can be retrieved without specifying a year.
         tech : str, optional
             The name of the technology you are interested in. `tech` is not required for parameters
             that are specified at the node level. `tech` is required to get any parameter that is
             stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
-            specified node, param, and year.
-        sub_param : str, optional
-            This is a rarely used parameter for specifying a nested key. Most commonly used when
-            `get_param()` would otherwise return a dictionary where a nested value contains the
-            parameter value of interest. In this case, the key corresponding to that value can be
-            provided as a `sub_param`. If sub_param is `.*`, all possible sub_param keys will be searched at the
-            specified node, param, tech, and year.
+            specified node, param, year, context, and sub_context.
+        context : str, optional
+            Used when there is context available in the node. Analogous to the 'context' column in the model
+            description. If context is `.*`, all possible context keys will be searched at the specified node, param,
+            year, sub_context, and tech.
+        sub_context : str, optional
+            Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+            If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
+            year, context, and tech.
         row_index : int, optional
             The index of the current row of the CSV. This is used to print the row number in error messages.
 
-        Returns
-        -------
-        Boolean
         """
-        # Print error message and return False if node not found
-        if node not in self.graph.nodes:
-            print("Row " + str(row_index + 1) + ': Unable to access node ' + str(
-                node) + '. Corresponding value was not set to ' + str(val) + ".")
-            return False
+        param_val = utils.create_param(self, val, param, node, year,
+                                       tech=tech,
+                                       context=context,
+                                       sub_context=sub_context,
+                                       row_index=row_index)
 
-        if year:
-            if year not in self.graph.nodes[node]:
-                self.graph.nodes[node][year] = {}
-            data = self.graph.nodes[node][year]
-        else:
-            data = self.graph.nodes[node]
+        return param_val
 
-        val_dict = create_value_dict(val, param_source='model')
-
-        # *********
-        # If there is a tech specified, check if it exists and create context (tech, param, sub-param) accordingly
-        # *********
-        if tech:
-            # add technology if it does not exist
-            if tech not in data:
-                if sub_param:
-                    sub_param_dict = {sub_param: val_dict}
-                    param_dict = {param: sub_param_dict}
-                else:
-                    param_dict = {param: val_dict}
-                data['technologies'][tech] = param_dict
-            # add param if it does not exist
-            elif param not in data['technologies'][tech]:
-                if sub_param:
-                    sub_param_dict = {sub_param: val_dict}
-                    data['technologies'][tech][param] = sub_param_dict
-                else:
-                    data['technologies'][tech][param] = val_dict
-            # add sub-param if it does not exist
-            elif sub_param not in data['technologies'][tech][param]:
-                data['technologies'][tech][param][sub_param] = val_dict
-
-        # *********
-        # Check if param exists and create context (param, sub-param) accordingly
-        # *********
-        elif param not in data:
-            if sub_param:
-                sub_param_dict = {sub_param: val_dict}
-                data[param] = sub_param_dict
-            else:
-                data[param] = val_dict
-
-        # *********
-        # Check if sub-param exists and create context (param, sub-param) accordingly
-        # *********
-        elif sub_param not in data[param]:
-            data[param][sub_param] = val_dict
-        return True
 
     def set_param_log(self, output_file=''):
         """
@@ -1704,6 +1307,7 @@ class Model:
             timestamp = time.strftime("%Y%m%d-%H%M%S")
             output_file = './change_log_' + filename + '_' + timestamp + '.csv'
         self.change_history.to_csv(output_file, index=False)
+
 
     def save_model(self, model_file='', save_changes=True):
         """
