@@ -194,7 +194,7 @@ class ModelReader:
                                          node_df_has_defaults['Default value']):
             if comp_type.lower() not in node_defaults:
                 node_defaults[comp_type.lower()] = {}
-            node_defaults[comp_type.lower()][param] = val
+            node_defaults[comp_type.lower()][param.lower()] = val
 
         # Return
         return technology_defaults, node_defaults
