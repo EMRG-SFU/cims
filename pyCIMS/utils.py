@@ -269,7 +269,7 @@ def get_param(model, param, node, year=None, context=None, sub_context=None, tec
             try:
                 val, source = model.get_param(param, node, year=year, context=context,
                                               sub_context=sub_context, return_source=True)
-                assert (source in ['inheritance', 'model'])
+                assert (source in ['inheritance', 'model', 'default'])
                 assert (val is not None)
                 param_source = source
             except AssertionError:
