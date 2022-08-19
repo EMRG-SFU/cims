@@ -74,15 +74,16 @@ class RequestedQuantity:
             total_quants[service] = total_service
         return total_quants
 
-    def summarize_distributed_supply(self):
-        distributed_supply = {}
-        for fuel in self.requested_quantities:
-            fuel_distributed_supply = 0
-            for child, quantity in self.requested_quantities[fuel].items():
-                if quantity > 0:
-                    fuel_distributed_supply += quantity
-            distributed_supply[fuel] = fuel_distributed_supply
-        return distributed_supply
+    # ***************** Brad: I don't think this code block is necessary since also below ************
+    # def summarize_distributed_supply(self):
+    #     distributed_supply = {}
+    #     for fuel in self.requested_quantities:
+    #         fuel_distributed_supply = 0
+    #         for child, quantity in self.requested_quantities[fuel].items():
+    #             if quantity > 0:
+    #                 fuel_distributed_supply += quantity
+    #         distributed_supply[fuel] = fuel_distributed_supply
+    #     return distributed_supply
 
     def sum_requested_quantities(self):
         total_quantity = 0
