@@ -8,9 +8,9 @@ from scipy.interpolate import interp1d
 
 import pandas as pd
 
-from pyCIMS.model import ProvidedQuantity, RequestedQuantity
+from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from pyCIMS.emissions import Emissions, EmissionRates, EmissionsCost
-
+from pyCIMS.emissions import Emissions, EmissionRates
 
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
@@ -96,6 +96,15 @@ def log_RequestedQuantity(val):
     return rqs
 
 
+def log_DistributedSupply(val):
+    distributed_supplies = []
+
+    for k, v in val.summarize_distributed_supply().items():
+        distributed_supplies.append(ValueLog(branch=k, value=v))
+
+    return distributed_supplies
+
+
 def log_Emissions(val):
     """ Provides a list of tuples to be used for logging, based on the provided Emissions object. A
     tuple is created for each GHG/Emission Type combination that exists in the node."""
@@ -179,7 +188,9 @@ def log_dict(val):
             return log_ProvidedQuantity(year_value)
         if isinstance(year_value, RequestedQuantity):
             return log_RequestedQuantity(year_value)
-        if isinstance(year_value, Emissions):
+        elif isinstance(year_value, DistributedSupply):
+            return log_DistributedSupply(year_value)
+        elif isinstance(year_value, Emissions):
             return log_Emissions(year_value)
         if isinstance(year_value, EmissionRates):
             return log_EmissionRates(year_value)
@@ -251,6 +262,7 @@ def add_log_item(all_logs, log_tuple):
                 float: log_float,
                 ProvidedQuantity: log_ProvidedQuantity,
                 RequestedQuantity: log_RequestedQuantity,
+                DistributedSupply: log_DistributedSupply,
                 Emissions: log_Emissions,
                 EmissionRates: log_EmissionRates,
                 EmissionsCost: log_EmissionsCost,

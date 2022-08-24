@@ -13,6 +13,27 @@ class ProvidedQuantity:
             total += amount
         return total
 
+    def calculate_proportion(self, node, tech=None):
+        """
+        Find the proportion of non-negative units provided to a particular node/tech combination.
+        """
+        proportion = 0
+
+        if tech is None:
+            total_provided_node_tech = self.get_quantity_provided_to_node(node)
+        else:
+            total_provided_node_tech = self.get_quantity_provided_to_tech(node, tech)
+
+        non_negative_total = 0
+        for amount in self.provided_quantities.values():
+            if amount > 0:
+                non_negative_total += amount
+
+        if total_provided_node_tech >= 0:
+            proportion = total_provided_node_tech / non_negative_total
+
+        return proportion
+
     def get_quantity_provided_to_node(self, node):
         """
         Find the quantity being provided to a specific node, across all it's technologies
@@ -62,5 +83,37 @@ class RequestedQuantity:
             fuel_rq = self.requested_quantities[fuel]
             for source in fuel_rq:
                 total_quantity += fuel_rq[source]
-
         return total_quantity
+
+
+class DistributedSupply:
+    """
+    Class to help record distributed supplies in the model.
+    Note, negative service request values are recorded as positive Distributed Supply values.
+    """
+    def __init__(self):
+        self.distributed_supply = {}
+
+    def record_distributed_supply(self, fuel, distributed_supply_node, amount):
+        """Records amount of fuel supplyed by the distributed_supply_node"""
+        if fuel in self.distributed_supply:
+            if distributed_supply_node in self.distributed_supply[fuel]:
+                self.distributed_supply[fuel][distributed_supply_node] += amount
+            else:
+                self.distributed_supply[fuel][distributed_supply_node] = amount
+
+        else:
+            self.distributed_supply[fuel] = {distributed_supply_node: amount}
+
+    def summarize_distributed_supply(self):
+        """
+        Summarize the distributed supply across all supplying_nodes, aggregating to the fuel/service
+        being provided.
+        """
+        distributed_supply = {}
+        for fuel in self.distributed_supply:
+            fuel_distributed_supply = 0
+            for child, quantity in self.distributed_supply[fuel].items():
+                fuel_distributed_supply += quantity
+            distributed_supply[fuel] = fuel_distributed_supply
+        return distributed_supply

@@ -12,10 +12,11 @@ from . import lcc_calculation
 from . import stock_allocation
 from . import loop_resolution
 
-from .quantities import ProvidedQuantity, RequestedQuantity
+from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionRates, EmissionsCost
+
 from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record
+from .quantity_aggregation import find_children, get_quantities_to_record, get_distributed_supply
 
 
 class Model:
@@ -780,26 +781,33 @@ class Model:
         quantities requested of node & all it's successors.
         """
         requested_quantity = RequestedQuantity()
+        distributed_supply = DistributedSupply()
 
         if self.get_param('competition type', node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param('requested_quantities',
-                                                            child, year).get_total_quantities_requested()
+                                                       child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
                                                                  child,
                                                                  child_rq_amount)
 
+                distributed_supplies = get_distributed_supply(self, child, node, year)
+                for fuel, child, attributable_amount in distributed_supplies:
+                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
+                tech_distributed_supply = DistributedSupply()
+
+                # Aggregate Fuel Quantities
                 req_prov_children = find_children(graph, node, year, tech, request_provide=True)
                 for child in req_prov_children:
                     quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
-
                     # Record requested quantities
                     for providing_node, child, attributable_amount in quantities_to_record:
                         tech_requested_quantity.record_requested_quantity(providing_node,
@@ -808,23 +816,41 @@ class Model:
                         requested_quantity.record_requested_quantity(providing_node,
                                                                      child,
                                                                      attributable_amount)
+
+                    # Record distributed supplies
+                    distributed_supplies = get_distributed_supply(self, child, node, year, tech)
+                    for fuel, child, attributable_amount in distributed_supplies:
+                        tech_distributed_supply.record_distributed_supply(fuel, child,
+                                                                          attributable_amount)
+                        distributed_supply.record_distributed_supply(fuel, child,
+                                                                     attributable_amount)
+
                 # Save the tech requested quantities
                 self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
                     tech_requested_quantity
+                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
+                    tech_distributed_supply
 
         else:
             req_prov_children = find_children(graph, node, year, request_provide=True)
             for child in req_prov_children:
-                quantities_to_record = get_quantities_to_record(self, child, node, year)
-
                 # Record requested quantities
+                quantities_to_record = get_quantities_to_record(self, child, node, year)
                 for providing_node, child, attributable_amount in quantities_to_record:
                     requested_quantity.record_requested_quantity(providing_node,
                                                                  child,
                                                                  attributable_amount)
 
+                # Record distributed supplies
+                distributed_supplies = get_distributed_supply(self, child, node, year)
+                for fuel, child, attributable_amount in distributed_supplies:
+                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
+
+        self.graph.nodes[node][year]['distributed_supply'] = \
+            utils.create_value_dict(distributed_supply, param_source='calculation')
 
     def _aggregate_emissions(self, graph, node, year, **kwargs):
         """
@@ -859,7 +885,6 @@ class Model:
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 total_emissions_cost += self.get_param('total_emissions_cost', child, year)
-
         else:
             pq = self.get_param('provided_quantities', node, year).get_total_quantity()
             emissions_cost = self.get_param('per_unit_emissions_cost', node, year)
@@ -877,6 +902,9 @@ class Model:
 
         value_dict = create_value_dict(total_emissions_cost)
         graph.nodes[node][year]['total_emissions_cost'] = value_dict
+
+    # TODO: proportion = child_quantities.calculate_proportion(node, tech)
+    # TODO: proportion = child_quantities.calculate_proportion(node)
 
     def get_tech_parameter_default(self, parameter):
         return self.technology_defaults[parameter]
@@ -958,7 +986,7 @@ class Model:
         Parameters
         ----------
         val : any or list of any
-            The new value(s) to be set at the specified `param` at `node`, given the context provided by 
+            The new value(s) to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
@@ -1037,7 +1065,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
@@ -1074,7 +1102,6 @@ class Model:
         filepath : str
             This is the path to the CSV file containing all context and value change information
         """
-
         param_val = utils.set_param_file(self, filepath)
 
         return param_val
@@ -1088,7 +1115,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `context, `sub_context`, and `tech`.
         param : str
             The name of the parameter whose value is being set.
@@ -1138,7 +1165,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
