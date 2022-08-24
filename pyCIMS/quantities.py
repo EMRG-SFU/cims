@@ -14,6 +14,9 @@ class ProvidedQuantity:
         return total
 
     def calculate_proportion(self, node, tech=None):
+        """
+        Find the proportion of non-negative units provided to a particular node/tech combination.
+        """
         proportion = 0
 
         if tech is None:
@@ -74,17 +77,6 @@ class RequestedQuantity:
             total_quants[service] = total_service
         return total_quants
 
-    # ***************** Brad: I don't think this code block is necessary since also below ************
-    # def summarize_distributed_supply(self):
-    #     distributed_supply = {}
-    #     for fuel in self.requested_quantities:
-    #         fuel_distributed_supply = 0
-    #         for child, quantity in self.requested_quantities[fuel].items():
-    #             if quantity > 0:
-    #                 fuel_distributed_supply += quantity
-    #         distributed_supply[fuel] = fuel_distributed_supply
-    #     return distributed_supply
-
     def sum_requested_quantities(self):
         total_quantity = 0
         for fuel in self.requested_quantities:
@@ -94,10 +86,15 @@ class RequestedQuantity:
 
 
 class DistributedSupply:
+    """
+    Class to help record distributed supplies in the model.
+    Note, negative service request values are recorded as positive Distributed Supply values.
+    """
     def __init__(self):
         self.distributed_supply = {}
 
     def record_distributed_supply(self, fuel, distributed_supply_node, amount):
+        """Records amount of fuel supplyed by the distributed_supply_node"""
         if fuel in self.distributed_supply:
             if distributed_supply_node in self.distributed_supply[fuel]:
                 self.distributed_supply[fuel][distributed_supply_node] += amount
@@ -108,6 +105,10 @@ class DistributedSupply:
             self.distributed_supply[fuel] = {distributed_supply_node: amount}
 
     def summarize_distributed_supply(self):
+        """
+        Summarize the distributed supply across all supplying_nodes, aggregating to the fuel/service
+        being provided.
+        """
         distributed_supply = {}
         for fuel in self.distributed_supply:
             fuel_distributed_supply = 0

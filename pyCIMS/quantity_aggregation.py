@@ -93,10 +93,11 @@ def get_distributed_supply(model, child, node, year, tech=None):
 
     # Find the quantities provided by child to the node/tech
     if tech is None:
-        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_node(node)
+        quantity_provided_to_node_tech = \
+            child_provided_quantities.get_quantity_provided_to_node(node)
     else:
-        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_tech(node,
-                                                                                            tech)
+        quantity_provided_to_node_tech = \
+            child_provided_quantities.get_quantity_provided_to_tech(node, tech)
 
     if quantity_provided_to_node_tech < 0:
         # Record quantities provided directly to the node/tech from child
