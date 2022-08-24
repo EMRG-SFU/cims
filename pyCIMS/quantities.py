@@ -83,6 +83,7 @@ class RequestedQuantity:
             fuel_rq = self.requested_quantities[fuel]
             for source in fuel_rq:
                 total_quantity += fuel_rq[source]
+        return total_quantity
 
 
 class DistributedSupply:
