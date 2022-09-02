@@ -9,8 +9,8 @@ from scipy.interpolate import interp1d
 import pandas as pd
 
 from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from pyCIMS.emissions import Emissions, EmissionRates, EmissionsCost
-from pyCIMS.emissions import Emissions, EmissionRates
+from pyCIMS.emissions import Emissions, EmissionsRate, EmissionsCost
+from pyCIMS.emissions import Emissions, EmissionsRate
 
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
@@ -121,8 +121,8 @@ def log_Emissions(val):
     return result
 
 
-def log_EmissionRates(val):
-    """ Provides a list of tuples to be used for logging, based on the provided EmissionRates
+def log_EmissionsRate(val):
+    """ Provides a list of tuples to be used for logging, based on the provided EmissionsRate
     object. A tuple is created for each GHG/Emission Type combination that exists in the node."""
 
     result = []
@@ -188,12 +188,12 @@ def log_dict(val):
             return log_ProvidedQuantity(year_value)
         if isinstance(year_value, RequestedQuantity):
             return log_RequestedQuantity(year_value)
-        elif isinstance(year_value, DistributedSupply):
+        if isinstance(year_value, DistributedSupply):
             return log_DistributedSupply(year_value)
-        elif isinstance(year_value, Emissions):
+        if isinstance(year_value, Emissions):
             return log_Emissions(year_value)
-        if isinstance(year_value, EmissionRates):
-            return log_EmissionRates(year_value)
+        if isinstance(year_value, EmissionsRate):
+            return log_EmissionsRate(year_value)
         if isinstance(year_value, EmissionsCost):
             return log_EmissionsCost(year_value)
         if isinstance(year_value, dict):
@@ -219,7 +219,7 @@ def log_dict(val):
                         val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
-                        val_pairs.append(deepcopy(val_log))
+                val_pairs.append(deepcopy(val_log))
 
             elif isinstance(inner_value, (int, float)):
                 val_log.value = float(inner_value)
@@ -264,7 +264,7 @@ def add_log_item(all_logs, log_tuple):
                 RequestedQuantity: log_RequestedQuantity,
                 DistributedSupply: log_DistributedSupply,
                 Emissions: log_Emissions,
-                EmissionRates: log_EmissionRates,
+                EmissionsRate: log_EmissionsRate,
                 EmissionsCost: log_EmissionsCost,
                 list: log_list,
                 dict: log_dict,
@@ -378,12 +378,12 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     if param == 'technologies':
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
-                                if tech_param not in ['aggregate_emissions_cost_rates']:
+                                if tech_param not in ['aggregate_emissions_cost_rate']:
                                     log = node, year, tech, tech_param, tech_val
                                     add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        if param not in ['aggregate_emissions_cost_rates']:
+                        if param not in ['aggregate_emissions_cost_rate']:
                             add_log_item(all_logs, log)
 
     else:

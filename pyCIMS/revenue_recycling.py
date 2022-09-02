@@ -1,7 +1,7 @@
 """
 Module to provide the calculation of recycled revenues from emissions.
 """
-from .emissions import calc_per_unit_emissions_cost
+from .emissions import calc_cumul_emissions_cost_rate
 
 
 def calc_recycled_revenues(model, node, year, tech=None):
@@ -41,9 +41,9 @@ def calc_recycled_revenues(model, node, year, tech=None):
             recycling_rates = model.get_param('recycled revenues', node, year, dict_expected=True)
 
     # Retrieve the aggregate emissions cost at the node/tech
-    calc_per_unit_emissions_cost(model, node, year, tech)
+    calc_cumul_emissions_cost_rate(model, node, year, tech)
 
-    aggregate_emissions_cost = model.get_param('per_unit_emissions_cost',
+    aggregate_emissions_cost = model.get_param('cumul_emissions_cost_rate',
                                                node, year, tech=tech, dict_expected=True)
 
     # Apply the recycling rates to the aggregate emissions to find the recycled revenues
