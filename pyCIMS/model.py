@@ -263,15 +263,13 @@ class Model:
                                                     self,
                                                     node_types=supply_nodes)
 
-                # Check for an Equilibrium
+                # Check for an Equilibrium -- Across all nodes, not just fuels
                 # ************************
                 # Find the previous prices
                 prev_prices = self.prices
-
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('life cycle cost', fuel, year, context=fuel.split('.')[-1])
-                              for fuel in self.equilibrium_fuels}  # context is str of fuel
-
+                new_prices = {node: self.get_param('life cycle cost', node, year, context=node.split('.')[-1]) for node in self.graph.nodes()}
+                # Check for an equilibrium in prices
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
                                self.check_equilibrium(prev_prices,
