@@ -13,7 +13,7 @@ from . import stock_allocation
 from . import loop_resolution
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from .emissions import Emissions, EmissionRates, EmissionsCost
+from .emissions import Emissions, EmissionsRate, EmissionsCost
 
 from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record, get_distributed_supply
@@ -680,9 +680,9 @@ class Model:
         def init_agg_emissions_cost(graph):
             # Reset the aggregate_emissions_cost at each node
             for n in self.graph.nodes():
-                self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
+                self.graph.nodes[n][year]['aggregate_emissions_cost_rate'] = \
                     create_value_dict({}, param_source='initialization')
-                self.graph.nodes[n][year]['per_unit_emissions_cost'] = \
+                self.graph.nodes[n][year]['cumul_emissions_cost_rate'] = \
                     create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
@@ -885,13 +885,13 @@ class Model:
                 total_emissions_cost += self.get_param('total_emissions_cost', child, year)
         else:
             pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-            emissions_cost = self.get_param('per_unit_emissions_cost', node, year)
+            emissions_cost = self.get_param('cumul_emissions_cost_rate', node, year)
             total_emissions_cost = emissions_cost * pq
             total_emissions_cost.num_units = pq
 
             if 'technologies' in graph.nodes[node][year]:
                 for tech in graph.nodes[node][year]['technologies']:
-                    ec = self.get_param('per_unit_emissions_cost', node, year, tech=tech)
+                    ec = self.get_param('cumul_emissions_cost_rate', node, year, tech=tech)
                     ms = self.get_param('total_market_share', node, year, tech=tech)
                     tech_total_emissions_cost = ec * ms * pq
                     tech_total_emissions_cost.num_units = ms * pq
