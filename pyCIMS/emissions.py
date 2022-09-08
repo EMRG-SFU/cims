@@ -367,7 +367,7 @@ def _add_emissions_cost_from_non_fuel_children(model, year, services_requested, 
     for req_data in services_requested.values():
         child = req_data['branch']
         if child not in model.fuels:
-            req_ratio = max(req_data['year_value'], 0)
+            req_ratio = req_data['year_value']
             child_emissions_cost = model.get_param('per_unit_emissions_cost', child, year,
                                                    dict_expected=True)
 
