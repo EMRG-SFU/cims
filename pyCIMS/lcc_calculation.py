@@ -138,13 +138,19 @@ def lcc_calculation(sub_graph, node, year, model):
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
         # This issue affects endogenous fuels that are not used until later years (like hydrogen)
-        if weighted_lccs == 0 and int(year) != model.base_year:
-            prev_year = str(int(year) - model.step)
-            weighted_lccs = model.get_param('life cycle cost', node, prev_year, context=node.split('.')[-1])
+        if node in model.fuels:
+            if weighted_lccs == 0 and int(year) != model.base_year:
+                prev_year = str(int(year) - model.step)
+                weighted_lccs = model.get_param('life cycle cost', node, prev_year, context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = weighted_lccs - recycled_revenues
+
+        if node not in model.fuels:
+            pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+            if (pq is not None) and (src == 'calculation') and (pq.get_total_quantity() <= 0):
+                lcc = 0
 
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['life cycle cost'] = {
@@ -166,6 +172,11 @@ def lcc_calculation(sub_graph, node, year, model):
                                                   return_source=True, do_calc=True)
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = service_cost - recycled_revenues
+
+        if node not in model.fuels:
+            pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+            if (pq is not None) and (src == 'calculation') and (pq.get_total_quantity() <= 0):
+                lcc = 0
 
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['life cycle cost'] = {
@@ -252,6 +263,10 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
     """
+    pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
+    if pq is not None:
+        if (src != 'initialization') and (pq.get_total_quantity() <= 0):
+         jillian = 1
     upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)

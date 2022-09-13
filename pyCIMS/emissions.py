@@ -298,6 +298,7 @@ def calc_cumul_emissions_cost_rate(model, node, year, tech=None):
         (2) At a node with techs -- Weighted emissions cost from techs
         (3) At a node without techs -- Emissions Cost from Non Fuel children
     """
+    pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
     if tech is not None:
         # (1) At a technology -- Emission Cost @ Tech + Emissions Cost from any non-fuel children
         agg_emissions_cost = EmissionsCost()
@@ -313,7 +314,8 @@ def calc_cumul_emissions_cost_rate(model, node, year, tech=None):
         agg_emissions_cost = _add_emissions_cost_from_non_fuel_children(model, year,
                                                                        services_requested,
                                                                        agg_emissions_cost)
-
+    elif (pq is not None) and (pq.get_total_quantity() <= 0) and (src == 'calculation'):
+        agg_emissions_cost = EmissionsCost()
     elif model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
         # (2) At a node with techs -- Weighted emissions cost from techs
         agg_emissions_cost = EmissionsCost()
