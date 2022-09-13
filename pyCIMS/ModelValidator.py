@@ -942,6 +942,46 @@ class ModelValidator:
                     w = f"{info} {more_info if len(market_children_requests) else ''}"
                     warnings.warn(w)
 
+        def revenue_recycling_at_techs():
+            """Revenue recycling should only happen at nodes, never at techs"""
+            # The model's DataFrame
+            data = self.model_df
+
+            # Add a Column w/ Technology Name
+            techs = data[data['Parameter'] == 'technology']['Context']
+            data['Tech'] = techs
+            data['Tech'] = data['Tech'].ffill()
+
+            # Find Recycled Revenues Rows
+            recycled_revenues = data[data['Parameter'] == 'recycled revenues']
+
+            # Find instances where recycled revenues is defined for a tech
+            rr_at_tech = recycled_revenues[~recycled_revenues['Tech'].isna()]
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in rr_at_tech.index]
+            techs_recycling_revenues = list(zip(rr_at_tech.index,
+                                                node_names,
+                                                rr_at_tech['Tech']))
+
+            if len(recycled_revenues) > 0:
+                self.warnings['techs_revenue_recycling'] = techs_recycling_revenues
+
+            if verbose:
+                info = "{} technologies are trying to recycle revenues.".format(
+                    len(techs_recycling_revenues))
+                more_info = "See ModelValidator.warnings['techs_revenue_recycling'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(techs_recycling_revenues) else ""))
+
+            if raise_warnings:
+                info = "{} technologies are trying to recycle revenues".format(
+                    len(techs_recycling_revenues))
+                more_info = "See ModelValidator.warnings['techs_revenue_recycling'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(techs_recycling_revenues) else ""))
+                warnings.warn(w)
+
         providers = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
         requested = self.model_df[self.model_df['Parameter'] == 'service requested']['Branch']
         roots = self.find_roots()
@@ -963,3 +1003,4 @@ class ModelValidator:
         bad_service_req()
         tech_compete_nodes_no_techs()
         market_child_requested()
+        revenue_recycling_at_techs()
