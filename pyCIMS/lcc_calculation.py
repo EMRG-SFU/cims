@@ -43,7 +43,8 @@ def lcc_calculation(sub_graph, node, year, model):
     """
     # Check if the node has an exogenously defined Life Cycle Cost
     if 'life cycle cost' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('life cycle cost', node, year, context=node.split('.')[-1],
+        lcc, lcc_source = model.get_param('life cycle cost', node, year,
+                                          context=node.split('.')[-1],
                                           return_source=True)  # context is the fuel name
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
@@ -94,7 +95,8 @@ def lcc_calculation(sub_graph, node, year, model):
 
             # If the technology is available in this year, add to the total LCC^-v value.
             first_year_avail = model.get_param('available', node, str(model.base_year), tech=tech)
-            first_year_unavail = model.get_param('unavailable', node, str(model.base_year), tech=tech)
+            first_year_unavail = model.get_param('unavailable', node, str(model.base_year),
+                                                 tech=tech)
             if first_year_avail <= int(year) < first_year_unavail:
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:
@@ -119,7 +121,8 @@ def lcc_calculation(sub_graph, node, year, model):
         # Cycle Cost
         for tech in node_techs:
             # Determine whether Market share is exogenous or not
-            ms, ms_source = model.get_param('market share', node, year, tech=tech, return_source=True)
+            ms, ms_source = model.get_param('market share', node, year, tech=tech,
+                                            return_source=True)
             ms_exogenous = ms_source == 'model'
 
             # Determine what market share to use for weighing Life Cycle Costs
@@ -141,16 +144,18 @@ def lcc_calculation(sub_graph, node, year, model):
         if node in model.fuels:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
-                weighted_lccs = model.get_param('life cycle cost', node, prev_year, context=node.split('.')[-1])
+                weighted_lccs = model.get_param('life cycle cost', node, prev_year,
+                                                context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = weighted_lccs - recycled_revenues
 
-        if node not in model.fuels:
-            pq, src = model.get_param('provided_quantities', node, year, return_source=True)
-            if (pq is not None) and (src == 'calculation') and (pq.get_total_quantity() <= 0):
-                lcc = 0
+        # Check that stock isn't 0 (GL Issue #110)
+        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+        if utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+                src == 'calculation') and (pq.get_total_quantity() <= 0):
+            lcc = 0
 
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['life cycle cost'] = {
@@ -173,10 +178,10 @@ def lcc_calculation(sub_graph, node, year, model):
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = service_cost - recycled_revenues
 
-        if node not in model.fuels:
-            pq, src = model.get_param('provided_quantities', node, year, return_source=True)
-            if (pq is not None) and (src == 'calculation') and (pq.get_total_quantity() <= 0):
-                lcc = 0
+        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+        if utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+                src == 'calculation') and (pq.get_total_quantity() <= 0):
+            lcc = 0
 
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['life cycle cost'] = {
@@ -263,10 +268,6 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
     """
-    pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
-    if pq is not None:
-        if (src != 'initialization') and (pq.get_total_quantity() <= 0):
-         jillian = 1
     upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
@@ -295,8 +296,10 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
     --------
     calc_financial_lcc: Calculates financial LCC, which does not include intangible costs.
     """
-    complete_upfront_cost = model.get_param('complete upfront cost', node, year, tech=tech, do_calc=True)
-    complete_annual_cost = model.get_param('complete annual cost', node, year, tech=tech, do_calc=True)
+    complete_upfront_cost = model.get_param('complete upfront cost', node, year, tech=tech,
+                                            do_calc=True)
+    complete_annual_cost = model.get_param('complete annual cost', node, year, tech=tech,
+                                           do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
     emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=True)
 
@@ -445,7 +448,8 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     if dcc_class is None or int(year) == int(model.base_year):
         capital_cost = model.get_param('capital cost_overnight', node, year, tech=tech)
     else:
-        capital_cost = model.get_param('capital cost_declining', node, year, tech=tech, do_calc=True)
+        capital_cost = model.get_param('capital cost_declining', node, year, tech=tech,
+                                       do_calc=True)
 
     return capital_cost
 
@@ -489,7 +493,8 @@ def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
             bs_sum += bs_k / unit_convert
 
         # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
-        year_list = [str(x) for x in range(int(model.base_year) + int(model.step), int(year), int(model.step))]
+        year_list = [str(x) for x in
+                     range(int(model.base_year) + int(model.step), int(year), int(model.step))]
         for j in year_list:
             ns_jk = model.get_param('new_stock', node_k, j, tech=tech_k)
             ns_sum += ns_jk / unit_convert
@@ -504,7 +509,7 @@ def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
         inner_sums = (bs_sum + ns_sum) / proven_stock
         progress_ratio = model.get_param('dcc_progress ratio', node, year, tech=tech)
         log_decline = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
-        
+
         cc_declining = max(log_decline, cc_overnight * cc_declining_limit)
 
     return cc_declining
@@ -636,7 +641,8 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
 
     # Check if the node has an exogenously defined capital recovery, if not use lifetime
     try:
-        payback_period = model.get_param('capital recovery', node, year, tech=tech, check_exist=True)
+        payback_period = model.get_param('capital recovery', node, year, tech=tech,
+                                         check_exist=True)
     except:
         payback_period = model.get_param('lifetime', node, year, tech=tech)
 
@@ -721,3 +727,5 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
             total_service_cost += do_sc_calculation(req)
 
     return total_service_cost
+
+

@@ -5,6 +5,7 @@ import copy
 from numpy import linspace
 from pyCIMS import utils
 
+from . import utils
 
 class EmissionsCost:
     """
@@ -314,7 +315,8 @@ def calc_cumul_emissions_cost_rate(model, node, year, tech=None):
         agg_emissions_cost = _add_emissions_cost_from_non_fuel_children(model, year,
                                                                        services_requested,
                                                                        agg_emissions_cost)
-    elif (pq is not None) and (pq.get_total_quantity() <= 0) and (src == 'calculation'):
+    elif utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+                src == 'calculation') and (pq.get_total_quantity() <= 0):
         agg_emissions_cost = EmissionsCost()
     elif model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
         # (2) At a node with techs -- Weighted emissions cost from techs
