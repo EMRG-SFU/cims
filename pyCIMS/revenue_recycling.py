@@ -64,7 +64,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
                     aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] = \
                         aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] * \
                         (1 - recycling_rate)
-                except:
+                except KeyError:
                     pass
 
     if tech is not None:
