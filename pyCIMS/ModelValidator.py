@@ -950,19 +950,32 @@ class ModelValidator:
             # Add a Column w/ Technology Name
             techs = data[data['Parameter'] == 'technology']['Context']
             data['Tech'] = techs
-            data['Tech'] = data['Tech'].ffill()
+            # data['Tech'] = data['Tech'].ffill()
+
+            # nodes_ffill = data['Node'].map(lambda x: None if pd.isna(x) else 'Node')
+            # techs_ffill = data['Tech'].map(lambda x: None if pd.isna(x) else 'Tech')
+            node_or_tech = []
+            for n, t in zip(data['Node'], data['Tech']):
+                if not pd.isna(t):
+                    node_or_tech.append('Tech')
+                elif not pd.isna(n):
+                    node_or_tech.append('Node')
+                else:
+                    node_or_tech.append(None)
+
+            data['Node_or_Tech'] = node_or_tech
+            data['Node_or_Tech'] = data['Node_or_Tech'].ffill()
 
             # Find Recycled Revenues Rows
             recycled_revenues = data[data['Parameter'] == 'recycled revenues']
 
             # Find instances where recycled revenues is defined for a tech
-            rr_at_tech = recycled_revenues[~recycled_revenues['Tech'].isna()]
+            rr_at_tech = recycled_revenues[recycled_revenues['Node_or_Tech']=='Tech']
 
             # Create our Warning information
             node_names = [self.index2node_map[i] for i in rr_at_tech.index]
-            techs_recycling_revenues = list(zip(rr_at_tech.index,
-                                                node_names,
-                                                rr_at_tech['Tech']))
+            tech_names = [data['Tech'].ffill().loc[i] for i in rr_at_tech.index]
+            techs_recycling_revenues = list(zip(rr_at_tech.index, node_names, tech_names))
 
             if len(recycled_revenues) > 0:
                 self.warnings['techs_revenue_recycling'] = techs_recycling_revenues
