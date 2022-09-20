@@ -151,6 +151,40 @@ class EmissionsRate:
     def __init__(self, emissions_rate=None):
         self.emissions_rate = emissions_rate if emissions_rate is not None else {}
 
+    def __add__(self, other):
+        result = EmissionsRate()
+
+        # Start by recording all the emissions from self in our result
+        for source_branch in self.emissions_rate:
+            if source_branch not in result.emissions_rate:
+                result.emissions_rate[source_branch] = {}
+            for ghg in self.emissions_rate[source_branch]:
+                if ghg not in result.emissions_rate[source_branch]:
+                    result.emissions_rate[source_branch][ghg] = {}
+                for emission_type in self.emissions_rate[source_branch][ghg]:
+                    emission_amount = self.emissions_rate[source_branch][ghg][emission_type][
+                        'year_value']
+                    result.emissions_rate[source_branch][ghg][emission_type] = utils.create_value_dict(
+                        emission_amount)
+
+        # Then, go through each of the emissions in other and add those to the result
+        for source_branch in other.emissions_rate:
+            if source_branch not in result.emissions_rate:
+                result.emissions_rate[source_branch] = {}
+            for ghg in other.emissions_rate[source_branch]:
+                if ghg not in result.emissions_rate[source_branch]:
+                    result.emissions_rate[source_branch][ghg] = {}
+                for emission_type in other.emissions_rate[source_branch][ghg]:
+                    if emission_type not in result.emissions_rate[source_branch][ghg]:
+                        result.emissions_rate[source_branch][ghg][
+                            emission_type] = utils.create_value_dict(0)
+                    emission_amount = other.emissions_rate[source_branch][ghg][emission_type][
+                        'year_value']
+                    result.emissions_rate[source_branch][ghg][emission_type][
+                        'year_value'] += emission_amount
+
+        return result
+
     def multiply_rates(self, amount):
         """
         Multiply, each emission rate in self.emissions_rate by amount. Amount will usually be the
@@ -347,6 +381,69 @@ def calc_cumul_emissions_cost_rate(model, node, year, tech=None):
         model.graph.nodes[node][year]['cumul_emissions_cost_rate'] = new_val_dict
 
 
+def calc_cumul_emissions_rate(model, node, year, tech=None):
+    """
+    Calculates the per unit emissions for a node/tech, including the emissions from child
+    techs/services that are excluded from "direct" rates.
+
+    There is slightly different logic, depending on the kind of node we are at. There are three
+    possible locations:
+        (1) At a technology -- Emissions @ Tech + Emissions from any non-fuel children
+        (2) At a node with techs -- Weighted emissions from techs
+        (3) At a node without techs -- Emissions from Non Fuel children
+    """
+    pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
+    emissions = ['net_emissions_rate', 'captured_emissions_rate', 'bio_emissions_rate']
+    for rate_param in emissions:
+        cumul_rate_param = f'cumul_{rate_param}'
+        if tech is not None:
+            # (1) At a technology -- Emission @ Tech + Emissions from any non-fuel children
+            agg_emissions = EmissionsRate()
+
+            # Emission @ Tech
+            if rate_param in model.graph.nodes[node][year]['technologies'][tech]:
+                tech_emissions = model.get_param(rate_param, node, year, tech=tech)
+                agg_emissions = agg_emissions + tech_emissions
+
+            # Emissions from any non-fuel children
+            services_requested = utils.get_services_requested(model, node, year, tech=tech)
+            agg_emissions = _add_emissions_from_non_fuel_children(model, year, services_requested,
+                                                                  agg_emissions,
+                                                                  emissions_param=cumul_rate_param)
+
+        elif utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+                    src == 'calculation') and (pq.get_total_quantity() <= 0):
+            agg_emissions = EmissionsRate()
+        elif model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
+            # (2) At a node with techs -- Weighted emissions from techs
+            agg_emissions = EmissionsRate()
+            # Weighted emissions from techs
+            for technology in model.graph.nodes[node][year]['technologies']:
+                tech_emissions = model.get_param(cumul_rate_param, node, year,
+                                                 tech=technology, dict_expected=True)
+                if tech_emissions is not None:
+                    market_share = model.get_param('total_market_share', node, year, tech=technology)
+                    agg_emissions = agg_emissions + EmissionsRate(tech_emissions.multiply_rates(market_share))
+
+        else:
+            # (3) At a node without techs -- Emissions from Non Fuel children
+            agg_emissions = EmissionsRate()
+            services_requested = utils.get_services_requested(model, node, year)
+
+            # Emissions from Non Fuel children
+            agg_emissions = _add_emissions_from_non_fuel_children(model, year, services_requested,
+                                                                  agg_emissions,
+                                                                  emissions_param=cumul_rate_param)
+
+        # Save the Aggregate Emission Rates
+        new_val_dict = utils.create_value_dict(year_val=agg_emissions, param_source='calculation')
+
+        if tech:
+            model.set_param_internal(new_val_dict, cumul_rate_param, node, year, tech)
+        else:
+            model.graph.nodes[node][year][cumul_rate_param] = new_val_dict
+
+
 def _add_emissions_cost_from_non_fuel_children(model, year, services_requested, agg_emissions_cost):
     """
     Go through each of the requested services and find the emissions cost that can be attributed to
@@ -378,6 +475,40 @@ def _add_emissions_cost_from_non_fuel_children(model, year, services_requested, 
             agg_emissions_cost = agg_emissions_cost + (child_emissions_cost * req_ratio)
 
     return agg_emissions_cost
+
+
+def _add_emissions_from_non_fuel_children(model, year, services_requested, agg_emissions,
+                                          emissions_param):
+    """
+    Go through each of the requested services and find the emissions that can be attributed to
+    the requesting node. Add these to agg_emissions.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model containing the relevant data.
+    year : str
+        The year of interest.
+    services_requested : dict
+        A dictionary containing requested services (service & request ratio).
+    agg_emissions : Emissions
+        The emissions cost(s) associated with the requesting node.
+
+    Returns
+    -------
+    Emissions
+
+    """
+    for req_data in services_requested.values():
+        child = req_data['branch']
+        if child not in model.fuels:
+            req_ratio = req_data['year_value']
+            child_emissions = model.get_param(emissions_param, child, year,
+                                              dict_expected=True)
+            if child_emissions is not None:
+                agg_emissions = agg_emissions + EmissionsRate(child_emissions.multiply_rates(req_ratio))
+
+    return agg_emissions
 
 
 def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
