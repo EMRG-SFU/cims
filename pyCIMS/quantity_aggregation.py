@@ -54,11 +54,13 @@ def get_quantities_to_record(model, child, node, year, tech=None):
     quantities_to_record = []
 
     # Find the quantities provided by child to the node/tech
+    # Note, the result of get_total_quantity() will not equal the sum across
+    # self.provided_quantities values when distributed supply is greater than the sum of
+    # positive provided quantities.
     if tech is None:
         quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_node(node)
     else:
-        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_tech(node,
-                                                                                            tech)
+        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_tech(node,                                                                                 tech)
     # Return early if there isn't a positive quantity
     if quantity_provided_to_node_tech <= 0:
         return quantities_to_record
@@ -92,6 +94,9 @@ def get_distributed_supply(model, child, node, year, tech=None):
     distributed_supply = []
 
     # Find the quantities provided by child to the node/tech
+    # Note, the result of get_total_quantity() will not equal the sum across
+    # self.provided_quantities values when distributed supply is greater than the sum of
+    # positive provided quantities.
     if tech is None:
         quantity_provided_to_node_tech = \
             child_provided_quantities.get_quantity_provided_to_node(node)
