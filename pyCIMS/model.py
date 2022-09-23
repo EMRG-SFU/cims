@@ -952,29 +952,36 @@ class Model:
 
         # Aggregate Cumulative Emissions
         emission_params = ['net_emissions', 'captured_emissions', 'bio_emissions']
-        pq = self.get_param('provided_quantities', node, year).get_total_quantity()
         for e in emission_params:
             rate_param = f"cumul_{e}_rate"
             total_param = f"total_cumul_{e}"
-            if 'technologies' in graph.nodes[node][year]:
-                node_total_cumul_emissions = Emissions()
-                for tech in graph.nodes[node][year]['technologies']:
-                    total_cumul_emissions = Emissions()
-                    ms = self.get_param('total_market_share', node, year, tech=tech)
-                    cumul_emissions = self.get_param(rate_param, node, year, tech=tech)
-                    if cumul_emissions is not None:
-                        total_cumul_emissions = Emissions(cumul_emissions.multiply_rates(pq * ms))
-                        node_total_cumul_emissions += total_cumul_emissions
-                    value_dict = create_value_dict(total_cumul_emissions)
-                    graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+            total_cumul_emissions = Emissions()
+
+            comp_type = self.get_param('competition type', node)
+            if comp_type in ['root', 'region']:
+                structural_children = find_children(graph, node, structural=True)
+                for child in structural_children:
+                    # Find quantities provided to the node via its structural children
+                    total_cumul_emissions += self.get_param(total_param, child, year)
 
             else:
+                pq = self.get_param('provided_quantities', node, year).get_total_quantity()
                 cumul_emissions = self.get_param(rate_param, node, year)
-                node_total_cumul_emissions = Emissions(cumul_emissions.multiply_rates(pq))
-            value_dict = create_value_dict(node_total_cumul_emissions)
+                total_cumul_emissions = Emissions(cumul_emissions.multiply_rates(pq))
+
+                if 'technologies' in graph.nodes[node][year]:
+                    for tech in graph.nodes[node][year]['technologies']:
+                        ms = self.get_param('total_market_share', node, year, tech=tech)
+                        em = self.get_param(rate_param, node, year, tech=tech)
+                        if em is not None:
+                            tech_total_cumul_emissions = Emissions(em.multiply_rates(pq * ms))
+                        else:
+                            tech_total_cumul_emissions = Emissions()
+                        value_dict = create_value_dict(tech_total_cumul_emissions)
+                        graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+
+            value_dict = create_value_dict(total_cumul_emissions)
             graph.nodes[node][year][total_param] = value_dict
-
-
 
     def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
         # Direct Emissions
