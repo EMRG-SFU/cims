@@ -162,7 +162,8 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10,
+            show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -274,7 +275,9 @@ class Model:
                               (int(year) == self.base_year or
                                self.check_equilibrium(prev_prices,
                                                       new_prices,
-                                                      equilibrium_threshold))
+                                                      iteration,
+                                                      equilibrium_threshold,
+                                                      print_eq))
 
                 self.prices = new_prices
 
@@ -290,16 +293,10 @@ class Model:
                                             fuels=self.fuels)
 
             graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_emissions_cost,
-                                            year,
-                                            loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
-
-            graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels = self.fuels)
+                                            fuels=self.fuels)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions_cost,
@@ -313,7 +310,13 @@ class Model:
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             fuels=self.fuels)
 
-    def check_equilibrium(self, prev, new, threshold):
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_cumul_emissions_cost,
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
+
+    def check_equilibrium(self, prev, new, iteration, threshold, print_eq):
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
@@ -337,6 +340,8 @@ class Model:
         True if all fuels changed less than `threshold`. False otherwise.
         """
         # For every fuel, check if the relative difference exceeds the threshold
+        equil_check = 0
+
         for fuel in new:
             prev_fuel_price = prev[fuel]
             if prev_fuel_price == 0:
@@ -345,6 +350,7 @@ class Model:
                 prev_fuel_price = self.get_node_parameter_default('life cycle cost', 'sector')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
+                print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
                 return False
             abs_diff = abs(new_fuel_price - prev_fuel_price)
 
@@ -358,7 +364,13 @@ class Model:
             # If any fuel's relative difference exceeds the threshold, an equilibrium
             # has not been reached
             if rel_diff > threshold:
-                return False
+                equil_check += 1
+                if iteration > 1 and print_eq == True:
+                    rel_diff_formatted = "{:.1f}".format(rel_diff * 100)
+                    print(f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
+
+        if equil_check > 0:
+            return False
 
         # Otherwise, an equilibrium has been reached
         return True
@@ -868,7 +880,7 @@ class Model:
         self.graph.nodes[node][year]['distributed_supply'] = \
             utils.create_value_dict(distributed_supply, param_source='calculation')
 
-    def _aggregate_emissions_cost(self, graph, node, year, **kwargs):
+    def _aggregate_cumul_emissions_cost(self, graph, node, year, **kwargs):
         """
         Calculates and records the total emissions cost for a particular node. This is done by
         taking the per-unit emissions cost and multiplying it by the number of units provided by a
@@ -951,7 +963,8 @@ class Model:
         calc_cumul_emissions_rate(self, node, year)
 
         # Aggregate Cumulative Emissions
-        emission_params = ['net_emissions', 'captured_emissions', 'bio_emissions']
+        emission_params = ['net_emissions', 'avoided_emissions',
+                           'negative_emissions', 'bio_emissions']
         for e in emission_params:
             rate_param = f"cumul_{e}_rate"
             total_param = f"total_cumul_{e}"
@@ -987,7 +1000,8 @@ class Model:
         # Direct Emissions
         emissions = [
             {'rate_param_name': 'net_emissions_rate', 'total_param_name': 'total_direct_net_emissions'},
-            {'rate_param_name': 'captured_emissions_rate', 'total_param_name': 'total_direct_captured_emissions'},
+            {'rate_param_name': 'avoided_emissions_rate', 'total_param_name': 'total_direct_avoided_emissions'},
+            {'rate_param_name': 'negative_emissions_rate', 'total_param_name': 'total_direct_negative_emissions'},
             {'rate_param_name': 'bio_emissions_rate', 'total_param_name': 'total_direct_bio_emissions'}
         ]
         pq = self.get_param('provided_quantities', node, year).get_total_quantity()
