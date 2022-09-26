@@ -3,13 +3,13 @@ Module containing the classes and functions related to emissions and emissions c
 """
 import copy
 from numpy import linspace
-from pyCIMS import utils
 
 from . import utils
 
+
 class EmissionsCost:
     """
-    Class for storing the emission cost per unit of. Emissions cost takes into account the
+    Class for storing the emission cost of a node. Emissions cost takes into account the
     emissions cost of children nodes, services, and technologies.
     """
 
@@ -144,102 +144,6 @@ class EmissionsCost:
         return total
 
 
-class EmissionsRate:
-    """Class for storing the emission rates of technologies. An emission rate is the amount of
-       emissions per unit of a technology."""
-
-    def __init__(self, emissions_rate=None):
-        self.emissions_rate = emissions_rate if emissions_rate is not None else {}
-
-    def __add__(self, other):
-        result = EmissionsRate()
-
-        # Start by recording all the emissions from self in our result
-        for source_branch in self.emissions_rate:
-            if source_branch not in result.emissions_rate:
-                result.emissions_rate[source_branch] = {}
-            for ghg in self.emissions_rate[source_branch]:
-                if ghg not in result.emissions_rate[source_branch]:
-                    result.emissions_rate[source_branch][ghg] = {}
-                for emission_type in self.emissions_rate[source_branch][ghg]:
-                    emission_amount = self.emissions_rate[source_branch][ghg][emission_type][
-                        'year_value']
-                    result.emissions_rate[source_branch][ghg][emission_type] = utils.create_value_dict(
-                        emission_amount)
-
-        # Then, go through each of the emissions in other and add those to the result
-        for source_branch in other.emissions_rate:
-            if source_branch not in result.emissions_rate:
-                result.emissions_rate[source_branch] = {}
-            for ghg in other.emissions_rate[source_branch]:
-                if ghg not in result.emissions_rate[source_branch]:
-                    result.emissions_rate[source_branch][ghg] = {}
-                for emission_type in other.emissions_rate[source_branch][ghg]:
-                    if emission_type not in result.emissions_rate[source_branch][ghg]:
-                        result.emissions_rate[source_branch][ghg][
-                            emission_type] = utils.create_value_dict(0)
-                    emission_amount = other.emissions_rate[source_branch][ghg][emission_type][
-                        'year_value']
-                    result.emissions_rate[source_branch][ghg][emission_type][
-                        'year_value'] += emission_amount
-
-        return result
-
-    def multiply_rates(self, amount):
-        """
-        Multiply, each emission rate in self.emissions_rate by amount. Amount will usually be the
-        total number of units of a given tech. Then rate * units will give the total emissions for
-        that tech.
-
-        Parameters
-        ----------
-        amount : float or int
-            The value to multiply each emission rate by.
-
-        Returns
-        -------
-        dict :
-            Returns a dictionary where each emission rate has been multiplied by amount.
-        """
-
-        emission_totals = {}
-        for source_branch in self.emissions_rate:
-            if source_branch not in emission_totals:
-                emission_totals[source_branch] = {}
-            for ghg in self.emissions_rate[source_branch]:
-                if ghg not in emission_totals[source_branch]:
-                    emission_totals[source_branch][ghg] = {}
-                for emission_type in self.emissions_rate[source_branch][ghg]:
-                    prev_val = self.emissions_rate[source_branch][ghg][emission_type]['year_value']
-                    emission_totals[source_branch][ghg][emission_type] = \
-                        utils.create_value_dict(prev_val * amount)
-
-        return emission_totals
-
-    def summarize_rates(self):
-        """
-        Sum emission rates across GHG/Emission Type pairs. This removes the differentiation between
-        which node an emission rate originated from.
-
-        Returns
-        -------
-        dict :
-            Returns a dictionary containing the summarized version of self.emissions_rate. This
-            summary dictionary will follow the form {GHG: {Emission Type: rate}}.
-        """
-        summary_rates = {}
-        for source in self.emissions_rate:
-            for ghg in self.emissions_rate[source]:
-                if ghg not in summary_rates:
-                    summary_rates[ghg] = {}
-                for emission_type in self.emissions_rate[source][ghg]:
-                    if emission_type not in summary_rates[ghg]:
-                        summary_rates[ghg][emission_type] = 0
-                    summary_rates[ghg][emission_type] += \
-                        self.emissions_rate[source][ghg][emission_type]['year_value']
-        return summary_rates
-
-
 class Emissions:
     """Class for storing the emissions for a particular technology or node."""
     def __init__(self, emissions=None):
@@ -297,7 +201,7 @@ class Emissions:
 
         return result
 
-    def summarize_emissions(self):
+    def summarize(self):
         """
         Sum emissions across GHG/Emission Type pairs. This removes the  differentiation between
         which node an emission originated from.
@@ -398,7 +302,7 @@ def calc_cumul_emissions_rate(model, node, year, tech=None):
         cumul_rate_param = f'cumul_{rate_param}'
         if tech is not None:
             # (1) At a technology -- Emission @ Tech + Emissions from any non-fuel children
-            agg_emissions = EmissionsRate()
+            agg_emissions = Emissions()
 
             # Emission @ Tech
             if rate_param in model.graph.nodes[node][year]['technologies'][tech]:
@@ -413,21 +317,21 @@ def calc_cumul_emissions_rate(model, node, year, tech=None):
 
         elif utils.prev_stock_existed(model, node, year) and (pq is not None) and (
                     src == 'calculation') and (pq.get_total_quantity() <= 0):
-            agg_emissions = EmissionsRate()
+            agg_emissions = Emissions()
         elif model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
             # (2) At a node with techs -- Weighted emissions from techs
-            agg_emissions = EmissionsRate()
+            agg_emissions = Emissions()
             # Weighted emissions from techs
             for technology in model.graph.nodes[node][year]['technologies']:
                 tech_emissions = model.get_param(cumul_rate_param, node, year,
                                                  tech=technology, dict_expected=True)
                 if tech_emissions is not None:
                     market_share = model.get_param('total_market_share', node, year, tech=technology)
-                    agg_emissions = agg_emissions + EmissionsRate(tech_emissions.multiply_rates(market_share))
+                    agg_emissions = agg_emissions + (tech_emissions * market_share)
 
         else:
             # (3) At a node without techs -- Emissions from Non Fuel children
-            agg_emissions = EmissionsRate()
+            agg_emissions = Emissions()
             services_requested = utils.get_services_requested(model, node, year)
 
             # Emissions from Non Fuel children
@@ -506,7 +410,7 @@ def _add_emissions_from_non_fuel_children(model, year, services_requested, agg_e
             child_emissions = model.get_param(emissions_param, child, year,
                                               dict_expected=True)
             if child_emissions is not None:
-                agg_emissions = agg_emissions + EmissionsRate(child_emissions.multiply_rates(req_ratio))
+                agg_emissions = agg_emissions + child_emissions * req_ratio
 
     return agg_emissions
 
@@ -768,11 +672,11 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-        EmissionsRate(emissions_rate=net_emissions)
+        Emissions(net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['captured_emissions_rate'] = \
-        EmissionsRate(emissions_rate=captured_emissions)
+        Emissions(captured_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emissions_rate'] = \
-        EmissionsRate(emissions_rate=bio_emissions)
+        Emissions(bio_emissions)
 
     # Record emission costs
     val_dict = utils.create_value_dict(year_val=total, param_source='calculation')

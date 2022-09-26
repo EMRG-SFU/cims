@@ -13,7 +13,7 @@ from . import stock_allocation
 from . import loop_resolution
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from .emissions import Emissions, EmissionsRate, EmissionsCost, calc_cumul_emissions_rate
+from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
 
 from .utils import create_value_dict, inheritable_params, inherit_parameter
 from .quantity_aggregation import find_children, get_quantities_to_record, get_distributed_supply
@@ -967,14 +967,14 @@ class Model:
             else:
                 pq = self.get_param('provided_quantities', node, year).get_total_quantity()
                 cumul_emissions = self.get_param(rate_param, node, year)
-                total_cumul_emissions = Emissions(cumul_emissions.multiply_rates(pq))
+                total_cumul_emissions = cumul_emissions * pq
 
                 if 'technologies' in graph.nodes[node][year]:
                     for tech in graph.nodes[node][year]['technologies']:
                         ms = self.get_param('total_market_share', node, year, tech=tech)
                         em = self.get_param(rate_param, node, year, tech=tech)
                         if em is not None:
-                            tech_total_cumul_emissions = Emissions(em.multiply_rates(pq * ms))
+                            tech_total_cumul_emissions = em * pq * ms
                         else:
                             tech_total_cumul_emissions = Emissions()
                         value_dict = create_value_dict(tech_total_cumul_emissions)
@@ -1001,7 +1001,7 @@ class Model:
                     ms = self.get_param('total_market_share', node, year, tech=tech)
                     direct_emissions = self.get_param(rate_param, node, year, tech=tech)
                     if direct_emissions is not None:
-                        total_direct_emissions = Emissions(direct_emissions.multiply_rates(pq * ms))
+                        total_direct_emissions = direct_emissions * pq * ms
                         node_total_direct_emissions += total_direct_emissions
                     value_dict = create_value_dict(total_direct_emissions)
                     graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
