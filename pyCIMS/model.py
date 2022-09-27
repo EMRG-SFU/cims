@@ -295,6 +295,10 @@ class Model:
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             fuels=self.fuels)
 
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_distributed_supplies,
+                                            year)
+
     def check_equilibrium(self, prev, new, threshold):
         """
         Return False unless an equilibrium has been reached.
@@ -849,6 +853,30 @@ class Model:
 
         self.graph.nodes[node][year]['distributed_supply'] = \
             utils.create_value_dict(distributed_supply, param_source='calculation')
+
+    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
+        """
+        We want to aggregate up the structural relationships. I would suppose this means that we
+        have three locations we care about:
+        (1) @ a Node with techs: Sum up the distributed supplies from all the children.
+        (2) @ a Node without techs: Sum up the distributed supplies from all the techs.
+        (3) @ a Tech : Sum up the distributed supplies from all the children of the tech.
+
+        I'm pretty sure that at no point in this aggregation we need to do any multiplications.
+
+        Hmmm -- techs are never actually structural parents to anyone. So there is a question as to
+        whether they should be a part of this aggregation at all. Except that they might be the
+        original source of a distributed supply (direct). 
+
+        """
+        distributed_supply = DistributedSupply()
+
+        structural_children = find_children(graph, node, structural=True)
+
+        for child in structural_children:
+            distributed_supplies = get_distributed_supply(self, child, node, year)
+            for fuel, child, attributable_amount in distributed_supplies:
+                distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
 
     def _aggregate_emissions(self, graph, node, year, **kwargs):
         """
