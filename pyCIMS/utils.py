@@ -171,6 +171,8 @@ inheritable_params = [
     'price multiplier',
     'discount rate_financial',
     'discount rate_retrofit',
+    'retrofit_existing_min',
+    'retrofit_existing_max',
 ]
 
 

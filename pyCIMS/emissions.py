@@ -376,7 +376,8 @@ def calc_cumul_emissions_rate(model: 'pyCIMS.Model', node: str, year: str,
     """
 
     pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
-    emissions = ['net_emissions_rate', 'captured_emissions_rate', 'bio_emissions_rate']
+    emissions = ['net_emissions_rate', 'avoided_emissions_rate', 'negative_emissions_rate',
+                 'bio_emissions_rate']
     for rate_param in emissions:
         cumul_rate_param = f'cumul_{rate_param}'
         if tech is not None:
@@ -498,9 +499,10 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     """
     Calculates the emission cost at a node.
 
-    Total, gross, captured, and net emissions are all calculated and combined to find the final
-    emission cost. This total emissions cost is returned by the function and stored in the model.
-    Net, captured, and biomass emission rates are also stored in the model.
+    Total, gross, avoided, negative, and net emissions are all calculated and combined to find
+    the final emission cost. This total emissions cost is returned by the function and stored
+    in the model.
+    Net, avoided, negative, and biomass emission rates are also stored in the model.
 
     To see how the calculation works, see the file 'Emissions_tax_example.xlsx':
     https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
@@ -516,7 +518,8 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     Returns
     -------
     float : the total emission cost. Has the side effect of updating the Emissions Cost,
-            net_emissions_rate, captured_emissions_rate, and bio_emissions_rate in the model.
+            net_emissions_rate, avoided_emissions_rate, negative_emissions_rate, and
+            bio_emissions_rate in the model.
     """
 
     fuels = model.fuels
@@ -540,18 +543,18 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
             tax_rates[ghg][emission_type] = utils.create_value_dict(
                 all_taxes[ghg][emission_type]['year_value'])
 
-    # EMISSIONS tech level
-    total_emissions = {}
+    # GROSS EMISSIONS tech level
+    gross_emissions = {}
     total = 0
     if 'emissions' in model.graph.nodes[node][year]['technologies'][tech]:
-        total_emissions[tech] = {}
+        gross_emissions[tech] = {}
         emission_data = model.graph.nodes[node][year]['technologies'][tech]['emissions']
 
         for ghg in emission_data:
             for emission_type in emission_data[ghg]:
-                if ghg not in total_emissions[tech]:
-                    total_emissions[tech][ghg] = {}
-                total_emissions[tech][ghg][emission_type] = utils.create_value_dict(
+                if ghg not in gross_emissions[tech]:
+                    gross_emissions[tech][ghg] = {}
+                gross_emissions[tech][ghg][emission_type] = utils.create_value_dict(
                     emission_data[ghg][emission_type]['year_value'])
 
     # EMISSIONS REMOVAL tech level
@@ -568,23 +571,23 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     if 'service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
-        # EMISSIONS child level
+        # GROSS EMISSIONS child level
         for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
             if 'emissions' in model.graph.nodes[child_node][
                 year] and child_node in fuels and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['emissions']
-                total_emissions[child_node] = {}
+                gross_emissions[child_node] = {}
                 for ghg in fuel_emissions:
                     for emission_type in fuel_emissions[ghg]:
-                        if ghg not in total_emissions[child_node]:
-                            total_emissions[child_node][ghg] = {}
-                        total_emissions[child_node][ghg][emission_type] = \
+                        if ghg not in gross_emissions[child_node]:
+                            gross_emissions[child_node][ghg] = {}
+                        gross_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(
                                 fuel_emissions[ghg][emission_type]['year_value'] * req_val)
 
-    gross_emissions = copy.deepcopy(total_emissions)
+    gross_bio_emissions = copy.deepcopy(gross_emissions)
 
     if 'service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
@@ -593,15 +596,15 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
             req_val = child_info['year_value']
             child_node = child_info['branch']
 
-            # GROSS EMISSIONS
+            # GROSS BIOMASS EMISSIONS
             if 'emissions_biomass' in model.graph.nodes[child_node][
                 year] and child_node in fuels and req_val > 0:
-                gross_dict = model.graph.nodes[child_node][year]['emissions_biomass']
-                for ghg in gross_dict:
-                    for emission_type in gross_dict[ghg]:
-                        gross_emissions[child_node][ghg][emission_type] = \
+                gross_bio_dict = model.graph.nodes[child_node][year]['emissions_biomass']
+                for ghg in gross_bio_dict:
+                    for emission_type in gross_bio_dict[ghg]:
+                        gross_bio_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(
-                                gross_dict[ghg][emission_type]['year_value'] * req_val)
+                                gross_bio_dict[ghg][emission_type]['year_value'] * req_val)
 
             # EMISSIONS REMOVAL child level
             if 'technologies' in model.graph.nodes[child_node][year]:
@@ -615,22 +618,32 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                                     utils.create_value_dict(
                                         removal_dict[ghg][emission_type]['year_value'])
 
-    # CAPTURED EMISSIONS
-    captured_emissions = copy.deepcopy(gross_emissions)
-    for node_name in captured_emissions:
-        for ghg in captured_emissions[node_name]:
-            for emission_type in captured_emissions[node_name][ghg]:
+    # AVOIDED EMISSIONS
+    avoided_emissions = copy.deepcopy(gross_emissions)
+    for node_name in avoided_emissions:
+        for ghg in avoided_emissions[node_name]:
+            for emission_type in avoided_emissions[node_name][ghg]:
                 em_removed = removal_rates[ghg][emission_type]
-                captured_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed[
+                avoided_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed[
+                    'year_value']
+
+    # NEGATIVE EMISSIONS
+    negative_emissions = copy.deepcopy(gross_bio_emissions)
+    for node_name in negative_emissions:
+        for ghg in negative_emissions[node_name]:
+            for emission_type in negative_emissions[node_name][ghg]:
+                em_removed = removal_rates[ghg][emission_type]
+                negative_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed[
                     'year_value']
 
     # NET EMISSIONS
-    net_emissions = copy.deepcopy(total_emissions)
+    net_emissions = copy.deepcopy(gross_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
                 net_emissions[node_name][ghg][emission_type]['year_value'] -= \
-                    captured_emissions[node_name][ghg][emission_type]['year_value']
+                    avoided_emissions[node_name][ghg][emission_type]['year_value'] + \
+                    negative_emissions[node_name][ghg][emission_type]['year_value']
 
     # EMISSIONS COST
     emissions_cost = copy.deepcopy(net_emissions)
@@ -751,9 +764,11 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-        Emissions(net_emissions)
-    model.graph.nodes[node][year]['technologies'][tech]['captured_emissions_rate'] = \
-        Emissions(captured_emissions)
+        Emissions(emissions_rate=net_emissions)
+    model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
+        Emissions(emissions_rate=avoided_emissions)
+    model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \
+        Emissions(emissions_rate=negative_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emissions_rate'] = \
         Emissions(bio_emissions)
 
