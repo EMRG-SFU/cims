@@ -764,11 +764,11 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-        Emissions(emissions_rate=net_emissions)
+        Emissions(emissions=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
-        Emissions(emissions_rate=avoided_emissions)
+        Emissions(emissions=avoided_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \
-        Emissions(emissions_rate=negative_emissions)
+        Emissions(emissions=negative_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emissions_rate'] = \
         Emissions(bio_emissions)
 

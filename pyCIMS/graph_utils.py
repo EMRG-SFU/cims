@@ -350,7 +350,7 @@ def add_node_data(graph, current_node, node_dfs):
 
     # 3 Find node type (supply, demand, or standard)
     typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
-    if typ[0] in ['demand', 'supply']:
+    if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
         graph.nodes[current_node]['type'] = typ[0]
     else:
         # If type isn't in the node's df or is not demand/supply, try to find it in the ancestors
