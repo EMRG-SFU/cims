@@ -16,7 +16,8 @@ from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsRate, EmissionsCost
 
 from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record, get_distributed_supply
+from .quantity_aggregation import find_children, get_quantities_to_record, \
+    get_direct_distributed_supply
 
 
 class Model:
@@ -783,7 +784,6 @@ class Model:
         quantities requested of node & all it's successors.
         """
         requested_quantity = RequestedQuantity()
-        distributed_supply = DistributedSupply()
 
         if self.get_param('competition type', node) in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
@@ -797,14 +797,9 @@ class Model:
                                                                  child,
                                                                  child_rq_amount)
 
-                distributed_supplies = get_distributed_supply(self, child, node, year)
-                for fuel, child, attributable_amount in distributed_supplies:
-                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
-
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
-                tech_distributed_supply = DistributedSupply()
 
                 # Aggregate Fuel Quantities
                 req_prov_children = find_children(graph, node, year, tech, request_provide=True)
@@ -819,19 +814,9 @@ class Model:
                                                                      child,
                                                                      attributable_amount)
 
-                    # Record distributed supplies
-                    distributed_supplies = get_distributed_supply(self, child, node, year, tech)
-                    for fuel, child, attributable_amount in distributed_supplies:
-                        tech_distributed_supply.record_distributed_supply(fuel, child,
-                                                                          attributable_amount)
-                        distributed_supply.record_distributed_supply(fuel, child,
-                                                                     attributable_amount)
-
                 # Save the tech requested quantities
                 self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
                     tech_requested_quantity
-                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
-                    tech_distributed_supply
 
         else:
             req_prov_children = find_children(graph, node, year, request_provide=True)
@@ -843,40 +828,53 @@ class Model:
                                                                  child,
                                                                  attributable_amount)
 
-                # Record distributed supplies
-                distributed_supplies = get_distributed_supply(self, child, node, year)
-                for fuel, child, attributable_amount in distributed_supplies:
-                    distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
-
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
-        self.graph.nodes[node][year]['distributed_supply'] = \
-            utils.create_value_dict(distributed_supply, param_source='calculation')
-
     def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
         """
-        We want to aggregate up the structural relationships. I would suppose this means that we
-        have three locations we care about:
-        (1) @ a Node with techs: Sum up the distributed supplies from all the children.
-        (2) @ a Node without techs: Sum up the distributed supplies from all the techs.
-        (3) @ a Tech : Sum up the distributed supplies from all the children of the tech.
+        We want to aggregate up the structural relationships in the tree. This means there are two
+        different locations within the tree we need to think about:
 
-        I'm pretty sure that at no point in this aggregation we need to do any multiplications.
+        (1) @ a Node without techs — Find any distributed supply that has been generated at the
+            node. Add any distributed supplies from structural children.
+        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node
+           (See Q below). Sum up the distributed supplies across all techs.
 
-        Hmmm -- techs are never actually structural parents to anyone. So there is a question as to
-        whether they should be a part of this aggregation at all. Except that they might be the
-        original source of a distributed supply (direct). 
+        When doing sums, there is no need to worry about multiply by weights or service request
+        ratios, since each node only has a single structural parent, everything will flow through
+        that path.
 
+        Question: I'm guessing that we want to store a "distributed_supply" value at the tech-level,
+        even though technologies will only include distributed supply if they are directly
+        producing it (since techs are never structural parents). Is this logic correct?
         """
-        distributed_supply = DistributedSupply()
+        node_distributed_supply = DistributedSupply()
+        if 'technologies' in self.graph.nodes[node][year]:
+            # @ a Node with techs
+            # Find distributed supply generated at the tech
+            for tech in self.graph.nodes[node][year]['technologies']:
+                tech_distributed_supply = DistributedSupply()
+                distributed_supplies = get_direct_distributed_supply(self, node, year, tech)
+                for service, amount in distributed_supplies:
+                    tech_distributed_supply.record_distributed_supply(service, node, amount)
+                    node_distributed_supply.record_distributed_supply(service, node, amount)
+                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
+                    tech_distributed_supply
+        else:
+            # @ a Node without techs
+            node_distributed_supply = DistributedSupply()
+            # Find distributed supply generated at the node
+            distributed_supplies = get_direct_distributed_supply(self, node, year)
+            for service, amount in distributed_supplies:
+                node_distributed_supply.record_distributed_supply(service, node, amount)
+            # Find distributed supply from structural children
+            structural_children = find_children(graph, node, structural=True)
+            for child in structural_children:
+                node_distributed_supply += self.get_param('distributed_supply', child, year)
 
-        structural_children = find_children(graph, node, structural=True)
-
-        for child in structural_children:
-            distributed_supplies = get_distributed_supply(self, child, node, year)
-            for fuel, child, attributable_amount in distributed_supplies:
-                distributed_supply.record_distributed_supply(fuel, child, attributable_amount)
+        self.graph.nodes[node][year]['distributed_supply'] = \
+            utils.create_value_dict(node_distributed_supply, param_source='calculation')
 
     def _aggregate_emissions(self, graph, node, year, **kwargs):
         """
@@ -928,9 +926,6 @@ class Model:
 
         value_dict = create_value_dict(total_emissions_cost)
         graph.nodes[node][year]['total_emissions_cost'] = value_dict
-
-    # TODO: proportion = child_quantities.calculate_proportion(node, tech)
-    # TODO: proportion = child_quantities.calculate_proportion(node)
 
     def get_tech_parameter_default(self, parameter):
         return self.technology_defaults[parameter]
