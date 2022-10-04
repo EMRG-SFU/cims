@@ -9,8 +9,14 @@ from scipy.interpolate import interp1d
 import pandas as pd
 
 from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from pyCIMS.emissions import Emissions, EmissionsRate, EmissionsCost
-from pyCIMS.emissions import Emissions, EmissionsRate
+from pyCIMS.emissions import Emissions, EmissionsCost
+
+excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
+                       'net_emissions_rate', 'cumul_net_emissions_rate',
+                       'bio_emissions_rate', 'cumul_bio_emissions_rate',
+                       'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
+                       'negative_emissions_rate', 'cumul_negative_emissions_rate']
+
 
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
@@ -110,7 +116,7 @@ def log_Emissions(val):
     tuple is created for each GHG/Emission Type combination that exists in the node."""
     result = []
 
-    emissions = val.summarize_emissions()
+    emissions = val.summarize()
     for ghg in emissions:
         for emission_type in emissions[ghg]:
             val = emissions[ghg][emission_type]
@@ -192,8 +198,6 @@ def log_dict(val):
             return log_DistributedSupply(year_value)
         if isinstance(year_value, Emissions):
             return log_Emissions(year_value)
-        if isinstance(year_value, EmissionsRate):
-            return log_EmissionsRate(year_value)
         if isinstance(year_value, EmissionsCost):
             return log_EmissionsCost(year_value)
         if isinstance(year_value, dict):
@@ -264,7 +268,6 @@ def add_log_item(all_logs, log_tuple):
                 RequestedQuantity: log_RequestedQuantity,
                 DistributedSupply: log_DistributedSupply,
                 Emissions: log_Emissions,
-                EmissionsRate: log_EmissionsRate,
                 EmissionsCost: log_EmissionsCost,
                 list: log_list,
                 dict: log_dict,
@@ -378,12 +381,12 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     if param == 'technologies':
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
-                                if tech_param not in ['aggregate_emissions_cost_rate']:
+                                if tech_param not in excluded_parameters:
                                     log = node, year, tech, tech_param, tech_val
                                     add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        if param not in ['aggregate_emissions_cost_rate']:
+                        if param not in excluded_parameters:
                             add_log_item(all_logs, log)
 
     else:
@@ -409,6 +412,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for param_to_log in p_list:
+                if param_to_log in excluded_parameters:
+                    continue
+
                 # check if the input parameter exists.
                 if param_to_log not in total_parameter_list:
                     message = "parameter {parameter:} does not exist".format(parameter=param_to_log)
