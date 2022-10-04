@@ -139,6 +139,14 @@ def get_services_requested(model, node, year, tech=None):
     return services_requested
 
 
+def prev_stock_existed(model, node, year):
+    for year in [y for y in model.years if y < year]:
+        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+        if pq.get_total_quantity() > 0:
+            return True
+    return False
+
+
 # ******************
 # Parameter Fetching
 # ******************
@@ -163,6 +171,8 @@ inheritable_params = [
     'price multiplier',
     'discount rate_financial',
     'discount rate_retrofit',
+    'retrofit_existing_min',
+    'retrofit_existing_max',
 ]
 
 
@@ -1240,3 +1250,4 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
         data[param][context][sub_context] = val_dict
 
     return True
+

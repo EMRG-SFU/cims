@@ -832,10 +832,12 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
         year_node = model.graph.nodes[service_data['branch']][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
-                utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
+                utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
+                # utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
         year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
+        year_node['provided_quantities']['param_source'] = 'calculation'
 
 
 def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares,
