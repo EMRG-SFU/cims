@@ -85,40 +85,106 @@ def get_quantities_to_record(model, child, node, year, tech=None):
     return quantities_to_record
 
 
-def get_distributed_supply(model, child, node, year, tech=None):
+# def get_direct_distributed_supply(model, node, year, tech=None):
+#     """
+#     Find the distributed supply originating at the node/tech.
+#
+#     Parameters
+#     ----------
+#     model : pyCIMS.Model
+#         The model containing the information of interest.
+#     node : str
+#         The node whose distributed supply we are interested in finding.
+#     year : str
+#         The year in which we want to find
+#     tech : str, optional
+#         Optional. If supplied, the tech whose distributed supply we are finding. Otherwise,
+#         we will look for distributed supply at the node itself.
+#
+#     Returns
+#     -------
+#     List[(str, float)]
+#         A list of tuples is returned. Each tuple has two entries. The first correspond to the
+#         service who is being provided through distributed supply. The second is the amount of that
+#         service being provided.
+#
+#     """
+#     children = find_req_prov_children(model.graph, node, year, tech)
+#
+#     distributed_supply = []
+#
+# <<<<<<< HEAD
+#     # Find the quantities provided by child to the node/tech
+#     # Note, the result of get_total_quantity() will not equal the sum across
+#     # self.provided_quantities values when distributed supply is greater than the sum of
+#     # positive provided quantities.
+#     if tech is None:
+#         quantity_provided_to_node_tech = \
+#             child_provided_quantities.get_quantity_provided_to_node(node)
+#     else:
+#         quantity_provided_to_node_tech = \
+#             child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+# =======
+#     for child in children:
+#         child_provided_quantities = model.get_param("provided_quantities", child, year=year)
+# >>>>>>> staging_test
+#
+#         # Find the quantities provided by child to the node/tech
+#         if tech is None:
+#             quantity_provided_to_node_tech = \
+#                 child_provided_quantities.get_quantity_provided_to_node(node)
+#         else:
+#             quantity_provided_to_node_tech = \
+#                 child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+#
+#         if quantity_provided_to_node_tech < 0:
+#             # Record quantities provided directly to the node/tech from child
+#             distributed_supply.append((child, -1 * quantity_provided_to_node_tech))
+#
+#     return distributed_supply
+
+
+def get_direct_distributed_supply(model, node, year, tech=None):
     """
-    Find the list of distributed supplies to be recorded for a node/tech based on it's request for
-    services from child.
+    Find the distributed supply originating at the node/tech.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model containing the information of interest.
+    node : str
+        The node whose distributed supply we are interested in finding.
+    year : str
+        The year in which we want to find
+    tech : str, optional
+        Optional. If supplied, the tech whose distributed supply we are finding. Otherwise,
+        we will look for distributed supply at the node itself.
+
+    Returns
+    -------
+    List[(str, float)]
+        A list of tuples is returned. Each tuple has two entries. The first correspond to the
+        service who is being provided through distributed supply. The second is the amount of that
+        service being provided.
+
     """
-    child_provided_quantities = model.get_param("provided_quantities", child, year=year)
+    children = find_req_prov_children(model.graph, node, year, tech)
+
     distributed_supply = []
 
-    # Find the quantities provided by child to the node/tech
-    # Note, the result of get_total_quantity() will not equal the sum across
-    # self.provided_quantities values when distributed supply is greater than the sum of
-    # positive provided quantities.
-    if tech is None:
-        quantity_provided_to_node_tech = \
-            child_provided_quantities.get_quantity_provided_to_node(node)
-    else:
-        quantity_provided_to_node_tech = \
-            child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+    for child in children:
+        child_provided_quantities = model.get_param("provided_quantities", child, year=year)
 
-    if quantity_provided_to_node_tech < 0:
-        # Record quantities provided directly to the node/tech from child
-        distributed_supply.append((child, child, -1 * quantity_provided_to_node_tech))
-    else:
-        # Find the indirectly requested quantities attributable to node/tech by way of its
-        # request of services from child
-        try:
-            child_total_quantity_provided = child_provided_quantities.get_total_quantity()
-            if child_total_quantity_provided != 0:
-                proportion = child_provided_quantities.calculate_proportion(node, tech)
-                child_dist_supply = model.get_param('distributed_supply', child, year=year)
-                distributed_supply_aggregated = child_dist_supply.summarize_distributed_supply()
-                for child_rq_node, amount in distributed_supply_aggregated.items():
-                    distributed_supply.append((child_rq_node, child, proportion * amount))
-        except KeyError:
-            print(f"Continuing b/c of a loop -- {node}")
+        # Find the quantities provided by child to the node/tech
+        if tech is None:
+            quantity_provided_to_node_tech = \
+                child_provided_quantities.get_quantity_provided_to_node(node)
+        else:
+            quantity_provided_to_node_tech = \
+                child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+
+        if quantity_provided_to_node_tech < 0:
+            # Record quantities provided directly to the node/tech from child
+            distributed_supply.append((child, -1 * quantity_provided_to_node_tech))
 
     return distributed_supply

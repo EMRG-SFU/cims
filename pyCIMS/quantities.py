@@ -1,4 +1,7 @@
+import copy
+
 # TODO: make quantity classes into a superclass with methods on dictionaries
+
 class ProvidedQuantity:
     def __init__(self):
         self.provided_quantities = {}
@@ -110,6 +113,17 @@ class DistributedSupply:
     """
     def __init__(self):
         self.distributed_supply = {}
+
+    def __add__(self, other):
+        result = copy.deepcopy(self)
+        for fuel in other.distributed_supply:
+            if fuel not in result.distributed_supply:
+                result.distributed_supply[fuel] = {}
+            for node in other.distributed_supply[fuel]:
+                if node not in result.distributed_supply[fuel]:
+                    result.distributed_supply[fuel][node] = 0
+                result.distributed_supply[fuel][node] += other.distributed_supply[fuel][node]
+        return result
 
     def record_distributed_supply(self, fuel, distributed_supply_node, amount):
         """Records amount of fuel supplyed by the distributed_supply_node"""
