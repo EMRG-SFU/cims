@@ -557,9 +557,9 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                 gross_emissions[tech][ghg][emission_type] = utils.create_value_dict(
                     emission_data[ghg][emission_type]['year_value'])
 
-    # EMISSIONS REMOVAL tech level
-    if 'emissions_removal' in model.graph.nodes[node][year]:
-        removal_dict = model.graph.nodes[node][year]['emissions_removal']
+    # EMISSIONS REMOVAL @ the tech
+    if 'emissions_removal' in model.graph.nodes[node][year]['technologies'][tech]:
+        removal_dict = model.graph.nodes[node][year]['technologies'][tech]['emissions_removal']
         for ghg in removal_dict:
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
