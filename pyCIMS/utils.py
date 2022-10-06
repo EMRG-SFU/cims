@@ -166,13 +166,14 @@ calculation_directory = {
     'life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
 }
-
+# TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
     'price multiplier',
     'discount rate_financial',
     'discount rate_retrofit',
     'retrofit_existing_min',
     'retrofit_existing_max',
+    'retrofit_heterogeneity',
 ]
 
 
