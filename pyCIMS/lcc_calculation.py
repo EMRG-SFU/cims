@@ -649,7 +649,7 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
     if finance_discount == 0:
         warnings.warn('Discount rate_financial has value of 0 at {} -- {}'.format(node, tech))
-        finance_discount = model.get_tech_parameter_default('discount rate_financial')
+        finance_discount = model.get_parameter_default('discount rate_financial')
 
     crf = finance_discount / (1 - (1 + finance_discount) ** (-1.0 * payback_period))
 
@@ -689,8 +689,7 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
                 service_requested_lcc = \
                     model.graph.nodes[fuel_branch][year]['life cycle cost'][fuel_name]['year_value']
             else:
-                service_requested_lcc = model.get_node_parameter_default('life cycle cost',
-                                                                         'sector')
+                service_requested_lcc = model.get_parameter_default('life cycle cost')
             try:
                 fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
