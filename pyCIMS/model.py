@@ -60,7 +60,7 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
+        self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
         self.equilibrium_fuels = []
@@ -351,7 +351,7 @@ class Model:
             if prev_fuel_price == 0:
                 if self.show_run_warnings:
                     warnings.warn("Previous fuel price is 0 for {}".format(fuel))
-                prev_fuel_price = self.get_node_parameter_default('life cycle cost', 'sector')
+                prev_fuel_price = self.get_parameter_default('life cycle cost')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
                 print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
@@ -1048,11 +1048,8 @@ class Model:
             value_dict = create_value_dict(node_total_direct_emissions)
             graph.nodes[node][year][total_param] = value_dict
 
-    def get_tech_parameter_default(self, parameter):
-        return self.technology_defaults[parameter]
-
-    def get_node_parameter_default(self, parameter, competition_type):
-        return self.node_defaults[competition_type][parameter]
+    def get_parameter_default(self, parameter):
+        return self.node_tech_defaults[parameter]
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
                   return_source=False, do_calc=False, check_exist=False, dict_expected=False):
