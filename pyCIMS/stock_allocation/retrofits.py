@@ -241,7 +241,8 @@ def calc_retrofits(model, node, year, existing_stock):
         during the retrofit competition.
     """
     comp_type = model.get_param('competition type', node).lower()
-    heterogeneity = model.get_param('heterogeneity', node, year)
+    heterogeneity = model.get_param('heterogeneity_retrofit', node, year)
+    added_retrofit_stocks = {}
     retrofit_stocks = {}
     for existing_node_tech in existing_stock.keys():
         existing_node, existing_tech = existing_node_tech
@@ -276,12 +277,18 @@ def calc_retrofits(model, node, year, existing_stock):
         retrofit_market_shares = _adjust_retrofit_marketshares(model, year, existing_node_tech,
                                                                retrofit_market_shares)
 
+        pre_retro_existing_stock = existing_stock[existing_node_tech]
+
         # Adjust stocks based on retrofit market shares
         for tech, market_share in retrofit_market_shares.items():
             if tech == existing_node_tech:
-                pre_retro_existing_stock = existing_stock[existing_node_tech]
-                post_retro_existing_stock = market_share * pre_retro_existing_stock
+                post_retro_existing_stock = pre_retro_existing_stock * market_share
                 existing_stock[existing_node_tech] = post_retro_existing_stock
+
+                if tech not in retrofit_stocks:
+                    retrofit_stocks[tech] = 0
+                retrofit_stocks[tech] += post_retro_existing_stock - pre_retro_existing_stock
+
                 _record_retrofitted_stock(model, existing_node, year, existing_tech,
                                           pre_retro_existing_stock - post_retro_existing_stock)
                 if comp_type == 'node tech compete':
@@ -289,9 +296,13 @@ def calc_retrofits(model, node, year, existing_stock):
                                               pre_retro_existing_stock - post_retro_existing_stock)
 
             else:
+                if tech not in added_retrofit_stocks:
+                    added_retrofit_stocks[tech] = 0
+                added_retrofit_stocks[tech] += pre_retro_existing_stock * market_share
+
                 if tech not in retrofit_stocks:
                     retrofit_stocks[tech] = 0
-                retrofit_stocks[tech] += existing_stock[existing_node_tech] * market_share
+                retrofit_stocks[tech] += pre_retro_existing_stock * market_share
 
         # note the remaining stock in the model
-    return existing_stock, retrofit_stocks
+    return existing_stock, added_retrofit_stocks, retrofit_stocks
