@@ -545,6 +545,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
     # GROSS EMISSIONS tech level
     gross_emissions = {}
+    gross_bio_emissions = {}
     total = 0
     if 'emissions' in model.graph.nodes[node][year]['technologies'][tech]:
         gross_emissions[tech] = {}
@@ -557,9 +558,9 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                 gross_emissions[tech][ghg][emission_type] = utils.create_value_dict(
                     emission_data[ghg][emission_type]['year_value'])
 
-    # EMISSIONS REMOVAL tech level
-    if 'emissions_removal' in model.graph.nodes[node][year]:
-        removal_dict = model.graph.nodes[node][year]['emissions_removal']
+    # EMISSIONS REMOVAL @ the tech
+    if 'emissions_removal' in model.graph.nodes[node][year]['technologies'][tech]:
+        removal_dict = model.graph.nodes[node][year]['technologies'][tech]['emissions_removal']
         for ghg in removal_dict:
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
@@ -571,40 +572,37 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     if 'service requested' in model.graph.nodes[node][year]['technologies'][tech]:
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
-        # GROSS EMISSIONS child level
+        # Child level
         for child_info in data.values():
             req_val = child_info['year_value']
             child_node = child_info['branch']
-            if 'emissions' in model.graph.nodes[child_node][
-                year] and child_node in fuels and req_val > 0:
-                fuel_emissions = model.graph.nodes[child_node][year]['emissions']
+
+            # GROSS EMISSIONS
+            if 'emissions' in model.graph.nodes[child_node][year] and \
+                    child_node in fuels and req_val > 0:
                 gross_emissions[child_node] = {}
-                for ghg in fuel_emissions:
-                    for emission_type in fuel_emissions[ghg]:
+                emission_data = model.graph.nodes[child_node][year]['emissions']
+
+                for ghg in emission_data:
+                    for emission_type in emission_data[ghg]:
                         if ghg not in gross_emissions[child_node]:
                             gross_emissions[child_node][ghg] = {}
-                        gross_emissions[child_node][ghg][emission_type] = \
-                            utils.create_value_dict(
-                                fuel_emissions[ghg][emission_type]['year_value'] * req_val)
-
-    gross_bio_emissions = copy.deepcopy(gross_emissions)
-
-    if 'service requested' in model.graph.nodes[node][year]['technologies'][tech]:
-        data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
-
-        for child_info in data.values():
-            req_val = child_info['year_value']
-            child_node = child_info['branch']
+                        gross_emissions[child_node][ghg][emission_type] = utils.create_value_dict(
+                                emission_data[ghg][emission_type]['year_value'] * req_val)
 
             # GROSS BIOMASS EMISSIONS
-            if 'emissions_biomass' in model.graph.nodes[child_node][
-                year] and child_node in fuels and req_val > 0:
-                gross_bio_dict = model.graph.nodes[child_node][year]['emissions_biomass']
-                for ghg in gross_bio_dict:
-                    for emission_type in gross_bio_dict[ghg]:
+            if 'emissions_biomass' in model.graph.nodes[child_node][year] and \
+                    child_node in fuels and req_val > 0:
+                gross_bio_emissions[child_node] = {}
+                bio_emission_data = model.graph.nodes[child_node][year]['emissions_biomass']
+
+                for ghg in bio_emission_data:
+                    for emission_type in bio_emission_data[ghg]:
+                        if ghg not in gross_bio_emissions[child_node]:
+                            gross_bio_emissions[child_node][ghg] = {}
                         gross_bio_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(
-                                gross_bio_dict[ghg][emission_type]['year_value'] * req_val)
+                                bio_emission_data[ghg][emission_type]['year_value'] * req_val)
 
             # EMISSIONS REMOVAL child level
             if 'technologies' in model.graph.nodes[child_node][year]:
@@ -628,13 +626,17 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                     'year_value']
 
     # NEGATIVE EMISSIONS
-    negative_emissions = copy.deepcopy(gross_bio_emissions)
+    negative_emissions = copy.deepcopy(gross_emissions)
     for node_name in negative_emissions:
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
-                em_removed = removal_rates[ghg][emission_type]
-                negative_emissions[node_name][ghg][emission_type]['year_value'] *= em_removed[
-                    'year_value']
+                try:
+                    em_removed = removal_rates[ghg][emission_type]
+                    negative_emissions[node_name][ghg][emission_type]['year_value'] = \
+                        gross_bio_emissions[node_name][ghg][emission_type]['year_value'] * \
+                        em_removed['year_value']
+                except KeyError:
+                    negative_emissions[node_name][ghg][emission_type]['year_value'] = 0
 
     # NET EMISSIONS
     net_emissions = copy.deepcopy(gross_emissions)
