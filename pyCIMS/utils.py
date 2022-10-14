@@ -1181,7 +1181,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     # *********
     if tech:
         # add technology if it does not exist
-        if tech not in data:
+        if tech not in data['technologies']:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
