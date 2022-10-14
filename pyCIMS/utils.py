@@ -166,13 +166,14 @@ calculation_directory = {
     'life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
 }
-
+# TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
     'price multiplier',
     'discount rate_financial',
     'discount rate_retrofit',
     'retrofit_existing_min',
     'retrofit_existing_max',
+    'retrofit_heterogeneity',
 ]
 
 
@@ -358,15 +359,9 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # ******************************
     # If there is a default value defined, use this value
     if param_source is None:
-        if tech:
-            if param in model.technology_defaults:
-                val = model.get_tech_parameter_default(param)
-                param_source = 'default'
-        else:
-            comp_type = model.get_param('competition type', node).lower()
-            if (comp_type in model.node_defaults) and (param in model.node_defaults[comp_type]):
-                val = model.get_node_parameter_default(param, comp_type)
-                param_source = 'default'
+        if param in model.node_tech_defaults:
+            val = model.get_parameter_default(param)
+            param_source = 'default'
 
     # Use Last Year's Value
     # ******************************
