@@ -1296,7 +1296,7 @@ class Model:
         return param_val
 
     def create_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                     row_index=None):
+                     row_index=None, param_source=None, branch=None):
         """
         Creates parameter in graph, for given context (node, year, tech, context, sub_context),
         and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1335,7 +1335,9 @@ class Model:
                                        tech=tech,
                                        context=context,
                                        sub_context=sub_context,
-                                       row_index=row_index)
+                                       row_index=row_index,
+                                       param_source=param_source,
+                                       branch=branch)
 
         return param_val
 

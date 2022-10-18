@@ -778,7 +778,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     val_dict = utils.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, 'emissions cost', node, year, tech)
 
-    model.set_param_internal(EmissionsCost(emissions_cost),
+    model.set_param_internal(utils.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
                              'emissions_cost_rate', node, year, tech)
 
     return total

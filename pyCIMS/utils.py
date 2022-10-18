@@ -670,7 +670,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     def set_node_param(model, new_value, param, node, year, context=None, sub_context=None):
         """
         Queries a model to set a parameter value at a given node, given a specified context
-        (year & sub-parameter).
+        (year, context, and sub_context).
 
         Parameters
         ----------
@@ -695,7 +695,6 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         # ******************************
         # If the parameter's value is in the model description for that node & year (if the year has
         # been defined), use it.
-        print('node test')
         if year:
             data = model.graph.nodes[node][year]
         else:
@@ -707,17 +706,19 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        val[context][sub_context].update(new_value)
+                        if isinstance(val[context][sub_context], dict):
+                            val[context][sub_context].update(new_value)
+                        else:
+                            val[context][sub_context] = new_value
                     else:
-                        val[context].update(new_value)
+                        if isinstance(val[context], dict):
+                            val[context].update(new_value)
+                        else:
+                            val[context] = new_value
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict):
-                        val[None].update(new_value)
-                    else:
-                        val[None].update(new_value)
-                elif len(val.keys()) == 1:
-                    val[list(val.keys())[0]].update(new_value)
+                    val[None].update(new_value)
+                else:
+                    data[param].update(new_value)
             else:
                 data[param] = new_value
 
@@ -761,22 +762,16 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
                         if isinstance(val[context][sub_context], dict):
                             val[context][sub_context].update(new_value)
                         else:
-                            val[context][sub_context].update(new_value)
+                            val[context][sub_context] = new_value
                     else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
                         if isinstance(val[context], dict):
                             val[context].update(new_value)
                         else:
-                            val[context].update(new_value)
+                            val[context] = new_value
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict):
-                        val[None].update(new_value)
-                    else:
                         val[None].update(new_value)
                 else:
                     data[param].update(new_value)
@@ -804,15 +799,33 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         year = [year]
         val = [val]
     for i in range(len(year)):
-
-        tech_data = model.graph.nodes[node][year[i]]["technologies"][tech]
-        if param in tech_data:
-            if tech:
-                set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
+        node_data = model.graph.nodes[node][year[i]]
+        if tech:
+            if tech in node_data["technologies"]:
+                tech_data = model.graph.nodes[node][year[i]]["technologies"][tech]
+                if param in tech_data:
+                    set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
+                else:
+                    value = val[i]['year_value']
+                    param_source = val[i]['param_source'] if 'param_source' in val[i] else None
+                    branch = val[i]['branch'] if 'branch' in val[i] else None
+                    model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
+                                       context=context, sub_context=sub_context,
+                                       param_source=param_source, branch=branch)
             else:
-                set_node_param(model, val[i], param, node, year[i], context, sub_context)
+                value = val[i]['year_value']
+                param_source = val[i]['param_source'] if 'param_source' in val[i] else None
+                branch = val[i]['branch'] if 'branch' in val[i] else None
+                model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
+                                   context=context, sub_context=sub_context,
+                                   param_source=param_source, branch=branch)
         else:
-            model.graph.nodes[node][year[i]]["technologies"][tech].update({str(param): val[i]})
+            if param in node_data:
+                set_node_param(model, val[i], param, node, year[i], context, sub_context)
+            else:
+                value = val[i]['year_value']
+                model.create_param(val=value, param=param, node=node, year=year[i],
+                                   context=context, sub_context=sub_context)
 
 
 def set_param_file(model, filepath):
@@ -1111,7 +1124,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
 
 
 def create_param(model, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                 row_index=None):
+                 param_source=None, branch=None, row_index=None):
     """
     Creates parameter in graph, for given context (node, year, tech, context, sub_context),
     and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1162,7 +1175,8 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     else:
         data = model.graph.nodes[node]
 
-    val_dict = create_value_dict(val, param_source='model')
+    param_source = param_source if param_source is not None else 'model'
+    val_dict = create_value_dict(val, param_source=param_source, branch=branch)
 
     # *********
     # If there is a tech specified, check if it exists and create context (tech, param, context,
@@ -1170,7 +1184,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     # *********
     if tech:
         # add technology if it does not exist
-        if tech not in data:
+        if tech not in data['technologies']:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
