@@ -585,7 +585,7 @@ class ModelValidator:
             nodes = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
             nodes.index = nodes.index - 1
             end = pd.Series(['None'], index=[self.model_df.index.max()])
-            nodes = nodes.append(end)
+            nodes = pd.concat([nodes, end])
             no_cap_cost = []
 
             for i in range(nodes.shape[0] - 1):
@@ -603,7 +603,7 @@ class ModelValidator:
                     else:
                         techs = dat[dat['Parameter'] == 'technology']['Context']
                         end = pd.Series(['None'], index=[dat.index.max()])
-                        techs = techs.append(end)
+                        techs = pd.concat([techs, end])
                         for i in range(techs.shape[0] - 1):
                             tech_name = techs.iloc[i]
                             start_index = techs.index[i]
