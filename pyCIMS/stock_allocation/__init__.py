@@ -1,0 +1,1 @@
+from .stock_allocation import all_tech_compete_allocation, general_allocation

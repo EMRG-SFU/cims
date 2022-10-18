@@ -3,6 +3,7 @@ import warnings
 import networkx as nx
 
 from . import utils
+from . import loop_resolution
 
 
 # **************************
@@ -73,10 +74,14 @@ def parent_name(curr_node, return_empty=False):
 
 
 def get_fuels(graph):
-    """ Find the names of nodes supplying fuel.
+    """
+    Find the names of nodes supplying fuel.
 
-    This is any node which (1) has a Node type "Supply" and (2) whose competition type contains
-    Sector (either Sector or Sector No Tech).
+    A fuel is any node which meets one of the following criteria:
+    * The node is a market node.
+    * The node is a supply node, whose competition type is Sector.
+    * The node is a supply node, whose competition type begins with Fuel (i.e. Fuel - Fixed Price,
+      Fuel - Cost Curve Annual, Fuel - Cost Curve Cumulative).
 
     Returns
     -------
@@ -87,10 +92,10 @@ def get_fuels(graph):
     fuels = []
     remove_fuels = []
     for node, data in graph.nodes(data=True):
+        is_market = 'market' in data['competition type'].lower()
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        is_market = 'market' in data['competition type'].lower()
-
+        starts_with_fuel = data['competition type'].startswith('fuel')
         if is_market:
             fuels.append(node)
             # Check all the service requested to remove them from the fuels list later
@@ -99,10 +104,12 @@ def get_fuels(graph):
                 if param.isdigit():
                     techs = data[param]['technologies']
                     for _, tech_dict in techs.items():
-                        child = tech_dict['Service requested']
+                        child = tech_dict['service requested']
                         remove_fuels.append(child['branch'])
                     break
         elif is_supply & is_sector:
+            fuels.append(node)
+        elif is_supply & starts_with_fuel:
             fuels.append(node)
     equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
     return fuels, equilibrium_fuels
@@ -127,11 +134,11 @@ def get_GHG_and_Emissions(graph, year):
             techs = data[year]['technologies']
             for tech in techs:
                 tech_data = data[year]['technologies'][tech]
-                if 'Emissions' in tech_data or 'Emissions removal' in tech_data:
-                    if 'Emissions' in tech_data:
-                        ghg_list = data[year]['technologies'][tech]['Emissions']
+                if 'emissions' in tech_data or 'emissions_removal' in tech_data:
+                    if 'emissions' in tech_data:
+                        ghg_list = data[year]['technologies'][tech]['emissions']
                     else:
-                        ghg_list = data[year]['technologies'][tech]['Emissions removal']
+                        ghg_list = data[year]['technologies'][tech]['emissions_removal']
 
                     node_ghg = [ghg for ghg in ghg_list]
                     node_emission_type = [emission_type for emission_record in ghg_list.values() for
@@ -141,11 +148,11 @@ def get_GHG_and_Emissions(graph, year):
                     emission_type = list(set(emission_type + node_emission_type))
 
         # Emissions from a supply node
-        elif 'Emissions' in data[year] or 'Emissions removal' in data[year]:
-            if 'Emissions' in data[year]:
-                ghg_dict = data[year]['Emissions']
+        elif 'emissions' in data[year] or 'emissions_removal' in data[year]:
+            if 'emissions' in data[year]:
+                ghg_dict = data[year]['emissions']
             else:
-                ghg_dict = data[year]['Emissions removal']
+                ghg_dict = data[year]['emissions_removal']
 
             node_ghg = [ghg for ghg in ghg_dict.keys()]
 
@@ -156,9 +163,9 @@ def get_GHG_and_Emissions(graph, year):
             emission_type = list(set(emission_type + node_emission_type))
 
         #GWP from pyCIMS node
-        if 'Emissions GWP' in data[year]:
-            for ghg2 in data[year]['Emissions GWP']:
-                gwp[ghg2] = data[year]['Emissions GWP'][ghg2]['year_value']
+        if 'emissions gwp' in data[year]:
+            for ghg2 in data[year]['emissions gwp']:
+                gwp[ghg2] = data[year]['emissions gwp'][ghg2]['year_value']
 
     return ghg, emission_type, gwp
 
@@ -188,7 +195,8 @@ def get_subgraph(graph, node_types):
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None,
+                       loop_resolution_func=loop_resolution.min_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -238,17 +246,16 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
             warnings.warn("Found a Loop -- ")
             # Resolve a loop
             cycles = nx.simple_cycles(sg_cur)
-            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
+            n_cur = loop_resolution_func(cycles, dist_from_root)
 
-            # candidates = {n: dist_from_root[n] for n in sg_cur}
-            n_cur = min(candidates, key=lambda x: candidates[x])
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
 
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None, **kwargs):
+def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None,
+                        loop_resolution_func=loop_resolution.max_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
 
@@ -303,8 +310,7 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
             warnings.warn("Found a Loop")
             # Resolve a loop
             cycles = nx.simple_cycles(sg_cur)
-            candidates = {node: dist_from_root[node] for cycle in cycles for node in cycle}
-            n_cur = max(candidates, key=lambda x: candidates[x])
+            n_cur = loop_resolution_func(cycles, dist_from_root, **kwargs)
 
             # Process chosen node in the sub-graph, using estimated values from their parents
             node_process_func(sub_graph, n_cur, *args, **kwargs)
@@ -343,28 +349,48 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'])
-    if len(typ) > 0:
-        graph.nodes[current_node]['type'] = typ[0].lower()
+    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
+    if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
+        graph.nodes[current_node]['type'] = typ[0]
     else:
-        # If type isn't in the node's df, try to find it in the ancestors
+        # If type isn't in the node's df or is not demand/supply, try to find it in the ancestors
         val = _find_value_in_ancestors(graph, current_node, 'type')
         graph.nodes[current_node]['type'] = val if val else 'standard'
 
-    # Drop Demand row
+    # Drop node type row
     current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
 
     # 4 Find node's competition type. (If there is one)
-    comp_list = list(current_node_df[current_node_df['Parameter'] == 'Competition type']['Context'])
+    comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
     if len(set(comp_list)) == 1:
         comp_type = comp_list[0]
         graph.nodes[current_node]['competition type'] = comp_type.lower()
     elif len(set(comp_list)) > 1:
         print("TOO MANY COMPETITION TYPES")
     # Get rid of competition type row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'Competition type']
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
 
-    # 5 For the remaining data, group by year.
+    # 5 Find the cost curve function
+    if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
+        years = [c for c in current_node_df.columns if utils.is_year(c)]
+
+        # Get quantities
+        cc_quant_line = current_node_df[current_node_df['Parameter'] == 'cost curve quantity']
+        cc_quants = [cc_quant_line[y].iloc[0] for y in years]
+
+        # Get prices
+        cc_price_line = current_node_df[current_node_df['Parameter'] == 'cost curve price']
+        cc_prices = [cc_price_line[y].iloc[0] for y in years]
+
+        # Create interpolator
+        cc_func = utils.create_cost_curve_func(cc_quants, cc_prices)
+        graph.nodes[current_node]['cost_curve_function'] = cc_func
+
+        # Get rid of cost curve rows
+        cost_curve_params = ['cost curve quantity', 'cost curve price']
+        current_node_df = current_node_df[~current_node_df['Parameter'].isin(cost_curve_params)]
+
+    # 6 For the remaining data, group by year.
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
 
@@ -373,7 +399,8 @@ def add_node_data(graph, current_node, node_dfs):
         current_year_data = non_year_data + [current_node_df[year]]
         year_dict = {}
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
-            dct = {'sub_context': sub_context,
+            dct = {'context': context,
+                   'sub_context': sub_context,
                    'branch': branch,
                    'source': source,
                    'unit': unit,
@@ -412,7 +439,7 @@ def add_node_data(graph, current_node, node_dfs):
             else:
                 year_dict[param] = dct
 
-        # Add data to node
+        # 6 Add data to node
         graph.nodes[current_node][year] = year_dict
 
     # 7 Return the new graph
@@ -439,7 +466,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
     graph = copy.copy(graph)
 
     # 2 Remove the row that indicates this is a service or technology.
-    t_df = t_df[~t_df['Parameter'].isin(['Service', 'Technology'])]
+    t_df = t_df[~t_df['Parameter'].isin(['service', 'technology'])]
 
     # 3 Group data by year & add to the tech's dictionary
     # NOTE: This is very similar to what we do for nodes (above). However, it differs because
@@ -529,7 +556,7 @@ def add_edges(graph, node, df):
     # 2 Find edges based on requester/provider relationships
     #   These are the edges that exist because one node requests a service to another node
     # Find all nodes node is requesting services from
-    providers = df[df['Parameter'] == 'Service requested']['Branch'].unique()
+    providers = df[df['Parameter'] == 'service requested']['Branch'].unique()
 
     rp_edges = [(node, p) for p in providers]
     graph.add_edges_from(rp_edges)

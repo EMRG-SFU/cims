@@ -2,11 +2,11 @@
 import pyCIMS
 from pprint import pprint
 
-file = 'pycims_prototype/model_descriptions/pyCIMS_model_description_ALL_value.xlsb'
+file = 'pycims_prototype/model_descriptions/pyCIMS_model_description.xlsb'
 
 my_validator = pyCIMS.ModelValidator(infile=file,
                                      sheet_map={'model': 'Lists',
-                                                'default_tech': 'Technology_Node templates'},
+                                                'default_param': 'Default values'},
                                      node_col='Node')
 my_validator.validate(raise_warnings=False)
 pprint(my_validator.warnings)
@@ -15,7 +15,7 @@ pprint(my_validator.warnings)
 my_reader = pyCIMS.ModelReader(infile=file,
                                sheet_map={'model': 'Lists',
                                           'incompatible': 'Incompatible',
-                                          'default_tech': 'Technology_Node templates'},
+                                          'default_param': 'Default values'},
                                node_col='Node')
 
 # Create a model from the reader

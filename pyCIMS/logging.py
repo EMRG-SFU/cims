@@ -1,11 +1,26 @@
-import pandas as pd
+"""
+Module providing all the logging (write Model parameters to CSV file) functionality for the pyCIMS
+package.
+"""
 import warnings
-from pyCIMS.model import ProvidedQuantity, RequestedQuantity
-from pyCIMS.emissions import Emissions, EmissionRates
 from copy import deepcopy
+from scipy.interpolate import interp1d
+
+import pandas as pd
+
+from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
+from pyCIMS.emissions import Emissions, EmissionsCost
+
+excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
+                       'net_emissions_rate', 'cumul_net_emissions_rate',
+                       'bio_emissions_rate', 'cumul_bio_emissions_rate',
+                       'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
+                       'negative_emissions_rate', 'cumul_negative_emissions_rate']
 
 
 class ValueLog:
+    """Class used to store the information needed to log a single parameter value."""
+
     def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
         self.context = context
         self.sub_context = sub_context
@@ -14,30 +29,44 @@ class ValueLog:
         self.value = value
 
     def tuple(self):
-        return self.context,  self.sub_context, self.branch, self.unit,  self.value
+        """
+        Returns
+        -------
+        tuple :
+            Returns a tuple containing the (context, sub-context, branch, unit, and value). Used to
+            create the logging CSV.
+        """
+        return self.context, self.sub_context, self.branch, self.unit, self.value
 
 
-def has_techs(node_year_data):
+def _has_techs(node_year_data):
+    """Checks if a node has technologies."""
     return 'technologies' in node_year_data.keys()
 
 
 def log_int(val):
+    """Creates a logging-ready representation of an integer."""
     return [ValueLog(value=float(val))]
 
 
 def log_float(val):
+    """Creates a logging-ready representation of a float."""
     return [ValueLog(value=val)]
 
 
 def log_str(val):
+    """Creates a logging-ready representation of a string."""
     return [ValueLog(value=val)]
 
 
 def log_bool(val):
+    """Creates a logging-ready representation of a boolean."""
     return [ValueLog(value=val)]
 
 
 def log_ProvidedQuantity(val):
+    """Creates a logging-ready representation of a ProvidedQuantity object, using the total number
+       of units provided by a node."""
     return [ValueLog(value=float(val.get_total_quantity()))]
 
 
@@ -60,9 +89,9 @@ def log_RequestedQuantity(val):
     rqs = []
 
     # Log quantities per tech
-    for k, v in val.get_total_quantities_requested().items():
-        rqs.append(ValueLog(branch=k,
-                            value=v
+    for key, quant in val.get_total_quantities_requested().items():
+        rqs.append(ValueLog(branch=key,
+                            value=quant
                             ))
 
     # Log total quantities
@@ -73,10 +102,21 @@ def log_RequestedQuantity(val):
     return rqs
 
 
+def log_DistributedSupply(val):
+    distributed_supplies = []
+
+    for k, v in val.summarize_distributed_supply().items():
+        distributed_supplies.append(ValueLog(branch=k, value=v))
+
+    return distributed_supplies
+
+
 def log_Emissions(val):
+    """ Provides a list of tuples to be used for logging, based on the provided Emissions object. A
+    tuple is created for each GHG/Emission Type combination that exists in the node."""
     result = []
 
-    emissions = val.summarize_emissions()
+    emissions = val.summarize()
     for ghg in emissions:
         for emission_type in emissions[ghg]:
             val = emissions[ghg][emission_type]
@@ -87,10 +127,29 @@ def log_Emissions(val):
     return result
 
 
-def log_EmissionRates(val):
+def log_EmissionsRate(val):
+    """ Provides a list of tuples to be used for logging, based on the provided EmissionsRate
+    object. A tuple is created for each GHG/Emission Type combination that exists in the node."""
+
     result = []
 
     rates = val.summarize_rates()
+    for ghg in rates:
+        for emission_type in rates[ghg]:
+            val = rates[ghg][emission_type]
+            result.append(ValueLog(context=ghg,
+                                   sub_context=emission_type,
+                                   value=val))
+    return result
+
+
+def log_EmissionsCost(val):
+    """ Provides a list of tuples to be used for logging, based on the provided EmissionsCost
+    object. A tuple is created for each GHG/Emission Type combination that exists in the node."""
+
+    result = []
+
+    rates = val.summarize()
     for ghg in rates:
         for emission_type in rates[ghg]:
             val = rates[ghg][emission_type]
@@ -131,60 +190,68 @@ def log_dict(val):
 
         if year_value is None:
             return [val_log]
-        elif isinstance(year_value, ProvidedQuantity):
+        if isinstance(year_value, ProvidedQuantity):
             return log_ProvidedQuantity(year_value)
-        elif isinstance(year_value, RequestedQuantity):
+        if isinstance(year_value, RequestedQuantity):
             return log_RequestedQuantity(year_value)
-        elif isinstance(year_value, Emissions):
+        if isinstance(year_value, DistributedSupply):
+            return log_DistributedSupply(year_value)
+        if isinstance(year_value, Emissions):
             return log_Emissions(year_value)
-        elif isinstance(year_value, EmissionRates):
-            return log_EmissionRates(year_value)
-        elif isinstance(year_value, dict):
+        if isinstance(year_value, EmissionsCost):
+            return log_EmissionsCost(year_value)
+        if isinstance(year_value, dict):
             return log_dict(year_value)
-        else:
-            val_log.value = float(year_value)
-            return [val_log]
+        val_log.value = float(year_value)
+        return [val_log]
     else:
         val_pairs = []
-        for k, v in val.items():
-            val_log.context = k
+        for key, inner_value in val.items():
+            val_log.context = key
 
-            if isinstance(v, dict):
-                if 'year_value' in v:
-                    val_log.sub_context = v['sub_context'] if 'sub_context' in v.keys() else None
-                    val_log.branch = v['branch'] if 'branch' in v.keys() else None
-                    val_log.unit = v['unit'] if 'unit' in v.keys() else None
-                    val_log.value = v['year_value']
+            if isinstance(inner_value, dict):
+                if 'year_value' in inner_value:
+                    val_log.sub_context = inner_value['sub_context'] \
+                        if 'sub_context' in inner_value.keys() else None
+                    val_log.branch = inner_value['branch'] \
+                        if 'branch' in inner_value.keys() else None
+                    val_log.unit = inner_value['unit'] if 'unit' in inner_value.keys() else None
+                    val_log.value = inner_value['year_value']
                 else:
-                    for sub_context, base_val in v.items():
+                    for sub_context, base_val in inner_value.items():
                         val_log.sub_context = sub_context
                         val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
-            elif isinstance(v, int) or isinstance(v, float):
-                val_log.value = float(v)
+                val_pairs.append(deepcopy(val_log))
 
-            val_pairs.append(deepcopy(val_log))
+            elif isinstance(inner_value, (int, float)):
+                val_log.value = float(inner_value)
+                val_pairs.append(deepcopy(val_log))
 
         return val_pairs
 
 
-# helper function for opening txt file
-def openfile(path):
-    with open(path) as f:
-        p_list = f.readlines()
+def do_not_log(_):
+    """A placeholder function to take care of types we don't want to be logged"""
+    return []
+
+
+def _open_file(path):
+    """Helper function for opening txt file"""
+    with open(path) as file:
+        p_list = file.readlines()
         p_list = [x.strip() for x in p_list]
 
     return p_list
 
 
-# define slim list example, change the content in parameter_list1 if you want a different list
-def slimlist(default_list):
-    # add more combinations to the list as we grow the default list
+def _slim_list(default_list):
+    """Define slim list example, change the content in p_list if you want a different list"""
 
     if default_list == 'slim':
-        p_list = ['new_market_share', 'Life Cycle Cost', 'competition type',
-                    'Service requested', 'Capital cost_overnight']
+        p_list = ['new_market_share', 'life cycle cost', 'competition type',
+                  'service requested', 'capital cost_overnight']
 
     # this is for validating if we have defined the default name
     else:
@@ -194,16 +261,19 @@ def slimlist(default_list):
 
 
 def add_log_item(all_logs, log_tuple):
+    """Process the log_tuple (according to its type) and add it to the list of all_logs"""
     log_func = {int: log_int,
                 float: log_float,
                 ProvidedQuantity: log_ProvidedQuantity,
                 RequestedQuantity: log_RequestedQuantity,
+                DistributedSupply: log_DistributedSupply,
                 Emissions: log_Emissions,
-                EmissionRates: log_EmissionRates,
+                EmissionsCost: log_EmissionsCost,
                 list: log_list,
                 dict: log_dict,
                 str: log_str,
-                bool: log_bool}
+                bool: log_bool,
+                interp1d: do_not_log}
 
     node, year, tech, param, val = log_tuple
     # Process the value & year value
@@ -223,39 +293,39 @@ def add_log_item(all_logs, log_tuple):
     return all_logs
 
 
-# Add model_parameter helper function which returns all parameters in the model and store as a list
-def model_parameter(model):
+def _full_parameter_list(model):
+    """Helper function which returns all parameters in the model and store as a list"""
     model_list = []
 
     for node in model.graph.nodes:
-        for param, val in model.graph.nodes[node].items():
+        for param, _ in model.graph.nodes[node].items():
             if param not in model_list:
                 model_list.append(param)
 
         for year in model.years:
             ny_data = model.graph.nodes[node][year]
-            for param, val in ny_data.items():
+            for param in ny_data:
                 if param not in model_list:
                     model_list.append(param)
 
-            for param, val in ny_data.items():
+            for param in ny_data:
                 if param == 'technologies':
-                    for tech, tech_data in ny_data['technologies'].items():
-                        for tech_param, tech_val in tech_data.items():
+                    for tech_data in ny_data['technologies'].values():
+                        for tech_param in tech_data:
                             if tech_param not in model_list:
                                 model_list.append(tech_param)
     return model_list
 
 
 def search_parameter(model, search: [str] = None):
-    model_list = model_parameter(model)
+    """Function to search for model parameters that contain any strings present in the search list.
+    """
+    model_list = _full_parameter_list(model)
 
     print('You are searching if any parameter in the model contains ', search)
     search_list = []
-    for i in range(len(search)):
-        m = search[i]
-        matching = [x for x in model_list if m in x]
-
+    for parameter in search:
+        matching = [x for x in model_list if parameter in x]
         search_list += matching
 
     if len(search_list) == 0:
@@ -267,13 +337,33 @@ def search_parameter(model, search: [str] = None):
     return search_list
 
 
-def log_model(model, output_file, parameter_list: [str] = None, path: str = None, default_list: str = None):
-    '''
-    parameter_list: a list of string such as ['aa', 'bb','cc']
-    path: str path of the txt file such as 'test.txt'
-    default_list: str of default list, right now 'all' return all parameters and 'slim' return a pre-defined 5 parameters
-    '''
+def log_model(model, output_file, parameter_list: [str] = None, path: str = None,
+              default_list: str = None):
+    """
+    Log a model's current state to an output CSV file.
 
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        Model that is being logged to a CSV file
+    output_file : str
+        Path to the output CSV file location
+    parameter_list : list of str, optional
+        A list of strings
+    path : str, optional
+        Path to a text file containing the list of parameters to log
+    default_list : str, optional
+        The name of a default parameter list. Currently two default lists are defined:
+        (1) 'all' will log all parameters and
+        (2) 'slim' will return 5 pre-defined parameters ('new_market_share', 'life cycle cost',
+            'competition type', 'service requested', 'capital cost_overnight'
+
+    Returns
+    -------
+    pandas.DataFrame :
+        The DataFrame containing the model's current parameter values. Additionally, a CSV file is
+        written to output_path.
+    """
     # if no argument chosen or defualt_list = 'all', return all parameters
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
         all_logs = []
@@ -291,16 +381,18 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     if param == 'technologies':
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
-                                log = node, year, tech, tech_param, tech_val
-                                add_log_item(all_logs, log)
+                                if tech_param not in excluded_parameters:
+                                    log = node, year, tech, tech_param, tech_val
+                                    add_log_item(all_logs, log)
                     else:
                         log = node, year, None, param, val
-                        add_log_item(all_logs, log)
+                        if param not in excluded_parameters:
+                            add_log_item(all_logs, log)
 
     else:
         # path argument exist
         if path and (parameter_list is None and default_list is None):
-            p_list = openfile(path)
+            p_list = _open_file(path)
 
         # parameter_list argument exist
         elif parameter_list and (default_list is None and path is None):
@@ -308,28 +400,28 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
         # default_list argument exist
         elif default_list and (parameter_list is None and path is None):
-            p_list = slimlist(default_list)
+            p_list = _slim_list(default_list)
 
         # Warning if there are more than 2 argument specified
         else:
             raise ValueError("ValueError exception thrown: multiple parameters specified")
 
-            return
-
-        l = len(p_list)
         all_logs = []
-        total_parameter_list = model_parameter(model)
+        total_parameter_list = _full_parameter_list(model)
 
         for node in model.graph.nodes:
             # Log Year Agnostic Values
-            for i in range(l):
+            for param_to_log in p_list:
+                if param_to_log in excluded_parameters:
+                    continue
+
                 # check if the input parameter exists.
-                if p_list[i] not in total_parameter_list:
-                    message = "parameter {parameter:} does not exist".format(parameter=p_list[i])
+                if param_to_log not in total_parameter_list:
+                    message = "parameter {parameter:} does not exist".format(parameter=param_to_log)
                     warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
-                    if param == p_list[i]:
+                    if param == param_to_log:
                         if param not in model.years:
                             log = node, None, None, param, val
                             add_log_item(all_logs, log)
@@ -342,11 +434,11 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                         if param == 'technologies':
                             for tech, tech_data in ny_data['technologies'].items():
                                 for tech_param, tech_val in tech_data.items():
-                                    if tech_param == p_list[i]:
+                                    if tech_param == param_to_log:
                                         log = node, year, tech, tech_param, tech_val
                                         add_log_item(all_logs, log)
                         else:
-                            if param == p_list[i]:
+                            if param == param_to_log:
                                 log = node, year, None, param, val
                                 add_log_item(all_logs, log)
 
@@ -355,8 +447,13 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
     # Split Value Log values
-    log_df[['context', 'sub_context', 'branch', 'unit', 'value']] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
-    log_df = log_df[['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'branch', 'unit', 'value']]
+    split_columns = ['context', 'sub_context', 'branch', 'unit', 'value']
+    log_df[split_columns] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
+
+    # Select final columns
+    columns = ['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'branch',
+               'unit', 'value']
+    log_df = log_df[columns]
 
     # Write to file
     log_df.to_csv(output_file, index=False)
