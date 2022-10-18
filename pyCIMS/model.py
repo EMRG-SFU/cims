@@ -12,10 +12,12 @@ from . import lcc_calculation
 from . import stock_allocation
 from . import loop_resolution
 
-from .quantities import ProvidedQuantity, RequestedQuantity
-from .emissions import Emissions, EmissionRates, EmissionsCost
+from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
+from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
+
 from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record
+from .quantity_aggregation import find_children, get_quantities_to_record, \
+    get_direct_distributed_supply
 
 
 class Model:
@@ -58,7 +60,7 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.technology_defaults, self.node_defaults = model_reader.get_default_tech_params()
+        self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
         self.equilibrium_fuels = []
@@ -114,17 +116,17 @@ class Model:
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresight_context = self.get_param('foresight method', 'pyCIMS', year, dict_expected=True)
+            foresight_context = self.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
             if foresight_context is not None:
                 for ghg, sectors in foresight_context.items():
                     for node in sec_list:
                         sector = node.split('.')[-1]
                         if sector in sectors:
                             # Initialize foresight method
-                            if 'foresight method' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['foresight method'] = {}
+                            if 'tax_foresight' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['tax_foresight'] = {}
 
-                            self.graph.nodes[node][year]['foresight method'][ghg] = sectors[sector]
+                            self.graph.nodes[node][year]['tax_foresight'][ghg] = sectors[sector]
 
             graph_utils.top_down_traversal(self.graph,
                                            self._init_foresight,
@@ -161,7 +163,8 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10, show_warnings=True):
+    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10,
+            show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -262,20 +265,20 @@ class Model:
                                                     self,
                                                     node_types=supply_nodes)
 
-                # Check for an Equilibrium
+                # Check for an Equilibrium -- Across all nodes, not just fuels
                 # ************************
                 # Find the previous prices
                 prev_prices = self.prices
-
                 # Go get all the new prices
-                new_prices = {fuel: self.get_param('life cycle cost', fuel, year, context=fuel.split('.')[-1])
-                              for fuel in self.equilibrium_fuels}  # context is str of fuel
-
+                new_prices = {node: self.get_param('life cycle cost', node, year, context=node.split('.')[-1]) for node in self.graph.nodes()}
+                # Check for an equilibrium in prices
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
                                self.check_equilibrium(prev_prices,
                                                       new_prices,
-                                                      equilibrium_threshold))
+                                                      iteration,
+                                                      equilibrium_threshold,
+                                                      print_eq))
 
                 self.prices = new_prices
 
@@ -291,12 +294,33 @@ class Model:
                                             fuels=self.fuels)
 
             graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_emissions,
+                                            self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             fuels=self.fuels)
 
-    def check_equilibrium(self, prev, new, threshold):
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_direct_emissions_cost,
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
+
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_cumul_emissions,
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
+
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_cumul_emissions_cost,
+                                            year,
+                                            loop_resolution_func=loop_resolution.aggregation_resolution,
+                                            fuels=self.fuels)
+
+            graph_utils.bottom_up_traversal(self.graph,
+                                            self._aggregate_distributed_supplies,
+                                            year)
+    def check_equilibrium(self, prev, new, iteration, threshold, print_eq):
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
@@ -320,28 +344,33 @@ class Model:
         True if all fuels changed less than `threshold`. False otherwise.
         """
         # For every fuel, check if the relative difference exceeds the threshold
+        equil_check = 0
+
         for fuel in new:
             prev_fuel_price = prev[fuel]
-            if prev_fuel_price == 0:
-                if self.show_run_warnings:
-                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
-                prev_fuel_price = self.get_node_parameter_default('life cycle cost', 'sector')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
+                print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
                 return False
             abs_diff = abs(new_fuel_price - prev_fuel_price)
 
-            try:
+            if prev_fuel_price == 0:
+                if self.show_run_warnings:
+                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
+                rel_diff = 0
+            else:
                 rel_diff = abs_diff / prev_fuel_price
-            except:
-                # For endogenous fuel nodes that are not called in beginning years (e.g. Hydrogen)
-                if prev_fuel_price == 0:
-                    rel_diff = 0
 
             # If any fuel's relative difference exceeds the threshold, an equilibrium
             # has not been reached
             if rel_diff > threshold:
-                return False
+                equil_check += 1
+                if iteration > 1 and print_eq == True:
+                    rel_diff_formatted = "{:.1f}".format(rel_diff * 100)
+                    print(f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
+
+        if equil_check > 0:
+            return False
 
         # Otherwise, an equilibrium has been reached
         return True
@@ -396,10 +425,10 @@ class Model:
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['foresight method']
+            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['tax_foresight']
         if parent_dict:
-            graph.nodes[node][year]['foresight method'] = parent_dict
+            graph.nodes[node][year]['tax_foresight'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """
@@ -681,9 +710,9 @@ class Model:
         def init_agg_emissions_cost(graph):
             # Reset the aggregate_emissions_cost at each node
             for n in self.graph.nodes():
-                self.graph.nodes[n][year]['aggregate_emissions_cost_rates'] = \
+                self.graph.nodes[n][year]['aggregate_emissions_cost_rate'] = \
                     create_value_dict({}, param_source='initialization')
-                self.graph.nodes[n][year]['per_unit_emissions_cost'] = \
+                self.graph.nodes[n][year]['cumul_emissions_cost_rate'] = \
                     create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
@@ -786,7 +815,7 @@ class Model:
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 child_requested_quant = self.get_param('requested_quantities',
-                                                            child, year).get_total_quantities_requested()
+                                                       child, year).get_total_quantities_requested()
                 for child_rq_node, child_rq_amount in child_requested_quant.items():
                     # Record requested quantities
                     requested_quantity.record_requested_quantity(child_rq_node,
@@ -796,10 +825,11 @@ class Model:
         elif 'technologies' in graph.nodes[node][year]:
             for tech in graph.nodes[node][year]['technologies']:
                 tech_requested_quantity = RequestedQuantity()
+
+                # Aggregate Fuel Quantities
                 req_prov_children = find_children(graph, node, year, tech, request_provide=True)
                 for child in req_prov_children:
                     quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
-
                     # Record requested quantities
                     for providing_node, child, attributable_amount in quantities_to_record:
                         tech_requested_quantity.record_requested_quantity(providing_node,
@@ -808,6 +838,7 @@ class Model:
                         requested_quantity.record_requested_quantity(providing_node,
                                                                      child,
                                                                      attributable_amount)
+
                 # Save the tech requested quantities
                 self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
                     tech_requested_quantity
@@ -815,9 +846,8 @@ class Model:
         else:
             req_prov_children = find_children(graph, node, year, request_provide=True)
             for child in req_prov_children:
-                quantities_to_record = get_quantities_to_record(self, child, node, year)
-
                 # Record requested quantities
+                quantities_to_record = get_quantities_to_record(self, child, node, year)
                 for providing_node, child, attributable_amount in quantities_to_record:
                     requested_quantity.record_requested_quantity(providing_node,
                                                                  child,
@@ -826,7 +856,52 @@ class Model:
         self.graph.nodes[node][year]['requested_quantities'] = \
             utils.create_value_dict(requested_quantity, param_source='calculation')
 
-    def _aggregate_emissions(self, graph, node, year, **kwargs):
+    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
+        """
+        We want to aggregate up the structural relationships in the tree. This means there are two
+        different locations within the tree we need to think about:
+
+        (1) @ a Node without techs — Find any distributed supply that has been generated at the
+            node. Add any distributed supplies from structural children.
+        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node
+           (See Q below). Sum up the distributed supplies across all techs.
+
+        When doing sums, there is no need to worry about multiply by weights or service request
+        ratios, since each node only has a single structural parent, everything will flow through
+        that path.
+
+        Question: I'm guessing that we want to store a "distributed_supply" value at the tech-level,
+        even though technologies will only include distributed supply if they are directly
+        producing it (since techs are never structural parents). Is this logic correct?
+        """
+        node_distributed_supply = DistributedSupply()
+        if 'technologies' in self.graph.nodes[node][year]:
+            # @ a Node with techs
+            # Find distributed supply generated at the tech
+            for tech in self.graph.nodes[node][year]['technologies']:
+                tech_distributed_supply = DistributedSupply()
+                distributed_supplies = get_direct_distributed_supply(self, node, year, tech)
+                for service, amount in distributed_supplies:
+                    tech_distributed_supply.record_distributed_supply(service, node, amount)
+                    node_distributed_supply.record_distributed_supply(service, node, amount)
+                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
+                    tech_distributed_supply
+        else:
+            # @ a Node without techs
+            node_distributed_supply = DistributedSupply()
+            # Find distributed supply generated at the node
+            distributed_supplies = get_direct_distributed_supply(self, node, year)
+            for service, amount in distributed_supplies:
+                node_distributed_supply.record_distributed_supply(service, node, amount)
+            # Find distributed supply from structural children
+            structural_children = find_children(graph, node, structural=True)
+            for child in structural_children:
+                node_distributed_supply += self.get_param('distributed_supply', child, year)
+
+        self.graph.nodes[node][year]['distributed_supply'] = \
+            utils.create_value_dict(node_distributed_supply, param_source='calculation')
+
+    def _aggregate_cumul_emissions_cost(self, graph, node, year, **kwargs):
         """
         Calculates and records the total emissions cost for a particular node. This is done by
         taking the per-unit emissions cost and multiplying it by the number of units provided by a
@@ -840,7 +915,7 @@ class Model:
             The graph being traversed.
 
         node : str
-            The node whose total_emissions_cost is being calculated.
+            The node whose total_cumul_emissions_cost is being calculated.
 
         year : str
             Tthe year of interest.
@@ -848,41 +923,129 @@ class Model:
         Returns
         -------
         None
-            Returns nothing but does record total_emissions_cost for the node (and any
+            Returns nothing but does record total_cumul_emissions_cost for the node (and any
             technologies).
         """
-        total_emissions_cost = EmissionsCost()
+        total_cumul_emissions_cost = EmissionsCost()
 
         comp_type = self.get_param('competition type', node)
         if comp_type in ['root', 'region']:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                total_emissions_cost += self.get_param('total_emissions_cost', child, year)
-
+                total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child, year)
         else:
             pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-            emissions_cost = self.get_param('per_unit_emissions_cost', node, year)
-            total_emissions_cost = emissions_cost * pq
-            total_emissions_cost.num_units = pq
+            emissions_cost = self.get_param('cumul_emissions_cost_rate', node, year)
+            total_cumul_emissions_cost = emissions_cost * pq
+            total_cumul_emissions_cost.num_units = pq
 
             if 'technologies' in graph.nodes[node][year]:
                 for tech in graph.nodes[node][year]['technologies']:
-                    ec = self.get_param('per_unit_emissions_cost', node, year, tech=tech)
+                    ec = self.get_param('cumul_emissions_cost_rate', node, year, tech=tech)
                     ms = self.get_param('total_market_share', node, year, tech=tech)
                     tech_total_emissions_cost = ec * ms * pq
                     tech_total_emissions_cost.num_units = ms * pq
                     value_dict = create_value_dict(tech_total_emissions_cost)
-                    graph.nodes[node][year]['technologies'][tech]['total_emissions_cost'] = value_dict
+                    graph.nodes[node][year]['technologies'][tech]['total_cumul_emissions_cost'] = value_dict
 
-        value_dict = create_value_dict(total_emissions_cost)
-        graph.nodes[node][year]['total_emissions_cost'] = value_dict
+        value_dict = create_value_dict(total_cumul_emissions_cost)
+        graph.nodes[node][year]['total_cumul_emissions_cost'] = value_dict
 
-    def get_tech_parameter_default(self, parameter):
-        return self.technology_defaults[parameter]
+    def _aggregate_direct_emissions_cost(self, graph, node, year, **kwargs):
 
-    def get_node_parameter_default(self, parameter, competition_type):
-        return self.node_defaults[competition_type][parameter]
+        emissions_cost_params = [
+            {'rate_param_name': 'emissions_cost_rate', 'total_param_name': 'total_direct_emissions_cost'}
+        ]
+        pq = self.get_param('provided_quantities', node, year).get_total_quantity()
+        for e in emissions_cost_params:
+            rate_param = e['rate_param_name']
+            total_param = e['total_param_name']
+            node_total_direct_emissions_cost = EmissionsCost()
+            if 'technologies' in graph.nodes[node][year]:
+                for tech in graph.nodes[node][year]['technologies']:
+                    total_direct_emissions_cost = EmissionsCost()
+                    ms = self.get_param('total_market_share', node, year, tech=tech)
+                    direct_emissions_cost = self.get_param(rate_param, node, year, tech=tech)
+                    if direct_emissions_cost is not None:
+                        total_direct_emissions_cost = direct_emissions_cost * (pq * ms)
+                        node_total_direct_emissions_cost += total_direct_emissions_cost
+                    value_dict = create_value_dict(total_direct_emissions_cost)
+                    graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+
+            value_dict = create_value_dict(node_total_direct_emissions_cost)
+            graph.nodes[node][year][total_param] = value_dict
+
+    def _aggregate_cumul_emissions(self, graph, node, year, **kwargs):
+        # Calculate Cumulative Emissions
+        if 'technologies' in graph.nodes[node][year]:
+            for tech in graph.nodes[node][year]['technologies']:
+                calc_cumul_emissions_rate(self, node, year, tech)
+        calc_cumul_emissions_rate(self, node, year)
+
+        # Aggregate Cumulative Emissions
+        emission_params = ['net_emissions', 'avoided_emissions',
+                           'negative_emissions', 'bio_emissions']
+        for e in emission_params:
+            rate_param = f"cumul_{e}_rate"
+            total_param = f"total_cumul_{e}"
+            total_cumul_emissions = Emissions()
+
+            comp_type = self.get_param('competition type', node)
+            if comp_type in ['root', 'region']:
+                structural_children = find_children(graph, node, structural=True)
+                for child in structural_children:
+                    # Find quantities provided to the node via its structural children
+                    total_cumul_emissions += self.get_param(total_param, child, year)
+
+            else:
+                pq = self.get_param('provided_quantities', node, year).get_total_quantity()
+                cumul_emissions = self.get_param(rate_param, node, year)
+                total_cumul_emissions = cumul_emissions * pq
+
+                if 'technologies' in graph.nodes[node][year]:
+                    for tech in graph.nodes[node][year]['technologies']:
+                        ms = self.get_param('total_market_share', node, year, tech=tech)
+                        em = self.get_param(rate_param, node, year, tech=tech)
+                        if em is not None:
+                            tech_total_cumul_emissions = em * pq * ms
+                        else:
+                            tech_total_cumul_emissions = Emissions()
+                        value_dict = create_value_dict(tech_total_cumul_emissions)
+                        graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+
+            value_dict = create_value_dict(total_cumul_emissions)
+            graph.nodes[node][year][total_param] = value_dict
+
+    def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
+        # Direct Emissions
+        emissions = [
+            {'rate_param_name': 'net_emissions_rate', 'total_param_name': 'total_direct_net_emissions'},
+            {'rate_param_name': 'avoided_emissions_rate', 'total_param_name': 'total_direct_avoided_emissions'},
+            {'rate_param_name': 'negative_emissions_rate', 'total_param_name': 'total_direct_negative_emissions'},
+            {'rate_param_name': 'bio_emissions_rate', 'total_param_name': 'total_direct_bio_emissions'}
+        ]
+        pq = self.get_param('provided_quantities', node, year).get_total_quantity()
+        for e in emissions:
+            rate_param = e['rate_param_name']
+            total_param = e['total_param_name']
+            node_total_direct_emissions = Emissions()
+            if 'technologies' in graph.nodes[node][year]:
+                for tech in graph.nodes[node][year]['technologies']:
+                    total_direct_emissions = Emissions()
+                    ms = self.get_param('total_market_share', node, year, tech=tech)
+                    direct_emissions = self.get_param(rate_param, node, year, tech=tech)
+                    if direct_emissions is not None:
+                        total_direct_emissions = direct_emissions * pq * ms
+                        node_total_direct_emissions += total_direct_emissions
+                    value_dict = create_value_dict(total_direct_emissions)
+                    graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+
+            value_dict = create_value_dict(node_total_direct_emissions)
+            graph.nodes[node][year][total_param] = value_dict
+
+    def get_parameter_default(self, parameter):
+        return self.node_tech_defaults[parameter]
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
                   return_source=False, do_calc=False, check_exist=False, dict_expected=False):
@@ -958,7 +1121,7 @@ class Model:
         Parameters
         ----------
         val : any or list of any
-            The new value(s) to be set at the specified `param` at `node`, given the context provided by 
+            The new value(s) to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
@@ -1037,7 +1200,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
@@ -1074,7 +1237,6 @@ class Model:
         filepath : str
             This is the path to the CSV file containing all context and value change information
         """
-
         param_val = utils.set_param_file(self, filepath)
 
         return param_val
@@ -1088,7 +1250,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `context, `sub_context`, and `tech`.
         param : str
             The name of the parameter whose value is being set.
@@ -1130,7 +1292,7 @@ class Model:
         return param_val
 
     def create_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                     row_index=None):
+                     row_index=None, param_source=None, branch=None):
         """
         Creates parameter in graph, for given context (node, year, tech, context, sub_context),
         and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1138,7 +1300,7 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by 
+            The new value to be set at the specified `param` at `node`, given the context provided by
             `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
@@ -1169,7 +1331,9 @@ class Model:
                                        tech=tech,
                                        context=context,
                                        sub_context=sub_context,
-                                       row_index=row_index)
+                                       row_index=row_index,
+                                       param_source=param_source,
+                                       branch=branch)
 
         return param_val
 

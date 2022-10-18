@@ -177,7 +177,7 @@ def _adjust_new_market_shares(new_market_shares, limit_adjusted_techs):
             try:
                 anms_h = (new_market_share_h / sum_msj) * (1 - sum_msl)
             except ZeroDivisionError:
-                jillian=1
+                pass
         else:
             anms_h = 0
         new_market_shares[remaining_tech] = anms_h

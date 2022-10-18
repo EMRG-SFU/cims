@@ -52,16 +52,17 @@ def all_tech_compete_allocation(model, node, year):
     existing_stock = _get_existing_stock(model, node, year, comp_type)
 
     # Retrofits
-    existing_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
+    existing_stock, added_retrofit_stock, retrofit_stock = calc_retrofits(model, node, year, existing_stock)
 
     # Capital Stock Availability -- Find how much new stock must be adopted to meet demand
-    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock, retrofit_stock)
+    new_stock_demanded = _calc_new_stock_demanded(assessed_demand, existing_stock, added_retrofit_stock)
 
     # Surplus Retirement
     if new_stock_demanded < 0:
-        new_stock_demanded, existing_stock, retrofit_stock = \
+        new_stock_demanded, existing_stock, added_retrofit_stock, retrofit_stock = \
             _retire_surplus_stock(model, node, year,
-                                  new_stock_demanded, existing_stock, retrofit_stock)
+                                  new_stock_demanded, existing_stock,
+                                  added_retrofit_stock, retrofit_stock)
 
     # New Tech Competition
     new_market_shares = _calculate_new_market_shares(model, node, year, comp_type)
@@ -74,13 +75,14 @@ def all_tech_compete_allocation(model, node, year):
                                                                   assessed_demand,
                                                                   new_stock_demanded,
                                                                   existing_stock,
-                                                                  retrofit_stock,
+                                                                  added_retrofit_stock,
                                                                   adjusted_new_ms)
 
 
     # Record Values in Model
     _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares_per_tech,
-                               assessed_demand, new_stock_demanded, retrofit_stock)
+                               assessed_demand, new_stock_demanded,
+                               added_retrofit_stock, retrofit_stock)
 
 
 def general_allocation(model, node, year):
@@ -186,7 +188,7 @@ def _get_existing_stock(model, node, year, comp_type):
     return existing_stock
 
 
-def _calc_new_stock_demanded(demand, existing_stock, retrofit_stock):
+def _calc_new_stock_demanded(demand, existing_stock, added_retrofit_stock):
     """
     Calculate amount of new stock that will be demanded by subtracting all existing stock from the
     total amount of stock being demanded.
@@ -204,7 +206,7 @@ def _calc_new_stock_demanded(demand, existing_stock, retrofit_stock):
     for e_stocks in existing_stock.values():
         demand -= e_stocks
 
-    for r_stocks in retrofit_stock.values():
+    for r_stocks in added_retrofit_stock.values():
         demand -= r_stocks
 
     return demand
@@ -289,7 +291,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
     """
     lifetime = model.get_param('lifetime', node, purchased_year, tech=tech)
     purchased_stock = model.get_param('new_stock', node,purchased_year, tech=tech)
-    purchased_stock += model.get_param('retrofit_stock', node, purchased_year, tech=tech)
+    purchased_stock += model.get_param('added_retrofit_stock', node, purchased_year, tech=tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
@@ -556,25 +558,28 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
     return amount_surplus_to_retire, existing_stock
 
 
-def _retire_surplus_retrofit_stock(model, node, year, retrofit_stock, surplus):
-    total_retrofit_stock = sum(retrofit_stock.values())
+def _retire_surplus_added_retrofit_stock(model, node, year, added_retrofit_stock,
+                                         retrofit_stock, surplus):
+    total_added_retrofit_stock = sum(added_retrofit_stock.values())
     amount_surplus_to_retire = 0
-    if total_retrofit_stock != 0:
-        retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_retrofit_stock)
-        for node_branch, tech in retrofit_stock:
-            tech_retrofit_stock = retrofit_stock[(node_branch, tech)]
-            amount_tech_to_retire = tech_retrofit_stock * retirement_proportion
+    if total_added_retrofit_stock != 0:
+        retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_added_retrofit_stock)
+        for node_branch, tech in added_retrofit_stock:
+            tech_added_retrofit_stock = added_retrofit_stock[(node_branch, tech)]
+            amount_tech_to_retire = tech_added_retrofit_stock * retirement_proportion
 
             # Remove from retrofit stock
+            added_retrofit_stock[(node_branch, tech)] -= amount_tech_to_retire
             retrofit_stock[(node_branch, tech)] -= amount_tech_to_retire
 
             # Add to stock to retire
             amount_surplus_to_retire += amount_tech_to_retire
 
-    return amount_surplus_to_retire, retrofit_stock
+    return amount_surplus_to_retire, added_retrofit_stock, retrofit_stock
 
 
-def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock, retrofit_stock):
+def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock,
+                          added_retrofit_stock, retrofit_stock):
     """
     Retires surplus stock, starting with the oldest existing stock first. There is surplus stock if
     fewer than 0 units of new stock have been demanded.
@@ -616,15 +621,15 @@ def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock,
     new_stock_demanded += new_stock_to_retire
 
     # Retrofit Stock Retirement
-    retrofit_stock_to_retire, retrofit_stock = \
-        _retire_surplus_retrofit_stock(model, node, year, retrofit_stock, surplus)
-
-    surplus -= retrofit_stock_to_retire
-    new_stock_demanded += retrofit_stock_to_retire
+    added_retrofit_stock_to_retire, added_retrofit_stock, retrofit_stock = \
+        _retire_surplus_added_retrofit_stock(model, node, year, added_retrofit_stock,
+                                             retrofit_stock, surplus)
+    surplus -= added_retrofit_stock_to_retire
+    new_stock_demanded += added_retrofit_stock_to_retire
 
     assert(round(new_stock_demanded) >= 0)
 
-    return new_stock_demanded, existing_stock, retrofit_stock
+    return new_stock_demanded, existing_stock, added_retrofit_stock, retrofit_stock
 
 
 #############################
@@ -725,14 +730,14 @@ def _calculate_new_market_shares(model, node, year, comp_type):
             utils.create_value_dict(0, param_source='initialization')
         model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
             utils.create_value_dict(0, param_source='initialization')
-        model.graph.nodes[node][year]['technologies'][tech_child]['retrofit_stock'] = \
+        model.graph.nodes[node][year]['technologies'][tech_child]['added_retrofit_stock'] = \
             utils.create_value_dict(0, param_source='initialization')
 
     return new_market_shares
 
 
 def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
-                                   existing_stock, retrofit_stock, adjusted_new_ms):
+                                   existing_stock, added_retrofit_stock, adjusted_new_ms):
     """
     A helper function called by `all_tech_compete_allocation()` to calculate total market shares
     for all technologies competing at the specified node. This is where the market share competition
@@ -772,12 +777,12 @@ def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
             total_stocks[child] += existing_stock[(node_branch, tech)]
 
     # Add retrofit stocks
-    for node_branch, tech in retrofit_stock:
+    for node_branch, tech in added_retrofit_stock:
         if node_branch == node:
-            total_stocks[tech] += retrofit_stock[(node_branch, tech)]
+            total_stocks[tech] += added_retrofit_stock[(node_branch, tech)]
         else:
             child = node_branch.split('.')[-1]
-            total_stocks[child] += retrofit_stock[(node_branch, tech)]
+            total_stocks[child] += added_retrofit_stock[(node_branch, tech)]
 
     # Add new stocks
     for tech_child in adjusted_new_ms:
@@ -832,14 +837,17 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
         year_node = model.graph.nodes[service_data['branch']][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
-                utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
+                utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
+                # utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
         year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
+        year_node['provided_quantities']['param_source'] = 'calculation'
 
 
 def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares,
-                               assessed_demand, new_stock_demanded, retrofit_stocks):
+                               assessed_demand, new_stock_demanded,
+                               added_retrofit_stocks, retrofit_stocks):
     """
 
     Parameters
@@ -896,14 +904,35 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
     # Retrofit Stock
     comp_type = model.get_param('competition type', node)
 
-    for n, t in retrofit_stocks:
-        retrofit_stock_dict = utils.create_value_dict(retrofit_stocks[(n, t)],
+    for n, t in added_retrofit_stocks:
+        # Added retrofit stock
+        added_retrofit_stock_dict = utils.create_value_dict(added_retrofit_stocks[(n, t)],
                                                       param_source='calculation')
+        model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', n, year, t)
+
+    for n, t in retrofit_stocks:
+        # Net retrofit stock
+        retrofit_stock_dict = utils.create_value_dict(retrofit_stocks[(n, t)],
+                                                            param_source='calculation')
         model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', n, year, t)
 
     if comp_type == 'node tech compete':
-        # We need to also store summary retrofit information at the Node Tech Compete parent node
-        # Create Summary Retrofit Dictionary
+        # We need to also store summary added retrofit information at the Node Tech Compete parent node
+        # Create Summary Added Retrofit dictionary
+        summary_added_retrofit_stocks = {}
+        for n, t in added_retrofit_stocks:
+            child_service = n.split('.')[-1]
+            if child_service not in summary_added_retrofit_stocks:
+                summary_added_retrofit_stocks[child_service] = 0
+            summary_added_retrofit_stocks[child_service] += added_retrofit_stocks[(n, t)]
+
+        # Save the info to the model
+        for child_service in summary_added_retrofit_stocks:
+            added_retrofit_stock_dict = utils.create_value_dict(summary_added_retrofit_stocks[child_service],
+                                                          param_source='calculation')
+            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_service)
+
+        # Create Summary Retrofit dictionary
         summary_retrofit_stocks = {}
         for n, t in retrofit_stocks:
             child_service = n.split('.')[-1]
@@ -914,7 +943,7 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         # Save the info to the model
         for child_service in summary_retrofit_stocks:
             retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_service],
-                                                          param_source='calculation')
+                                                                param_source='calculation')
             model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_service)
 
     # Send Demand Below
