@@ -116,17 +116,17 @@ class Model:
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresight_context = self.get_param('foresight method', 'pyCIMS', year, dict_expected=True)
+            foresight_context = self.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
             if foresight_context is not None:
                 for ghg, sectors in foresight_context.items():
                     for node in sec_list:
                         sector = node.split('.')[-1]
                         if sector in sectors:
                             # Initialize foresight method
-                            if 'foresight method' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['foresight method'] = {}
+                            if 'tax_foresight' not in self.graph.nodes[node][year]:
+                                self.graph.nodes[node][year]['tax_foresight'] = {}
 
-                            self.graph.nodes[node][year]['foresight method'][ghg] = sectors[sector]
+                            self.graph.nodes[node][year]['tax_foresight'][ghg] = sectors[sector]
 
             graph_utils.top_down_traversal(self.graph,
                                            self._init_foresight,
@@ -348,22 +348,18 @@ class Model:
 
         for fuel in new:
             prev_fuel_price = prev[fuel]
-            if prev_fuel_price == 0:
-                if self.show_run_warnings:
-                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
-                prev_fuel_price = self.get_parameter_default('life cycle cost')
             new_fuel_price = new[fuel]
             if (prev_fuel_price is None) or (new_fuel_price is None):
                 print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
                 return False
             abs_diff = abs(new_fuel_price - prev_fuel_price)
 
-            try:
+            if prev_fuel_price == 0:
+                if self.show_run_warnings:
+                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
+                rel_diff = 0
+            else:
                 rel_diff = abs_diff / prev_fuel_price
-            except:
-                # For endogenous fuel nodes that are not called in beginning years (e.g. Hydrogen)
-                if prev_fuel_price == 0:
-                    rel_diff = 0
 
             # If any fuel's relative difference exceeds the threshold, an equilibrium
             # has not been reached
@@ -429,10 +425,10 @@ class Model:
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'foresight method' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['foresight method']
+            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                parent_dict = graph.nodes[parent][year]['tax_foresight']
         if parent_dict:
-            graph.nodes[node][year]['foresight method'] = parent_dict
+            graph.nodes[node][year]['tax_foresight'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """
