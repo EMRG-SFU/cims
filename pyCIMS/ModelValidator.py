@@ -49,11 +49,12 @@ class ModelValidator:
         n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
         all_cols = np.concatenate((n_cols, y_cols))
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf['Parameter'] = mdf['Parameter'].str.lower()
 
         return mdf
 
     def find_roots(self):
-        root_idx = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
+        root_idx = self.model_df[(self.model_df['Parameter'] == 'competition type') &
                                  (self.model_df['Context'] == 'Root')].index
         root_nodes = set([self.index2node_map[ri] for ri in root_idx])
 
@@ -74,15 +75,14 @@ class ModelValidator:
         return index_to_node_index_map
 
     def _create_index_to_branch_map(self):
-        all_services_provided = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
+        all_services_provided = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
         node_index_2_branch_map = {int(self.index2node_index_map[i]): b for i, b in all_services_provided.items()}
         return {i: node_index_2_branch_map[ni] for i, ni in self.index2node_index_map.items()}
 
     def validate(self, verbose=True, raise_warnings=False):
         def invalid_competition_type():
             """
-            Identify any nodes which use a competition type that is not one of the "Root", "Region",
-            "Sector", "Sector No Tech", "Tech Compete", and "Fixed Ratio". 
+            Identify any nodes which use an invalid competition type.
     
             Parameters
             ----------
@@ -95,14 +95,17 @@ class ModelValidator:
             valid_comp_type = ['Root',
                                'Region',
                                'Sector',
-                               'Sector No Tech',
                                'Tech Compete',
                                'Node Tech Compete',
                                'Fixed Ratio',
-                               'Market']
+                               'Market',
+                               'Fuel - Fixed Price',
+                               'Fuel - Cost Curve Annual',
+                               'Fuel - Cost Curve Cumulative',
+                               ]
 
             invalid_nodes = []
-            comp_types = self.model_df[self.model_df['Parameter'] == 'Competition type']
+            comp_types = self.model_df[self.model_df['Parameter'] == 'competition type']
             for index, value in zip(comp_types.index, comp_types['Context']):
                 if value not in valid_comp_type:
                     invalid_nodes.append((index, self.index2node_map[index]))
@@ -126,7 +129,7 @@ class ModelValidator:
 
         def unspecified_nodes(p, r):
             """
-            Identify any nodes which are referenced in another node's "service requested" row but 
+            Identify any nodes which are referenced in another node's 'service requested' row but
             the node has not been specified within the mdoel description. 
 
             Parameters
@@ -377,7 +380,7 @@ class ModelValidator:
             # Add a Column w/ Technology Name
             node_names = data['Node']
             node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
-            techs = data[data['Parameter'] == "Technology"]['Context']
+            techs = data[data['Parameter'] == 'technology']['Context']
             node_boundaries.update(techs)
             tech_names = node_boundaries.ffill()
             data['tech'] = tech_names
@@ -394,13 +397,13 @@ class ModelValidator:
 
             # Find techs with no service request
             technologies = grouped[grouped['tech'] != ""]
-            serv_req_bool = technologies['Parameter'].apply(lambda x: 'Service requested' in x)
+            serv_req_bool = technologies['Parameter'].apply(lambda x: 'service requested' in x)
             techs_no_serv_req = technologies[~serv_req_bool]
 
             # Find nodes with no service request
             nodes = grouped[grouped['tech'] == '']
             nodes_non_tech = nodes[~nodes['node_id'].isin(technologies['node_id'])]
-            serv_req_bool = nodes_non_tech['Parameter'].apply(lambda x: 'Service requested' in x)
+            serv_req_bool = nodes_non_tech['Parameter'].apply(lambda x: 'service requested' in x)
             nodes_no_serv_req = nodes_non_tech[~serv_req_bool]
 
             # Combine Techs & Nodes
@@ -449,7 +452,7 @@ class ModelValidator:
         #     tree_sheet = pd.Series(tree_df['Branch']).dropna().reset_index(drop=True).str.lower()
         #
         #     d = self.model_df
-        #     p = d[d['Parameter'] == 'Service provided']['Branch']
+        #     p = d[d['Parameter'] == 'service provided']['Branch']
         #     model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
         #
         #     nodes_with_discrepencies = []
@@ -497,7 +500,7 @@ class ModelValidator:
             -------
             None
             """
-            output = self.model_df[self.model_df['Parameter'] == 'Output'].iloc[:, 8:19]
+            output = self.model_df[self.model_df['Parameter'] == 'output'].iloc[:, 8:19]
             zero_output_nodes = []
             for i in range(output.shape[0]):
                 if output.iloc[i, 0:12].eq(0).any():
@@ -523,7 +526,7 @@ class ModelValidator:
 
         def fuel_nodes_no_lcc():
             """
-            Identify fuel nodes that do not have an "Life Cycle Cost" row specified in the base year. 
+            Identify fuel nodes that do not have an 'life cycle cost' row specified in the base year.
             
             Parameters
             ----------
@@ -533,19 +536,19 @@ class ModelValidator:
             -------
             None
             """
-            d = self.model_df[self.model_df['Parameter'] == 'Node type']['Context'].str.lower() == 'supply'
+            d = self.model_df[self.model_df['Parameter'] == 'node type']['Context'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
             for n in supply_nodes:
                 node = self.index2node_map[self.index2node_map == n]
                 dat = self.model_df.loc[node.index, :]
-                s = dat[dat['Parameter'] == 'Competition type']['Context'].str.lower()
-                if 'sector no tech' in s.to_string():
-                    if 'Life Cycle Cost' not in list(dat['Parameter']):
+                s = dat[dat['Parameter'] == 'competition type']['Context'].str.lower()
+                if 'fuel - fixed price' in s.to_string():
+                    if 'life cycle cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'Life Cycle Cost'].iloc[:, 8:19]
+                        prod_cost = dat[dat['Parameter'] == 'life cycle cost'].iloc[:, 8:19]
                         if prod_cost.iloc[0].isnull().any():
                             no_prod_cost.append((node.index[0], n))
 
@@ -555,13 +558,13 @@ class ModelValidator:
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                print("{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
+                print("{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
                                                                                more_info if len(
                                                                                    no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                w = "{} fuel nodes don't have an Life Cycle Cost. {}".format(len(no_prod_cost),
+                w = "{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
                                                                              more_info if len(
                                                                                  no_prod_cost) else "")
                 warnings.warn(w)
@@ -579,10 +582,10 @@ class ModelValidator:
             -------
             None
             """
-            nodes = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
+            nodes = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
             nodes.index = nodes.index - 1
             end = pd.Series(['None'], index=[self.model_df.index.max()])
-            nodes = nodes.append(end)
+            nodes = pd.concat([nodes, end])
             no_cap_cost = []
 
             for i in range(nodes.shape[0] - 1):
@@ -591,21 +594,21 @@ class ModelValidator:
                 start_index = nodes.index[i]
                 end_index = nodes.index[i + 1]
                 dat = self.model_df.loc[start_index:end_index]
-                tech_nodes = dat[dat['Parameter'] == 'Competition type'][
+                tech_nodes = dat[dat['Parameter'] == 'competition type'][
                                  'Context'].str.lower() == 'tech compete'
                 if tech_nodes.iloc[0]:
-                    if 'Technology' not in list(dat['Parameter']):
-                        if 'Capital cost_overnight' not in list(dat['Parameter']):
+                    if 'technology' not in list(dat['Parameter']):
+                        if 'capital cost_overnight' not in list(dat['Parameter']):
                             no_cap_cost.append((node_index, node_name))
                     else:
-                        techs = dat[dat['Parameter'] == 'Technology']['Context']
+                        techs = dat[dat['Parameter'] == 'technology']['Context']
                         end = pd.Series(['None'], index=[dat.index.max()])
-                        techs = techs.append(end)
+                        techs = pd.concat([techs, end])
                         for i in range(techs.shape[0] - 1):
                             tech_name = techs.iloc[i]
                             start_index = techs.index[i]
                             end_index = techs.index[i + 1]
-                            if 'Capital cost_overnight' not in list(
+                            if 'capital cost_overnight' not in list(
                                     dat['Parameter'].loc[start_index:end_index]):
                                 no_cap_cost.append((node_index, node_name, tech_name))
 
@@ -647,7 +650,7 @@ class ModelValidator:
             base_year_col = [[c for c in data.columns if is_year(c)][0]]
 
             # For each market share, find what node it belongs to (by index)
-            market_shares = data[data['Parameter'] == 'Market share'][base_year_col]
+            market_shares = data[data['Parameter'] == 'market share'][base_year_col]
             market_shares['Node'] = [int(self.index2node_index_map[i]) for i in market_shares.index]
 
             # Sum the market shares for each node
@@ -694,12 +697,12 @@ class ModelValidator:
             data = self.model_df
 
             # Add a Column w/ Technology Name
-            techs = data[data['Parameter'] == "Technology"]['Context']
+            techs = data[data['Parameter'] == 'technology']['Context']
             data['Tech'] = techs
             data['Tech'] = data['Tech'].ffill()
 
             # Find Market Share Rows
-            market_shares = data[data['Parameter'] == 'Market share']
+            market_shares = data[data['Parameter'] == 'market share']
 
             # Find Instances where there isn't a base year market share
             base_year_col = [c for c in data.columns if is_year(c)][0]
@@ -747,7 +750,7 @@ class ModelValidator:
             # Add a Column w/ Technology Name
             node_names = data['Node']
             node_boundaries = node_names.apply(lambda x: '' if x is not None else x)
-            techs = data[data['Parameter'] == "Technology"]['Context']
+            techs = data[data['Parameter'] == 'technology']['Context']
             node_boundaries.update(techs)
             tech_names = node_boundaries.ffill()
             data['tech'] = tech_names
@@ -758,7 +761,7 @@ class ModelValidator:
             data['node_id'] = data['node_id'].ffill()
 
             # Filter to Service Request Rows only
-            services_req = data[data['Parameter'] == 'Service requested']
+            services_req = data[data['Parameter'] == 'service requested']
 
             # Select the columns that will tell us things
             req_info = services_req[['node_id', 'tech', 'Branch']]
@@ -813,7 +816,7 @@ class ModelValidator:
             data = self.model_df
 
             # Filter to Only Include Service Requested
-            services_req = data[data['Parameter'] == 'Service requested']
+            services_req = data[data['Parameter'] == 'service requested']
 
             # Select only the year columns
             year_cols = [c for c in services_req.columns if is_year(c)]
@@ -844,7 +847,7 @@ class ModelValidator:
 
         def tech_compete_nodes_no_techs():
             """
-            Identify tech compete nodes that don't contain "Technology" or "Service" headings --
+            Identify tech compete nodes that don't contain 'technology' or 'service' headings --
             thereby appearing to not have a technology present.
                     
             Parameters
@@ -872,7 +875,7 @@ class ModelValidator:
             data['node_id'] = data['node_id'].ffill()
 
             # Add a Column w/ Competition Type
-            comp_types = data[data['Parameter'] == "Competition type"][['node_id', 'Context']]
+            comp_types = data[data['Parameter'] == 'competition type'][['node_id', 'Context']]
             comp_types.columns = ['node_id', 'comp_type']
             data = data.merge(comp_types, on='node_id')
 
@@ -911,12 +914,12 @@ class ModelValidator:
             data = self.model_df
 
             # Find Markets
-            markets = self.model_df[(self.model_df['Parameter'] == 'Competition type') &
+            markets = self.model_df[(self.model_df['Parameter'] == 'competition type') &
                                     (self.model_df['Context'] == 'Market')]
             market_node_idxs = [self.index2node_index_map[i] for i in markets.index]
 
             # Find Nodes that are children of a market
-            all_service_req = data[data['Parameter'] == 'Service requested']['Branch']
+            all_service_req = data[data['Parameter'] == 'service requested']['Branch']
             market_children = [b for i, b in all_service_req.items()
                                if self.index2node_index_map[i] in market_node_idxs]
 
@@ -939,8 +942,61 @@ class ModelValidator:
                     w = f"{info} {more_info if len(market_children_requests) else ''}"
                     warnings.warn(w)
 
-        providers = self.model_df[self.model_df['Parameter'] == 'Service provided']['Branch']
-        requested = self.model_df[self.model_df['Parameter'] == 'Service requested']['Branch']
+        def revenue_recycling_at_techs():
+            """Revenue recycling should only happen at nodes, never at techs"""
+            # The model's DataFrame
+            data = self.model_df
+
+            # Add a Column w/ Technology Name
+            techs = data[data['Parameter'] == 'technology']['Context']
+            data['Tech'] = techs
+            # data['Tech'] = data['Tech'].ffill()
+
+            # nodes_ffill = data['Node'].map(lambda x: None if pd.isna(x) else 'Node')
+            # techs_ffill = data['Tech'].map(lambda x: None if pd.isna(x) else 'Tech')
+            node_or_tech = []
+            for n, t in zip(data['Node'], data['Tech']):
+                if not pd.isna(t):
+                    node_or_tech.append('Tech')
+                elif not pd.isna(n):
+                    node_or_tech.append('Node')
+                else:
+                    node_or_tech.append(None)
+
+            data['Node_or_Tech'] = node_or_tech
+            data['Node_or_Tech'] = data['Node_or_Tech'].ffill()
+
+            # Find Recycled Revenues Rows
+            recycled_revenues = data[data['Parameter'] == 'recycled revenues']
+
+            # Find instances where recycled revenues is defined for a tech
+            rr_at_tech = recycled_revenues[recycled_revenues['Node_or_Tech']=='Tech']
+
+            # Create our Warning information
+            node_names = [self.index2node_map[i] for i in rr_at_tech.index]
+            tech_names = [data['Tech'].ffill().loc[i] for i in rr_at_tech.index]
+            techs_recycling_revenues = list(zip(rr_at_tech.index, node_names, tech_names))
+
+            if len(recycled_revenues) > 0:
+                self.warnings['techs_revenue_recycling'] = techs_recycling_revenues
+
+            if verbose:
+                info = "{} technologies are trying to recycle revenues.".format(
+                    len(techs_recycling_revenues))
+                more_info = "See ModelValidator.warnings['techs_revenue_recycling'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(techs_recycling_revenues) else ""))
+
+            if raise_warnings:
+                info = "{} technologies are trying to recycle revenues".format(
+                    len(techs_recycling_revenues))
+                more_info = "See ModelValidator.warnings['techs_revenue_recycling'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(techs_recycling_revenues) else ""))
+                warnings.warn(w)
+
+        providers = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
+        requested = self.model_df[self.model_df['Parameter'] == 'service requested']['Branch']
         roots = self.find_roots()
 
         mismatched_node_names(providers)
@@ -954,9 +1010,10 @@ class ModelValidator:
         nodes_with_zero_output()
         fuel_nodes_no_lcc()
         nodes_no_capital_cost()
-        nodes_bad_total_market_share()
+        # nodes_bad_total_market_share()
         techs_no_base_market_share()
         duplicate_service_requests()
         bad_service_req()
         tech_compete_nodes_no_techs()
         market_child_requested()
+        revenue_recycling_at_techs()

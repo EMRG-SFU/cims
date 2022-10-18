@@ -108,8 +108,12 @@ class ModelReader:
         for s, e in node_start_ends:
             node_df = self.model_df.loc[s + 1:e - 1]
             node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
+
+            # Convert parameter strings to lower case
+            node_df['Parameter'] = node_df['Parameter'].str.lower()
+
             try:
-                node_name = list(node_df[node_df['Parameter'] == 'Service provided']['Branch'])[0]
+                node_name = list(node_df[node_df['Parameter'] == 'service provided']['Branch'])[0]
             except IndexError:
                 continue
             node_dfs[node_name] = node_df
@@ -120,10 +124,10 @@ class ModelReader:
         # Extract tech dfs from node df's and rewrite node df without techs
         tech_dfs = {}
         for nn, ndf in node_dfs.items():
-            if any(ndf.Parameter.isin(["Technology", "Service"])):  # Technologies can also be called Services
+            if any(ndf.Parameter.isin(['technology', 'service'])):  # Technologies can also be called Services
                 tdfs = {}
                 first_row, last_row = ndf.index[0], ndf.index[-1]
-                tech_rows = ndf.loc[ndf.Parameter.isin(["Technology", "Service"])].index
+                tech_rows = ndf.loc[ndf.Parameter.isin(['technology', 'service'])].index
                 for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
                     tech_df = ndf.loc[trs:tre]
                     tech_name = tech_df.iloc[0].Context
@@ -152,42 +156,25 @@ class ModelReader:
         inc_df = inc_df.dropna(axis=1)
         return inc_df
 
-    def get_default_tech_params(self):
+    def get_default_params(self):
         # Read model_description from excel
         df = pd.read_excel(self.infile,
-                           sheet_name=self.sheet_map['default_tech'],
+                           sheet_name=self.sheet_map['default_param'],
                            header=0,
                            engine=self.excel_engine).replace({np.nan: None})
 
         # Remove empty rows
         df = df.dropna(axis=0, how="all")
 
-        # Forward fill the parameter type
-        df['Unnamed: 0'] = df['Unnamed: 0'].ffill()
+        # Convert parameter strings to lower case
+        df['Parameter'] = df['Parameter'].str.lower()
 
-        # Technology Default Parameters
-        technology_df = df[df['Unnamed: 0'] == 'Technology format']
-        node_df_has_defaults = technology_df[~technology_df['Default value'].isna()]
-        technology_defaults = {}
-        for param, val in zip(node_df_has_defaults['Parameter'],
-                              node_df_has_defaults['Default value']):
-            technology_defaults[param] = val
-
-        # Other Default Parameters
-        node_df = df[df['Unnamed: 0'] != 'Technology format']
-
-        pd.options.mode.chained_assignment = None  # Temporarily turn off SettingWithCopyWarning
-        node_df['node_type'] = node_df['Unnamed: 0'].str.split(' node format').str[0]
-        pd.options.mode.chained_assignment = 'warn'  # Turn SettingWithCopyWarning back on
-
-        node_df_has_defaults = node_df[~node_df['Default value'].isna()]
-        node_defaults = {}
-        for comp_type, param, val in zip(node_df_has_defaults['node_type'],
-                                         node_df_has_defaults['Parameter'],
-                                         node_df_has_defaults['Default value']):
-            if comp_type.lower() not in node_defaults:
-                node_defaults[comp_type.lower()] = {}
-            node_defaults[comp_type.lower()][param] = val
+        # Default Parameters
+        df_has_defaults = df[~df['Default value'].isna()]
+        node_tech_defaults = {}
+        for param, val in zip(df_has_defaults['Parameter'],
+                              df_has_defaults['Default value']):
+            node_tech_defaults[param] = val
 
         # Return
-        return technology_defaults, node_defaults
+        return node_tech_defaults
