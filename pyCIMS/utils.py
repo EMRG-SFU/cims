@@ -706,16 +706,14 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        try:
-                            isinstance(val[context][sub_context], dict)
+                        if isinstance(val[context][sub_context], dict):
                             val[context][sub_context].update(new_value)
-                        except:
+                        else:
                             val[context][sub_context] = new_value
                     else:
-                        try:
-                            isinstance(val[context], dict)
+                        if isinstance(val[context], dict):
                             val[context].update(new_value)
-                        except:
+                        else:
                             val[context] = new_value
                 elif None in val:
                     val[None].update(new_value)
@@ -764,16 +762,14 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        try:
-                            isinstance(val[context][sub_context], dict)
+                        if isinstance(val[context][sub_context], dict):
                             val[context][sub_context].update(new_value)
-                        except:
+                        else:
                             val[context][sub_context] = new_value
                     else:
-                        try:
-                            isinstance(val[context], dict)
+                        if isinstance(val[context], dict):
                             val[context].update(new_value)
-                        except:
+                        else:
                             val[context] = new_value
                 elif None in val:
                         val[None].update(new_value)
@@ -811,12 +807,18 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
                     set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
                 else:
                     value = val[i]['year_value']
+                    param_source = val[i]['param_source'] if 'param_source' in val[i] else None
+                    branch = val[i]['branch'] if 'branch' in val[i] else None
                     model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
-                                       context=context, sub_context=sub_context)
+                                       context=context, sub_context=sub_context,
+                                       param_source=param_source, branch=branch)
             else:
                 value = val[i]['year_value']
+                param_source = val[i]['param_source'] if 'param_source' in val[i] else None
+                branch = val[i]['branch'] if 'branch' in val[i] else None
                 model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
-                                   context=context, sub_context=sub_context)
+                                   context=context, sub_context=sub_context,
+                                   param_source=param_source, branch=branch)
         else:
             if param in node_data:
                 set_node_param(model, val[i], param, node, year[i], context, sub_context)
@@ -1122,7 +1124,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
 
 
 def create_param(model, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                 row_index=None):
+                 param_source=None, branch=None, row_index=None):
     """
     Creates parameter in graph, for given context (node, year, tech, context, sub_context),
     and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1173,7 +1175,8 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     else:
         data = model.graph.nodes[node]
 
-    val_dict = create_value_dict(val, param_source='model')
+    param_source = param_source if param_source is not None else 'model'
+    val_dict = create_value_dict(val, param_source=param_source, branch=branch)
 
     # *********
     # If there is a tech specified, check if it exists and create context (tech, param, context,
