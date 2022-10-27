@@ -654,22 +654,10 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
             for emission_type in emissions_cost[node_name][ghg]:
                 expected_ec = 0
 
-                #  Dict to check if emission_type exists in taxes
-                # tax_check = {}
                 if ghg in all_taxes:
                     if emission_type in all_taxes[ghg]:
-                        # tax_check = model.get_param('tax', node, year, context=ghg,
-                        #                             sub_context=emission_type, dict_expected=False)
                         method = model.get_param('tax_foresight', node, year, context=ghg,
                                                     sub_context=emission_type, dict_expected=False)
-
-                # Use foresight method to calculate tax
-                # method_dict = model.get_param('tax_foresight', node, year, dict_expected=True)
-                #
-                # # Replace current tax with foresight method
-                # method = None
-                # if method_dict and ghg in method_dict:
-                #     method = method_dict[ghg]['year_value']
 
                         if (method == 'Myopic') or (method is None) or (not allow_foresight):
                             expected_ec = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
