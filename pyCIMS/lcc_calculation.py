@@ -187,6 +187,8 @@ def lcc_calculation(sub_graph, node, year, model):
         sub_graph.nodes[node][year]['life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
+    # fLCC -> Price
+    price = calc_price(model, node, year)
 
 def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     """
@@ -728,3 +730,37 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     return total_service_cost
 
 
+def calc_price(model, node, year):
+
+    price, source = model.get_param('price', node, year, return_source=True)
+    if (price is not None) & (source == 'model'):
+        pass
+
+    elif 'cost of production' in model.graph.nodes[node][year]:
+        service_name = node.split('.')[-1]
+
+        cost_of_production = model.get_param('cost of production', node, year)
+
+        # Base Year Costs
+        base_year = str(model.base_year)
+        base_price = model.get_param('price', node, base_year)
+        base_AC = model.get_param('additional cost', node, base_year)
+        base_fLCC = model.get_param('life cycle cost', node, base_year, context=service_name)
+
+        # Current Year Costs
+        cur_AC = model.get_param('additional cost', node, year)
+        cur_fLCC = model.get_param('life cycle cost', node, year, context=service_name)
+
+        price = base_price * ((cur_fLCC/base_fLCC*cost_of_production) + (cur_AC/base_AC*(1-cost_of_production)))
+        source = 'calculation'
+
+    else:
+        service_name = node.split('.')[-1]
+        price = model.get_param('life cycle cost', node, year,
+                                context=service_name)   # price = fLCC
+        source = 'calculation'
+
+    val_dict = {'year_value': price, 'param_source': source}
+    model.set_param_internal(val_dict, 'price', node, year)
+
+    return price
