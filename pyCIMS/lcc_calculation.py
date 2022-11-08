@@ -731,9 +731,38 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
 
 
 def calc_price(model, node, year):
+    """
+    Calculate
+    Parameters
+    ----------
+    model
+    node
+    year
 
+    Returns
+    -------
+
+    """
+    base_year = str(model.base_year)
     price, source = model.get_param('price', node, year, return_source=True)
-    if (price is not None) & (source == 'model'):
+
+    if year == base_year:
+        service_name = node.split('.')[-1]
+        cur_fLCC = model.get_param('life cycle cost', node, year, context=service_name)
+        if (price is not None) & (source == 'model'):   # price is specified in model description
+            price, source = max([(price, 'model'),
+                                 (cur_fLCC+0.01, 'calculation')],
+                                key=lambda x: x[0])
+        else:   # price is NOT specified in model description
+            cost_of_production = model.get_param('cost of production', node, year)
+            if cost_of_production is None:
+                price = 0
+                source = 'default'
+            else:
+                price = cur_fLCC / cost_of_production
+                source = 'calculation'
+
+    elif (price is not None) & (source == 'model'):
         pass
 
     elif 'cost of production' in model.graph.nodes[node][year]:
@@ -742,7 +771,6 @@ def calc_price(model, node, year):
         cost_of_production = model.get_param('cost of production', node, year)
 
         # Base Year Costs
-        base_year = str(model.base_year)
         base_price = model.get_param('price', node, base_year)
         base_AC = model.get_param('additional cost', node, base_year)
         base_fLCC = model.get_param('life cycle cost', node, base_year, context=service_name)
