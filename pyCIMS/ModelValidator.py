@@ -526,7 +526,8 @@ class ModelValidator:
 
         def fuel_nodes_no_lcc():
             """
-            Identify fuel nodes that do not have an 'life cycle cost' row specified in the base year.
+            Identify fuel nodes that do not have an 'financial life cycle cost' row specified in the
+            base year.
             
             Parameters
             ----------
@@ -545,10 +546,10 @@ class ModelValidator:
                 dat = self.model_df.loc[node.index, :]
                 s = dat[dat['Parameter'] == 'competition type']['Context'].str.lower()
                 if 'fuel - fixed price' in s.to_string():
-                    if 'life cycle cost' not in list(dat['Parameter']):
+                    if 'financial life cycle cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'life cycle cost'].iloc[:, 8:19]
+                        prod_cost = dat[dat['Parameter'] == 'financial life cycle cost'].iloc[:, 8:19]
                         if prod_cost.iloc[0].isnull().any():
                             no_prod_cost.append((node.index[0], n))
 
