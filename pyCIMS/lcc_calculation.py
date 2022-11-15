@@ -732,10 +732,8 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
 
 
 def calc_price(model, node, year):
-    if node == 'pyCIMS.Canada.British Columbia.Coal Mining.Coal.Raw Product.Mine Ventilation':
-        jillian = 1
     service = node.split('.')[-1]
-    fLCC = model.get_param('life cycle cost', node, year, context=service)
+    fLCC = model.get_param('financial life cycle cost', node, year, context=service)
 
     base_year = str(model.base_year)
     p2000, p2000_source = model.get_param('p2000', node, base_year, return_source=True)
@@ -775,21 +773,16 @@ def calc_price(model, node, year):
     else:
         # Find Base Year Values
         additional_cost_2000 = model.get_param('additional cost', node, base_year)
-        # fLCC_2000 = model.get_param('financial life cycle cost', node, base_year)
-        fLCC_2000 = model.get_param('life cycle cost', node, base_year, context=service)  # TODO: Remove once fLCC is actually implemented
+        fLCC_2000 = model.get_param('financial life cycle cost', node, base_year, context=service)
 
         # Current Year Values
-        # fLCC = model.get_param('financial life cycle cost', node, year)
-        fLCC = model.get_param('life cycle cost', node, year, context=service)  # TODO: Remove once fLCC is actually implemented
+        fLCC = model.get_param('financial life cycle cost', node, year, context=service)
         additional_cost = model.get_param('additional cost', node, year)
 
         # Calculate Price
         if p2000_exogenous or cop_exogenous:
-            try:
-                price_t = p2000 * (
-                            fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
-            except:
-                jillian = 1
+            price_t = p2000 * (
+                        fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
         else:
             additional_cost = 0
             model.set_param_internal(utils.create_value_dict(additional_cost, param_source='calculation'),
