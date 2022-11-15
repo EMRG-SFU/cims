@@ -42,8 +42,8 @@ def lcc_calculation(sub_graph, node, year, model):
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
     # Check if the node has an exogenously defined Life Cycle Cost
-    if 'life cycle cost' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('life cycle cost', node, year,
+    if 'financial life cycle cost' in sub_graph.nodes[node][year]:
+        lcc, lcc_source = model.get_param('financial life cycle cost', node, year,
                                           context=node.split('.')[-1],
                                           return_source=True)  # context is the fuel name
         if lcc_source == 'model':
@@ -79,10 +79,10 @@ def lcc_calculation(sub_graph, node, year, model):
 
             # LCC (financial)
             # ************
-            lcc, lcc_source = model.get_param('life cycle cost', node, year, tech=tech,
+            lcc, lcc_source = model.get_param('financial life cycle cost', node, year, tech=tech,
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
-            model.set_param_internal(val_dict, 'life cycle cost', node, year, tech)
+            model.set_param_internal(val_dict, 'financial life cycle cost', node, year, tech)
 
             # Complete LCC
             # ************
@@ -136,7 +136,7 @@ def lcc_calculation(sub_graph, node, year, model):
 
             # Weight Life Cycle Cost and Add to Node Total
             # ********************************************
-            curr_lcc = model.get_param('life cycle cost', node, year, tech=tech)
+            curr_lcc = model.get_param('financial life cycle cost', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
@@ -144,7 +144,7 @@ def lcc_calculation(sub_graph, node, year, model):
         if node in model.fuels:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
-                weighted_lccs = model.get_param('life cycle cost', node, prev_year,
+                weighted_lccs = model.get_param('financial life cycle cost', node, prev_year,
                                                 context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
@@ -158,13 +158,13 @@ def lcc_calculation(sub_graph, node, year, model):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['life cycle cost'] = {
+        sub_graph.nodes[node][year]['financial life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source='calculation')}
 
     elif 'cost curve' in model.get_param('competition type', node):
         lcc = calc_cost_curve_lcc(model, node, year)
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['life cycle cost'] = {
+        sub_graph.nodes[node][year]['financial life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
 
     else:
@@ -184,7 +184,7 @@ def lcc_calculation(sub_graph, node, year, model):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['life cycle cost'] = {
+        sub_graph.nodes[node][year]['financial life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
     # fLCC -> Price
@@ -253,7 +253,7 @@ def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, min_year: str, ma
 
 def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
-    Calculate the Financial Life Cycle Cost (called 'life cycle cost' in the model & model
+    Calculate the Financial Life Cycle Cost (called 'financial life cycle cost' in the model & model
     description). This LCC does not contain intangible costs.
 
     Parameters
@@ -687,12 +687,12 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
         if service_requested['branch'] in model.fuels:
             fuel_branch = service_requested['branch']
 
-            if 'life cycle cost' in model.graph.nodes[fuel_branch][year]:
-                fuel_name = list(model.graph.nodes[fuel_branch][year]['life cycle cost'].keys())[0]
+            if 'financial life cycle cost' in model.graph.nodes[fuel_branch][year]:
+                fuel_name = list(model.graph.nodes[fuel_branch][year]['financial life cycle cost'].keys())[0]
                 service_requested_lcc = \
-                    model.graph.nodes[fuel_branch][year]['life cycle cost'][fuel_name]['year_value']
+                    model.graph.nodes[fuel_branch][year]['financial life cycle cost'][fuel_name]['year_value']
             else:
-                service_requested_lcc = model.get_parameter_default('life cycle cost')
+                service_requested_lcc = model.get_parameter_default('financial life cycle cost')
             try:
                 fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
@@ -702,10 +702,10 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
             service_requested_lcc *= price_multiplier
         else:
             service_requested_branch = service_requested['branch']
-            if 'life cycle cost' in model.graph.nodes[service_requested_branch][year]:
+            if 'financial life cycle cost' in model.graph.nodes[service_requested_branch][year]:
                 service_name = service_requested_branch.split('.')[-1]
                 service_requested_lcc = \
-                    model.graph.nodes[service_requested_branch][year]['life cycle cost'][
+                    model.graph.nodes[service_requested_branch][year]['financial life cycle cost'][
                         service_name]['year_value']
             else:
                 # Encountering a non-visited node

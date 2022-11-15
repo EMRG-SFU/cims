@@ -250,7 +250,7 @@ def _slim_list(default_list):
     """Define slim list example, change the content in p_list if you want a different list"""
 
     if default_list == 'slim':
-        p_list = ['new_market_share', 'life cycle cost', 'competition type',
+        p_list = ['new_market_share', 'financial life cycle cost', 'competition type',
                   'service requested', 'capital cost_overnight']
 
     # this is for validating if we have defined the default name
@@ -355,8 +355,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     default_list : str, optional
         The name of a default parameter list. Currently two default lists are defined:
         (1) 'all' will log all parameters and
-        (2) 'slim' will return 5 pre-defined parameters ('new_market_share', 'life cycle cost',
-            'competition type', 'service requested', 'capital cost_overnight'
+        (2) 'slim' will return 5 pre-defined parameters ('new_market_share',
+            'financial life cycle cost', 'competition type', 'service requested',
+            'capital cost_overnight'
 
     Returns
     -------

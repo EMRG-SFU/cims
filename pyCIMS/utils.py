@@ -163,7 +163,7 @@ calculation_directory = {
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
     'service cost': lcc_calculation.calc_annual_service_cost,
     'emissions cost': lcc_calculation.calc_emissions_cost,
-    'life cycle cost': lcc_calculation.calc_financial_lcc,
+    'financial life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
     'price': lcc_calculation.calc_price,
 }

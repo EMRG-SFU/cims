@@ -1,8 +1,8 @@
-# Run this from the the /pycims_prototype/ directory
+# Run this from the /pycims_prototype/ directory
 import pyCIMS
 from pprint import pprint
 
-file = 'pycims_prototype/model_descriptions/pyCIMS_model_description.xlsb'
+file = 'pycims_prototype/models/pyCIMS_model.xlsb'
 
 my_validator = pyCIMS.ModelValidator(infile=file,
                                      sheet_map={'model': 'Lists',
