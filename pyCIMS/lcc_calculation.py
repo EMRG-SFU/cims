@@ -734,16 +734,13 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
 def calc_price(model, node, year):
     if node == 'pyCIMS.Canada.British Columbia.Coal Mining.Coal.Raw Product.Mine Ventilation':
         jillian = 1
-    # Should only be reached if price isn't specified in the model description.
-    base_year = str(model.base_year)
-
     service = node.split('.')[-1]
     fLCC = model.get_param('life cycle cost', node, year, context=service)
 
-    p2000, p2000_source = model.get_param('p2000', node, year, return_source=True)
+    base_year = str(model.base_year)
+    p2000, p2000_source = model.get_param('p2000', node, base_year, return_source=True)
     p2000_exogenous = (p2000 is not None) & (p2000_source == 'model')
-
-    cop, cop_source = model.get_param('cop', node, year, return_source=True)
+    cop, cop_source = model.get_param('cop', node, base_year, return_source=True)
     cop_exogenous = (cop is not None) & (cop_source == 'model')
 
     if year == base_year:
@@ -766,36 +763,41 @@ def calc_price(model, node, year):
             additional_cost = 0
 
         # Set parameters
-        # model.set_param_internal(utils.create_value_dict(p2000, source=p2000_source), 'p2000', node)
-        model.graph.nodes[node]['p2000'] = utils.create_value_dict(p2000, source=p2000_source)
-        # model.set_param_internal(utils.create_value_dict(cop, source=cop_source), 'cop', node)
-        model.graph.nodes[node]['cop'] = utils.create_value_dict(cop, source=cop_source)
-        model.set_param_internal(utils.create_value_dict(price_t, source='calculation'),
+        model.set_param_internal(utils.create_value_dict(p2000, param_source=p2000_source), 'p2000', node, year)
+        # model.graph.nodes[node][year]['p2000'] = utils.create_value_dict(p2000, source=p2000_source)
+        model.set_param_internal(utils.create_value_dict(cop, param_source=cop_source), 'cop', node, year)
+        # model.graph.nodes[node][year]['cop'] = utils.create_value_dict(cop, source=cop_source)
+        model.set_param_internal(utils.create_value_dict(price_t, param_source='calculation'),
                                  'price_t', node, year)
-        model.set_param_internal(utils.create_value_dict(additional_cost, source='calculation'),
+        model.set_param_internal(utils.create_value_dict(additional_cost, param_source='calculation'),
                                  'additional cost', node, year)
 
     else:
         # Find Base Year Values
         additional_cost_2000 = model.get_param('additional cost', node, base_year)
-        fLCC_2000 = model.get_param('financial life cycle cost', node, base_year)  # TODO: Determine why this is None
+        # fLCC_2000 = model.get_param('financial life cycle cost', node, base_year)
+        fLCC_2000 = model.get_param('life cycle cost', node, base_year, context=service)  # TODO: Remove once fLCC is actually implemented
 
         # Current Year Values
-        fLCC = model.get_param('financial life cycle cost', node, year)  # TODO: Determine why this is None
+        # fLCC = model.get_param('financial life cycle cost', node, year)
+        fLCC = model.get_param('life cycle cost', node, year, context=service)  # TODO: Remove once fLCC is actually implemented
         additional_cost = model.get_param('additional cost', node, year)
 
         # Calculate Price
         if p2000_exogenous or cop_exogenous:
-            price_t = p2000 * (
-                        fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
+            try:
+                price_t = p2000 * (
+                            fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
+            except:
+                jillian = 1
         else:
             additional_cost = 0
-            model.set_param_internal(utils.create_value_dict(additional_cost, source='calculation'),
+            model.set_param_internal(utils.create_value_dict(additional_cost, param_source='calculation'),
                                      'additional cost', node, year)
             price_t = fLCC
 
         # Set parameters
-        model.set_param_internal(utils.create_value_dict(price_t, source='calculation'),
+        model.set_param_internal(utils.create_value_dict(price_t, param_source='calculation'),
                                  'price_t', node, year)
 
     return price_t

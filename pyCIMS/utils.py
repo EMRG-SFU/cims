@@ -830,7 +830,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             else:
                 value = val[i]['year_value']
                 model.create_param(val=value, param=param, node=node, year=year[i],
-                                   context=context, sub_context=sub_context)
+                                   context=context, sub_context=sub_context, param_source=val[i]['param_source'])
 
 
 def set_param_file(model, filepath):
