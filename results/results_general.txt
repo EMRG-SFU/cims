@@ -1,0 +1,18 @@
+competition type
+price multiplier
+life cycle cost
+complete life cycle cost
+service provided
+service requested
+provided_quantities
+distributed_supply
+requested_quantities
+new_stock
+retrofit_stock
+total_stock
+total_cumul_net_emissions
+total_cumul_avoided_emissions
+total_cumul_negative_emissions
+total_cumul_bio_emissions
+total_cumul_emissions_cost
+tax
