@@ -749,7 +749,7 @@ def calc_price(model, node, year):
             price_t = p2000
             additional_cost = price_t - fLCC
         elif cop_exogenous:
-            cop, cop_source = max([(cop, 'model'), (fLCC / (fLCC + 0.01), 'calculation')],
+            cop, cop_source = min([(cop, 'model'), (fLCC / (fLCC + 0.01), 'calculation')],
                                   key=lambda x: x[0])
             p2000, p2000_source = fLCC / cop, 'calculation'
             price_t = p2000
