@@ -41,14 +41,17 @@ class ModelValidator:
                                      engine=self.excel_engine).replace({np.nan: None})
             appended_data.append(sheet_df)
 
-        model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
+        model_df = pd.concat(appended_data,
+                             ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
                             model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
+        n_cols, y_cols = get_node_cols(model_df,
+                                       self.node_col)  # Find columns, separated year cols from non-year cols
         all_cols = np.concatenate((n_cols, y_cols))
-        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf = model_df.loc[1:,
+              all_cols]  # Create df, drop irrelevant columns & skip first, empty row
         mdf['Parameter'] = mdf['Parameter'].str.lower()
 
         return mdf
@@ -75,8 +78,10 @@ class ModelValidator:
         return index_to_node_index_map
 
     def _create_index_to_branch_map(self):
-        all_services_provided = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
-        node_index_2_branch_map = {int(self.index2node_index_map[i]): b for i, b in all_services_provided.items()}
+        all_services_provided = self.model_df[self.model_df['Parameter'] == 'service provided'][
+            'Branch']
+        node_index_2_branch_map = {int(self.index2node_index_map[i]): b for i, b in
+                                   all_services_provided.items()}
         return {i: node_index_2_branch_map[ni] for i, ni in self.index2node_index_map.items()}
 
     def validate(self, verbose=True, raise_warnings=False):
@@ -147,7 +152,7 @@ class ModelValidator:
             Returns
             -------
             None
-            """ 
+            """
             referenced_unspecified = [(i, v) for i, v in r.iteritems() if v not in p.values]
 
             # referenced_unspecified = set(r).difference(set(p))
@@ -191,7 +196,7 @@ class ModelValidator:
             Returns
             -------
             None
-            """ 
+            """
             specified_unreferenced = [(i, v) for i, v in p.iteritems() if
                                       (v not in r.values) and (v not in roots)]
 
@@ -228,7 +233,7 @@ class ModelValidator:
             Returns
             -------
             None
-            """            
+            """
             node_name_indexes = self.model_df['Node'].dropna()
             mismatched = []
             # Given an index where a service provided line lives find the name of the Node housing it.
@@ -275,7 +280,7 @@ class ModelValidator:
             Returns
             -------
             None
-            """  
+            """
             nodes = self.model_df[self.node_col].dropna()
             nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
             nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
@@ -537,7 +542,8 @@ class ModelValidator:
             -------
             None
             """
-            d = self.model_df[self.model_df['Parameter'] == 'node type']['Context'].str.lower() == 'supply'
+            d = self.model_df[self.model_df['Parameter'] == 'node type'][
+                    'Context'].str.lower() == 'supply'
             supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
 
             no_prod_cost = []
@@ -549,7 +555,8 @@ class ModelValidator:
                     if 'financial life cycle cost' not in list(dat['Parameter']):
                         no_prod_cost.append((node.index[0], n))
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'financial life cycle cost'].iloc[:, 8:19]
+                        prod_cost = dat[dat['Parameter'] == 'financial life cycle cost'].iloc[:,
+                                    8:19]
                         if prod_cost.iloc[0].isnull().any():
                             no_prod_cost.append((node.index[0], n))
 
@@ -560,14 +567,14 @@ class ModelValidator:
             if verbose:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
                 print("{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
-                                                                               more_info if len(
-                                                                                   no_prod_cost) else ""))
+                                                                              more_info if len(
+                                                                                  no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
                 w = "{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
-                                                                             more_info if len(
-                                                                                 no_prod_cost) else "")
+                                                                            more_info if len(
+                                                                                no_prod_cost) else "")
                 warnings.warn(w)
 
         def nodes_no_capital_cost():
@@ -771,7 +778,8 @@ class ModelValidator:
             if len(duplicated) > 0:
                 # Group & list rows (index) where duplicates exist
                 duplicated_with_idx = duplicated.reset_index()
-                duplicated_groups = duplicated_with_idx.groupby(['node_id', 'tech', 'Branch'])['index'].apply(list)
+                duplicated_groups = duplicated_with_idx.groupby(['node_id', 'tech', 'Branch'])[
+                    'index'].apply(list)
                 duplicated_groups = duplicated_groups.reset_index()
 
                 # Create our Warning information
@@ -859,6 +867,7 @@ class ModelValidator:
             -------
             None
             """
+
             def check_for_header(lst):
                 lower_lst = [str(p).lower() for p in lst]
                 if ('technology' in lower_lst) or ('service' in lower_lst):
@@ -925,7 +934,8 @@ class ModelValidator:
                                if self.index2node_index_map[i] in market_node_idxs]
 
             # Find Service Requests for Market Children
-            market_children_requests = [(i, self.index2branch_map[i], b) for i, b in all_service_req.items()
+            market_children_requests = [(i, self.index2branch_map[i], b) for i, b in
+                                        all_service_req.items()
                                         if (b in market_children) and
                                         (self.index2node_index_map[i] not in market_node_idxs)]
 
@@ -971,14 +981,14 @@ class ModelValidator:
             recycled_revenues = data[data['Parameter'] == 'recycled revenues']
 
             # Find instances where recycled revenues is defined for a tech
-            rr_at_tech = recycled_revenues[recycled_revenues['Node_or_Tech']=='Tech']
+            rr_at_tech = recycled_revenues[recycled_revenues['Node_or_Tech'] == 'Tech']
 
             # Create our Warning information
             node_names = [self.index2node_map[i] for i in rr_at_tech.index]
             tech_names = [data['Tech'].ffill().loc[i] for i in rr_at_tech.index]
             techs_recycling_revenues = list(zip(rr_at_tech.index, node_names, tech_names))
 
-            if len(recycled_revenues) > 0:
+            if len(techs_recycling_revenues) > 0:
                 self.warnings['techs_revenue_recycling'] = techs_recycling_revenues
 
             if verbose:
@@ -994,6 +1004,44 @@ class ModelValidator:
                 more_info = "See ModelValidator.warnings['techs_revenue_recycling'] for more info."
                 w = ("{} {}".format(info,
                                     more_info if len(techs_recycling_revenues) else ""))
+                warnings.warn(w)
+
+        def both_cop_p2000_defined():
+            """No node should have both COP & P2000 exogenously defined"""
+            
+            data = self.model_df
+
+            # Find all instances of COP & P2000 in the model description
+            cop_p2000 = data[data['Parameter'].isin(['cop', 'p2000'])]
+
+            # Only keep the ones that aren't None
+            cop_p2000 = cop_p2000.dropna(how='all',
+                                         subset=[c for c in cop_p2000.columns if is_year(c)])
+
+            # Find what node each parameter is referencing
+            node_indexes = pd.Series([self.index2node_index_map[i] for i in cop_p2000.index])
+            node_indexes_with_both = node_indexes[node_indexes.duplicated()]
+
+            # Create our Warning information
+            branches = [self.index2branch_map[i] for i in node_indexes_with_both]
+            nodes_with_cop_and_p2000 = list(zip(node_indexes_with_both, branches))
+
+            if len(nodes_with_cop_and_p2000) > 0:
+                self.warnings['nodes_with_cop_and_p2000'] = nodes_with_cop_and_p2000
+
+            if verbose:
+                info = "{} node(s) have both COP & P2000 exogenously defined.".format(
+                    len(nodes_with_cop_and_p2000))
+                more_info = "See ModelValidator.warnings['nodes_with_cop_and_p2000'] for more info."
+                print("{} {}".format(info,
+                                     more_info if len(nodes_with_cop_and_p2000) else ""))
+
+            if raise_warnings:
+                info = "{} node(s) have both COP & P2000 exogenously defined".format(
+                    len(nodes_with_cop_and_p2000))
+                more_info = "See ModelValidator.warnings['nodes_with_cop_and_p2000'] for more info."
+                w = ("{} {}".format(info,
+                                    more_info if len(nodes_with_cop_and_p2000) else ""))
                 warnings.warn(w)
 
         providers = self.model_df[self.model_df['Parameter'] == 'service provided']['Branch']
@@ -1018,3 +1066,4 @@ class ModelValidator:
         tech_compete_nodes_no_techs()
         market_child_requested()
         revenue_recycling_at_techs()
+        both_cop_p2000_defined()
