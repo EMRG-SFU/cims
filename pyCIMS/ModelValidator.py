@@ -529,10 +529,10 @@ class ModelValidator:
                                                                         zero_output_nodes) else "")
                 warnings.warn(w)
 
-        def fuel_nodes_no_lcc():
+        def fuel_nodes_no_lcc_or_price():
             """
-            Identify fuel nodes that do not have an 'financial life cycle cost' row specified in the
-            base year.
+            Identify fuel nodes that do not have neither a 'financial life cycle cost' or 'price'
+            row specified in the base year.
             
             Parameters
             ----------
@@ -552,29 +552,49 @@ class ModelValidator:
                 dat = self.model_df.loc[node.index, :]
                 s = dat[dat['Parameter'] == 'competition type']['Context'].str.lower()
                 if 'fuel - fixed price' in s.to_string():
-                    if 'financial life cycle cost' not in list(dat['Parameter']):
-                        no_prod_cost.append((node.index[0], n))
+                    # Check whether fLCC is specified
+                    if 'financial life cycle cost' not in dat['Parameter'].values:
+                        fLCC_specified = False
                     else:
-                        prod_cost = dat[dat['Parameter'] == 'financial life cycle cost'].iloc[:,
-                                    8:19]
-                        if prod_cost.iloc[0].isnull().any():
-                            no_prod_cost.append((node.index[0], n))
+                        year_columns = [c for c in dat.columns if is_year(c)]
+                        base_year = year_columns[0]
+                        fLCC = \
+                            dat[dat['Parameter'] == 'financial life cycle cost'][base_year].values[
+                                0]
+                        if fLCC is None:
+                            fLCC_specified = False
+                        else:
+                            fLCC_specified = True
+
+                    # Check whether price is specified
+                    if 'price' not in dat['Parameter'].values:
+                        price_specified = False
+                    else:
+                        year_columns = [c for c in dat.columns if is_year(c)]
+                        base_year = year_columns[0]
+                        price = dat[dat['Parameter'] == 'price'][base_year].values[0]
+                        if price is None:
+                            price_specified = False
+                        else:
+                            price_specified = True
+
+                    # Check that one of fLCC or price is specified
+                    if not (fLCC_specified or price_specified):
+                        no_prod_cost.append((node.index[0], n))
 
             if len(no_prod_cost) > 0:
-                self.warnings['fuels_without_lcc'] = no_prod_cost
+                self.warnings['fuels_without_lcc_or_price'] = no_prod_cost
 
             # Print Problems
             if verbose:
-                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                print("{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
-                                                                              more_info if len(
-                                                                                  no_prod_cost) else ""))
+                more_info = "See ModelValidator.warnings['fuels_without_lcc_or_price'] for more info"
+                print("{} fuel nodes don't have a life cycle cost or price. {}".format(
+                    len(no_prod_cost), more_info if len(no_prod_cost) else ""))
             # Raise Warnings
             if raise_warnings:
-                more_info = "See ModelValidator.warnings['fuels_without_lcc'] for more info"
-                w = "{} fuel nodes don't have a life cycle cost. {}".format(len(no_prod_cost),
-                                                                            more_info if len(
-                                                                                no_prod_cost) else "")
+                more_info = "See ModelValidator.warnings['fuels_without_lcc_or_price'] for more info"
+                w = "{} fuel nodes don't have a life cycle cost or price. {}".format(
+                    len(no_prod_cost), more_info if len(no_prod_cost) else "")
                 warnings.warn(w)
 
         def nodes_no_capital_cost():
@@ -1008,7 +1028,7 @@ class ModelValidator:
 
         def both_cop_p2000_defined():
             """No node should have both COP & P2000 exogenously defined"""
-            
+
             data = self.model_df
 
             # Find all instances of COP & P2000 in the model description
@@ -1057,7 +1077,7 @@ class ModelValidator:
         nodes_no_requested_service()
         # discrepencies_in_model_and_tree()
         nodes_with_zero_output()
-        fuel_nodes_no_lcc()
+        fuel_nodes_no_lcc_or_price()
         nodes_no_capital_cost()
         # nodes_bad_total_market_share()
         techs_no_base_market_share()
