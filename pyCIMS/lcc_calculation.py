@@ -49,6 +49,13 @@ def lcc_calculation(sub_graph, node, year, model):
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
             calc_cumul_emissions_cost_rate(model, node, year)
+
+            # Calculate Price
+            price, price_source = model.get_param('price', node, year, return_source=True,
+                                                  do_calc=True)
+            val_dict = {'year_value': price, 'param_source': price_source}
+            model.set_param_internal(val_dict, 'price', node, year)
+
             return
 
     # Check if the node is a tech compete node:
@@ -56,7 +63,7 @@ def lcc_calculation(sub_graph, node, year, model):
         total_lcc_v = 0.0
         v = model.get_param('heterogeneity', node, year)
 
-        # Get all of the technologies in the node
+        # Get all the technologies in the node
         node_techs = sub_graph.nodes[node][year]['technologies'].keys()
 
         # For every tech in the node, retrieve or compute required economic values
@@ -79,6 +86,7 @@ def lcc_calculation(sub_graph, node, year, model):
 
             # LCC (financial)
             # ************
+            # TODO: Change to Price, knowing that internally the fLCC will be calculated.
             lcc, lcc_source = model.get_param('financial life cycle cost', node, year, tech=tech,
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
@@ -186,6 +194,11 @@ def lcc_calculation(sub_graph, node, year, model):
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['financial life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
+
+    # fLCC -> Price
+    price, price_source = model.get_param('price', node, year, return_source=True, do_calc=True)
+    val_dict = {'year_value': price, 'param_source': price_source}
+    model.set_param_internal(val_dict, 'price', node, year)
 
 
 def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
@@ -681,35 +694,36 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     def do_sc_calculation(service_requested):
         service_requested_value = service_requested['year_value']
         service_cost = 0
+
         if service_requested['branch'] in model.fuels:
             fuel_branch = service_requested['branch']
+            fuel_name = fuel_branch.split('.')[-1]
 
-            if 'financial life cycle cost' in model.graph.nodes[fuel_branch][year]:
-                fuel_name = list(model.graph.nodes[fuel_branch][year]['financial life cycle cost'].keys())[0]
-                service_requested_lcc = \
-                    model.graph.nodes[fuel_branch][year]['financial life cycle cost'][fuel_name]['year_value']
-            else:
-                service_requested_lcc = model.get_parameter_default('financial life cycle cost')
+            if node in ['pyCIMS.Canada.British Columbia.Biodiesel.Steam.Cogenerators',
+                        'pyCIMS.Canada.British Columbia.Biodiesel.Steam.Boilers']:
+                jillian = 1
+            fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
+
+            # Price Multiplier
             try:
                 fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
                     'year_value']
             except KeyError:
                 price_multiplier = 1
-            service_requested_lcc *= price_multiplier
+            try:
+                service_requested_price = fuel_price * price_multiplier
+            except:
+                jillian = 1
         else:
             service_requested_branch = service_requested['branch']
-            if 'financial life cycle cost' in model.graph.nodes[service_requested_branch][year]:
-                service_name = service_requested_branch.split('.')[-1]
-                service_requested_lcc = \
-                    model.graph.nodes[service_requested_branch][year]['financial life cycle cost'][
-                        service_name]['year_value']
+            if 'price' in model.graph.nodes[service_requested_branch][year]:
+                service_requested_price = model.get_param('price', service_requested_branch, year)
             else:
                 # Encountering a non-visited node
-                service_requested_lcc = 1
+                service_requested_price = 1
 
-        service_cost += service_requested_lcc * service_requested_value
-
+        service_cost += service_requested_price * service_requested_value
         return service_cost
 
     total_service_cost = 0
@@ -728,3 +742,100 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     return total_service_cost
 
 
+def calc_price(model, node, year, tech=None):
+    """
+    Calculates the Price of a node or technology.
+
+    When a COP or P2000 is exogenously defined for a node, price is calculated based off of the
+    node's fLCC, COP, P2000, and Additional costs. Otherwise, the node's price will be its fLCC.
+
+    A technology's price will always be its fLCC.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to retrieve data from & save the calculated price to.
+    node : str
+        The node (in branch form) whose price is being calculated.
+    year : str
+        The year for which we are calculating price.
+    tech : str, optional
+        If specified, the technology whose price is being retrieved.
+
+    Returns
+    -------
+    None
+
+    This function has the side effect of setting the node/year's "price" and "additional cost" (if
+    not exogenously defined) parameters in the model. If calculating price for a base year,
+    P2000, and COP are also set (if they weren't exogenously defined).
+    """
+    service = node.split('.')[-1]
+    fLCC = model.get_param('financial life cycle cost', node, year, tech=tech, context=service)
+
+    if tech is not None:
+        price = fLCC
+        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
+                                 'price', node, year, tech=tech)
+        return price
+
+    base_year = str(model.base_year)
+    p2000, p2000_source = model.get_param('p2000', node, base_year, return_source=True)
+    p2000_exogenous = (p2000 is not None) & (p2000_source == 'model')
+    cop, cop_source = model.get_param('cop', node, base_year, return_source=True)
+    cop_exogenous = (cop is not None) & (cop_source == 'model')
+
+    if year == base_year:
+        if p2000_exogenous:
+            p2000, p2000_source = max([(p2000, 'model'), (fLCC + 0.01, 'calculation')],
+                                      key=lambda x: x[0])
+            cop, cop_source = fLCC / p2000, 'calculation'
+            price = p2000
+            additional_cost = price - fLCC
+        elif cop_exogenous:
+            cop, cop_source = min([(cop, 'model'), (fLCC / (fLCC + 0.01), 'calculation')],
+                                  key=lambda x: x[0])
+            p2000, p2000_source = fLCC / cop, 'calculation'
+            price = p2000
+            additional_cost = price - fLCC
+        else:
+            p2000, p2000_source = 0, 'calculation'
+            cop, cop_source = 0, 'calculation'
+            price = fLCC
+            additional_cost = 0
+
+        # Set parameters
+        model.set_param_internal(utils.create_value_dict(p2000, param_source=p2000_source), 'p2000',
+                                 node, year)
+        model.set_param_internal(utils.create_value_dict(cop, param_source=cop_source), 'cop', node,
+                                 year)
+        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
+                                 'price', node, year)
+        model.set_param_internal(
+            utils.create_value_dict(additional_cost, param_source='calculation'),
+            'additional cost', node, year)
+
+    else:
+        # Find Base Year Values
+        additional_cost_2000 = model.get_param('additional cost', node, base_year)
+        fLCC_2000 = model.get_param('financial life cycle cost', node, base_year, context=service)
+
+        # Current Year Values
+        fLCC = model.get_param('financial life cycle cost', node, year, context=service)
+        additional_cost = model.get_param('additional cost', node, year)
+
+        # Calculate Price
+        if p2000_exogenous or cop_exogenous:
+            price = p2000 * (
+                    fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
+        else:
+            additional_cost = 0
+            model.set_param_internal(
+                utils.create_value_dict(additional_cost, param_source='calculation'),
+                'additional cost', node, year)
+            price = fLCC
+
+        # Set parameters
+        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
+                                 'price', node, year)
+    return price
