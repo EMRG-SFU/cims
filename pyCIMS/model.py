@@ -270,7 +270,8 @@ class Model:
                 # Find the previous prices
                 prev_prices = self.prices
                 # Go get all the new prices
-                new_prices = {node: self.get_param('financial life cycle cost', node, year, context=node.split('.')[-1]) for node in self.graph.nodes()}
+                new_prices = {node: self.get_param('price', node, year, do_calc=True) for node in self.graph.nodes()}
+
                 # Check for an equilibrium in prices
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
