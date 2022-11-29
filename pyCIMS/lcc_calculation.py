@@ -691,40 +691,6 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     float : The service cost, defined as SC = SUM_over_services(fLCC * request_amount)
     """
 
-    def do_sc_calculation_old(service_requested):
-        service_requested_value = service_requested['year_value']
-        service_cost = 0
-        if service_requested['branch'] in model.fuels:
-            fuel_branch = service_requested['branch']
-
-            if 'financial life cycle cost' in model.graph.nodes[fuel_branch][year]:
-                fuel_name = list(model.graph.nodes[fuel_branch][year]['financial life cycle cost'].keys())[0]
-                service_requested_lcc = \
-                    model.graph.nodes[fuel_branch][year]['financial life cycle cost'][fuel_name]['year_value']
-            else:
-                service_requested_lcc = model.get_parameter_default('financial life cycle cost')
-            try:
-                fuel_name = fuel_branch.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
-                    'year_value']
-            except KeyError:
-                price_multiplier = 1
-            service_requested_lcc *= price_multiplier
-        else:
-            service_requested_branch = service_requested['branch']
-            if 'financial life cycle cost' in model.graph.nodes[service_requested_branch][year]:
-                service_name = service_requested_branch.split('.')[-1]
-                service_requested_lcc = \
-                    model.graph.nodes[service_requested_branch][year]['financial life cycle cost'][
-                        service_name]['year_value']
-            else:
-                # Encountering a non-visited node
-                service_requested_lcc = 1
-
-        service_cost += service_requested_lcc * service_requested_value
-
-        return service_cost
-
     def do_sc_calculation(service_requested):
         service_requested_value = service_requested['year_value']
         service_cost = 0
