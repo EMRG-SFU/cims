@@ -737,10 +737,7 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     if 'service requested' in data:
         service_req = data['service requested']
         for req in service_req.values():
-            old = round(do_sc_calculation_old(req), 6)
-            new = round(do_sc_calculation(req), 6)
-            assert(old == new)
-            total_service_cost += new
+            total_service_cost += do_sc_calculation(req)
 
     return total_service_cost
 
