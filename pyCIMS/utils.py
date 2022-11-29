@@ -165,6 +165,7 @@ calculation_directory = {
     'emissions cost': lcc_calculation.calc_emissions_cost,
     'financial life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
+    'price': lcc_calculation.calc_price,
 }
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
@@ -367,14 +368,18 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # ******************************
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     if param_source is None:
-        prev_year = str(int(year) - model.step)
-        if int(prev_year) >= model.base_year:
-            val = model.get_param(param, node,
-                                  year=prev_year,
-                                  context=context,
-                                  sub_context=sub_context,
-                                  tech=tech)
-            param_source = 'previous_year'
+        if year is not None:
+            prev_year = str(int(year) - model.step)
+            if int(prev_year) >= model.base_year:
+                val = model.get_param(param, node,
+                                      year=prev_year,
+                                      context=context,
+                                      sub_context=sub_context,
+                                      tech=tech)
+                param_source = 'previous_year'
+            else:
+                val = None
+                param_source = None
         else:
             val = None
             param_source = None
@@ -825,7 +830,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             else:
                 value = val[i]['year_value']
                 model.create_param(val=value, param=param, node=node, year=year[i],
-                                   context=context, sub_context=sub_context)
+                                   context=context, sub_context=sub_context, param_source=val[i]['param_source'])
 
 
 def set_param_file(model, filepath):
