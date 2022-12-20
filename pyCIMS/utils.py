@@ -166,6 +166,7 @@ calculation_directory = {
     'financial life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
     'price': lcc_calculation.calc_price,
+    'price_subsidy': lcc_calculation.calc_price_subsidy
 }
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
