@@ -235,13 +235,13 @@ class Model:
                                                year,
                                                node_types=demand_nodes)
 
-                if int(year) != self.base_year:
-                    # Calculate Service Costs on Demand Side
-                    graph_utils.bottom_up_traversal(self.graph,
-                                                    lcc_calculation.lcc_calculation,
-                                                    year,
-                                                    self,
-                                                    node_types=demand_nodes)
+
+                # Calculate Service Costs on Demand Side
+                graph_utils.bottom_up_traversal(self.graph,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self,
+                                                node_types=demand_nodes)
 
                 # Supply
                 # ******************
@@ -257,13 +257,12 @@ class Model:
                                                year,
                                                node_types=supply_nodes)
 
-                if int(year) != self.base_year:
-                    # Calculate Service Costs on Supply Side
-                    graph_utils.bottom_up_traversal(self.graph,
-                                                    lcc_calculation.lcc_calculation,
-                                                    year,
-                                                    self,
-                                                    node_types=supply_nodes)
+                # Calculate Service Costs on Supply Side
+                graph_utils.bottom_up_traversal(self.graph,
+                                                lcc_calculation.lcc_calculation,
+                                                year,
+                                                self,
+                                                node_types=supply_nodes)
 
                 # Check for an Equilibrium -- Across all nodes, not just fuels
                 # ************************
