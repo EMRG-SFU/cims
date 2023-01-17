@@ -3,6 +3,7 @@ This module contains the functions for LCC Calculations for the pyCIMS model.
 """
 import warnings
 import math
+
 from .emissions import calc_emissions_cost, calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
@@ -741,6 +742,49 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
     return total_service_cost
 
 
+def calc_price_subsidy(model: 'pyCIMS.Model', node: str, year: str, tech=None):
+    """
+    Calculates the price_subsidy for a node in a given year.
+    Price subsidy is the sum of benchmark * tax across all ghg/emission type combinations.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model of interest.
+    node : str
+        The node (in branch form) whose price subsidy is being calculated.
+    year : str
+        The year for which price subsidy is being calculated
+    tech : str, optional
+        This parameter only exists to enable this function to work with the general get_param()
+        function. If tech is provided, an error will be raised.
+
+    Returns
+    -------
+    float :
+        The price subsidy for a particular node in a given year.
+    """
+    if tech is not None:
+        raise ValueError('Cannot calculate price subsidy for a technology.')
+
+    price_subsidy = 0
+    benchmark = model.get_param('benchmark', node, year, dict_expected=True)
+
+    if type(benchmark) is dict:
+        tax = model.get_param('tax', node, year, dict_expected=True)
+        for ghg in benchmark:
+            for emission_type in benchmark[ghg]:
+                try:
+                    tax_value = tax[ghg][emission_type]['year_value']
+                except KeyError:
+                    tax_value = 0
+
+                benchmark_value = benchmark[ghg][emission_type]['year_value']
+                price_subsidy += benchmark_value * tax_value
+
+    return price_subsidy
+
+
 def calc_price(model, node, year, tech=None):
     """
     Calculates the Price of a node or technology.
@@ -808,8 +852,6 @@ def calc_price(model, node, year, tech=None):
                                  node, year)
         model.set_param_internal(utils.create_value_dict(cop, param_source=cop_source), 'cop', node,
                                  year)
-        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
-                                 'price', node, year)
         model.set_param_internal(
             utils.create_value_dict(additional_cost, param_source='calculation'),
             'additional cost', node, year)
@@ -834,9 +876,15 @@ def calc_price(model, node, year, tech=None):
                 'additional cost', node, year)
             price = fLCC
 
-        # Set parameters
-        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
-                                 'price', node, year)
+    # Set parameters
+    price_subsidy = model.get_param('price_subsidy', node, year, do_calc=True)
+    model.set_param_internal(utils.create_value_dict(price_subsidy, param_source='calculation'),
+                             'price_subsidy', node, year)
+
+    price = price - price_subsidy
+    model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
+                             'price', node, year)
+
     return price
 
 
