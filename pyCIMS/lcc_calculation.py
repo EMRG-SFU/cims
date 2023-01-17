@@ -810,7 +810,7 @@ def calc_price(model, node, year, tech=None):
     -------
     None
 
-    This function has the side effect of setting the node/year's "price" and "additional cost" (if
+    This function has the side effect of setting the node/year's "price" and "non-energy cost" (if
     not exogenously defined) parameters in the model. If calculating price for a base year,
     P2000, and COP are also set (if they weren't exogenously defined).
     """
@@ -835,18 +835,18 @@ def calc_price(model, node, year, tech=None):
                                       key=lambda x: x[0])
             cop, cop_source = fLCC / p2000, 'calculation'
             price = p2000
-            additional_cost = price - fLCC
+            non_energy_cost = price - fLCC
         elif cop_exogenous:
             cop, cop_source = min([(cop, 'model'), (fLCC / (fLCC + 0.01), 'calculation')],
                                   key=lambda x: x[0])
             p2000, p2000_source = fLCC / cop, 'calculation'
             price = p2000
-            additional_cost = price - fLCC
+            non_energy_cost = price - fLCC
         else:
             p2000, p2000_source = 0, 'calculation'
             cop, cop_source = 0, 'calculation'
             price = fLCC
-            additional_cost = 0
+            non_energy_cost = 0
 
         # Set parameters
         model.set_param_internal(utils.create_value_dict(p2000, param_source=p2000_source), 'p2000',
@@ -854,27 +854,27 @@ def calc_price(model, node, year, tech=None):
         model.set_param_internal(utils.create_value_dict(cop, param_source=cop_source), 'cop', node,
                                  year)
         model.set_param_internal(
-            utils.create_value_dict(additional_cost, param_source='calculation'),
-            'additional cost', node, year)
+            utils.create_value_dict(non_energy_cost, param_source='calculation'),
+            'non-energy cost', node, year)
 
     else:
         # Find Base Year Values
-        additional_cost_2000 = model.get_param('additional cost', node, base_year)
+        non_energy_cost_2000 = model.get_param('non-energy cost', node, base_year)
         fLCC_2000 = model.get_param('financial life cycle cost', node, base_year, context=service)
 
         # Current Year Values
         fLCC = model.get_param('financial life cycle cost', node, year, context=service)
-        additional_cost = model.get_param('additional cost', node, year)
+        non_energy_cost = model.get_param('non-energy cost', node, year)
 
         # Calculate Price
         if p2000_exogenous or cop_exogenous:
             price = p2000 * (
-                    fLCC / fLCC_2000 * cop + additional_cost / additional_cost_2000 * (1 - cop))
+                    fLCC / fLCC_2000 * cop + non_energy_cost / non_energy_cost_2000 * (1 - cop))
         else:
-            additional_cost = 0
+            non_energy_cost = 0
             model.set_param_internal(
-                utils.create_value_dict(additional_cost, param_source='calculation'),
-                'additional cost', node, year)
+                utils.create_value_dict(non_energy_cost, param_source='calculation'),
+                'non-energy cost', node, year)
             price = fLCC
 
         # Set parameters
