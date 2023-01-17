@@ -839,6 +839,7 @@ def calc_price(model, node, year, tech=None):
         elif cop_exogenous:
             cop, cop_source = min([(cop, 'model'), (fLCC / (fLCC + 0.01), 'calculation')],
                                   key=lambda x: x[0])
+            cop = max(0.01, cop)
             p2000, p2000_source = fLCC / cop, 'calculation'
             price = p2000
             non_energy_cost = price - fLCC
