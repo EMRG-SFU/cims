@@ -80,9 +80,48 @@ class Model:
         self.show_run_warnings = True
 
         self.model_description_file = model_reader.infile
+        self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
                      'context', 'sub_context', 'old_value', 'new_value'])
+
+        self.status = 'instantiated'
+
+    def update(self, scenario_model_reader):
+        """
+        Update a model based off another ModelReader. Intended for use with a
+        reference + scenario model
+        """
+        if self.status.lower() in ['run initiated', 'run completed']:
+            raise ValueError("You've attempted to update a model which has already been run. "
+                             "To prevent inconsistencies, this update has not been done.")
+
+        # Make a copy, so we don't alter self
+        model = copy.deepcopy(self)
+
+        # Update the model's node_df & tech_dfs
+        # TODO: Update self.node_dfs & self.tech_dfs
+        scenario_node_dfs, scenario_tech_dfs = scenario_model_reader.get_model_description()
+
+        # Update the nodes & edges in the graph
+        graph = graph_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = graph_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
+        model.graph = graph
+
+        # Update the Model's metadata
+        model.fuels, model.equilibrium_fuels = graph_utils.get_fuels(graph)
+        model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
+                                                                                        str(self.base_year))
+        model.dcc_classes = model._dcc_classes()
+
+        # Perform some initialization
+        model._inherit_parameter_values()  # TODO: Check this works
+        model._initialize_model()  # TODO: Check this works
+
+        model.show_run_warnings = True
+        model.scenario_model_description_file = scenario_model_reader.infile
+
+        return self
 
     def build_graph(self):
         """
@@ -98,11 +137,12 @@ class Model:
         graph = nx.DiGraph()
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
-        graph = graph_utils.make_nodes(graph, node_dfs, tech_dfs)
-        graph = graph_utils.make_edges(graph, node_dfs, tech_dfs)
+        graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
         self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph, str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
+                                                                                     str(self.base_year))
         self.graph = graph
 
     def _initialize_model(self):
@@ -152,7 +192,7 @@ class Model:
                 for tech in nodes[node][base_year]['technologies']:
                     try:
                         dccc = self.graph.nodes[node][base_year]['technologies'][tech]['dcc_class'][
-                        'context']
+                            'context']
                     except:
                         dccc = None
                     if dccc is not None:
@@ -196,7 +236,7 @@ class Model:
 
         """
         self.show_run_warnings = show_warnings
-
+        self.status = 'Run initiated'
         # Make a subgraph based on the type of node
         demand_nodes = ['demand', 'standard']
         supply_nodes = ['supply', 'standard']
@@ -270,7 +310,8 @@ class Model:
                 # Find the previous prices
                 prev_prices = self.prices
                 # Go get all the new prices
-                new_prices = {node: self.get_param('price', node, year, do_calc=True) for node in self.graph.nodes()}
+                new_prices = {node: self.get_param('price', node, year, do_calc=True) for node in
+                              self.graph.nodes()}
 
                 # Check for an equilibrium in prices
                 equilibrium = min_iterations <= iteration and \
@@ -321,6 +362,8 @@ class Model:
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
+        self.status = 'Run completed'
+
     def check_equilibrium(self, prev, new, iteration, threshold, print_eq):
         """
         Return False unless an equilibrium has been reached.
@@ -368,7 +411,8 @@ class Model:
                 equil_check += 1
                 if iteration > 1 and print_eq == True:
                     rel_diff_formatted = "{:.1f}".format(rel_diff * 100)
-                    print(f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
+                    print(
+                        f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
 
         if equil_check > 0:
             return False
@@ -476,13 +520,15 @@ class Model:
             if len(parents) > 0:
                 parent = parents[0]
                 if 'price multiplier' in graph.nodes[parent][year]:
-                    price_multipliers = copy.deepcopy(self.graph.nodes[parent][year]['price multiplier'])
+                    price_multipliers = copy.deepcopy(
+                        self.graph.nodes[parent][year]['price multiplier'])
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'price multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('price multiplier', node, year, dict_expected=True)
+                price_multipliers = self.get_param('price multiplier', node, year,
+                                                   dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -543,10 +589,12 @@ class Model:
                         last_year = str(int(year) - step)
                         last_year_value = self.get_param('financial life cycle cost',
                                                          node, last_year)[fuel_name]['year_value']
-                        graph.nodes[node][year]['financial life cycle cost'][fuel_name]['year_value'] = last_year_value
+                        graph.nodes[node][year]['financial life cycle cost'][fuel_name][
+                            'year_value'] = last_year_value
 
                     else:
-                        graph.nodes[node][year]['financial life cycle cost'][fuel_name]['to_estimate'] = False
+                        graph.nodes[node][year]['financial life cycle cost'][fuel_name][
+                            'to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
                     if int(year) == self.base_year:
                         lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
@@ -557,7 +605,8 @@ class Model:
                     else:
                         last_year = str(int(year) - self.step)
                         service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('financial life cycle cost', node, last_year)
+                        last_year_value = self.get_param('financial life cycle cost', node,
+                                                         last_year)
                         graph.nodes[node][year]['financial life cycle cost'] = {
                             service_name: utils.create_value_dict(last_year_value,
                                                                   param_source='cost curve function')}
@@ -934,7 +983,8 @@ class Model:
             structural_children = find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
-                total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child, year)
+                total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child,
+                                                             year)
         else:
             pq = self.get_param('provided_quantities', node, year).get_total_quantity()
             emissions_cost = self.get_param('cumul_emissions_cost_rate', node, year)
@@ -948,7 +998,8 @@ class Model:
                     tech_total_emissions_cost = ec * ms * pq
                     tech_total_emissions_cost.num_units = ms * pq
                     value_dict = create_value_dict(tech_total_emissions_cost)
-                    graph.nodes[node][year]['technologies'][tech]['total_cumul_emissions_cost'] = value_dict
+                    graph.nodes[node][year]['technologies'][tech][
+                        'total_cumul_emissions_cost'] = value_dict
 
         value_dict = create_value_dict(total_cumul_emissions_cost)
         graph.nodes[node][year]['total_cumul_emissions_cost'] = value_dict
@@ -956,7 +1007,8 @@ class Model:
     def _aggregate_direct_emissions_cost(self, graph, node, year, **kwargs):
 
         emissions_cost_params = [
-            {'rate_param_name': 'emissions_cost_rate', 'total_param_name': 'total_direct_emissions_cost'}
+            {'rate_param_name': 'emissions_cost_rate',
+             'total_param_name': 'total_direct_emissions_cost'}
         ]
         pq = self.get_param('provided_quantities', node, year).get_total_quantity()
         for e in emissions_cost_params:
@@ -1021,10 +1073,14 @@ class Model:
     def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
         # Direct Emissions
         emissions = [
-            {'rate_param_name': 'net_emissions_rate', 'total_param_name': 'total_direct_net_emissions'},
-            {'rate_param_name': 'avoided_emissions_rate', 'total_param_name': 'total_direct_avoided_emissions'},
-            {'rate_param_name': 'negative_emissions_rate', 'total_param_name': 'total_direct_negative_emissions'},
-            {'rate_param_name': 'bio_emissions_rate', 'total_param_name': 'total_direct_bio_emissions'}
+            {'rate_param_name': 'net_emissions_rate',
+             'total_param_name': 'total_direct_net_emissions'},
+            {'rate_param_name': 'avoided_emissions_rate',
+             'total_param_name': 'total_direct_avoided_emissions'},
+            {'rate_param_name': 'negative_emissions_rate',
+             'total_param_name': 'total_direct_negative_emissions'},
+            {'rate_param_name': 'bio_emissions_rate',
+             'total_param_name': 'total_direct_bio_emissions'}
         ]
         pq = self.get_param('provided_quantities', node, year).get_total_quantity()
         for e in emissions:
@@ -1153,7 +1209,8 @@ class Model:
 
         return param_val
 
-    def set_param_internal(self, val, param, node, year=None, tech=None, context=None, sub_context=None):
+    def set_param_internal(self, val, param, node, year=None, tech=None, context=None,
+                           sub_context=None):
         """
         Sets a parameter's value, given a specific context (node, year, tech, context, sub_context).
         This is used from within the model.run function and is not intended to make changes to the model
@@ -1192,7 +1249,8 @@ class Model:
 
         return param_val
 
-    def set_param_wildcard(self, val, param, node_regex, year, tech=None, context=None, sub_context=None,
+    def set_param_wildcard(self, val, param, node_regex, year, tech=None, context=None,
+                           sub_context=None,
                            save=True):
         """
         Sets a parameter's value, for all contexts (node, year, tech, context, sub_context)
@@ -1242,7 +1300,8 @@ class Model:
 
         return param_val
 
-    def set_param_search(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
+    def set_param_search(self, val, param, node, year=None, tech=None, context=None,
+                         sub_context=None,
                          val_operator='==', create_missing=False, row_index=None):
         """
         Sets parameter values for all contexts (node, year, tech, context, sub_context),

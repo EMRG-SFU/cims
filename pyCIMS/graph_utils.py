@@ -352,6 +352,8 @@ def add_node_data(graph, current_node, node_dfs):
     typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
     if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
         graph.nodes[current_node]['type'] = typ[0]
+    elif 'type' in graph.nodes[current_node].keys():
+        pass
     else:
         # If type isn't in the node's df or is not demand/supply, try to find it in the ancestors
         val = _find_value_in_ancestors(graph, current_node, 'type')
@@ -367,6 +369,9 @@ def add_node_data(graph, current_node, node_dfs):
         graph.nodes[current_node]['competition type'] = comp_type.lower()
     elif len(set(comp_list)) > 1:
         print("TOO MANY COMPETITION TYPES")
+    elif 'competition type' in graph.nodes[current_node]:
+        comp_type = graph.nodes[current_node]['competition type']
+
     # Get rid of competition type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
 
@@ -397,7 +402,10 @@ def add_node_data(graph, current_node, node_dfs):
     non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
-        year_dict = {}
+        if year in graph.nodes[current_node]:
+            year_dict = graph.nodes[current_node][year]
+        else:
+            year_dict = {}
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
@@ -589,7 +597,7 @@ def add_edges(graph, node, df):
     return graph
 
 
-def make_edges(graph, node_dfs, tech_dfs):
+def make_or_update_edges(graph, node_dfs, tech_dfs):
     """
     Add edges to `graph` using information in `node_dfs` and `tech_dfs`.
 
@@ -609,9 +617,9 @@ def make_edges(graph, node_dfs, tech_dfs):
     return graph
 
 
-def make_nodes(graph, node_dfs, tech_dfs):
+def make_or_update_nodes(graph, node_dfs, tech_dfs):
     """
-    Add nodes to `graph` using `node_dfs` and `tech_dfs`.
+    Add nodes to `graph` using `node_dfs` and `tech_dfs`. If node already exists, update it.
 
     Returns
     -------
@@ -627,11 +635,14 @@ def make_nodes(graph, node_dfs, tech_dfs):
     node_dfs_to_add = list(node_dfs.keys())
     while len(node_dfs_to_add) > 0:
         node_data = node_dfs_to_add.pop(0)
-        try:
+        if node_data in graph.nodes:
             new_graph = add_node_data(graph, node_data, node_dfs)
+        else:
+            try:
+                new_graph = add_node_data(graph, node_data, node_dfs)
 
-        except KeyError:
-            node_dfs_to_add.append(node_data)
+            except KeyError:
+                node_dfs_to_add.append(node_data)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:
