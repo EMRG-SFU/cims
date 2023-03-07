@@ -222,7 +222,7 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     -------
     float : LCC (financial) calculated from the node's cost curve function.
     """
-    comp_type = model.get_param('competition type', node).str.lower()
+    comp_type = model.get_param('competition type', node).lower()
     if comp_type == 'fuel - cost curve annual':
         min_year = year
         max_year = year
@@ -707,6 +707,13 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
             fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
 
             # Price Multiplier
+            if 'financial life cycle cost' in model.graph.nodes[fuel_branch][year]:
+                fuel_name = list(model.graph.nodes[fuel_branch][year]['financial life cycle cost'].keys())[0]
+                service_requested_lcc = \
+                    model.graph.nodes[fuel_branch][year]['financial life cycle cost'][fuel_name]['year_value']
+            else:
+                service_requested_lcc = model.get_parameter_default('financial life cycle cost')
+
             try:
                 fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
