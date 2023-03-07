@@ -485,7 +485,10 @@ def add_tech_data(graph, node, tech_dfs, tech):
     non_year_data = [t_df[c] for c in non_years]
     for year in years:
         current_year_data = non_year_data + [t_df[year]]
-        year_dict = {}
+        try:
+            year_dict = graph.nodes[node][year]['technologies'][tech]
+        except KeyError:
+            year_dict = {}
 
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
             dct = {'context': context,
