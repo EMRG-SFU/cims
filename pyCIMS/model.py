@@ -102,19 +102,19 @@ class Model:
 
         # Update the model's node_df & tech_dfs
         # TODO: Update self.node_dfs & self.tech_dfs
-        self.scenario_node_dfs, self.scenario_tech_dfs = scenario_model_reader.get_model_description()
+        model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
-        graph = graph_utils.make_or_update_nodes(model.graph, self.scenario_node_dfs,
-                                                 self.scenario_tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, self.scenario_node_dfs,
-                                                 self.scenario_tech_dfs)
+        graph = graph_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
+                                                 model.scenario_tech_dfs)
+        graph = graph_utils.make_or_update_edges(graph, model.scenario_node_dfs,
+                                                 model.scenario_tech_dfs)
         model.graph = graph
 
         # Update the Model's metadata
         model.fuels, model.equilibrium_fuels = graph_utils.get_fuels(graph)
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
-                                                                                        str(self.base_year))
+                                                                                        str(model.base_year))
         model.dcc_classes = model._dcc_classes()
 
         # Perform some initialization
