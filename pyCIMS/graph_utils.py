@@ -423,6 +423,16 @@ def add_node_data(graph, current_node, node_dfs):
                 #    these cases, sub_context isn't defined, but there will be values in year_
                 #    value that we need to record.
                 elif year_value is not None:
+                    if 'year_value' in year_dict[param]:
+                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
+                    year_dict[param][context] = dct
+
+                # No year value has been specified, but there are other instances of this parameter
+                # already saved to the model for this node
+                elif year_dict[param]:
+                    # Check that it's not a base dictionary.
+                    if 'year_value' in year_dict[param]:
+                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
                     year_dict[param][context] = dct
 
                 # 3. Context contains the value we actually want to record. Additionally, this
