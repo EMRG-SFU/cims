@@ -90,8 +90,18 @@ class Model:
 
     def update(self, scenario_model_reader):
         """
-        Update a model based off another ModelReader. Intended for use with a
-        reference + scenario model
+        Create an updated version of self based off another ModelReader.
+        Intended for use with a reference + scenario model setup.
+
+        Parameters
+        ----------
+        scenario_model_reader : pyCIMS.ModelReader
+            An instantiated ModelReader to be used for updating self.
+
+        Returns
+        -------
+        pyCIMS.Model :
+            An updated version of self.
         """
         if self.status.lower() in ['run initiated', 'run completed']:
             raise ValueError("You've attempted to update a model which has already been run. "
@@ -101,8 +111,8 @@ class Model:
         model = copy.deepcopy(self)
 
         # Update the model's node_df & tech_dfs
-        # TODO: Update self.node_dfs & self.tech_dfs
-        model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
+        model.scenario_node_dfs, model.scenario_tech_dfs = \
+            scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
         graph = graph_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
@@ -117,7 +127,7 @@ class Model:
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
 
-        # Perform some initialization
+        # Re-initialize the model
         model._inherit_parameter_values()
         model._initialize_model()
 
