@@ -6,6 +6,7 @@ import math
 from ..quantities import ProvidedQuantity
 from pyCIMS import utils
 from .retrofits import calc_retrofits
+from .macro_economics import calc_total_stock_demanded
 from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import _apply_min_max_limits
 import copy
@@ -46,7 +47,8 @@ def all_tech_compete_allocation(model, node, year):
         comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
+    # assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
+    assessed_demand = calc_total_stock_demanded(model, node, year)
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
     existing_stock = _get_existing_stock(model, node, year, comp_type)
