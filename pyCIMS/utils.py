@@ -166,6 +166,8 @@ calculation_directory = {
     'financial life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
     'price': lcc_calculation.calc_price,
+    'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
+    'price_subsidy': lcc_calculation.calc_price_subsidy
 }
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
@@ -180,31 +182,45 @@ inheritable_params = [
 
 def inherit_parameter(graph, node, year, param):
     assert param in inheritable_params
-
     parent = '.'.join(node.split('.')[:-1])
 
     if parent:
         parent_param_val = {}
-
         if param in graph.nodes[parent][year]:
             param_val = copy.deepcopy(graph.nodes[parent][year][param])
             parent_param_val.update(param_val)
 
+        # Update Param Source
+        if 'param_source' in parent_param_val:
+            parent_param_val.update({'param_source': 'inheritance'})
+        else:
+            for context in parent_param_val:
+                if 'param_source' in parent_param_val[context]:
+                    parent_param_val[context].update({'param_source': 'inheritance'})
+                else:
+                    for sub_context in parent_param_val[context]:
+                        parent_param_val[context][sub_context].update(
+                            {'param_source': 'inheritance'})
+
         node_param_val = copy.deepcopy(parent_param_val)
         if param in graph.nodes[node][year]:
             param_val = graph.nodes[node][year][param]
-            node_param_val.update(param_val)
 
-        # Update Param Source
-        if 'param_source' in node_param_val:
-            node_param_val.update({'param_source': 'inheritance'})
-        else:
-            for context in node_param_val:
-                if 'param_source' in node_param_val[context]:
-                    node_param_val[context].update({'param_source': 'inheritance'})
-                else:
-                    for sub_context in node_param_val[context]:
-                        node_param_val[context][sub_context].updatet({'param_source': 'inheritance'})
+            # Remove any previously inherited parameter values
+            if 'param_source' in param_val:
+                if param_val['param_source'] == 'inheritance':
+                    param_val = {}
+            elif param_val is not None:
+                for context in list(param_val):
+                    if 'param_source' in param_val[context]:
+                        if param_val[context]['param_source'] == 'inheritance':
+                            param_val.pop(context)
+                    else:
+                        for sub_context in list(param_val[context]):
+                            if param_val[context][sub_context]['param_source'] == 'inheritance':
+                                param_val[context].pop(sub_context)
+
+            node_param_val.update(param_val)
 
         if node_param_val:
             graph.nodes[node][year][param] = node_param_val
@@ -279,7 +295,10 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         val = data[param]
         if isinstance(val, dict):
             if context:
-                val = val[context]
+                try:
+                    val = val[context]
+                except KeyError:
+                    val = None
                 if sub_context:
                     val = val[sub_context]
             elif None in val:
