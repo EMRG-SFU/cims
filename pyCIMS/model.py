@@ -60,6 +60,7 @@ class Model:
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
+        self.scenario_node_dfs, self.scenario_tech_dfs = None, None
         self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
@@ -101,11 +102,13 @@ class Model:
 
         # Update the model's node_df & tech_dfs
         # TODO: Update self.node_dfs & self.tech_dfs
-        scenario_node_dfs, scenario_tech_dfs = scenario_model_reader.get_model_description()
+        self.scenario_node_dfs, self.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
-        graph = graph_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = graph_utils.make_or_update_nodes(model.graph, self.scenario_node_dfs,
+                                                 self.scenario_tech_dfs)
+        graph = graph_utils.make_or_update_edges(graph, self.scenario_node_dfs,
+                                                 self.scenario_tech_dfs)
         model.graph = graph
 
         # Update the Model's metadata
@@ -115,13 +118,13 @@ class Model:
         model.dcc_classes = model._dcc_classes()
 
         # Perform some initialization
-        model._inherit_parameter_values()  # TODO: Check this works
-        model._initialize_model()  # TODO: Check this works
+        model._inherit_parameter_values()
+        model._initialize_model()
 
         model.show_run_warnings = True
         model.scenario_model_description_file = scenario_model_reader.infile
 
-        return self
+        return model
 
     def build_graph(self):
         """
@@ -446,12 +449,24 @@ class Model:
         if len(parents) > 0:
             parent = parents[0]
             if 'tax' in graph.nodes[parent][year]:
-                parent_dict = graph.nodes[parent][year]['tax']
+                parent_dict = copy.deepcopy(graph.nodes[parent][year]['tax'])
+
+        # Update parameter source for values from parent
+        for ghg in parent_dict:
+            for emission_type in parent_dict[ghg]:
+                parent_dict[ghg][emission_type]['param_source'] = 'inheritance'
 
         # Store away tax at current node to overwrite parent tax later
         node_dict = {}
         if 'tax' in graph.nodes[node][year]:
-            node_dict = graph.nodes[node][year]['tax']
+            node_dict = copy.deepcopy(graph.nodes[node][year]['tax'])
+            # Remove any inherited values from the update
+            for ghg in list(node_dict):
+                for emission_type in list(node_dict[ghg]):
+                    if node_dict[ghg][emission_type]['param_source'] == 'inheritance':
+                        node_dict[ghg].pop(emission_type)
+                        if len(node_dict[ghg]) == 0:
+                            node_dict.pop(ghg)
 
         # Make final dict where we prioritize keeping node_dict and only unique parent taxes
         final_tax = copy.deepcopy(node_dict)
