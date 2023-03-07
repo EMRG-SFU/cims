@@ -185,7 +185,8 @@ def lcc_calculation(sub_graph, node, year, model):
         service_cost, sc_source = model.get_param('service cost', node, year,
                                                   return_source=True, do_calc=True)
         recycled_revenues = calc_recycled_revenues(model, node, year)
-        lcc = service_cost - recycled_revenues
+        fixed_cost_rate = model.get_param('fixed cost rate', node, year, do_calc=True)
+        lcc = service_cost + fixed_cost_rate - recycled_revenues
 
         pq, src = model.get_param('provided_quantities', node, year, return_source=True)
         if utils.prev_stock_existed(model, node, year) and (pq is not None) and (
@@ -285,9 +286,11 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
+    fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
     emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
     recycled_revenues = calc_recycled_revenues(model, node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost + emissions_cost - recycled_revenues
+    lcc = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + emissions_cost - \
+          recycled_revenues
     return lcc
 
 
@@ -315,10 +318,11 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
     complete_annual_cost = model.get_param('complete annual cost', node, year, tech=tech,
                                            do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
+    fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
     emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=True)
 
     complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
-                   emissions_cost
+                   fixed_cost_rate + emissions_cost
 
     return complete_lcc
 
@@ -700,9 +704,6 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
             fuel_branch = service_requested['branch']
             fuel_name = fuel_branch.split('.')[-1]
 
-            if node in ['pyCIMS.Canada.British Columbia.Biodiesel.Steam.Cogenerators',
-                        'pyCIMS.Canada.British Columbia.Biodiesel.Steam.Boilers']:
-                jillian = 1
             fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
 
             # Price Multiplier
@@ -712,10 +713,8 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
                     'year_value']
             except KeyError:
                 price_multiplier = 1
-            try:
-                service_requested_price = fuel_price * price_multiplier
-            except:
-                jillian = 1
+            service_requested_price = fuel_price * price_multiplier
+
         else:
             service_requested_branch = service_requested['branch']
             if 'price' in model.graph.nodes[service_requested_branch][year]:
@@ -877,8 +876,7 @@ def calc_price(model, node, year, tech=None):
                 'additional cost', node, year)
             price = fLCC
 
-        # Set parameters
-
+    # Set parameters
     price_subsidy = model.get_param('price_subsidy', node, year, do_calc=True)
     model.set_param_internal(utils.create_value_dict(price_subsidy, param_source='calculation'),
                              'price_subsidy', node, year)
@@ -888,3 +886,63 @@ def calc_price(model, node, year, tech=None):
                              'price', node, year)
 
     return price
+
+
+def calc_fixed_cost_rate(model, node, year, tech=None):
+    """
+    Calculate the fixed cost rate for a node or technology. This is the total fixed cost (which is
+    provided exogenously) divided by the total quantity being provided by the node or technology.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to retrieve data from & save the result to.
+    node : str
+        The node (in branch form) whose fixed cost rate is being calculated.
+    year : str
+        The year in which to calculated the fixed cost rate.
+    tech : str, optional
+        If specified, the technology whose fixed cost rate is being calculated.
+
+    Returns
+    -------
+    float:
+        The fixed cost rate calculated for the node or technology. If total fixed cost isn't
+        specified in the model, the fixed cost rate returned is 0. Additionally, if a total fixed
+        cost is specified for the node/tech in the model, the model will be updated with the
+        calculated fixed cost rate.
+
+    """
+    total_fixed_cost = model.get_param('total fixed cost', node, year, tech=tech)
+    if total_fixed_cost is not None:
+        prov_quant_object, src = model.get_param('provided_quantities', node, year,
+                                                 return_source=True)
+        prov_quant = prov_quant_object.get_total_quantity()
+
+        if tech and prov_quant != 0:
+            total_market_share = model.get_param('total_market_share', node, year, tech=tech)
+            prov_quant = prov_quant * total_market_share
+
+        if src == 'initialization':
+            if int(year) == model.base_year:
+                fixed_cost_rate = 0
+                fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                                                               param_source='default')
+            else:
+                prev_year = str(int(year) - model.step)
+                prov_quant = model.get_param('provided_quantities', node,
+                                             prev_year).get_total_quantity()
+                fixed_cost_rate = total_fixed_cost / prov_quant
+                fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                                                               param_source='calculation')
+        else:
+            fixed_cost_rate = total_fixed_cost / prov_quant
+            fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                                                           param_source='calculation')
+
+        model.set_param_internal(fixed_cost_rate_dict, 'fixed cost rate', node, year, tech=tech)
+
+    else:
+        fixed_cost_rate = 0
+
+    return fixed_cost_rate
