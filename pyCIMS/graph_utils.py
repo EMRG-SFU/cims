@@ -95,7 +95,7 @@ def get_fuels(graph):
         is_market = 'market' in data['competition type'].lower()
         is_supply = data['type'].lower() == 'supply'
         is_sector = 'sector' in data['competition type'].lower()
-        starts_with_fuel = data['competition type'].startswith('fuel')
+        starts_with_fuel = data['competition type'].lower().startswith('fuel')
         if is_market:
             fuels.append(node)
             # Check all the service requested to remove them from the fuels list later
@@ -365,8 +365,8 @@ def add_node_data(graph, current_node, node_dfs):
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
     if len(set(comp_list)) == 1:
-        comp_type = comp_list[0]
-        graph.nodes[current_node]['competition type'] = comp_type.lower()
+        comp_type = comp_list[0].lower()
+        graph.nodes[current_node]['competition type'] = comp_type
     elif len(set(comp_list)) > 1:
         print("TOO MANY COMPETITION TYPES")
     elif 'competition type' in graph.nodes[current_node]:

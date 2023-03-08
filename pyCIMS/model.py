@@ -615,26 +615,15 @@ class Model:
                                                          node, last_year)[fuel_name]['year_value']
                         graph.nodes[node][year]['financial life cycle cost'][fuel_name][
                             'year_value'] = last_year_value
-
                     else:
                         graph.nodes[node][year]['financial life cycle cost'][fuel_name][
                             'to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
-                    if int(year) == self.base_year:
-                        lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
-                        service_name = node.split('.')[-1]
-                        graph.nodes[node][year]['financial life cycle cost'] = {
-                            service_name: utils.create_value_dict(lcc,
-                                                                  param_source='initialization')}
-                    else:
-                        last_year = str(int(year) - self.step)
-                        service_name = node.split('.')[-1]
-                        last_year_value = self.get_param('financial life cycle cost', node,
-                                                         last_year)
-                        graph.nodes[node][year]['financial life cycle cost'] = {
-                            service_name: utils.create_value_dict(last_year_value,
-                                                                  param_source='cost curve function')}
-
+                    lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
+                    service_name = node.split('.')[-1]
+                    graph.nodes[node][year]['financial life cycle cost'] = {
+                        service_name: utils.create_value_dict(lcc,
+                                                              param_source='cost curve function')}
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
