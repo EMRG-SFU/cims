@@ -11,6 +11,7 @@ from . import utils
 from . import lcc_calculation
 from . import stock_allocation
 from . import loop_resolution
+from . import cost_curves
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
@@ -87,6 +88,10 @@ class Model:
                      'context', 'sub_context', 'old_value', 'new_value'])
 
         self.status = 'instantiated'
+
+        self.cost_curve_lcc_max = None
+        self.cost_curve_lcc_min = None
+        self.cost_curve_min_max = False
 
     def update(self, scenario_model_reader):
         """
@@ -261,6 +266,10 @@ class Model:
             equilibrium = False
             iteration = 1
 
+            self.cost_curve_lcc_max = None
+            self.cost_curve_lcc_min = None
+            self.cost_curve_min_max = False
+
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
             while not equilibrium:
@@ -288,7 +297,6 @@ class Model:
                                                year,
                                                node_types=demand_nodes)
 
-
                 # Calculate Service Costs on Demand Side
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
@@ -299,6 +307,7 @@ class Model:
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
+                self.cost_curve_min_max = True
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -311,6 +320,7 @@ class Model:
                                                node_types=supply_nodes)
 
                 # Calculate Service Costs on Supply Side
+                self.cost_curve_min_max = False
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -619,7 +629,7 @@ class Model:
                         graph.nodes[node][year]['financial life cycle cost'][fuel_name][
                             'to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
-                    lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
+                    lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
                     service_name = node.split('.')[-1]
                     graph.nodes[node][year]['financial life cycle cost'] = {
                         service_name: utils.create_value_dict(lcc,
