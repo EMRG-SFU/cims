@@ -1,5 +1,4 @@
 "This module contains functions related to cost-curve price calculations"
-import pandas as pd
 from statistics import mean
 from . import utils
 
@@ -35,8 +34,8 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
 
     quantity = calc_cost_curve_quantity(model, node, min_year, max_year)
     cc_func = model.get_param('cost_curve_function', node)
-    expected_lcc = max(pd.Series([float(cc_func(quantity)), model.cost_curve_lcc_min]))
-    expected_lcc = min(pd.Series([expected_lcc, model.cost_curve_lcc_max]))
+    expected_lcc = max([x for x in [float(cc_func(quantity)), model.cost_curve_lcc_min] if x is not None])
+    expected_lcc = min(x for x in [expected_lcc, model.cost_curve_lcc_max] if x is not None)
 
     service_name = node.split('.')[-1]
     previous_lcc, prev_src = model.get_param('financial life cycle cost', node, year,
