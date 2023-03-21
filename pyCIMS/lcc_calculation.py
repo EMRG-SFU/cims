@@ -203,6 +203,7 @@ def lcc_calculation(sub_graph, node, year, model):
     val_dict = {'year_value': price, 'param_source': price_source}
     model.set_param_internal(val_dict, 'price', node, year)
 
+
 def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
     Calculate the Financial Life Cycle Cost (called 'financial life cycle cost' in the model & model
@@ -880,7 +881,10 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
                 prev_year = str(int(year) - model.step)
                 prov_quant = model.get_param('provided_quantities', node,
                                              prev_year).get_total_quantity()
-                fixed_cost_rate = total_fixed_cost / prov_quant
+                if prov_quant > 0:
+                    fixed_cost_rate = total_fixed_cost / prov_quant
+                else:
+                    fixed_cost_rate = 0
                 fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
                                                                param_source='calculation')
         else:
