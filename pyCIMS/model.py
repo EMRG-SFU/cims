@@ -89,10 +89,6 @@ class Model:
 
         self.status = 'instantiated'
 
-        self.cost_curve_lcc_max = None
-        self.cost_curve_lcc_min = None
-        self.cost_curve_min_max = False
-
     def update(self, scenario_model_reader):
         """
         Create an updated version of self based off another ModelReader.
@@ -266,10 +262,6 @@ class Model:
             equilibrium = False
             iteration = 1
 
-            self.cost_curve_lcc_max = None
-            self.cost_curve_lcc_min = None
-            self.cost_curve_min_max = False
-
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
             while not equilibrium:
@@ -307,12 +299,12 @@ class Model:
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                self.cost_curve_min_max = True
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes)
+                                                node_types=supply_nodes,
+                                                cost_curve_min_max = True)
                 # Calculate Fuel Quantities
                 graph_utils.top_down_traversal(self.graph,
                                                self.stock_allocation_and_retirement,
@@ -320,7 +312,6 @@ class Model:
                                                node_types=supply_nodes)
 
                 # Calculate Service Costs on Supply Side
-                self.cost_curve_min_max = False
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
                                                 year,

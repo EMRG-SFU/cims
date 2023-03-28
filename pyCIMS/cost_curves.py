@@ -3,7 +3,8 @@ from statistics import mean
 from . import utils
 
 
-def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
+def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str,
+                        cost_curve_min_max: bool = False):
     """
     Calculate a node's LCC using its cost curve function (stored in the node level data).
     Depending on the node's competition type, annual or cumulative provided quantity values will be
@@ -17,6 +18,7 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     model : The model containing node.
     node : The name of the node for which LCC  will be calculated.
     year : The year to calculate LCC for.
+    cost_curve_min_max : Whether to re-calculate the cost curve price
 
     Returns
     -------
@@ -39,24 +41,58 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str):
     previous_lcc, prev_src = model.get_param('financial life cycle cost', node, year,
                                              context=service_name, return_source=True)
 
-    if model.cost_curve_min_max == True:
-        expected_lcc = max([x for x in [float(cc_func(quantity)), model.cost_curve_lcc_min] if x is not None])
-        expected_lcc = min(x for x in [expected_lcc, model.cost_curve_lcc_max] if x is not None)
+    # TODO: Make sure this works with cumulative cost curves as well --
+    #       minimum will be value from previous year.
+    if cost_curve_min_max:
+        cc_min = find_cost_curve_min(model, node, year)
+        cc_max = find_cost_curve_max(model, node, year)
+
+        expected_lcc = max(x for x in [float(cc_func(quantity)), cc_min] if x is not None)
+        expected_lcc = min(x for x in [expected_lcc, cc_max] if x is not None)
 
         if expected_lcc > previous_lcc:
-            model.cost_curve_lcc_min = max([x for x in [previous_lcc, model.cost_curve_lcc_min] if x is not None])
-        if expected_lcc < previous_lcc:
-            model.cost_curve_lcc_max = min([x for x in [previous_lcc, model.cost_curve_lcc_max] if x is not None])
+            update_cost_curve_min(model, node, year, previous_lcc, cc_min)
+        elif expected_lcc < previous_lcc:
+            update_cost_curve_max(model, node, year, previous_lcc, cc_max)
 
         if prev_src == 'cost curve function':
             lcc = mean((previous_lcc, expected_lcc))
         else:
             lcc = expected_lcc
-        print(f"{round(previous_lcc, 2):10}\t{round(quantity, 2):10}\t{round(expected_lcc, 2):10}\t{round(lcc, 2):10}")
+
+    elif prev_src == 'default':
+        lcc = float(cc_func(quantity))
+
     else:
         lcc = previous_lcc
 
     return lcc
+
+
+def find_cost_curve_min(model, node, year):
+    cc_min, cc_min_src = model.get_param('cost_curve_lcc_min', node, year, return_source=True)
+    if cc_min_src == 'previous_year':
+        cc_min = None
+    return cc_min
+
+
+def find_cost_curve_max(model, node, year):
+    cc_max, cc_max_src = model.get_param('cost_curve_lcc_max', node, year, return_source=True)
+    if cc_max_src == 'previous_year':
+        cc_max = None
+    return cc_max
+
+
+def update_cost_curve_min(model, node, year, previous_lcc, cost_curve_min):
+    cc_min = max(x for x in [previous_lcc, cost_curve_min] if x is not None)
+    model.set_param_internal(utils.create_value_dict(cc_min, param_source='cost curve function'),
+                             'cost_curve_lcc_min', node, year)
+
+
+def update_cost_curve_max(model, node, year, previous_lcc, cost_curve_max):
+    cc_max = min(x for x in [previous_lcc, cost_curve_max] if x is not None)
+    model.set_param_internal(utils.create_value_dict(cc_max, param_source='cost curve function'),
+                             'cost_curve_lcc_max', node, year)
 
 
 def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, min_year: str, max_year: str):

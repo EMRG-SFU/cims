@@ -10,7 +10,7 @@ from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
 
 
-def lcc_calculation(sub_graph, node, year, model):
+def lcc_calculation(sub_graph, node, year, model, **kwargs):
     """
     Determines economic parameters for `node` in `year` and stores the values in the sub_graph
     at the appropriate node. Specifically,
@@ -172,7 +172,7 @@ def lcc_calculation(sub_graph, node, year, model):
             service_name: utils.create_value_dict(lcc, param_source='calculation')}
 
     elif 'cost curve' in model.get_param('competition type', node):
-        lcc = calc_cost_curve_lcc(model, node, year)
+        lcc = calc_cost_curve_lcc(model, node, year, cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
         service_name = node.split('.')[-1]
         sub_graph.nodes[node][year]['financial life cycle cost'] = {
             service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
