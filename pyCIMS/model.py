@@ -304,7 +304,7 @@ class Model:
                                                 year,
                                                 self,
                                                 node_types=supply_nodes,
-                                                cost_curve_min_max = True)
+                                                cost_curve_min_max=True)
                 # Calculate Fuel Quantities
                 graph_utils.top_down_traversal(self.graph,
                                                self.stock_allocation_and_retirement,

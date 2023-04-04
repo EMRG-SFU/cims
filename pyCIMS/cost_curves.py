@@ -61,8 +61,13 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str,
             lcc = expected_lcc
 
     elif prev_src == 'default':
-        lcc = float(cc_func(quantity))
-
+        if (comp_type == 'fuel - cost curve cumulative') and (int(year) > model.base_year):
+            prev_year = str(int(year) - model.step)
+            prev_year_lcc = model.get_param('financial life cycle cost', node, prev_year,
+                                            context=service_name)
+            lcc = max(prev_year_lcc, float(cc_func(quantity)))
+        else:
+            lcc = float(cc_func(quantity))
     else:
         lcc = previous_lcc
 
