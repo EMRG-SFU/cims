@@ -41,9 +41,10 @@ def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str,
             prev_year = str(int(year) - model.step)
             prev_year_lcc = model.get_param('financial life cycle cost', node, prev_year,
                                             context=node.split('.')[-1])
-            lcc = max(prev_year_lcc, float(cc_func(quantity)))
+            lcc = max(prev_year_lcc, cc_lcc)
         else:
-            lcc = float(cc_func(quantity))
+            lcc = cc_lcc
+
     else:
         lcc = previous_lcc
 
@@ -71,7 +72,7 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
         The LCC calculated from applying minimums, maximums, and averaging to cc_lcc.
     Additionally, the cost_curve_lcc_min and cost_curve_lcc_max values are updated.
     """
-    # Find Previous LCC
+    # Find Previous Iteration's LCC
     prev_lcc, prev_src = model.get_param('financial life cycle cost', node, year,
                                          context=node.split('.')[-1], return_source=True)
 
