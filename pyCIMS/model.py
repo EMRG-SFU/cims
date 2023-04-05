@@ -169,17 +169,12 @@ class Model:
             sec_list = [node for node, data in self.graph.nodes(data=True)
                         if 'sector' in data['competition type'].lower()]
 
-            foresight_context = self.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
-            if foresight_context is not None:
-                for ghg, sectors in foresight_context.items():
+            foresight_dict = self.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
+            if foresight_dict is not None:
+                for sector in foresight_dict:
                     for node in sec_list:
-                        sector = node.split('.')[-1]
-                        if sector in sectors:
-                            # Initialize foresight method
-                            if 'tax_foresight' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['tax_foresight'] = {}
-
-                            self.graph.nodes[node][year]['tax_foresight'][ghg] = sectors[sector]
+                        if node.split('.')[-1] == sector:
+                            self.graph.nodes[node][year]['tax_foresight'] = foresight_dict[sector]
 
             graph_utils.top_down_traversal(self.graph,
                                            self._init_foresight,
@@ -490,14 +485,15 @@ class Model:
             graph.nodes[node][year]['tax'] = final_tax
 
     def _init_foresight(self, graph, node, year):
-        parents = list(graph.predecessors(node))
-        parent_dict = {}
-        if len(parents) > 0:
-            parent = parents[0]
-            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['tax_foresight']
-        if parent_dict:
-            graph.nodes[node][year]['tax_foresight'] = parent_dict
+        if 'tax_foresight' not in graph.nodes[node][year]:
+            parents = list(graph.predecessors(node))
+            parent_dict = {}
+            if len(parents) > 0:
+                parent = parents[0]
+                if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
+                    parent_dict = graph.nodes[parent][year]['tax_foresight']
+            if parent_dict:
+                graph.nodes[node][year]['tax_foresight'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """

@@ -656,9 +656,7 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
 
                 if ghg in all_taxes:
                     if emission_type in all_taxes[ghg]:
-                        method = model.get_param('tax_foresight', node, year, context=ghg,
-                                                    sub_context=emission_type, dict_expected=False)
-
+                        method = model.get_param('tax_foresight', node, year, dict_expected=False)
                         if (method == 'Myopic') or (method is None) or (not allow_foresight):
                             expected_ec = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
 
@@ -672,13 +670,13 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
                                 if str(year_n) <= max(model.years):
                                     cur_tax = model.get_param('tax', node, str(year_n),
                                                               context=ghg, sub_context=emission_type)
-                                else:  # when future years are out of range
+                                else:  # when current year is out of range
                                     cur_tax = model.get_param('tax', node, max(model.years),
                                                               context=ghg, sub_context=emission_type)
                                 if str(year_n + model.step) <= max(model.years):
                                     next_tax = model.get_param('tax', node, str(year_n + model.step),
                                                                context=ghg, sub_context=emission_type)
-                                else:  # when future years are out of range
+                                else:  # when future year(s) are out of range
                                     next_tax = cur_tax
                                 tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
 
