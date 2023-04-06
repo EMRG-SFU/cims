@@ -5,8 +5,6 @@ import re
 import copy
 import warnings
 import pandas as pd
-from typing import List
-from scipy.interpolate import interp1d
 import operator
 
 from . import lcc_calculation
@@ -100,27 +98,6 @@ def is_param_exogenous(model, param, node, year, tech=None):
     _, source = model.get_param(param, node, year=year, tech=tech, return_source=True)
     ms_exogenous = source == 'model'
     return ms_exogenous
-
-
-def create_cost_curve_func(quantities: List[float], prices: List[float]):
-    """
-    Build an interpolator that uses quantity to interpolate price.
-    To be used for cost curve LCC calculations.
-
-    Parameters
-    ----------
-    quantities : list of quantities.
-    prices : list of prices. The length of prices must be equal to the length of quantities.
-
-    Returns
-    -------
-    scipy.interpolate.interp1d : A 1d interpolator that consumes a quantity to interpolate price.
-    """
-    qp_pairs = list(set(zip(quantities, prices)))
-    qp_pairs.sort(key=lambda x: x[0])
-    quantities, prices = zip(*qp_pairs)
-
-    return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
 
 
 def get_services_requested(model, node, year, tech=None):

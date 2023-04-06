@@ -12,6 +12,7 @@ from . import lcc_calculation
 from . import stock_allocation
 from . import loop_resolution
 from . import tax_foresight
+from . import cost_curves
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
@@ -271,7 +272,6 @@ class Model:
                                                year,
                                                node_types=demand_nodes)
 
-
                 # Calculate Service Costs on Demand Side
                 graph_utils.bottom_up_traversal(self.graph,
                                                 lcc_calculation.lcc_calculation,
@@ -286,7 +286,8 @@ class Model:
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes)
+                                                node_types=supply_nodes,
+                                                cost_curve_min_max=True)
                 # Calculate Fuel Quantities
                 graph_utils.top_down_traversal(self.graph,
                                                self.stock_allocation_and_retirement,
@@ -593,7 +594,7 @@ class Model:
                         graph.nodes[node][year]['financial life cycle cost'][fuel_name][
                             'to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
-                    lcc = lcc_calculation.calc_cost_curve_lcc(self, node, year)
+                    lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
                     service_name = node.split('.')[-1]
                     graph.nodes[node][year]['financial life cycle cost'] = {
                         service_name: utils.create_value_dict(lcc,

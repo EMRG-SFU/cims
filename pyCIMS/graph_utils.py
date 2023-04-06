@@ -4,6 +4,7 @@ import networkx as nx
 
 from . import utils
 from . import loop_resolution
+from . import cost_curves
 
 
 # **************************
@@ -368,7 +369,7 @@ def add_node_data(graph, current_node, node_dfs):
         comp_type = comp_list[0].lower()
         graph.nodes[current_node]['competition type'] = comp_type
     elif len(set(comp_list)) > 1:
-        print("TOO MANY COMPETITION TYPES")
+        raise ValueError("TOO MANY COMPETITION TYPES")
     elif 'competition type' in graph.nodes[current_node]:
         comp_type = graph.nodes[current_node]['competition type']
 
@@ -377,18 +378,7 @@ def add_node_data(graph, current_node, node_dfs):
 
     # 5 Find the cost curve function
     if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
-        years = [c for c in current_node_df.columns if utils.is_year(c)]
-
-        # Get quantities
-        cc_quant_line = current_node_df[current_node_df['Parameter'] == 'cost curve quantity']
-        cc_quants = [cc_quant_line[y].iloc[0] for y in years]
-
-        # Get prices
-        cc_price_line = current_node_df[current_node_df['Parameter'] == 'cost curve price']
-        cc_prices = [cc_price_line[y].iloc[0] for y in years]
-
-        # Create interpolator
-        cc_func = utils.create_cost_curve_func(cc_quants, cc_prices)
+        cc_func = cost_curves.build_cost_curve_function(current_node_df)
         graph.nodes[current_node]['cost_curve_function'] = cc_func
 
         # Get rid of cost curve rows
