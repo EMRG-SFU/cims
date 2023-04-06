@@ -4,7 +4,7 @@ Module containing loop resolution functions.
 import networkx as nx
 
 
-def min_distance_from_root(list_of_cycles, distances_from_root):
+def min_distance_from_root(list_of_cycles, distances_from_root, **kwargs):
     # TODO: Document function
     candidates = {node: distances_from_root[node] for cycle in list_of_cycles for node in cycle}
     next_node = min(candidates, key=lambda x: candidates[x])
@@ -12,7 +12,7 @@ def min_distance_from_root(list_of_cycles, distances_from_root):
     return next_node
 
 
-def max_distance_from_root(list_of_cycles, distances_from_root):
+def max_distance_from_root(list_of_cycles, distances_from_root, **kwargs):
     # TODO: Document function
     candidates = {node: distances_from_root[node] for cycle in list_of_cycles for node in cycle}
     next_node = max(candidates, key=lambda x: candidates[x])
