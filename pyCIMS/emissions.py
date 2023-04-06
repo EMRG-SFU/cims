@@ -4,8 +4,9 @@ Module containing the classes and functions related to emissions and emissions c
 from __future__ import annotations  # For Type Hinting
 from typing import List
 import copy
-from numpy import linspace
+
 from . import utils
+from . import tax_foresight
 
 
 class EmissionsCost:
@@ -366,7 +367,7 @@ def calc_cumul_emissions_rate(model: 'pyCIMS.Model', node: str, year: str,
     tech : str, optional
         An optional parameter that specifies the technology whose cumulative emissions rate is being
         calculated. If this parameter is not specified, but a node has technologies than the
-        cumulative emissions rate is an aggregation across the techs. 
+        cumulative emissions rate is an aggregation across the techs.
 
     Returns
     -------
@@ -652,68 +653,38 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
-                expected_ec = 0
+                expected_tax = 0
 
                 if ghg in all_taxes:
                     if emission_type in all_taxes[ghg]:
                         method = model.get_param('tax_foresight', node, year, dict_expected=False)
+
                         if (method == 'Myopic') or (method is None) or (not allow_foresight):
-                            expected_ec = tax_rates[ghg][emission_type]['year_value']  # same as regular tax
+                            # This option is the most straightforward method for calculating
+                            # expected emissions cost, using the tax value set in the model.
+                            expected_tax = tax_rates[ghg][emission_type]['year_value']
 
                         elif method == 'Discounted':
-                            lifetime = int(model.get_param('lifetime', node, year, tech=tech))
-                            r_k = model.get_param('discount rate_financial', node, year)
-
-                            # interpolate tax values
-                            tax_vals = []
-                            for year_n in range(int(year), int(year) + lifetime, model.step):
-                                if str(year_n) <= max(model.years):
-                                    cur_tax = model.get_param('tax', node, str(year_n),
-                                                              context=ghg, sub_context=emission_type)
-                                else:  # when current year is out of range
-                                    cur_tax = model.get_param('tax', node, max(model.years),
-                                                              context=ghg, sub_context=emission_type)
-                                if str(year_n + model.step) <= max(model.years):
-                                    next_tax = model.get_param('tax', node, str(year_n + model.step),
-                                                               context=ghg, sub_context=emission_type)
-                                else:  # when future year(s) are out of range
-                                    next_tax = cur_tax
-                                tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
-
-                            # discount future taxes
-                            expected_ec = sum(
-                                [tax / (1 + r_k) ** (n - int(year) + 1)
-                                 for tax, n in zip(tax_vals, range(int(year), int(year) + lifetime))]
+                            # This option generates expectations of future tax costs based on the
+                            # net present value of emissions charges. After the present value of
+                            # emissions charges has been calculated, it is annualized using the
+                            # capital recovery factor (annual value required for CIMS simulation).
+                            expected_tax = tax_foresight.discounted_foresight(
+                                model, node, year, tech, ghg, emission_type
                             )
-                            expected_ec *= r_k / (1 - (1 + r_k) ** (-lifetime))
 
                         elif method == 'Average':
-                            lifetime = int(model.get_param('lifetime', node, year, tech=tech))
-
-                            # interpolate tax values
-                            tax_vals = []
-                            for year_n in range(int(year), int(year) + lifetime, model.step):
-                                if str(year_n) <= max(model.years):
-                                    cur_tax = model.get_param('tax', node, str(year_n),
-                                                              context=ghg, sub_context=emission_type)
-                                else:  # when future years are out of range
-                                    cur_tax = model.get_param('tax', node, max(model.years),
-                                                              context=ghg, sub_context=emission_type)
-                                if str(year_n + model.step) <= max(model.years):
-                                    next_tax = model.get_param('tax', node, str(year_n + model.step),
-                                                               context=ghg, sub_context=emission_type)
-                                else:  # when future years are out of range
-                                    next_tax = cur_tax
-                                tax_vals.extend(linspace(cur_tax, next_tax, model.step, endpoint=False))
-
-                            # average of all taxes
-                            expected_ec = sum(tax_vals) / lifetime
+                            # This option generates expectations of future tax costs based on
+                            # the average tax over the lifespan of a technology.
+                            expected_tax = tax_foresight.average_foresight(
+                                model, node, year, tech, ghg, emission_type
+                            )
 
                         else:
-                            raise ValueError(
-                                'Foresight method not identified, use Myopic, Discounted, or Average')
+                            raise ValueError('Foresight method not identified, use Myopic, '
+                                             'Discounted, or Average')
 
-                emissions_cost[node_name][ghg][emission_type]['year_value'] *= expected_ec
+                emissions_cost[node_name][ghg][emission_type]['year_value'] *= expected_tax
 
     # Add everything in nested dictionary together
     for node_name in emissions_cost:
@@ -768,7 +739,8 @@ def calc_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
     val_dict = utils.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, 'emissions cost', node, year, tech)
 
-    model.set_param_internal(utils.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
-                             'emissions_cost_rate', node, year, tech)
+    model.set_param_internal(
+        utils.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
+        'emissions_cost_rate', node, year, tech)
 
     return total
