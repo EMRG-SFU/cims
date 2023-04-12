@@ -11,6 +11,7 @@ from . import utils
 from . import lcc_calculation
 from . import stock_allocation
 from . import loop_resolution
+from . import tax_foresight
 from . import cost_curves
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
@@ -166,25 +167,7 @@ class Model:
                                            self._init_tax_emissions,
                                            year)
 
-            # Pass foresight methods to all children nodes
-            sec_list = [node for node, data in self.graph.nodes(data=True)
-                        if 'sector' in data['competition type'].lower()]
-
-            foresight_context = self.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
-            if foresight_context is not None:
-                for ghg, sectors in foresight_context.items():
-                    for node in sec_list:
-                        sector = node.split('.')[-1]
-                        if sector in sectors:
-                            # Initialize foresight method
-                            if 'tax_foresight' not in self.graph.nodes[node][year]:
-                                self.graph.nodes[node][year]['tax_foresight'] = {}
-
-                            self.graph.nodes[node][year]['tax_foresight'][ghg] = sectors[sector]
-
-            graph_utils.top_down_traversal(self.graph,
-                                           self._init_foresight,
-                                           year)
+        tax_foresight.initialize_tax_foresight(self)
 
     def _dcc_classes(self):
         """
@@ -490,15 +473,6 @@ class Model:
         if final_tax:
             graph.nodes[node][year]['tax'] = final_tax
 
-    def _init_foresight(self, graph, node, year):
-        parents = list(graph.predecessors(node))
-        parent_dict = {}
-        if len(parents) > 0:
-            parent = parents[0]
-            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
-                parent_dict = graph.nodes[parent][year]['tax_foresight']
-        if parent_dict:
-            graph.nodes[node][year]['tax_foresight'] = parent_dict
 
     def initialize_graph(self, graph, year):
         """
