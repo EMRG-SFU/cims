@@ -1,9 +1,29 @@
+"""
+Module containing all declining capital cost functionality, used as part of LCC calculation.
+"""
 from math import log2
 
+import pyCIMS
 from . import utils
 
 
-def calc_declining_capital_cost(model, node, year, tech):
+def calc_declining_capital_cost(model: pyCIMS.Model, node: str, year: str, tech: str):
+    """
+    Calculate the declining capital cost for a node. Should only be used for nodes where a DCC class
+    has been specified.
+
+    Parameters
+    ----------
+    model : The model containing all the information needed for calculating declining capital cost
+    node : The name of the node whose declining capital cost is being calculated
+    year : The year to calculate declining capital cost for
+    tech : The name of the technology whose declining capital cost is being calculated
+
+    Returns
+    -------
+    float : Declining capital cost for the node, tech, and year specified.
+
+    """
     cc_min = _calc_cc_min(model, node, year, tech=tech)
     cc_learning = _calc_cc_learning(model, node, year, tech=tech)
     cc_declining = min(cc_min, cc_learning)
@@ -43,8 +63,8 @@ def _calc_all_stock(model, node, year, tech):
     dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
     dcc_class_techs = model.dcc_classes[dcc_class]
 
-    base_stock_sum = 0
-    new_stock_sum = 0
+    stock_sums = {'base_stock': 0,
+                  'new_stock': 0}
     for node_k, tech_k in dcc_class_techs:
         # Need to convert stocks for transportation techs to common vkt unit
         unit_convert = model.get_param('load factor', node_k, str(model.base_year), tech=tech_k)
@@ -54,7 +74,7 @@ def _calc_all_stock(model, node, year, tech):
         # Base Stock summed over all techs in DCC class (base year only)
         bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech=tech_k)
         if bs_k is not None:
-            base_stock_sum += bs_k / unit_convert
+            stock_sums['base_stock'] += bs_k / unit_convert
 
         # New Stock summed over all techs in DCC class and over all previous years (excluding base
         # year)
@@ -64,9 +84,9 @@ def _calc_all_stock(model, node, year, tech):
                            int(model.step))]
         for j in year_list:
             ns_jk = model.get_param('new_stock', node_k, j, tech=tech_k)
-            new_stock_sum += ns_jk / unit_convert
+            stock_sums['new_stock'] += ns_jk / unit_convert
 
-    all_stock = base_stock_sum + new_stock_sum
+    all_stock = stock_sums['base_stock'] + stock_sums['new_stock']
 
     return all_stock
 
