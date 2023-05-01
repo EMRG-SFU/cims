@@ -458,45 +458,6 @@ def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
     return return_uic
 
 
-def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Annual Declining Intangible Cost (declining AIC).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining AIC.
-    node : The node to calculate declining AIC for.
-    year : The year to calculate declining AIC for.
-    tech : The technology to calculate declining AIC for.
-
-    Returns
-    -------
-    float : The declining AIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('aic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('aic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('aic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining AIC
-    if int(year) == int(model.base_year):
-        return_val = initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
-        aic_declining = min(prev_aic_declining, initial_aic / denominator)
-
-        return_val = aic_declining
-
-    return return_val
 
 
 def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:

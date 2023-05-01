@@ -8,7 +8,7 @@ import pandas as pd
 import operator
 
 from . import lcc_calculation
-from . import declining_capital_cost
+from . import declining_costs
 
 
 def is_year(val: str or int) -> bool:
@@ -129,13 +129,13 @@ def prev_stock_existed(model, node, year):
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'capital cost_declining': declining_capital_cost.calc_declining_capital_cost,
+    'capital cost_declining': declining_costs.calc_declining_capital_cost,
     'capital cost': lcc_calculation.calc_capital_cost,
     'crf': lcc_calculation.calc_crf,
     'uic_declining': lcc_calculation.calc_declining_uic,
     'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
     'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
-    'aic_declining': lcc_calculation.calc_declining_aic,
+    'aic_declining': declining_costs.calc_declining_aic,
     'financial annual cost': lcc_calculation.calc_financial_annual_cost,
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
     'service cost': lcc_calculation.calc_annual_service_cost,
