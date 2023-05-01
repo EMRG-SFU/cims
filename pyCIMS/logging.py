@@ -5,6 +5,7 @@ package.
 import warnings
 from copy import deepcopy
 from scipy.interpolate import interp1d
+import numbers
 
 import pandas as pd
 
@@ -202,7 +203,10 @@ def log_dict(val):
             return log_EmissionsCost(year_value)
         if isinstance(year_value, dict):
             return log_dict(year_value)
-        val_log.value = float(year_value)
+        if isinstance(val_log.value, numbers.Number):
+            val_log.value = float(year_value)
+        else:
+            val_log.value = year_value
         return [val_log]
     else:
         val_pairs = []
@@ -225,7 +229,7 @@ def log_dict(val):
                         val_log.value = base_val['year_value']
                 val_pairs.append(deepcopy(val_log))
 
-            elif isinstance(inner_value, (int, float)):
+            elif isinstance(inner_value, numbers.Number):
                 val_log.value = float(inner_value)
                 val_pairs.append(deepcopy(val_log))
 
@@ -370,6 +374,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for param, val in model.graph.nodes[node].items():
+
                 if param not in model.years:
                     log = node, None, None, param, val
                     add_log_item(all_logs, log)
