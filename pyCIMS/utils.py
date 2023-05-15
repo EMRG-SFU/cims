@@ -8,6 +8,7 @@ import pandas as pd
 import operator
 
 from . import lcc_calculation
+from . import declining_capital_cost
 
 
 def is_year(val: str or int) -> bool:
@@ -128,8 +129,7 @@ def prev_stock_existed(model, node, year):
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'GCC_t': lcc_calculation.calc_gcc,
-    'capital cost_declining': lcc_calculation.calc_declining_cc,
+    'capital cost_declining': declining_capital_cost.calc_declining_capital_cost,
     'capital cost': lcc_calculation.calc_capital_cost,
     'crf': lcc_calculation.calc_crf,
     'uic_declining': lcc_calculation.calc_declining_uic,
@@ -146,6 +146,7 @@ calculation_directory = {
     'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
     'price_subsidy': lcc_calculation.calc_price_subsidy
 }
+
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
     'price multiplier',
