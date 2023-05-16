@@ -3,7 +3,6 @@ Module containing all declining capital cost & declining intangible cost functio
 part of LCC calculation.
 """
 from math import log2, exp
-import pyCIMS
 from . import utils
 
 
@@ -25,7 +24,6 @@ def calc_declining_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tec
     Returns
     -------
     float : Declining capital cost for the node, tech, and year specified.
-
     """
     cc_min = _calc_cc_min(model, node, year, tech=tech)
     cc_learning = _calc_cc_learning(model, node, year, tech=tech)
@@ -143,24 +141,28 @@ def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
     # Calculate Declining AIC
     if int(year) == int(model.base_year):
         return initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
 
-        prev_nms = _dic_new_market_share(model, node, prev_year, tech=tech)
+    prev_year = str(int(year) - model.step)
 
-        try:
-            denominator = 1 + shape_constant * exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
+    prev_nms = _dic_new_market_share(model, node, prev_year, tech=tech)
 
-        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
-        aic_declining = min(prev_aic_declining, initial_aic / denominator)
+    try:
+        denominator = 1 + shape_constant * exp(rate_constant * prev_nms)
+    except OverflowError as overflow:
+        print(node, year, shape_constant, rate_constant, prev_nms)
+        raise overflow
 
-        return aic_declining
+    prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
+    aic_declining = min(prev_aic_declining, initial_aic / denominator)
+
+    return aic_declining
 
 
 def _dic_new_market_share(model, node, year, tech):
+    """
+    Find the total new marketshare attributed to technologies from the node's DIC class (relative to
+    all technologies and nodes competing for marketshare with technologies within the DIC class)
+    """
     dic_class = model.get_param('dic_class', node, year, tech=tech, context='context')
     if dic_class:
         # We already know there is a DIC class
@@ -170,7 +172,7 @@ def _dic_new_market_share(model, node, year, tech):
         dic_class_stock = _get_dic_class_new_stock(model, dic_class_techs, year)
 
         # All Stock
-        all_competing_stock = _get_dic_competing_stock(model, dic_class_techs, year)
+        all_competing_stock = _get_dic_competing_new_stock(model, dic_class_techs, year)
 
         # New Market Share
         if dic_class_stock == 0:
@@ -184,47 +186,36 @@ def _dic_new_market_share(model, node, year, tech):
 
 
 def _get_dic_class_new_stock(model, dic_techs, year):
+    """
+    Calculate the new stock from all the technologies in the DIC class.
+    """
     new_dic_stock = 0
     for node, tech in dic_techs:
         new_dic_stock += model.get_param('new_stock', node, year, tech=tech)
     return new_dic_stock
 
 
-def _get_dic_competing_stock(model, dic_techs, year):
-    dic_nodes = set([x[0] for x in dic_techs])
+def _get_dic_competing_new_stock(model, dic_techs, year):
+    """
+    Calculate the new stock from all the technologies competing for marketshare with the nodes in
+    the DIC class (including the DIC techs).
+    """
+    dic_nodes = {x[0] for x in dic_techs}
 
     competing_stocks = {}
     for node in dic_nodes:
-        comp_type = model.get_param('competition type', node)
         competing_techs = _find_dic_competing_techs(model, node)
         for c_node, c_tech in competing_techs:
-            competing_stocks[(c_node, c_tech)] = model.get_param('new_stock', c_node, year, tech=c_tech)
+            competing_stocks[(c_node, c_tech)] = \
+                model.get_param('new_stock', c_node, year, tech=c_tech)
 
-    return sum([v for k, v in competing_stocks.items() if v is not None])
+    return sum(v for k, v in competing_stocks.items() if v is not None)
 
 
 def _find_dic_competing_techs(model, node):
     """
-    A helper function used by _calculate_new_market_shares() to find all the technologies competing
-    for marketshare at a given node & year.
-
-    Parameters
-    ----------
-    model : pyCIMS.Model
-        The model to use for retrieving data.
-    node : str
-        Name of the node (branch notation) whose competing technologies we want to find.
-    comp_type : str
-        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
-
-    Returns
-    -------
-    list :
-        The list of technologies competing for market share at `node`.
-        If comp_type is Tech Compete, this will simply be the technologies defined at the node. If
-        comp_type is Node Tech Compete, this will include the technologies of the services requested
-        by node. This does not verify the technology is available in the given year.
-
+    Find all the nodes/technologies competing for stock with the DIC class technologies. For node
+    tech compete nodes this includes all the technologies of nodes requested by the parent NTC node.
     """
     base_year = str(model.base_year)
     competing_technologies = []
@@ -239,7 +230,9 @@ def _find_dic_competing_techs(model, node):
     for parent in parents:
         if model.get_param('competition type', parent) == 'node tech compete':
             for sibling in model.graph.nodes[parent][base_year]['technologies']:
-                sibling_node = model.graph.nodes[parent][base_year]['technologies'][sibling]['service requested'][sibling]['branch']
+                sibling_node = \
+                model.graph.nodes[parent][base_year]['technologies'][sibling]['service requested'][
+                    sibling]['branch']
                 for tech in model.graph.nodes[sibling_node][base_year]['technologies']:
                     competing_technologies.append((sibling_node, tech))
 
