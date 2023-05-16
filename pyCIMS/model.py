@@ -77,6 +77,8 @@ class Model:
 
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+
         self._inherit_parameter_values()
         self._initialize_model()
 
@@ -128,6 +130,7 @@ class Model:
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
+        model.dic_classes = model._dic_classes()
 
         # Re-initialize the model
         model._inherit_parameter_values()
@@ -199,6 +202,37 @@ class Model:
                             dcc_classes[dccc] = [(node, tech)]
 
         return dcc_classes
+
+    def _dic_classes(self):
+        """
+        Iterate through each node and technology in self to create a dictionary mapping Declining
+        Capital Cost (DCC) Classes to a list of nodes that belong to that class.
+
+        Returns
+        -------
+        dict {str: [str]}:
+            Dictionary where keys are declining capital cost classes (str) and values are lists of
+            nodes (str) belonging to that class.
+        """
+        dic_classes = {}
+
+        nodes = self.graph.nodes
+        base_year = str(self.base_year)
+        for node in nodes:
+            if 'technologies' in nodes[node][base_year]:
+                for tech in nodes[node][base_year]['technologies']:
+                    try:
+                        dicc = self.graph.nodes[node][base_year]['technologies'][tech]['dic_class'][
+                            'context']
+                    except:
+                        dicc = None
+                    if dicc is not None:
+                        if dicc in dic_classes:
+                            dic_classes[dicc].append((node, tech))
+                        else:
+                            dic_classes[dicc] = [(node, tech)]
+
+        return dic_classes
 
     def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10,
             show_warnings=True, print_eq=False):

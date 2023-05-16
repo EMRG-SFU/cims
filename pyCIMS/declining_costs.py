@@ -1,8 +1,8 @@
 """
-Module containing all declining capital cost functionality, used as part of LCC calculation.
+Module containing all declining capital cost & declining intangible cost functionality, used as
+part of LCC calculation.
 """
 from math import log2, exp
-
 import pyCIMS
 from . import utils
 
@@ -142,7 +142,7 @@ def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
 
     # Calculate Declining AIC
     if int(year) == int(model.base_year):
-        return_val = initial_aic
+        return initial_aic
     else:
         prev_year = str(int(year) - model.step)
 
@@ -157,9 +157,7 @@ def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
         prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
         aic_declining = min(prev_aic_declining, initial_aic / denominator)
 
-        return_val = aic_declining
-
-    return return_val
+        return aic_declining
 
 
 def _dic_new_market_share(model, node, year, tech):
@@ -175,7 +173,10 @@ def _dic_new_market_share(model, node, year, tech):
         all_competing_stock = _get_dic_competing_stock(model, dic_class_techs, year)
 
         # New Market Share
-        dic_nms = dic_class_stock / all_competing_stock
+        if dic_class_stock == 0:
+            dic_nms = 0
+        else:
+            dic_nms = dic_class_stock / all_competing_stock
     else:
         dic_nms = model.get_param('new_market_share', node, year, tech=tech)
 
@@ -190,13 +191,56 @@ def _get_dic_class_new_stock(model, dic_techs, year):
 
 
 def _get_dic_competing_stock(model, dic_techs, year):
-    competing_nodes = set([x[0] for x in dic_techs])
-    competing_stocks = {}
-    for node in competing_nodes:
-        parent = '.'.join(node.split('.')[:-1])
-        if model.get_param('competition type', parent) == 'node tech compete':
-            competing_stocks[parent] = model.get_param('new_stock', parent, year)
-        else:
-            competing_stocks[node] = model.get_param('new_stock', node, year)
+    dic_nodes = set([x[0] for x in dic_techs])
 
-    return competing_stocks.values().sum()
+    competing_stocks = {}
+    for node in dic_nodes:
+        comp_type = model.get_param('competition type', node)
+        competing_techs = _find_dic_competing_techs(model, node)
+        for c_node, c_tech in competing_techs:
+            competing_stocks[(c_node, c_tech)] = model.get_param('new_stock', c_node, year, tech=c_tech)
+
+    return sum([v for k, v in competing_stocks.items() if v is not None])
+
+
+def _find_dic_competing_techs(model, node):
+    """
+    A helper function used by _calculate_new_market_shares() to find all the technologies competing
+    for marketshare at a given node & year.
+
+    Parameters
+    ----------
+    model : pyCIMS.Model
+        The model to use for retrieving data.
+    node : str
+        Name of the node (branch notation) whose competing technologies we want to find.
+    comp_type : str
+        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
+
+    Returns
+    -------
+    list :
+        The list of technologies competing for market share at `node`.
+        If comp_type is Tech Compete, this will simply be the technologies defined at the node. If
+        comp_type is Node Tech Compete, this will include the technologies of the services requested
+        by node. This does not verify the technology is available in the given year.
+
+    """
+    base_year = str(model.base_year)
+    competing_technologies = []
+
+    # Find all technologies at the node
+    if model.get_param('competition type', node) == 'tech compete':
+        for tech in model.graph.nodes[node][base_year]['technologies']:
+            competing_technologies.append((node, tech))
+
+    # Find any technologies from Node-Tech-Compete siblings
+    parents = [u for u, v in model.graph.in_edges(node)]
+    for parent in parents:
+        if model.get_param('competition type', parent) == 'node tech compete':
+            for sibling in model.graph.nodes[parent][base_year]['technologies']:
+                sibling_node = model.graph.nodes[parent][base_year]['technologies'][sibling]['service requested'][sibling]['branch']
+                for tech in model.graph.nodes[sibling_node][base_year]['technologies']:
+                    competing_technologies.append((sibling_node, tech))
+
+    return set(competing_technologies)
