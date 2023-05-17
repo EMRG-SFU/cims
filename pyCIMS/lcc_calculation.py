@@ -291,11 +291,9 @@ def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
     capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
     subsidy = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
-    fixed_uic = model.get_param('uic_fixed', node, year, tech=tech, do_calc=True)
-    declining_uic = model.get_param('uic_declining', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_uc = (capital_cost + subsidy + fixed_uic + declining_uic) / output * crf
+    complete_uc = (capital_cost + subsidy) / output * crf
 
     return complete_uc
 
@@ -415,49 +413,6 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
         capital_cost = max(cc_declining, cc_overnight * cc_declining_limit)
 
     return capital_cost
-
-
-def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Upfront Declining Intangible Cost (UIC_declining).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining UIC.
-    node : The node to calculate declining UIC for.
-    year : The year to calculate declining UIC for.
-    tech : The technology to calculate declining UIC for.
-
-    Returns
-    -------
-    float : The declining UIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_uic = model.get_param('uic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('uic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('uic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining UIC
-    if int(year) == int(model.base_year):
-        return_uic = initial_uic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
-        uic_declining = min(prev_uic_declining, initial_uic / denominator)
-
-        return_uic = uic_declining
-
-    return return_uic
-
-
 
 
 def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:

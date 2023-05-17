@@ -132,7 +132,6 @@ calculation_directory = {
     'capital cost_declining': declining_costs.calc_declining_capital_cost,
     'capital cost': lcc_calculation.calc_capital_cost,
     'crf': lcc_calculation.calc_crf,
-    'uic_declining': lcc_calculation.calc_declining_uic,
     'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
     'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
     'aic_declining': declining_costs.calc_declining_aic,
