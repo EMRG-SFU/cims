@@ -118,33 +118,33 @@ def _dcc_segment_3(model, node, year, tech, all_stock):
 # ==========================================
 # Declining Intangible Cost Functions
 # ==========================================
-def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_declining_intangible_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     """
-    Calculate Annual Declining Intangible Cost (declining AIC).
+    Calculate Annual Declining Intangible Cost (DIC).
 
     Parameters
     ----------
-    model : The model containing component parts of declining AIC.
-    node : The node to calculate declining AIC for.
-    year : The year to calculate declining AIC for.
-    tech : The technology to calculate declining AIC for.
+    model : The model containing component parts of DIC.
+    node : The node to calculate DIC for.
+    year : The year to calculate DIC for.
+    tech : The technology to calculate DIC for.
 
     Returns
     -------
-    float : The declining AIC.
+    float : The DIC.
     """
     # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('aic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('aic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('aic_declining_shape', node, year, tech=tech)
+    initial_intangible_cost = model.get_param('dic_initial', node, year, tech=tech)
+    rate_constant = model.get_param('dic_rate', node, year, tech=tech)
+    shape_constant = model.get_param('dic_shape', node, year, tech=tech)
 
-    # Calculate Declining AIC
+    # Calculate DIC
     if int(year) == int(model.base_year):
-        return initial_aic
+        return initial_intangible_cost
 
     prev_year = str(int(year) - model.step)
 
-    prev_nms = _dic_new_market_share(model, node, prev_year, tech=tech)
+    prev_nms = _find_dic_class_new_market_share(model, node, prev_year, tech=tech)
 
     try:
         denominator = 1 + shape_constant * exp(rate_constant * prev_nms)
@@ -152,13 +152,13 @@ def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -
         print(node, year, shape_constant, rate_constant, prev_nms)
         raise overflow
 
-    prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
-    aic_declining = min(prev_aic_declining, initial_aic / denominator)
+    prev_dic = calc_declining_intangible_cost(model, node, prev_year, tech)
+    dic = min(prev_dic, initial_intangible_cost / denominator)
 
-    return aic_declining
+    return dic
 
 
-def _dic_new_market_share(model, node, year, tech):
+def _find_dic_class_new_market_share(model, node, year, tech):
     """
     Find the total new marketshare attributed to technologies from the node's DIC class (relative to
     all technologies and nodes competing for marketshare with technologies within the DIC class)
@@ -169,10 +169,10 @@ def _dic_new_market_share(model, node, year, tech):
         dic_class_techs = model.dic_classes[dic_class]
 
         # DIC Stock
-        dic_class_stock = _get_dic_class_new_stock(model, dic_class_techs, year)
+        dic_class_stock = _find_dic_class_new_stock(model, dic_class_techs, year)
 
         # All Stock
-        all_competing_stock = _get_dic_competing_new_stock(model, dic_class_techs, year)
+        all_competing_stock = _find_dic_competing_new_stock(model, dic_class_techs, year)
 
         # New Market Share
         if dic_class_stock == 0:
@@ -185,7 +185,7 @@ def _dic_new_market_share(model, node, year, tech):
     return dic_nms
 
 
-def _get_dic_class_new_stock(model, dic_techs, year):
+def _find_dic_class_new_stock(model, dic_techs, year):
     """
     Calculate the new stock from all the technologies in the DIC class.
     """
@@ -195,7 +195,7 @@ def _get_dic_class_new_stock(model, dic_techs, year):
     return new_dic_stock
 
 
-def _get_dic_competing_new_stock(model, dic_techs, year):
+def _find_dic_competing_new_stock(model, dic_techs, year):
     """
     Calculate the new stock from all the technologies competing for marketshare with the nodes in
     the DIC class (including the DIC techs).

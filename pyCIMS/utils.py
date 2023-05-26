@@ -134,7 +134,7 @@ calculation_directory = {
     'crf': lcc_calculation.calc_crf,
     'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
     'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
-    'aic_declining': declining_costs.calc_declining_aic,
+    'dic': declining_costs.calc_declining_intangible_cost,
     'financial annual cost': lcc_calculation.calc_financial_annual_cost,
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
     'service cost': lcc_calculation.calc_annual_service_cost,

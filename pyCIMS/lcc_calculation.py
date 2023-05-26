@@ -347,13 +347,11 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     calc_financial_annual_cost
     """
     operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
-    fixed_aic = model.get_param('aic_fixed', node, year, tech=tech)
-    declining_aic = model.get_param('aic_declining', node, year, tech=tech, do_calc=True)
+    fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
+    declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_ac = (operating_maintenance +
-                   fixed_aic +
-                   declining_aic) / output
+    complete_ac = (operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
     return complete_ac
 
