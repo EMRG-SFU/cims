@@ -1,4 +1,5 @@
 import copy
+import random
 import warnings
 import networkx as nx
 import pandas as pd
@@ -74,6 +75,7 @@ class Model:
         self.base_year = int(self.years[0])
 
         self.prices = {}
+        self.equilibrium_count = 0
 
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
@@ -200,7 +202,7 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, min_iterations=1, max_iterations=10,
+    def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=1, max_iterations=10,
             show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
@@ -243,12 +245,13 @@ class Model:
 
             # Initialize Basic Variables
             equilibrium = False
+            self.equilibrium_count = 0
             iteration = 1
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
-            while not equilibrium:
-                print('iter {}'.format(iteration))
+            while self.equilibrium_count < num_equilibrium_iterations:
+                print(f'iter {iteration}')
                 # Early exit if we reach the maximum number of iterations
                 if iteration >= max_iterations:
                     warnings.warn("Max iterations reached for year {}. "
@@ -310,6 +313,7 @@ class Model:
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
+
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
                                self.check_equilibrium(prev_prices,
@@ -317,6 +321,14 @@ class Model:
                                                       iteration,
                                                       equilibrium_threshold,
                                                       print_eq))
+
+                if int(year) == self.base_year:
+                    # Force the model to continue after a single iteration in the base year
+                    self.equilibrium_count = num_equilibrium_iterations
+                elif equilibrium:
+                    self.equilibrium_count += 1
+                else:
+                    self.equilibrium_count = 0
 
                 self.prices = new_prices
 
