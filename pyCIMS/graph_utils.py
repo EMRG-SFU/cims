@@ -76,14 +76,7 @@ def parent_name(curr_node, return_empty=False):
 
 def get_fuels(graph):
     """
-    Find the names of nodes supplying fuel.
-
-    A fuel is any node which meets one of the following criteria:
-    * The node is a market node.
-    * The node is a supply node, whose competition type is Sector.
-    * The node is a supply node, whose competition type begins with Fuel (i.e. Fuel - Fixed Price,
-      Fuel - Cost Curve Annual, Fuel - Cost Curve Cumulative).
-
+    Find the nodes which have been specified as fuels in the model description.
     Returns
     -------
     tuple of two lists
@@ -91,29 +84,12 @@ def get_fuels(graph):
         The first output is a list containing fuels and markets, excluding children of markets.
     """
     fuels = []
-    remove_fuels = []
-    for node, data in graph.nodes(data=True):
-        is_market = 'market' in data['competition type'].lower()
-        is_supply = data['type'].lower() == 'supply'
-        is_sector = 'sector' in data['competition type'].lower()
-        starts_with_fuel = data['competition type'].lower().startswith('fuel')
-        if is_market:
+    for node in graph.nodes:
+        if graph.nodes[node]['is_fuel']:
             fuels.append(node)
-            # Check all the service requested to remove them from the fuels list later
-            for param in data.keys():
-                # checking if param is a year
-                if param.isdigit():
-                    techs = data[param]['technologies']
-                    for _, tech_dict in techs.items():
-                        child = tech_dict['service requested']
-                        remove_fuels.append(child['branch'])
-                    break
-        elif is_supply & is_sector:
-            fuels.append(node)
-        elif is_supply & starts_with_fuel:
-            fuels.append(node)
-    equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
-    return fuels, equilibrium_fuels
+        # except KeyError:
+        #     continue
+    return fuels
 
 
 def get_GHG_and_Emissions(graph, year):
@@ -350,6 +326,7 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 3 Find node type (supply, demand, or standard)
+    # TODO: Change this -- now it will either be a fuel or will be a demand node -- Q: before we had the notion of a "standard" node that was visited in both the top-down and bottom-up traverses, what happens now?
     typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
     if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
         graph.nodes[current_node]['type'] = typ[0]
@@ -362,6 +339,13 @@ def add_node_data(graph, current_node, node_dfs):
 
     # Drop node type row
     current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
+
+    # 3.5 Find whether node is a fuel
+    is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is_fuel']['Context']
+    is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
+    graph.nodes[current_node]['is_fuel'] = is_fuel
+    # Drop fuel row
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'is_fuel']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
