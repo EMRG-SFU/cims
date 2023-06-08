@@ -163,12 +163,13 @@ class Model:
         self.graph = graph
 
     def _initialize_model(self):
+        # Initialize Taxes
         for year in self.years:
             # Pass tax to all children for carbon cost
             graph_utils.top_down_traversal(self.graph,
                                            self._init_tax_emissions,
                                            year)
-
+        # Initialize Tax Foresight
         tax_foresight.initialize_tax_foresight(self)
 
     def _dcc_classes(self):
@@ -236,9 +237,9 @@ class Model:
         """
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
-        # Make a subgraph based on the type of node
-        demand_nodes = ['demand', 'standard']
-        supply_nodes = ['supply', 'standard']
+
+        demand_nodes = graph_utils.get_demand_nodes(self.graph)
+        supply_nodes = graph_utils.get_supply_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -263,46 +264,42 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate Life Cycle Cost values on demand side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self,
-                                                node_types=demand_nodes)
+                                                self)
 
                 # Calculate Quantities (Total Stock Needed)
-                graph_utils.top_down_traversal(self.graph,
+                graph_utils.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
                                                self.stock_allocation_and_retirement,
-                                               year,
-                                               node_types=demand_nodes)
+                                               year)
 
                 # Calculate Service Costs on Demand Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self,
-                                                node_types=demand_nodes)
+                                                self)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes,
                                                 cost_curve_min_max=True)
                 # Calculate Fuel Quantities
-                graph_utils.top_down_traversal(self.graph,
+                graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
-                                               node_types=supply_nodes)
+                                               )
 
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes)
+                                                )
 
                 # Check for an Equilibrium -- Across all nodes, not just fuels
                 # ************************

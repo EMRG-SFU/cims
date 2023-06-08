@@ -1,6 +1,9 @@
+from __future__ import annotations  # For Type Hinting
 import copy
 import warnings
 import networkx as nx
+from typing import List
+
 
 from . import utils
 from . import loop_resolution
@@ -147,32 +150,64 @@ def get_GHG_and_Emissions(graph, year):
     return ghg, emission_type, gwp
 
 
-def get_subgraph(graph, node_types):
+def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
     """
-    Find the sub-graph of `graph` that only includes nodes whose type is in `node_types`.
+    Find the nodes to use for demand-side traversals. The returned list of nodes will include all
+    nodes whose "node type" attribute is not "supply.
 
     Parameters
     ----------
-    node_types : list of str
-        A list of node types ('standard', 'supply', or 'demand') to include in the returned
-        sub-graph.
+    graph :
+        The graph whose demand tree will be returned.
 
     Returns
     -------
-    networkx.DiGraph or networkX.Graph
-        The returned graph is a sub-graph of `graph`. A node is only included if its type is one
-        of `node_types`. A edge is only included if it connects two nodes found in the returned
-        graph.
+    A subgraph of graph which includes only non-supply nodes.
     """
-    nodes = [n for n, a in graph.nodes(data=True) if a['type'] in node_types]
-    sub_g = graph.subgraph(nodes)
-    return sub_g
+    non_supply_nodes = [n for n, d in graph.nodes(data=True) if
+                        ('node type' not in d) or (d['node type'] != 'supply')]
+
+    return non_supply_nodes
+
+
+def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
+    """
+    Find the nodes to use for supply-side traversals. The returned list of nodes will include all
+    nodes whose "node type" is "supply" and any node which is a structural ancestor of these supply
+    nodes.
+
+    Parameters
+    ----------
+    graph :
+        The graph whose supply tree will be returned.
+
+    Returns
+    -------
+    A subgraph of graph which includes only supply nodes & their structural ancestors.
+    """
+    # Find all the supply nodes
+    supply_nodes = [n for n, d in graph.nodes(data=True) if
+                    ('node type' in d) and (d['node type'] == 'supply')]
+
+    # Find the structural ancestors of the supply nodes
+    supply_subgraph = graph.subgraph(supply_nodes)
+    supply_roots = [n for n in supply_subgraph.nodes if supply_subgraph.in_degree(n) == 0]
+
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_graph = graph.edge_subgraph(structural_edges)
+
+    ancestors = set()
+    for supply_root in supply_nodes:
+        supply_root_structural_ancestors = nx.ancestors(structural_graph, supply_root)
+        ancestors = ancestors.union(supply_root_structural_ancestors)
+
+    return supply_nodes + list(ancestors)
 
 
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None,
+def top_down_traversal(graph, node_process_func, *args, root=None,
                        loop_resolution_func=loop_resolution.min_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -190,10 +225,6 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
 
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
-
     Returns
     -------
     None
@@ -209,10 +240,7 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
     dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
+    sub_graph = graph
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
@@ -231,7 +259,7 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None,
+def bottom_up_traversal(graph, node_process_func, *args, root=None,
                         loop_resolution_func=loop_resolution.max_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -253,16 +281,11 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
 
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
-
     Returns
     -------
     None
 
     """
-
     # If root hasn't been provided, find the sub-graph's root
     if not root:
         possible_roots = [n for n, d in graph.in_degree() if d == 0]
@@ -273,10 +296,7 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
     dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
+    sub_graph = graph
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
@@ -325,25 +345,12 @@ def add_node_data(graph, current_node, node_dfs):
     # 2 Add an empty node to the graph
     graph.add_node(current_node)
 
-    # 3 Find node type (supply, demand, or standard)
-    # TODO: Change this -- now it will either be a fuel or will be a demand node -- Q: before we had the notion of a "standard" node that was visited in both the top-down and bottom-up traverses, what happens now?
-    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
-    if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
-        graph.nodes[current_node]['type'] = typ[0]
-    elif 'type' in graph.nodes[current_node].keys():
-        pass
-    else:
-        # If type isn't in the node's df or is not demand/supply, try to find it in the ancestors
-        val = _find_value_in_ancestors(graph, current_node, 'type')
-        graph.nodes[current_node]['type'] = val if val else 'standard'
-
-    # Drop node type row
-    current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
-
-    # 3.5 Find whether node is a fuel
+    # 3 Find whether node is a fuel
     is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is_fuel']['Context']
     is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
     graph.nodes[current_node]['is_fuel'] = is_fuel
+    if is_fuel:
+        graph.nodes[current_node]['node type'] = 'supply'
     # Drop fuel row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'is_fuel']
 
