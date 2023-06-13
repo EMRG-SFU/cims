@@ -82,16 +82,13 @@ def get_fuels(graph):
     Find the nodes which have been specified as fuels in the model description.
     Returns
     -------
-    tuple of two lists
-        The first output is a list containing the names of nodes which supply fuels and markets.
-        The first output is a list containing fuels and markets, excluding children of markets.
+    List
+        A list containing the names of nodes which supply fuels and markets.
     """
     fuels = []
     for node in graph.nodes:
         if graph.nodes[node]['is_fuel']:
             fuels.append(node)
-        # except KeyError:
-        #     continue
     return fuels
 
 
@@ -164,10 +161,20 @@ def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
     -------
     A subgraph of graph which includes only non-supply nodes.
     """
-    non_supply_nodes = [n for n, d in graph.nodes(data=True) if
-                        ('node type' not in d) or (d['node type'] != 'supply')]
+    # Find Fuels
+    fuels = set([n for n, d in graph.nodes(data=True) if ('is_fuel' in d) and d['is_fuel']])
 
-    return non_supply_nodes
+    # Find the structural descendants of fuels
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_graph = graph.edge_subgraph(structural_edges)
+
+    descendants = set()
+    for fuel in fuels:
+        fuel_structural_descendants = nx.descendants(structural_graph, fuel)
+        descendants = descendants.union(fuel_structural_descendants)
+
+    # Return all the nodes which are neither fuels nor their descendants
+    return list(set(graph.nodes).difference(set(fuels).union(descendants)))
 
 
 def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
@@ -185,23 +192,23 @@ def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
     -------
     A subgraph of graph which includes only supply nodes & their structural ancestors.
     """
-    # Find all the supply nodes
-    supply_nodes = [n for n, d in graph.nodes(data=True) if
-                    ('node type' in d) and (d['node type'] == 'supply')]
+    # Find Fuels
+    fuels = [n for n, d in graph.nodes(data=True) if ('is_fuel' in d) and d['is_fuel']]
 
     # Find the structural ancestors of the supply nodes
-    supply_subgraph = graph.subgraph(supply_nodes)
-    supply_roots = [n for n in supply_subgraph.nodes if supply_subgraph.in_degree(n) == 0]
-
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
     structural_graph = graph.edge_subgraph(structural_edges)
 
     ancestors = set()
-    for supply_root in supply_nodes:
-        supply_root_structural_ancestors = nx.ancestors(structural_graph, supply_root)
-        ancestors = ancestors.union(supply_root_structural_ancestors)
+    descendants = set()
+    for fuel in fuels:
+        structural_ancestors = nx.ancestors(structural_graph, fuel)
+        ancestors = ancestors.union(structural_ancestors)
 
-    return supply_nodes + list(ancestors)
+        structural_descendants = nx.descendants(structural_graph, fuel)
+        descendants = descendants.union(structural_descendants)
+
+    return fuels + list(ancestors) + list(descendants)
 
 
 # **************************
@@ -349,8 +356,6 @@ def add_node_data(graph, current_node, node_dfs):
     is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is_fuel']['Context']
     is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
     graph.nodes[current_node]['is_fuel'] = is_fuel
-    if is_fuel:
-        graph.nodes[current_node]['node type'] = 'supply'
     # Drop fuel row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'is_fuel']
 

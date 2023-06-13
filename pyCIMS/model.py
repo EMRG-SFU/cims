@@ -67,7 +67,6 @@ class Model:
         self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
-        self.equilibrium_fuels = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
@@ -126,7 +125,7 @@ class Model:
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels, model.equilibrium_fuels = graph_utils.get_fuels(graph)
+        model.fuels = graph_utils.get_fuels(graph)
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
