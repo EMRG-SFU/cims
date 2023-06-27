@@ -864,20 +864,20 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     """
     total_fixed_cost = model.get_param('total fixed cost', node, year, tech=tech)
     if total_fixed_cost is not None:
-        prov_quant_object, src = model.get_param('provided_quantities', node, year,
-                                                 return_source=True)
-        prov_quant = prov_quant_object.get_total_quantity()
+        if int(year) == model.base_year:
+            fixed_cost_rate = 0
+            fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                                                           param_source='default')
+        else:
+            prov_quant_object, src = model.get_param('provided_quantities', node, year,
+                                                     return_source=True)
+            prov_quant = prov_quant_object.get_total_quantity()
 
-        if tech and prov_quant != 0:
-            total_market_share = model.get_param('total_market_share', node, year, tech=tech)
-            prov_quant = prov_quant * total_market_share
+            if tech and prov_quant != 0:
+                total_market_share = model.get_param('total_market_share', node, year, tech=tech)
+                prov_quant = prov_quant * total_market_share
 
-        if src == 'initialization':
-            if int(year) == model.base_year:
-                fixed_cost_rate = 0
-                fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
-                                                               param_source='default')
-            else:
+            if src == 'initialization':
                 prev_year = str(int(year) - model.step)
                 prov_quant = model.get_param('provided_quantities', node,
                                              prev_year).get_total_quantity()
@@ -887,10 +887,18 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
                     fixed_cost_rate = 0
                 fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
                                                                param_source='calculation')
-        else:
-            fixed_cost_rate = total_fixed_cost / prov_quant
-            fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
-                                                           param_source='calculation')
+            else:
+                prov_quant = prov_quant_object.get_total_quantity()
+
+                if tech and prov_quant != 0:
+                    total_market_share = model.get_param('total_market_share', node, year, tech=tech)
+                    prov_quant = prov_quant * total_market_share
+
+
+                else:
+                    fixed_cost_rate = total_fixed_cost / prov_quant
+                    fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                                                                   param_source='calculation')
 
         model.set_param_internal(fixed_cost_rate_dict, 'fixed cost rate', node, year, tech=tech)
 
