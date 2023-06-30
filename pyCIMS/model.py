@@ -202,8 +202,8 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=1, max_iterations=10,
-            show_warnings=True, print_eq=False):
+    def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
+            max_iterations=10, show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -217,7 +217,7 @@ class Model:
 
         min_iterations : int, optional
             The minimum number of times to iterate between supply and demand in an attempt to reach
-            an equilibrium.
+            an equilibrium. TODO: Document why this has changed to 2.
 
         max_iterations : int, optional
             The maximum number of times to iterate between supply and demand in an attempt to reach
