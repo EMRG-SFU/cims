@@ -110,7 +110,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             if first_year_avail <= int(year) < first_year_unavail:
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:
-                    # When lcc < 0.01, we will approximate it's weight using a TREND line
+                    # When lcc < 0.01, we will approximate its weight using a TREND line
                     w1 = 0.1 ** (-1 * v)
                     w2 = 0.01 ** (-1 * v)
                     slope = (w2 - w1) / (0.01 - 0.1)
@@ -291,11 +291,9 @@ def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
     capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
     subsidy = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
-    fixed_uic = model.get_param('uic_fixed', node, year, tech=tech, do_calc=True)
-    declining_uic = model.get_param('uic_declining', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_uc = (capital_cost + subsidy + fixed_uic + declining_uic) / output * crf
+    complete_uc = (capital_cost + subsidy) / output * crf
 
     return complete_uc
 
@@ -349,13 +347,11 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     calc_financial_annual_cost
     """
     operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
-    fixed_aic = model.get_param('aic_fixed', node, year, tech=tech)
-    declining_aic = model.get_param('aic_declining', node, year, tech=tech, do_calc=True)
+    fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
+    declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_ac = (operating_maintenance +
-                   fixed_aic +
-                   declining_aic) / output
+    complete_ac = (operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
     return complete_ac
 
@@ -404,182 +400,17 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     """
     dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
 
-    if dcc_class is None or int(year) == int(model.base_year):
+    if dcc_class is None:
         capital_cost = model.get_param('capital cost_overnight', node, year, tech=tech)
     else:
-        capital_cost = model.get_param('capital cost_declining', node, year, tech=tech,
+        cc_declining = model.get_param('capital cost_declining', node, year, tech=tech,
                                        do_calc=True)
+        cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
+        cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
+
+        capital_cost = max(cc_declining, cc_overnight * cc_declining_limit)
 
     return capital_cost
-
-
-def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculates declining capital cost.
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining capital cost.
-    node : The node to calculate declining capital cost for.
-    year : The year to calculate declining capital cost for.
-    tech : The technology to calculate declining capital cost for.
-
-    Returns
-    -------
-    float : The declining capital cost.
-    """
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
-    dcc_class_techs = model.dcc_classes[dcc_class]
-
-    cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
-    cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
-
-    proven_stock = model.get_param('dcc_proven stock', node, year, tech=tech)
-    # For transportation, 'dcc_proven stock' already given in vkt, so no need to convert
-
-    bs_sum = 0
-    ns_sum = 0
-
-    for node_k, tech_k in dcc_class_techs:
-        # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param('load factor', node_k, str(model.base_year), tech=tech_k)
-        if unit_convert is None:
-            unit_convert = 1
-
-        # Base Stock summed over all techs in DCC class (base year only)
-        bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech=tech_k)
-        if bs_k is not None:
-            bs_sum += bs_k / unit_convert
-
-        # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
-        year_list = [str(x) for x in
-                     range(int(model.base_year) + int(model.step), int(year), int(model.step))]
-        for j in year_list:
-            ns_jk = model.get_param('new_stock', node_k, j, tech=tech_k)
-            ns_sum += ns_jk / unit_convert
-
-    # Capital cost adjusted for global R&D
-    gcc_t = model.get_param('GCC_t', node, year, tech=tech, do_calc=True)
-
-    # Calculate Declining Capital Cost
-    if (bs_sum + ns_sum) < proven_stock:
-        cc_declining = max(gcc_t, cc_overnight * cc_declining_limit)
-    else:
-        inner_sums = (bs_sum + ns_sum) / proven_stock
-        progress_ratio = model.get_param('dcc_progress ratio', node, year, tech=tech)
-        log_decline = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
-
-        cc_declining = max(log_decline, cc_overnight * cc_declining_limit)
-
-    return cc_declining
-
-
-def calc_gcc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate GCC, which is the capital cost adjusted for global R&D.
-
-    Parameters
-    ----------
-    model : The model containing component parts of GCC.
-    node : The node to calculate GCC for.
-    year : The year to calculate GCC for.
-    tech : The technology to calculate GCC for.
-
-    Returns
-    -------
-    float : The GCC. If year is the base year, GCC = CC_overnight. Otherwise,
-            GCC_t = GCC_(t-5) * (1 - AEEI)^5.
-    """
-    if int(year) == int(model.base_year):
-        gcc = model.get_param('capital cost_overnight', node, year, tech=tech)
-    else:
-        previous_year = str(int(year) - model.step)
-        aeei = model.get_param('dcc_aeei', node, year, tech=tech)
-        gcc = ((1 - aeei) ** model.step) * calc_gcc(model, node, previous_year, tech=tech)
-
-    return gcc
-
-
-def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Upfront Declining Intangible Cost (UIC_declining).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining UIC.
-    node : The node to calculate declining UIC for.
-    year : The year to calculate declining UIC for.
-    tech : The technology to calculate declining UIC for.
-
-    Returns
-    -------
-    float : The declining UIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_uic = model.get_param('uic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('uic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('uic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining UIC
-    if int(year) == int(model.base_year):
-        return_uic = initial_uic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
-        uic_declining = min(prev_uic_declining, initial_uic / denominator)
-
-        return_uic = uic_declining
-
-    return return_uic
-
-
-def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Annual Declining Intangible Cost (declining AIC).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining AIC.
-    node : The node to calculate declining AIC for.
-    year : The year to calculate declining AIC for.
-    tech : The technology to calculate declining AIC for.
-
-    Returns
-    -------
-    float : The declining AIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('aic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('aic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('aic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining AIC
-    if int(year) == int(model.base_year):
-        return_val = initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
-        aic_declining = min(prev_aic_declining, initial_aic / denominator)
-
-        return_val = aic_declining
-
-    return return_val
 
 
 def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
