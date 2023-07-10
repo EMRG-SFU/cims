@@ -225,8 +225,6 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
     """
     # Calculate the LCC of any new stock
-    if node == 'pyCIMS.Canada.British Columbia.Coal Mining.Coal.Raw Product.Extraction':
-        jillian = 1
     upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
@@ -240,21 +238,23 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     model.set_param_internal(val_dict, 'new_stock_fLCC', node, year, tech)
 
     # Calculate the Vintage-weighted fLCC
-    total_stock = model.get_param('total_stock', node, year, tech=tech)
-    if not total_stock:
+    total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
+    if (not total_stock) or (src in ['previous_year', 'initialization']):
         vintage_weighted_fLCC = fLCC_new_stock
     else:
         stock_by_vintage = {}
         if year == str(model.base_year):
             stock_by_vintage[year] = model.get_param('base_stock', node, year, tech=tech)
         else:
-            stock_by_vintage.update(model.get_param('new_stock_remaining', node, year, tech=tech) or {})
-            stock_by_vintage[str(model.base_year)] = model.get_param('base_stock_remaining', node, year, tech=tech)
-            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech)
+            stock_by_vintage.update(model.get_param('new_stock_remaining', node, year, tech=tech, dict_expected=True) or {})
+            base_stock = model.get_param('base_stock_remaining', node, year, tech=tech) or 0
+            stock_by_vintage[str(model.base_year)] = base_stock
+            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech) + \
+                                     model.get_param('added_retrofit_stock', node, year, tech=tech)
 
         vintage_weighted_fLCC = 0
         for vintage_year in stock_by_vintage:
-            vintage_fLCC = model.get_param('financial life cycle cost', node, vintage_year, tech=tech)
+            vintage_fLCC = model.get_param('new_stock_fLCC', node, vintage_year, tech=tech)
             vintage_weighted_fLCC += (stock_by_vintage[vintage_year] * vintage_fLCC) / total_stock
 
     return vintage_weighted_fLCC
