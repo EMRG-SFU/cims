@@ -8,6 +8,7 @@ from .emissions import calc_emissions_cost, calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
+from .vintage_weighting import calculate_vintage_weighted_parameter
 
 
 def lcc_calculation(sub_graph, node, year, model, **kwargs):
@@ -224,15 +225,27 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
     """
+    # Calculate the LCC of any new stock
     upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
     annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
     emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
     recycled_revenues = calc_recycled_revenues(model, node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + emissions_cost - \
-          recycled_revenues
-    return lcc
+    fLCC_new_stock = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + \
+                     emissions_cost - recycled_revenues
+
+    val_dict = {'year_value': fLCC_new_stock, 'param_source': 'calculation'}
+    model.set_param_internal(val_dict, 'new_stock_fLCC', node, year, tech)
+
+    # Calculate the Vintage-weighted fLCC
+    total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
+    if src in ['previous_year', 'initialization']:
+        vintage_weighted_fLCC = fLCC_new_stock
+    else:
+        vintage_weighted_fLCC = calculate_vintage_weighted_parameter('new_stock_fLCC', model, node, year, tech)
+
+    return vintage_weighted_fLCC
 
 
 def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
