@@ -5,6 +5,7 @@ surplus) and allocating new stock through a market share competition between tec
 import math
 from ..quantities import ProvidedQuantity
 from pyCIMS import utils
+from pyCIMS.vintage_weighting import calculate_vintage_weighted_parameter
 from .retrofits import calc_retrofits
 from .macro_economics import calc_total_stock_demanded
 from .allocation_utils import _find_competing_techs, _find_competing_weights
@@ -84,7 +85,7 @@ def all_tech_compete_allocation(model, node, year):
     # Record Values in Model
     _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares_per_tech,
                                assessed_demand, new_stock_demanded,
-                               added_retrofit_stock, retrofit_stock, use_vintage_weighting=year>str(model.base_year))
+                               added_retrofit_stock, retrofit_stock)
 
 
 def general_allocation(model, node, year):
@@ -809,7 +810,7 @@ def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
 # Record Values
 #############################
 def _record_provided_quantities(model, node, year, requested_services, assessed_demand, tech=None,
-                                market_share=1, use_vintage_weighting=False):
+                                market_share=1):
     """
     A helper function used by `all_tech_compete_allocation()` and `general_allocation()` to record
     the quantities provided by down-tree services (nodes requested by node) to `node` in `year`.
@@ -839,32 +840,14 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
     """
 
     for service, service_data in requested_services.items():
-        weighted_service_request_ratio = 0
-        if use_vintage_weighting and (assessed_demand*market_share) > 0:
-            # Base Year
-            weighted_service_request_ratio += model.get_param('base_stock_remaining', node, year, tech=tech)/(assessed_demand*market_share) * \
-                                              model.get_param("service requested", node, str(model.base_year), tech=tech, context=service)
-            # All other vintages
-            for vintage, vintage_stock in model.get_param('new_stock_remaining', node, year, tech=tech, dict_expected=True).items():
-                service_req_ratio = model.get_param('service requested', node, vintage, tech=tech, context=service)
-                weighted_service_request_ratio += (vintage_stock/(assessed_demand*market_share)) * service_req_ratio
+        vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
+            'service requested', model, node, year, tech=tech, context=service)
 
-            # New & Retrofit Stock
-            all_new_stock = model.get_param('base_stock', node, year, tech=tech) + \
-                            model.get_param('new_stock', node, year, tech=tech) + \
-                            model.get_param('added_retrofit_stock', node, year, tech=tech)
-            weighted_service_request_ratio += all_new_stock/(assessed_demand*market_share) * model.get_param('service requested', node, year, tech=tech, context=service)
-
-            service_req_ratio = weighted_service_request_ratio
-        else:
-            service_req_ratio = service_data['year_value']
-
-        quant_requested = market_share * service_req_ratio * assessed_demand
+        quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
         year_node = model.graph.nodes[service_data['branch']][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
                 utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
-                # utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
         year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
@@ -873,7 +856,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
 
 def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares,
                                assessed_demand, new_stock_demanded,
-                               added_retrofit_stocks, retrofit_stocks, use_vintage_weighting=False):
+                               added_retrofit_stocks, retrofit_stocks):
     """
 
     Parameters
@@ -980,5 +963,4 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
             # Calculate the provided_quantities being for each of the services
             t_ms = total_market_shares[tech]
             _record_provided_quantities(model, node, year, services_being_requested,
-                                        assessed_demand, tech=tech, market_share=t_ms,
-                                        use_vintage_weighting=use_vintage_weighting)
+                                        assessed_demand, tech=tech, market_share=t_ms)

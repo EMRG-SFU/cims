@@ -8,6 +8,7 @@ from .emissions import calc_emissions_cost, calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
+from .vintage_weighting import calculate_vintage_weighted_parameter
 
 
 def lcc_calculation(sub_graph, node, year, model, **kwargs):
@@ -239,23 +240,10 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
 
     # Calculate the Vintage-weighted fLCC
     total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
-    if (not total_stock) or (src in ['previous_year', 'initialization']):
+    if src in ['previous_year', 'initialization']:
         vintage_weighted_fLCC = fLCC_new_stock
     else:
-        stock_by_vintage = {}
-        if year == str(model.base_year):
-            stock_by_vintage[year] = model.get_param('base_stock', node, year, tech=tech)
-        else:
-            stock_by_vintage.update(model.get_param('new_stock_remaining', node, year, tech=tech, dict_expected=True) or {})
-            base_stock = model.get_param('base_stock_remaining', node, year, tech=tech) or 0
-            stock_by_vintage[str(model.base_year)] = base_stock
-            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech) + \
-                                     model.get_param('added_retrofit_stock', node, year, tech=tech)
-
-        vintage_weighted_fLCC = 0
-        for vintage_year in stock_by_vintage:
-            vintage_fLCC = model.get_param('new_stock_fLCC', node, vintage_year, tech=tech)
-            vintage_weighted_fLCC += (stock_by_vintage[vintage_year] * vintage_fLCC) / total_stock
+        vintage_weighted_fLCC = calculate_vintage_weighted_parameter('new_stock_fLCC', model, node, year, tech)
 
     return vintage_weighted_fLCC
 
