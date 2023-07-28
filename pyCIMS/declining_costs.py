@@ -40,8 +40,8 @@ def _calc_cc_min(model, node, year, tech):
     else:
         prev_cc_min = model.get_param('capital_cost_min', node, str(int(year) - model.step),
                                       tech=tech)
-        mal = model.get_param('dcc_min learning', node, year, tech=tech)
-        cc_min = prev_cc_min * (1 - mal) ** model.step
+        min_learning = model.get_param('dcc_min learning', node, year, tech=tech)
+        cc_min = prev_cc_min * (1 - min_learning) ** model.step
 
     model.set_param_internal(utils.create_value_dict(cc_min, param_source='calculation'),
                              'capital_cost_min', node, year, tech=tech)
