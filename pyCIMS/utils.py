@@ -137,7 +137,8 @@ calculation_directory = {
     'dic': declining_costs.calc_declining_intangible_cost,
     'financial annual cost': lcc_calculation.calc_financial_annual_cost,
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
-    'service cost': lcc_calculation.calc_annual_service_cost,
+    'service cost': lcc_calculation.calc_complete_annual_service_cost,
+    'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
     'emissions cost': lcc_calculation.calc_emissions_cost,
     'financial life cycle cost': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
@@ -371,7 +372,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                                       year=prev_year,
                                       context=context,
                                       sub_context=sub_context,
-                                      tech=tech)
+                                      tech=tech,
+                                      dict_expected=dict_expected)
                 param_source = 'previous_year'
             else:
                 val = None

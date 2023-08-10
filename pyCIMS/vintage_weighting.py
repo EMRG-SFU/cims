@@ -12,6 +12,21 @@ def _get_vintage_weights(model, node, year, tech):
     total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
     if (total_stock is None) or (total_stock == 0):
         vintage_weights = {year: 1}
+    elif src == 'previous_year':
+        stock_by_vintage = {}
+        if year == str(model.base_year+model.step):
+            stock_by_vintage[year] = model.get_param('base_stock', node, year, tech=tech)
+        else:
+            stock_by_vintage.update(
+                model.get_param('new_stock_remaining', node, year, tech=tech,
+                                dict_expected=True) or {})
+            base_stock = model.get_param('base_stock_remaining', node, year, tech=tech) or 0
+            stock_by_vintage[str(model.base_year)] = base_stock
+            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech) + \
+                                     model.get_param('added_retrofit_stock', node, year,
+                                                     tech=tech)
+        vintage_weights = {k: v / total_stock for k, v in stock_by_vintage.items()}
+
     else:
         stock_by_vintage = {}
         if year == str(model.base_year):
@@ -26,13 +41,13 @@ def _get_vintage_weights(model, node, year, tech):
                                      model.get_param('added_retrofit_stock', node, year,
                                                      tech=tech)
 
-        vintage_weights = {k: v/total_stock for k, v in stock_by_vintage.items()}
+        vintage_weights = {k: v / total_stock for k, v in stock_by_vintage.items()}
 
     return vintage_weights
 
 
-def calculate_vintage_weighted_parameter(parameter:str , model: "pyCIMS.Model", node: str,
-                                         year: str, tech: str, context: str=None) -> float:
+def calculate_vintage_weighted_parameter(parameter: str, model: "pyCIMS.Model", node: str,
+                                         year: str, tech: str, context: str = None) -> float:
     """
     Uses vintage-based weighting to calculate the value of a parameter. This function is used for
     peforming vintage-based weighting of financial LCC and quantities requested of children nodes.
@@ -41,8 +56,9 @@ def calculate_vintage_weighted_parameter(parameter:str , model: "pyCIMS.Model", 
     for when we calculate the financial LCC value associated with all stock, not just the newest
     stock.
 
-    Similarly, this ensures between year changes of service request ratios (e.g. a technology becoming
-    more or less efficient over time) are accounted for when we calculate the total demand for these services.
+    Similarly, this ensures between year changes of service request ratios (e.g. a technology
+    becoming more or less efficient over time) are accounted for when we calculate the total demand
+    for these services.
 
     Parameters
     ----------
@@ -64,9 +80,12 @@ def calculate_vintage_weighted_parameter(parameter:str , model: "pyCIMS.Model", 
     """
     vintage_weights = _get_vintage_weights(model, node, year, tech)
 
+    assert (round(sum(vintage_weights.values()), 5) == 1)
+
     weighted_parameter = 0
     for vintage_year, weight in vintage_weights.items():
         parameter_value = model.get_param(parameter, node, vintage_year, tech=tech, context=context)
         weighted_parameter += parameter_value * weight
 
     return weighted_parameter
+
