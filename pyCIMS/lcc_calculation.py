@@ -2,9 +2,9 @@
 This module contains the functions for LCC Calculations for the pyCIMS model.
 """
 import warnings
-import math
 
-from .emissions import calc_emissions_cost, calc_cumul_emissions_cost_rate
+from .emissions import calc_complete_emissions_cost, calc_financial_emissions_cost, \
+    calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
@@ -253,8 +253,8 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     # Fixed Cost Rate -- No Vintage Weighting
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
 
-    # Emissions Cost -- TODO
-    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
+    # Emissions Cost -- Vintage-weight the emissions ratios, but leave the cost/emission the same
+    emissions_cost = calc_financial_emissions_cost(model, node, year, tech, allow_foresight=False)
 
     # Recycled Revenues -- TODO
     recycled_revenues = calc_recycled_revenues(model, node, year, tech)
@@ -291,7 +291,7 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
                                            do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
-    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=True)
+    emissions_cost = calc_complete_emissions_cost(model, node, year, tech, allow_foresight=True)
 
     complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
                    fixed_cost_rate + emissions_cost
@@ -382,7 +382,8 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_ac = (operating_maintenance + fixed_intangible_cost + declining_intangible_cost)/output
+    complete_ac = (
+                              operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
     return complete_ac
 
@@ -478,7 +479,7 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
 
 
 def calc_financial_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
-                                              tech: str = None) -> float:
+                                       tech: str = None) -> float:
     """
     """
 
@@ -750,6 +751,8 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     Calculate the fixed cost rate for a node or technology. This is the total fixed cost (which is
     provided exogenously) divided by the total quantity being provided by the node or technology.
 
+    Note: This parameter is not weighted by stock vintage.
+
     Parameters
     ----------
     model : pyCIMS.Model
@@ -772,6 +775,12 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     """
     total_fixed_cost = model.get_param('total fixed cost', node, year, tech=tech)
     if total_fixed_cost is not None:
+        if tech:
+            warnings.warn(
+                "This function was not intended for use with technologies. While we won't stop"
+                "you from using it for that purpose, you are doing so at your own risk. You"
+                "may want to consider re-organizing your model to avoid this case.")
+
         prov_quant_object, src = model.get_param('provided_quantities', node, year,
                                                  return_source=True)
         prov_quant = prov_quant_object.get_total_quantity()

@@ -47,7 +47,7 @@ def _get_vintage_weights(model, node, year, tech):
 
 
 def calculate_vintage_weighted_parameter(parameter: str, model: "pyCIMS.Model", node: str,
-                                         year: str, tech: str, context: str = None) -> float:
+                                         year: str, tech: str, context: str = None, default_value=0) -> float:
     """
     Uses vintage-based weighting to calculate the value of a parameter. This function is used for
     peforming vintage-based weighting of financial LCC and quantities requested of children nodes.
@@ -82,7 +82,7 @@ def calculate_vintage_weighted_parameter(parameter: str, model: "pyCIMS.Model", 
 
     assert (round(sum(vintage_weights.values()), 5) == 1)
 
-    weighted_parameter = 0
+    weighted_parameter = default_value
     for vintage_year, weight in vintage_weights.items():
         parameter_value = model.get_param(parameter, node, vintage_year, tech=tech, context=context)
         weighted_parameter += parameter_value * weight
