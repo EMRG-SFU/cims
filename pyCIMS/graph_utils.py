@@ -87,7 +87,7 @@ def get_fuels(graph):
     """
     fuels = []
     for node in graph.nodes:
-        if graph.nodes[node]['is_fuel']:
+        if graph.nodes[node]['is fuel']:
             fuels.append(node)
     return fuels
 
@@ -162,7 +162,7 @@ def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only non-supply nodes.
     """
     # Find Fuels
-    fuels = set([n for n, d in graph.nodes(data=True) if ('is_fuel' in d) and d['is_fuel']])
+    fuels = set([n for n, d in graph.nodes(data=True) if ('is fuel' in d) and d['is fuel']])
 
     # Find the structural descendants of fuels
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
@@ -193,7 +193,7 @@ def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only supply nodes & their structural ancestors.
     """
     # Find Fuels
-    fuels = [n for n, d in graph.nodes(data=True) if ('is_fuel' in d) and d['is_fuel']]
+    fuels = [n for n, d in graph.nodes(data=True) if ('is fuel' in d) and d['is fuel']]
 
     # Find the structural ancestors of the supply nodes
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
@@ -353,11 +353,11 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 3 Find whether node is a fuel
-    is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is_fuel']['Context']
+    is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
     is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
-    graph.nodes[current_node]['is_fuel'] = is_fuel
+    graph.nodes[current_node]['is fuel'] = is_fuel
     # Drop fuel row
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'is_fuel']
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'is fuel']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])

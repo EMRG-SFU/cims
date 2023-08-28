@@ -40,8 +40,8 @@ def _calc_cc_min(model, node, year, tech):
     else:
         prev_cc_min = model.get_param('capital_cost_min', node, str(int(year) - model.step),
                                       tech=tech)
-        mal = model.get_param('dcc_min annual learning', node, year, tech=tech)
-        cc_min = prev_cc_min * (1 - mal) ** model.step
+        min_learning = model.get_param('dcc_min learning', node, year, tech=tech)
+        cc_min = prev_cc_min * (1 - min_learning) ** model.step
 
     model.set_param_internal(utils.create_value_dict(cc_min, param_source='calculation'),
                              'capital_cost_min', node, year, tech=tech)
@@ -95,24 +95,24 @@ def _calc_all_stock(model, node, year, tech):
 
 
 def _dcc_segment_1(model, node, year, tech, all_stock):
-    bc_1 = model.get_param('dcc_baseline_capacity_1', node, year, tech=tech)
-    bc_2 = model.get_param('dcc_baseline_capacity_2', node, year, tech=tech)
-    pr_1 = model.get_param('dcc_progress_ratio_1', node, year, tech=tech)
+    bc_1 = model.get_param('dcc_capacity_1', node, year, tech=tech)
+    bc_2 = model.get_param('dcc_capacity_2', node, year, tech=tech)
+    pr_1 = model.get_param('dcc_progress ratio_1', node, year, tech=tech)
     segment_1 = (min(max(all_stock, bc_1), bc_2) / bc_1) ** log2(pr_1)
     return segment_1
 
 
 def _dcc_segment_2(model, node, year, tech, all_stock):
-    bc_2 = model.get_param('dcc_baseline_capacity_2', node, year, tech=tech)
-    bc_3 = model.get_param('dcc_baseline_capacity_3', node, year, tech=tech)
-    pr_2 = model.get_param('dcc_progress_ratio_2', node, year, tech=tech)
+    bc_2 = model.get_param('dcc_capacity_2', node, year, tech=tech)
+    bc_3 = model.get_param('dcc_capacity_3', node, year, tech=tech)
+    pr_2 = model.get_param('dcc_progress ratio_2', node, year, tech=tech)
     segment_2 = (min(max(all_stock, bc_2), bc_3) / bc_2) ** log2(pr_2)
     return segment_2
 
 
 def _dcc_segment_3(model, node, year, tech, all_stock):
-    bc_3 = model.get_param('dcc_baseline_capacity_3', node, year, tech=tech)
-    pr_3 = model.get_param('dcc_progress_ratio_3', node, year, tech=tech)
+    bc_3 = model.get_param('dcc_capacity_3', node, year, tech=tech)
+    pr_3 = model.get_param('dcc_progress ratio_3', node, year, tech=tech)
     segment_3 = (max(all_stock, bc_3) / bc_3) ** log2(pr_3)
     return segment_3
 

@@ -145,17 +145,6 @@ class ModelReader:
         cols = [y for y in self.model_df.columns if is_year(y)]
         return cols
 
-    def get_incompatible_techs(self):
-        # ------------------------
-        # Read in the data
-        # ------------------------
-        # Read model_description from excel
-        inc_df = pd.read_excel(self.infile,
-                               sheet_name=self.sheet_map['incompatible'],
-                               engine=self.excel_engine).replace({np.nan: None})
-        inc_df = inc_df.dropna(axis=1)
-        return inc_df
-
     def get_default_params(self):
         # Read model_description from excel
         df = pd.read_excel(self.infile,
