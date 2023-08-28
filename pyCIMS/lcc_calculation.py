@@ -256,7 +256,7 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     # Emissions Cost -- Vintage-weight the emissions ratios, but leave the cost/emission the same
     emissions_cost = calc_financial_emissions_cost(model, node, year, tech, allow_foresight=False)
 
-    # Recycled Revenues -- TODO
+    # Recycled Revenues -- TODO: vintage weighting
     recycled_revenues = calc_recycled_revenues(model, node, year, tech)
 
     # Add it all together

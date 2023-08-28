@@ -9,6 +9,7 @@ import operator
 
 from . import lcc_calculation
 from . import declining_costs
+from . import vintage_weighting
 
 
 def is_year(val: str or int) -> bool:
@@ -101,13 +102,26 @@ def is_param_exogenous(model, param, node, year, tech=None):
     return ms_exogenous
 
 
-def get_services_requested(model, node, year, tech=None):
+def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
         if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
             services_requested = model.graph.nodes[node][year]['technologies'][tech][
                 'service requested']
+            if use_vintage_weighting:
+                weighted_services = {}
+                for serv in services_requested:
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(
+                        'service requested', model, node, year, tech=tech, context=serv
+                    )
+                    weighted_services[serv] = create_value_dict(
+                        year_val=weighted_req_ratio,
+                        branch=services_requested[serv]['branch'],
+                        param_source='vintage_weighting'
+                    )
+                services_requested = weighted_services
+
     else:
         if 'service requested' not in model.graph.nodes[node][year]:
             services_requested = {}
