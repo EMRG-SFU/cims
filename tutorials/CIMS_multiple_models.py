@@ -1,8 +1,8 @@
 # Multiple Models
-import pyCIMS
+import CIMS
 
-reference_model_file = 'pycims_prototype/models/multiple_models/pyCIMS_model_reference.xlsb'
-scenario_model_file = 'pycims_prototype/models/multiple_models/pyCIMS_model_scenario1.xlsb'
+reference_model_file = 'pycims_prototype/models/multiple_models/CIMS_model_reference.xlsb'
+scenario_model_file = 'pycims_prototype/models/multiple_models/CIMS_model_scenario1.xlsb'
 
 # ***************************************************
 # Design Option 1
@@ -10,18 +10,18 @@ scenario_model_file = 'pycims_prototype/models/multiple_models/pyCIMS_model_scen
 # Reference
 # =========
 # Create reference model reader
-reference_reader = pyCIMS.ModelReader(infile=reference_model_file,
+reference_reader = CIMS.ModelReader(infile=reference_model_file,
                                       sheet_map={'model': 'Lists',
                                                  'incompatible': 'Incompatible',
                                                  'default_param': 'Default values'},
                                       node_col='Node')
 # create reference model
-reference_model = pyCIMS.Model(reference_reader)
+reference_model = CIMS.Model(reference_reader)
 
 # Scenario 1
 # ==========
 # create scenario reader
-scenario_1_reader = pyCIMS.ModelReader(infile=scenario_model_file,
+scenario_1_reader = CIMS.ModelReader(infile=scenario_model_file,
                                        sheet_map={'model': 'Lists'},
                                        node_col='Node')
 
