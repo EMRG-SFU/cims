@@ -29,7 +29,7 @@ class Model:
 
     Parameters
     ----------
-    reader : pyCIMS.reader
+    reader : CIMS.reader
         The Reader set up to ingest the description (excel file) for our model.
 
     Attributes
@@ -99,12 +99,12 @@ class Model:
 
         Parameters
         ----------
-        scenario_model_reader : pyCIMS.ModelReader
+        scenario_model_reader : CIMS.ModelReader
             An instantiated ModelReader to be used for updating self.
 
         Returns
         -------
-        pyCIMS.Model :
+        CIMS.Model :
             An updated version of self.
         """
         if self.status.lower() in ['run initiated', 'run completed']:
@@ -865,7 +865,7 @@ class Model:
         quantities requested by it's successors (children, grandchildren, etc).
 
         This method was built to be used with the bottom up traversal method
-        (pyCIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
+        (CIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
         all its children have been visited (except when it needs to break a loop).
 
         Important things to note:

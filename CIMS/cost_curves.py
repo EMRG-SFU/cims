@@ -5,7 +5,7 @@ from scipy.interpolate import interp1d
 from . import utils
 
 
-def calc_cost_curve_lcc(model: "pyCIMS.Model", node: str, year: str,
+def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
                         cost_curve_min_max: bool = False):
     """
     Calculate a node's LCC using its cost curve function (stored in the node level data).
@@ -57,7 +57,7 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to fetch paramters from.
     node : str
         The node whose LCC is being calculated.
@@ -110,7 +110,7 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
     return lcc
 
 
-def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, year: str):
+def calc_cost_curve_quantity(model: "CIMS.Model", node: str, year: str):
     """
     Calculate the total quantity provided by the node.
     The number of years this is calcualted over depends on whether cost curves are annual or
@@ -118,7 +118,7 @@ def calc_cost_curve_quantity(model: "pyCIMS.Model", node: str, year: str):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing node.
     node : str
         The name of the node for which total quantity will be calculated.

@@ -1,5 +1,5 @@
 """
-This module contains utility functions used throughout the pyCIMS package.
+This module contains utility functions used throughout the CIMS package.
 """
 import re
 import copy
@@ -232,7 +232,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the parameter value of interest.
     param : str
         The name of the parameter whose value is being retrieved.
@@ -412,7 +412,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the parameter value of interest.
     val : any or list of any
         The new value(s) to be set at the specified `param` at `node`, given the context provided by
@@ -447,7 +447,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_val : any
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -543,7 +543,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_val : any
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -692,7 +692,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_value : dict
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -751,7 +751,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_value : dict
             The new value to be set at the specified `param` at `node`, given the context provided by

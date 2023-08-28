@@ -13,7 +13,7 @@ def _retrofit_lcc(model, node, year, existing_tech):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model where LCC components are stored. Must contain node.
     node : str
         The name of the node (branch notation) where the LCC components can be found.
@@ -44,7 +44,7 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model where the limits are stored.
     year : str
         The year for which the retrofit competition has been done.
@@ -106,7 +106,7 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model of interest.
     year : str
         The year for which the retrofit competition has been done.
@@ -176,7 +176,7 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to record the retrofit results in.
     node : str
         The name of the node (branch notation) whose stock has been retrofitted.
@@ -220,7 +220,7 @@ def calc_retrofits(model, node, year, existing_stock):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model of interest.
     node : str
         The name of the node (branch notation) where the retrofit competition will occur.

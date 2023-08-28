@@ -1,5 +1,5 @@
 """
-This module contains the functions for LCC Calculations for the pyCIMS model.
+This module contains the functions for LCC Calculations for the CIMS model.
 """
 import warnings
 
@@ -206,7 +206,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
     model.set_param_internal(val_dict, 'price', node, year)
 
 
-def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
+def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
     """
     Calculate the Financial Life Cycle Cost (called 'financial life cycle cost' in the model & model
     description). This LCC does not contain intangible costs.
@@ -266,7 +266,7 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     return fLCC
 
 
-def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
+def calc_complete_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
     """
     Calculate Complete Life Cycle Cost. This LCC includes intangible costs.
 
@@ -299,7 +299,7 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
     return complete_lcc
 
 
-def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_complete_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates complete upfront cost, which includes intangible costs.
 
@@ -329,7 +329,7 @@ def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     return complete_uc
 
 
-def calc_financial_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates financial upfront cost, which does not include intangible costs.
 
@@ -358,7 +358,7 @@ def calc_financial_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tec
     return financial_uc
 
 
-def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_complete_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates complete annual cost, which includes intangible costs.
 
@@ -388,7 +388,7 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     return complete_ac
 
 
-def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_financial_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates financial annual cost, which includes intangible costs.
 
@@ -415,7 +415,7 @@ def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     return financial_ac
 
 
-def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_capital_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculates capital cost.
 
@@ -445,7 +445,7 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
     return capital_cost
 
 
-def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_crf(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate the Capital Recovery Factor (CRF).
 
@@ -478,7 +478,7 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     return crf
 
 
-def calc_financial_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
+def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
                                        tech: str = None) -> float:
     """
     """
@@ -530,7 +530,7 @@ def calc_financial_annual_service_cost(model: 'pyCIMS.Model', node: str, year: s
     return total_service_cost
 
 
-def calc_complete_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
+def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
                                       tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.
@@ -599,14 +599,14 @@ def calc_complete_annual_service_cost(model: 'pyCIMS.Model', node: str, year: st
     return total_service_cost
 
 
-def calc_price_subsidy(model: 'pyCIMS.Model', node: str, year: str, tech=None):
+def calc_price_subsidy(model: 'CIMS.Model', node: str, year: str, tech=None):
     """
     Calculates the price_subsidy for a node in a given year.
     Price subsidy is the sum of benchmark * tax across all ghg/emission type combinations.
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model of interest.
     node : str
         The node (in branch form) whose price subsidy is being calculated.
@@ -653,7 +653,7 @@ def calc_price(model, node, year, tech=None):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to retrieve data from & save the calculated price to.
     node : str
         The node (in branch form) whose price is being calculated.
@@ -755,7 +755,7 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to retrieve data from & save the result to.
     node : str
         The node (in branch form) whose fixed cost rate is being calculated.

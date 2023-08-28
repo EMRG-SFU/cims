@@ -91,7 +91,7 @@ def get_direct_distributed_supply(model, node, year, tech=None):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the information of interest.
     node : str
         The node whose distributed supply we are interested in finding.
