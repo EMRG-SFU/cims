@@ -155,7 +155,7 @@ calculation_directory = {
     'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
     'emissions cost': lcc_calculation.calc_complete_emissions_cost,
     'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
-    'financial life cycle cost': lcc_calculation.calc_financial_lcc,
+    'lcc_financial': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
     'price': lcc_calculation.calc_price,
     'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,

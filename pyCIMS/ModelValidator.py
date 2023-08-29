@@ -531,7 +531,7 @@ class ModelValidator:
 
         def fuel_nodes_no_lcc_or_price():
             """
-            Identify fuel nodes that do not have neither a 'financial life cycle cost' or 'price'
+            Identify fuel nodes that do not have neither a 'lcc_financial' or 'price'
             row specified in the base year.
             
             Parameters
@@ -553,13 +553,13 @@ class ModelValidator:
                 s = dat[dat['Parameter'] == 'competition type']['Context'].str.lower()
                 if 'fuel - fixed price' in s.to_string():
                     # Check whether fLCC is specified
-                    if 'financial life cycle cost' not in dat['Parameter'].values:
+                    if 'lcc_financial' not in dat['Parameter'].values:
                         fLCC_specified = False
                     else:
                         year_columns = [c for c in dat.columns if is_year(c)]
                         base_year = year_columns[0]
                         fLCC = \
-                            dat[dat['Parameter'] == 'financial life cycle cost'][base_year].values[
+                            dat[dat['Parameter'] == 'lcc_financial'][base_year].values[
                                 0]
                         if fLCC is None:
                             fLCC_specified = False
@@ -626,7 +626,7 @@ class ModelValidator:
                                  'Context'].str.lower() == 'tech compete'
                 if tech_nodes.iloc[0]:
                     if 'technology' not in list(dat['Parameter']):
-                        if 'capital cost_overnight' not in list(dat['Parameter']):
+                        if 'fcc' not in list(dat['Parameter']):
                             no_cap_cost.append((node_index, node_name))
                     else:
                         techs = dat[dat['Parameter'] == 'technology']['Context']
@@ -636,7 +636,7 @@ class ModelValidator:
                             tech_name = techs.iloc[i]
                             start_index = techs.index[i]
                             end_index = techs.index[i + 1]
-                            if 'capital cost_overnight' not in list(
+                            if 'fcc' not in list(
                                     dat['Parameter'].loc[start_index:end_index]):
                                 no_cap_cost.append((node_index, node_name, tech_name))
 

@@ -45,8 +45,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
     # Check if the node has an exogenously defined Life Cycle Cost
-    if 'financial life cycle cost' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('financial life cycle cost', node, year,
+    if 'lcc_financial' in sub_graph.nodes[node][year]:
+        lcc, lcc_source = model.get_param('lcc_financial', node, year,
                                           context=node.split('.')[-1],
                                           return_source=True)  # context is the fuel name
         if lcc_source == 'model':
@@ -90,10 +90,10 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
-            lcc, lcc_source = model.get_param('financial life cycle cost', node, year, tech=tech,
+            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech,
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
-            model.set_param_internal(val_dict, 'financial life cycle cost', node, year, tech)
+            model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
 
             # Complete LCC
             # ************
@@ -147,7 +147,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
             # Weight Life Cycle Cost and Add to Node Total
             # ********************************************
-            curr_lcc = model.get_param('financial life cycle cost', node, year, tech=tech)
+            curr_lcc = model.get_param('lcc_financial', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
@@ -155,7 +155,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         if node in model.fuels:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
-                weighted_lccs = model.get_param('financial life cycle cost', node, prev_year,
+                weighted_lccs = model.get_param('lcc_financial', node, prev_year,
                                                 context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
@@ -169,14 +169,14 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source='calculation')}
 
     elif 'cost curve' in model.get_param('competition type', node):
         lcc = calc_cost_curve_lcc(model, node, year,
                                   cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
 
     else:
@@ -197,7 +197,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
     # fLCC -> Price
@@ -208,7 +208,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
 def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
-    Calculate the Financial Life Cycle Cost (called 'financial life cycle cost' in the model & model
+    Calculate the Financial Life Cycle Cost (called 'lcc_financial' in the model & model
     description). This LCC does not contain intangible costs.
 
     Parameters
@@ -377,7 +377,7 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     --------
     calc_financial_annual_cost
     """
-    operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
+    operating_maintenance = model.get_param('fom', node, year, tech=tech)
     fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
     declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
@@ -407,7 +407,7 @@ def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     --------
     calc_complete_annual_cost
     """
-    operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
+    operating_maintenance = model.get_param('fom', node, year, tech=tech)
     output = model.get_param('output', node, year, tech=tech)
 
     financial_ac = operating_maintenance / output
@@ -428,19 +428,19 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
 
     Returns
     -------
-    float : Capital cost, defined as CC = max{CC_declining, CC_overnight * CC_declining_limit}.
+    float : Capital cost, defined as CC = max{CC_declining, cc_fixed * CC_declining_limit}.
     """
     dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
 
     if dcc_class is None:
-        capital_cost = model.get_param('capital cost_overnight', node, year, tech=tech)
+        capital_cost = model.get_param('fcc', node, year, tech=tech)
     else:
         cc_declining = model.get_param('capital cost_declining', node, year, tech=tech,
                                        do_calc=True)
-        cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
+        cc_fixed = model.get_param('fcc', node, year, tech=tech)
         cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
 
-        capital_cost = max(cc_declining, cc_overnight * cc_declining_limit)
+        capital_cost = max(cc_declining, cc_fixed * cc_declining_limit)
 
     return capital_cost
 
@@ -671,7 +671,7 @@ def calc_price(model, node, year, tech=None):
     P2000, and COP are also set (if they weren't exogenously defined).
     """
     service = node.split('.')[-1]
-    fLCC = model.get_param('financial life cycle cost', node, year, tech=tech, context=service)
+    fLCC = model.get_param('lcc_financial', node, year, tech=tech, context=service)
 
     if tech is not None:
         price = fLCC
@@ -717,10 +717,10 @@ def calc_price(model, node, year, tech=None):
     else:
         # Find Base Year Values
         non_energy_cost_2000 = model.get_param('non-energy cost', node, base_year)
-        fLCC_2000 = model.get_param('financial life cycle cost', node, base_year, context=service)
+        fLCC_2000 = model.get_param('lcc_financial', node, base_year, context=service)
 
         # Current Year Values
-        fLCC = model.get_param('financial life cycle cost', node, year, context=service)
+        fLCC = model.get_param('lcc_financial', node, year, context=service)
         non_energy_cost = model.get_param('non-energy cost', node, year)
 
         # Calculate Price
