@@ -34,13 +34,13 @@ def calc_declining_capital_cost(model: 'CIMS.Model', node: str, year: str, tech:
 
 def _calc_cc_min(model, node, year, tech):
     year_avail = model.get_param('available', node, str(model.base_year), tech=tech)
+    min_learning = model.get_param('dcc_min learning', node, year, tech=tech)
 
-    if int(year) == model.base_year or int(year) <= year_avail:
-        cc_min = model.get_param('capital cost_overnight', node, year, tech=tech)
+    if int(year) == model.base_year or int(year) <= year_avail or min_learning == 0:
+        cc_min = model.get_param('fcc', node, year, tech=tech)
     else:
         prev_cc_min = model.get_param('capital_cost_min', node, str(int(year) - model.step),
                                       tech=tech)
-        min_learning = model.get_param('dcc_min learning', node, year, tech=tech)
         cc_min = prev_cc_min * (1 - min_learning) ** model.step
 
     model.set_param_internal(utils.create_value_dict(cc_min, param_source='calculation'),
@@ -50,14 +50,14 @@ def _calc_cc_min(model, node, year, tech):
 
 
 def _calc_cc_learning(model, node, year, tech):
-    cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
+    cc_fixed = model.get_param('fcc', node, year, tech=tech)
 
     all_stock = _calc_all_stock(model, node, year, tech=tech)
     segment_1 = _dcc_segment_1(model, node, year, tech, all_stock)
     segment_2 = _dcc_segment_2(model, node, year, tech, all_stock)
     segment_3 = _dcc_segment_3(model, node, year, tech, all_stock)
 
-    cc_learning = cc_overnight * segment_1 * segment_2 * segment_3
+    cc_learning = cc_fixed * segment_1 * segment_2 * segment_3
 
     return cc_learning
 
