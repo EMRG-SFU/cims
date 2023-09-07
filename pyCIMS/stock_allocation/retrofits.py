@@ -241,7 +241,7 @@ def calc_retrofits(model, node, year, existing_stock):
         during the retrofit competition.
     """
     comp_type = model.get_param('competition type', node).lower()
-    heterogeneity = model.get_param('heterogeneity_retrofit', node, year)
+    heterogeneity = model.get_param('retrofit_heterogeneity', node, year)
     added_retrofit_stocks = {}
     retrofit_stocks = {}
     for existing_node_tech in existing_stock.keys():

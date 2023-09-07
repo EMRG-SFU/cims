@@ -2,12 +2,13 @@
 This module contains the functions for LCC Calculations for the pyCIMS model.
 """
 import warnings
-import math
 
-from .emissions import calc_emissions_cost, calc_cumul_emissions_cost_rate
+from .emissions import calc_complete_emissions_cost, calc_financial_emissions_cost, \
+    calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
+from .vintage_weighting import calculate_vintage_weighted_parameter
 
 
 def lcc_calculation(sub_graph, node, year, model, **kwargs):
@@ -44,8 +45,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
     # Check if the node has an exogenously defined Life Cycle Cost
-    if 'financial life cycle cost' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('financial life cycle cost', node, year,
+    if 'lcc_financial' in sub_graph.nodes[node][year]:
+        lcc, lcc_source = model.get_param('lcc_financial', node, year,
                                           context=node.split('.')[-1],
                                           return_source=True)  # context is the fuel name
         if lcc_source == 'model':
@@ -89,10 +90,10 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
-            lcc, lcc_source = model.get_param('financial life cycle cost', node, year, tech=tech,
+            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech,
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
-            model.set_param_internal(val_dict, 'financial life cycle cost', node, year, tech)
+            model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
 
             # Complete LCC
             # ************
@@ -110,7 +111,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             if first_year_avail <= int(year) < first_year_unavail:
                 # Life Cycle Cost ^ -v
                 if lcc < 0.01:
-                    # When lcc < 0.01, we will approximate it's weight using a TREND line
+                    # When lcc < 0.01, we will approximate its weight using a TREND line
                     w1 = 0.1 ** (-1 * v)
                     w2 = 0.01 ** (-1 * v)
                     slope = (w2 - w1) / (0.01 - 0.1)
@@ -146,7 +147,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
             # Weight Life Cycle Cost and Add to Node Total
             # ********************************************
-            curr_lcc = model.get_param('financial life cycle cost', node, year, tech=tech)
+            curr_lcc = model.get_param('lcc_financial', node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
@@ -154,7 +155,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         if node in model.fuels:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
-                weighted_lccs = model.get_param('financial life cycle cost', node, prev_year,
+                weighted_lccs = model.get_param('lcc_financial', node, prev_year,
                                                 context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
@@ -168,13 +169,14 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source='calculation')}
 
     elif 'cost curve' in model.get_param('competition type', node):
-        lcc = calc_cost_curve_lcc(model, node, year, cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
+        lcc = calc_cost_curve_lcc(model, node, year,
+                                  cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
 
     else:
@@ -195,7 +197,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             lcc = 0
 
         service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['financial life cycle cost'] = {
+        sub_graph.nodes[node][year]['lcc_financial'] = {
             service_name: utils.create_value_dict(lcc, param_source=sc_source)}
 
     # fLCC -> Price
@@ -206,7 +208,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
 def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
     """
-    Calculate the Financial Life Cycle Cost (called 'financial life cycle cost' in the model & model
+    Calculate the Financial Life Cycle Cost (called 'lcc_financial' in the model & model
     description). This LCC does not contain intangible costs.
 
     Parameters
@@ -224,15 +226,44 @@ def calc_financial_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
     """
-    upfront_cost = model.get_param('financial upfront cost', node, year, tech=tech, do_calc=True)
-    annual_cost = model.get_param('financial annual cost', node, year, tech=tech, do_calc=True)
-    annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
+
+    # Calculate the LCC of any new stock
+
+    # Upfront Cost - vintage-weight full term
+    new_upfront_cost, uc_src = model.get_param('financial upfront cost', node, year, tech=tech,
+                                               do_calc=True, return_source=True)
+    model.set_param_internal(param='new_stock_financial_upfront_cost', node=node, year=year,
+                             tech=tech,
+                             val=utils.create_value_dict(new_upfront_cost, param_source=uc_src))
+    upfront_cost = calculate_vintage_weighted_parameter('new_stock_financial_upfront_cost', model,
+                                                        node, year, tech)
+
+    # Annual Cost - vintage-weight full term
+    new_annual_cost, ac_src = model.get_param('financial annual cost', node, year, tech=tech,
+                                              do_calc=True, return_source=True)
+    model.set_param_internal(utils.create_value_dict(new_annual_cost, param_source=ac_src),
+                             'new_stock_financial_annual_cost', node, year, tech=tech)
+    annual_cost = calculate_vintage_weighted_parameter('new_stock_financial_annual_cost', model,
+                                                       node, year, tech)
+
+    # Annual Service Cost - vintage weight the service requested ratios
+    annual_service_cost = model.get_param('financial service cost', node, year, tech=tech,
+                                          do_calc=True)
+
+    # Fixed Cost Rate -- No Vintage Weighting
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
-    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=False)
+
+    # Emissions Cost -- Vintage-weight the emissions ratios, but leave the cost/emission the same
+    emissions_cost = calc_financial_emissions_cost(model, node, year, tech, allow_foresight=False)
+
+    # Recycled Revenues -- TODO: vintage weighting
     recycled_revenues = calc_recycled_revenues(model, node, year, tech)
-    lcc = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + emissions_cost - \
-          recycled_revenues
-    return lcc
+
+    # Add it all together
+    fLCC = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + emissions_cost - \
+           recycled_revenues
+
+    return fLCC
 
 
 def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) -> float:
@@ -260,7 +291,7 @@ def calc_complete_lcc(model: "pyCIMS.Model", node: str, year: str, tech: str) ->
                                            do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
-    emissions_cost = calc_emissions_cost(model, node, year, tech, allow_foresight=True)
+    emissions_cost = calc_complete_emissions_cost(model, node, year, tech, allow_foresight=True)
 
     complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
                    fixed_cost_rate + emissions_cost
@@ -291,11 +322,9 @@ def calc_complete_upfront_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
     capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
     subsidy = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
-    fixed_uic = model.get_param('uic_fixed', node, year, tech=tech, do_calc=True)
-    declining_uic = model.get_param('uic_declining', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_uc = (capital_cost + subsidy + fixed_uic + declining_uic) / output * crf
+    complete_uc = (capital_cost + subsidy) / output * crf
 
     return complete_uc
 
@@ -348,14 +377,13 @@ def calc_complete_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech:
     --------
     calc_financial_annual_cost
     """
-    operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
-    fixed_aic = model.get_param('aic_fixed', node, year, tech=tech)
-    declining_aic = model.get_param('aic_declining', node, year, tech=tech, do_calc=True)
+    operating_maintenance = model.get_param('fom', node, year, tech=tech)
+    fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
+    declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_ac = (operating_maintenance +
-                   fixed_aic +
-                   declining_aic) / output
+    complete_ac = (
+                              operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
     return complete_ac
 
@@ -379,7 +407,7 @@ def calc_financial_annual_cost(model: 'pyCIMS.Model', node: str, year: str, tech
     --------
     calc_complete_annual_cost
     """
-    operating_maintenance = model.get_param('operating and maintenance', node, year, tech=tech)
+    operating_maintenance = model.get_param('fom', node, year, tech=tech)
     output = model.get_param('output', node, year, tech=tech)
 
     financial_ac = operating_maintenance / output
@@ -400,186 +428,21 @@ def calc_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) ->
 
     Returns
     -------
-    float : Capital cost, defined as CC = max{CC_declining, CC_overnight * CC_declining_limit}.
+    float : Capital cost, defined as CC = max{CC_declining, cc_fixed * CC_declining_limit}.
     """
     dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
 
-    if dcc_class is None or int(year) == int(model.base_year):
-        capital_cost = model.get_param('capital cost_overnight', node, year, tech=tech)
+    if dcc_class is None:
+        capital_cost = model.get_param('fcc', node, year, tech=tech)
     else:
-        capital_cost = model.get_param('capital cost_declining', node, year, tech=tech,
+        cc_declining = model.get_param('capital cost_declining', node, year, tech=tech,
                                        do_calc=True)
+        cc_fixed = model.get_param('fcc', node, year, tech=tech)
+        cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
+
+        capital_cost = max(cc_declining, cc_fixed * cc_declining_limit)
 
     return capital_cost
-
-
-def calc_declining_cc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculates declining capital cost.
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining capital cost.
-    node : The node to calculate declining capital cost for.
-    year : The year to calculate declining capital cost for.
-    tech : The technology to calculate declining capital cost for.
-
-    Returns
-    -------
-    float : The declining capital cost.
-    """
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
-    dcc_class_techs = model.dcc_classes[dcc_class]
-
-    cc_overnight = model.get_param('capital cost_overnight', node, year, tech=tech)
-    cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
-
-    proven_stock = model.get_param('dcc_proven stock', node, year, tech=tech)
-    # For transportation, 'dcc_proven stock' already given in vkt, so no need to convert
-
-    bs_sum = 0
-    ns_sum = 0
-
-    for node_k, tech_k in dcc_class_techs:
-        # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param('load factor', node_k, str(model.base_year), tech=tech_k)
-        if unit_convert is None:
-            unit_convert = 1
-
-        # Base Stock summed over all techs in DCC class (base year only)
-        bs_k = model.get_param('base_stock', node_k, str(model.base_year), tech=tech_k)
-        if bs_k is not None:
-            bs_sum += bs_k / unit_convert
-
-        # New Stock summed over all techs in DCC class and over all previous years (excluding base year)
-        year_list = [str(x) for x in
-                     range(int(model.base_year) + int(model.step), int(year), int(model.step))]
-        for j in year_list:
-            ns_jk = model.get_param('new_stock', node_k, j, tech=tech_k)
-            ns_sum += ns_jk / unit_convert
-
-    # Capital cost adjusted for global R&D
-    gcc_t = model.get_param('GCC_t', node, year, tech=tech, do_calc=True)
-
-    # Calculate Declining Capital Cost
-    if (bs_sum + ns_sum) < proven_stock:
-        cc_declining = max(gcc_t, cc_overnight * cc_declining_limit)
-    else:
-        inner_sums = (bs_sum + ns_sum) / proven_stock
-        progress_ratio = model.get_param('dcc_progress ratio', node, year, tech=tech)
-        log_decline = gcc_t * (inner_sums ** math.log(progress_ratio, 2))
-
-        cc_declining = max(log_decline, cc_overnight * cc_declining_limit)
-
-    return cc_declining
-
-
-def calc_gcc(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate GCC, which is the capital cost adjusted for global R&D.
-
-    Parameters
-    ----------
-    model : The model containing component parts of GCC.
-    node : The node to calculate GCC for.
-    year : The year to calculate GCC for.
-    tech : The technology to calculate GCC for.
-
-    Returns
-    -------
-    float : The GCC. If year is the base year, GCC = CC_overnight. Otherwise,
-            GCC_t = GCC_(t-5) * (1 - AEEI)^5.
-    """
-    if int(year) == int(model.base_year):
-        gcc = model.get_param('capital cost_overnight', node, year, tech=tech)
-    else:
-        previous_year = str(int(year) - model.step)
-        aeei = model.get_param('dcc_aeei', node, year, tech=tech)
-        gcc = ((1 - aeei) ** model.step) * calc_gcc(model, node, previous_year, tech=tech)
-
-    return gcc
-
-
-def calc_declining_uic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Upfront Declining Intangible Cost (UIC_declining).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining UIC.
-    node : The node to calculate declining UIC for.
-    year : The year to calculate declining UIC for.
-    tech : The technology to calculate declining UIC for.
-
-    Returns
-    -------
-    float : The declining UIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_uic = model.get_param('uic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('uic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('uic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining UIC
-    if int(year) == int(model.base_year):
-        return_uic = initial_uic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_uic_declining = calc_declining_uic(model, node, prev_year, tech)
-        uic_declining = min(prev_uic_declining, initial_uic / denominator)
-
-        return_uic = uic_declining
-
-    return return_uic
-
-
-def calc_declining_aic(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
-    """
-    Calculate Annual Declining Intangible Cost (declining AIC).
-
-    Parameters
-    ----------
-    model : The model containing component parts of declining AIC.
-    node : The node to calculate declining AIC for.
-    year : The year to calculate declining AIC for.
-    tech : The technology to calculate declining AIC for.
-
-    Returns
-    -------
-    float : The declining AIC.
-    """
-    # Retrieve Exogenous Terms from Model Description
-    initial_aic = model.get_param('aic_declining_initial', node, year, tech=tech)
-    rate_constant = model.get_param('aic_declining_rate', node, year, tech=tech)
-    shape_constant = model.get_param('aic_declining_shape', node, year, tech=tech)
-
-    # Calculate Declining AIC
-    if int(year) == int(model.base_year):
-        return_val = initial_aic
-    else:
-        prev_year = str(int(year) - model.step)
-        prev_nms = model.get_param('new_market_share', node, prev_year, tech=tech)
-
-        try:
-            denominator = 1 + shape_constant * math.exp(rate_constant * prev_nms)
-        except OverflowError as overflow:
-            print(node, year, shape_constant, rate_constant, prev_nms)
-            raise overflow
-
-        prev_aic_declining = calc_declining_aic(model, node, prev_year, tech)
-        aic_declining = min(prev_aic_declining, initial_aic / denominator)
-
-        return_val = aic_declining
-
-    return return_val
 
 
 def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
@@ -615,8 +478,60 @@ def calc_crf(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
     return crf
 
 
-def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
-                             tech: str = None) -> float:
+def calc_financial_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
+                                       tech: str = None) -> float:
+    """
+    """
+
+    def do_sc_calculation(service_requested):
+        service_requested_value = calculate_vintage_weighted_parameter('service requested',
+                                                                       model, node, year,
+                                                                       tech, serv)
+        service_cost = 0
+
+        if service_requested['branch'] in model.fuels:
+            fuel_branch = service_requested['branch']
+
+            fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
+
+            # Price Multiplier
+            try:
+                fuel_name = fuel_branch.split('.')[-1]
+                price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
+                    'year_value']
+            except KeyError:
+                price_multiplier = 1
+            service_requested_price = fuel_price * price_multiplier
+
+        else:
+            service_requested_branch = service_requested['branch']
+            if 'price' in model.graph.nodes[service_requested_branch][year]:
+                service_requested_price = model.get_param('price', service_requested_branch, year)
+            else:
+                # Encountering a non-visited node
+                service_requested_price = 1
+
+        service_cost += service_requested_price * service_requested_value
+        return service_cost
+
+    total_service_cost = 0
+    graph = model.graph
+
+    if tech is not None:
+        data = graph.nodes[node][year]['technologies'][tech]
+    else:
+        data = graph.nodes[node][year]
+
+    if 'service requested' in data:
+        service_req = data['service requested']
+        for serv, req in service_req.items():
+            total_service_cost += do_sc_calculation(req)
+
+    return total_service_cost
+
+
+def calc_complete_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
+                                      tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.
 
@@ -648,19 +563,13 @@ def calc_annual_service_cost(model: 'pyCIMS.Model', node: str, year: str,
             fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
 
             # Price Multiplier
-            if 'financial life cycle cost' in model.graph.nodes[fuel_branch][year]:
-                fuel_name = list(model.graph.nodes[fuel_branch][year]['financial life cycle cost'].keys())[0]
-                service_requested_lcc = \
-                    model.graph.nodes[fuel_branch][year]['financial life cycle cost'][fuel_name]['year_value']
-            else:
-                service_requested_lcc = model.get_parameter_default('financial life cycle cost')
-
             try:
                 fuel_name = fuel_branch.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
                     'year_value']
             except KeyError:
                 price_multiplier = 1
+
             service_requested_price = fuel_price * price_multiplier
 
         else:
@@ -762,7 +671,7 @@ def calc_price(model, node, year, tech=None):
     P2000, and COP are also set (if they weren't exogenously defined).
     """
     service = node.split('.')[-1]
-    fLCC = model.get_param('financial life cycle cost', node, year, tech=tech, context=service)
+    fLCC = model.get_param('lcc_financial', node, year, tech=tech, context=service)
 
     if tech is not None:
         price = fLCC
@@ -808,10 +717,10 @@ def calc_price(model, node, year, tech=None):
     else:
         # Find Base Year Values
         non_energy_cost_2000 = model.get_param('non-energy cost', node, base_year)
-        fLCC_2000 = model.get_param('financial life cycle cost', node, base_year, context=service)
+        fLCC_2000 = model.get_param('lcc_financial', node, base_year, context=service)
 
         # Current Year Values
-        fLCC = model.get_param('financial life cycle cost', node, year, context=service)
+        fLCC = model.get_param('lcc_financial', node, year, context=service)
         non_energy_cost = model.get_param('non-energy cost', node, year)
 
         # Calculate Price
@@ -842,6 +751,8 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     Calculate the fixed cost rate for a node or technology. This is the total fixed cost (which is
     provided exogenously) divided by the total quantity being provided by the node or technology.
 
+    Note: This parameter is not weighted by stock vintage.
+
     Parameters
     ----------
     model : pyCIMS.Model
@@ -864,6 +775,12 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     """
     total_fixed_cost = model.get_param('total fixed cost', node, year, tech=tech)
     if total_fixed_cost is not None:
+        if tech:
+            warnings.warn(
+                "This function was not intended for use with technologies. While we won't stop"
+                "you from using it for that purpose, you are doing so at your own risk. You"
+                "may want to consider re-organizing your model to avoid this case.")
+
         if int(year) == model.base_year:
             fixed_cost_rate = 0
             fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,

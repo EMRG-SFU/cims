@@ -1,5 +1,4 @@
 import copy
-import random
 import warnings
 import networkx as nx
 import pandas as pd
@@ -67,7 +66,6 @@ class Model:
         self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
         self.fuels = []
-        self.equilibrium_fuels = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
@@ -79,6 +77,8 @@ class Model:
 
         self.build_graph()
         self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+
         self._inherit_parameter_values()
         self._initialize_model()
 
@@ -126,10 +126,11 @@ class Model:
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels, model.equilibrium_fuels = graph_utils.get_fuels(graph)
+        model.fuels = graph_utils.get_fuels(graph)
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
+        model.dic_classes = model._dic_classes()
 
         # Re-initialize the model
         model._inherit_parameter_values()
@@ -157,18 +158,19 @@ class Model:
         graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels, self.equilibrium_fuels = graph_utils.get_fuels(graph)
+        self.fuels = graph_utils.get_fuels(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
 
     def _initialize_model(self):
+        # Initialize Taxes
         for year in self.years:
             # Pass tax to all children for carbon cost
             graph_utils.top_down_traversal(self.graph,
                                            self._init_tax_emissions,
                                            year)
-
+        # Initialize Tax Foresight
         tax_foresight.initialize_tax_foresight(self)
 
     def _dcc_classes(self):
@@ -202,8 +204,39 @@ class Model:
 
         return dcc_classes
 
-    def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=1, max_iterations=10,
-            show_warnings=True, print_eq=False):
+    def _dic_classes(self):
+        """
+        Iterate through each node and technology in self to create a dictionary mapping Declining
+        Capital Cost (DCC) Classes to a list of nodes that belong to that class.
+
+        Returns
+        -------
+        dict {str: [str]}:
+            Dictionary where keys are declining capital cost classes (str) and values are lists of
+            nodes (str) belonging to that class.
+        """
+        dic_classes = {}
+
+        nodes = self.graph.nodes
+        base_year = str(self.base_year)
+        for node in nodes:
+            if 'technologies' in nodes[node][base_year]:
+                for tech in nodes[node][base_year]['technologies']:
+                    try:
+                        dicc = self.graph.nodes[node][base_year]['technologies'][tech]['dic_class'][
+                            'context']
+                    except:
+                        dicc = None
+                    if dicc is not None:
+                        if dicc in dic_classes:
+                            dic_classes[dicc].append((node, tech))
+                        else:
+                            dic_classes[dicc] = [(node, tech)]
+
+        return dic_classes
+
+    def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
+            max_iterations=10, show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -217,7 +250,7 @@ class Model:
 
         min_iterations : int, optional
             The minimum number of times to iterate between supply and demand in an attempt to reach
-            an equilibrium.
+            an equilibrium. TODO: Document why this has changed to 2.
 
         max_iterations : int, optional
             The maximum number of times to iterate between supply and demand in an attempt to reach
@@ -236,9 +269,9 @@ class Model:
         """
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
-        # Make a subgraph based on the type of node
-        demand_nodes = ['demand', 'standard']
-        supply_nodes = ['supply', 'standard']
+
+        demand_nodes = graph_utils.get_demand_nodes(self.graph)
+        supply_nodes = graph_utils.get_supply_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -263,46 +296,42 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate Life Cycle Cost values on demand side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self,
-                                                node_types=demand_nodes)
+                                                self)
 
                 # Calculate Quantities (Total Stock Needed)
-                graph_utils.top_down_traversal(self.graph,
+                graph_utils.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
                                                self.stock_allocation_and_retirement,
-                                               year,
-                                               node_types=demand_nodes)
+                                               year)
 
                 # Calculate Service Costs on Demand Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
-                                                self,
-                                                node_types=demand_nodes)
+                                                self)
 
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes,
                                                 cost_curve_min_max=True)
                 # Calculate Fuel Quantities
-                graph_utils.top_down_traversal(self.graph,
+                graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
-                                               node_types=supply_nodes)
+                                               )
 
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(self.graph,
+                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
-                                                node_types=supply_nodes)
+                                                )
 
                 # Check for an Equilibrium -- Across all nodes, not just fuels
                 # ************************
@@ -591,30 +620,30 @@ class Model:
                                                 root=node)
 
             if node in self.fuels:
-                if 'financial life cycle cost' in graph.nodes[node][year]:
-                    lcc_dict = graph.nodes[node][year]['financial life cycle cost']
+                if 'lcc_financial' in graph.nodes[node][year]:
+                    lcc_dict = graph.nodes[node][year]['lcc_financial']
 
                     fuel_name = list(lcc_dict.keys())[0]
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True
                         last_year = str(int(year) - step)
-                        last_year_value = self.get_param('financial life cycle cost',
+                        last_year_value = self.get_param('lcc_financial',
                                                          node, last_year)[fuel_name]['year_value']
-                        graph.nodes[node][year]['financial life cycle cost'][fuel_name][
+                        graph.nodes[node][year]['lcc_financial'][fuel_name][
                             'year_value'] = last_year_value
                     else:
-                        graph.nodes[node][year]['financial life cycle cost'][fuel_name][
+                        graph.nodes[node][year]['lcc_financial'][fuel_name][
                             'to_estimate'] = False
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
                     service_name = node.split('.')[-1]
-                    graph.nodes[node][year]['financial life cycle cost'] = {
+                    graph.nodes[node][year]['lcc_financial'] = {
                         service_name: utils.create_value_dict(lcc,
                                                               param_source='cost curve function')}
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
-                    lcc_dict = graph.nodes[node][year]['financial life cycle cost']
+                    lcc_dict = graph.nodes[node][year]['lcc_financial']
                     fuel_name = list(lcc_dict.keys())[0]
                     lcc_dict[fuel_name]['to_estimate'] = True
 

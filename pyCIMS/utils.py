@@ -8,6 +8,8 @@ import pandas as pd
 import operator
 
 from . import lcc_calculation
+from . import declining_costs
+from . import vintage_weighting
 
 
 def is_year(val: str or int) -> bool:
@@ -100,13 +102,26 @@ def is_param_exogenous(model, param, node, year, tech=None):
     return ms_exogenous
 
 
-def get_services_requested(model, node, year, tech=None):
+def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
         if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
             services_requested = model.graph.nodes[node][year]['technologies'][tech][
                 'service requested']
+            if use_vintage_weighting:
+                weighted_services = {}
+                for serv in services_requested:
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(
+                        'service requested', model, node, year, tech=tech, context=serv
+                    )
+                    weighted_services[serv] = create_value_dict(
+                        year_val=weighted_req_ratio,
+                        branch=services_requested[serv]['branch'],
+                        param_source='vintage_weighting'
+                    )
+                services_requested = weighted_services
+
     else:
         if 'service requested' not in model.graph.nodes[node][year]:
             services_requested = {}
@@ -128,24 +143,25 @@ def prev_stock_existed(model, node, year):
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'GCC_t': lcc_calculation.calc_gcc,
-    'capital cost_declining': lcc_calculation.calc_declining_cc,
+    'capital cost_declining': declining_costs.calc_declining_capital_cost,
     'capital cost': lcc_calculation.calc_capital_cost,
     'crf': lcc_calculation.calc_crf,
-    'uic_declining': lcc_calculation.calc_declining_uic,
     'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
     'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
-    'aic_declining': lcc_calculation.calc_declining_aic,
+    'dic': declining_costs.calc_declining_intangible_cost,
     'financial annual cost': lcc_calculation.calc_financial_annual_cost,
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
-    'service cost': lcc_calculation.calc_annual_service_cost,
-    'emissions cost': lcc_calculation.calc_emissions_cost,
-    'financial life cycle cost': lcc_calculation.calc_financial_lcc,
+    'service cost': lcc_calculation.calc_complete_annual_service_cost,
+    'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
+    'emissions cost': lcc_calculation.calc_complete_emissions_cost,
+    'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
+    'lcc_financial': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
     'price': lcc_calculation.calc_price,
     'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
     'price_subsidy': lcc_calculation.calc_price_subsidy
 }
+
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
     'price multiplier',
@@ -371,7 +387,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                                       year=prev_year,
                                       context=context,
                                       sub_context=sub_context,
-                                      tech=tech)
+                                      tech=tech,
+                                      dict_expected=dict_expected)
                 param_source = 'previous_year'
             else:
                 val = None
