@@ -167,7 +167,7 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     return retrofit_market_shares
 
 
-def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
+def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_at_parent=True):
     """
     Update the amount of base stock and new stock remaining in the model based on how much stock
     is retrofitted. The amount of retrofitted stock is first subtracted from base_stock_remaining.
@@ -199,17 +199,34 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
     base_stock_remaining = model.get_param('base_stock_remaining', node, year, tech=tech)
     base_stock_retrofitted = min(base_stock_remaining, retrofit_amount)
     retrofit_amount -= base_stock_retrofitted
-    model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining']['year_value'] -= base_stock_retrofitted
+    model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'][
+        'year_value'] -= base_stock_retrofitted
+    if record_at_parent:
+        parent_node = '.'.join(node.split('.')[:-1])
+        parent_tech = node.split('.')[-1]
+        model.graph.nodes[parent_node][year]['technologies'][parent_tech]['base_stock_remaining'][
+            'year_value'] -= base_stock_retrofitted
 
     # New Stock
     if retrofit_amount > 0:
-        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech, dict_expected=True)
+        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech,
+                                              dict_expected=True)
         for prev_year in new_stock_remaining:
             y_ns_remaining = new_stock_remaining[prev_year]
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)
             retrofit_amount -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining']['year_value'][prev_year] -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus']['year_value'][prev_year] -= y_ns_retrofitted
+            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'][
+                'year_value'][prev_year] -= y_ns_retrofitted
+            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'][
+                'year_value'][prev_year] -= y_ns_retrofitted
+
+            if record_at_parent:
+                parent_node = '.'.join(node.split('.')[:-1])
+                parent_tech = node.split('.')[-1]
+                model.graph.nodes[parent_node][year]['technologies'][parent_tech][
+                    'new_stock_remaining']['year_value'][prev_year] -= y_ns_retrofitted
+                model.graph.nodes[parent_node][year]['technologies'][parent_tech][
+                    'new_stock_remaining_pre_surplus']['year_value'][prev_year] -= y_ns_retrofitted
 
 
 def calc_retrofits(model, node, year, existing_stock):
@@ -290,10 +307,8 @@ def calc_retrofits(model, node, year, existing_stock):
                 retrofit_stocks[tech] += post_retro_existing_stock - pre_retro_existing_stock
 
                 _record_retrofitted_stock(model, existing_node, year, existing_tech,
-                                          pre_retro_existing_stock - post_retro_existing_stock)
-                if comp_type == 'node tech compete':
-                    _record_retrofitted_stock(model, node, year, existing_node.split('.')[-1],
-                                              pre_retro_existing_stock - post_retro_existing_stock)
+                                          pre_retro_existing_stock - post_retro_existing_stock,
+                                          record_at_parent=comp_type=='node tech compete')
 
             else:
                 if tech not in added_retrofit_stocks:
