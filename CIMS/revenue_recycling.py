@@ -12,7 +12,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing node
     node : str
         The name of the node (in branch form) for which recycled revenues will be calculated.

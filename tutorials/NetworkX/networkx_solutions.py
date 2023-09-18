@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-import pyCIMS
+import CIMS
 import pprint as pp
 import copy
 
@@ -96,44 +96,44 @@ draw_net(my_graph)
 # *****************************************************************************
 # Run the code below to create a graph based on the model description. It will
 # be saved as network.
-file = 'pycims_prototype/pyCIMS_model_description_20200221.xlsm'
-my_reader = pyCIMS.Reader(infile=file, node_col='Node',
+file = 'CIMS_prototype/CIMS_model_description_20200221.xlsm'
+my_reader = CIMS.Reader(infile=file, node_col='Node',
                           sheet_map={'model': 'Model',
                                      'incompatible': 'Incompatible',
                                      'default_tech': 'Technologies'})
-my_model = pyCIMS.Model(my_reader)
+my_model = CIMS.Model(my_reader)
 my_model.build_graph()
 network = my_model.graph
 
-# Find all the keys for attributes at node "pyCIMS.Canada.Alberta"
-print(network.nodes['pyCIMS.Canada.Alberta'].keys())
+# Find all the keys for attributes at node "CIMS.Canada.Alberta"
+print(network.nodes['CIMS.Canada.Alberta'].keys())
 
-# Check what pyCIMS.Canada.Alberta.Electricity's competition type is
-print(network.nodes['pyCIMS.Canada.Alberta']['competition type'])
+# Check what CIMS.Canada.Alberta.Electricity's competition type is
+print(network.nodes['CIMS.Canada.Alberta']['competition type'])
 
-# Check out the data stored within the pyCIMS.Canada.Alberta.Electricity node.
+# Check out the data stored within the CIMS.Canada.Alberta.Electricity node.
 # See if you can find patterns regarding how data is stored within the year
 # data dictionaries
-pp.pprint(network.nodes['pyCIMS.Canada.Alberta'])
+pp.pprint(network.nodes['CIMS.Canada.Alberta'])
 
 # *****************************************************************************
 #  5. Relationships in our model network
 # *****************************************************************************
-# Find the children for the pyCIMS.Canada.Alberta.Electricity node
-print(list(network.successors('pyCIMS.Canada.Alberta')))
+# Find the children for the CIMS.Canada.Alberta.Electricity node
+print(list(network.successors('CIMS.Canada.Alberta')))
 
 # Of those children, only print the ones that are connected to
-# pyCIMS.Canada.Alberta through an edge where the edge's "type" attribute
+# CIMS.Canada.Alberta through an edge where the edge's "type" attribute
 # includes 'request_provide'. Each of these children represent a node where the
-# pyCIMS.Canada.Alberta node is requesting some service from them. Nodes can
+# CIMS.Canada.Alberta node is requesting some service from them. Nodes can
 # also be connected through "structural" edges.
-for u, v, d in network.edges('pyCIMS.Canada.Alberta', data=True):
+for u, v, d in network.edges('CIMS.Canada.Alberta', data=True):
     if 'request_provide' in d['type']:
         print(v)
 
-# Find the data stored at the structural parent of 'pyCIMS.Canada.Alberta'
+# Find the data stored at the structural parent of 'CIMS.Canada.Alberta'
 # There are a few ways to do this, the easiest is below.
-node = 'pyCIMS.Canada.Alberta'
+node = 'CIMS.Canada.Alberta'
 parent = '.'.join(node.split('.')[:-1])
 pp.pprint(network.nodes[parent])
 
@@ -154,7 +154,7 @@ draw_net(supply_graph)
 # *****************************************************************************
 #  7. Understand a Traversal
 # *****************************************************************************
-# I've included the traverse graph function below (implemented in pyCIMS).
+# I've included the traverse graph function below (implemented in CIMS).
 # However, I have not included the docstring. Its purpose is to visit every
 # node in the graph in a particular order, applying a function
 # (node_process_func) to each node.
@@ -210,5 +210,5 @@ Nothing. It makes changes to the existing graph instead.
 # Without running the function, what are the first 4 nodes that will be visited
 # if we were apply our supply subgraph to the top_down_traversal function?
 """
-pyCIMS, pyCIMS.Canada, pyCIMS.Canada.Alberta, pyCIMS.Canada.Alberta.Electricity
+CIMS, CIMS.Canada, CIMS.Canada.Alberta, CIMS.Canada.Alberta.Electricity
 """

@@ -1,7 +1,7 @@
 """
 Module containing the functions required for performing Macro Economics calculations.
 """
-from pyCIMS import utils
+from CIMS import utils
 
 def calc_total_stock_demanded(model, node, year):
     """
@@ -10,7 +10,7 @@ def calc_total_stock_demanded(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the data required for calculation.
     node : str
         The node whose Total Stock Demanded is being calculated.
@@ -40,7 +40,7 @@ def calc_stock_demanded(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the data required for calculation.
     node : str
         The node whose Stock Demanded is being calculated.
@@ -81,7 +81,7 @@ def find_regions(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the data required for calculation.
     node : str
         The node whose regions are being determined.
@@ -111,7 +111,7 @@ def calc_stock_exported(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the data required for calculation.
     node : str
         The node whose Stock Exported is being calculated.

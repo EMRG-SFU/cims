@@ -8,7 +8,7 @@ from numpy import linspace, mean
 from . import graph_utils
 
 
-def initialize_tax_foresight(model: 'pyCIMS.Model') -> None:
+def initialize_tax_foresight(model: 'CIMS.Model') -> None:
     """
     Update model to populate the tax_foresight parameter for all nodes within sectors where a tax
     foresight method has been specified.
@@ -28,7 +28,7 @@ def initialize_tax_foresight(model: 'pyCIMS.Model') -> None:
 
     for year in model.years:
         # Find the tax foresight methods defined in a particular year
-        foresight_dict = model.get_param('tax_foresight', 'pyCIMS', year, dict_expected=True)
+        foresight_dict = model.get_param('tax_foresight', 'CIMS', year, dict_expected=True)
 
         # Record the tax foresight methods for specified sectors
         if foresight_dict is not None:
@@ -63,13 +63,13 @@ def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str) -> Non
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'pyCIMS':
+            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'CIMS':
                 parent_dict = graph.nodes[parent][year]['tax_foresight']
         if parent_dict:
             graph.nodes[node][year]['tax_foresight'] = parent_dict
 
 
-def discounted_foresight(model: 'pyCIMS.Model', node: str, year: str, tech: str or None, ghg: str,
+def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str or None, ghg: str,
                          emission_type: str) -> float:
     """
     Use the "Discounted Tax Foresight" method to calculates an expected tax value for a given
@@ -147,7 +147,7 @@ def _tax_foresight_interpolation(model, node, year, tech, ghg, emission_type):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to retrieve paramter values from.
     node : str
         The node whose expected tax cost is being found.
