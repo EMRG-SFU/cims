@@ -1,9 +1,13 @@
+from __future__ import annotations  # For Type Hinting
 import copy
 import warnings
 import networkx as nx
+from typing import List
+
 
 from . import utils
 from . import loop_resolution
+from . import cost_curves
 
 
 # **************************
@@ -23,7 +27,7 @@ def _find_value_in_ancestors(graph, node, parameter, year=None):
         The graph where `node` resides.
     node : str
         The name of the node to begin our search from. Must be contained within `graph`. (e.g.
-        'pyCIMS.Canada.Alberta')
+        'CIMS.Canada.Alberta')
     parameter : str
         The name of the parameter whose value is being found. (e.g. 'Sector type')
     year : str, optional
@@ -75,44 +79,17 @@ def parent_name(curr_node, return_empty=False):
 
 def get_fuels(graph):
     """
-    Find the names of nodes supplying fuel.
-
-    A fuel is any node which meets one of the following criteria:
-    * The node is a market node.
-    * The node is a supply node, whose competition type is Sector.
-    * The node is a supply node, whose competition type begins with Fuel (i.e. Fuel - Fixed Price,
-      Fuel - Cost Curve Annual, Fuel - Cost Curve Cumulative).
-
+    Find the nodes which have been specified as fuels in the model description.
     Returns
     -------
-    tuple of two lists
-        The first output is a list containing the names of nodes which supply fuels and markets.
-        The first output is a list containing fuels and markets, excluding children of markets.
+    List
+        A list containing the names of nodes which supply fuels and markets.
     """
     fuels = []
-    remove_fuels = []
-    for node, data in graph.nodes(data=True):
-        is_market = 'market' in data['competition type'].lower()
-        is_supply = data['type'].lower() == 'supply'
-        is_sector = 'sector' in data['competition type'].lower()
-        starts_with_fuel = data['competition type'].startswith('fuel')
-        if is_market:
+    for node in graph.nodes:
+        if graph.nodes[node]['is fuel']:
             fuels.append(node)
-            # Check all the service requested to remove them from the fuels list later
-            for param in data.keys():
-                # checking if param is a year
-                if param.isdigit():
-                    techs = data[param]['technologies']
-                    for _, tech_dict in techs.items():
-                        child = tech_dict['service requested']
-                        remove_fuels.append(child['branch'])
-                    break
-        elif is_supply & is_sector:
-            fuels.append(node)
-        elif is_supply & starts_with_fuel:
-            fuels.append(node)
-    equilibrium_fuels = [fuel for fuel in fuels if fuel not in remove_fuels]
-    return fuels, equilibrium_fuels
+    return fuels
 
 
 def get_GHG_and_Emissions(graph, year):
@@ -162,7 +139,7 @@ def get_GHG_and_Emissions(graph, year):
             ghg = list(set(ghg + node_ghg))
             emission_type = list(set(emission_type + node_emission_type))
 
-        #GWP from pyCIMS node
+        #GWP from CIMS node
         if 'emissions gwp' in data[year]:
             for ghg2 in data[year]['emissions gwp']:
                 gwp[ghg2] = data[year]['emissions gwp'][ghg2]['year_value']
@@ -170,32 +147,74 @@ def get_GHG_and_Emissions(graph, year):
     return ghg, emission_type, gwp
 
 
-def get_subgraph(graph, node_types):
+def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
     """
-    Find the sub-graph of `graph` that only includes nodes whose type is in `node_types`.
+    Find the nodes to use for demand-side traversals. The returned list of nodes will include all
+    nodes whose "node type" attribute is not "supply.
 
     Parameters
     ----------
-    node_types : list of str
-        A list of node types ('standard', 'supply', or 'demand') to include in the returned
-        sub-graph.
+    graph :
+        The graph whose demand tree will be returned.
 
     Returns
     -------
-    networkx.DiGraph or networkX.Graph
-        The returned graph is a sub-graph of `graph`. A node is only included if its type is one
-        of `node_types`. A edge is only included if it connects two nodes found in the returned
-        graph.
+    A subgraph of graph which includes only non-supply nodes.
     """
-    nodes = [n for n, a in graph.nodes(data=True) if a['type'] in node_types]
-    sub_g = graph.subgraph(nodes)
-    return sub_g
+    # Find Fuels
+    fuels = set([n for n, d in graph.nodes(data=True) if ('is fuel' in d) and d['is fuel']])
+
+    # Find the structural descendants of fuels
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_graph = graph.edge_subgraph(structural_edges)
+
+    descendants = set()
+    for fuel in fuels:
+        fuel_structural_descendants = nx.descendants(structural_graph, fuel)
+        descendants = descendants.union(fuel_structural_descendants)
+
+    # Return all the nodes which are neither fuels nor their descendants
+    return list(set(graph.nodes).difference(set(fuels).union(descendants)))
+
+
+def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
+    """
+    Find the nodes to use for supply-side traversals. The returned list of nodes will include all
+    nodes whose "node type" is "supply" and any node which is a structural ancestor of these supply
+    nodes.
+
+    Parameters
+    ----------
+    graph :
+        The graph whose supply tree will be returned.
+
+    Returns
+    -------
+    A subgraph of graph which includes only supply nodes & their structural ancestors.
+    """
+    # Find Fuels
+    fuels = [n for n, d in graph.nodes(data=True) if ('is fuel' in d) and d['is fuel']]
+
+    # Find the structural ancestors of the supply nodes
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_graph = graph.edge_subgraph(structural_edges)
+
+    ancestors = set()
+    descendants = set()
+    for fuel in fuels:
+        structural_ancestors = nx.ancestors(structural_graph, fuel)
+        ancestors = ancestors.union(structural_ancestors)
+
+        structural_descendants = nx.descendants(structural_graph, fuel)
+        descendants = descendants.union(structural_descendants)
+
+    return fuels + list(ancestors) + list(descendants)
 
 
 # **************************
 # 2 - TRAVERSALS
 # **************************
-def top_down_traversal(graph, node_process_func, *args, node_types=None, root=None,
+def top_down_traversal(graph, node_process_func, *args, root=None,
                        loop_resolution_func=loop_resolution.min_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -213,10 +232,6 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
 
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
-
     Returns
     -------
     None
@@ -232,10 +247,7 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
     dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
+    sub_graph = graph
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
@@ -254,7 +266,7 @@ def top_down_traversal(graph, node_process_func, *args, node_types=None, root=No
         sg_cur.remove_node(n_cur)
 
 
-def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=None,
+def bottom_up_traversal(graph, node_process_func, *args, root=None,
                         loop_resolution_func=loop_resolution.max_distance_from_root, **kwargs):
     """
     Visit each node in `sub_graph` applying `node_process_func` to each node as its visited.
@@ -276,16 +288,11 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
         The function to be applied to each node in `sub_graph`. Doesn't return anything but should
         have an effect on the node data within `sub_graph`.
 
-    node_types : list of str -> None
-        A list of node types to be provided if making a subgraph to traverse. Possible values: 'demand', 'supply',
-        'standard'. If not provided, traverse the original graph.
-
     Returns
     -------
     None
 
     """
-
     # If root hasn't been provided, find the sub-graph's root
     if not root:
         possible_roots = [n for n, d in graph.in_degree() if d == 0]
@@ -296,10 +303,7 @@ def bottom_up_traversal(graph, node_process_func, *args, node_types=None, root=N
     dist_from_root = nx.single_source_shortest_path_length(graph, root)
 
     # Start the traversal
-    if not node_types:
-        sub_graph = graph
-    else:
-        sub_graph = get_subgraph(graph, node_types)
+    sub_graph = graph
     sg_cur = sub_graph.copy()
 
     while len(sg_cur.nodes) > 0:
@@ -348,42 +352,29 @@ def add_node_data(graph, current_node, node_dfs):
     # 2 Add an empty node to the graph
     graph.add_node(current_node)
 
-    # 3 Find node type (supply, demand, or standard)
-    typ = list(current_node_df[current_node_df['Parameter'].str.lower() == 'node type']['Context'].str.lower())
-    if (len(typ) > 0) and (typ[0] in ['demand', 'supply']):
-        graph.nodes[current_node]['type'] = typ[0]
-    else:
-        # If type isn't in the node's df or is not demand/supply, try to find it in the ancestors
-        val = _find_value_in_ancestors(graph, current_node, 'type')
-        graph.nodes[current_node]['type'] = val if val else 'standard'
-
-    # Drop node type row
-    current_node_df = current_node_df[current_node_df['Parameter'].str.lower() != 'node type']
+    # 3 Find whether node is a fuel
+    is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
+    is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
+    graph.nodes[current_node]['is fuel'] = is_fuel
+    # Drop fuel row
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'is fuel']
 
     # 4 Find node's competition type. (If there is one)
     comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
     if len(set(comp_list)) == 1:
-        comp_type = comp_list[0]
-        graph.nodes[current_node]['competition type'] = comp_type.lower()
+        comp_type = comp_list[0].lower()
+        graph.nodes[current_node]['competition type'] = comp_type
     elif len(set(comp_list)) > 1:
-        print("TOO MANY COMPETITION TYPES")
+        raise ValueError("TOO MANY COMPETITION TYPES")
+    elif 'competition type' in graph.nodes[current_node]:
+        comp_type = graph.nodes[current_node]['competition type']
+
     # Get rid of competition type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
 
     # 5 Find the cost curve function
     if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
-        years = [c for c in current_node_df.columns if utils.is_year(c)]
-
-        # Get quantities
-        cc_quant_line = current_node_df[current_node_df['Parameter'] == 'cost curve quantity']
-        cc_quants = [cc_quant_line[y].iloc[0] for y in years]
-
-        # Get prices
-        cc_price_line = current_node_df[current_node_df['Parameter'] == 'cost curve price']
-        cc_prices = [cc_price_line[y].iloc[0] for y in years]
-
-        # Create interpolator
-        cc_func = utils.create_cost_curve_func(cc_quants, cc_prices)
+        cc_func = cost_curves.build_cost_curve_function(current_node_df)
         graph.nodes[current_node]['cost_curve_function'] = cc_func
 
         # Get rid of cost curve rows
@@ -397,7 +388,10 @@ def add_node_data(graph, current_node, node_dfs):
     non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
-        year_dict = {}
+        if year in graph.nodes[current_node]:
+            year_dict = graph.nodes[current_node][year]
+        else:
+            year_dict = {}
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
@@ -423,6 +417,16 @@ def add_node_data(graph, current_node, node_dfs):
                 #    these cases, sub_context isn't defined, but there will be values in year_
                 #    value that we need to record.
                 elif year_value is not None:
+                    if 'year_value' in year_dict[param]:
+                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
+                    year_dict[param][context] = dct
+
+                # No year value has been specified, but there are other instances of this parameter
+                # already saved to the model for this node
+                elif year_dict[param]:
+                    # Check that it's not a base dictionary.
+                    if 'year_value' in year_dict[param]:
+                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
                     year_dict[param][context] = dct
 
                 # 3. Context contains the value we actually want to record. Additionally, this
@@ -477,7 +481,10 @@ def add_tech_data(graph, node, tech_dfs, tech):
     non_year_data = [t_df[c] for c in non_years]
     for year in years:
         current_year_data = non_year_data + [t_df[year]]
-        year_dict = {}
+        try:
+            year_dict = graph.nodes[node][year]['technologies'][tech]
+        except KeyError:
+            year_dict = {}
 
         for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
             dct = {'context': context,
@@ -571,7 +578,7 @@ def add_edges(graph, node, df):
             graph.edges[edge]['type'] = ['request_provide']
 
     # 3 Find edge based on branch structure.
-    # e.g. If our node was pyCIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
+    # e.g. If our node was CIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
     # Find the node's parent
     parent = '.'.join(node.split('.')[:-1])
     if parent:
@@ -589,7 +596,7 @@ def add_edges(graph, node, df):
     return graph
 
 
-def make_edges(graph, node_dfs, tech_dfs):
+def make_or_update_edges(graph, node_dfs, tech_dfs):
     """
     Add edges to `graph` using information in `node_dfs` and `tech_dfs`.
 
@@ -609,9 +616,9 @@ def make_edges(graph, node_dfs, tech_dfs):
     return graph
 
 
-def make_nodes(graph, node_dfs, tech_dfs):
+def make_or_update_nodes(graph, node_dfs, tech_dfs):
     """
-    Add nodes to `graph` using `node_dfs` and `tech_dfs`.
+    Add nodes to `graph` using `node_dfs` and `tech_dfs`. If node already exists, update it.
 
     Returns
     -------
@@ -627,11 +634,14 @@ def make_nodes(graph, node_dfs, tech_dfs):
     node_dfs_to_add = list(node_dfs.keys())
     while len(node_dfs_to_add) > 0:
         node_data = node_dfs_to_add.pop(0)
-        try:
+        if node_data in graph.nodes:
             new_graph = add_node_data(graph, node_data, node_dfs)
+        else:
+            try:
+                new_graph = add_node_data(graph, node_data, node_dfs)
 
-        except KeyError:
-            node_dfs_to_add.append(node_data)
+            except KeyError:
+                node_dfs_to_add.append(node_data)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:
