@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
-import pyCIMS
+import CIMS
 import copy
 import pprint as pp
 
@@ -70,20 +70,20 @@ shown in this link: https://faculty.ucr.edu/~hanneman/nettext/Figure7_11.jpg
 # *****************************************************************************
 # Run the code below to create a graph based on the model description. It will
 # be saved as network.
-file = 'pycims_prototype/pyCIMS_model_description_20200221.xlsm'
-my_reader = pyCIMS.Reader(infile=file, node_col='Node',
+file = 'CIMS_prototype/CIMS_model_description_20200221.xlsm'
+my_reader = CIMS.Reader(infile=file, node_col='Node',
                           sheet_map={'model': 'Model',
                                      'incompatible': 'Incompatible',
                                      'default_tech': 'Technologies'})
-my_model = pyCIMS.Model(my_reader)
+my_model = CIMS.Model(my_reader)
 my_model.build_graph()
 network = my_model.graph
 
-# A. Find all the keys for attributes at node "pyCIMS.Canada.Alberta"
+# A. Find all the keys for attributes at node "CIMS.Canada.Alberta"
 
-# B. Check what pyCIMS.Canada.Alberta.Electricity's competition type is
+# B. Check what CIMS.Canada.Alberta.Electricity's competition type is
 
-# C. Check out the data stored within the pyCIMS.Canada.Alberta.Electricity node.
+# C. Check out the data stored within the CIMS.Canada.Alberta.Electricity node.
 # See if you can find patterns regarding how data is stored within the year
 # data dictionaries
 
@@ -91,15 +91,15 @@ network = my_model.graph
 # *****************************************************************************
 #  5. Relationships in our model network
 # *****************************************************************************
-# A. Find the children for the pyCIMS.Canada.Alberta.Electricity node
+# A. Find the children for the CIMS.Canada.Alberta.Electricity node
 
 # B. Of those children, only print the ones that are connected to
-# pyCIMS.Canada.Alberta through an edge where the edge's "type" attribute
+# CIMS.Canada.Alberta through an edge where the edge's "type" attribute
 # includes 'request_provide'. Each of these children represent a node where the
-# pyCIMS.Canada.Alberta node is requesting some service from them. Nodes can
+# CIMS.Canada.Alberta node is requesting some service from them. Nodes can
 # also be connected through "structural" edges.
 
-# C. Find the data stored at the structural parent of 'pyCIMS.Canada.Alberta'
+# C. Find the data stored at the structural parent of 'CIMS.Canada.Alberta'
 # There are a few ways to do this, the easiest is below.
 
 
@@ -117,7 +117,7 @@ network = my_model.graph
 # *****************************************************************************
 #  7. Understand a Traversal
 # *****************************************************************************
-# I've included the traverse graph function below (implemented in pyCIMS).
+# I've included the traverse graph function below (implemented in CIMS).
 # However, I have not included the docstring. Its purpose is to visit every
 # node in the graph in a particular order, applying a function
 # (node_process_func) to each node.

@@ -265,7 +265,7 @@ class Emissions:
         return summary_emissions
 
 
-def calc_cumul_emissions_cost_rate(model: 'pyCIMS.Model', node: str, year: str,
+def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
                                    tech: str = None) -> None:
     """
     Calculates the per unit emissions cost for a node or tech. This includes the emissions costs
@@ -283,7 +283,7 @@ def calc_cumul_emissions_cost_rate(model: 'pyCIMS.Model', node: str, year: str,
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the node and information of interest
     node : str
         The node whose cumulative emissions cost rate is being calculated
@@ -345,7 +345,7 @@ def calc_cumul_emissions_cost_rate(model: 'pyCIMS.Model', node: str, year: str,
         model.graph.nodes[node][year]['cumul_emissions_cost_rate'] = new_val_dict
 
 
-def calc_cumul_emissions_rate(model: 'pyCIMS.Model', node: str, year: str,
+def calc_cumul_emissions_rate(model: 'CIMS.Model', node: str, year: str,
                               tech: str = None) -> None:
     """
     Calculates the per unit emissions for a node/tech, including the emissions from child
@@ -359,7 +359,7 @@ def calc_cumul_emissions_rate(model: 'pyCIMS.Model', node: str, year: str,
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the node and information of interest
     node : str
         The node whose cumulative emissions cost rate is being calculated
@@ -429,7 +429,7 @@ def calc_cumul_emissions_rate(model: 'pyCIMS.Model', node: str, year: str,
             model.graph.nodes[node][year][cumul_rate_param] = new_val_dict
 
 
-def _find_indirect_emissions_cost(model: "pyCIMS.Model", year: str,
+def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
                                   services_requested: List[dict]) -> EmissionsCost:
     """
     Go through each of the requested services and find the emissions cost that can be attributed to
@@ -437,7 +437,7 @@ def _find_indirect_emissions_cost(model: "pyCIMS.Model", year: str,
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the relevant data.
     year : str
         The year of interest.
@@ -462,7 +462,7 @@ def _find_indirect_emissions_cost(model: "pyCIMS.Model", year: str,
     return indirect_emissions_cost
 
 
-def _find_indirect_emissions(model: 'pyCIMS.Model', year: str, services_requested: List[dict],
+def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested: List[dict],
                              emissions_param: str) -> Emissions:
     """
     Go through each of the requested services and find the emissions that can be attributed to
@@ -470,7 +470,7 @@ def _find_indirect_emissions(model: 'pyCIMS.Model', year: str, services_requeste
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the relevant data.
     year : str
         The year of interest.
@@ -496,7 +496,7 @@ def _find_indirect_emissions(model: 'pyCIMS.Model', year: str, services_requeste
     return indirect_emissions
 
 
-def calc_complete_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
+def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
                         allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
@@ -507,7 +507,7 @@ def calc_complete_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, te
     Net, avoided, negative, and biomass emission rates are also stored in the model.
 
     To see how the calculation works, see the file 'Emissions_tax_example.xlsx':
-    https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
+    https://gitlab.rcg.sfu.ca/mlachain/CIMS_prototype/-/issues/22#note_6489
 
     Parameters
     ----------
@@ -747,7 +747,7 @@ def calc_complete_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, te
     return total
 
 
-def calc_financial_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str,
+def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
                         allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
@@ -758,7 +758,7 @@ def calc_financial_emissions_cost(model: 'pyCIMS.Model', node: str, year: str, t
     Net, avoided, negative, and biomass emission rates are also stored in the model.
 
     To see how the calculation works, see the file 'Emissions_tax_example.xlsx':
-    https://gitlab.rcg.sfu.ca/mlachain/pycims_prototype/-/issues/22#note_6489
+    https://gitlab.rcg.sfu.ca/mlachain/pyCIMS_prototype/-/issues/22#note_6489
 
     Parameters
     ----------

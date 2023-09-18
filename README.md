@@ -1,11 +1,11 @@
-# pyCIMS
-pyCIMS is a Python package providing the Python implementation of the [CIMS](https://pics.uvic.ca/sites/default/files/uploads/CIMS%20Community%20Excel%20model%20user%20documentation_0.pdf)
+# CIMS
+CIMS is a Python package providing the Python implementation of the [CIMS](https://pics.uvic.ca/sites/default/files/uploads/CIMS%20Community%20Excel%20model%20user%20documentation_0.pdf)
 economic climate model. 
 
 Written for Dr. Bradford Griffin by developers from Simon Fraser
-University's Big Data Initiative. Major contributions have been made by Maude 
-Lachaine, Daisy Yu, Kacy Wu, Adriena Wong, Jillian Anderson, and Dr. Steven 
-Bergner. 
+University's Big Data Initiative and Research Computing Group. Major
+contributions have been made by Jillian Anderson, Rashid Barket, Maude Lachaine,
+Adriena Wong, Kacy Wu, Daisy Yu, and Dr. Steven Bergner. 
 
 # CIMS Background
 CIMS is a simulation model for economy, energy and materials. The goal of CIMS 
@@ -25,11 +25,10 @@ CIMS provides information such as:
 
 
 ## Installation
-Check out the [installation guide](docs/Installation.md) to get pyCIMS running
+Check out the [installation guide](docs/Installation.md) to get CIMS running
 on your own machine. This guide will walk through downloading pre-requisites and
-installing the pyCIMS repository from our git repository. 
+installing the CIMS repository from our git repository. 
 
 ## Usage
-Once pyCIMS has been installed, follow our 
-[introduction tutorial](tutorials/Quickstart.ipynb) to familiarize yourself with 
-pyCIMS key functionality. 
+Once CIMS has been installed, follow our [introduction tutorial](tutorials/Quickstart.ipynb) to 
+familiarize yourself with CIMS's key functionality. 

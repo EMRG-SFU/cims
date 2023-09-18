@@ -1,13 +1,13 @@
 # Installation & Setup
 
-There are 3 steps for setting up pyCIMS on your personal computer. 
+There are 3 steps for setting up CIMS on your personal computer. 
 1. [Install required software](#required)
 2. [Clone the git repository](#clone)
-3. [Install pyCIMS](#pycims)
+3. [Install CIMS](#CIMS)
 
 
 ## Install Required Software <a id=required></a>
-Before you install pyCIMS make sure you have 3 pieces of software installed on your computer: 
+Before you install CIMS make sure you have 3 pieces of software installed on your computer: 
 * Bash Shell
 * Git
 * Python
@@ -38,7 +38,7 @@ On Linux or Mac machines, open Terminal (pre-installed). On Windows, open GitBas
     cd pycims_prototype
     ```
 
-## Install pyCIMS <a id=pycims></a>
+## Install CIMS <a id=CIMS></a>
 1. From within the `pycims_prototype` directory, install dependencies using Anaconda. 
 ```
 conda env create -f environment.yml python=3.6
@@ -46,10 +46,10 @@ conda env create -f environment.yml python=3.6
 
 2. Activate the conda environment.
 ```
-conda activate pyCIMS_env
+conda activate CIMS_env
 ```
 
-3. From within the `pycims_prototype` directory, install pyCIMS. 
+3. From within the `pycims_prototype` directory, install CIMS. 
 ```
 pip install -e .
 ```

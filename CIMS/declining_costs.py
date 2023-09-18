@@ -9,7 +9,7 @@ from . import utils
 # ==========================================
 # Declining Capital Cost Functions
 # ==========================================
-def calc_declining_capital_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str):
+def calc_declining_capital_cost(model: 'CIMS.Model', node: str, year: str, tech: str):
     """
     Calculate the declining capital cost for a node. Should only be used for nodes where a DCC class
     has been specified.
@@ -120,7 +120,7 @@ def _dcc_segment_3(model, node, year, tech, all_stock):
 # ==========================================
 # Declining Intangible Cost Functions
 # ==========================================
-def calc_declining_intangible_cost(model: 'pyCIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
     Calculate Annual Declining Intangible Cost (DIC).
 
