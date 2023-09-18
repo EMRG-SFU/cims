@@ -2,21 +2,25 @@
 import CIMS
 from pprint import pprint
 
-file = 'pycims_prototype/models/CIMS_model.xlsb'
+file = 'pycims_prototype/models/CIMS_base model.xlsb'
 
-my_validator = CIMS.ModelValidator(infile=file,
-                                     sheet_map={'model': 'Lists',
-                                                'default_param': 'Default values'},
-                                     node_col='Node')
+my_validator = CIMS.ModelValidator(
+    infile=file,
+    sheet_map={
+        'model': 'RunSheets',
+        'default_param': 'Default values'},
+    node_col='Node')
 my_validator.validate(raise_warnings=False)
 pprint(my_validator.warnings)
 
 # Create a model description reader
-my_reader = CIMS.ModelReader(infile=file,
-                               sheet_map={'model': 'Lists',
-                                          'incompatible': 'Incompatible',
-                                          'default_param': 'Default values'},
-                               node_col='Node')
+my_reader = CIMS.ModelReader(
+    infile=file,
+    sheet_map={
+        'model': 'RunSheets',
+        'incompatible': 'Incompatible',
+        'default_param': 'Default values'},
+    node_col='Node')
 
 # Create a model from the reader
 my_model = CIMS.Model(my_reader)
