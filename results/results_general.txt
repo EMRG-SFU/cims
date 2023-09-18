@@ -1,6 +1,6 @@
 competition type
 price multiplier
-life cycle cost
+financial life cycle cost
 complete life cycle cost
 service provided
 service requested

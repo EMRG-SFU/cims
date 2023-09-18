@@ -4,8 +4,10 @@ surplus) and allocating new stock through a market share competition between tec
 """
 import math
 from ..quantities import ProvidedQuantity
-from pyCIMS import utils
+from CIMS import utils
+from CIMS.vintage_weighting import calculate_vintage_weighted_parameter
 from .retrofits import calc_retrofits
+from .macro_economics import calc_total_stock_demanded
 from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import _apply_min_max_limits
 import copy
@@ -25,7 +27,7 @@ def all_tech_compete_allocation(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to stock retirement and
         allocation.
 
@@ -46,7 +48,8 @@ def all_tech_compete_allocation(model, node, year):
         comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
+    # assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
+    assessed_demand = calc_total_stock_demanded(model, node, year)
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
     existing_stock = _get_existing_stock(model, node, year, comp_type)
@@ -95,7 +98,7 @@ def general_allocation(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to stock retirement and
         allocation.
 
@@ -146,7 +149,7 @@ def _get_existing_stock(model, node, year, comp_type):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to vintage specific retirement
     node : str
         Name of the node (branch notation) to query for existing stock
@@ -175,6 +178,10 @@ def _get_existing_stock(model, node, year, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
+            node_year_data['technologies'][child].pop("base_stock_remaining", None)
+            node_year_data['technologies'][child].pop("new_stock_remaining", None)
+            node_year_data['technologies'][child].pop("new_stock_remaining_pre_surplus", None)
+
             child_node = model.get_param('service requested', node,
                                          year=year,
                                          tech=child,
@@ -222,7 +229,7 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model used for retrieving data relevant to base stock retirement.
     node : str
         The name of the node (in branch form) for which base stock retirement will be calculated.
@@ -271,7 +278,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model used for retrieving data relevant to new stock retirement.
     node : str
         The name of the node (in branch form) for which new stock retirement will be calculated.
@@ -328,7 +335,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model used for retrieving and storing data relevant to natural retirement.
     node : str
         The name of the node (in branch form) containing the technology to be retired.
@@ -440,7 +447,7 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to surplus retirements
     node : str
         Name of the node (branch notation) where surplus stock will be retired from.
@@ -480,10 +487,16 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
             # Note early retirement in the model
             model.graph.nodes[node_branch][year]['technologies'][tech]['base_stock_remaining'][
                 'year_value'] -= amount_tech_to_retire
-            if node_branch != node:
-                child = node_branch.split('.')[-1]
+
+        # Note early retirement for node-tech compete
+        comp_type = model.get_param('competition type', node)
+        if comp_type == 'node tech compete':
+            children = {e[0].split('.')[-1] for e in existing_stock}
+            for child in children:
+                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=child)
+                amount_child_to_retire = retirement_proportion * child_base_stock
                 model.graph.nodes[node][year]['technologies'][child]['base_stock_remaining'][
-                    'year_value'] -= amount_tech_to_retire
+                    'year_value'] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
 
@@ -494,7 +507,7 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to surplus retirements
     node : str
         Name of the node (branch notation) where surplus stock will be retired from.
@@ -547,13 +560,19 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
             surplus -= amount_tech_to_retire
             amount_surplus_to_retire += amount_tech_to_retire
 
-            # note new stock remaining (post surplus) in the model
+            # Note new stock remaining (post surplus) in the model
             model.graph.nodes[node_branch][year]['technologies'][tech]['new_stock_remaining'][
                 'year_value'][purchase_year] -= amount_tech_to_retire
-            if node_branch != node:
-                child = node_branch.split('.')[-1]
+
+        # Note new stock remaining for node-tech compete
+        comp_type = model.get_param('competition type', node)
+        if comp_type == 'node tech compete':
+            children = {e[0].split('.')[-1] for e in existing_stock}
+            for child in children:
+                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=child, dict_expected=True)[purchase_year]
+                amount_child_to_retire = retirement_proportion * child_new_stock_remaining
                 model.graph.nodes[node][year]['technologies'][child]['new_stock_remaining'][
-                    'year_value'][purchase_year] -= amount_tech_to_retire
+                    'year_value'][purchase_year] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
 
@@ -586,7 +605,7 @@ def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock,
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving and storing data relevant to surplus retirements
     node : str
         Name of the node (branch notation) where surplus stock will be retired from.
@@ -644,7 +663,7 @@ def _find_exogenous_market_shares(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving exogenous market shares.
     node :
         The name of the node (branch notation) to query for exogenous market shares.
@@ -675,7 +694,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving values relevant to weight calculation.
     node
         The name of the node (branch notation) whose technologies' will compete for market share.
@@ -810,7 +829,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model where provided quantities will be recorded.
     node : str
         The node which requests the quantities.
@@ -831,14 +850,16 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
     None :
         Nothing is returned. Instead, the model is updated with the provided quantities.
     """
-    for service_data in requested_services.values():
-        service_req_ratio = service_data['year_value']
-        quant_requested = market_share * service_req_ratio * assessed_demand
+
+    for service, service_data in requested_services.items():
+        vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
+            'service requested', model, node, year, tech=tech, context=service)
+
+        quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
         year_node = model.graph.nodes[service_data['branch']][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
                 utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
-                # utils.create_value_dict(ProvidedQuantity(), param_source='initialization')
         year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
@@ -852,7 +873,7 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model where the results of stock allocation (new stock, market shares, etc).
     node : str
         The name of the node (branch form) whose results are being recorded.
@@ -917,7 +938,7 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', n, year, t)
 
     if comp_type == 'node tech compete':
-        # We need to also store summary added retrofit information at the Node Tech Compete parent node
+        # We need to also store summary retrofit information at the Node Tech Compete parent node
         # Create Summary Added Retrofit dictionary
         summary_added_retrofit_stocks = {}
         for n, t in added_retrofit_stocks:
@@ -928,8 +949,9 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
         # Save the info to the model
         for child_service in summary_added_retrofit_stocks:
-            added_retrofit_stock_dict = utils.create_value_dict(summary_added_retrofit_stocks[child_service],
-                                                          param_source='calculation')
+            added_retrofit_stock_dict = utils.create_value_dict(
+                summary_added_retrofit_stocks[child_service],
+                param_source='calculation')
             model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_service)
 
         # Create Summary Retrofit dictionary
@@ -943,7 +965,7 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         # Save the info to the model
         for child_service in summary_retrofit_stocks:
             retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_service],
-                                                                param_source='calculation')
+                                                          param_source='calculation')
             model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_service)
 
     # Send Demand Below

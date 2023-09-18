@@ -1,15 +1,15 @@
 """
-This module contains utility functions used throughout the pyCIMS package.
+This module contains utility functions used throughout the CIMS package.
 """
 import re
 import copy
 import warnings
 import pandas as pd
-from typing import List
-from scipy.interpolate import interp1d
 import operator
 
 from . import lcc_calculation
+from . import declining_costs
+from . import vintage_weighting
 
 
 def is_year(val: str or int) -> bool:
@@ -102,34 +102,26 @@ def is_param_exogenous(model, param, node, year, tech=None):
     return ms_exogenous
 
 
-def create_cost_curve_func(quantities: List[float], prices: List[float]):
-    """
-    Build an interpolator that uses quantity to interpolate price.
-    To be used for cost curve LCC calculations.
-
-    Parameters
-    ----------
-    quantities : list of quantities.
-    prices : list of prices. The length of prices must be equal to the length of quantities.
-
-    Returns
-    -------
-    scipy.interpolate.interp1d : A 1d interpolator that consumes a quantity to interpolate price.
-    """
-    qp_pairs = list(set(zip(quantities, prices)))
-    qp_pairs.sort(key=lambda x: x[0])
-    quantities, prices = zip(*qp_pairs)
-
-    return interp1d(quantities, prices, bounds_error=False, fill_value=(prices[0], prices[-1]))
-
-
-def get_services_requested(model, node, year, tech=None):
+def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
         if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
             services_requested = model.graph.nodes[node][year]['technologies'][tech][
                 'service requested']
+            if use_vintage_weighting:
+                weighted_services = {}
+                for serv in services_requested:
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(
+                        'service requested', model, node, year, tech=tech, context=serv
+                    )
+                    weighted_services[serv] = create_value_dict(
+                        year_val=weighted_req_ratio,
+                        branch=services_requested[serv]['branch'],
+                        param_source='vintage_weighting'
+                    )
+                services_requested = weighted_services
+
     else:
         if 'service requested' not in model.graph.nodes[node][year]:
             services_requested = {}
@@ -151,21 +143,25 @@ def prev_stock_existed(model, node, year):
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'GCC_t': lcc_calculation.calc_gcc,
-    'capital cost_declining': lcc_calculation.calc_declining_cc,
+    'capital cost_declining': declining_costs.calc_declining_capital_cost,
     'capital cost': lcc_calculation.calc_capital_cost,
     'crf': lcc_calculation.calc_crf,
-    'uic_declining': lcc_calculation.calc_declining_uic,
     'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
     'complete upfront cost': lcc_calculation.calc_complete_upfront_cost,
-    'aic_declining': lcc_calculation.calc_declining_aic,
+    'dic': declining_costs.calc_declining_intangible_cost,
     'financial annual cost': lcc_calculation.calc_financial_annual_cost,
     'complete annual cost': lcc_calculation.calc_complete_annual_cost,
-    'service cost': lcc_calculation.calc_annual_service_cost,
-    'emissions cost': lcc_calculation.calc_emissions_cost,
-    'financial life cycle cost': lcc_calculation.calc_financial_lcc,
+    'service cost': lcc_calculation.calc_complete_annual_service_cost,
+    'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
+    'emissions cost': lcc_calculation.calc_complete_emissions_cost,
+    'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
+    'lcc_financial': lcc_calculation.calc_financial_lcc,
     'complete life cycle cost': lcc_calculation.calc_complete_lcc,
+    'price': lcc_calculation.calc_price,
+    'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
+    'price_subsidy': lcc_calculation.calc_price_subsidy
 }
+
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
     'price multiplier',
@@ -179,31 +175,45 @@ inheritable_params = [
 
 def inherit_parameter(graph, node, year, param):
     assert param in inheritable_params
-
     parent = '.'.join(node.split('.')[:-1])
 
     if parent:
         parent_param_val = {}
-
         if param in graph.nodes[parent][year]:
             param_val = copy.deepcopy(graph.nodes[parent][year][param])
             parent_param_val.update(param_val)
 
+        # Update Param Source
+        if 'param_source' in parent_param_val:
+            parent_param_val.update({'param_source': 'inheritance'})
+        else:
+            for context in parent_param_val:
+                if 'param_source' in parent_param_val[context]:
+                    parent_param_val[context].update({'param_source': 'inheritance'})
+                else:
+                    for sub_context in parent_param_val[context]:
+                        parent_param_val[context][sub_context].update(
+                            {'param_source': 'inheritance'})
+
         node_param_val = copy.deepcopy(parent_param_val)
         if param in graph.nodes[node][year]:
             param_val = graph.nodes[node][year][param]
-            node_param_val.update(param_val)
 
-        # Update Param Source
-        if 'param_source' in node_param_val:
-            node_param_val.update({'param_source': 'inheritance'})
-        else:
-            for context in node_param_val:
-                if 'param_source' in node_param_val[context]:
-                    node_param_val[context].update({'param_source': 'inheritance'})
-                else:
-                    for sub_context in node_param_val[context]:
-                        node_param_val[context][sub_context].updatet({'param_source': 'inheritance'})
+            # Remove any previously inherited parameter values
+            if 'param_source' in param_val:
+                if param_val['param_source'] == 'inheritance':
+                    param_val = {}
+            elif param_val is not None:
+                for context in list(param_val):
+                    if 'param_source' in param_val[context]:
+                        if param_val[context]['param_source'] == 'inheritance':
+                            param_val.pop(context)
+                    else:
+                        for sub_context in list(param_val[context]):
+                            if param_val[context][sub_context]['param_source'] == 'inheritance':
+                                param_val[context].pop(sub_context)
+
+            node_param_val.update(param_val)
 
         if node_param_val:
             graph.nodes[node][year][param] = node_param_val
@@ -222,7 +232,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the parameter value of interest.
     param : str
         The name of the parameter whose value is being retrieved.
@@ -278,7 +288,10 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         val = data[param]
         if isinstance(val, dict):
             if context:
-                val = val[context]
+                try:
+                    val = val[context]
+                except KeyError:
+                    val = None
                 if sub_context:
                     val = val[sub_context]
             elif None in val:
@@ -367,14 +380,19 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # ******************************
     # Otherwise, use the value from the previous year. (If no base year value, throw an error)
     if param_source is None:
-        prev_year = str(int(year) - model.step)
-        if int(prev_year) >= model.base_year:
-            val = model.get_param(param, node,
-                                  year=prev_year,
-                                  context=context,
-                                  sub_context=sub_context,
-                                  tech=tech)
-            param_source = 'previous_year'
+        if year is not None:
+            prev_year = str(int(year) - model.step)
+            if int(prev_year) >= model.base_year:
+                val = model.get_param(param, node,
+                                      year=prev_year,
+                                      context=context,
+                                      sub_context=sub_context,
+                                      tech=tech,
+                                      dict_expected=dict_expected)
+                param_source = 'previous_year'
+            else:
+                val = None
+                param_source = None
         else:
             val = None
             param_source = None
@@ -394,7 +412,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model containing the parameter value of interest.
     val : any or list of any
         The new value(s) to be set at the specified `param` at `node`, given the context provided by
@@ -429,7 +447,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_val : any
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -525,7 +543,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_val : any
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -674,7 +692,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_value : dict
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -733,7 +751,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
 
         Parameters
         ----------
-        model : pyCIMS.Model
+        model : CIMS.Model
             The model containing the parameter value of interest.
         new_value : dict
             The new value to be set at the specified `param` at `node`, given the context provided by
@@ -825,7 +843,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             else:
                 value = val[i]['year_value']
                 model.create_param(val=value, param=param, node=node, year=year[i],
-                                   context=context, sub_context=sub_context)
+                                   context=context, sub_context=sub_context, param_source=val[i]['param_source'])
 
 
 def set_param_file(model, filepath):

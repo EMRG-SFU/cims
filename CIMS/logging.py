@@ -1,15 +1,16 @@
 """
-Module providing all the logging (write Model parameters to CSV file) functionality for the pyCIMS
+Module providing all the logging (write Model parameters to CSV file) functionality for the CIMS
 package.
 """
 import warnings
 from copy import deepcopy
 from scipy.interpolate import interp1d
+import numbers
 
 import pandas as pd
 
-from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from pyCIMS.emissions import Emissions, EmissionsCost
+from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
+from CIMS.emissions import Emissions, EmissionsCost
 
 excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
                        'net_emissions_rate', 'cumul_net_emissions_rate',
@@ -76,7 +77,7 @@ def log_RequestedQuantity(val):
 
     Parameters
     ----------
-    val : pyCIMS.RequestedQuantity
+    val : CIMS.RequestedQuantity
         The RequestedQuantity object containing the record of all requested quantities which can be
         traced back to a node, from either it's own requested services, or those of it's successors.
 
@@ -202,7 +203,10 @@ def log_dict(val):
             return log_EmissionsCost(year_value)
         if isinstance(year_value, dict):
             return log_dict(year_value)
-        val_log.value = float(year_value)
+        if isinstance(val_log.value, numbers.Number):
+            val_log.value = float(year_value)
+        else:
+            val_log.value = year_value
         return [val_log]
     else:
         val_pairs = []
@@ -225,7 +229,7 @@ def log_dict(val):
                         val_log.value = base_val['year_value']
                 val_pairs.append(deepcopy(val_log))
 
-            elif isinstance(inner_value, (int, float)):
+            elif isinstance(inner_value, numbers.Number):
                 val_log.value = float(inner_value)
                 val_pairs.append(deepcopy(val_log))
 
@@ -250,8 +254,8 @@ def _slim_list(default_list):
     """Define slim list example, change the content in p_list if you want a different list"""
 
     if default_list == 'slim':
-        p_list = ['new_market_share', 'financial life cycle cost', 'competition type',
-                  'service requested', 'capital cost_overnight']
+        p_list = ['new_market_share', 'price', 'competition type',
+                  'service requested', 'fcc']
 
     # this is for validating if we have defined the default name
     else:
@@ -344,7 +348,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         Model that is being logged to a CSV file
     output_file : str
         Path to the output CSV file location
@@ -355,9 +359,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     default_list : str, optional
         The name of a default parameter list. Currently two default lists are defined:
         (1) 'all' will log all parameters and
-        (2) 'slim' will return 5 pre-defined parameters ('new_market_share',
-            'financial life cycle cost', 'competition type', 'service requested',
-            'capital cost_overnight'
+        (2) 'slim' will return 5 pre-defined parameters ('new_market_share', 'price',
+            'competition type', 'service requested', 'fcc'
 
     Returns
     -------
@@ -371,6 +374,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for param, val in model.graph.nodes[node].items():
+
                 if param not in model.years:
                     log = node, None, None, param, val
                     add_log_item(all_logs, log)

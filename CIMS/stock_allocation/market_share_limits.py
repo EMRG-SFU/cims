@@ -1,4 +1,4 @@
-from pyCIMS import utils
+from CIMS import utils
 
 
 #############################
@@ -11,8 +11,8 @@ def _get_min_max_limits(model, node, year):
 
     Parameters
     ----------
-    model : pyCIMS.Model
-        The pyCIMS model containing the market share limits you want to retrieve.
+    model : CIMS.Model
+        The CIMS model containing the market share limits you want to retrieve.
     node : str
         The name of the node from which you want to retrieve the market share limits.
     year : str
@@ -193,8 +193,8 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
 
     Parameters
     ----------
-    model : pyCIMS.Model
-        The pyCIMS model containing node.
+    model : CIMS.Model
+        The CIMS model containing node.
     node : str
         The name of the node housing the market shares which may be eligible for adjustment.
     year : str
@@ -230,8 +230,8 @@ def _apply_min_max_limits(model, node, year, new_market_shares):
 
     Parameters
     ----------
-    model : pyCIMS.Model
-        The pyCIMS model containing node.
+    model : CIMS.Model
+        The CIMS model containing node.
     node : str
         The name of the node housing the market shares which limits will be applied.
     year : str
