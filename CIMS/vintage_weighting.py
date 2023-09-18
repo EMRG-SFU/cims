@@ -46,7 +46,7 @@ def _get_vintage_weights(model, node, year, tech):
     return vintage_weights
 
 
-def calculate_vintage_weighted_parameter(parameter: str, model: "pyCIMS.Model", node: str,
+def calculate_vintage_weighted_parameter(parameter: str, model: "CIMS.Model", node: str,
                                          year: str, tech: str, context: str = None, default_value=0) -> float:
     """
     Uses vintage-based weighting to calculate the value of a parameter. This function is used for
@@ -64,7 +64,7 @@ def calculate_vintage_weighted_parameter(parameter: str, model: "pyCIMS.Model", 
     ----------
     parameter : The name of a numerical parameter whose vintage-weighted value will be calculated
         (e.g. "financial life cycle cost").
-    model : The pyCIMS.Model storing the data required to calculate the vintage-weighted value of
+    model : The CIMS.Model storing the data required to calculate the vintage-weighted value of
         the parameter.
     node : The name of the node which contains the technology of interest
     year : The year whose vintage-weighted parameter will be calculated. This will use the new stock

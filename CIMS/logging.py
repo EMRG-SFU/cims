@@ -1,5 +1,5 @@
 """
-Module providing all the logging (write Model parameters to CSV file) functionality for the pyCIMS
+Module providing all the logging (write Model parameters to CSV file) functionality for the CIMS
 package.
 """
 import warnings
@@ -9,8 +9,8 @@ import numbers
 
 import pandas as pd
 
-from pyCIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from pyCIMS.emissions import Emissions, EmissionsCost
+from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
+from CIMS.emissions import Emissions, EmissionsCost
 
 excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
                        'net_emissions_rate', 'cumul_net_emissions_rate',
@@ -77,7 +77,7 @@ def log_RequestedQuantity(val):
 
     Parameters
     ----------
-    val : pyCIMS.RequestedQuantity
+    val : CIMS.RequestedQuantity
         The RequestedQuantity object containing the record of all requested quantities which can be
         traced back to a node, from either it's own requested services, or those of it's successors.
 
@@ -348,7 +348,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         Model that is being logged to a CSV file
     output_file : str
         Path to the output CSV file location

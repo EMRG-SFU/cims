@@ -5,7 +5,7 @@ def _find_competing_techs(model, node, comp_type):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving data.
     node : str
         Name of the node (branch notation) whose competing technologies we want to find.
@@ -45,7 +45,7 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
 
     Parameters
     ----------
-    model : pyCIMS.Model
+    model : CIMS.Model
         The model to use for retrieving values relevant to weight calculation.
     year : str
         The year of interest.

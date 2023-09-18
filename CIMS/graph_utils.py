@@ -27,7 +27,7 @@ def _find_value_in_ancestors(graph, node, parameter, year=None):
         The graph where `node` resides.
     node : str
         The name of the node to begin our search from. Must be contained within `graph`. (e.g.
-        'pyCIMS.Canada.Alberta')
+        'CIMS.Canada.Alberta')
     parameter : str
         The name of the parameter whose value is being found. (e.g. 'Sector type')
     year : str, optional
@@ -139,7 +139,7 @@ def get_GHG_and_Emissions(graph, year):
             ghg = list(set(ghg + node_ghg))
             emission_type = list(set(emission_type + node_emission_type))
 
-        #GWP from pyCIMS node
+        #GWP from CIMS node
         if 'emissions gwp' in data[year]:
             for ghg2 in data[year]['emissions gwp']:
                 gwp[ghg2] = data[year]['emissions gwp'][ghg2]['year_value']
@@ -578,7 +578,7 @@ def add_edges(graph, node, df):
             graph.edges[edge]['type'] = ['request_provide']
 
     # 3 Find edge based on branch structure.
-    # e.g. If our node was pyCIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
+    # e.g. If our node was CIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
     # Find the node's parent
     parent = '.'.join(node.split('.')[:-1])
     if parent:
