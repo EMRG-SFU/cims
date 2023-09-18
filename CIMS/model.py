@@ -622,7 +622,6 @@ class Model:
             if node in self.fuels:
                 if 'lcc_financial' in graph.nodes[node][year]:
                     lcc_dict = graph.nodes[node][year]['lcc_financial']
-
                     fuel_name = list(lcc_dict.keys())[0]
                     if lcc_dict[fuel_name]['year_value'] is None:
                         lcc_dict[fuel_name]['to_estimate'] = True

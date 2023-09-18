@@ -531,8 +531,8 @@ class ModelValidator:
 
         def fuel_nodes_no_lcc_or_price():
             """
-            Identify fuel nodes that do not have neither a 'lcc_financial' or 'price'
-            row specified in the base year.
+            Identify fuel nodes that have neither a 'lcc_financial' or 'price' row specified in
+            the base year.
             
             Parameters
             ----------

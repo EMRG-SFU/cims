@@ -659,7 +659,6 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
                 if ghg in all_taxes:
                     if emission_type in all_taxes[ghg]:
                         method = model.get_param('tax_foresight', node, year, dict_expected=False)
-
                         if (method == 'Myopic') or (method is None) or (not allow_foresight):
                             # This option is the most straightforward method for calculating
                             # expected emissions cost, using the tax value set in the model.
