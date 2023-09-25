@@ -2,11 +2,6 @@
 CIMS is a Python package providing the Python implementation of the [CIMS](https://pics.uvic.ca/sites/default/files/uploads/CIMS%20Community%20Excel%20model%20user%20documentation_0.pdf)
 economic climate model. 
 
-Written for Dr. Bradford Griffin by developers from Simon Fraser
-University's Big Data Initiative and Research Computing Group. Major
-contributions have been made by Jillian Anderson, Rashid Barket, Maude Lachaine,
-Adriena Wong, Kacy Wu, Daisy Yu, and Dr. Steven Bergner. 
-
 # CIMS Background
 CIMS is a simulation model for economy, energy and materials. The goal of CIMS 
 is to understand the relationship between energy policy and firms/households 
@@ -32,3 +27,28 @@ installing the CIMS repository from our git repository.
 ## Usage
 Once CIMS has been installed, follow our [introduction tutorial](tutorials/Quickstart.ipynb) to 
 familiarize yourself with CIMS's key functionality. 
+
+## Citation
+
+## :pray: Acknowledgements 
+[Bradford Griffin](https://github.com/brad-griffin) and [Jillian Anderson](https://github.com/jillianderson8) are the project's lead researcher and lead technical developer, respectively.
+
+In addition, contributions to the codebase have been made by members of Simon Fraser University's [Big Data Hub](https://www.sfu.ca/big-data.html) and [Research Computing Group](https://www.rcg.sfu.ca/): 
+* [Steven Bergner](https://github.com/git-steb)
+* [Rashid Barket](https://github.com/rbarket)
+* [Maude Lachaine](https://github.com/semaphore-maude)
+* [Adriena Wong](https://github.com/atwong88)
+* Daisy Yu
+* Kacy Wu
+
+
+Finally, thank you to the numerous EMRG graduate students who have attended meetings, submitted features requests, and flagged bugs: 
+* [Thomas Budd](https://github.com/tcbudd)
+* Aaron Pardy
+* Emma Starke
+* Kaitlin Thompson
+* Heather Chambers
+* Ryan Safton
+
+## :balance_scale: License 
+The CIMS Python library is licensed under the standard [MIT License](https://github.com/EMRG-SFU/cims/blob/main/LICENSE). For more information about this license, checkout [this overview](https://choosealicense.com/licenses/mit/).
