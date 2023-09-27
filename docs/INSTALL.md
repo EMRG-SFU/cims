@@ -1,0 +1,87 @@
+# Installing CIMS
+
+## Requirements
+Before you can install CIMS, you'll need to ensure bash, git, and Python are installed on your computer. 
+
+If you're new to programming and managing software installations through the commandline, we suggest following the installation instructions found on the [Software Carpentries]() website. Specifically, look for these 3 sections:
+* [bash shell](https://carpentries.github.io/workshop-template/install_instructions/#the-bash-shell)
+* [git](https://carpentries.github.io/workshop-template/install_instructions/#git-1)
+* [Python](https://carpentries.github.io/workshop-template/install_instructions/#python-1)
+
+> [!NOTE]  
+> Highlights information that users should take into account, even when skimming.
+
+If you're already comfortable maintaining and managing software installations outside of Anaconda, go ahead and use the workflow you're used to.
+
+## Installation
+
+### Clone the Repository
+1. Open Git Bash (Windows) or Terminal (Mac or Linux)   
+2. Using the commandline (Git Bash or Terminal), change the current working directory (using `cd` commands) to the location where you will clone the repository. For example:
+   
+   On Windows
+   ```
+   cd ~\Documents\phd\
+   ```   
+   On Mac/Linux
+   ```
+   cd ~/Documents/phd/
+   ```
+     
+4. Clone the repository
+   ```
+   git clone https://github.com/EMRG-SFU/cims.git
+   ```
+   
+5. This will download the repository into a new directory called `cims`. Navigate into this directory.
+   ```
+   cd cims
+   ```
+
+### Create & Activate an Anaconda Environment
+1. From within the `cims` directory, create an Anaconda environment containing the required python packages. This process may be slow, but you should see progress being made on the commandline (via a spinning line & commandline output). 
+   ```
+   conda env create -f environment.yml python
+   ```
+   
+2. Activate the environment
+   ```
+   conda activate cims
+   ```
+   You should now see `(cims)` at the start of your commandline prompt
+
+### Install CIMS
+1. Install CIMS in development mode. 
+   ```
+   pip install -e .
+   ```
+   
+## Verify Installation
+1. Start the Python console
+   ```
+   python
+   ```
+2. This should bring up the Python interpreter. You should see something like this:
+   ```
+   Python 3.11.5 | packaged by conda-forge | (main, Aug 27 2023, 03:35:23) [Clang 15.0.7 ] on darwin
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>> 
+   ```
+3. Attempt to import CIMS into python.
+   ```
+   >>> import CIMS
+   ```
+   If this import executes without error (you see the `>>>` prompt re-appear without an error or warning appearing), then you've successfully installed CIMS!
+4. Exit the python interpreter
+   ```
+   >>> exit()
+   ```
+   
+## Troubleshooting Installation
+If you are unable to `import CIMS` into Python, you may receive the following error message:
+```
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'CIMS'
+```
+If you receive this error message, ensure that you have activated the `cims` Anaconda environment. If problems persist, you may need to try re-installing CIMS from scratch or reach out for help.
