@@ -3,7 +3,7 @@ CIMS is a Python package providing the Python implementation of the [CIMS](https
 economic climate model. 
 
 ## :gear: Installation
-CIMS is not currently available on PyPi or other package indexes. Follow the [installation guide](docs/Installation.md) to get CIMS running on your machine.
+CIMS is not currently available on PyPi or other package indexes. Follow the [installation guide](docs/INSTALL.md) to get CIMS running on your machine.
 
 ## :technologist: Usage
 Once you've installed CIMS you can call its functions and classes from within your own Python script, notebook, or program. Follow the [quickstart guide](tutorials/Quickstart.ipynb) to familiarize yourself with CIMS's key functionality. 
