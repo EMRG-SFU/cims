@@ -9,7 +9,7 @@ If you're new to programming and managing software installations through the com
 * [Python](https://carpentries.github.io/workshop-template/install_instructions/#python-1)
 
 > [!NOTE]  
-> Highlights information that users should take into account, even when skimming.
+> Be sure to use the installation instructions which correspond to your operating system
 
 If you're already comfortable maintaining and managing software installations outside of Anaconda, go ahead and use the workflow you're used to.
 
