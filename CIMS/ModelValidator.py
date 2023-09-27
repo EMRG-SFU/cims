@@ -153,7 +153,7 @@ class ModelValidator:
             -------
             None
             """
-            referenced_unspecified = [(i, v) for i, v in r.iteritems() if v not in p.values]
+            referenced_unspecified = [(i, v) for i, v in r.items() if v not in p.values]
 
             # referenced_unspecified = set(r).difference(set(p))
             if len(referenced_unspecified) > 0:
@@ -197,7 +197,7 @@ class ModelValidator:
             -------
             None
             """
-            specified_unreferenced = [(i, v) for i, v in p.iteritems() if
+            specified_unreferenced = [(i, v) for i, v in p.items() if
                                       (v not in r.values) and (v not in roots)]
 
             if len(specified_unreferenced) > 0:
@@ -237,7 +237,7 @@ class ModelValidator:
             node_name_indexes = self.model_df['Node'].dropna()
             mismatched = []
             # Given an index where a service provided line lives find the name of the Node housing it.
-            for i, x in p.iteritems():
+            for i, x in p.items():
                 cand = node_name_indexes.loc[:i]
                 node_name_index = cand.index.max()
                 node_name = list(cand)[-1]
@@ -282,8 +282,8 @@ class ModelValidator:
             None
             """
             nodes = self.model_df[self.node_col].dropna()
-            nodes_that_provide = [self.index2node_map[i] for i, v in p.iteritems()]
-            nodes_no_service = [(i, n) for i, n in nodes.iteritems() if n not in nodes_that_provide]
+            nodes_that_provide = [self.index2node_map[i] for i, v in p.items()]
+            nodes_no_service = [(i, n) for i, n in nodes.items() if n not in nodes_that_provide]
 
             if len(nodes_no_service) > 0:
                 self.warnings['nodes_no_provided_service'] = nodes_no_service
@@ -329,12 +329,12 @@ class ModelValidator:
             # Use Index to Node Index map to determine node index for all service provided lines
             p_df = pd.DataFrame(index=p.index)
             p_df['branch'] = p
-            p_df['node_index'] = [self.index2node_index_map[i] for i, branch in p.iteritems()]
+            p_df['node_index'] = [self.index2node_index_map[i] for i, branch in p.items()]
 
             # Use Index to Node Index map to determine node index for all service requested lines
             r_df = pd.DataFrame(index=r.index)
             r_df['branch'] = r
-            r_df['node_index'] = [self.index2node_index_map[i] for i, branch in r.iteritems()]
+            r_df['node_index'] = [self.index2node_index_map[i] for i, branch in r.items()]
 
             # Merge
             merge_df = r_df.reset_index().merge(p_df.reset_index(),
@@ -461,7 +461,7 @@ class ModelValidator:
         #     model_sheet = pd.Series(p).reset_index(drop=True).str.lower()
         #
         #     nodes_with_discrepencies = []
-        #     for i, n in tree_sheet.iteritems():
+        #     for i, n in tree_sheet.items():
         #         discrepancy = False
         #         if n not in list(model_sheet):
         #             discrepancy = True
@@ -544,7 +544,7 @@ class ModelValidator:
             """
             d = self.model_df[self.model_df['Parameter'] == 'node type'][
                     'Context'].str.lower() == 'supply'
-            supply_nodes = [self.index2node_map[i] for i, v in d.iteritems() if v]
+            supply_nodes = [self.index2node_map[i] for i, v in d.items() if v]
 
             no_prod_cost = []
             for n in supply_nodes:

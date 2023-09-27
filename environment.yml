@@ -1,12 +1,12 @@
-name: pycims_env
+name: cims
 channels:
   - conda-forge
 dependencies:
-  - python=3
+  - python>=3.11
   - jupyter
   - matplotlib
   - numpy
-  - pandas>=1
+  - pandas>=2
   - pip
   - scipy
   - setuptools
