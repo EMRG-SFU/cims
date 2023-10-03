@@ -39,6 +39,9 @@ If you're already comfortable maintaining and managing software installations ou
    ```
 
 ### Create & Activate an Anaconda Environment
+If you haven't worked with conda environments before, you can check out [this
+primer](https://github.com/EMRG-SFU/cims/blob/main/docs/WorkingWithCondaEnvironment.md) on the topic. 
+
 1. From within the `cims` directory, create an Anaconda environment containing the required python packages. This process may be slow, but you should see progress being made on the commandline (via a spinning line & commandline output). 
    ```
    conda env create -f environment.yml python
