@@ -21,11 +21,11 @@ If you're already comfortable maintaining and managing software installations ou
    
    On Windows
    ```
-   cd ~\Documents\phd\
+   cd ~\PATH\TO\FOLDER
    ```   
    On Mac/Linux
    ```
-   cd ~/Documents/phd/
+   cd ~/PATH/TO/FOLDER
    ```
      
 4. Clone the repository
@@ -85,3 +85,28 @@ Traceback (most recent call last):
 ModuleNotFoundError: No module named 'CIMS'
 ```
 If you receive this error message, ensure that you have activated the `cims` Anaconda environment. If problems persist, you may need to try re-installing CIMS from scratch or reach out for help.
+
+## Updating CIMS
+You may want to update CIMS to access new functionality, bug fixes, or the most
+up-to-date documentation. Assuming you've followed the steps above to install
+CIMS, you can use the following steps to update: 
+
+1. Using your bash shell (Git Bash or Terminal), activate the CIMS environment 
+   you setup previously.
+   ```commandline
+   conda activate cims
+   ```
+
+2. Use `cd` to navigate to your local clone of the CIMS repository. 
+    ```commandline
+    cd PATH/TO/FOLDER/cims
+    ```   
+   
+3. Use git pull to update the repository.
+    ```
+    git pull
+    ```
+   You may encounter a "merge conflict" if you have made local changes to the CIMS code. If this is your first time encountering a merge conflict in git (or you want a refresher), I suggest reading through the Git Tower article on [dealing with merge requests](https://www.git-tower.com/learn/git/ebook/en/command-line/advanced-topics/merge-conflicts/). 
+   Merge conflicts can be particularly messy if you are working with Jupyter Notebooks. If you want to resolve merge conflicts in Jupyter notebooks (rather than overwrite your local changes), I would suggest using [nbdime](https://nbdime.readthedocs.io/en/latest/#). There is both a command line and web tool that simplifies merge conflict resolution. 
+
+4. Restart any active Python sessions you have running. If you are using Jupyter Notebook, do this by selecting one of the restart (e.g. Restart, Restart & Clear Output, etc) options under the "Kernel" menu at the top of the notebook. In other IDEs such as Spyder, PyCharm, or Atom this usually requires a reload of the Python Console. 
