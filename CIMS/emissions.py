@@ -149,17 +149,17 @@ class EmissionsCost:
 class Emissions:
     """Class for storing the emissions for a particular technology or node."""
 
-    def __init__(self, emissions=None):
+    def __init__(self, emissions_dict=None):
         """
         Initializes an Emissions object.
 
         Parameters
         ----------
-        emissions : dict
+        emissions_dict : dict
             The dictionary containing the detailed emissions by source node (fuel), GHG, and
             emission_type.
         """
-        self.emissions = emissions if emissions is not None else {}
+        self.emissions = emissions_dict if emissions_dict is not None else {}
 
     def __add__(self, other: Emissions) -> Emissions:
         """
@@ -497,7 +497,7 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
 
 
 def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
-                        allow_foresight=False) -> float:
+                                 allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
 
@@ -526,24 +526,9 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
 
     fuels = model.fuels
 
-    # No tax rate at all or node is a fuel
-    if 'tax' not in model.graph.nodes[node][year] or node in fuels:
-        return 0
-
-    # Initialize all taxes and emission removal rates to 0
-    # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
-    tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for
-                 ghg in model.GHGs}
-    removal_rates = copy.deepcopy(tax_rates)
-
-    # Grab correct tax values
-    all_taxes = model.get_param('tax', node, year, dict_expected=True)
-    for ghg in all_taxes:
-        for emission_type in all_taxes[ghg]:
-            if ghg not in tax_rates:
-                tax_rates[ghg] = {}
-            tax_rates[ghg][emission_type] = utils.create_value_dict(
-                all_taxes[ghg][emission_type]['year_value'])
+    tax_rates = _find_tax_rates(model, node, year)
+    removal_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types}
+                     for ghg in model.GHGs}
 
     # GROSS EMISSIONS tech level
     gross_emissions = {}
@@ -590,7 +575,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
                         if ghg not in gross_emissions[child_node]:
                             gross_emissions[child_node][ghg] = {}
                         gross_emissions[child_node][ghg][emission_type] = utils.create_value_dict(
-                                emission_data[ghg][emission_type]['year_value'] * req_val)
+                            emission_data[ghg][emission_type]['year_value'] * req_val)
 
             # GROSS BIOMASS EMISSIONS
             if 'emissions_biomass' in model.graph.nodes[child_node][year] and \
@@ -656,33 +641,32 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
             for emission_type in emissions_cost[node_name][ghg]:
                 expected_tax = 0
 
-                if ghg in all_taxes:
-                    if emission_type in all_taxes[ghg]:
-                        method = model.get_param('tax_foresight', node, year, dict_expected=False)
-                        if (method == 'Myopic') or (method is None) or (not allow_foresight):
-                            # This option is the most straightforward method for calculating
-                            # expected emissions cost, using the tax value set in the model.
-                            expected_tax = tax_rates[ghg][emission_type]['year_value']
+                if (ghg in tax_rates) and (emission_type in tax_rates[ghg]):
+                    method = model.get_param('tax_foresight', node, year, dict_expected=False)
+                    if (method == 'Myopic') or (method is None) or (not allow_foresight):
+                        # This option is the most straightforward method for calculating
+                        # expected emissions cost, using the tax value set in the model.
+                        expected_tax = tax_rates[ghg][emission_type]['year_value']
 
-                        elif method == 'Discounted':
-                            # This option generates expectations of future tax costs based on the
-                            # net present value of emissions charges. After the present value of
-                            # emissions charges has been calculated, it is annualized using the
-                            # capital recovery factor (annual value required for CIMS simulation).
-                            expected_tax = tax_foresight.discounted_foresight(
-                                model, node, year, tech, ghg, emission_type
-                            )
+                    elif method == 'Discounted':
+                        # This option generates expectations of future tax costs based on the
+                        # net present value of emissions charges. After the present value of
+                        # emissions charges has been calculated, it is annualized using the
+                        # capital recovery factor (annual value required for CIMS simulation).
+                        expected_tax = tax_foresight.discounted_foresight(
+                            model, node, year, tech, ghg, emission_type
+                        )
 
-                        elif method == 'Average':
-                            # This option generates expectations of future tax costs based on
-                            # the average tax over the lifespan of a technology.
-                            expected_tax = tax_foresight.average_foresight(
-                                model, node, year, tech, ghg, emission_type
-                            )
+                    elif method == 'Average':
+                        # This option generates expectations of future tax costs based on
+                        # the average tax over the lifespan of a technology.
+                        expected_tax = tax_foresight.average_foresight(
+                            model, node, year, tech, ghg, emission_type
+                        )
 
-                        else:
-                            raise ValueError('Foresight method not identified, use Myopic, '
-                                             'Discounted, or Average')
+                    else:
+                        raise ValueError('Foresight method not identified, use Myopic, '
+                                         'Discounted, or Average')
 
                 emissions_cost[node_name][ghg][emission_type]['year_value'] *= expected_tax
 
@@ -727,11 +711,11 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-        Emissions(emissions=net_emissions)
+        Emissions(emissions_dict=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
-        Emissions(emissions=avoided_emissions)
+        Emissions(emissions_dict=avoided_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \
-        Emissions(emissions=negative_emissions)
+        Emissions(emissions_dict=negative_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emissions_rate'] = \
         Emissions(bio_emissions)
 
@@ -747,7 +731,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
 
 
 def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
-                        allow_foresight=False) -> float:
+                                  allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
 
@@ -775,25 +759,23 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     """
 
     fuels = model.fuels
-
-    # No tax rate at all or node is a fuel
-    if 'tax' not in model.graph.nodes[node][year] or node in fuels:
-        return 0
-
-    # Initialize all taxes and emission removal rates to 0
-    # example of item in tax_rates -> {'CO2': {'Combustion': 5}}
     tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
     removal_rates = copy.deepcopy(tax_rates)
 
     # Grab correct tax values
-    all_taxes = model.get_param('tax', node, year, dict_expected=True)
-    for ghg in all_taxes:
-        for emission_type in all_taxes[ghg]:
-            if ghg not in tax_rates:
-                tax_rates[ghg] = {}
-            tax_rates[ghg][emission_type] = utils.create_value_dict(
-                all_taxes[ghg][emission_type]['year_value'])
+    if node not in fuels:
+        for ghg in tax_rates:
+            for em_type in tax_rates[ghg]:
+                try:
+                    tax = model.get_param('tax', node, year, context=ghg, sub_context=em_type)
+                    if tax:
+                        tax_rates[ghg][em_type] = utils.create_value_dict(tax)
+                except KeyError:
+                    # context or sub_context isn't at the node
+                    continue
+                except TypeError:
+                    continue
 
     # GROSS EMISSIONS tech level
     gross_emissions = {}
@@ -840,7 +822,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                         if ghg not in gross_emissions[child_node]:
                             gross_emissions[child_node][ghg] = {}
                         gross_emissions[child_node][ghg][emission_type] = utils.create_value_dict(
-                                emission_data[ghg][emission_type]['year_value'] * req_val)
+                            emission_data[ghg][emission_type]['year_value'] * req_val)
 
             # GROSS BIOMASS EMISSIONS
             if 'emissions_biomass' in model.graph.nodes[child_node][year] and \
@@ -901,44 +883,41 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
 
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-        Emissions(emissions=net_emissions)
+        Emissions(emissions_dict=net_emissions)
     # EMISSIONS COST
     emissions_cost = calculate_vintage_weighted_parameter('net_emissions_rate', model, node, year,
                                                           tech, default_value=Emissions()).emissions
-    # emissions_cost = copy.deepcopy(net_emissions)
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
                 expected_tax = 0
+                if (ghg in tax_rates) and (emission_type in tax_rates[ghg]):
+                    method = model.get_param('tax_foresight', node, year, dict_expected=False)
 
-                if ghg in all_taxes:
-                    if emission_type in all_taxes[ghg]:
-                        method = model.get_param('tax_foresight', node, year, dict_expected=False)
+                    if (method == 'Myopic') or (method is None) or (not allow_foresight):
+                        # This option is the most straightforward method for calculating
+                        # expected emissions cost, using the tax value set in the model.
+                        expected_tax = tax_rates[ghg][emission_type]['year_value']
 
-                        if (method == 'Myopic') or (method is None) or (not allow_foresight):
-                            # This option is the most straightforward method for calculating
-                            # expected emissions cost, using the tax value set in the model.
-                            expected_tax = tax_rates[ghg][emission_type]['year_value']
+                    elif method == 'Discounted':
+                        # This option generates expectations of future tax costs based on the
+                        # net present value of emissions charges. After the present value of
+                        # emissions charges has been calculated, it is annualized using the
+                        # capital recovery factor (annual value required for CIMS simulation).
+                        expected_tax = tax_foresight.discounted_foresight(
+                            model, node, year, tech, ghg, emission_type
+                        )
 
-                        elif method == 'Discounted':
-                            # This option generates expectations of future tax costs based on the
-                            # net present value of emissions charges. After the present value of
-                            # emissions charges has been calculated, it is annualized using the
-                            # capital recovery factor (annual value required for CIMS simulation).
-                            expected_tax = tax_foresight.discounted_foresight(
-                                model, node, year, tech, ghg, emission_type
-                            )
+                    elif method == 'Average':
+                        # This option generates expectations of future tax costs based on
+                        # the average tax over the lifespan of a technology.
+                        expected_tax = tax_foresight.average_foresight(
+                            model, node, year, tech, ghg, emission_type
+                        )
 
-                        elif method == 'Average':
-                            # This option generates expectations of future tax costs based on
-                            # the average tax over the lifespan of a technology.
-                            expected_tax = tax_foresight.average_foresight(
-                                model, node, year, tech, ghg, emission_type
-                            )
-
-                        else:
-                            raise ValueError('Foresight method not identified, use Myopic, '
-                                             'Discounted, or Average')
+                    else:
+                        raise ValueError('Foresight method not identified, use Myopic, '
+                                         'Discounted, or Average')
 
                 emissions_cost[node_name][ghg][emission_type]['year_value'] *= expected_tax
 
@@ -985,9 +964,9 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     # model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
     #     Emissions(emissions=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
-        Emissions(emissions=avoided_emissions)
+        Emissions(emissions_dict=avoided_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \
-        Emissions(emissions=negative_emissions)
+        Emissions(emissions_dict=negative_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['bio_emissions_rate'] = \
         Emissions(bio_emissions)
 
@@ -1000,3 +979,37 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
         'emissions_cost_rate', node, year, tech)
 
     return total
+
+
+def _find_tax_rates(model: "CIMS.Model", node: str, year: str) -> dict[str: dict[str: float]]:
+    """
+    Find the tax rates for a node in a given year. If no tax has been specified for any of the
+    GHG/emission type combinations present in the model, a default of 0 will be used.
+
+    Parameters
+    ----------
+    model : model to use for retrieving tax rates.
+    node : name of the node (in branch form) whose tax rates should be retrieved.
+    year : year in which to retrieve tax rates.
+
+    Returns
+    -------
+        dict: A nested dictionary of the form {GHG: {emission_type: float}}.
+    """
+    # Initialize all taxes and emission removal rates to 0
+    tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for
+                 ghg in model.GHGs}
+
+    # Grab correct tax values
+    for ghg in tax_rates:
+        for em_type in tax_rates[ghg]:
+            try:
+                tax = model.get_param('tax', node, year, context=ghg, sub_context=em_type)
+                if tax:
+                    tax_rates[ghg][em_type] = utils.create_value_dict(tax)
+            except TypeError:
+                continue
+            except KeyError:
+                continue
+
+    return tax_rates
