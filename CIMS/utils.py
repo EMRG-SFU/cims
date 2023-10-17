@@ -525,10 +525,10 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': filename, 'parameter': param, 'node': node,
-                              'year': year, 'technology': None, 'context': context, 'sub_context': sub_context,
-                              'old_value': prev_val, 'new_value': new_val}
-                model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
+                              'year': [year], 'technology': None, 'context': [context], 'sub_context': [sub_context],
+                              'old_value': [prev_val], 'new_value': [new_val]}
+                model.change_history = pd.concat([model.change_history, pd.DataFrame(change_log)], ignore_index=True)
         else:
             print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
                 year) + '. No new value was set for this.')
@@ -613,10 +613,12 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': filename, 'parameter': param, 'node': node,
-                              'year': year, 'technology': tech, 'context': context, 'sub_context': sub_context,
-                              'old_value': prev_val, 'new_value': new_val}
-                model.change_history = model.change_history.append(pd.Series(change_log), ignore_index=True)
+                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
+                              'year': year, 'technology': [tech], 'context': [context], 'sub_context': [sub_context],
+                              'old_value': [prev_val], 'new_value': [new_val]}
+                changes_to_concat = [model.change_history, pd.DataFrame(change_log)]
+                model.change_history = pd.concat([df for df in changes_to_concat if len(df) != 0], ignore_index=True)
+
         else:
             print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
                 year) + '. No new value was set for this.')
@@ -879,7 +881,7 @@ def set_param_file(model, filepath):
         # *********
         node = row['node'] if row['node'] != 'None' else None
         node_regex = row['node_regex'] if row['node_regex'] != "None" else None
-        param = row['param'] if row['param'] != 'None' else None
+        param = row['param'].lower() if row['param'] != 'None' else None
         tech = row['tech'] if row['tech'] != 'None' else None
         context = row['context'] if row['context'] != 'None' else None
         sub_context = row['sub_context'] if row['sub_context'] != 'None' else None
@@ -947,7 +949,7 @@ def set_param_file(model, filepath):
                     for idx, year in enumerate(years):
                         val_tmp = vals[idx]
                         model.set_param_search(val_tmp, param, node_tmp, year, tech, context, sub_context,
-                                              val_operator, create_missing, index)
+                                               val_operator, create_missing, index)
         elif node == None:
             # check if node satisfies node_regex conditions
             for node_tmp in model.graph.nodes:
@@ -1050,16 +1052,18 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
                         except:
                             continue
                         for sub_context_tmp in sub_contexts:
-                            val_tmp = get_val_operated(val, param, node, year, tech_tmp, context_tmp, sub_context_tmp,
-                                                       val_operator, row_index, create_missing)
+                            val_tmp = get_val_operated(model, val, param, node, year, tech_tmp,
+                                                       context_tmp, sub_context_tmp, val_operator,
+                                                       row_index, create_missing)
                             if val_tmp:
                                 model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
                                                context=context_tmp, sub_context=sub_context_tmp)
 
                     # use sub_context as is if it is not .*
                     else:
-                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, context_tmp, sub_context,
-                                                   val_operator, row_index, create_missing)
+                        val_tmp = get_val_operated(model, val, param, node, year, tech_tmp,
+                                                   context_tmp, sub_context, val_operator,
+                                                   row_index, create_missing)
                         if val_tmp:
                             model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
                                            context=context_tmp, sub_context=sub_context)
@@ -1073,16 +1077,17 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
                     except:
                         continue
                     for sub_context_tmp in sub_contexts:
-                        val_tmp = get_val_operated(val, param, node, year, tech_tmp, context, sub_context_tmp,
-                                                   val_operator, row_index, create_missing)
+                        val_tmp = get_val_operated(model, val, param, node, year, tech_tmp, context,
+                                                   sub_context_tmp, val_operator, row_index,
+                                                   create_missing)
                         if val_tmp:
                             model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
                                            context=context, sub_context=sub_context_tmp)
 
                 # use sub_context as is if it is not .*
                 else:
-                    val_tmp = get_val_operated(val, param, node, year, tech_tmp, context, sub_context,
-                                               val_operator, row_index, create_missing)
+                    val_tmp = get_val_operated(model, val, param, node, year, tech_tmp, context,
+                                               sub_context, val_operator, row_index, create_missing)
                     if val_tmp:
                         model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech_tmp,
                                        context=context, sub_context=sub_context)
@@ -1092,7 +1097,10 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
         if context == '.*':
             try:
                 # search through all contexts in node given tech
-                contexts = list(model.get_param(param, node, year, tech=tech).keys())
+                if tech:
+                    contexts = list(model.get_param(param, node, year, tech=tech, dict_expected=True).keys())
+                else:
+                    contexts = list(model.get_param(param, node, year, dict_expected=True).keys())
             except:
                 return
             for context_tmp in contexts:
@@ -1103,16 +1111,17 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
                     except:
                         continue
                     for sub_context_tmp in sub_contexts:
-                        val_tmp = get_val_operated(val, param, node, year, tech, context_tmp, sub_context_tmp,
-                                                   val_operator, row_index, create_missing)
+                        val_tmp = get_val_operated(model, val, param, node, year, tech, context_tmp,
+                                                   sub_context_tmp, val_operator, row_index,
+                                                   create_missing)
                         if val_tmp:
                             model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech,
                                            context=context_tmp, sub_context=sub_context_tmp)
 
                 # use sub_context as is if it is not .*
                 else:
-                    val_tmp = get_val_operated(val, param, node, year, tech, context_tmp, sub_context,
-                                               val_operator, row_index, create_missing)
+                    val_tmp = get_val_operated(model, val, param, node, year, tech, context_tmp,
+                                               sub_context, val_operator, row_index, create_missing)
                     if val_tmp:
                         model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech,
                                        context=context_tmp, sub_context=sub_context)
@@ -1123,19 +1132,23 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
                 try:
                     # search through all sub_contexts in node given tech
                     sub_contexts = list(model.get_param(param, node, year, tech=tech, context=context).keys())
-                except:
+                except AttributeError:
+                    print(f"Unable to access parameter at "
+                          f"get_param({param}, {node}, {year}, {tech}, {context}, {sub_context}). \n"
+                          f"Corresponding value was not set.")
                     return
                 for sub_context_tmp in sub_contexts:
-                    val_tmp = get_val_operated(val, param, node, year, tech, context, sub_context_tmp,
-                                               val_operator, row_index, create_missing)
+                    val_tmp = get_val_operated(model, val, param, node, year, tech, context,
+                                               sub_context_tmp, val_operator, row_index,
+                                               create_missing)
                     if val_tmp:
                         model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech,
                                        context=context, sub_context=sub_context_tmp)
 
             # use sub_context as is if it is not .*
             else:
-                val_tmp = get_val_operated(val, param, node, year, tech, context, sub_context,
-                                           val_operator, row_index, create_missing)
+                val_tmp = get_val_operated(model, val, param, node, year, tech, context,
+                                           sub_context, val_operator, row_index, create_missing)
                 if val_tmp:
                     model.set_param(val=val_tmp, param=param, node=node, year=year, tech=tech,
                                    context=context, sub_context=sub_context)
@@ -1243,7 +1256,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
             sub_context_dict = {sub_context: val_dict}
             context_dict = {context: sub_context_dict}
             data[param] = context_dict
-        if context:
+        elif context:
             context_dict = {context: val_dict}
             data[param] = context_dict
         else:

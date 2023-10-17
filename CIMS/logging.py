@@ -297,7 +297,7 @@ def add_log_item(all_logs, log_tuple):
     return all_logs
 
 
-def _full_parameter_list(model):
+def full_parameter_list(model):
     """Helper function which returns all parameters in the model and store as a list"""
     model_list = []
 
@@ -324,7 +324,7 @@ def _full_parameter_list(model):
 def search_parameter(model, search: [str] = None):
     """Function to search for model parameters that contain any strings present in the search list.
     """
-    model_list = _full_parameter_list(model)
+    model_list = full_parameter_list(model)
 
     print('You are searching if any parameter in the model contains ', search)
     search_list = []
@@ -412,7 +412,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
             raise ValueError("ValueError exception thrown: multiple parameters specified")
 
         all_logs = []
-        total_parameter_list = _full_parameter_list(model)
+        total_parameter_list = full_parameter_list(model)
 
         for node in model.graph.nodes:
             # Log Year Agnostic Values

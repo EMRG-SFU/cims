@@ -1,5 +1,5 @@
 new_market_share
-Life Cycle Cost
+price
 competition type
-Service requested
-Capital cost_overnight
+service requested
+provided_quantities
