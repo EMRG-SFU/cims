@@ -354,8 +354,15 @@ def add_node_data(graph, current_node, node_dfs):
 
     # 3 Find whether node is a fuel
     is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
-    is_fuel = is_fuel_rows.all() and not is_fuel_rows.empty
+    if is_fuel_rows.empty:
+        if ('is fuel' in graph.nodes[current_node]) and (graph.nodes[current_node]['is fuel']):
+            is_fuel = True
+        else:
+            is_fuel = False
+    else:
+        is_fuel = is_fuel_rows.all()
     graph.nodes[current_node]['is fuel'] = is_fuel
+
     # Drop fuel row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'is fuel']
 

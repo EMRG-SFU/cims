@@ -342,14 +342,10 @@ class Model:
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
-
                 equilibrium = min_iterations <= iteration and \
                               (int(year) == self.base_year or
-                               self.check_equilibrium(prev_prices,
-                                                      new_prices,
-                                                      iteration,
-                                                      equilibrium_threshold,
-                                                      print_eq))
+                               self.check_equilibrium(prev_prices, new_prices,
+                                                      equilibrium_threshold, print_eq))
 
                 if int(year) == self.base_year:
                     # Force the model to continue after a single iteration in the base year
@@ -401,61 +397,59 @@ class Model:
                                             year)
         self.status = 'Run completed'
 
-    def check_equilibrium(self, prev, new, iteration, threshold, print_eq):
+    def check_equilibrium(self, prev: dict, new: dict, threshold: float,
+                          print_equilibrium_details: bool) -> bool:
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
                iteration)
-            2. For every fuel, check if the relative difference exceeds the threshold
+            2. For every node, check if the relative difference in price exceeds the threshold
                 (A) If it does, return False
                 (B) Otherwise, keep checking
-            3. If all fuels are checked and no relative difference exceeds the
-               threshold, return True
+            3. If all nodes are checked and no relative difference exceeds the threshold, return
+               True
 
         Parameters
         ----------
-        prev : dict
+        prev : Prices from the previous iteration.
 
-        new : dict
+        new : Prices from the current iteration.
 
-        threshold : float
+        threshold : The threshold to use for determining whether an equilibrium has been reached.
+
+        print_equilibrium_details : Whether to print details regarding the nodes responsible for an
+        equilibrium not being reached.
 
         Returns
         -------
-        True if all fuels changed less than `threshold`. False otherwise.
+        True if all nodes changed less than `threshold`. False otherwise.
         """
-        # For every fuel, check if the relative difference exceeds the threshold
-        equil_check = 0
+        # For every node, check if the relative difference in price exceeds the threshold
+        equilibrium_reached = True
+        for node in new:
+            prev_price = prev[node]
+            new_price = new[node]
+            if (prev_price is None) or (new_price is None):
+                print(f"\tNot at equilibrium: {node} does not have an LCC calculated")
+                equilibrium_reached = False
+            abs_diff = abs(new_price - prev_price)
 
-        for fuel in new:
-            prev_fuel_price = prev[fuel]
-            new_fuel_price = new[fuel]
-            if (prev_fuel_price is None) or (new_fuel_price is None):
-                print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
-                return False
-            abs_diff = abs(new_fuel_price - prev_fuel_price)
-
-            if prev_fuel_price == 0:
+            if prev_price == 0:
                 if self.show_run_warnings:
-                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
+                    warnings.warn(f"Previous price is 0 for {node}")
                 rel_diff = 0
             else:
-                rel_diff = abs_diff / prev_fuel_price
+                rel_diff = abs_diff / prev_price
 
-            # If any fuel's relative difference exceeds the threshold, an equilibrium
-            # has not been reached
+            # If any node's relative difference exceeds threshold, equilibrium has not been reached
             if rel_diff > threshold:
-                equil_check += 1
-                if iteration > 1 and print_eq == True:
-                    rel_diff_formatted = "{:.1f}".format(rel_diff * 100)
+                equilibrium_reached = False
+                if print_equilibrium_details:
                     print(
-                        f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
+                        f"\tNot at equilibrium: {node} has {rel_diff:.1%} difference between"
+                        f" iterations")
 
-        if equil_check > 0:
-            return False
-
-        # Otherwise, an equilibrium has been reached
-        return True
+        return equilibrium_reached
 
     def _init_tax_emissions(self, graph, node, year):
         """
