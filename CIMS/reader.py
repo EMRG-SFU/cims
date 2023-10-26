@@ -49,7 +49,7 @@ def get_node_cols(mdf, first_data_col_name="Node"):
 
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, node_col):
+    def __init__(self, infile, sheet_map, node_col, year_list):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
@@ -57,6 +57,7 @@ class ModelReader:
 
         self.sheet_map = sheet_map
         self.node_col = node_col
+        self.year_list = year_list
 
         self.model_df = self._get_model_df()
 
@@ -64,21 +65,16 @@ class ModelReader:
         self.tech_dfs = {}
 
     def _get_model_df(self):
-        # Read in list of sheets from 'Lists' sheet in model description
-        sheet_df = pd.read_excel(self.infile,
-                                 sheet_name=self.sheet_map['model'],
-                                 engine=self.excel_engine)
-
-        # Remove nans from list
-        sheet_list = [sheet for sheet in sheet_df['Model sheets'] if not pd.isna(sheet)]
-
         appended_data = []
-        for sheet in sheet_list:
-            sheet_df = pd.read_excel(self.infile,
-                                     sheet_name=sheet,
-                                     header=1,
-                                     engine=self.excel_engine).replace({np.nan: None})
-            appended_data.append(sheet_df)
+        for sheet in self.sheet_map['model']:
+            try:
+                sheet_df = pd.read_excel(self.infile,
+                                         sheet_name=sheet,
+                                         header=1,
+                                         engine=self.excel_engine).replace({np.nan: None})
+                appended_data.append(sheet_df)
+            except:
+                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
@@ -86,6 +82,7 @@ class ModelReader:
         model_df.columns = [str(c) for c in
                             model_df.columns]  # Convert all column names to strings (years were ints)
         n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
+        y_cols = [y_col for y_col in y_cols if y_col in [str(yr) for yr in self.year_list]]
         all_cols = np.concatenate((n_cols, y_cols))
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
