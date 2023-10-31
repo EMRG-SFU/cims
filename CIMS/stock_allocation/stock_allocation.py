@@ -32,7 +32,7 @@ def all_tech_compete_allocation(model, node, year):
         allocation.
 
     node: str
-        The name of the node (in branch form) where stock retirement and allocation is performed.
+        The name of the node (branch notation) where stock retirement and allocation is performed.
 
     year: str
         The year to perform stock retirement and allocation.
@@ -103,7 +103,7 @@ def general_allocation(model, node, year):
         allocation.
 
     node: str
-        The name of the node (in branch form) where stock retirement and allocation is performed.
+        The name of the node (branch notation) where stock retirement and allocation is performed.
 
     year: str
         The year to perform stock retirement and allocation.
@@ -185,7 +185,7 @@ def _get_existing_stock(model, node, year, comp_type):
             child_node = model.get_param('service requested', node,
                                          year=year,
                                          tech=child,
-                                         dict_expected=True)[child]['branch']
+                                         dict_expected=True)[child]['target']
 
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
@@ -232,7 +232,7 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
     model : CIMS.Model
         The model used for retrieving data relevant to base stock retirement.
     node : str
-        The name of the node (in branch form) for which base stock retirement will be calculated.
+        The name of the node (branch notation) for which base stock retirement will be calculated.
     tech : str
         The name of the technology to calculate base stock retirement.
     initial_year : str
@@ -281,7 +281,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
     model : CIMS.Model
         The model used for retrieving data relevant to new stock retirement.
     node : str
-        The name of the node (in branch form) for which new stock retirement will be calculated.
+        The name of the node (branch notation) for which new stock retirement will be calculated.
     tech : str
         The name of the technology to calculate new stock retirement for.
     purchased_year : str
@@ -338,7 +338,7 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
     model : CIMS.Model
         The model used for retrieving and storing data relevant to natural retirement.
     node : str
-        The name of the node (in branch form) containing the technology to be retired.
+        The name of the node (branch notation) containing the technology to be retired.
     year : str
         The year to calculate natural retirements up to.
     tech : str
@@ -734,7 +734,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                 child_node = model.get_param('service requested', node,
                                              year=year,
                                              tech=tech_child,
-                                             dict_expected=True)[tech_child]['branch']
+                                             dict_expected=True)[tech_child]['target']
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 
@@ -856,7 +856,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
             'service requested', model, node, year, tech=tech, context=service)
 
         quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
-        year_node = model.graph.nodes[service_data['branch']][year]
+        year_node = model.graph.nodes[service_data['target']][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
                 utils.create_value_dict(ProvidedQuantity(), param_source='calculation')

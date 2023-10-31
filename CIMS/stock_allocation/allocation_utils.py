@@ -31,7 +31,7 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.graph.nodes[node][base_year]['technologies'][child]['service requested'][child]['branch']
+            child_node = model.graph.nodes[node][base_year]['technologies'][child]['service requested'][child]['target']
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 

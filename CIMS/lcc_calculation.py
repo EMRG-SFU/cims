@@ -76,7 +76,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             annual_service_cost, sc_source = model.get_param('service cost', node, year, tech=tech,
                                                              return_source=True, do_calc=True)
             val_dict = {'year_value': annual_service_cost,
-                        "branch": str(node),
                         'param_source': sc_source}
             model.set_param_internal(val_dict, 'service cost', node, year, tech)
 
@@ -489,8 +488,8 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
                                                                        tech, serv)
         service_cost = 0
 
-        if service_requested['branch'] in model.fuels:
-            fuel_branch = service_requested['branch']
+        if service_requested['target'] in model.fuels:
+            fuel_branch = service_requested['target']
 
             fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
 
@@ -504,7 +503,7 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
             service_requested_price = fuel_price * price_multiplier
 
         else:
-            service_requested_branch = service_requested['branch']
+            service_requested_branch = service_requested['target']
             if 'price' in model.graph.nodes[service_requested_branch][year]:
                 service_requested_price = model.get_param('price', service_requested_branch, year)
             else:
@@ -556,8 +555,8 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
         service_requested_value = service_requested['year_value']
         service_cost = 0
 
-        if service_requested['branch'] in model.fuels:
-            fuel_branch = service_requested['branch']
+        if service_requested['target'] in model.fuels:
+            fuel_branch = service_requested['target']
             fuel_name = fuel_branch.split('.')[-1]
 
             fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
@@ -573,7 +572,7 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
             service_requested_price = fuel_price * price_multiplier
 
         else:
-            service_requested_branch = service_requested['branch']
+            service_requested_branch = service_requested['target']
             if 'price' in model.graph.nodes[service_requested_branch][year]:
                 service_requested_price = model.get_param('price', service_requested_branch, year)
             else:
