@@ -22,10 +22,10 @@ excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
 
-    def __init__(self, context=None, sub_context=None, branch=None, unit=None, value=None):
+    def __init__(self, context=None, sub_context=None, target=None, unit=None, value=None):
         self.context = context
         self.sub_context = sub_context
-        self.branch = branch
+        self.target = target
         self.unit = unit
         self.value = value
 
@@ -34,10 +34,10 @@ class ValueLog:
         Returns
         -------
         tuple :
-            Returns a tuple containing the (context, sub-context, branch, unit, and value). Used to
+            Returns a tuple containing the (context, sub-context, target, unit, and value). Used to
             create the logging CSV.
         """
-        return self.context, self.sub_context, self.branch, self.unit, self.value
+        return self.context, self.sub_context, self.target, self.unit, self.value
 
 
 def _has_techs(node_year_data):
@@ -91,7 +91,7 @@ def log_RequestedQuantity(val):
 
     # Log quantities per tech
     for key, quant in val.get_total_quantities_requested().items():
-        rqs.append(ValueLog(branch=key,
+        rqs.append(ValueLog(target=key,
                             value=quant
                             ))
 
@@ -107,7 +107,7 @@ def log_DistributedSupply(val):
     distributed_supplies = []
 
     for k, v in val.summarize_distributed_supply().items():
-        distributed_supplies.append(ValueLog(branch=k, value=v))
+        distributed_supplies.append(ValueLog(target=k, value=v))
 
     return distributed_supplies
 
@@ -167,7 +167,7 @@ def log_list(val):
         val_log = ValueLog()
         val_log.context = entry['context'] if 'context' in entry.keys() else None
         val_log.sub_context = entry['sub_context'] if 'sub_context' in entry.keys() else None
-        val_log.branch = entry['branch'] if 'branch' in entry.keys() else None
+        val_log.target = entry['target'] if 'target' in entry.keys() else None
         val_log.unit = entry['unit'] if 'unit' in entry.keys() else None
         val_log.value = entry['year_value']
 
@@ -184,7 +184,7 @@ def log_dict(val):
     if 'year_value' in val.keys():
         val_log.context = val['context'] if 'context' in val.keys() else None
         val_log.sub_context = val['sub_context'] if 'sub_context' in val.keys() else None
-        val_log.branch = val['branch'] if 'branch' in val.keys() else None
+        val_log.target = val['target'] if 'target' in val.keys() else None
         val_log.unit = val['unit'] if 'unit' in val.keys() else None
 
         year_value = val['year_value']
@@ -217,14 +217,14 @@ def log_dict(val):
                 if 'year_value' in inner_value:
                     val_log.sub_context = inner_value['sub_context'] \
                         if 'sub_context' in inner_value.keys() else None
-                    val_log.branch = inner_value['branch'] \
-                        if 'branch' in inner_value.keys() else None
+                    val_log.target = inner_value['target'] \
+                        if 'target' in inner_value.keys() else None
                     val_log.unit = inner_value['unit'] if 'unit' in inner_value.keys() else None
                     val_log.value = inner_value['year_value']
                 else:
                     for sub_context, base_val in inner_value.items():
                         val_log.sub_context = sub_context
-                        val_log.branch = base_val['branch'] if 'branch' in base_val.keys() else None
+                        val_log.target = base_val['target'] if 'target' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
                 val_pairs.append(deepcopy(val_log))
@@ -453,11 +453,11 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
 
     # Split Value Log values
-    split_columns = ['context', 'sub_context', 'branch', 'unit', 'value']
+    split_columns = ['context', 'sub_context', 'target', 'unit', 'value']
     log_df[split_columns] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
 
     # Select final columns
-    columns = ['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'branch',
+    columns = ['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'target',
                'unit', 'value']
     log_df = log_df[columns]
 

@@ -234,7 +234,7 @@ def _find_dic_competing_techs(model, node):
             for sibling in model.graph.nodes[parent][base_year]['technologies']:
                 sibling_node = \
                 model.graph.nodes[parent][base_year]['technologies'][sibling]['service requested'][
-                    sibling]['branch']
+                    sibling]['target']
                 for tech in model.graph.nodes[sibling_node][base_year]['technologies']:
                     competing_technologies.append((sibling_node, tech))
 
