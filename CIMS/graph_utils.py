@@ -375,6 +375,8 @@ def add_node_data(graph, current_node, node_dfs):
         raise ValueError("TOO MANY COMPETITION TYPES")
     elif 'competition type' in graph.nodes[current_node]:
         comp_type = graph.nodes[current_node]['competition type']
+    else:
+        warnings.warn(f"Not a real competition type: {comp_list}")
 
     # Get rid of competition type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
