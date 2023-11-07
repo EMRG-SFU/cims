@@ -97,12 +97,12 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
             # Complete LCC
             # ************
-            complete_lcc, complete_lcc_source = model.get_param('complete life cycle cost',
+            complete_lcc, complete_lcc_source = model.get_param('lcc_complete',
                                                                 node, year, tech=tech,
                                                                 return_source=True,
                                                                 do_calc=True)
             val_dict = {'year_value': complete_lcc, 'param_source': complete_lcc_source}
-            model.set_param_internal(val_dict, 'complete life cycle cost', node, year, tech)
+            model.set_param_internal(val_dict, 'lcc_complete', node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
             first_year_avail = model.get_param('available', node, str(model.base_year), tech=tech)

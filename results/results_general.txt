@@ -1,7 +1,7 @@
 competition type
 price multiplier
-financial life cycle cost
-complete life cycle cost
+lcc_financial
+lcc_complete
 service provided
 service requested
 provided_quantities
