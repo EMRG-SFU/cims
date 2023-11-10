@@ -61,6 +61,7 @@ class Model:
 
     def __init__(self, model_reader):
         self.graph = nx.DiGraph()
+        self.root = model_reader.root
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
         self.scenario_node_dfs, self.scenario_tech_dfs = None, None
         self.node_tech_defaults = model_reader.get_default_params()

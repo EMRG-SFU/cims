@@ -49,7 +49,7 @@ def get_node_cols(mdf, first_data_col_name="Branch"):
 
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list):
+    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list, root_node="CIMS"):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
@@ -62,6 +62,7 @@ class ModelReader:
         self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
+        self.root = root_node
 
         self.node_dfs = {}
         self.tech_dfs = {}
