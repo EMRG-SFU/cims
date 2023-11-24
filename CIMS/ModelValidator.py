@@ -20,26 +20,22 @@ class ModelValidator:
 
         self.warnings = {}
 
-        self.index2node_map = self.model_df[self.node_col].ffill()
-        self.index2node_index_map = self._create_index_to_node_index_map()
         self.index2branch_map = self._create_index_to_branch_map()
+        self.branch2node_index_map = self._create_branch_to_node_index_map()
+
 
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
-        sheet_df = pd.read_excel(self.infile,
-                                 sheet_name=self.sheet_map['model'],
-                                 engine=self.excel_engine)
-
-        # Remove nans from list
-        sheet_list = [sheet for sheet in sheet_df['Model sheets'] if not pd.isna(sheet)]
-
         appended_data = []
-        for sheet in sheet_list:
-            sheet_df = pd.read_excel(self.infile,
-                                     sheet_name=sheet,
-                                     header=1,
-                                     engine=self.excel_engine).replace({np.nan: None})
-            appended_data.append(sheet_df)
+        for sheet in self.sheet_map['model']:
+            try:
+                sheet_df = pd.read_excel(self.infile,
+                                         sheet_name=sheet,
+                                         header=1,
+                                         engine=self.excel_engine).replace({np.nan: None})
+                appended_data.append(sheet_df)
+            except ValueError:
+                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
         model_df = pd.concat(appended_data,
                              ignore_index=True)  # Add province sheets together and re-index
@@ -59,30 +55,17 @@ class ModelValidator:
     def find_roots(self):
         root_idx = self.model_df[(self.model_df['Parameter'] == 'competition type') &
                                  (self.model_df['Context'] == 'Root')].index
-        root_nodes = set([self.index2node_map[ri] for ri in root_idx])
+        root_nodes = set([self.index2branch_map[ri] for ri in root_idx])
 
         return root_nodes
 
-    def _create_index_to_node_index_map(self):
-        # Record the index for every node name
-        node_indexes = []
-        for i, name in zip(self.model_df.index, self.model_df[self.node_col]):
-            if name:
-                node_indexes.append(i)
-            else:
-                node_indexes.append(None)
-
-        # Forward fill to get map
-        index_to_node_index_map = pd.Series(node_indexes, index=self.model_df.index).ffill()
-
+    def _create_branch_to_node_index_map(self):
+        branch_index = {b: i for i, b in self.model_df[self.node_col].drop_duplicates(keep='first').items()}
+        index_to_node_index_map = {self.index2branch_map[i]: branch_index[self.index2branch_map[i]] for i in self.model_df.index}
         return index_to_node_index_map
 
     def _create_index_to_branch_map(self):
-        all_services_provided = self.model_df[self.model_df['Parameter'] == 'service provided'][
-            'Branch']
-        node_index_2_branch_map = {int(self.index2node_index_map[i]): b for i, b in
-                                   all_services_provided.items()}
-        return {i: node_index_2_branch_map[ni] for i, ni in self.index2node_index_map.items()}
+        return {i: self.model_df['Branch'].loc[i] for i in self.model_df.index}
 
     def validate(self, verbose=True, raise_warnings=False):
         def invalid_competition_type():
@@ -220,8 +203,8 @@ class ModelValidator:
 
         def mismatched_node_names(p):
             """
-            Identify any nodes whose name (from the Node col) does not match the last component 
-            of their branch. 
+            Identify any nodes whose service provided name doesn't match the last component of their
+            branch.
             
             Parameters
             ----------
@@ -234,19 +217,13 @@ class ModelValidator:
             -------
             None
             """
-            node_name_indexes = self.model_df['Node'].dropna()
             mismatched = []
-            # Given an index where a service provided line lives find the name of the Node housing it.
-            for i, x in p.items():
-                cand = node_name_indexes.loc[:i]
-                node_name_index = cand.index.max()
-                node_name = list(cand)[-1]
-                if x is None:
-                    mismatched.append((node_name_index, node_name, None))
-                else:
-                    branch_node_name = x.split('.')[-1]
-                    if node_name != branch_node_name:
-                        mismatched.append((node_name_index, node_name, branch_node_name))
+            for i, branch in p.items():
+                branch_node_name = branch.split('.')[-1]
+                service_name = self.model_df['Context'].loc[i]
+                node_index = self.branch2node_index_map[branch]
+                if branch_node_name != service_name:
+                    mismatched.append((node_index, branch_node_name, service_name))
 
             if len(mismatched) > 0:
                 self.warnings['mismatched_node_names'] = mismatched
@@ -254,13 +231,13 @@ class ModelValidator:
             # Print Problems
             if verbose:
                 more_info = "See ModelValidator.warnings['mismatched_node_names'] for more info"
-                print("{} node name/branch mismatches. {}".format(len(mismatched),
+                print("{} service name/branch mismatches. {}".format(len(mismatched),
                                                                   more_info if len(
                                                                       mismatched) else ""))
             # Raise Warnings
             if raise_warnings:
                 more_info = "See ModelValidator.warnings['mismatched_node_names'] for more info"
-                w = "{} node name/branch mismatches. {}".format(len(mismatched), more_info if len(
+                w = "{} service name/branch mismatches. {}".format(len(mismatched), more_info if len(
                     mismatched) else "")
                 warnings.warn(w)
 
