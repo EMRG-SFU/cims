@@ -2,15 +2,16 @@ import numpy as np
 import pandas as pd
 import re
 import os
+from pathlib import Path
 
 
 # ********************************
 # Helper Functions
 # ********************************
 # DataFrame helpers
-def non_empty_rows(df, exclude_column="Branch"):
-    """Return bool array to flag rows as False that have only None or False values, ignoring exclude_column"""
-    return df.loc[:, df.columns != exclude_column].T.apply(any)
+# def non_empty_rows(df, exclude_column="Branch"):
+#     """Return bool array to flag rows as False that have only None or False values, ignoring exclude_column"""
+#     return df.loc[:, df.columns != exclude_column].T.apply(any)
 
 
 # column extraction helpers
@@ -53,7 +54,7 @@ class ModelReader:
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
-        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+        self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
         self.sheet_map = sheet_map
         self.node_col = node_col
@@ -76,7 +77,7 @@ class ModelReader:
                                          header=1,
                                          engine=self.excel_engine).replace({np.nan: None})
                 appended_data.append(sheet_df)
-            except:
+            except ValueError:
                 print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
@@ -85,9 +86,10 @@ class ModelReader:
         model_df.columns = [str(c) for c in
                             model_df.columns]  # Convert all column names to strings (years were ints)
         n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
-        n_cols = [n_col for n_col in n_cols if n_col in [c for c in self.col_list]]
-        y_cols = [y_col for y_col in y_cols if y_col in [str(yr) for yr in self.year_list]]
-        all_cols = np.concatenate((n_cols, y_cols))
+        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
+        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
+        all_cols = n_cols + y_cols
+
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         return mdf
@@ -103,34 +105,18 @@ class ModelReader:
         # ------------------------
         # Extract Node DFs
         # ------------------------
-        node_dfs = {}
-        node_names = self.model_df['Branch'].dropna().unique()
-        for name in node_names:
-            node_df = self.model_df[self.model_df['Branch'] == name]
-            node_df = node_df.drop(columns=['Branch'])
-
-            node_df['Parameter'] = node_df['Parameter'].str.lower()
-
-            node_dfs[name] = node_df
+        self.model_df['Parameter'] = self.model_df['Parameter'].str.lower()
+        node_dfs = {n: gb for n, gb in self.model_df.groupby(by='Branch')}
 
         # ------------------------
         # Extract Tech DFs
         # ------------------------
         # Extract tech dfs from node dfs and rewrite node df without techs
         tech_dfs = {}
-        for nn, ndf in node_dfs.items():
-            if any(~ndf['Technology'].isnull()):
-                tdfs = {}
-                tech_names = ndf['Technology'].dropna().unique()
-                for tn in tech_names:
-                    tech_df = ndf[ndf['Technology'] == tn]
-                    tech_df = tech_df.drop(columns=['Technology'])
-                    tdfs[tn] = tech_df
-                tech_dfs[nn] = tdfs
-
-                ndf = ndf.apply(lambda row: row[~ndf['Technology'].isin(tech_names)])
-            ndf = ndf.drop(columns=['Technology'])
-            node_dfs[nn] = ndf
+        for node_name, node_df in node_dfs.items():
+            if not all(node_df['Technology'].isnull()):
+                tech_dfs[node_name] = {t: gb for t, gb in node_df.groupby(by='Technology')}
+                node_dfs[node_name] = node_df[node_df['Technology'].isnull()]#.drop(columns='Technology')
 
         if inplace:
             self.node_dfs = node_dfs
