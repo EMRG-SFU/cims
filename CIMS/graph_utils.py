@@ -338,7 +338,7 @@ def add_node_data(graph, current_node, node_dfs):
     Parameters
     ----------
     current_node : str
-        The name of the node (branch format) to add.
+        The name of the node (branch notation) to add.
 
     Returns
     -------
@@ -355,12 +355,14 @@ def add_node_data(graph, current_node, node_dfs):
     # 3 Find whether node is a fuel
     is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
     if is_fuel_rows.empty:
+        # Even if "is fuel" hasn't been specified for this node, it could have been in a previously
+        # loaded model (e.g. base_model).
         if ('is fuel' in graph.nodes[current_node]) and (graph.nodes[current_node]['is fuel']):
             is_fuel = True
         else:
             is_fuel = False
     else:
-        is_fuel = is_fuel_rows.all()
+        is_fuel = all(is_fuel_rows)
     graph.nodes[current_node]['is fuel'] = is_fuel
 
     # Drop fuel row
@@ -401,10 +403,12 @@ def add_node_data(graph, current_node, node_dfs):
             year_dict = graph.nodes[current_node][year]
         else:
             year_dict = {}
-        for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
+
+        for branch, technology, param, context, sub_context, target, source, unit, year_value \
+                in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
-                   'branch': branch,
+                   'target': target,
                    'source': source,
                    'unit': unit,
                    'year_value': year_value,
@@ -495,10 +499,11 @@ def add_tech_data(graph, node, tech_dfs, tech):
         except KeyError:
             year_dict = {}
 
-        for param, context, sub_context, branch, source, unit, _, year_value in zip(*current_year_data):
+        for branch, technology, param, context, sub_context, target, source, unit, year_value \
+                in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
-                   'branch': branch,
+                   'target': target,
                    'source': source,
                    'unit': unit,
                    'year_value': year_value,
@@ -572,7 +577,7 @@ def add_edges(graph, node, df):
     # 2 Find edges based on requester/provider relationships
     #   These are the edges that exist because one node requests a service to another node
     # Find all nodes node is requesting services from
-    providers = df[df['Parameter'] == 'service requested']['Branch'].unique()
+    providers = df[df['Parameter'] == 'service requested']['Target'].unique()
 
     rp_edges = [(node, p) for p in providers]
     graph.add_edges_from(rp_edges)
@@ -643,14 +648,10 @@ def make_or_update_nodes(graph, node_dfs, tech_dfs):
     node_dfs_to_add = list(node_dfs.keys())
     while len(node_dfs_to_add) > 0:
         node_data = node_dfs_to_add.pop(0)
-        if node_data in graph.nodes:
+        try:
             new_graph = add_node_data(graph, node_data, node_dfs)
-        else:
-            try:
-                new_graph = add_node_data(graph, node_data, node_dfs)
-
-            except KeyError:
-                node_dfs_to_add.append(node_data)
+        except KeyError:
+            node_dfs_to_add.append(node_data)
 
     # 3 Add technologies to the graph
     for node in tech_dfs:

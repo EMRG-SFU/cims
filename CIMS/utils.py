@@ -51,7 +51,7 @@ def search_nodes(search_term, graph):
     Returns
     -------
     list [str]
-        A list of node names (branch format) whose last component contains `search_term`.
+        A list of node names (branch notation) whose last component contains `search_term`.
     """
     def search(name):
         components = name.split('.')
@@ -61,14 +61,14 @@ def search_nodes(search_term, graph):
     return [n for n in graph.nodes if search(n)]
 
 
-def create_value_dict(year_val, source=None, context=None, sub_context=None, branch=None, unit=None,
+def create_value_dict(year_val, source=None, context=None, sub_context=None, target=None, unit=None,
                       param_source=None):
     """
     Creates a standard value dictionary from the inner values.
     """
     value_dictionary = {'context': context,
                         'sub_context': sub_context,
-                        'branch': branch,
+                        'target': target,
                         'source': source,
                         'unit': unit,
                         'year_value': year_val,
@@ -117,7 +117,7 @@ def get_services_requested(model, node, year, tech=None, use_vintage_weighting=F
                     )
                     weighted_services[serv] = create_value_dict(
                         year_val=weighted_req_ratio,
-                        branch=services_requested[serv]['branch'],
+                        target=services_requested[serv]['target'],
                         param_source='vintage_weighting'
                     )
                 services_requested = weighted_services
@@ -237,7 +237,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     param : str
         The name of the parameter whose value is being retrieved.
     node : str
-        The name of the node (branch format) whose parameter you are interested in retrieving.
+        The name of the node (branch notation) whose parameter you are interested in retrieving.
     year : str
         The year which you are interested in. `year` must be provided for all parameters stored at
         the technology level, even if the parameter doesn't change year to year.
@@ -420,7 +420,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
     param : str
         The name of the parameter whose value is being set.
     node : str
-        The name of the node (branch format) whose parameter you are interested in set.
+        The name of the node (branch notation) whose parameter you are interested in set.
     year : str or list, optional
         The year(s) which you are interested in. `year` is not required for parameters specified at
         the node level and which by definition cannot change year to year. For example,
@@ -455,7 +455,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch notation) whose parameter you are interested in set.
         year : str
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
@@ -551,7 +551,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch notation) whose parameter you are interested in set.
         year : str
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
@@ -668,7 +668,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     param : str
         The name of the parameter whose value is being set.
     node : str
-        The name of the node (branch format) whose parameter you are interested in set.
+        The name of the node (branch notation) whose parameter you are interested in set.
     year : str or list, optional
         The year(s) which you are interested in. `year` is not required for parameters specified at
         the node level and which by definition cannot change year to year. For example,
@@ -702,7 +702,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch notation) whose parameter you are interested in set.
         year : str
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
@@ -761,7 +761,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch notation) whose parameter you are interested in set.
         year : str
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
@@ -828,17 +828,17 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
                 else:
                     value = val[i]['year_value']
                     param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                    branch = val[i]['branch'] if 'branch' in val[i] else None
+                    target = val[i]['target'] if 'target' in val[i] else None
                     model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
-                                       context=context, sub_context=sub_context,
-                                       param_source=param_source, branch=branch)
+                                       context=context, sub_context=sub_context, target=target,
+                                       param_source=param_source)
             else:
                 value = val[i]['year_value']
                 param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                branch = val[i]['branch'] if 'branch' in val[i] else None
+                target = val[i]['target'] if 'target' in val[i] else None
                 model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
-                                   context=context, sub_context=sub_context,
-                                   param_source=param_source, branch=branch)
+                                   context=context, sub_context=sub_context, target=target,
+                                   param_source=param_source)
         else:
             if param in node_data:
                 set_node_param(model, val[i], param, node, year[i], context, sub_context)
@@ -980,7 +980,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
     param : str
         The name of the parameter whose value is being set.
     node : str
-        The name of the node (branch format) whose parameter you are interested in matching.
+        The name of the node (branch notation) whose parameter you are interested in matching.
     year : str, optional
         The year which you are interested in. `year` is not required for parameters specified at
         the node level and which by definition cannot change year to year. For example,
@@ -1155,7 +1155,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
 
 
 def create_param(model, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                 param_source=None, branch=None, row_index=None):
+                 target=None, param_source=None, row_index=None):
     """
     Creates parameter in graph, for given context (node, year, tech, context, sub_context),
     and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1207,7 +1207,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
         data = model.graph.nodes[node]
 
     param_source = param_source if param_source is not None else 'model'
-    val_dict = create_value_dict(val, param_source=param_source, branch=branch)
+    val_dict = create_value_dict(val, param_source=param_source, target=target)
 
     # *********
     # If there is a tech specified, check if it exists and create context (tech, param, context,

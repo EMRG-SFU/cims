@@ -2,15 +2,16 @@ import numpy as np
 import pandas as pd
 import re
 import os
+from pathlib import Path
 
 
 # ********************************
 # Helper Functions
 # ********************************
 # DataFrame helpers
-def non_empty_rows(df, exclude_column="Node"):
-    """Return bool array to flag rows as False that have only None or False values, ignoring exclude_column"""
-    return df.loc[:, df.columns != exclude_column].T.apply(any)
+# def non_empty_rows(df, exclude_column="Branch"):
+#     """Return bool array to flag rows as False that have only None or False values, ignoring exclude_column"""
+#     return df.loc[:, df.columns != exclude_column].T.apply(any)
 
 
 # column extraction helpers
@@ -31,8 +32,8 @@ def find_first_index(items, pred=bool):
     return find_first(enumerate(items), lambda kcn: pred(kcn[1]))[0]
 
 
-def get_node_cols(mdf, first_data_col_name="Node"):
-    """Returns list of column names after 'Node' and a list of years that follow """
+def get_node_cols(mdf, first_data_col_name="Branch"):
+    """Returns list of column names after 'Branch' and a list of years that follow """
     node_col_idx = find_first_index(mdf.columns,
                                     lambda cn: first_data_col_name.lower() in cn.lower())
 
@@ -49,15 +50,17 @@ def get_node_cols(mdf, first_data_col_name="Node"):
 
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, node_col, year_list, root_node="CIMS"):
+    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list, root_node="CIMS"):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
-        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+        self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
         self.sheet_map = sheet_map
         self.node_col = node_col
+        self.col_list = col_list
         self.year_list = year_list
+        self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
         self.root = root_node
@@ -74,7 +77,7 @@ class ModelReader:
                                          header=1,
                                          engine=self.excel_engine).replace({np.nan: None})
                 appended_data.append(sheet_df)
-            except:
+            except ValueError:
                 print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
@@ -83,55 +86,37 @@ class ModelReader:
         model_df.columns = [str(c) for c in
                             model_df.columns]  # Convert all column names to strings (years were ints)
         n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
-        y_cols = [y_col for y_col in y_cols if y_col in [str(yr) for yr in self.year_list]]
-        all_cols = np.concatenate((n_cols, y_cols))
+        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
+        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
+        all_cols = n_cols + y_cols
+
         mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
 
         return mdf
 
     def get_model_description(self, inplace=False):
         # ------------------------
+        # Filter sectors for calibration (if applicable)
+        # ------------------------
+        if self.sector_list:
+            self.model_df = self.model_df.apply(lambda row: row[self.model_df['Sector'].isin(self.sector_list)])
+        self.model_df = self.model_df.drop(columns=['Sector'])
+
+        # ------------------------
         # Extract Node DFs
         # ------------------------
-        # determine, row ranges for each node def, based on non-empty Node field
-        node_rows = self.model_df.Node[~self.model_df.Node.isnull()]  # does not work if node names have been filled in
-        node_rows.index.name = "Row Number"
-        last_row = self.model_df.index[-1]
-        node_start_ends = zip(node_rows.index,
-                              node_rows.index[1:].tolist() + [last_row + 1]) # Adding 1 to make sure last row is included
-
-        # extract Node DataFrames, at this point still including Technologies
-        node_dfs = {}
-        non_node_cols = self.model_df.columns != self.node_col
-        for s, e in node_start_ends:
-            node_df = self.model_df.loc[s + 1:e - 1]
-            node_df = node_df.loc[non_empty_rows(node_df), non_node_cols]
-
-            # Convert parameter strings to lower case
-            node_df['Parameter'] = node_df['Parameter'].str.lower()
-
-            try:
-                node_name = list(node_df[node_df['Parameter'] == 'service provided']['Branch'])[0]
-            except IndexError:
-                continue
-            node_dfs[node_name] = node_df
+        self.model_df['Parameter'] = self.model_df['Parameter'].str.lower()
+        node_dfs = {n: gb for n, gb in self.model_df.groupby(by='Branch')}
 
         # ------------------------
         # Extract Tech DFs
         # ------------------------
-        # Extract tech dfs from node df's and rewrite node df without techs
+        # Extract tech dfs from node dfs and rewrite node df without techs
         tech_dfs = {}
-        for nn, ndf in node_dfs.items():
-            if any(ndf.Parameter.isin(['technology', 'service'])):  # Technologies can also be called Services
-                tdfs = {}
-                first_row, last_row = ndf.index[0], ndf.index[-1]
-                tech_rows = ndf.loc[ndf.Parameter.isin(['technology', 'service'])].index
-                for trs, tre in zip(tech_rows, tech_rows[1:].tolist() + [last_row]):
-                    tech_df = ndf.loc[trs:tre]
-                    tech_name = tech_df.iloc[0].Context
-                    tdfs[tech_name] = tech_df
-                tech_dfs[nn] = tdfs
-                node_dfs[nn] = ndf.loc[:tech_rows[0] - 1]
+        for node_name, node_df in node_dfs.items():
+            if not all(node_df['Technology'].isnull()):
+                tech_dfs[node_name] = {t: gb for t, gb in node_df.groupby(by='Technology')}
+                node_dfs[node_name] = node_df[node_df['Technology'].isnull()]#.drop(columns='Technology')
 
         if inplace:
             self.node_dfs = node_dfs

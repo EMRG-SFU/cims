@@ -76,7 +76,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             annual_service_cost, sc_source = model.get_param('service cost', node, year, tech=tech,
                                                              return_source=True, do_calc=True)
             val_dict = {'year_value': annual_service_cost,
-                        "branch": str(node),
                         'param_source': sc_source}
             model.set_param_internal(val_dict, 'service cost', node, year, tech)
 
@@ -489,14 +488,13 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
                                                                        tech, serv)
         service_cost = 0
 
-        if service_requested['branch'] in model.fuels:
-            fuel_branch = service_requested['branch']
-
-            fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
+        if service_requested['target'] in model.fuels:
+            target_fuel = service_requested['target']
+            fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
 
             # Price Multiplier
             try:
-                fuel_name = fuel_branch.split('.')[-1]
+                fuel_name = target_fuel.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
                     'year_value']
             except KeyError:
@@ -504,9 +502,9 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
             service_requested_price = fuel_price * price_multiplier
 
         else:
-            service_requested_branch = service_requested['branch']
-            if 'price' in model.graph.nodes[service_requested_branch][year]:
-                service_requested_price = model.get_param('price', service_requested_branch, year)
+            service_request_target = service_requested['target']
+            if 'price' in model.graph.nodes[service_request_target][year]:
+                service_requested_price = model.get_param('price', service_request_target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -556,15 +554,13 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
         service_requested_value = service_requested['year_value']
         service_cost = 0
 
-        if service_requested['branch'] in model.fuels:
-            fuel_branch = service_requested['branch']
-            fuel_name = fuel_branch.split('.')[-1]
-
-            fuel_price = model.get_param('price', fuel_branch, year, do_calc=True)
+        if service_requested['target'] in model.fuels:
+            target_fuel = service_requested['target']
+            fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
 
             # Price Multiplier
             try:
-                fuel_name = fuel_branch.split('.')[-1]
+                fuel_name = target_fuel.split('.')[-1]
                 price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
                     'year_value']
             except KeyError:
@@ -573,9 +569,9 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
             service_requested_price = fuel_price * price_multiplier
 
         else:
-            service_requested_branch = service_requested['branch']
-            if 'price' in model.graph.nodes[service_requested_branch][year]:
-                service_requested_price = model.get_param('price', service_requested_branch, year)
+            service_request_target = service_requested['target']
+            if 'price' in model.graph.nodes[service_request_target][year]:
+                service_requested_price = model.get_param('price', service_request_target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -609,7 +605,7 @@ def calc_price_subsidy(model: 'CIMS.Model', node: str, year: str, tech=None):
     model : CIMS.Model
         The model of interest.
     node : str
-        The node (in branch form) whose price subsidy is being calculated.
+        The node (in branch notation) whose price subsidy is being calculated.
     year : str
         The year for which price subsidy is being calculated
     tech : str, optional
@@ -656,7 +652,7 @@ def calc_price(model, node, year, tech=None):
     model : CIMS.Model
         The model to retrieve data from & save the calculated price to.
     node : str
-        The node (in branch form) whose price is being calculated.
+        The node (in branch notation) whose price is being calculated.
     year : str
         The year for which we are calculating price.
     tech : str, optional
@@ -758,9 +754,9 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
     model : CIMS.Model
         The model to retrieve data from & save the result to.
     node : str
-        The node (in branch form) whose fixed cost rate is being calculated.
+        The node (in branch notation) whose fixed cost rate is being calculated.
     year : str
-        The year in which to calculated the fixed cost rate.
+        The year to calculate the fixed cost rate.
     tech : str, optional
         If specified, the technology whose fixed cost rate is being calculated.
 

@@ -40,12 +40,12 @@ class Model:
         relationships are edges in the `graph`.
 
     node_dfs : dict {str: pandas.DataFrame}
-        Node names (branch form) are the keys in the dictionary. Associated DataFrames (specified in
+        Node names (branch notation) are the keys in the dictionary. Associated DataFrames (specified in
         the excel model description) are the values. DataFrames do not include 'technology' or
         'service' information for a node.
 
     tech_dfs : dict {str: dict {str: pandas.DataFrame}}
-        Technology & service information from the excel model description. Node names (branch form)
+        Technology & service information from the excel model description. Node names (branch notation)
         are keys in `tech_dfs` to sub-dictionaries. These sub-dictionaries have technology/service
         names as keys and pandas DataFrames as values. These DataFrames contain information from the
         excel model description.
@@ -616,18 +616,9 @@ class Model:
 
             if node in self.fuels:
                 if 'lcc_financial' in graph.nodes[node][year]:
-                    lcc_dict = graph.nodes[node][year]['lcc_financial']
-                    fuel_name = list(lcc_dict.keys())[0]
-                    if lcc_dict[fuel_name]['year_value'] is None:
-                        lcc_dict[fuel_name]['to_estimate'] = True
-                        last_year = str(int(year) - step)
-                        last_year_value = self.get_param('lcc_financial',
-                                                         node, last_year)[fuel_name]['year_value']
-                        graph.nodes[node][year]['lcc_financial'][fuel_name][
-                            'year_value'] = last_year_value
-                    else:
-                        graph.nodes[node][year]['lcc_financial'][fuel_name][
-                            'to_estimate'] = False
+                    fuel_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
+                    if graph.nodes[node][year]['lcc_financial'][fuel_name]['year_value'] is None:
+                        calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
                     service_name = node.split('.')[-1]
@@ -637,9 +628,6 @@ class Model:
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
-                    lcc_dict = graph.nodes[node][year]['lcc_financial']
-                    fuel_name = list(lcc_dict.keys())[0]
-                    lcc_dict[fuel_name]['to_estimate'] = True
 
         def init_convert_to_CO2e(graph, node, year, gwp):
             """
@@ -826,7 +814,7 @@ class Model:
             `graph_utils.top_down_traversal()`.
 
         node: str
-            The name of the node (in branch form) where stock stock retirement and allocation will
+            The name of the node (branch notation) where stock stock retirement and allocation will
             be performed.
 
         year: str
@@ -1375,7 +1363,7 @@ class Model:
         return param_val
 
     def create_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                     row_index=None, param_source=None, branch=None):
+                     row_index=None, param_source=None, target=None):
         """
         Creates parameter in graph, for given context (node, year, tech, context, sub_context),
         and sets the value to val. Returns True if param was created successfully and False otherwise.
@@ -1414,9 +1402,9 @@ class Model:
                                        tech=tech,
                                        context=context,
                                        sub_context=sub_context,
+                                       target=target,
                                        row_index=row_index,
-                                       param_source=param_source,
-                                       branch=branch)
+                                       param_source=param_source)
 
         return param_val
 

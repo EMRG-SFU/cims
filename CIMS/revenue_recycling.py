@@ -15,7 +15,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
     model : CIMS.Model
         The model containing node
     node : str
-        The name of the node (in branch form) for which recycled revenues will be calculated.
+        The name of the node (branch notation) for which recycled revenues will be calculated.
     year : str
         The year for which recycled revenues will be calculated.
     tech : str, default=None
