@@ -28,7 +28,7 @@ def initialize_tax_foresight(model: 'CIMS.Model') -> None:
 
     for year in model.years:
         # Find the tax foresight methods defined in a particular year
-        foresight_dict = model.get_param('tax_foresight', 'CIMS', year, dict_expected=True)
+        foresight_dict = model.get_param('tax_foresight', model.root, year, dict_expected=True)
 
         # Record the tax foresight methods for specified sectors
         if foresight_dict is not None:
@@ -40,10 +40,10 @@ def initialize_tax_foresight(model: 'CIMS.Model') -> None:
         # Pass foresight methods down to all other nodes in a sector
         graph_utils.top_down_traversal(model.graph,
                                        _inherit_tax_foresight,
-                                       year)
+                                       year, model=model)
 
 
-def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str) -> None:
+def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str, model: "CIMS.Model") -> None:
     """
     Updates node's tax_foresight parameter, based on the tax_foresight value of its sector. For use
     with a top-down traversal function.
@@ -63,7 +63,7 @@ def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str) -> Non
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'CIMS':
+            if 'tax_foresight' in graph.nodes[parent][year] and parent != model.root:
                 parent_dict = graph.nodes[parent][year]['tax_foresight']
         if parent_dict:
             graph.nodes[node][year]['tax_foresight'] = parent_dict

@@ -355,12 +355,14 @@ def add_node_data(graph, current_node, node_dfs):
     # 3 Find whether node is a fuel
     is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
     if is_fuel_rows.empty:
+        # Even if "is fuel" hasn't been specified for this node, it could have been in a previously
+        # loaded model (e.g. base_model).
         if ('is fuel' in graph.nodes[current_node]) and (graph.nodes[current_node]['is fuel']):
             is_fuel = True
         else:
             is_fuel = False
     else:
-        is_fuel = is_fuel_rows.all()
+        is_fuel = all(is_fuel_rows)
     graph.nodes[current_node]['is fuel'] = is_fuel
 
     # Drop fuel row
@@ -375,6 +377,8 @@ def add_node_data(graph, current_node, node_dfs):
         raise ValueError("TOO MANY COMPETITION TYPES")
     elif 'competition type' in graph.nodes[current_node]:
         comp_type = graph.nodes[current_node]['competition type']
+    else:
+        warnings.warn(f"Not a real competition type: {comp_list}")
 
     # Get rid of competition type row
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
@@ -400,7 +404,8 @@ def add_node_data(graph, current_node, node_dfs):
         else:
             year_dict = {}
 
-        for param, context, sub_context, target, source, unit, year_value in zip(*current_year_data):
+        for branch, technology, param, context, sub_context, target, source, unit, year_value \
+                in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
                    'target': target,
@@ -494,7 +499,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
         except KeyError:
             year_dict = {}
 
-        for param, context, sub_context, target, source, unit, year_value in zip(*current_year_data):
+        for branch, technology, param, context, sub_context, target, source, unit, year_value \
+                in zip(*current_year_data):
             dct = {'context': context,
                    'sub_context': sub_context,
                    'target': target,
