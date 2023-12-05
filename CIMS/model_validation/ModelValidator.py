@@ -1,14 +1,14 @@
 import pandas as pd
 import numpy as np
-from cims.CIMS.reader import get_node_cols
+from ..reader import get_node_cols
 import warnings
 import os
-from cims.CIMS.utils import is_year
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 
+
 class ModelValidator:
-    def __init__(self, infile, sheet_map, node_col, root_node='CIMS', target_col='Target'):
+    def __init__(self, infile, sheet_map, root_node='CIMS', node_col='Branch', target_col='Target'):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
