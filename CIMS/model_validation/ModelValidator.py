@@ -1,0 +1,115 @@
+import pandas as pd
+import numpy as np
+from ..reader import get_node_cols
+import warnings
+import os
+from . import validation_checks as validate
+from .validation_utils import get_providers, get_requested
+
+
+class ModelValidator:
+    def __init__(self, infile, sheet_map, root_node='CIMS', node_col='Branch', target_col='Target'):
+        self.infile = infile
+        excel_engine_map = {'.xlsb': 'pyxlsb',
+                            '.xlsm': 'xlrd'}
+        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+
+        self.sheet_map = sheet_map
+        self.node_col = node_col
+        self.target_col = target_col
+
+        self.model_df = self._get_model_df()
+        self.root = root_node
+
+        self.warnings = {}
+        self.verbose = False
+        self.raise_warnings = False
+
+        self.index2branch_map = self._create_index_to_branch_map()
+        self.branch2node_index_map = self._create_branch_to_node_index_map()
+
+    def _get_model_df(self):
+        # Read in list of sheets from 'Lists' sheet in model description
+        appended_data = []
+        for sheet in self.sheet_map['model']:
+            try:
+                sheet_df = pd.read_excel(self.infile,
+                                         sheet_name=sheet,
+                                         header=1,
+                                         engine=self.excel_engine).replace({np.nan: None})
+                appended_data.append(sheet_df)
+            except ValueError:
+                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
+
+        model_df = pd.concat(appended_data,
+                             ignore_index=True)  # Add province sheets together and re-index
+        model_df.index += 3  # Adjust index to correspond to Excel line numbers
+        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
+        model_df.columns = [str(c) for c in
+                            model_df.columns]  # Convert all column names to strings (years were ints)
+        n_cols, y_cols = get_node_cols(model_df,
+                                       self.node_col)  # Find columns, separated year cols from non-year cols
+        all_cols = np.concatenate((n_cols, y_cols))
+        mdf = model_df.loc[1:,
+              all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf['Parameter'] = mdf['Parameter'].str.lower()
+
+        return mdf
+
+    def _create_branch_to_node_index_map(self):
+        branch_index = {b: i for i, b in self.model_df[self.node_col].drop_duplicates(keep='first').items()}
+        index_to_node_index_map = {self.index2branch_map[i]: branch_index[self.index2branch_map[i]] for i in self.model_df.index}
+        return index_to_node_index_map
+
+    def _create_index_to_branch_map(self):
+        return {i: self.model_df['Branch'].loc[i] for i in self.model_df.index}
+
+    def _raise_concerns(self, concerns, concern_key, concern_desc):
+        if len(concerns) <= 0:
+            more_info = ""
+        else:
+            more_info = f"See ModelValidator.warnings['{concern_key}'] for more info."
+
+        info_str = f"{len(concerns)} {concern_desc}. {more_info}"
+
+        if self.verbose:
+            print(info_str)
+        if self.raise_warnings:
+            warnings.warn(info_str)
+
+    def _run_check(self, check_function, **kwargs):
+        # Collect list
+        concern_list, concern_key, concern_desc = check_function(**kwargs)
+
+        # Raise Concerns
+        self._raise_concerns(concern_list, concern_key, concern_desc)
+
+        # Return list
+        self.warnings[concern_key] = concern_list
+
+    def validate(self, verbose=True, raise_warnings=False):
+        self.verbose = verbose
+        self.raise_warnings = raise_warnings
+
+        providers = get_providers(self.model_df, self.node_col)
+        requested = get_requested(self.model_df, self.target_col)
+
+        self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
+        self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
+        self._run_check(validate.unreferenced_nodes, providers=providers, requested=requested, root_node=self.root)
+        self._run_check(validate.nodes_no_provided_service, validator=self)
+        self._run_check(validate.invalid_competition_type, df=self.model_df)
+        self._run_check(validate.nodes_requesting_self, validator=self)
+        self._run_check(validate.nodes_no_requested_service, validator=self)
+        self._run_check(validate.nodes_with_zero_output, validator=self)
+        self._run_check(validate.fuel_nodes_no_lcc_or_price, validator=self)
+        self._run_check(validate.techs_no_base_market_share, validator=self)
+        self._run_check(validate.duplicate_service_requests, validator=self)
+        self._run_check(validate.bad_service_req, validator=self)
+        self._run_check(validate.tech_compete_nodes_no_techs, validator=self)
+        self._run_check(validate.market_child_requested, validator=self)
+        self._run_check(validate.revenue_recycling_at_techs, validator=self)
+        self._run_check(validate.both_cop_p2000_defined, validator=self)
+
+
+
