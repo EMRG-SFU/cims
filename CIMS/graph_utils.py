@@ -352,38 +352,29 @@ def add_node_data(graph, current_node, node_dfs):
     # 2 Add an empty node to the graph
     graph.add_node(current_node)
 
-    # 3 Find whether node is a fuel
-    is_fuel_rows = current_node_df[current_node_df['Parameter'] == 'is fuel']['Context']
-    if is_fuel_rows.empty:
-        # Even if "is fuel" hasn't been specified for this node, it could have been in a previously
-        # loaded model (e.g. base_model).
-        if ('is fuel' in graph.nodes[current_node]) and (graph.nodes[current_node]['is fuel']):
-            is_fuel = True
-        else:
-            is_fuel = False
-    else:
-        is_fuel = all(is_fuel_rows)
-    graph.nodes[current_node]['is fuel'] = is_fuel
-
-    # Drop fuel row
+    # 3 Set boolean node constants
+    # 3.1 is fuel
+    graph = add_node_constant(graph, current_node_df, current_node, 'is fuel')
     current_node_df = current_node_df[current_node_df['Parameter'] != 'is fuel']
-
-    # 4 Find node's competition type. (If there is one)
-    comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
-    if len(set(comp_list)) == 1:
-        comp_type = comp_list[0].lower()
-        graph.nodes[current_node]['competition type'] = comp_type
-    elif len(set(comp_list)) > 1:
-        raise ValueError("TOO MANY COMPETITION TYPES")
-    elif 'competition type' in graph.nodes[current_node]:
-        comp_type = graph.nodes[current_node]['competition type']
-    else:
-        warnings.warn(f"Not a real competition type: {comp_list}")
-
-    # Get rid of competition type row
+    # 3.2 structural aggregation
+    graph = add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
+    # 3.3 competition type
+    graph = add_node_constant(graph, current_node_df, current_node, 'competition type', required=True)
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
+    # comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
+    # if len(set(comp_list)) == 1:
+    #     comp_type = comp_list[0].lower()
+    #     graph.nodes[current_node]['competition type'] = comp_type
+    # elif len(set(comp_list)) > 1:
+    #     raise ValueError("TOO MANY COMPETITION TYPES")
+    # elif 'competition type' in graph.nodes[current_node]:
+    #     comp_type = graph.nodes[current_node]['competition type']
+    # else:
+    #     warnings.warn(f"Not a real competition type: {comp_list}")
 
     # 5 Find the cost curve function
+    comp_type = graph.nodes[current_node]['competition type']
     if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
         cc_func = cost_curves.build_cost_curve_function(current_node_df)
         graph.nodes[current_node]['cost_curve_function'] = cc_func
@@ -555,8 +546,8 @@ def add_edges(graph, node, df):
 
     Edges are added to the graph based on: (1) if a node is requesting a service provided by
     another node or (2) the relationships implicit in the branch structure used to identify a node.
-    When an edge is added to the graph, we also store the edge type ('request_provide', 'structure')
-    in the edge attributes. An edge may have more than one type.
+    When an edge is added to the graph, we also store the edge type ('request_provide', 'structure',
+    or 'aggregation') in the edge attributes. An edge may have more than one type.
 
     Parameters
     ----------
@@ -606,7 +597,21 @@ def add_edges(graph, node, df):
         except KeyError:
             graph.edges[s_edge]['type'] = ['structure']
 
-    # 4 Return resulting graph
+    # 4 Find Aggregation Edges
+    if ('structural_aggregation' in graph.nodes[node]) and (graph.nodes[node]['structural_aggregation']):
+        for edge in rp_edges:
+            types = graph.edges[edge]['type']
+            if 'aggregation' not in types:
+                # Add 0 weighted aggregation edges
+                graph.edges[edge]['type'] += ['aggregation']
+                graph.edges[edge]['aggregation_weight'] = 0
+
+            # Add 1 weighted aggregation edges
+            _, tgt = edge
+            tgt_parent = '.'.join(tgt.split('.')[:-1])
+            graph.add_edge(tgt_parent, tgt, aggregation_weight=1)
+
+    # 5 Return resulting graph
     return graph
 
 
@@ -661,3 +666,30 @@ def make_or_update_nodes(graph, node_dfs, tech_dfs):
 
     # Return the graph
     return new_graph
+
+
+def standardize_param_value(val):
+    if isinstance(val, str):
+        return val.lower()
+    else:
+        return val
+
+
+def add_node_constant(graph, node_df, node, parameter, required=False):
+    parameter_list = list(node_df[node_df['Parameter'] == parameter]['Context'])
+
+    if len(set(parameter_list)) == 1:
+        parameter_val = standardize_param_value(parameter_list[0])
+    elif len(set(parameter_list)) > 1:
+        raise ValueError(f"{parameter} has too many values at {node}.")
+    elif parameter in graph.nodes[node]:
+        parameter_val = graph.nodes[node][parameter]
+    elif required:
+        raise ValueError(f"Required {parameter} value not found at {node}")
+    else:
+        parameter_val = None
+
+    # Add constant to graph
+    graph.nodes[node][parameter] = parameter_val
+
+    return graph
