@@ -363,7 +363,7 @@ class Model:
 
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
             graph_utils.bottom_up_traversal(self.graph,
-                                            self.calc_requested_quantities,
+                                            self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             fuels=self.fuels)
@@ -835,7 +835,7 @@ class Model:
         else:
             stock_allocation.general_allocation(self, node, year)
 
-    def calc_requested_quantities(self, graph, node, year, **kwargs):
+    def _aggregate_requested_quantities(self, graph, node, year, **kwargs):
         """
         Calculates and records fuel quantities attributable to a node in the specified year. Fuel
         quantities can be attributed to a node in 3 ways:
