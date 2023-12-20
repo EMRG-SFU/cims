@@ -13,13 +13,12 @@ from . import stock_allocation
 from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
+from . import quantity_aggregation as qa
 
-from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
+from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
 
 from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record, \
-    get_direct_distributed_supply
 
 
 class Model:
@@ -838,84 +837,38 @@ class Model:
 
     def calc_requested_quantities(self, graph, node, year, **kwargs):
         """
-        Calculates and records fuel quantities requested by a node in the specified year.
+        Calculates and records fuel quantities attributable to a node in the specified year. Fuel
+        quantities can be attributed to a node in 3 ways:
 
-        This includes fuel quantities directly requested of the node (e.g. a Lighting requests
-        services directly from Electricity) and fuel quantities that are indirectly requested, but
-        can be attributed to the node (e.g. Alberta indirectly requests Electricity via its
-        children). In other words, this not only includes quantities a node requests, but also
-        quantities requested by it's successors (children, grandchildren, etc).
+        (1) via request/provide relationships - any fuel quantity directly requested of the node
+        (e.g. Lighting requests services directly from Electricity) and fuel quantities that
+        are indirectly requested, but can be attributed to the node (e.g. Housing requests
+        Electricity via its request of Lighting).
 
-        This method was built to be used with the bottom up traversal method
-        (CIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
-        all its children have been visited (except when it needs to break a loop).
+        (2) via structural relationships - fuel nodes pass indirect quantities to their structural
+        parents, rather than request/provide parents. Additionally, root & region nodes collect
+        quantities via their structural children, rather than their request/provide children.
 
-        Important things to note:
-           * Fuel nodes pass along quantities requested by their successors via their structural
-             parent rather than through request/provide parents.
+        (3) via weighted aggregate relationships - if specified in the model description, nodes will
+        aggregate quantities structurally. For example, if a market node has
+        "structural_aggregation" turned on, any quantities (direct or in-direct) from the market
+        children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
+        which it has a request/provide relationship with (CAN.Natural Gas).
 
-        Parameters
-        ----------
-        graph : networkX.Graph
-            The graph containing node & its children.
-        node : str
-            The name of the node (in branch/path notation) for which the total requested quantities
-            will be calculated.
-        year : str
-            The year of interest.
-
-        Returns
-        -------
-        Nothing. Does set the requested_quantities parameter in the Model according to the
-        quantities requested of node & all it's successors.
+        This method was built to be used with the bottom-up traversal method, which ensures a node
+        is only visited once all its children have been visited (except when needs to break a loop).
         """
-        requested_quantity = RequestedQuantity()
+        # Find children
+        children_for_aggregation = qa.find_children_for_aggregation(self, node, year)
 
-        if self.get_param('competition type', node) in ['root', 'region']:
-            structural_children = find_children(graph, node, structural=True)
-            for child in structural_children:
-                # Find quantities provided to the node via its structural children
-                child_requested_quant = self.get_param('requested_quantities',
-                                                       child, year).get_total_quantities_requested()
-                for child_rq_node, child_rq_amount in child_requested_quant.items():
-                    # Record requested quantities
-                    requested_quantity.record_requested_quantity(child_rq_node,
-                                                                 child,
-                                                                 child_rq_amount)
+        # Find Quantities
+        quantities = qa.find_aggregation_quantities(self, year, children_for_aggregation)
 
-        elif 'technologies' in graph.nodes[node][year]:
-            for tech in graph.nodes[node][year]['technologies']:
-                tech_requested_quantity = RequestedQuantity()
+        # Aggregate Quantities
+        aggregate_quantities = qa.aggregate_quantities(node, quantities)
 
-                # Aggregate Fuel Quantities
-                req_prov_children = find_children(graph, node, year, tech, request_provide=True)
-                for child in req_prov_children:
-                    quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
-                    # Record requested quantities
-                    for providing_node, child, attributable_amount in quantities_to_record:
-                        tech_requested_quantity.record_requested_quantity(providing_node,
-                                                                          child,
-                                                                          attributable_amount)
-                        requested_quantity.record_requested_quantity(providing_node,
-                                                                     child,
-                                                                     attributable_amount)
-
-                # Save the tech requested quantities
-                self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
-                    tech_requested_quantity
-
-        else:
-            req_prov_children = find_children(graph, node, year, request_provide=True)
-            for child in req_prov_children:
-                # Record requested quantities
-                quantities_to_record = get_quantities_to_record(self, child, node, year)
-                for providing_node, child, attributable_amount in quantities_to_record:
-                    requested_quantity.record_requested_quantity(providing_node,
-                                                                 child,
-                                                                 attributable_amount)
-
-        self.graph.nodes[node][year]['requested_quantities'] = \
-            utils.create_value_dict(requested_quantity, param_source='calculation')
+        # Record Quantities
+        qa.record_quantities(self, aggregate_quantities, year)
 
     def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
         """
@@ -941,7 +894,7 @@ class Model:
             # Find distributed supply generated at the tech
             for tech in self.graph.nodes[node][year]['technologies']:
                 tech_distributed_supply = DistributedSupply()
-                distributed_supplies = get_direct_distributed_supply(self, node, year, tech)
+                distributed_supplies = qa.get_direct_distributed_supply(self, node, year, tech)
                 for service, amount in distributed_supplies:
                     tech_distributed_supply.record_distributed_supply(service, node, amount)
                     node_distributed_supply.record_distributed_supply(service, node, amount)
@@ -951,11 +904,11 @@ class Model:
             # @ a Node without techs
             node_distributed_supply = DistributedSupply()
             # Find distributed supply generated at the node
-            distributed_supplies = get_direct_distributed_supply(self, node, year)
+            distributed_supplies = qa.get_direct_distributed_supply(self, node, year)
             for service, amount in distributed_supplies:
                 node_distributed_supply.record_distributed_supply(service, node, amount)
             # Find distributed supply from structural children
-            structural_children = find_children(graph, node, structural=True)
+            structural_children = qa.find_children(graph, node, structural=True)
             for child in structural_children:
                 node_distributed_supply += self.get_param('distributed_supply', child, year)
 
@@ -991,7 +944,7 @@ class Model:
 
         comp_type = self.get_param('competition type', node)
         if comp_type in ['root', 'region']:
-            structural_children = find_children(graph, node, structural=True)
+            structural_children = qa.find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child,
@@ -1057,7 +1010,7 @@ class Model:
 
             comp_type = self.get_param('competition type', node)
             if comp_type in ['root', 'region']:
-                structural_children = find_children(graph, node, structural=True)
+                structural_children = qa.find_children(graph, node, structural=True)
                 for child in structural_children:
                     # Find quantities provided to the node via its structural children
                     total_cumul_emissions += self.get_param(total_param, child, year)

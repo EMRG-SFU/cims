@@ -362,16 +362,6 @@ def add_node_data(graph, current_node, node_dfs):
     # 3.3 competition type
     graph = add_node_constant(graph, current_node_df, current_node, 'competition type', required=True)
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
-    # comp_list = list(current_node_df[current_node_df['Parameter'] == 'competition type']['Context'])
-    # if len(set(comp_list)) == 1:
-    #     comp_type = comp_list[0].lower()
-    #     graph.nodes[current_node]['competition type'] = comp_type
-    # elif len(set(comp_list)) > 1:
-    #     raise ValueError("TOO MANY COMPETITION TYPES")
-    # elif 'competition type' in graph.nodes[current_node]:
-    #     comp_type = graph.nodes[current_node]['competition type']
-    # else:
-    #     warnings.warn(f"Not a real competition type: {comp_list}")
 
     # 5 Find the cost curve function
     comp_type = graph.nodes[current_node]['competition type']
@@ -599,17 +589,7 @@ def add_edges(graph, node, df):
 
     # 4 Find Aggregation Edges
     if ('structural_aggregation' in graph.nodes[node]) and (graph.nodes[node]['structural_aggregation']):
-        for edge in rp_edges:
-            types = graph.edges[edge]['type']
-            if 'aggregation' not in types:
-                # Add 0 weighted aggregation edges
-                graph.edges[edge]['type'] += ['aggregation']
-                graph.edges[edge]['aggregation_weight'] = 0
-
-            # Add 1 weighted aggregation edges
-            _, tgt = edge
-            tgt_parent = '.'.join(tgt.split('.')[:-1])
-            graph.add_edge(tgt_parent, tgt, aggregation_weight=1)
+        graph = add_aggregation_edges(graph, rp_edges)
 
     # 5 Return resulting graph
     return graph
@@ -691,5 +671,26 @@ def add_node_constant(graph, node_df, node, parameter, required=False):
 
     # Add constant to graph
     graph.nodes[node][parameter] = parameter_val
+
+    return graph
+
+
+def add_aggregation_edges(graph, request_provide_edges):
+    for edge in request_provide_edges:
+        types = graph.edges[edge]['type']
+        if 'aggregation' not in types:
+            # Add 0 weighted aggregation edges
+            graph.edges[edge]['type'] += ['aggregation']
+            graph.edges[edge]['aggregation_weight'] = 0
+
+        # Add 1 weighted aggregation edges
+        _, tgt = edge
+        tgt_parent = '.'.join(tgt.split('.')[:-1])
+        if graph.has_edge(tgt_parent, tgt):
+            if 'aggregation' not in graph.edges[(tgt_parent, tgt)]['type']:
+                graph.edges[(tgt_parent, tgt)]['type'] += ['aggregation']
+        else:
+            graph.add_edge(tgt_parent, tgt, type=['aggregation'])
+        graph.edges[(tgt_parent, tgt)]['aggregation_weight'] = 1
 
     return graph

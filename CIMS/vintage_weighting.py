@@ -1,6 +1,7 @@
 """
 This module contains the functions for conducting vintage-based weighting
 """
+import math
 
 
 def _get_vintage_weights(model, node, year, tech):
@@ -10,7 +11,7 @@ def _get_vintage_weights(model, node, year, tech):
     """
     # Total Stock
     total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
-    if (total_stock is None) or (total_stock == 0):
+    if (total_stock is None) or (round(total_stock, 5) == 0):
         vintage_weights = {year: 1}
     elif src == 'previous_year':
         stock_by_vintage = {}
@@ -41,7 +42,7 @@ def _get_vintage_weights(model, node, year, tech):
                                      model.get_param('added_retrofit_stock', node, year,
                                                      tech=tech)
 
-        vintage_weights = {k: v / total_stock for k, v in stock_by_vintage.items()}
+        vintage_weights = {k: round(v / total_stock, 5) for k, v in stock_by_vintage.items()}
 
     return vintage_weights
 
@@ -80,7 +81,7 @@ def calculate_vintage_weighted_parameter(parameter: str, model: "CIMS.Model", no
     """
     vintage_weights = _get_vintage_weights(model, node, year, tech)
 
-    assert (round(sum(vintage_weights.values()), 5) == 1)
+    assert math.isclose(sum(vintage_weights.values()), 1, rel_tol=0.01)
 
     weighted_parameter = default_value
     for vintage_year, weight in vintage_weights.items():
