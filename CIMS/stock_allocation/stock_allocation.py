@@ -115,7 +115,8 @@ def general_allocation(model, node, year):
     node_year_data = model.graph.nodes[node][year]
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    if model.get_param('competition type', node) == 'root':
+    if model.get_param('competition type', node) == 'root' or model.get_param('competition type',
+                                                                            node) == 'fixed amount':
         assessed_demand = 1
     else:
         assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
