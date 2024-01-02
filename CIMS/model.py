@@ -284,13 +284,14 @@ class Model:
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
-            while self.equilibrium_count < num_equilibrium_iterations:
-                print(f'iter {iteration}')
+            while self.equilibrium_count < num_equilibrium_iterations or \
+                    iteration <= min_iterations:
                 # Early exit if we reach the maximum number of iterations
-                if iteration >= max_iterations:
+                if iteration > max_iterations:
                     warnings.warn("Max iterations reached for year {}. "
                                   "Continuing to next year.".format(year))
                     break
+                print(f'iter {iteration}')
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
@@ -343,15 +344,10 @@ class Model:
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
-                equilibrium = min_iterations <= iteration and \
-                              (int(year) == self.base_year or
-                               self.check_equilibrium(prev_prices, new_prices,
-                                                      equilibrium_threshold, print_eq))
+                equilibrium = self.check_equilibrium(prev_prices, new_prices, iteration,
+                                                     equilibrium_threshold, print_eq)
 
-                if int(year) == self.base_year:
-                    # Force the model to continue after a single iteration in the base year
-                    self.equilibrium_count = num_equilibrium_iterations
-                elif equilibrium:
+                if equilibrium:
                     self.equilibrium_count += 1
                 else:
                     self.equilibrium_count = 0
@@ -398,7 +394,7 @@ class Model:
                                             year)
         self.status = 'Run completed'
 
-    def check_equilibrium(self, prev: dict, new: dict, threshold: float,
+    def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
                           print_equilibrium_details: bool) -> bool:
         """
         Return False unless an equilibrium has been reached.
@@ -445,7 +441,7 @@ class Model:
             # If any node's relative difference exceeds threshold, equilibrium has not been reached
             if rel_diff > threshold:
                 equilibrium_reached = False
-                if print_equilibrium_details:
+                if print_equilibrium_details and iteration > 1:
                     print(
                         f"\tNot at equilibrium: {node} has {rel_diff:.1%} difference between"
                         f" iterations")
