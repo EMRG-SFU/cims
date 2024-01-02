@@ -924,16 +924,12 @@ class Model:
 
         (1) @ a Node without techs — Find any distributed supply that has been generated at the
             node. Add any distributed supplies from structural children.
-        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node
-           (See Q below). Sum up the distributed supplies across all techs.
+        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node.
+           Sum up the distributed supplies across all techs.
 
         When doing sums, there is no need to worry about multiply by weights or service request
         ratios, since each node only has a single structural parent, everything will flow through
         that path.
-
-        Question: I'm guessing that we want to store a "distributed_supply" value at the tech-level,
-        even though technologies will only include distributed supply if they are directly
-        producing it (since techs are never structural parents). Is this logic correct?
         """
         node_distributed_supply = DistributedSupply()
         if 'technologies' in self.graph.nodes[node][year]:
@@ -954,10 +950,11 @@ class Model:
             distributed_supplies = get_direct_distributed_supply(self, node, year)
             for service, amount in distributed_supplies:
                 node_distributed_supply.record_distributed_supply(service, node, amount)
-            # Find distributed supply from structural children
-            structural_children = find_children(graph, node, structural=True)
-            for child in structural_children:
-                node_distributed_supply += self.get_param('distributed_supply', child, year)
+
+        # Find distributed supply from structural children
+        structural_children = find_children(graph, node, structural=True)
+        for child in structural_children:
+            node_distributed_supply += self.get_param('distributed_supply', child, year)
 
         self.graph.nodes[node][year]['distributed_supply'] = \
             utils.create_value_dict(node_distributed_supply, param_source='calculation')
