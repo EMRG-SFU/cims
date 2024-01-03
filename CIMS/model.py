@@ -344,7 +344,8 @@ class Model:
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
-                equilibrium = self.check_equilibrium(prev_prices, new_prices, iteration,
+                equilibrium = int(year) == self.base_year or \
+                              self.check_equilibrium(prev_prices, new_prices, iteration,
                                                      equilibrium_threshold, print_eq)
 
                 if equilibrium:
