@@ -169,8 +169,8 @@ def find_children_for_aggregation(model, node, year):
                 req_prov_children, parent_node=node, parent_tech=tech,
                 aggregation_type='request_provide')
             aggregation_children = find_children(model.graph, node, aggregation=True)
-            aggregation_children += _add_children_for_aggregation(
-                req_prov_children, parent_node=node, parent_tech=tech,
+            children_for_aggregation += _add_children_for_aggregation(
+                aggregation_children, parent_node=node, parent_tech=tech,
                 aggregation_type='aggregation')
 
     else:
@@ -206,10 +206,11 @@ def find_aggregation_quantities(model, year, children_for_aggregation):
 
         elif agg_type == 'aggregation':
             agg_weight = model.graph.edges[(parent_node, child_node)]['aggregation_weight']
+
             # all quantities requested of child, should be multiplied by the aggregation weight and
             # recorded as requested of node
-            quantities = get_quantities_to_record(model, child_node, parent_node, year, tech=parent_tech)
-            for providing_node, _, request_amount in quantities:
+            quantities = model.get_param('requested_quantities', child_node, year).get_total_quantities_requested()
+            for providing_node, request_amount in quantities.items():
                 agg_info['quantities'].append((providing_node, agg_weight * request_amount))
 
         elif agg_type == 'request_provide':
@@ -258,6 +259,7 @@ def record_quantities(model, aggregate_quantities, year):
             model.graph.nodes[node][year]['requested_quantities'] = requested_quant
         else:
             model.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = requested_quant
+
 
 def _add_children_for_aggregation(children, parent_node, parent_tech, aggregation_type):
     child_dicts = []
