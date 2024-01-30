@@ -180,8 +180,7 @@ def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
 def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
     """
     Find the nodes to use for supply-side traversals. The returned list of nodes will include all
-    nodes whose "node type" is "supply" and any node which is a structural ancestor of these supply
-    nodes.
+    fuel nodes, the structural ancestors of the fuel nodes, and the descendants of the fuel nodes.
 
     Parameters
     ----------
@@ -190,7 +189,7 @@ def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
 
     Returns
     -------
-    A subgraph of graph which includes only supply nodes & their structural ancestors.
+    A subgraph of graph which includes only fuels, their structural ancestors, and their descendants
     """
     # Find Fuels
     fuels = [n for n, d in graph.nodes(data=True) if ('is fuel' in d) and d['is fuel']]
@@ -199,16 +198,13 @@ def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
     structural_graph = graph.edge_subgraph(structural_edges)
 
-    ancestors = set()
+    structural_ancestors = set()
     descendants = set()
     for fuel in fuels:
-        structural_ancestors = nx.ancestors(structural_graph, fuel)
-        ancestors = ancestors.union(structural_ancestors)
+        structural_ancestors = structural_ancestors.union(nx.ancestors(structural_graph, fuel))
+        descendants = descendants.union(nx.descendants(graph, fuel))
 
-        structural_descendants = nx.descendants(structural_graph, fuel)
-        descendants = descendants.union(structural_descendants)
-
-    return fuels + list(ancestors) + list(descendants)
+    return fuels + list(structural_ancestors) + list(descendants)
 
 
 # **************************
