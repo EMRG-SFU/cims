@@ -382,12 +382,6 @@ class Model:
                                             fuels=self.fuels)
 
             graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_cumul_emissions_cost,
-                                            year,
-                                            loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
-
-            graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
         self.status = 'Run completed'
@@ -502,7 +496,6 @@ class Model:
 
         if final_tax:
             graph.nodes[node][year]['tax'] = final_tax
-
 
     def initialize_graph(self, graph, year):
         """
@@ -911,90 +904,41 @@ class Model:
         self.graph.nodes[node][year]['distributed_supply'] = \
             utils.create_value_dict(node_distributed_supply, param_source='calculation')
 
-    def _aggregate_cumul_emissions_cost(self, graph, node, year, **kwargs):
-        """
-        Calculates and records the total emissions cost for a particular node. This is done by
-        taking the per-unit emissions cost and multiplying it by the number of units provided by a
-        particular node or technology.
-
-        To be used as part of a bottom_up_traversal once an equilibrium has been reached.
-
-        Parameters
-        ----------
-        graph : NetworkX.Digraph
-            The graph being traversed.
-
-        node : str
-            The node whose total_cumul_emissions_cost is being calculated.
-
-        year : str
-            Tthe year of interest.
-
-        Returns
-        -------
-        None
-            Returns nothing but does record total_cumul_emissions_cost for the node (and any
-            technologies).
-        """
-        total_cumul_emissions_cost = EmissionsCost()
-
-        comp_type = self.get_param('competition type', node)
-        if comp_type in ['root', 'region']:
-            structural_children = aggregation.find_children(graph, node, structural=True)
-            for child in structural_children:
-                # Find quantities provided to the node via its structural children
-                total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child,
-                                                             year)
-        else:
-            pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-            emissions_cost = self.get_param('cumul_emissions_cost_rate', node, year)
-            total_cumul_emissions_cost = emissions_cost * pq
-            total_cumul_emissions_cost.num_units = pq
-
-            if 'technologies' in graph.nodes[node][year]:
-                for tech in graph.nodes[node][year]['technologies']:
-                    ec = self.get_param('cumul_emissions_cost_rate', node, year, tech=tech)
-                    ms = self.get_param('total_market_share', node, year, tech=tech)
-                    tech_total_emissions_cost = ec * ms * pq
-                    tech_total_emissions_cost.num_units = ms * pq
-                    value_dict = create_value_dict(tech_total_emissions_cost)
-                    graph.nodes[node][year]['technologies'][tech][
-                        'total_cumul_emissions_cost'] = value_dict
-
-        value_dict = create_value_dict(total_cumul_emissions_cost)
-        graph.nodes[node][year]['total_cumul_emissions_cost'] = value_dict
-
     def _aggregate_cumulative_emissions(self, graph, node, year, **kwargs):
         # Net Emissions
         aggregation.aggregate_cumulative_emissions(
-            self, graph, node, year,
+            self, node, year,
             rate_param='cumul_net_emissions_rate',
             total_param='total_cumul_net_emissions'
         )
 
         # Avoided Emissions
         aggregation.aggregate_cumulative_emissions(
-            self, graph, node, year,
+            self, node, year,
             rate_param='cumul_avoided_emissions_rate',
             total_param='total_cumul_avoided_emissions'
         )
 
         # Negative Emissions
         aggregation.aggregate_cumulative_emissions(
-            self, graph, node, year,
+            self, node, year,
             rate_param='cumul_negative_emissions_rate',
             total_param='total_cumul_negative_emissions'
         )
 
         # Bio Emissions
         aggregation.aggregate_cumulative_emissions(
-            self, graph, node, year,
+            self, node, year,
             rate_param='cumul_bio_emissions_rate',
             total_param='total_cumul_bio_emissions'
         )
 
         # Emissions Cost
-        # TODO
+        aggregation.aggregate_cumulative_emissions_cost(
+            self, node, year,
+            rate_param='cumul_emissions_cost_rate',
+            total_param='total_cumul_emissions_cost'
+        )
 
     def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
         # Net Emissions
@@ -1020,7 +964,6 @@ class Model:
         aggregation.aggregate_direct_emissions_cost(self, graph, node, year,
                                                     rate_param='emissions_cost_rate',
                                                     total_param='total_direct_emissions_cost')
-
 
     def get_parameter_default(self, parameter):
         return self.node_tech_defaults[parameter]

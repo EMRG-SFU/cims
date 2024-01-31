@@ -1,9 +1,12 @@
-from .emissions_aggregation import (
+from .direct_emissions_aggregation import (
     aggregate_direct_emissions,
-    aggregate_direct_emissions_cost,
-    aggregate_cumulative_emissions,
+    aggregate_direct_emissions_cost
 )
 
+from .cumulative_emissions_aggregation import (
+    aggregate_cumulative_emissions,
+    aggregate_cumulative_emissions_cost
+)
 from .aggregation_utils import (
     find_children_for_aggregation,
     find_children
