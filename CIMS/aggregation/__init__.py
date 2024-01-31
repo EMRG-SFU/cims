@@ -4,4 +4,7 @@ from .emissions_aggregation import (
     aggregate_cumulative_emissions,
 )
 
-from .aggregation_utils import find_children_for_aggregation
+from .aggregation_utils import (
+    find_children_for_aggregation,
+    find_children
+)

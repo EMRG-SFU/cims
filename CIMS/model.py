@@ -13,8 +13,8 @@ from . import stock_allocation
 from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
-from . import quantity_aggregation as qa
 from . import aggregation
+from .aggregation import quantity_aggregation as qa
 
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
@@ -904,7 +904,7 @@ class Model:
             for service, amount in distributed_supplies:
                 node_distributed_supply.record_distributed_supply(service, node, amount)
             # Find distributed supply from structural children
-            structural_children = qa.find_children(graph, node, structural=True)
+            structural_children = aggregation.find_children(graph, node, structural=True)
             for child in structural_children:
                 node_distributed_supply += self.get_param('distributed_supply', child, year)
 
@@ -940,7 +940,7 @@ class Model:
 
         comp_type = self.get_param('competition type', node)
         if comp_type in ['root', 'region']:
-            structural_children = qa.find_children(graph, node, structural=True)
+            structural_children = aggregation.find_children(graph, node, structural=True)
             for child in structural_children:
                 # Find quantities provided to the node via its structural children
                 total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child,
