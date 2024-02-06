@@ -847,62 +847,32 @@ class Model:
         This method was built to be used with the bottom-up traversal method, which ensures a node
         is only visited once all its children have been visited (except when needs to break a loop).
         """
-        # Find children
-        children_for_aggregration = aggregation.find_children_for_aggregation(self, node, year)
+        aggregation.aggregate_requested_quantities(self, node, year)
 
-        # Find Quantities
-        quantities = qa.find_aggregation_quantities(self, year, children_for_aggregration)
+    def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
+        # Net Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param='net_emissions_rate',
+                                               total_param='total_direct_net_emissions')
+        # Avoided Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param='avoided_emissions_rate',
+                                               total_param='total_direct_avoided_emissions')
 
-        # Aggregate Quantities
-        aggregate_quantities = qa.aggregate_quantities(node, quantities)
+        # Negative Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param='negative_emissions_rate',
+                                               total_param='total_direct_negative_emissions')
 
-        # Record Quantities
-        qa.record_quantities(self, aggregate_quantities, year)
+        # Bio Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param='bio_emissions_rate',
+                                               total_param='total_direct_bio_emissions')
 
-    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
-        """
-        We want to aggregate up the structural relationships in the tree. This means there are two
-        different locations within the tree we need to think about:
-
-        (1) @ a Node without techs — Find any distributed supply that has been generated at the
-            node. Add any distributed supplies from structural children.
-        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node
-           (See Q below). Sum up the distributed supplies across all techs.
-
-        When doing sums, there is no need to worry about multiply by weights or service request
-        ratios, since each node only has a single structural parent, everything will flow through
-        that path.
-
-        Question: I'm guessing that we want to store a "distributed_supply" value at the tech-level,
-        even though technologies will only include distributed supply if they are directly
-        producing it (since techs are never structural parents). Is this logic correct?
-        """
-        node_distributed_supply = DistributedSupply()
-        if 'technologies' in self.graph.nodes[node][year]:
-            # @ a Node with techs
-            # Find distributed supply generated at the tech
-            for tech in self.graph.nodes[node][year]['technologies']:
-                tech_distributed_supply = DistributedSupply()
-                distributed_supplies = qa.get_direct_distributed_supply(self, node, year, tech)
-                for service, amount in distributed_supplies:
-                    tech_distributed_supply.record_distributed_supply(service, node, amount)
-                    node_distributed_supply.record_distributed_supply(service, node, amount)
-                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
-                    tech_distributed_supply
-        else:
-            # @ a Node without techs
-            node_distributed_supply = DistributedSupply()
-            # Find distributed supply generated at the node
-            distributed_supplies = qa.get_direct_distributed_supply(self, node, year)
-            for service, amount in distributed_supplies:
-                node_distributed_supply.record_distributed_supply(service, node, amount)
-            # Find distributed supply from structural children
-            structural_children = aggregation.find_children(graph, node, structural=True)
-            for child in structural_children:
-                node_distributed_supply += self.get_param('distributed_supply', child, year)
-
-        self.graph.nodes[node][year]['distributed_supply'] = \
-            utils.create_value_dict(node_distributed_supply, param_source='calculation')
+        # Emissions Cost
+        aggregation.aggregate_direct_emissions_cost(self, graph, node, year,
+                                                    rate_param='emissions_cost_rate',
+                                                    total_param='total_direct_emissions_cost')
 
     def _aggregate_cumulative_emissions(self, graph, node, year, **kwargs):
         # Net Emissions
@@ -940,30 +910,8 @@ class Model:
             total_param='total_cumul_emissions_cost'
         )
 
-    def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
-        # Net Emissions
-        aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param='net_emissions_rate',
-                                               total_param='total_direct_net_emissions')
-        # Avoided Emissions
-        aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param='avoided_emissions_rate',
-                                               total_param='total_direct_avoided_emissions')
-
-        # Negative Emissions
-        aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param='negative_emissions_rate',
-                                               total_param='total_direct_negative_emissions')
-
-        # Bio Emissions
-        aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param='bio_emissions_rate',
-                                               total_param='total_direct_bio_emissions')
-
-        # Emissions Cost
-        aggregation.aggregate_direct_emissions_cost(self, graph, node, year,
-                                                    rate_param='emissions_cost_rate',
-                                                    total_param='total_direct_emissions_cost')
+    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
+        aggregation.aggregate_distributed_supplies(self, node, year)
 
     def get_parameter_default(self, parameter):
         return self.node_tech_defaults[parameter]

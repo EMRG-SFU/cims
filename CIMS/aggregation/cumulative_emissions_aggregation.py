@@ -1,6 +1,6 @@
 from ..emissions import Emissions, EmissionsCost
 from ..utils import create_value_dict
-from .aggregation_utils import find_children_for_aggregation
+from .aggregation_utils import find_children_for_aggregation, record_aggregate_values
 
 
 def aggregate_cumulative_emissions_cost(model, node, year, rate_param, total_param):
@@ -27,8 +27,7 @@ def _abstract_cumulative_emission_aggregation(base_emission_class, model, node, 
                                                                base_emission_class)
 
     # Record Cumulative Emission Rates
-    _record_cumulative_emission_rates(model, node, year, aggregate_emissions, rate_param,
-                                      base_emission_class)
+    record_aggregate_values(model, node, year, aggregate_emissions, rate_param, base_emission_class)
 
     # Record Total Cumulative Emissions
     _record_total_cumulative_emissions(model, node, year, rate_param, total_param)
@@ -93,19 +92,6 @@ def _aggregate_cumulative_emission_rates(model, year, emissions_for_aggregation,
             total_cumulative_emissions[(parent_node, None)] += agg_values
 
     return total_cumulative_emissions
-
-
-def _record_cumulative_emission_rates(model, node, year, aggregate_emissions, rate_param, base_emissions_class):
-    if (node, None) not in aggregate_emissions:
-        aggregate_emissions[(node, None)] = base_emissions_class()
-
-    for (node, tech), emissions in aggregate_emissions.items():
-        if tech is None:
-            model.graph.nodes[node][year][rate_param] = create_value_dict(emissions)
-
-        else:
-            model.graph.nodes[node][year]['technologies'][tech][rate_param] = (
-                create_value_dict(emissions))
 
 
 def _record_total_cumulative_emissions(model, node, year, rate_param, total_param):

@@ -1,3 +1,4 @@
+from ..utils import create_value_dict
 
 
 def find_req_prov_children(graph, node, year, tech=None):
@@ -134,3 +135,15 @@ def find_children_for_aggregation(model, node, year, include_self=False):
                 aggregation_type='self').values()
 
     return children_for_aggregation
+
+
+def record_aggregate_values(model, node, year, aggregate_values, rate_param, base_class):
+    if (node, None) not in aggregate_values:
+        aggregate_values[(node, None)] = base_class()
+
+    for (node, tech), aggregate_val in aggregate_values.items():
+        if tech is None:
+            model.graph.nodes[node][year][rate_param] = create_value_dict(aggregate_val)
+        else:
+            model.graph.nodes[node][year]['technologies'][tech][rate_param] = (
+                create_value_dict(aggregate_val))

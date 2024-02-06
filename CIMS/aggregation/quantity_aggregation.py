@@ -3,10 +3,47 @@ Module providing helper functions for calculating a node's requested quantities 
 fuel which can be attributed to a node).
 """
 from ..quantities import RequestedQuantity
-from .aggregation_utils import find_req_prov_children
+from .aggregation_utils import record_aggregate_values, find_children_for_aggregation
 
 
-def get_quantities_to_record(model, child, node, year, tech=None):
+def aggregate_requested_quantities(model, node, year):
+    """
+    Calculates and records fuel quantities attributable to a node in the specified year. Fuel
+    quantities can be attributed to a node in 3 ways:
+
+    (1) via request/provide relationships - any fuel quantity directly requested of the node
+    (e.g. Lighting requests services directly from Electricity) and fuel quantities that
+    are indirectly requested, but can be attributed to the node (e.g. Housing requests
+    Electricity via its request of Lighting).
+
+    (2) via structural relationships - fuel nodes pass indirect quantities to their structural
+    parents, rather than request/provide parents. Additionally, root & region nodes collect
+    quantities via their structural children, rather than their request/provide children.
+
+    (3) via weighted aggregate relationships - if specified in the model description, nodes will
+    aggregate quantities structurally. For example, if a market node has
+    "structural_aggregation" turned on, any quantities (direct or in-direct) from the market
+    children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
+    which it has a request/provide relationship with (CAN.Natural Gas).
+
+    This method was built to be used with the bottom-up traversal method, which ensures a node
+    is only visited once all its children have been visited (except when needs to break a loop).
+    """
+    # Find children
+    children_for_aggregration = find_children_for_aggregation(model, node, year)
+
+    # Find Quantities
+    quantities = _find_aggregation_quantities(model, year, children_for_aggregration)
+
+    # Aggregate Quantities
+    agg_quantities = _aggregate_quantities(node, quantities)
+
+    # Record Quantities
+    record_aggregate_values(model, node, year, agg_quantities, 'requested_quantities', RequestedQuantity)
+    # _record_quantities(model, agg_quantities, year)
+
+
+def _get_quantities_to_record(model, child, node, year, tech=None):
     """
     Find the list of quantities to be recorded for a node/tech based on it's request for services
     from child.
@@ -48,53 +85,7 @@ def get_quantities_to_record(model, child, node, year, tech=None):
     return quantities_to_record
 
 
-def get_direct_distributed_supply(model, node, year, tech=None):
-    """
-    Find the distributed supply originating at the node/tech.
-
-    Parameters
-    ----------
-    model : CIMS.Model
-        The model containing the information of interest.
-    node : str
-        The node whose distributed supply we are interested in finding.
-    year : str
-        The year in which we want to find
-    tech : str, optional
-        Optional. If supplied, the tech whose distributed supply we are finding. Otherwise,
-        we will look for distributed supply at the node itself.
-
-    Returns
-    -------
-    List[(str, float)]
-        A list of tuples is returned. Each tuple has two entries. The first correspond to the
-        service who is being provided through distributed supply. The second is the amount of that
-        service being provided.
-
-    """
-    children = find_req_prov_children(model.graph, node, year, tech)
-
-    distributed_supply = []
-
-    for child in children:
-        child_provided_quantities = model.get_param("provided_quantities", child, year=year)
-
-        # Find the quantities provided by child to the node/tech
-        if tech is None:
-            quantity_provided_to_node_tech = \
-                child_provided_quantities.get_quantity_provided_to_node(node)
-        else:
-            quantity_provided_to_node_tech = \
-                child_provided_quantities.get_quantity_provided_to_tech(node, tech)
-
-        if quantity_provided_to_node_tech < 0:
-            # Record quantities provided directly to the node/tech from child
-            distributed_supply.append((child, -1 * quantity_provided_to_node_tech))
-
-    return distributed_supply
-
-
-def find_aggregation_quantities(model, year, children_for_aggregation):
+def _find_aggregation_quantities(model, year, children_for_aggregation):
     quantities_for_aggregation = []
 
     # [{child_node, parent_node, parent_tech, aggregate_type}]
@@ -123,8 +114,8 @@ def find_aggregation_quantities(model, year, children_for_aggregation):
                 agg_info['quantities'].append((providing_node, agg_weight * request_amount))
 
         elif agg_type == 'request_provide':
-            quantities = get_quantities_to_record(model, child_node, parent_node, year,
-                                                  tech=parent_tech)
+            quantities = _get_quantities_to_record(model, child_node, parent_node, year,
+                                                   tech=parent_tech)
             for providing_node, _, request_amount in quantities:
                 agg_info['quantities'].append((providing_node, request_amount))
         else:
@@ -136,7 +127,7 @@ def find_aggregation_quantities(model, year, children_for_aggregation):
     return quantities_for_aggregation
 
 
-def aggregate_quantities(node, quantities_for_aggregation):
+def _aggregate_quantities(node, quantities_for_aggregation):
     aggregated_quantities = {}
 
     if len(quantities_for_aggregation) == 0:
@@ -162,12 +153,3 @@ def aggregate_quantities(node, quantities_for_aggregation):
                 aggregated_quantities[(parent_node, parent_tech)].record_requested_quantity(
                     providing_node, child_node, amount)
     return aggregated_quantities
-
-
-def record_quantities(model, aggregate_quantities, year):
-    for (node, tech), requested_quant in aggregate_quantities.items():
-        if tech is None:
-            model.graph.nodes[node][year]['requested_quantities'] = requested_quant
-        else:
-            model.graph.nodes[node][year]['technologies'][tech][
-                'requested_quantities'] = requested_quant
