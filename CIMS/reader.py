@@ -59,7 +59,7 @@ class ModelReader:
         self.sheet_map = sheet_map
         self.node_col = node_col
         self.col_list = col_list
-        self.year_list = year_list
+        self.year_list = [str(x) for x in year_list]
         self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
@@ -99,6 +99,7 @@ class ModelReader:
         # Filter sectors for calibration (if applicable)
         # ------------------------
         if self.sector_list:
+            self.sector_list.append(None)
             self.model_df = self.model_df.apply(lambda row: row[self.model_df['Sector'].isin(self.sector_list)])
         self.model_df = self.model_df.drop(columns=['Sector'])
 
