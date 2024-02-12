@@ -86,6 +86,14 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             val_dict = {'year_value': crf, 'param_source': crf_source}
             model.set_param_internal(val_dict, 'crf', node, year, tech)
 
+            # Capital Cost
+            # ************
+            capital_cost, capital_cost_source = model.get_param('capital cost', node, year,
+                                                tech=tech, return_source=True, do_calc=True)
+            if capital_cost:
+                val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
+                model.set_param_internal(val_dict, 'capital cost', node, year, tech)
+
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
@@ -93,6 +101,14 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
+
+            # Declining Intangible Cost
+            # ************
+            dic, dic_source = model.get_param('dic', node, year, tech=tech, return_source=True,
+                                                do_calc=True)
+            if dic:
+                val_dict = {'year_value': dic, 'param_source': dic_source}
+                model.set_param_internal(val_dict, 'dic', node, year, tech)
 
             # Complete LCC
             # ************
