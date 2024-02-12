@@ -40,10 +40,10 @@ def aggregate_distributed_supplies(model, node, year):
         for service, amount in distributed_supplies:
             node_distributed_supply.record_distributed_supply(service, node, amount)
 
-        # Find distributed supply from structural children
-        structural_children = find_structural_children(model.graph, node)
-        for child in structural_children:
-            node_distributed_supply += model.get_param('distributed_supply', child, year)
+    # Find distributed supply from structural children
+    structural_children = find_structural_children(model.graph, node)
+    for child in structural_children:
+        node_distributed_supply += model.get_param('distributed_supply', child, year)
 
     model.graph.nodes[node][year]['distributed_supply'] = \
         create_value_dict(node_distributed_supply, param_source='calculation')
