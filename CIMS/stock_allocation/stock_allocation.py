@@ -126,7 +126,7 @@ def general_allocation(model, node, year):
         for tech, tech_data in node_year_data['technologies'].items():
             if 'service requested' in tech_data.keys():
                 services_being_requested = tech_data['service requested']
-                t_ms = tech_data['market share']
+                t_ms = tech_data['market share']['year_value']
                 _record_provided_quantities(model, node, year, services_being_requested,
                                             assessed_demand, tech=tech, market_share=t_ms)
 
