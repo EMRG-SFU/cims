@@ -1,0 +1,61 @@
+,fuel_type,price,year
+0,CIMS.CAN.BC.Biodiesel,25,2000
+1,CIMS.CAN.BC.Electricity,10.36106094,2000
+2,CIMS.CAN.BC.Ethanol,35.36746104,2000
+3,CIMS.CAN.BC.Hydrogen,27.06838765,2000
+4,CIMS.Generic Fuels.Biogas,16.815,2000
+5,CIMS.Generic Fuels.Black Liquor,0.0001,2000
+6,CIMS.Generic Fuels.Coal,3.386822749,2000
+7,CIMS.Generic Fuels.Coke,3.471660762,2000
+8,CIMS.Generic Fuels.Diesel,33.67,2000
+9,CIMS.Generic Fuels.Fuel Oil,26.45,2000
+10,CIMS.Generic Fuels.Gasoline,36.5,2000
+11,CIMS.Generic Fuels.Jet Fuel,22.51991925,2000
+12,CIMS.Generic Fuels.LPG,44.37059479,2000
+13,CIMS.Generic Fuels.Natural Gas,11.21,2000
+14,CIMS.Generic Fuels.Petroleum Coke,3.471660762,2000
+15,CIMS.Generic Fuels.Propane,17.15300341,2000
+16,CIMS.Generic Fuels.Refinery Fuel Gas,0,2000
+17,CIMS.Generic Fuels.Solid Biomass,1.927501291,2000
+18,CIMS.Generic Fuels.Uranium,0.202749858,2000
+19,CIMS.Generic Fuels.Waste Fuel,1.337406991,2000
+20,CIMS.CAN.BC.Biodiesel,26.99731731,2005
+21,CIMS.CAN.BC.Electricity,41.70988872,2005
+22,CIMS.CAN.BC.Ethanol,33.58912792,2005
+23,CIMS.CAN.BC.Hydrogen,28.45435153,2005
+24,CIMS.Generic Fuels.Biogas,16.815,2005
+25,CIMS.Generic Fuels.Black Liquor,0.0001,2005
+26,CIMS.Generic Fuels.Coal,3.287415745,2005
+27,CIMS.Generic Fuels.Coke,3.678991452,2005
+28,CIMS.Generic Fuels.Diesel,33.67,2005
+29,CIMS.Generic Fuels.Fuel Oil,26.45,2005
+30,CIMS.Generic Fuels.Gasoline,36.5,2005
+31,CIMS.Generic Fuels.Jet Fuel,25.97437763,2005
+32,CIMS.Generic Fuels.LPG,35.64732069,2005
+33,CIMS.Generic Fuels.Natural Gas,11.21,2005
+34,CIMS.Generic Fuels.Petroleum Coke,3.678991452,2005
+35,CIMS.Generic Fuels.Propane,35.64732069,2005
+36,CIMS.Generic Fuels.Refinery Fuel Gas,0,2005
+37,CIMS.Generic Fuels.Solid Biomass,1.564218702,2005
+38,CIMS.Generic Fuels.Uranium,0.201162649,2005
+39,CIMS.Generic Fuels.Waste Fuel,1.353049178,2005
+40,CIMS.CAN.BC.Biodiesel,27.11224123,2010
+41,CIMS.CAN.BC.Electricity,39.63573759,2010
+42,CIMS.CAN.BC.Ethanol,30.74039808,2010
+43,CIMS.CAN.BC.Hydrogen,19.59823285,2010
+44,CIMS.Generic Fuels.Biogas,7.2,2010
+45,CIMS.Generic Fuels.Black Liquor,0.0001,2010
+46,CIMS.Generic Fuels.Coal,2.989194734,2010
+47,CIMS.Generic Fuels.Coke,4.300983523,2010
+48,CIMS.Generic Fuels.Diesel,32.94,2010
+49,CIMS.Generic Fuels.Fuel Oil,27.24,2010
+50,CIMS.Generic Fuels.Gasoline,36.87,2010
+51,CIMS.Generic Fuels.Jet Fuel,34.83204625,2010
+52,CIMS.Generic Fuels.LPG,45.38987303,2010
+53,CIMS.Generic Fuels.Natural Gas,4.8,2010
+54,CIMS.Generic Fuels.Petroleum Coke,4.300983523,2010
+55,CIMS.Generic Fuels.Propane,60.19307683,2010
+56,CIMS.Generic Fuels.Refinery Fuel Gas,0,2010
+57,CIMS.Generic Fuels.Solid Biomass,0.474370935,2010
+58,CIMS.Generic Fuels.Uranium,0.196401021,2010
+59,CIMS.Generic Fuels.Waste Fuel,1.399975739,2010
