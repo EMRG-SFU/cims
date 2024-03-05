@@ -13,6 +13,7 @@ from . import stock_allocation
 from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
+from . import visualize
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
@@ -505,7 +506,6 @@ class Model:
 
         if final_tax:
             graph.nodes[node][year]['tax'] = final_tax
-
 
     def initialize_graph(self, graph, year):
         """
@@ -1444,6 +1444,47 @@ class Model:
         if save_changes:
             self.set_param_log(output_file='change_log_' + model_file)
 
+    def visualize_prices_change_over_time(
+            self,
+            out_file="fuel_prices_over_years.png",
+            show=False):
+        """Creates a visualization of fuel prices over time as a multi-line
+        graph. A wrapper for the visualize.visualize_prices_change_over_time()
+        function.
+
+        Parameters
+        ----------
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default "fuel_prices_over_years.png".
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_prices_change_over_time(
+            self, out_file=out_file, show=show)
+
+    def visualize_price_comparison_with_benchmark(
+            self,
+            benchmark_file='./benchmark/prices.csv',
+            out_file='price_comparison_to_baseline.png',
+            show=False):
+        """Creates a visualization comparing prices with their benchmark values.
+        A wrapper for the visualize.visualize_price_comparison_with_benchmark()
+        function.
+
+        Parameters
+        ----------
+        benchmark_file : str, optional
+            The location of the CSV file containing benchmark values for each
+            fuel, by default tests/data/benchmark_prices.csv.
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default price_comparison_to_baseline.png.
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_price_comparison_with_benchmark(
+            self, benchmark_file=benchmark_file, out_file=out_file, show=show)
 
 def load_model(model_file):
     """
