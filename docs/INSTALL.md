@@ -14,8 +14,18 @@ If you're new to programming and managing software installations through the com
 If you're already comfortable maintaining and managing software installations outside of Anaconda, go ahead and use the workflow you're used to.
 
 ## Installation
+### Basic Installation
+Follow the [cims-meta](https://github.com/EMRG-SFU/cims-meta) repository's
+installation instructions to install the `CIMS` Python package alongside
+compatible model files.
 
-### Clone the Repository
+### Advanced Installation
+In certain situations, installation via the `cims-meta` repository will not be
+sufficient. For example, if you are contributing to `CIMS` Python development
+you'll want to see local code changes reflected in your installed version of
+`CIMS`. In these cases, follow the installation instructions below: 
+
+#### Clone the Repository
 1. Open Git Bash (Windows) or Terminal (Mac or Linux)   
 2. Using the commandline (Git Bash or Terminal), change the current working directory (using `cd` commands) to the location where you will clone the repository. For example:
    
@@ -27,18 +37,18 @@ If you're already comfortable maintaining and managing software installations ou
    ```
    cd ~/PATH/TO/FOLDER
    ```
-     
-4. Clone the repository
+
+3. Clone the repository
    ```
    git clone https://github.com/EMRG-SFU/cims.git
    ```
-   
-5. This will download the repository into a new directory called `cims`. Navigate into this directory.
+ 
+4. This will download the repository into a new directory called `cims`. Navigate into this directory.
    ```
    cd cims
    ```
 
-### Create & Activate an Anaconda Environment
+#### Create & Activate an Anaconda Environment
 If you haven't worked with conda environments before, you can check out [this
 primer](https://github.com/EMRG-SFU/cims/blob/main/docs/WorkingWithCondaEnvironment.md) on the topic. 
 
@@ -53,13 +63,18 @@ primer](https://github.com/EMRG-SFU/cims/blob/main/docs/WorkingWithCondaEnvironm
    ```
    You should now see `(cims)` at the start of your commandline prompt
 
-### Install CIMS
+> [!NOTE]  
+> Feel free to use your preferred virtual environment manager (e.g. `venv`) if
+> you'd rather not use `conda`.
+
+
+#### Install CIMS
 1. Install CIMS in development mode. 
    ```
    pip install -e .
    ```
    
-## Verify Installation
+#### Verify Installation
 1. Start the Python console
    ```
    python
@@ -74,22 +89,27 @@ primer](https://github.com/EMRG-SFU/cims/blob/main/docs/WorkingWithCondaEnvironm
    ```
    >>> import CIMS
    ```
-   If this import executes without error (you see the `>>>` prompt re-appear without an error or warning appearing), then you've successfully installed CIMS!
+   If this import executes without error (you see the `>>>` prompt re-appear 
+without an error or warning appearing), then you've successfully installed 
+CIMS!
+
 4. Exit the python interpreter
    ```
    >>> exit()
    ```
    
-## Troubleshooting Installation
+#### Troubleshooting Installation
 If you are unable to `import CIMS` into Python, you may receive the following error message:
 ```
 Traceback (most recent call last):
   File "<stdin>", line 1, in <module>
 ModuleNotFoundError: No module named 'CIMS'
 ```
-If you receive this error message, ensure that you have activated the `cims` Anaconda environment. If problems persist, you may need to try re-installing CIMS from scratch or reach out for help.
+If you receive this error message, ensure that you have activated the 
+`cims` virtual environment. If problems persist, you may need to try 
+re-installing CIMS from scratch or reach out for help.
 
-## Updating CIMS
+#### Updating CIMS
 You may want to update CIMS to access new functionality, bug fixes, or the most
 up-to-date documentation. Assuming you've followed the steps above to install
 CIMS, you can use the following steps to update: 
@@ -109,7 +129,7 @@ CIMS, you can use the following steps to update:
     ```
     git pull
     ```
-   You may encounter a "merge conflict" if you have made local changes to the CIMS code. If this is your first time encountering a merge conflict in git (or you want a refresher), I suggest reading through the Git Tower article on [dealing with merge requests](https://www.git-tower.com/learn/git/ebook/en/command-line/advanced-topics/merge-conflicts/). 
-   Merge conflicts can be particularly messy if you are working with Jupyter Notebooks. If you want to resolve merge conflicts in Jupyter notebooks (rather than overwrite your local changes), I would suggest using [nbdime](https://nbdime.readthedocs.io/en/latest/#). There is both a command line and web tool that simplifies merge conflict resolution. 
+   You may encounter a "merge conflict" if you have made local changes to the CIMS code. If this is your first time encountering a merge conflict in git (or you want a refresher), I suggest reading through the Git Tower article on [dealing with merge requests](https://www.git-tower.com/learn/git/ebook/en/command-line/advanced-topics/merge-conflicts/).   
+   Merge conflicts can be particularly messy if you are working with Jupyter Notebooks. If you want to resolve merge conflicts in Jupyter notebooks (rather than overwrite your local changes), I would suggest using [nbdime](https://nbdime.readthedocs.io/en/latest/#). There is both a command line and web tool that simplifies merge conflict resolution.   
 
 4. Restart any active Python sessions you have running. If you are using Jupyter Notebook, do this by selecting one of the restart (e.g. Restart, Restart & Clear Output, etc) options under the "Kernel" menu at the top of the notebook. In other IDEs such as Spyder, PyCharm, or Atom this usually requires a reload of the Python Console. 
