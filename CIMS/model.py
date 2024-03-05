@@ -5,8 +5,6 @@ import pandas as pd
 import re
 import time
 import pickle
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 from . import graph_utils
 from . import utils
@@ -15,6 +13,7 @@ from . import stock_allocation
 from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
+from . import visualize
 
 from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
@@ -507,7 +506,6 @@ class Model:
 
         if final_tax:
             graph.nodes[node][year]['tax'] = final_tax
-
 
     def initialize_graph(self, graph, year):
         """
@@ -1446,101 +1444,47 @@ class Model:
         if save_changes:
             self.set_param_log(output_file='change_log_' + model_file)
 
-    def get_fuel_prices(self):
-        """_summary_
-        this function returns model fuel prices for each year of the model as a dataframe for visualization
+    def visualize_prices_change_over_time(
+            self,
+            out_file="fuel_prices_over_years.png",
+            show=False):
+        """Creates a visualization of fuel prices over time as a multi-line
+        graph. A wrapper for the visualize.visualize_prices_change_over_time()
+        function.
 
-        There is also a commented out line to save the dataframe as a csv file for benchmarking purposes
-
-        Returns:
-            DataFrame: fuel prices by fuel_type and year
+        Parameters
+        ----------
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default "fuel_prices_over_years.png".
+        show : bool, optional
+            If True, displays the generated figure, by default False
         """
-        fuel_prices ={
-            "fuel_type":[] ,
-            "price": [],
-            "year": []
-            }
-        for year in self.years:
-            print(year)
-            for fuel in self.fuels:
-                print(fuel, self.get_param('price', fuel, year))
-                fuel_prices["fuel_type"].append(fuel)
-                fuel_prices["year"].append(year)
-                fuel_prices["price"].append(self.get_param('price', fuel, year))
-        fuel_prices = pd.DataFrame(fuel_prices)
+        visualize.visualize_prices_change_over_time(
+            self, out_file=out_file, show=show)
 
-        #NOTE To generate a benchmark dataset for comparison uncomment the line below
-        #fuel_prices.to_csv('../tests/data/prices_test.csv', index=False)
+    def visualize_price_comparison_with_benchmark(
+            self,
+            benchmark_file='./benchmark/prices.csv',
+            out_file='price_comparison_to_baseline.png',
+            show=False):
+        """Creates a visualization comparing prices with their benchmark values.
+        A wrapper for the visualize.visualize_price_comparison_with_benchmark()
+        function.
 
-        return fuel_prices
-
-    def visualize_prices_change_over_time(self):
-        """_summary_
-        This function creates a visualization of fuel prices over time as a multiline graph using seaborn and matplotlib
-        The  graph is saved as a png file in the current working directory
+        Parameters
+        ----------
+        benchmark_file : str, optional
+            The location of the CSV file containing benchmark values for each
+            fuel, by default tests/data/benchmark_prices.csv.
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default price_comparison_to_baseline.png.
+        show : bool, optional
+            If True, displays the generated figure, by default False
         """
-
-        price_data = self.get_fuel_prices()
-        # Set the style of the visualization
-        sns.set_theme(style="darkgrid")
-
-        # Plotting
-        plt.figure(figsize=(14, 8))
-        sns.lineplot(data=price_data, x='year', y='price', hue='fuel_type', marker='o')
-
-        plt.title('Fuel Prices Over Years')
-        plt.xlabel('Year')
-        plt.ylabel('Price')
-        plt.legend(title='Fuel Type', bbox_to_anchor=(1.05, 1), loc='upper left')
-
-        # Adjust layout to make room for the legend
-        plt.tight_layout()
-
-        #NOTE Option to Show plot as a pop up after each run
-        #plt.show()
-
-        # Save plot
-        plt.savefig('fuel_prices_over_years.png')
-        return
-
-
-    def visualize_price_comparison_with_benchmark(self):
-        # Example of preparing data for heatmap (you'd need to calculate the differences first)
-        # Assuming `data_diff` is a DataFrame with differences calculated
-        data = self.get_fuel_prices()
-        benchmark = pd.read_csv('../tests/data/prices_test.csv')
-        #filter default data to only include years found
-        data['year'] = data['year'].astype(int)
-        benchmark['year'] = benchmark['year'].astype(int)
-        benchmark = benchmark[benchmark['year'].isin(data['year'].unique())]
-        data['Price Difference'] = data['price'] - benchmark['price']
-
-        # Get unique years and assign a unique color to each
-        unique_years = data['year'].unique()
-        #format dataframe for multi-scatter plot
-        pd.melt(data, id_vars=['fuel_type','year'], value_vars=['Price Difference'])
-        #create plot
-        fig, ax = plt.subplots()
-        for year in unique_years:
-            ax.scatter(data[data['year']==year]['Price Difference'],data[data['year']==year]['fuel_type'],label=year)
-        ax.legend()
-
-        # Placing the legend outside the plot to the right
-        plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-
-        # Adjust the subplot parameters to give some more space for the legend
-        plt.subplots_adjust(right=0.75)
-        plt.title('Price Difference Heatmap (Run values - Test values)')
-        plt.xticks(rotation='vertical')
-        plt.tight_layout()
-
-        #NOTE Option to Show plot as a pop up after each run
-        #plt.show()
-
-        #save figure (can change location of where file is saved here)
-        plt.savefig('price_comparison_to_baseline.png')
-        return
-
+        visualize.visualize_price_comparison_with_benchmark(
+            self, benchmark_file=benchmark_file, out_file=out_file, show=show)
 
 def load_model(model_file):
     """

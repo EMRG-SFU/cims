@@ -5,6 +5,7 @@ dependencies:
   - python>=3.11
   - jupyter
   - matplotlib
+  - seaborn>=0.13.2
   - numpy
   - pandas>=2
   - pip

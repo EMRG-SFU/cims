@@ -1,12 +1,12 @@
-# Run this from the /CIMS/ directory
 import CIMS
 from pprint import pprint
 import numpy as np
-#NOTE i was running the tutorial from the cims/tutorials directory, so i had to change the path to the model file
-file = '../models/CIMS_base model.xlsb'
 
+model_file='models/CIMS_base model.xlsb'
+
+# --- Validate Model ---
 my_validator = CIMS.ModelValidator(
-    infile=file,
+    infile=model_file,
     sheet_map={
         'model': ['CIMS', 'CAN', 'BC'],
         'incompatible': 'Incompatible',
@@ -14,16 +14,16 @@ my_validator = CIMS.ModelValidator(
     node_col='Branch',
     root_node='CIMS'
 )
-my_validator.validate(raise_warnings=False)
-pprint(my_validator.warnings)
+# my_validator.validate(raise_warnings=False)
+# pprint(my_validator.warnings)
 
-# Create a model description reader
+# --- Build Model ---
 col_list1 = ['Branch', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
              'Target', 'Source', 'Unit']
 year_columns = list(np.arange(2000, 2051, 5))
 col_list = col_list1 + year_columns
 my_reader = CIMS.ModelReader(
-    infile=file,
+    infile=model_file,
     sheet_map={
         'model': ['CIMS', 'CAN', 'BC'],
         'incompatible': 'Incompatible',
@@ -35,16 +35,19 @@ my_reader = CIMS.ModelReader(
     root_node='CIMS'
 )
 
-# Create a model from the reader
 base_model = CIMS.Model(my_reader)
 model = base_model
 
-# Run the Model
+# --- Run Model ---
 model.run(show_warnings=False, max_iterations=10, print_eq=False)
 
-#visualize the change in price of each fuel type overtime
-model.visualize_prices_change_over_time()
-#visualize the price difference between the base model run and the benchmarked values stored in test/data/price_test.csv
-model.visualize_price_comparison_with_benchmark()
+# --- Visualize Results ---
+model.visualize_prices_change_over_time(
+    out_file='./fuel_prices_over_years.png')
 
+model.visualize_price_comparison_with_benchmark(
+    benchmark_file='./benchmark/prices.csv',
+    out_file='./price_comparison_to_benchmark.png')
+
+# --- Export Model to CSV ---
 df = CIMS.log_model(model=model, output_file="log.csv")
