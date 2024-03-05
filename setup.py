@@ -12,6 +12,7 @@ setup(
                      'pandas>=1.2',
                      'xlrd',
                      'pyxlsb',
+                     'scipy'
                      'seaborn>=0.13.2'
                      ],  # external packages as dependencies
 )
