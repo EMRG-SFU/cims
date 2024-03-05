@@ -18,6 +18,7 @@ access these model files in two ways:
 compatible model files will already have been downloaded for you. You will find
 these inside the `cims-models` directory which would have been downloaded into 
 the `cims-meta` directory when you installed `CIMS`.
+   
 2. Alternatively, you can directly clone the 
 [`cims-models` repository](https://github.com/EMRG-SFU/cims-models/) from
 GitHub. 
@@ -26,8 +27,10 @@ GitHub.
     ```
     This will download a directory containing sample model descriptions which
     you can use as-is or customize for your own modelling needs.
-    > [!WARNING] If you are using an older version of `CIMS`, you may find the model files downloaded when cloning the latest version of the `cims-model` repository are incompatible with your `CIMS` version. 
-    >
-    > For this reason, we recommend installing CIMS via the [`cims-meta` repository](https://github.com/EMRG-SFU/cims-meta).   
-    > 
-    > If this remains an infeasible option, review the version-specific [CIMS release notes](https://github.com/EMRG-SFU/cims/releases) to find a compatible `cims-model` release. Then, use the version number to download compatible model files: `git clone --branch v1.0 https://github.com/EMRG-SFU/cims-models/@`)
+
+> [!CAUTION]
+> If you are using an older version of `CIMS`, you may find the model files obtained through method 2 are incompatible with your `CIMS` version. 
+>
+> For this reason, we recommend installing CIMS via the [`cims-meta` repository](https://github.com/EMRG-SFU/cims-meta).   
+> 
+> If this remains an infeasible option, review the version-specific [CIMS release notes](https://github.com/EMRG-SFU/cims/releases) to find a compatible `cims-model` release. Then, use the version number to download compatible model files: `git clone --branch v1.0 https://github.com/EMRG-SFU/cims-models/@`)
