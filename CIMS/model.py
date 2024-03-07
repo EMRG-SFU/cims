@@ -14,8 +14,9 @@ from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
 from . import aggregation
-from .aggregation import quantity_aggregation as qa
+from . import visualize
 
+from .aggregation import quantity_aggregation as qa
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
 
@@ -284,13 +285,14 @@ class Model:
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
-            while self.equilibrium_count < num_equilibrium_iterations:
-                print(f'iter {iteration}')
+            while self.equilibrium_count < num_equilibrium_iterations or \
+                    iteration <= min_iterations:
                 # Early exit if we reach the maximum number of iterations
-                if iteration >= max_iterations:
+                if iteration > max_iterations:
                     warnings.warn("Max iterations reached for year {}. "
                                   "Continuing to next year.".format(year))
                     break
+                print(f'iter {iteration}')
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
@@ -343,15 +345,11 @@ class Model:
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
-                equilibrium = min_iterations <= iteration and \
-                              (int(year) == self.base_year or
-                               self.check_equilibrium(prev_prices, new_prices,
-                                                      equilibrium_threshold, print_eq))
+                equilibrium = int(year) == self.base_year or \
+                              self.check_equilibrium(prev_prices, new_prices, iteration,
+                                                     equilibrium_threshold, print_eq)
 
-                if int(year) == self.base_year:
-                    # Force the model to continue after a single iteration in the base year
-                    self.equilibrium_count = num_equilibrium_iterations
-                elif equilibrium:
+                if equilibrium:
                     self.equilibrium_count += 1
                 else:
                     self.equilibrium_count = 0
@@ -386,7 +384,7 @@ class Model:
                                             year)
         self.status = 'Run completed'
 
-    def check_equilibrium(self, prev: dict, new: dict, threshold: float,
+    def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
                           print_equilibrium_details: bool) -> bool:
         """
         Return False unless an equilibrium has been reached.
@@ -433,7 +431,7 @@ class Model:
             # If any node's relative difference exceeds threshold, equilibrium has not been reached
             if rel_diff > threshold:
                 equilibrium_reached = False
-                if print_equilibrium_details:
+                if print_equilibrium_details and iteration > 1:
                     print(
                         f"\tNot at equilibrium: {node} has {rel_diff:.1%} difference between"
                         f" iterations")
@@ -1251,6 +1249,47 @@ class Model:
         if save_changes:
             self.set_param_log(output_file='change_log_' + model_file)
 
+    def visualize_prices_change_over_time(
+            self,
+            out_file="fuel_prices_over_years.png",
+            show=False):
+        """Creates a visualization of fuel prices over time as a multi-line
+        graph. A wrapper for the visualize.visualize_prices_change_over_time()
+        function.
+
+        Parameters
+        ----------
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default "fuel_prices_over_years.png".
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_prices_change_over_time(
+            self, out_file=out_file, show=show)
+
+    def visualize_price_comparison_with_benchmark(
+            self,
+            benchmark_file='./benchmark/prices.csv',
+            out_file='price_comparison_to_baseline.png',
+            show=False):
+        """Creates a visualization comparing prices with their benchmark values.
+        A wrapper for the visualize.visualize_price_comparison_with_benchmark()
+        function.
+
+        Parameters
+        ----------
+        benchmark_file : str, optional
+            The location of the CSV file containing benchmark values for each
+            fuel, by default tests/data/benchmark_prices.csv.
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default price_comparison_to_baseline.png.
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_price_comparison_with_benchmark(
+            self, benchmark_file=benchmark_file, out_file=out_file, show=show)
 
 def load_model(model_file):
     """

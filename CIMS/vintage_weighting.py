@@ -3,7 +3,6 @@ This module contains the functions for conducting vintage-based weighting
 """
 import math
 
-
 def _get_vintage_weights(model, node, year, tech):
     """
     Find the distribution (in percentages) of a node/technology's total stock over each possible
