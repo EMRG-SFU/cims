@@ -50,8 +50,8 @@ def get_node_cols(mdf, first_data_col_name="Branch"):
 
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list,
-                 default_values=None, root_node="CIMS"):
+    def __init__(self, infile, sheet_map, col_list, year_list, sector_list,
+                 default_values=None, node_col="Branch", root_node="CIMS"):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
