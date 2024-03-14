@@ -348,6 +348,13 @@ def add_node_data(graph, current_node, node_dfs):
     # 2 Add an empty node to the graph
     graph.add_node(current_node)
 
+    # 2.1 Add index for use in the results viewer file
+    try:
+        if 'tree index' not in graph.nodes[current_node]:
+            graph.nodes[current_node]['tree index'] = current_node_df.index[0].item()
+    except IndexError:
+        pass
+
     # 3 Set boolean node constants
     # 3.1 is fuel
     graph = add_node_constant(graph, current_node_df, current_node, 'is fuel')
@@ -459,6 +466,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
     t_df = copy.copy(tech_dfs[node][tech])
     graph = copy.copy(graph)
 
+    tree_index = t_df.index[0].item()
+
     # 2 Remove the row that indicates this is a service or technology.
     t_df = t_df[~t_df['Parameter'].isin(['service', 'technology'])]
 
@@ -522,6 +531,13 @@ def add_tech_data(graph, node, tech_dfs, tech):
 
         # Add the technology specific data for that year
         graph.nodes[node][year]['technologies'][tech] = year_dict
+
+        # Add index for use in the results viewer file
+        try:
+            if 'tree index' not in graph.nodes[node][year]['technologies'][tech]:
+                graph.nodes[node][year]['technologies'][tech]['tree index'] = tree_index
+        except IndexError:
+            pass
 
     # 4 Return the new graph
     return graph
