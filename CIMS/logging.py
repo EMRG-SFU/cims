@@ -375,6 +375,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         for node in model.graph.nodes:
             # Log Year Agnostic Values
             for param, val in model.graph.nodes[node].items():
+                if val is None:
+                    val = model.get_param(param, node)
 
                 if param not in model.years:
                     log = node, None, None, param, val

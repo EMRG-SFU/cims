@@ -136,7 +136,7 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     adopting_tech_ms_limits = {}
     for (node, tech), market_share in retrofit_market_shares.items():
         if (node, tech) == existing_tech:
-            pass
+            continue
         else:
             ms_retrofit_min = model.get_param('retrofit_new_min', node, year, tech=tech)
             ms_retrofit_max = model.get_param('retrofit_new_max', node, year, tech=tech)
@@ -261,9 +261,15 @@ def calc_retrofits(model, node, year, existing_stock):
     heterogeneity = model.get_param('retrofit_heterogeneity', node, year)
     added_retrofit_stocks = {}
     retrofit_stocks = {}
-    for existing_node_tech in existing_stock.keys():
-        existing_node, existing_tech = existing_node_tech
 
+    # If node part of a node tech competition (i.e. parent is node tech compete), skip retrofitting
+    if part_of_node_tech_competition(model, node):
+        return existing_stock, added_retrofit_stocks, retrofit_stocks
+
+    # Otherwise, we continue to do retrofits across all technologies
+    for existing_node_tech in existing_stock.keys():
+
+        existing_node, existing_tech = existing_node_tech
         # Find Other Competing
         other_competing_techs = _find_competing_techs(model, node, comp_type)
         other_competing_techs.remove(existing_node_tech)
@@ -279,10 +285,7 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # Find Market shares based off of weights
         retrofit_market_shares = {}
-        if comp_type == 'tech compete':
-            for tech in competing_weights:
-                retrofit_market_shares[tech] = competing_weights[tech] / total_weight
-        elif comp_type == 'node tech compete':
+        if comp_type in ['tech compete', 'node tech compete']:
             for tech in competing_weights:
                 retrofit_market_shares[tech] = competing_weights[tech] / total_weight
 
@@ -321,3 +324,16 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # note the remaining stock in the model
     return existing_stock, added_retrofit_stocks, retrofit_stocks
+
+
+def part_of_node_tech_competition(model, node):
+    request_provide_parents = []
+    for parent in model.graph.predecessors(node):
+        if 'request_provide' in model.graph.edges[(parent, node)]['type']:
+            request_provide_parents.append(parent)
+
+    for parent in request_provide_parents:
+        if model.get_param('competition type', parent) == 'node tech compete':
+            return True
+
+    return False
