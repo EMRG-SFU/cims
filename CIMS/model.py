@@ -82,7 +82,7 @@ class Model:
         self.dic_classes = self._dic_classes()
 
         self._inherit_parameter_values()
-        self._initialize_model()
+        self._initialize_tax()
 
         self.show_run_warnings = True
 
@@ -129,6 +129,7 @@ class Model:
 
         # Update the Model's metadata
         model.fuels = graph_utils.get_fuels(graph)
+
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
@@ -136,7 +137,7 @@ class Model:
 
         # Re-initialize the model
         model._inherit_parameter_values()
-        model._initialize_model()
+        model._initialize_tax()
 
         model.show_run_warnings = True
         model.scenario_model_description_file = scenario_model_reader.infile
@@ -165,7 +166,7 @@ class Model:
                                                                                      str(self.base_year))
         self.graph = graph
 
-    def _initialize_model(self):
+    def _initialize_tax(self):
         # Initialize Taxes
         for year in self.years:
             # Pass tax to all children for carbon cost
