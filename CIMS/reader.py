@@ -50,12 +50,15 @@ def get_node_cols(mdf, first_data_col_name="Branch"):
 
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list, root_node="CIMS"):
+    def __init__(self, infile, sheet_map, node_col, col_list, year_list, sector_list,
+                 default_values=None, root_node="CIMS"):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
         self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
+        if default_values:
+            self.default_values = default_values
         self.sheet_map = sheet_map
         self.node_col = node_col
         self.col_list = col_list
@@ -70,7 +73,7 @@ class ModelReader:
 
     def _get_model_df(self):
         appended_data = []
-        for sheet in self.sheet_map['model']:
+        for sheet in self.sheet_map:
             try:
                 sheet_df = pd.read_excel(self.infile,
                                          sheet_name=sheet,
@@ -131,8 +134,7 @@ class ModelReader:
 
     def get_default_params(self):
         # Read model_description from excel
-        df = pd.read_excel(self.infile,
-                           sheet_name=self.sheet_map['default_param'],
+        df = pd.read_excel(self.default_values,
                            header=0,
                            engine=self.excel_engine).replace({np.nan: None})
 
