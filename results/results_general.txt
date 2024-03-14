@@ -1,3 +1,6 @@
+region
+sector
+tree index
 competition type
 price multiplier
 lcc_financial
@@ -8,6 +11,7 @@ provided_quantities
 distributed_supply
 requested_quantities
 new_stock
+added_retrofit_stock
 retrofit_stock
 total_stock
 total_cumul_net_emissions
