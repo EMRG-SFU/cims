@@ -279,7 +279,7 @@ def add_log_item(all_logs, log_tuple):
                 bool: log_bool,
                 interp1d: do_not_log}
 
-    node, year, tech, param, val = log_tuple
+    node, region, sector, year, tech, param, val = log_tuple
     # Process the value & year value
     try:
         prepped_val = log_func[type(val)](val)
@@ -289,10 +289,10 @@ def add_log_item(all_logs, log_tuple):
     # Log
     if isinstance(prepped_val, list):
         for val in prepped_val:
-            log = node, year, tech, param, val
+            log = node, region, sector, year, tech, param, val
             all_logs.append(log)
     else:
-        log = node, year, tech, param, prepped_val
+        log = node, region, sector, year, tech, param, prepped_val
         all_logs.append(log)
     return all_logs
 
@@ -373,13 +373,21 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
         all_logs = []
         for node in model.graph.nodes:
+            region = None
+            sector = None
+
             # Log Year Agnostic Values
             for param, val in model.graph.nodes[node].items():
                 if val is None:
                     val = model.get_param(param, node)
+                    
+                if param == 'region':
+                    region = val
+                if param == 'sector':
+                    sector = val
 
                 if param not in model.years:
-                    log = node, None, None, param, val
+                    log = node, region, sector, None, None, param, val
                     add_log_item(all_logs, log)
 
             # Log Year Specific Values
@@ -390,10 +398,10 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                         for tech, tech_data in ny_data['technologies'].items():
                             for tech_param, tech_val in tech_data.items():
                                 if tech_param not in excluded_parameters:
-                                    log = node, year, tech, tech_param, tech_val
+                                    log = node, region, sector, year, tech, tech_param, tech_val
                                     add_log_item(all_logs, log)
                     else:
-                        log = node, year, None, param, val
+                        log = node, region, sector, year, None, param, val
                         if param not in excluded_parameters:
                             add_log_item(all_logs, log)
 
@@ -418,6 +426,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         total_parameter_list = _full_parameter_list(model)
 
         for node in model.graph.nodes:
+            region = None
+            sector = None
+
             # Log Year Agnostic Values
             for param_to_log in p_list:
                 if param_to_log in excluded_parameters:
@@ -429,9 +440,14 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
+                    if param == 'region':
+                        region = val
+                    if param == 'sector':
+                        sector = val
+
                     if param == param_to_log:
                         if param not in model.years:
-                            log = node, None, None, param, val
+                            log = node, region, sector, None, None, param, val
                             add_log_item(all_logs, log)
 
                 # Log Year Specific Values
@@ -443,24 +459,24 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                             for tech, tech_data in ny_data['technologies'].items():
                                 for tech_param, tech_val in tech_data.items():
                                     if tech_param == param_to_log:
-                                        log = node, year, tech, tech_param, tech_val
+                                        log = node, region, sector, year, tech, tech_param, tech_val
                                         add_log_item(all_logs, log)
                         else:
                             if param == param_to_log:
-                                log = node, year, None, param, val
+                                log = node, region, sector, year, None, param, val
                                 add_log_item(all_logs, log)
 
     # data_tuples = [log.tuple() for log in all_logs]
     log_df = pd.DataFrame(all_logs)
-    log_df.columns = ['node', 'year', 'technology', 'parameter', 'value']
+    log_df.columns = ['node', 'region', 'sector', 'year', 'technology', 'parameter', 'value']
 
     # Split Value Log values
     split_columns = ['context', 'sub_context', 'target', 'unit', 'value']
     log_df[split_columns] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
 
     # Select final columns
-    columns = ['node', 'year', 'technology', 'parameter', 'context', 'sub_context', 'target',
-               'unit', 'value']
+    columns = ['node', 'region', 'sector', 'year', 'technology', 'parameter', 'context',
+               'sub_context', 'target', 'unit', 'value']
     log_df = log_df[columns]
 
     # Write to file
