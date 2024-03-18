@@ -366,6 +366,27 @@ def add_node_data(graph, current_node, node_dfs):
     graph = add_node_constant(graph, current_node_df, current_node, 'competition type', required=True)
     current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
 
+    # 4 Set node's region and sector
+    region_list = []
+    for item in current_node_df['Region']:
+        if item not in region_list and item != None:
+            region_list.append(item)
+    try:
+        graph.nodes[current_node]['region'] = region_list[0]
+    except IndexError:
+        pass
+    current_node_df = current_node_df.drop(columns=['Region'])
+
+    sector_list = []
+    for item in current_node_df['Sector']:
+        if item not in sector_list and item != None:
+            sector_list.append(item)
+    try:
+        graph.nodes[current_node]['sector'] = sector_list[0]
+    except IndexError:
+        pass
+    current_node_df = current_node_df.drop(columns=['Sector'])
+    
     # 5 Find the cost curve function
     comp_type = graph.nodes[current_node]['competition type']
     if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
