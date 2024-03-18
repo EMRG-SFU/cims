@@ -137,3 +137,6 @@ dmypy.json
 tutorials/ResultLogger/sample_output/*
 tutorials/DataChangesByScript/change_log.csv
 tutorials/DataChangesByScript/*.pkl
+
+# Model Files
+models/*/*.xlsb
