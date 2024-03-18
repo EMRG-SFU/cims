@@ -3,6 +3,7 @@
 # https://github.com/explosion/spaCy/blob/master/spacy/cli/download.py
 # ------------------------------------------------------------------------------
 import requests
+import tarfile
 import tqdm
 
 from packaging.version import InvalidVersion, Version
@@ -14,13 +15,13 @@ from wasabi import msg
 from . import about
 
 
-def download_model(out_path:str, token:str=None, model_name:str="all_models", overwrite:bool=False) -> None:
-    # determine what the compatible version of the data models are 
+def download_models(out_path:str, token:str=None, model_name:str="all_models",
+                    overwrite:bool=False, unzip=False) -> None:
     all_compatible_models = get_compatibility(token=token)
     model_version = get_model_version(model_name, all_compatible_models)
     release_id = get_release_id(model_version, token=token)
     download_release_asset(out_path, release_id, model_name, model_version,
-                           token=token, overwrite=overwrite)
+                           token=token, overwrite=overwrite, unzip=unzip)
 
 def get_compatibility(token:str=None) -> dict:
     version = get_minor_version(about.__version__)
@@ -96,7 +97,7 @@ def get_release_id(model_version:str, token: str) -> str:
     release_id = r.json()['id']
     return release_id
 
-def download_release_asset(out_path:str, release_id: int, model_name, model_version, token: str=None, overwrite: bool=False) -> None:
+def download_release_asset(out_path:str, release_id: int, model_name, model_version, token: str=None, overwrite: bool=False, unzip:bool=False) -> None:
     # Asset Name
     asset_name = get_asset_name(model_name, model_version)
 
@@ -130,21 +131,34 @@ def download_release_asset(out_path:str, release_id: int, model_name, model_vers
     response = requests.get(asset_url, headers=headers, stream=True)
 
     if response.status_code == 200:
-        out_file = Path(out_path).joinpath(asset_name)
-        write_file(response, out_file, overwrite=overwrite)
+        out_file = write_file(response, out_path, asset_name, overwrite=overwrite, unzip=unzip)
     
     return out_file
 
-def write_file(response:requests.Response, out_file:str, overwrite=False):
-    if (not overwrite) and Path(out_file).is_file():
+def write_file(response:requests.Response, out_path:str, asset_name:str, overwrite=False, unzip=False):
+    if unzip:
+        out_file = Path(out_path).joinpath(asset_name.replace('.tar.gz', ''))
+    else:
+        out_file = Path(out_path).joinpath(asset_name)
+
+    if (not overwrite) and Path(out_file).exists():
         msg.fail(
                 title="File exists.",
                 text=f"{out_file} already exists. Use `overwrite=True` to allow overwrites.",
-                exits=True,
             )    
-    total = int(response.headers.get('Content-Length', 0))
-    with open(out_file, 'wb') as file, tqdm.tqdm(desc=out_file, total=total, unit='iB', unit_scale=True, unit_divisor=1024) as bar:
-        for chunk in response.iter_content(chunk_size=1024):
-            if chunk:
-                size = file.write(chunk)
-                bar.update(size)
+        return out_file
+
+    if unzip:
+        file = tarfile.open(fileobj=response.raw, mode="r|gz")
+        file.extractall(path=out_path, filter='data')
+        msg.good(title=f"{asset_name} download & unzip successful")
+    else:
+        total = int(response.headers.get('Content-Length', 0))
+        with open(out_file, 'wb') as file, tqdm.tqdm(desc=out_file.name, total=total, unit='iB', unit_scale=True, unit_divisor=1024) as bar:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    size = file.write(chunk)
+                    bar.update(size)
+        msg.good(title=f"{asset_name} download successful")
+
+    return out_file

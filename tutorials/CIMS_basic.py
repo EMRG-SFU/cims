@@ -3,7 +3,18 @@ import CIMS
 from pprint import pprint
 import numpy as np
 
-file = 'cims/models/CIMS_base model.xlsb'
+import config # A config.py file in the tutorials directory
+
+
+CIMS.download_models(
+    out_path='cims/models/',
+    token=config.TOKEN,
+    model_name="all_models",
+    overwrite=False,
+    unzip=True
+)
+
+file = 'cims/models/all_models-v0.0.0-alpha/CIMS_base model.xlsb'
 
 my_validator = CIMS.ModelValidator(
     infile=file,
