@@ -165,7 +165,7 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
     try:
         denominator = 1 + shape_constant * exp(rate_constant * prev_nms)
     except OverflowError as overflow:
-        print(node, year, shape_constant, rate_constant, prev_nms)
+        print(node, year, tech, shape_constant, rate_constant, prev_nms)
         raise overflow
 
     prev_dic = calc_declining_intangible_cost(model, node, prev_year, tech)
