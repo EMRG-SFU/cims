@@ -62,12 +62,32 @@ def _calc_cc_learning(model, node, year, tech):
     pr_2 = model.get_param('dcc_progress ratio_2', node, year, tech=tech)
     pr_3 = model.get_param('dcc_progress ratio_3', node, year, tech=tech)
 
-    segment_1 = _dcc_segment(all_stock, pr_1, bc_1, bc_2)
-    segment_2 = _dcc_segment(all_stock, pr_2, bc_2, bc_3)
-    segment_3 = _dcc_segment(all_stock, pr_3, bc_3)
+    segment_1 = segment_2 = segment_3 = 1
+
+    if bc_3:
+        segment_1 = _dcc_segment(all_stock, pr_1, bc_1, bc_2)
+        segment_2 = _dcc_segment(all_stock, pr_2, bc_2, bc_3)
+        segment_3 = _dcc_segment(all_stock, pr_3, bc_3)
+    elif bc_2:
+        segment_1 = _dcc_segment(all_stock, pr_1, bc_1, bc_2)
+        segment_2 = _dcc_segment(all_stock, pr_2, bc_2)
+    elif bc_1:
+        segment_1 = _dcc_segment(all_stock, pr_1, bc_1)
+
     cc_learning = cc_fixed * segment_1 * segment_2 * segment_3
 
     return cc_learning
+
+
+def _dcc_segment(all_stock, pr, bc_A=None, bc_B=None):
+    if bc_A:
+        if bc_B:
+            segment = (min(max(all_stock, bc_A), bc_B) / bc_A) ** log2(pr)
+        else:
+            segment = (max(all_stock, bc_A) / bc_A) ** log2(pr)
+    else:
+        segment = 1
+    return segment
 
 
 def _calc_all_stock(model, node, year, tech):
@@ -108,27 +128,12 @@ def _calc_dcc_capacity(model, node, year, tech, capacity):
 
     capacity_sum = 0
     for node_k, tech_k in dcc_class_techs:
-        # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param('load factor', node_k, str(model.base_year), tech=tech_k)
-        if unit_convert is None:
-            unit_convert = 1
-
         # Capacity summed over all techs in DCC class
         cap_k = model.get_param(capacity, node_k, year, tech=tech_k)
         if cap_k is not None:
-            capacity_sum += cap_k / unit_convert
+            capacity_sum += cap_k
 
     return capacity_sum
-
-def _dcc_segment(all_stock, pr, bc_A=None, bc_B=None):
-    if bc_A:
-        if bc_B:
-            segment = (min(max(all_stock, bc_A), bc_B) / bc_A) ** log2(pr)
-        else:
-            segment = (max(all_stock, bc_A) / bc_A) ** log2(pr)
-    else:
-        segment = 1
-    return segment
 
 
 # ==========================================
