@@ -11,6 +11,8 @@ setup(
                      'numpy',
                      'pandas>=1.2',
                      'xlrd',
+                     'pyxlsb',
                      'scipy',
-                     'pyxlsb'],  # external packages as dependencies
+                     'seaborn>=0.13.2'
+                     ],  # external packages as dependencies
 )
