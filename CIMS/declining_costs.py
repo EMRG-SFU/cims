@@ -54,9 +54,9 @@ def _calc_cc_learning(model, node, year, tech):
 
     all_stock = _calc_all_stock(model, node, year, tech=tech)
 
-    bc_1 = _calc_dcc_capacity(model, node, year, tech=tech, capacity='dcc_capacity_1')
-    bc_2 = _calc_dcc_capacity(model, node, year, tech=tech, capacity='dcc_capacity_2')
-    bc_3 = _calc_dcc_capacity(model, node, year, tech=tech, capacity='dcc_capacity_3')
+    bc_1 = model.get_param('dcc_capacity_1', node, year, tech=tech)
+    bc_2 = model.get_param('dcc_capacity_2', node, year, tech=tech)
+    bc_3 = model.get_param('dcc_capacity_3', node, year, tech=tech)
 
     pr_1 = model.get_param('dcc_progress ratio_1', node, year, tech=tech)
     pr_2 = model.get_param('dcc_progress ratio_2', node, year, tech=tech)
@@ -120,20 +120,6 @@ def _calc_all_stock(model, node, year, tech):
     all_stock = stock_sums['base_stock'] + stock_sums['new_stock']
 
     return all_stock
-
-
-def _calc_dcc_capacity(model, node, year, tech, capacity):
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
-    dcc_class_techs = model.dcc_classes[dcc_class]
-
-    capacity_sum = 0
-    for node_k, tech_k in dcc_class_techs:
-        # Capacity summed over all techs in DCC class
-        cap_k = model.get_param(capacity, node_k, year, tech=tech_k)
-        if cap_k is not None:
-            capacity_sum += cap_k
-
-    return capacity_sum
 
 
 # ==========================================
