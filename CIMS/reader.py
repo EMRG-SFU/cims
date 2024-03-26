@@ -102,9 +102,9 @@ class ModelReader:
         # Filter sectors for calibration (if applicable)
         # ------------------------
         if self.sector_list:
-            self.sector_list.append(None)
+            if None not in self.sector_list:
+                self.sector_list.append(None)
             self.model_df = self.model_df.apply(lambda row: row[self.model_df['Sector'].isin(self.sector_list)])
-        self.model_df = self.model_df.drop(columns=['Sector'])
 
         # ------------------------
         # Extract Node DFs
@@ -121,6 +121,11 @@ class ModelReader:
             if not all(node_df['Technology'].isnull()):
                 tech_dfs[node_name] = {t: gb for t, gb in node_df.groupby(by='Technology')}
                 node_dfs[node_name] = node_df[node_df['Technology'].isnull()]#.drop(columns='Technology')
+
+                # Remove region and sector columns from tech dfs
+                for t in tech_dfs[node_name]:
+                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=['Region'])
+                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=['Sector'])
 
         if inplace:
             self.node_dfs = node_dfs
