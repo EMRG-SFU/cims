@@ -2,7 +2,18 @@ import CIMS
 from pprint import pprint
 import numpy as np
 
-model_file='models/CIMS_base model.xlsb'
+import config # A config.py file in the tutorials directory
+
+
+CIMS.download_models(
+    out_path='cims/models/',
+    token=config.TOKEN,
+    model_name="all_models",
+    overwrite=False,
+    unzip=True
+)
+
+file = 'cims/models/all_models-v0.0.0-alpha/CIMS_base model.xlsb'
 
 # --- Validate Model ---
 my_validator = CIMS.ModelValidator(
@@ -18,7 +29,7 @@ my_validator = CIMS.ModelValidator(
 # pprint(my_validator.warnings)
 
 # --- Build Model ---
-col_list1 = ['Branch', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
+col_list1 = ['Branch', 'Region', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
              'Target', 'Source', 'Unit']
 year_columns = list(np.arange(2000, 2051, 5))
 col_list = col_list1 + year_columns
