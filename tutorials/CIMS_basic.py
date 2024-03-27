@@ -18,7 +18,7 @@ my_validator = CIMS.ModelValidator(
 # pprint(my_validator.warnings)
 
 # --- Build Model ---
-col_list1 = ['Branch', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
+col_list1 = ['Branch', 'Region', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
              'Target', 'Source', 'Unit']
 year_columns = list(np.arange(2000, 2051, 5))
 col_list = col_list1 + year_columns
