@@ -370,14 +370,15 @@ def add_node_data(graph, current_node, node_dfs):
         pass
     current_node_df = current_node_df.drop(columns=['Region'])
 
-    sector_list = []
-    for item in current_node_df['Sector']:
-        if item not in sector_list and item != None:
-            sector_list.append(item)
-    try:
-        graph.nodes[current_node]['sector'] = sector_list[0]
-    except IndexError:
-        pass
+    if graph.nodes[current_node]['competition type'] not in ['root', 'region']:
+        sector_list = []
+        for item in current_node_df['Sector']:
+            if item not in sector_list and item != None:
+                sector_list.append(item)
+        try:
+            graph.nodes[current_node]['sector'] = sector_list[0]
+        except IndexError:
+            pass
     current_node_df = current_node_df.drop(columns=['Sector'])
     
     # 5 Find the cost curve function
