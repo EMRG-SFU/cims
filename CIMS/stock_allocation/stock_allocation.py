@@ -269,8 +269,7 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
     return base_stock_remaining
 
 
-def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
-                                intercept=-11.513):
+def _purchased_stock_retirement(model, node, tech, purchased_year, current_year, intercept):
     """
     Calculate the amount of new stock (adopted in purchased_year) remaining in current_year, after
     natural retirements.
@@ -369,7 +368,9 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             existing_stock += remain_base_stock_vintage_y
 
             # New Stock (Including Previous Years' Retrofitted Stock)
-            remain_new_stock = _purchased_stock_retirement(model, node, tech, earlier_year, year)
+            retirement_intercept = model.get_param('retirement intercept', node, year)
+            remain_new_stock = _purchased_stock_retirement(model, node, tech, earlier_year, year,
+                                                           intercept=retirement_intercept)
             remaining_new_stock_pre_surplus[earlier_year] = remain_new_stock
             existing_stock += remain_new_stock
 
