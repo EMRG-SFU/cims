@@ -3,113 +3,129 @@
 ## Requirements
 Before you can install CIMS, you'll need to ensure bash, git, and Python are installed on your computer. 
 
-If you're new to programming and managing software installations through the commandline, we suggest following the installation instructions found on the [Software Carpentries]() website. Specifically, look for these 3 sections:
+If you're new to programming and managing software installations through the commandline, we suggest following the installation instructions found on the [Software Carpentries]() website. Specifically, look for these 3 sections (Be sure to use the installation instructions which correspond to your operating system):
 * [bash shell](https://carpentries.github.io/workshop-template/install_instructions/#the-bash-shell)
 * [git](https://carpentries.github.io/workshop-template/install_instructions/#git-1)
 * [Python](https://carpentries.github.io/workshop-template/install_instructions/#python-1)
 
-> [!NOTE]  
-> Be sure to use the installation instructions which correspond to your operating system
 
-If you're already comfortable maintaining and managing software installations outside of Anaconda, go ahead and use the workflow you're used to.
+> [!NOTE]  
+> If you're already comfortable maintaining and managing software installations outside of Anaconda, go ahead and use the workflow you're used to.
 
 ## Installation
+### Basic Installation
+1. **Setup a virtual environment** _(optional)_   
+   If you are using a virtual environment, but are unfamiliar with how to use them, follow [these instructions](#using-virtual-environments) to create and activate your virtual environment.
 
-### Clone the Repository
-1. Open Git Bash (Windows) or Terminal (Mac or Linux)   
-2. Using the commandline (Git Bash or Terminal), change the current working directory (using `cd` commands) to the location where you will clone the repository. For example:
+2. **Retrieve your GitHub PAT**   
+   If you are installing `CIMS` prior to its public release, you will need to use a Personal Access Token (PAT) from GitHub to do so. For instructions on creating these tokens, checkout [GitHub's documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens). 
    
-   On Windows
-   ```
-   cd ~\PATH\TO\FOLDER
-   ```   
-   On Mac/Linux
-   ```
-   cd ~/PATH/TO/FOLDER
-   ```
-     
-4. Clone the repository
-   ```
-   git clone https://github.com/EMRG-SFU/cims.git
-   ```
-   
-5. This will download the repository into a new directory called `cims`. Navigate into this directory.
-   ```
-   cd cims
+   Once you have your PAT, open the `install-cims.sh` file in a text editor and update line 8 with your own PAT from GitHub.
+
+3. **Install `CIMS`**  
+   Replacing `TOKEN` in the following command with the `PAT` you retreived in
+   step 2, install `CIMS` using pip.
+   ```shell
+   $ pip3 install git+https://TOKEN@github.com/EMRG-SFU/cims.git
    ```
 
-### Create & Activate an Anaconda Environment
-If you haven't worked with conda environments before, you can check out [this
-primer](https://github.com/EMRG-SFU/cims/blob/main/docs/WorkingWithCondaEnvironment.md) on the topic. 
+   If you want to install a specific version of `CIMS` (e.g. `v1.0.0`) you can
+   use the following command. Be sure to use the relevant version name (found at
+   the end of the command).
+   ```shell
+   pip3 install git+https://TOKEN@github.com/EMRG-SFU/cims.git@v1.0.0
+   ``` 
+   ``
+4. **Confirm the Installation Succeeded**
+   To ensure the Python package has been installed, open a Python Shell and try
+   to import the `CIMS` package.
+      ```shell
+      $ python3
+         >>> import CIMS
+      ```   
+      If this completes without raising errors or warnings, then you are good to go!
 
-1. From within the `cims` directory, create an Anaconda environment containing the required python packages. This process may be slow, but you should see progress being made on the commandline (via a spinning line & commandline output). 
-   ```
-   conda env create -f environment.yml python
-   ```
-   
-2. Activate the environment
-   ```
-   conda activate cims
-   ```
-   You should now see `(cims)` at the start of your commandline prompt
+### Advanced Installation
+In certain situations, the [basic installation](#basic-installation)
+instructions will not be sufficient. For example, if you are contributing to 
+`CIMS` Python development you'll want to see local code changes reflected in
+your installed version of `CIMS`. In these cases, it may make sense to follow
+these advanced installation instructions. 
 
-### Install CIMS
-1. Install CIMS in development mode. 
+1. **Clone the GitHub repository**
+   ```shell
+   $ git clone https://github.com/EMRG-SFU/cims.git
    ```
-   pip install -e .
+
+2. **Navigate to inside the `cims` directory**
+   ```shell
+   $ cd cims
    ```
-   
-## Verify Installation
-1. Start the Python console
-   ```
-   python
-   ```
-2. This should bring up the Python interpreter. You should see something like this:
-   ```
-   Python 3.11.5 | packaged by conda-forge | (main, Aug 27 2023, 03:35:23) [Clang 15.0.7 ] on darwin
-   Type "help", "copyright", "credits" or "license" for more information.
-   >>> 
-   ```
-3. Attempt to import CIMS into python.
-   ```
-   >>> import CIMS
-   ```
-   If this import executes without error (you see the `>>>` prompt re-appear without an error or warning appearing), then you've successfully installed CIMS!
-4. Exit the python interpreter
-   ```
-   >>> exit()
+
+3. **Setup a virtual environment** _(optional)_   
+   If you are using a virtual environment, but are unfamiliar with how to use them, follow [these instructions](#using-virtual-environments) to create and activate your virtual environment.
+
+4. **Install CIMS**
+   Using `pip` install `CIMS` in development mode from source. This will ensure any changes you make to the source code are reflected in the `CIMS` package.
+   ```shell
+   $ pip install -e .
    ```
    
-## Troubleshooting Installation
-If you are unable to `import CIMS` into Python, you may receive the following error message:
+5. **Confirm the Installation Succeeded**
+   To ensure the Python package has been installed, open a Python Shell and try
+   to import the `CIMS` package.
+      ```shell
+      $ python3
+         >>> import CIMS
+      ```   
+      If this completes without raising errors or warnings, then you are good to go!
+
+
+## Using Virtual Environments
+More information on working with Python Virtual Environments can be read [here](https://realpython.com/python-virtual-environments-a-primer/).   
+
+> [!NOTE]  
+> Anaconda offers an alternative to virtual environments. Feel free to use it instead.
+
+
+### Create a Virtual Environment
+Create a brand new virtual environment using `venv` passing in a filepath to specify where the virtual environment will be saved.
+```shell
+$ python -m venv /path/to/new/virtual/environment
 ```
-Traceback (most recent call last):
-  File "<stdin>", line 1, in <module>
-ModuleNotFoundError: No module named 'CIMS'
+
+For example, the following command would create a virtual environment called `cims-venv` in your current directory.
+```shell
+$ python -m venv ./cims-venv 
 ```
-If you receive this error message, ensure that you have activated the `cims` Anaconda environment. If problems persist, you may need to try re-installing CIMS from scratch or reach out for help.
 
-## Updating CIMS
-You may want to update CIMS to access new functionality, bug fixes, or the most
-up-to-date documentation. Assuming you've followed the steps above to install
-CIMS, you can use the following steps to update: 
+### Activate your Virtual Environment
+Before you can use your virtual environment, you need to activate it. For example, 
 
-1. Using your bash shell (Git Bash or Terminal), activate the CIMS environment 
-   you setup previously.
-   ```commandline
-   conda activate cims
+* On Windows
+   ```shell
+   $  .\cims-venv\Scripts\activate
+   ```
+* On Mac/Linux
+   ```shell
+   $ source ./cims-venv/bin/activate 
    ```
 
-2. Use `cd` to navigate to your local clone of the CIMS repository. 
-    ```commandline
-    cd PATH/TO/FOLDER/cims
-    ```   
-   
-3. Use git pull to update the repository.
-    ```
-    git pull
-    ```
-   You may encounter a "merge conflict" if you have made local changes to the CIMS code. If this is your first time encountering a merge conflict in git (or you want a refresher), I suggest reading through the Git Tower article on [dealing with merge requests](https://www.git-tower.com/learn/git/ebook/en/command-line/advanced-topics/merge-conflicts/). 
-   Merge conflicts can be particularly messy if you are working with Jupyter Notebooks. If you want to resolve merge conflicts in Jupyter notebooks (rather than overwrite your local changes), I would suggest using [nbdime](https://nbdime.readthedocs.io/en/latest/#). There is both a command line and web tool that simplifies merge conflict resolution. 
+Once your virtual environment is successfully activated, your command prompt will change to include the virtual environment's name. For example: 
+```shell
+(cims-venv) $
+```
 
-4. Restart any active Python sessions you have running. If you are using Jupyter Notebook, do this by selecting one of the restart (e.g. Restart, Restart & Clear Output, etc) options under the "Kernel" menu at the top of the notebook. In other IDEs such as Spyder, PyCharm, or Atom this usually requires a reload of the Python Console. 
+Any Python packages you install while the virtual environment is activated will be available _inside_ the virtual environment but not outside of it. This allows you to install specific package versions for a single project, without impacting the packages you have available for other projects. 
+
+Note, you only need to create & setup your virtual environment once. However, you do need to activate your virtual environment each time you want to use it.   
+
+### Deactivate your Virtual Environment
+Once you're done using your virtual environment (or if you want to change to a different virtual environment), you can de-activate the environment. 
+```shell
+(cims-venv) $ deactivate
+```
+Your command prompt will return to normal (with the environment name having disappeared) and the packages available within the virtual environment will no longer be available to you (unless they are also installed globally on your machine)
+```shell
+$
+```
