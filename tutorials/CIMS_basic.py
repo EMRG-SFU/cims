@@ -2,13 +2,24 @@ import CIMS
 from pprint import pprint
 import numpy as np
 
-model_file='models/CIMS_base model.xlsb'
+import config # A config.py file in the tutorials directory
+
+CIMS.download_models(
+    out_path='cims/models/',
+    token=config.TOKEN,
+    model_name="all_models",
+    overwrite=False,
+    unzip=True
+)
+
+model_file = 'cims/models/CIMS_base model.xlsb'
+default_values_file = 'cims/models/CIMS_parameters.xlsb'
 
 # --- Validate Model ---
 my_validator = CIMS.ModelValidator(
     infile=model_file,
     sheet_map={
-        'model': ['CIMS', 'CAN', 'BC'],
+        'model': ['CIMS', 'CAN', 'ON'],
         'incompatible': 'Incompatible',
         'default_param': 'Default values'},
     node_col='Branch',
@@ -18,16 +29,14 @@ my_validator = CIMS.ModelValidator(
 # pprint(my_validator.warnings)
 
 # --- Build Model ---
-col_list1 = ['Branch', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
+col_list1 = ['Branch', 'Region', 'Sector', 'Technology', 'Parameter', 'Context', 'Sub_Context',
              'Target', 'Source', 'Unit']
 year_columns = list(np.arange(2000, 2051, 5))
 col_list = col_list1 + year_columns
 my_reader = CIMS.ModelReader(
     infile=model_file,
-    sheet_map={
-        'model': ['CIMS', 'CAN', 'BC'],
-        'incompatible': 'Incompatible',
-        'default_param': 'Default values'},
+    sheet_map=['CIMS', 'CAN', 'ON'],
+    default_values=default_values_file,
     node_col='Branch',
     year_list=year_columns,
     col_list=col_list,
@@ -43,11 +52,11 @@ model.run(show_warnings=False, max_iterations=10, print_eq=False)
 
 # --- Visualize Results ---
 model.visualize_prices_change_over_time(
-    out_file='./fuel_prices_over_years.png')
+    out_file='cims/fuel_prices_over_years.png')
 
 model.visualize_price_comparison_with_benchmark(
-    benchmark_file='./benchmark/prices.csv',
-    out_file='./price_comparison_to_benchmark.png')
+    benchmark_file='cims/benchmark/prices.csv',
+    out_file='cims/price_comparison_to_benchmark.png')
 
 # --- Export Model to CSV ---
 df = CIMS.log_model(model=model, output_file="log.csv")
