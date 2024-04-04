@@ -12,7 +12,7 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
     Depending on the node's competition type, annual or cumulative provided quantity values will be
     used in the call to the cost curve interpolation function.
 
-    Note, cost curve LCC is only used for fuels, so this LCC is the same as the financial LCC we use
+    Note, cost curve LCC is only used supply nodes, so this LCC is the same as the financial LCC we use
     for other nodes.
 
     Parameters
@@ -37,7 +37,7 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
 
     elif prev_src == 'default':
         comp_type = model.get_param('competition type', node).lower()
-        if (comp_type == 'fuel - cost curve cumulative') and (int(year) > model.base_year):
+        if (comp_type == 'supply - cost curve cumulative') and (int(year) > model.base_year):
             prev_year = str(int(year) - model.step)
             prev_year_lcc = model.get_param('lcc_financial', node, prev_year,
                                             context=node.split('.')[-1])
@@ -131,10 +131,10 @@ def calc_cost_curve_quantity(model: "CIMS.Model", node: str, year: str):
         Total quantity needed to calcualte cost curve price.
     """
     comp_type = model.get_param('competition type', node).lower()
-    if comp_type == 'fuel - cost curve annual':
+    if comp_type == 'supply - cost curve annual':
         min_year = year
         max_year = year
-    elif comp_type == 'fuel - cost curve cumulative':
+    elif comp_type == 'supply - cost curve cumulative':
         min_year = model.base_year
         max_year = year
     else:
