@@ -1,6 +1,6 @@
 """
 Module providing helper functions for calculating a node's requested quantities (i.e. amounts of
-fuel which can be attributed to a node).
+supply which can be attributed to a node).
 """
 from ..quantities import RequestedQuantity
 from .aggregation_utils import record_aggregate_values, find_children_for_aggregation
@@ -8,15 +8,15 @@ from .aggregation_utils import record_aggregate_values, find_children_for_aggreg
 
 def aggregate_requested_quantities(model, node, year):
     """
-    Calculates and records fuel quantities attributable to a node in the specified year. Fuel
+    Calculates and records supply quantities attributable to a node in the specified year. Supply
     quantities can be attributed to a node in 3 ways:
 
-    (1) via request/provide relationships - any fuel quantity directly requested of the node
-    (e.g. Lighting requests services directly from Electricity) and fuel quantities that
+    (1) via request/provide relationships - any supply quantity directly requested of the node
+    (e.g. Lighting requests services directly from Electricity) and supply quantities that
     are indirectly requested, but can be attributed to the node (e.g. Housing requests
     Electricity via its request of Lighting).
 
-    (2) via structural relationships - fuel nodes pass indirect quantities to their structural
+    (2) via structural relationships - supply nodes pass indirect quantities to their structural
     parents, rather than request/provide parents. Additionally, root & region nodes collect
     quantities via their structural children, rather than their request/provide children.
 
@@ -65,7 +65,7 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
     if quantity_provided_to_node_tech <= 0:
         return quantities_to_record
 
-    if child in model.fuels:
+    if child in model.supply:
         # Record quantities provided directly to the node/tech from child
         quantities_to_record.append((child, child, quantity_provided_to_node_tech))
     else:
