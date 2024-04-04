@@ -20,9 +20,9 @@ def invalid_competition_type(df):
         'Node Tech Compete',
         'Fixed Ratio',
         'Market',
-        'Fuel - Fixed Price',
-        'Fuel - Cost Curve Annual',
-        'Fuel - Cost Curve Cumulative'
+        'Supply - Fixed Price',
+        'Supply - Cost Curve Annual',
+        'Supply - Cost Curve Cumulative'
     ]
 
     invalid_rows = df[(df['Parameter'] == COMP_TYPE) &
@@ -143,20 +143,20 @@ def nodes_with_zero_output(validator):
     return zero_output_nodes, concern_key, concern_desc
 
 
-def fuel_nodes_no_lcc_or_price(validator):
+def supply_nodes_no_lcc_or_price(validator):
     """
-    Identify fuel nodes that have neither a 'lcc_financial' nor 'price' row specified in
+    Identify supply nodes that have neither a 'lcc_financial' nor 'price' row specified in
     the base year.
     """
-    fuel_nodes = validator.model_df[validator.model_df['Parameter'] == 'is fuel']['Branch']
+    supply_nodes = validator.model_df[validator.model_df['Parameter'] == 'is supply']['Branch']
 
     cost_df = validator.model_df[validator.model_df['Parameter'].isin(['lcc_financial', 'price'])]
     has_base_year_cost = cost_df[~cost_df['2000'].isna()]['Branch']
-    no_prod_cost = [(validator.branch2node_index_map[f], f) for f in fuel_nodes if
+    no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
                     f not in has_base_year_cost.values]
 
-    concern_key, concern_desc = ('fuels_without_lcc_or_price',
-                                 "fuel nodes don't have a life cycle cost or price")
+    concern_key, concern_desc = ('supply_without_lcc_or_price',
+                                 "supply nodes don't have a life cycle cost or price")
     return no_prod_cost, concern_key, concern_desc
 
 
