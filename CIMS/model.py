@@ -128,7 +128,7 @@ class Model:
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels = graph_utils.get_fuels(graph)
+        model.fuels = graph_utils.get_supply_nodes(graph)
 
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
@@ -161,7 +161,7 @@ class Model:
         graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels = graph_utils.get_fuels(graph)
+        self.fuels = graph_utils.get_supply_nodes(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
