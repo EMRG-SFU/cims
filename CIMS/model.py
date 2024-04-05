@@ -1252,9 +1252,9 @@ class Model:
 
     def visualize_prices_change_over_time(
             self,
-            out_file="fuel_prices_over_years.png",
+            out_file="supply_prices_over_years.png",
             show=False):
-        """Creates a visualization of fuel prices over time as a multi-line
+        """Creates a visualization of supply prices over time as a multi-line
         graph. A wrapper for the visualize.visualize_prices_change_over_time()
         function.
 
@@ -1262,7 +1262,7 @@ class Model:
         ----------
         out_file : str, optional
             Filepath to the location where the visualization will be saved, by
-            default "fuel_prices_over_years.png".
+            default "supply_prices_over_years.png".
         show : bool, optional
             If True, displays the generated figure, by default False
         """
@@ -1282,7 +1282,7 @@ class Model:
         ----------
         benchmark_file : str, optional
             The location of the CSV file containing benchmark values for each
-            fuel, by default tests/data/benchmark_prices.csv.
+            supply node, by default tests/data/benchmark_prices.csv.
         out_file : str, optional
             Filepath to the location where the visualization will be saved, by
             default price_comparison_to_baseline.png.

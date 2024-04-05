@@ -3,7 +3,7 @@ import seaborn as sns
 import pandas as pd
 
 def visualize_prices_change_over_time(model, out_file, show=False):
-    """Creates a visualization of fuel prices over time as a multi-line
+    """Creates a visualization of supply prices over time as a multi-line
     graph.
     
     Parameters
@@ -18,13 +18,13 @@ def visualize_prices_change_over_time(model, out_file, show=False):
         If True, displays the generated figure, by default False
     """
 
-    price_data = get_fuel_prices(model)
+    price_data = get_supply_prices(model)
     # Set the style of the visualization
     sns.set_theme(style="darkgrid")
 
     # Plotting
     plt.figure(figsize=(14, 8))
-    sns.lineplot(data=price_data, x='year', y='price', hue='fuel_type', marker='o')
+    sns.lineplot(data=price_data, x='year', y='price', hue='supply_type', marker='o')
 
     plt.title('Fuel Prices Over Years')
     plt.xlabel('Year')
@@ -55,7 +55,7 @@ def visualize_price_comparison_with_benchmark(model, benchmark_file, out_file,
 
     benchmark_file : str
         The location of the CSV file containing benchmark values for each
-        fuel.
+        supply.
 
     out_file : str
         Filepath to the location where the visualization will be saved.
@@ -65,7 +65,7 @@ def visualize_price_comparison_with_benchmark(model, benchmark_file, out_file,
     """
     # Example of preparing data for heatmap (you'd need to calculate the differences first)
     # Assuming `data_diff` is a DataFrame with differences calculated
-    data = get_fuel_prices(model)
+    data = get_supply_prices(model)
     benchmark = pd.read_csv(benchmark_file)
 
     # Filter default data to only include years found
@@ -78,12 +78,12 @@ def visualize_price_comparison_with_benchmark(model, benchmark_file, out_file,
     unique_years = data['year'].unique()
    
     # Format dataframe for multi-scatter plot
-    pd.melt(data, id_vars=['fuel_type','year'], value_vars=['Price Difference'])
+    pd.melt(data, id_vars=['supply_type','year'], value_vars=['Price Difference'])
     
     # Create plot
     _, ax = plt.subplots()
     for year in unique_years:
-        ax.scatter(data[data['year']==year]['Price Difference'],data[data['year']==year]['fuel_type'],label=year)
+        ax.scatter(data[data['year']==year]['Price Difference'],data[data['year']==year]['supply_type'],label=year)
     ax.legend()
 
     # Placing the legend outside the plot to the right
@@ -104,8 +104,8 @@ def visualize_price_comparison_with_benchmark(model, benchmark_file, out_file,
     plt.savefig(out_file)
 
 
-def get_fuel_prices(model, out_file=None):
-    """Retrieves model fuel prices for each year, returning a dataframe meant
+def get_supply_prices(model, out_file=None):
+    """Retrieves supply prices for each year, returning a dataframe meant
      for visualization
 
     Parameters
@@ -114,27 +114,27 @@ def get_fuel_prices(model, out_file=None):
         The model to retrieve data from.
 
     out_file : str, optional
-       Writes a CSV of fuel prices to the provided filepath. None by default, 
+       Writes a CSV of supply prices to the provided filepath. None by default, 
        which won't write a file. Meant for recording benchmark data.
 
     Returns
     -------
     pd.DataFrame
-        fuel prices by fuel_type and year
+        supply prices by supply_type and year
     """    
-    fuel_prices ={
-        "fuel_type":[] ,
+    supply_prices ={
+        "supply_type":[] ,
         "price": [],
         "year": []
         }
     for year in model.years:
         for supply_node in model.supply_nodes:
-            fuel_prices["fuel_type"].append(supply_node)
-            fuel_prices["year"].append(year)
-            fuel_prices["price"].append(model.get_param('price', supply_node, year))
-    fuel_prices = pd.DataFrame(fuel_prices)
+            supply_prices["supply_type"].append(supply_node)
+            supply_prices["year"].append(year)
+            supply_prices["price"].append(model.get_param('price', supply_node, year))
+    supply_prices = pd.DataFrame(supply_prices)
 
     if out_file is not None:
-        fuel_prices.to_csv(out_file, index=False)
+        supply_prices.to_csv(out_file, index=False)
 
-    return fuel_prices
+    return supply_prices
