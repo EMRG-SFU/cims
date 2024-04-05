@@ -391,7 +391,7 @@ def add_node_data(graph, current_node, node_dfs):
     
     # 5 Find the cost curve function
     comp_type = graph.nodes[current_node]['competition type']
-    if comp_type in ['fuel - cost curve annual', 'fuel - cost curve cumulative']:
+    if comp_type in ['supply - cost curve annual', 'supply - cost curve cumulative']:
         cc_func = cost_curves.build_cost_curve_function(current_node_df)
         graph.nodes[current_node]['cost_curve_function'] = cc_func
 
