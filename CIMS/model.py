@@ -366,19 +366,19 @@ class Model:
                                             self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.supply_nodes)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.supply_nodes)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_cumulative_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.supply_nodes)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
@@ -825,15 +825,15 @@ class Model:
 
     def _aggregate_requested_quantities(self, graph, node, year, **kwargs):
         """
-        Calculates and records fuel quantities attributable to a node in the specified year. Fuel
+        Calculates and records supply quantities attributable to a node in the specified year. Fuel
         quantities can be attributed to a node in 3 ways:
 
-        (1) via request/provide relationships - any fuel quantity directly requested of the node
-        (e.g. Lighting requests services directly from Electricity) and fuel quantities that
+        (1) via request/provide relationships - any supply quantity directly requested of the node
+        (e.g. Lighting requests services directly from Electricity) and supply quantities that
         are indirectly requested, but can be attributed to the node (e.g. Housing requests
         Electricity via its request of Lighting).
 
-        (2) via structural relationships - fuel nodes pass indirect quantities to their structural
+        (2) via structural relationships - supply nodes pass indirect quantities to their structural
         parents, rather than request/provide parents. Additionally, root & region nodes collect
         quantities via their structural children, rather than their request/provide children.
 

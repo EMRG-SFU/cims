@@ -99,10 +99,10 @@ class RequestedQuantity:
 
     def sum_requested_quantities(self):
         total_quantity = 0
-        for fuel in self.requested_quantities:
-            fuel_rq = self.requested_quantities[fuel]
-            for source in fuel_rq:
-                total_quantity += fuel_rq[source]
+        for supply_node in self.requested_quantities:
+            supply_rq = self.requested_quantities[supply_node]
+            for source in supply_rq:
+                total_quantity += supply_rq[source]
         return total_quantity
 
 
@@ -116,35 +116,35 @@ class DistributedSupply:
 
     def __add__(self, other):
         result = copy.deepcopy(self)
-        for fuel in other.distributed_supply:
-            if fuel not in result.distributed_supply:
-                result.distributed_supply[fuel] = {}
-            for node in other.distributed_supply[fuel]:
-                if node not in result.distributed_supply[fuel]:
-                    result.distributed_supply[fuel][node] = 0
-                result.distributed_supply[fuel][node] += other.distributed_supply[fuel][node]
+        for supply_node in other.distributed_supply:
+            if supply_node not in result.distributed_supply:
+                result.distributed_supply[supply_node] = {}
+            for node in other.distributed_supply[supply_node]:
+                if node not in result.distributed_supply[supply_node]:
+                    result.distributed_supply[supply_node][node] = 0
+                result.distributed_supply[supply_node][node] += other.distributed_supply[supply_node][node]
         return result
 
-    def record_distributed_supply(self, fuel, distributed_supply_node, amount):
-        """Records amount of fuel supplyed by the distributed_supply_node"""
-        if fuel in self.distributed_supply:
-            if distributed_supply_node in self.distributed_supply[fuel]:
-                self.distributed_supply[fuel][distributed_supply_node] += amount
+    def record_distributed_supply(self, supply_node, distributed_supply_node, amount):
+        """Records amount of supply provided by the distributed_supply_node"""
+        if supply_node in self.distributed_supply:
+            if distributed_supply_node in self.distributed_supply[supply_node]:
+                self.distributed_supply[supply_node][distributed_supply_node] += amount
             else:
-                self.distributed_supply[fuel][distributed_supply_node] = amount
+                self.distributed_supply[supply_node][distributed_supply_node] = amount
 
         else:
-            self.distributed_supply[fuel] = {distributed_supply_node: amount}
+            self.distributed_supply[supply_node] = {distributed_supply_node: amount}
 
     def summarize_distributed_supply(self):
         """
-        Summarize the distributed supply across all supplying_nodes, aggregating to the fuel/service
+        Summarize the distributed supply across all supplying_nodes, aggregating to the supply node/service
         being provided.
         """
         distributed_supply = {}
-        for fuel in self.distributed_supply:
-            fuel_distributed_supply = 0
-            for child, quantity in self.distributed_supply[fuel].items():
-                fuel_distributed_supply += quantity
-            distributed_supply[fuel] = fuel_distributed_supply
+        for supply_node in self.distributed_supply:
+            node_distributed_supply = 0
+            for child, quantity in self.distributed_supply[supply_node].items():
+                node_distributed_supply += quantity
+            distributed_supply[supply_node] = node_distributed_supply
         return distributed_supply
