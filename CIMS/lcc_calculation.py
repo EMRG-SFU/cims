@@ -166,8 +166,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
-        # This issue affects endogenous fuels that are not used until later years (like hydrogen)
-        if node in model.fuels:
+        # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen)
+        if node in model.supply_nodes:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
                 weighted_lccs = model.get_param('lcc_financial', node, prev_year,
@@ -504,7 +504,7 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
                                                                        tech, serv)
         service_cost = 0
 
-        if service_requested['target'] in model.fuels:
+        if service_requested['target'] in model.supply_nodes:
             target_fuel = service_requested['target']
             fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
 
@@ -570,7 +570,7 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
         service_requested_value = service_requested['year_value']
         service_cost = 0
 
-        if service_requested['target'] in model.fuels:
+        if service_requested['target'] in model.supply_nodes:
             target_fuel = service_requested['target']
             fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
 

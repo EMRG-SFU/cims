@@ -128,10 +128,10 @@ def get_fuel_prices(model, out_file=None):
         "year": []
         }
     for year in model.years:
-        for fuel in model.fuels:
-            fuel_prices["fuel_type"].append(fuel)
+        for supply_node in model.supply_nodes:
+            fuel_prices["fuel_type"].append(supply_node)
             fuel_prices["year"].append(year)
-            fuel_prices["price"].append(model.get_param('price', fuel, year))
+            fuel_prices["price"].append(model.get_param('price', supply_node, year))
     fuel_prices = pd.DataFrame(fuel_prices)
 
     if out_file is not None:

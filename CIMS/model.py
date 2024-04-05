@@ -67,7 +67,7 @@ class Model:
         self.scenario_node_dfs, self.scenario_tech_dfs = None, None
         self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
-        self.fuels = []
+        self.supply_nodes = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
@@ -128,7 +128,7 @@ class Model:
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels = graph_utils.get_supply_nodes(graph)
+        model.supply_nodes = graph_utils.get_supply_nodes(graph)
 
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
@@ -161,7 +161,7 @@ class Model:
         graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels = graph_utils.get_supply_nodes(graph)
+        self.supply_nodes = graph_utils.get_supply_nodes(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
@@ -366,19 +366,19 @@ class Model:
                                             self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            fuels=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            fuels=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_cumulative_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            fuels=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
@@ -601,7 +601,7 @@ class Model:
                                                 self,
                                                 root=node)
 
-            if node in self.fuels:
+            if node in self.supply_nodes:
                 if 'lcc_financial' in graph.nodes[node][year]:
                     fuel_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
                     if graph.nodes[node][year]['lcc_financial'][fuel_name]['year_value'] is None:

@@ -111,7 +111,7 @@ class EmissionsCost:
             Returns a nested dictionary. The first level keys are GHGs (e.g. CO2). The second level
             keys are emission types (e.g. Combustion). The second level values are floats
             representing the aggregate cost for the GHG/emission type combinations across all source
-            fuels.
+            supply_nodes.
         """
         summary_rates = {}
         for source_branch in self.emissions_cost:
@@ -128,12 +128,12 @@ class EmissionsCost:
 
     def total_emissions_cost(self) -> float:
         """
-        Find the total emissions cost across all fuels, GHGs, and emission types.
+        Find the total emissions cost across all supply_nodes, GHGs, and emission types.
 
         Returns
         -------
         float :
-            The sum of emissions costs across all fuels, GHGs, and emission types in the
+            The sum of emissions costs across all supply_nodes, GHGs, and emission types in the
             `EmissionCost.emission_cost` dictionary.
         """
         total = 0
@@ -249,7 +249,7 @@ class Emissions:
             Returns a nested dictionary. The first level keys are GHGs (e.g. CO2). The second level
             keys are emission types (e.g. Combustion). The second level values are floats
             representing the aggregate cost for the GHG/emission type combinations across all source
-            fuels.
+            supply_nodes.
         """
         summary_emissions = {}
         for source in self.emissions:
@@ -368,7 +368,7 @@ def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
     indirect_emissions_cost = EmissionsCost()
     for req_data in services_requested.values():
         child = req_data['target']
-        if child not in model.fuels:
+        if child not in model.supply_nodes:
             req_ratio = req_data['year_value']
             child_emissions_cost = model.get_param('cumul_emissions_cost_rate', child, year,
                                                    dict_expected=True)
@@ -402,7 +402,7 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
     indirect_emissions = Emissions()
     for req_data in services_requested.values():
         child = req_data['target']
-        if child not in model.fuels:
+        if child not in model.supply_nodes:
             req_ratio = req_data['year_value']
             child_emissions = model.get_param(emissions_param, child, year,
                                               dict_expected=True)
@@ -440,7 +440,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
             bio_emissions_rate in the model.
     """
 
-    fuels = model.fuels
+    supply_nodes = model.supply_nodes
 
     tax_rates = _find_tax_rates(model, node, year)
     removal_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types}
@@ -482,7 +482,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
 
             # GROSS EMISSIONS
             if 'emissions' in model.graph.nodes[child_node][year] and \
-                    child_node in fuels and req_val > 0:
+                    child_node in supply_nodes and req_val > 0:
                 gross_emissions[child_node] = {}
                 emission_data = model.graph.nodes[child_node][year]['emissions']
 
@@ -495,7 +495,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
 
             # GROSS BIOMASS EMISSIONS
             if 'emissions_biomass' in model.graph.nodes[child_node][year] and \
-                    child_node in fuels and req_val > 0:
+                    child_node in supply_nodes and req_val > 0:
                 gross_bio_emissions[child_node] = {}
                 bio_emission_data = model.graph.nodes[child_node][year]['emissions_biomass']
 
@@ -614,7 +614,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
             req_val = child_info['year_value']
             child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
-                year] and child_node in fuels and req_val > 0:
+                year] and child_node in supply_nodes and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
                 bio_emissions[child_node] = {}
                 for ghg in fuel_emissions:
@@ -674,13 +674,13 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
             bio_emissions_rate in the model.
     """
 
-    fuels = model.fuels
+    supply_nodes = model.supply_nodes
     tax_rates = {ghg: {em_type: utils.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
     removal_rates = copy.deepcopy(tax_rates)
 
     # Grab correct tax values
-    if node not in fuels:
+    if node not in supply_nodes:
         for ghg in tax_rates:
             for em_type in tax_rates[ghg]:
                 try:
@@ -729,7 +729,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
 
             # GROSS EMISSIONS
             if 'emissions' in model.graph.nodes[child_node][year] and \
-                    child_node in fuels and req_val > 0:
+                    child_node in supply_nodes and req_val > 0:
                 gross_emissions[child_node] = {}
                 emission_data = model.graph.nodes[child_node][year]['emissions']
 
@@ -742,7 +742,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
 
             # GROSS BIOMASS EMISSIONS
             if 'emissions_biomass' in model.graph.nodes[child_node][year] and \
-                    child_node in fuels and req_val > 0:
+                    child_node in supply_nodes and req_val > 0:
                 gross_bio_emissions[child_node] = {}
                 bio_emission_data = model.graph.nodes[child_node][year]['emissions_biomass']
 
@@ -865,7 +865,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
             req_val = child_info['year_value']
             child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
-                year] and child_node in fuels and req_val > 0:
+                year] and child_node in supply_nodes and req_val > 0:
                 fuel_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
                 bio_emissions[child_node] = {}
                 for ghg in fuel_emissions:
