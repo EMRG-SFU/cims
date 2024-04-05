@@ -52,7 +52,7 @@ model.run(show_warnings=False, max_iterations=10, print_eq=False)
 
 # --- Visualize Results ---
 model.visualize_prices_change_over_time(
-    out_file='cims/fuel_prices_over_years.png')
+    out_file='cims/supply_prices_over_years.png')
 
 model.visualize_price_comparison_with_benchmark(
     benchmark_file='cims/benchmark/prices.csv',
