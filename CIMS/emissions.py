@@ -22,7 +22,7 @@ class EmissionsCost:
         Parameters
         ----------
         emissions_cost : dict
-            The dictionary containing the detailed emissions cost by source node (fuel), GHG, and
+            The dictionary containing the detailed emissions cost by supply node, GHG, and
             emission_type.
 
         num_units : float, Optional
@@ -156,7 +156,7 @@ class Emissions:
         Parameters
         ----------
         emissions_dict : dict
-            The dictionary containing the detailed emissions by source node (fuel), GHG, and
+            The dictionary containing the detailed emissions by supply node, GHG, and
             emission_type.
         """
         self.emissions = emissions_dict if emissions_dict is not None else {}
@@ -274,9 +274,9 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
 
     There is slightly different logic, depending on the kind of node we are at. There are three
     possible locations:
-        (1) At a technology -- Emission Cost @ Tech + Emissions Cost from any non-fuel children
+        (1) At a technology -- Emission Cost @ Tech + Emissions Cost from any non-supply children
         (2) At a node with techs -- Weighted emissions cost from techs
-        (3) At a node without techs -- Emissions Cost from Non Fuel children
+        (3) At a node without techs -- Emissions Cost from non-supply children
 
     Finally, if we are at a node or a tech that previously had stock but no longer has stock, the
     cumulative emissions cost rate at the node will be 0.
@@ -302,7 +302,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     """
     pq, src = model.get_param('provided_quantities', node, year, tech=tech, return_source=True)
     if tech is not None:
-        # (1) At a technology -- Emission Cost @ Tech + Emissions Cost from any non-fuel children
+        # (1) At a technology -- Emission Cost @ Tech + Emissions Cost from any non-supply children
         agg_emissions_cost = EmissionsCost()
 
         # Emission Cost @ Tech
@@ -311,7 +311,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
                                                   node, year, tech=tech)
             agg_emissions_cost = agg_emissions_cost + tech_emissions_cost
 
-        # Emissions Cost from any non-fuel children
+        # Emissions Cost from any non-supply children
         services_requested = utils.get_services_requested(model, node, year, tech=tech)
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
@@ -615,15 +615,15 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
             child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
                 year] and child_node in supply_nodes and req_val > 0:
-                fuel_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
+                supply_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
                 bio_emissions[child_node] = {}
-                for ghg in fuel_emissions:
-                    for emission_type in fuel_emissions[ghg]:
+                for ghg in supply_emissions:
+                    for emission_type in supply_emissions[ghg]:
                         if ghg not in bio_emissions[child_node]:
                             bio_emissions[child_node][ghg] = {}
                         bio_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(
-                                fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+                                supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
@@ -866,15 +866,15 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
             child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
                 year] and child_node in supply_nodes and req_val > 0:
-                fuel_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
+                supply_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
                 bio_emissions[child_node] = {}
-                for ghg in fuel_emissions:
-                    for emission_type in fuel_emissions[ghg]:
+                for ghg in supply_emissions:
+                    for emission_type in supply_emissions[ghg]:
                         if ghg not in bio_emissions[child_node]:
                             bio_emissions[child_node][ghg] = {}
                         bio_emissions[child_node][ghg][emission_type] = \
                             utils.create_value_dict(
-                                fuel_emissions[ghg][emission_type]['year_value'] * req_val)
+                                supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
     # model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
