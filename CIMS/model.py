@@ -603,8 +603,8 @@ class Model:
 
             if node in self.supply_nodes:
                 if 'lcc_financial' in graph.nodes[node][year]:
-                    fuel_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
-                    if graph.nodes[node][year]['lcc_financial'][fuel_name]['year_value'] is None:
+                    supply_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
+                    if graph.nodes[node][year]['lcc_financial'][supply_name]['year_value'] is None:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
