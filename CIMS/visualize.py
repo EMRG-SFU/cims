@@ -26,10 +26,10 @@ def visualize_prices_change_over_time(model, out_file, show=False):
     plt.figure(figsize=(14, 8))
     sns.lineplot(data=price_data, x='year', y='price', hue='supply_type', marker='o')
 
-    plt.title('Fuel Prices Over Years')
+    plt.title('Supply Prices Over Years')
     plt.xlabel('Year')
     plt.ylabel('Price')
-    plt.legend(title='Fuel Type', bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.legend(title='Supply Type', bbox_to_anchor=(1.05, 1), loc='upper left')
 
     # Adjust layout to make room for the legend
     plt.tight_layout()

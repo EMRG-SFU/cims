@@ -329,11 +329,11 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
             agg_emissions_cost = agg_emissions_cost + (tech_emissions_cost * market_share)
 
     else:
-        # (3) At a node without techs -- Emissions Cost from Non Fuel children
+        # (3) At a node without techs -- Emissions Cost from Non-Supply children
         agg_emissions_cost = EmissionsCost()
         services_requested = utils.get_services_requested(model, node, year)
 
-        # Emissions Cost from Non Fuel children
+        # Emissions Cost from Non-Supply children
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
     # Save the Aggregate Emission Cost Rates

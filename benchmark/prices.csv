@@ -1,4 +1,4 @@
-,fuel_type,price,year
+,supply_type,price,year
 0,CIMS.CAN.BC.Biodiesel,25,2000
 1,CIMS.CAN.BC.Electricity,10.36106094,2000
 2,CIMS.CAN.BC.Ethanol,35.36746104,2000

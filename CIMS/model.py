@@ -51,9 +51,9 @@ class Model:
         names as keys and pandas DataFrames as values. These DataFrames contain information from the
         excel model description.
 
-    fuels : list [str]
-        List of supply-side sector nodes (fuels, etc) requested by the demand side of the Model
-        Graph.  Populated using the `build_graph` method.
+    supply_nodes : list [str]
+        List of supply nodes requested by the demand side of the Model Graph. 
+        Populated using the `build_graph` method.
 
     years : list [str or int]
         List of the years for which the model will be run.
@@ -148,7 +148,7 @@ class Model:
         """
 
         Builds graph based on the model reader used in instantiation of the class. Stores this graph
-        in `self.graph`. Additionally, initializes `self.fuels`.
+        in `self.graph`. Additionally, initializes `self.supply_nodes`.
 
         Returns
         -------
@@ -261,7 +261,7 @@ class Model:
             that year will stop, and iteration for the next year will begin.
 
         verbose : bool, optional
-            Whether or not to have verbose printing during iterations. If true, fuel prices are
+            Whether or not to have verbose printing during iterations. If true, supply node prices are
             printed at the end of each iteration.
 
         Returns
@@ -324,7 +324,7 @@ class Model:
                                                 year,
                                                 self,
                                                 cost_curve_min_max=True)
-                # Calculate Fuel Quantities
+                # Calculate Supply Quantities
                 graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
@@ -337,7 +337,7 @@ class Model:
                                                 self,
                                                 )
 
-                # Check for an Equilibrium -- Across all nodes, not just fuels
+                # Check for an Equilibrium -- Across all nodes, not just supply nodes
                 # ************************
                 # Find the previous prices
                 prev_prices = self.prices
@@ -499,7 +499,7 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
+        Specifically, initializes (1) price multiplier values and (2) supply nodes' Life Cycle Cost
         value.
 
         Parameters
@@ -555,9 +555,9 @@ class Model:
             # Set Price Multiplier of node in the graph
             graph.nodes[node][year]['price multiplier'] = node_price_multipliers
 
-        def init_fuel_lcc(graph, node, year, step=5):
+        def init_supply_node_lcc(graph, node, year, step=5):
             """
-            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
+            Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
             function.
 
@@ -578,7 +578,7 @@ class Model:
             Returns
             -------
             Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
-            Cycle Cost if node is a fuel node.
+            Cycle Cost if node is a supply node.
             """
 
             def calc_lcc_from_children():
@@ -589,7 +589,7 @@ class Model:
                 -------
                 Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
                 """
-                # Find the subtree rooted at the fuel node
+                # Find the subtree rooted at the supply node
                 descendants = nx.descendants(graph, node) | {node}
 
                 descendant_tree = nx.subgraph(graph, descendants)
@@ -773,7 +773,7 @@ class Model:
                                        init_load_factor,
                                        year)
         graph_utils.bottom_up_traversal(graph,
-                                        init_fuel_lcc,
+                                        init_supply_node_lcc,
                                         year)
 
     def iteration_initialization(self, year):
@@ -825,7 +825,7 @@ class Model:
 
     def _aggregate_requested_quantities(self, graph, node, year, **kwargs):
         """
-        Calculates and records supply quantities attributable to a node in the specified year. Fuel
+        Calculates and records supply quantities attributable to a node in the specified year. Supply
         quantities can be attributed to a node in 3 ways:
 
         (1) via request/provide relationships - any supply quantity directly requested of the node
