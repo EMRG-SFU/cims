@@ -65,7 +65,7 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
     if quantity_provided_to_node_tech <= 0:
         return quantities_to_record
 
-    if child in model.supply:
+    if child in model.supply_nodes:
         # Record quantities provided directly to the node/tech from child
         quantities_to_record.append((child, child, quantity_provided_to_node_tech))
     else:
