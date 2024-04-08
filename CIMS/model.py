@@ -51,9 +51,9 @@ class Model:
         names as keys and pandas DataFrames as values. These DataFrames contain information from the
         excel model description.
 
-    fuels : list [str]
-        List of supply-side sector nodes (fuels, etc) requested by the demand side of the Model
-        Graph.  Populated using the `build_graph` method.
+    supply_nodes : list [str]
+        List of supply nodes requested by the demand side of the Model Graph. 
+        Populated using the `build_graph` method.
 
     years : list [str or int]
         List of the years for which the model will be run.
@@ -67,7 +67,7 @@ class Model:
         self.scenario_node_dfs, self.scenario_tech_dfs = None, None
         self.node_tech_defaults = model_reader.get_default_params()
         self.step = 5  # TODO: Make this an input or calculate
-        self.fuels = []
+        self.supply_nodes = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
@@ -128,7 +128,7 @@ class Model:
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels = graph_utils.get_fuels(graph)
+        model.supply_nodes = graph_utils.get_supply_nodes(graph)
 
         model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                         str(model.base_year))
@@ -148,7 +148,7 @@ class Model:
         """
 
         Builds graph based on the model reader used in instantiation of the class. Stores this graph
-        in `self.graph`. Additionally, initializes `self.fuels`.
+        in `self.graph`. Additionally, initializes `self.supply_nodes`.
 
         Returns
         -------
@@ -161,7 +161,7 @@ class Model:
         graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
-        self.fuels = graph_utils.get_fuels(graph)
+        self.supply_nodes = graph_utils.get_supply_nodes(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
@@ -261,7 +261,7 @@ class Model:
             that year will stop, and iteration for the next year will begin.
 
         verbose : bool, optional
-            Whether or not to have verbose printing during iterations. If true, fuel prices are
+            Whether or not to have verbose printing during iterations. If true, supply node prices are
             printed at the end of each iteration.
 
         Returns
@@ -273,8 +273,8 @@ class Model:
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
-        demand_nodes = graph_utils.get_demand_nodes(self.graph)
-        supply_nodes = graph_utils.get_supply_nodes(self.graph)
+        demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
+        supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -324,7 +324,7 @@ class Model:
                                                 year,
                                                 self,
                                                 cost_curve_min_max=True)
-                # Calculate Fuel Quantities
+                # Calculate Supply Quantities
                 graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
@@ -337,7 +337,7 @@ class Model:
                                                 self,
                                                 )
 
-                # Check for an Equilibrium -- Across all nodes, not just fuels
+                # Check for an Equilibrium -- Across all nodes, not just supply nodes
                 # ************************
                 # Find the previous prices
                 prev_prices = self.prices
@@ -366,19 +366,19 @@ class Model:
                                             self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_cumulative_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
             graph_utils.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
@@ -499,7 +499,7 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
+        Specifically, initializes (1) price multiplier values and (2) supply nodes' Life Cycle Cost
         value.
 
         Parameters
@@ -555,9 +555,9 @@ class Model:
             # Set Price Multiplier of node in the graph
             graph.nodes[node][year]['price multiplier'] = node_price_multipliers
 
-        def init_fuel_lcc(graph, node, year, step=5):
+        def init_supply_node_lcc(graph, node, year, step=5):
             """
-            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
+            Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
             function.
 
@@ -578,7 +578,7 @@ class Model:
             Returns
             -------
             Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
-            Cycle Cost if node is a fuel node.
+            Cycle Cost if node is a supply node.
             """
 
             def calc_lcc_from_children():
@@ -589,7 +589,7 @@ class Model:
                 -------
                 Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
                 """
-                # Find the subtree rooted at the fuel node
+                # Find the subtree rooted at the supply node
                 descendants = nx.descendants(graph, node) | {node}
 
                 descendant_tree = nx.subgraph(graph, descendants)
@@ -601,10 +601,10 @@ class Model:
                                                 self,
                                                 root=node)
 
-            if node in self.fuels:
+            if node in self.supply_nodes:
                 if 'lcc_financial' in graph.nodes[node][year]:
-                    fuel_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
-                    if graph.nodes[node][year]['lcc_financial'][fuel_name]['year_value'] is None:
+                    supply_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
+                    if graph.nodes[node][year]['lcc_financial'][supply_name]['year_value'] is None:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
@@ -773,7 +773,7 @@ class Model:
                                        init_load_factor,
                                        year)
         graph_utils.bottom_up_traversal(graph,
-                                        init_fuel_lcc,
+                                        init_supply_node_lcc,
                                         year)
 
     def iteration_initialization(self, year):
@@ -825,15 +825,15 @@ class Model:
 
     def _aggregate_requested_quantities(self, graph, node, year, **kwargs):
         """
-        Calculates and records fuel quantities attributable to a node in the specified year. Fuel
+        Calculates and records supply quantities attributable to a node in the specified year. Supply
         quantities can be attributed to a node in 3 ways:
 
-        (1) via request/provide relationships - any fuel quantity directly requested of the node
-        (e.g. Lighting requests services directly from Electricity) and fuel quantities that
+        (1) via request/provide relationships - any supply quantity directly requested of the node
+        (e.g. Lighting requests services directly from Electricity) and supply quantities that
         are indirectly requested, but can be attributed to the node (e.g. Housing requests
         Electricity via its request of Lighting).
 
-        (2) via structural relationships - fuel nodes pass indirect quantities to their structural
+        (2) via structural relationships - supply nodes pass indirect quantities to their structural
         parents, rather than request/provide parents. Additionally, root & region nodes collect
         quantities via their structural children, rather than their request/provide children.
 
@@ -1252,9 +1252,9 @@ class Model:
 
     def visualize_prices_change_over_time(
             self,
-            out_file="fuel_prices_over_years.png",
+            out_file="supply_prices_over_years.png",
             show=False):
-        """Creates a visualization of fuel prices over time as a multi-line
+        """Creates a visualization of supply prices over time as a multi-line
         graph. A wrapper for the visualize.visualize_prices_change_over_time()
         function.
 
@@ -1262,7 +1262,7 @@ class Model:
         ----------
         out_file : str, optional
             Filepath to the location where the visualization will be saved, by
-            default "fuel_prices_over_years.png".
+            default "supply_prices_over_years.png".
         show : bool, optional
             If True, displays the generated figure, by default False
         """
@@ -1282,7 +1282,7 @@ class Model:
         ----------
         benchmark_file : str, optional
             The location of the CSV file containing benchmark values for each
-            fuel, by default tests/data/benchmark_prices.csv.
+            supply node, by default tests/data/benchmark_prices.csv.
         out_file : str, optional
             Filepath to the location where the visualization will be saved, by
             default price_comparison_to_baseline.png.

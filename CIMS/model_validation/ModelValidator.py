@@ -102,7 +102,7 @@ class ModelValidator:
         self._run_check(validate.nodes_requesting_self, validator=self)
         self._run_check(validate.nodes_no_requested_service, validator=self)
         self._run_check(validate.nodes_with_zero_output, validator=self)
-        self._run_check(validate.fuel_nodes_no_lcc_or_price, validator=self)
+        self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
         self._run_check(validate.techs_no_base_market_share, validator=self)
         self._run_check(validate.duplicate_service_requests, validator=self)
         self._run_check(validate.bad_service_req, validator=self)

@@ -48,7 +48,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
     if 'lcc_financial' in sub_graph.nodes[node][year]:
         lcc, lcc_source = model.get_param('lcc_financial', node, year,
                                           context=node.split('.')[-1],
-                                          return_source=True)  # context is the fuel name
+                                          return_source=True)  # context is the supply node's name
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
             calc_cumul_emissions_cost_rate(model, node, year)
@@ -166,8 +166,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
-        # This issue affects endogenous fuels that are not used until later years (like hydrogen)
-        if node in model.fuels:
+        # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen)
+        if node in model.supply_nodes:
             if weighted_lccs == 0 and int(year) != model.base_year:
                 prev_year = str(int(year) - model.step)
                 weighted_lccs = model.get_param('lcc_financial', node, prev_year,
@@ -504,18 +504,18 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
                                                                        tech, serv)
         service_cost = 0
 
-        if service_requested['target'] in model.fuels:
-            target_fuel = service_requested['target']
-            fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
+        if service_requested['target'] in model.supply_nodes:
+            target_supply = service_requested['target']
+            supply_price = model.get_param('price', target_supply, year, do_calc=True)
 
             # Price Multiplier
             try:
-                fuel_name = target_fuel.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
+                supply_name = target_supply.split('.')[-1]
+                price_multiplier = model.graph.nodes[node][year]['price multiplier'][supply_name][
                     'year_value']
             except KeyError:
                 price_multiplier = 1
-            service_requested_price = fuel_price * price_multiplier
+            service_requested_price = supply_price * price_multiplier
 
         else:
             service_request_target = service_requested['target']
@@ -550,7 +550,7 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
     Find the service cost associated with a given technology.
 
     For each service being requested:
-        i) If the service is a fuel, find the fuel price (Life Cycle Cost) and add it to the
+        i) If the service is a supply node, find the supply price (Life Cycle Cost) and add it to the
            service cost.
        ii) Otherwise, use the service's financial Life Cycle Cost (already calculated).
 
@@ -570,19 +570,19 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
         service_requested_value = service_requested['year_value']
         service_cost = 0
 
-        if service_requested['target'] in model.fuels:
-            target_fuel = service_requested['target']
-            fuel_price = model.get_param('price', target_fuel, year, do_calc=True)
+        if service_requested['target'] in model.supply_nodes:
+            target_supply = service_requested['target']
+            supply_price = model.get_param('price', target_supply, year, do_calc=True)
 
             # Price Multiplier
             try:
-                fuel_name = target_fuel.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['price multiplier'][fuel_name][
+                supply_name = target_supply.split('.')[-1]
+                price_multiplier = model.graph.nodes[node][year]['price multiplier'][supply_name][
                     'year_value']
             except KeyError:
                 price_multiplier = 1
 
-            service_requested_price = fuel_price * price_multiplier
+            service_requested_price = supply_price * price_multiplier
 
         else:
             service_request_target = service_requested['target']
