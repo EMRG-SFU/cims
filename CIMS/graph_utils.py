@@ -148,7 +148,7 @@ def get_GHG_and_Emissions(graph, year):
     return ghg, emission_type, gwp
 
 
-def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
+def get_demand_side_nodes(graph: nx.DiGraph) -> List[str]:
     """
     Find the nodes to use for demand-side traversals. The returned list of nodes will include all
     nodes whose "node type" attribute is not "supply.
@@ -178,7 +178,7 @@ def get_demand_nodes(graph: nx.DiGraph) -> List[str]:
     return list(set(graph.nodes).difference(set(supply_nodes).union(descendants)))
 
 
-def get_supply_nodes(graph: nx.DiGraph) -> List[str]:
+def get_supply_side_nodes(graph: nx.DiGraph) -> List[str]:
     """
     Find the nodes to use for supply-side traversals. The returned list of nodes will include all
     supply nodes, the structural ancestors of the supply nodes, and the descendants of the supply nodes.

@@ -273,8 +273,8 @@ class Model:
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
-        demand_nodes = graph_utils.get_demand_nodes(self.graph)
-        supply_nodes = graph_utils.get_supply_nodes(self.graph)
+        demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
+        supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
