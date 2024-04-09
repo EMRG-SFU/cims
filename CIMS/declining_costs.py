@@ -141,26 +141,23 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
     float : The DIC.
     """
     # Retrieve Exogenous Terms from Model Description
-    initial_intangible_cost = model.get_param('dic_initial', node, year, tech=tech)
-    rate_constant = model.get_param('dic_rate', node, year, tech=tech)
-    shape_constant = model.get_param('dic_shape', node, year, tech=tech)
+    dic_initial = model.get_param('dic_initial', node, year, tech=tech)
+    dic_slope = model.get_param('dic_slope', node, year, tech=tech)
+    dic_x50 = model.get_param('dic_x50', node, year, tech=tech)
+    dic_min = model.get_param('dic_min', node, year, tech=tech)
+
+    # In base year, dic==dic_0
+    if int(year) == int(model.base_year):
+        return dic_initial
+
+    # Find the tech's NMS & DIC in the previous year
+    prev_year = str(int(year) - model.step)
+    prev_nms = _find_dic_class_new_market_share(model, node, prev_year, tech=tech)
+    prev_dic = model.get_param('dic', node, prev_year, tech=tech)
 
     # Calculate DIC
-    if int(year) == int(model.base_year):
-        return initial_intangible_cost
-
-    prev_year = str(int(year) - model.step)
-
-    prev_nms = _find_dic_class_new_market_share(model, node, prev_year, tech=tech)
-
-    try:
-        denominator = 1 + shape_constant * exp(rate_constant * prev_nms)
-    except OverflowError as overflow:
-        print(node, year, tech, shape_constant, rate_constant, prev_nms)
-        raise overflow
-
-    prev_dic = calc_declining_intangible_cost(model, node, prev_year, tech)
-    dic = min(prev_dic, initial_intangible_cost / denominator)
+    dic = min(prev_dic, max(0, dic_min + (dic_initial-dic_min)/
+                                         (1+(prev_nms/dic_x50)**dic_slope)))
 
     return dic
 
