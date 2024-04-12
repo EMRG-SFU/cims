@@ -692,7 +692,7 @@ def calc_price(model, node, year, tech=None):
         return price
 
     base_year = str(model.base_year)
-    p2000, p2000_source = model.get_param('p2000', node, base_year, return_source=True)
+    p2000, p2000_source = model.get_param('price', node, base_year, return_source=True)
     p2000_exogenous = (p2000 is not None) & (p2000_source == 'model')
     cop, cop_source = model.get_param('cop', node, base_year, return_source=True)
     cop_exogenous = (cop is not None) & (cop_source == 'model')
