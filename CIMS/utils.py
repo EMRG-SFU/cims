@@ -170,6 +170,7 @@ inheritable_params = [
     'retrofit_existing_min',
     'retrofit_existing_max',
     'retrofit_heterogeneity',
+    'retirement intercept',
 ]
 
 
