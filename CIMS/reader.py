@@ -75,11 +75,16 @@ class ModelReader:
         appended_data = []
         for sheet in self.sheet_map:
             try:
-                sheet_df = pd.read_excel(self.infile,
-                                         sheet_name=sheet,
-                                         header=1,
-                                         engine=self.excel_engine).replace({np.nan: None})
+                mixed_type_columns = ['Context']
+                sheet_df = pd.read_excel(
+                    self.infile,
+                    sheet_name=sheet,
+                    header=1,
+                    converters={c: _bool_as_string for c in mixed_type_columns},
+                    engine=self.excel_engine).replace(
+                        {np.nan: None, 'False': False, 'True': True})
                 appended_data.append(sheet_df)
+
             except ValueError:
                 print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
@@ -139,9 +144,13 @@ class ModelReader:
 
     def get_default_params(self):
         # Read model_description from excel
-        df = pd.read_excel(self.default_values,
-                           header=0,
-                           engine=self.excel_engine).replace({np.nan: None})
+        mixed_type_columns = ['Default value']
+        df = pd.read_excel(
+            self.default_values,
+            header=0,
+            converters={c: _bool_as_string for c in mixed_type_columns},
+            engine=self.excel_engine).replace(
+                {np.nan: None, 'False': False, 'True': True})
 
         # Remove empty rows
         df = df.dropna(axis=0, how="all")
@@ -158,3 +167,15 @@ class ModelReader:
 
         # Return
         return node_tech_defaults
+
+def _bool_as_string(val):
+    """ Convert bools to str, otherwise leave value as is
+
+    This is done to differentiate between boolean and integer values.
+    Otherwise, during pd.read_excel() parsing, a single representation of
+    0/False and 1/True is chosen, depending on which value is encountered first
+    within the column.
+    """
+    if isinstance(val, bool):
+        return str(val)
+    return val
