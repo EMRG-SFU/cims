@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from ..reader import get_node_cols
+from ..reader import get_node_cols, _bool_as_string
 import warnings
 import os
 from . import validation_checks as validate
@@ -33,10 +33,16 @@ class ModelValidator:
         appended_data = []
         for sheet in self.sheet_map['model']:
             try:
-                sheet_df = pd.read_excel(self.infile,
-                                         sheet_name=sheet,
-                                         header=1,
-                                         engine=self.excel_engine).replace({np.nan: None})
+                mixed_type_columns = ['Context']
+                sheet_df = pd.read_excel(
+                    self.infile,
+                    sheet_name=sheet,
+                    header=1,
+                    converters={c:_bool_as_string for c in mixed_type_columns},
+                    engine=self.excel_engine).replace(
+                        {np.nan: None, 'False': False, 'True': True})
+                appended_data.append(sheet_df)
+
                 appended_data.append(sheet_df)
             except ValueError:
                 print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
