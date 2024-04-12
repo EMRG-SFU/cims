@@ -29,16 +29,16 @@ def calc_recycled_revenues(model, node, year, tech=None):
     """
     # Retrieve the recycling rates
     if tech is not None:
-        if 'recycled revenues' not in model.graph.nodes[node][year]['technologies'][tech]:
+        if 'revenue recycle rate' not in model.graph.nodes[node][year]['technologies'][tech]:
             recycling_rates = {}
         else:
-            recycling_rates = model.get_param('recycled revenues',
+            recycling_rates = model.get_param('revenue recycle rate',
                                               node, year, tech=tech, dict_expected=True)
     else:
-        if 'recycled revenues' not in model.graph.nodes[node][year]:
+        if 'revenue recycle rate' not in model.graph.nodes[node][year]:
             recycling_rates = {}
         else:
-            recycling_rates = model.get_param('recycled revenues', node, year, dict_expected=True)
+            recycling_rates = model.get_param('revenue recycle rate', node, year, dict_expected=True)
 
     # Retrieve the aggregate emissions cost at the node/tech
     calc_cumul_emissions_cost_rate(model, node, year, tech)
