@@ -105,8 +105,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # Declining Intangible Cost
             # ************
             dic, dic_source = model.get_param('dic', node, year, tech=tech, return_source=True,
-                                                do_calc=True)
-            if dic:
+                                              do_calc=True)
+            if dic is not None:
                 val_dict = {'year_value': dic, 'param_source': dic_source}
                 model.set_param_internal(val_dict, 'dic', node, year, tech)
 
