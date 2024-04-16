@@ -17,8 +17,11 @@ def _abstract_cumulative_emission_aggregation(base_emission_class, model, node, 
     children_for_aggregation = find_children_for_aggregation(model, node, year, include_self=True)
 
     # Calculate Cumulative Cost Emission Rates
-    cumulative_emission_rate = _find_cumulative_emission_rates(model, year,
-                                                               children_for_aggregation, rate_param,
+    cumulative_emission_rate = _find_cumulative_emission_rates(model, 
+                                                               year,
+                                                               children_for_aggregation, 
+                                                               rate_param,
+                                                               total_param,
                                                                base_emission_class)
 
     # Aggregate Cumulative Emission Rates
@@ -33,7 +36,7 @@ def _abstract_cumulative_emission_aggregation(base_emission_class, model, node, 
     _record_total_cumulative_emissions(model, node, year, rate_param, total_param)
 
 
-def _find_cumulative_emission_rates(model, year, children_for_aggregation, cumul_rate_param, base_emissions_class):
+def _find_cumulative_emission_rates(model, year, children_for_aggregation, cumul_rate_param, total_param, base_emissions_class):
     values_to_aggregate = []
 
     # [{child_node, parent_node, parent_tech, aggregate_type}]
@@ -47,9 +50,10 @@ def _find_cumulative_emission_rates(model, year, children_for_aggregation, cumul
                 model, agg_info['parent_node'], year, agg_info['parent_tech'], base_rate_param, base_emissions_class)
 
         elif agg_type == 'structural':
-            # All emissions at the child node should be recorded at the parent node
+            # All emissions at the child node should be recorded at the parent
+            # node. To do this, we use the total parameter, rather than the rate
             aggregate_value = _find_cumulative_rate_via_structural_edge(
-                model, agg_info['child_node'], year, cumul_rate_param)
+                model, agg_info['child_node'], year, total_param)
 
         elif agg_type == 'aggregation':
             aggregate_value = _find_cumulative_rate_via_aggregation_edge(
@@ -110,17 +114,23 @@ def _find_cumulative_rate_via_self(model, node, year, tech, base_rate_param, bas
     return direct_emissions
 
 
-def _find_cumulative_rate_via_structural_edge(model, node, year, cumulative_rate_param):
-    return model.get_param(cumulative_rate_param, node, year)
+def _find_cumulative_rate_via_structural_edge(model, node, year, total_param):
+    # To ensure ALL emissions/quantities flow through a structural edge, we
+    # use the child's total cumulative value as the parent's rate.
+
+    return model.get_param(total_param, node, year)
 
 
 def _find_cumulative_rate_via_aggregation_edge(model, parent_node, child_node, year,
-                                               cumulative_rate_param):
-    # all emissions requested of the child node should be multiplied by the aggregation
-    # weight and recorded at the parent node
+                                               total_param):
+    # All emissions requested of the child node should be multiplied by the
+    # aggregation weight and recorded at the parent node. 
+    
     agg_weight = model.graph.edges[(parent_node, child_node)]['aggregation_weight']
 
-    return model.get_param(cumulative_rate_param, child_node, year) * agg_weight
+    # To ensure ALL emissions/quantities flow through an aggregation edge, we
+    # use the child's total cumulative value as the parent rate.  
+    return model.get_param(total_param, child_node, year) * agg_weight
 
 
 def _find_cumulative_rate_via_request_provide_edge(model, agg_info, year, cumulative_rate_param, base_emissions_class):
