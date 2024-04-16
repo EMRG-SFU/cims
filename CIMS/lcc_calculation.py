@@ -86,14 +86,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             val_dict = {'year_value': crf, 'param_source': crf_source}
             model.set_param_internal(val_dict, 'crf', node, year, tech)
 
-            # Capital Cost
-            # ************
-            capital_cost, capital_cost_source = model.get_param('capital cost', node, year,
-                                                tech=tech, return_source=True, do_calc=True)
-            if capital_cost:
-                val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
-                model.set_param_internal(val_dict, 'capital cost', node, year, tech)
-
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
@@ -101,14 +93,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
-
-            # Declining Intangible Cost
-            # ************
-            dic, dic_source = model.get_param('dic', node, year, tech=tech, return_source=True,
-                                              do_calc=True)
-            if dic is not None:
-                val_dict = {'year_value': dic, 'param_source': dic_source}
-                model.set_param_internal(val_dict, 'dic', node, year, tech)
 
             # Complete LCC
             # ************
@@ -364,10 +348,14 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
     calc_complete_upfront_cost
     """
     crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
-    capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
+    capital_cost, capital_cost_source = model.get_param('capital cost', node, year, tech=tech, return_source=True, do_calc=True)
     subsidy = model.get_param('subsidy', node, year, tech=tech)
     output = model.get_param('output', node, year, tech=tech)
 
+    # Record capital cost (FCC or DCC) value in dictionary
+    val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
+    model.set_param_internal(val_dict, 'capital cost', node, year, tech)
+    
     financial_uc = (capital_cost + subsidy) / output * crf
 
     return financial_uc
@@ -394,11 +382,15 @@ def calc_complete_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: s
     """
     operating_maintenance = model.get_param('fom', node, year, tech=tech)
     fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
-    declining_intangible_cost = model.get_param('dic', node, year, tech=tech, do_calc=True)
+    declining_intangible_cost, dic_source = model.get_param('dic', node, year, tech=tech, return_source=True, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
+    
+    # Record DIC value in dictionary
+    val_dict = {'year_value': declining_intangible_cost, 'param_source': dic_source}
+    model.set_param_internal(val_dict, 'dic', node, year, tech)
 
     complete_ac = (
-                              operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
+        operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
     return complete_ac
 
