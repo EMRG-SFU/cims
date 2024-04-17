@@ -99,7 +99,10 @@ def _aggregate_cumulative_emission_rates(model, year, emissions_for_aggregation,
 
 
 def _record_total_cumulative_emissions(model, node, year, rate_param, total_param):
-    provided_quantities = model.get_param('provided_quantities', node, year).get_total_quantity()
+    if model.get_param("competition type", node) == 'root':
+        provided_quantities = 1
+    else:
+        provided_quantities = model.get_param('provided_quantities', node, year).get_total_quantity()
     emissions_rate = model.get_param(rate_param, node, year)
     model.graph.nodes[node][year][total_param] = create_value_dict(emissions_rate *
                                                                    provided_quantities)
