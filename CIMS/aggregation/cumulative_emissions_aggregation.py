@@ -145,16 +145,17 @@ def _find_cumulative_rate_via_request_provide_edge(model, agg_info, year, cumula
 
     req_ratio = model.get_param('service requested', parent_node, year, tech=parent_tech,
                                 context=child_node.split('.')[-1])
-
-    child_emissions_rate = model.get_param(cumulative_rate_param, child_node, year)
-    if child_emissions_rate is not None:
-        emission_rates += child_emissions_rate * req_ratio
-
     # If the child produces emissions (e.g. requests supply with emissions), we
     # multiply the child's direct emission rate by the service_request ratio.
     direct_emission_rate_param = cumulative_rate_param.split('cumul_')[-1]
     if direct_emission_rate_param in model.graph.nodes[child_node][year]:
         child_direct_emissions_rate = model.get_param(direct_emission_rate_param, child_node, year)
         emission_rates += child_direct_emissions_rate * req_ratio
+
+    # So long as child is not a supply node, add indirect emissions too
+    if child_node not in model.supply_nodes:
+        child_emissions_rate = model.get_param(cumulative_rate_param, child_node, year)
+        if child_emissions_rate is not None:
+            emission_rates += child_emissions_rate * req_ratio
 
     return emission_rates
