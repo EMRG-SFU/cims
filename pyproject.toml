@@ -40,8 +40,12 @@ Repository = "https://github.com/EMRG-SFU/cims"
 [project.optional-dependencies]
 dev = []
 
+[tool.setuptools]
+py-modules = ["CIMS"]
+
 [tool.setuptools.dynamic]
 version = {attr = "CIMS.__version__"}
+
 
 [tool.fawltydeps]
 code = ["CIMS"]  # Only search for imports under ./CIMS
