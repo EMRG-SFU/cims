@@ -6,4 +6,4 @@ from .model_validation.ModelValidator import ModelValidator
 from .logging import log_model, search_parameter
 from .download import download_models
 
-__version__ = "v0.1.3"
+from . about import __version__
