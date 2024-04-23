@@ -41,7 +41,7 @@ Repository = "https://github.com/EMRG-SFU/cims"
 dev = []
 
 [tool.setuptools]
-py-modules = ["CIMS"]
+packages = ["CIMS"]
 
 [tool.setuptools.dynamic]
 version = {attr = "CIMS.__version__"}
