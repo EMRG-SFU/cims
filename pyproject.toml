@@ -37,8 +37,6 @@ dynamic = ["version"]
 Repository = "https://github.com/EMRG-SFU/cims"
 "Model Repository" = "https://github.com/EMRG-SFU/cims-models/"
 
-[project.optional-dependencies]
-dev = []
 
 [tool.setuptools]
 packages = ["CIMS"]
