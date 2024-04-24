@@ -42,7 +42,7 @@ Repository = "https://github.com/EMRG-SFU/cims"
 packages = ["CIMS"]
 
 [tool.setuptools.dynamic]
-version = {attr = "CIMS.__version__"}
+version = {attr = "CIMS.about.__version__"}
 
 
 [tool.fawltydeps]
