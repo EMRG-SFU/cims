@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CIMS"
+requires-python = ">=3.9"
+authors = [
+    {name = "Jillian Anderson"},
+    {name = "Bradford Griffin"}
+    ]
+description = "Economic Climate Modelling in Python"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+]
+dependencies = [
+    'networkx',
+    'numpy',
+    'pandas>=1.2',
+    'xlrd',
+    'pyxlsb',
+    'scipy',
+    'seaborn>=0.13.2',
+    'matplotlib',
+    'wasabi',
+    'tqdm',
+    "packaging",
+    "requests"
+    ]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/EMRG-SFU/cims"
+"Model Repository" = "https://github.com/EMRG-SFU/cims-models/"
+
+
+[tool.setuptools]
+packages = ["CIMS"]
+
+[tool.setuptools.dynamic]
+version = {attr = "CIMS.about.__version__"}
+
+
+[tool.fawltydeps]
+code = ["CIMS"]  # Only search for imports under ./CIMS
+deps = ["pyproject.toml"]  # Only look for declared dependencies here
+ignore_unused = ["xlrd", "pyxlsb"]  # Pandas uses them, but they aren't imported
+output_format = "human_detailed"  # Detailed report by default

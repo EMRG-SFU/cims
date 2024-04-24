@@ -5,3 +5,5 @@ from .reader import ModelReader
 from .model_validation.ModelValidator import ModelValidator
 from .logging import log_model, search_parameter
 from .download import download_models
+
+from .about import __version__
