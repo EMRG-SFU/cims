@@ -141,9 +141,9 @@ def get_GHG_and_Emissions(graph, year):
             emission_type = list(set(emission_type + node_emission_type))
 
         #GWP from CIMS node
-        if 'emissions gwp' in data[year]:
-            for ghg2 in data[year]['emissions gwp']:
-                gwp[ghg2] = data[year]['emissions gwp'][ghg2]['year_value']
+        if 'emissions_gwp' in data[year]:
+            for ghg2 in data[year]['emissions_gwp']:
+                gwp[ghg2] = data[year]['emissions_gwp'][ghg2]['year_value']
 
     return ghg, emission_type, gwp
 
@@ -492,7 +492,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
     tree_index = t_df.index[0].item()
 
     # 2 Remove the row that indicates this is a service or technology.
-    t_df = t_df[~t_df['Parameter'].isin(['service', 'technology'])]
+    t_df = t_df[t_df['Parameter'] != 'technology']
 
     # 3 Group data by year & add to the tech's dictionary
     # NOTE: This is very similar to what we do for nodes (above). However, it differs because

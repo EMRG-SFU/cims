@@ -42,8 +42,7 @@ class Model:
 
     node_dfs : dict {str: pandas.DataFrame}
         Node names (branch notation) are the keys in the dictionary. Associated DataFrames (specified in
-        the excel model description) are the values. DataFrames do not include 'technology' or
-        'service' information for a node.
+        the excel model description) are the values. DataFrames do not include 'technology' information for a node.
 
     tech_dfs : dict {str: dict {str: pandas.DataFrame}}
         Technology & service information from the excel model description. Node names (branch notation)
@@ -130,8 +129,7 @@ class Model:
         # Update the Model's metadata
         model.supply_nodes = graph_utils.get_supply_nodes(graph)
 
-        model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
-                                                                                        str(model.base_year))
+        model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,str(model.base_year))
         model.dcc_classes = model._dcc_classes()
         model.dic_classes = model._dic_classes()
 
@@ -162,8 +160,7 @@ class Model:
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
 
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
-                                                                                     str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,str(self.base_year))
         self.graph = graph
 
     def _initialize_tax(self):

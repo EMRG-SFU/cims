@@ -796,10 +796,10 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 net_emissions[node_name][ghg][emission_type]['year_value'] -= \
                     avoided_emissions[node_name][ghg][emission_type]['year_value'] + \
                     negative_emissions[node_name][ghg][emission_type]['year_value']
-
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
         Emissions(emissions_dict=net_emissions)
+    
     # EMISSIONS COST
     emissions_cost = calculate_vintage_weighted_parameter('net_emissions_rate', model, node, year,
                                                           tech, default_value=Emissions()).emissions
@@ -877,8 +877,6 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                                 supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
-    # model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-    #     Emissions(emissions=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
         Emissions(emissions_dict=avoided_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \
