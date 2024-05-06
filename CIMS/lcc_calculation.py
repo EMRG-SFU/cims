@@ -725,7 +725,8 @@ def calc_price(model, node, year, tech=None):
 
         # Current Year Values
         fLCC = model.get_param('lcc_financial', node, year, context=service)
-        non_energy_cost = model.get_param('non-energy cost', node, year)
+        prev_year = str(int(year) - model.step)
+        non_energy_cost = model.get_param('non-energy cost', node, prev_year) + model.get_param('non-energy cost change', node, year)
 
         # Calculate Price
         if p2000_exogenous or cop_exogenous:
@@ -733,10 +734,11 @@ def calc_price(model, node, year, tech=None):
                     fLCC / fLCC_2000 * cop + non_energy_cost / non_energy_cost_2000 * (1 - cop))
         else:
             non_energy_cost = 0
-            model.set_param_internal(
-                utils.create_value_dict(non_energy_cost, param_source='calculation'),
-                'non-energy cost', node, year)
             price = fLCC
+
+        model.set_param_internal(
+            utils.create_value_dict(non_energy_cost, param_source='calculation'),
+            'non-energy cost', node, year)
 
     # Set parameters
     price_subsidy = model.get_param('price_subsidy', node, year, do_calc=True)
