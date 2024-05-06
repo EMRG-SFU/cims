@@ -5,18 +5,25 @@ import warnings
 import os
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
+from pathlib import Path
 
 
 class ModelValidator:
-    def __init__(self, infile, sheet_map, root_node='CIMS', node_col='Branch', target_col='Target'):
+    def __init__(self, infile, sheet_map, col_list, year_list, sector_list,
+                 default_values=None, node_col="Branch", target_col="Target", root_node="CIMS"):
         self.infile = infile
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
-        self.excel_engine = excel_engine_map[os.path.splitext(self.infile)[1]]
+        self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
+        if default_values:
+            self.default_values = default_values
         self.sheet_map = sheet_map
         self.node_col = node_col
         self.target_col = target_col
+        self.col_list = col_list
+        self.year_list = [str(x) for x in year_list]
+        self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
         self.root = root_node
@@ -31,7 +38,7 @@ class ModelValidator:
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
         appended_data = []
-        for sheet in self.sheet_map['model']:
+        for sheet in self.sheet_map:
             try:
                 mixed_type_columns = ['Context']
                 sheet_df = pd.read_excel(
@@ -43,7 +50,6 @@ class ModelValidator:
                         {np.nan: None, 'False': False, 'True': True})
                 appended_data.append(sheet_df)
 
-                appended_data.append(sheet_df)
             except ValueError:
                 print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
 
@@ -55,7 +61,10 @@ class ModelValidator:
                             model_df.columns]  # Convert all column names to strings (years were ints)
         n_cols, y_cols = get_node_cols(model_df,
                                        self.node_col)  # Find columns, separated year cols from non-year cols
-        all_cols = np.concatenate((n_cols, y_cols))
+        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
+        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
+        all_cols = n_cols + y_cols
+
         mdf = model_df.loc[1:,
               all_cols]  # Create df, drop irrelevant columns & skip first, empty row
         mdf['Parameter'] = mdf['Parameter'].str.lower()
