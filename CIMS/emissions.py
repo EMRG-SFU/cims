@@ -467,7 +467,7 @@ def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
                     removal_rates[ghg] = {}
-                rr_val = removal_dict[ghg][emission_type]['year_value'] or model.get_parameter_default('emissions')
+                rr_val = removal_dict[ghg][emission_type]['year_value'] or model.get_parameter_default('emissions_removal')
                 removal_rates[ghg][emission_type] = utils.create_value_dict(rr_val)
 
     # Check all services requested for
@@ -704,8 +704,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
             for emission_type in emission_data[ghg]:
                 if ghg not in gross_emissions[tech]:
                     gross_emissions[tech][ghg] = {}
-                em_val = emission_data[ghg][emission_type]['year_value'] or model.get_parameter_default('emissions')
-                gross_emissions[tech][ghg][emission_type] = utils.create_value_dict(em_val)
+                gross_emissions_val = emission_data[ghg][emission_type]['year_value'] or model.get_parameter_default('emissions')
+                gross_emissions[tech][ghg][emission_type] = utils.create_value_dict(gross_emissions_val)
 
     # EMISSIONS REMOVAL @ the tech
     if 'emissions_removal' in model.graph.nodes[node][year]['technologies'][tech]:
@@ -780,10 +780,10 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
                 try:
-                    em_removed = removal_rates[ghg][emission_type]
+                    em_removed = removal_rates[ghg][emission_type]['year_value']
                     negative_emissions[node_name][ghg][emission_type]['year_value'] = \
                         gross_bio_emissions[node_name][ghg][emission_type]['year_value'] * \
-                        em_removed['year_value']
+                        em_removed
                 except KeyError:
                     negative_emissions[node_name][ghg][emission_type]['year_value'] = 0
 
@@ -799,6 +799,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
         Emissions(emissions_dict=net_emissions)
+
     # EMISSIONS COST
     emissions_cost = calculate_vintage_weighted_parameter('net_emissions_rate', model, node, year,
                                                           tech, default_value=Emissions()).emissions
