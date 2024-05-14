@@ -12,11 +12,13 @@ import pandas as pd
 from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from CIMS.emissions import Emissions, EmissionsCost
 
-excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
-                       'net_emissions_rate', 'cumul_net_emissions_rate',
-                       'bio_emissions_rate', 'cumul_bio_emissions_rate',
-                       'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
-                       'negative_emissions_rate', 'cumul_negative_emissions_rate']
+excluded_parameters = [
+# 'emissions_cost_rate', 'cumul_emissions_cost_rate',
+#                        'net_emissions_rate', 'cumul_net_emissions_rate',
+#                        'bio_emissions_rate', 'cumul_bio_emissions_rate',
+#                        'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
+#                        'negative_emissions_rate', 'cumul_negative_emissions_rate'
+]
 
 
 class ValueLog:
