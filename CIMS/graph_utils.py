@@ -522,7 +522,8 @@ def _update_year_dict(existing_year_dict, update_data):
                 year_dict[param][context][sub_context] = value_dict
 
             # 2. We place our value dictionary keyed only by context.
-            elif value_dict['year_value'] is not None:
+            elif (value_dict['year_value'] is not None) or \
+                ((param in existing_year_dict) and ('year_value' not in existing_year_dict[param])):
                 year_dict[param][context] = value_dict
 
             # 3. We save context as the year_value, which will remain constant

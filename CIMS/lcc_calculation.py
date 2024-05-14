@@ -559,7 +559,7 @@ def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
     """
 
     def do_sc_calculation(service_requested):
-        service_requested_value = service_requested['year_value']
+        service_requested_value = service_requested['year_value'] or model.get_parameter_default('service requested')
         service_cost = 0
 
         if service_requested['target'] in model.supply_nodes:
