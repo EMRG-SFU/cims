@@ -350,11 +350,9 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 2.1 Add index for use in the results viewer file
-    try:
-        if 'tree index' not in graph.nodes[current_node]:
-            graph.nodes[current_node]['tree index'] = current_node_df.index[0].item()
-    except IndexError:
-        pass
+    if 'tree index' not in graph.nodes[current_node]:
+        graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
+        graph.nodes[current_node]['tree index'] = current_node_df.index[0].item() + graph.cur_tree_index[0]
 
     # 3 Set boolean node constants
     # 3.1 is supply
@@ -489,7 +487,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
     t_df = copy.copy(tech_dfs[node][tech])
     graph = copy.copy(graph)
 
-    tree_index = t_df.index[0].item()
+    graph.max_tree_index[0] = max(graph.max_tree_index[0], t_df.index[0].item())
 
     # 2 Remove the row that indicates this is a service or technology.
     t_df = t_df[t_df['Parameter'] != 'technology']
@@ -556,11 +554,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
         graph.nodes[node][year]['technologies'][tech] = year_dict
 
         # Add index for use in the results viewer file
-        try:
-            if 'tree index' not in graph.nodes[node][year]['technologies'][tech]:
-                graph.nodes[node][year]['technologies'][tech]['tree index'] = tree_index
-        except IndexError:
-            pass
+        if 'tree index' not in graph.nodes[node][year]['technologies'][tech]:
+            graph.nodes[node][year]['technologies'][tech]['tree index'] = t_df.index[0].item() + graph.cur_tree_index[0]
 
     # 4 Return the new graph
     return graph
