@@ -33,8 +33,8 @@ def _retrofit_lcc(model, node, year, existing_tech):
                                           tech=existing_tech, do_calc=True)
     emissions_cost = model.get_param('emissions cost', node, year,
                                      tech=existing_tech, do_calc=True)
-    retrofit_competition_lcc = competition_annual_cost + annual_service_cost + emissions_cost
-    return retrofit_competition_lcc
+    retrofit_lcc_competition = competition_annual_cost + annual_service_cost + emissions_cost
+    return retrofit_lcc_competition
 
 
 def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
