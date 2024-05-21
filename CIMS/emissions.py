@@ -412,7 +412,7 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
     return indirect_emissions
 
 
-def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
+def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
                                  allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.

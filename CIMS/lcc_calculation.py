@@ -3,7 +3,7 @@ This module contains the functions for LCC Calculations for the CIMS model.
 """
 import warnings
 
-from .emissions import calc_complete_emissions_cost, calc_financial_emissions_cost, \
+from .emissions import calc_competition_emissions_cost, calc_financial_emissions_cost, \
     calc_cumul_emissions_cost_rate
 from . import utils
 from .revenue_recycling import calc_recycled_revenues
@@ -94,14 +94,14 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
 
-            # Complete LCC
+            # Competition LCC
             # ************
-            complete_lcc, complete_lcc_source = model.get_param('lcc_complete',
+            competition_lcc, competition_lcc_source = model.get_param('competition_lcc',
                                                                 node, year, tech=tech,
                                                                 return_source=True,
                                                                 do_calc=True)
-            val_dict = {'year_value': complete_lcc, 'param_source': complete_lcc_source}
-            model.set_param_internal(val_dict, 'lcc_complete', node, year, tech)
+            val_dict = {'year_value': competition_lcc, 'param_source': competition_lcc_source}
+            model.set_param_internal(val_dict, 'competition_lcc', node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
             first_year_avail = model.get_param('available', node, str(model.base_year), tech=tech)
@@ -222,7 +222,7 @@ def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> 
 
     See Also
     --------
-    calc_complete_lcc: Calculates complete LCC, which includes intangible costs.
+    calc_competition_lcc: Calculates Competition LCC, which includes intangible costs.
     """
 
     # Calculate the LCC of any new stock
@@ -264,53 +264,53 @@ def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> 
     return fLCC
 
 
-def calc_complete_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
+def calc_competition_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
     """
-    Calculate Complete Life Cycle Cost. This LCC includes intangible costs.
+    Calculate Competition Life Cycle Cost. This LCC includes intangible costs.
 
     Parameters
     ----------
-    model : The model containing component parts of complete LCC.
-    node : The name of the node for which complete LCC will be calculated.
-    year : The year to calculate complete LCC for.
-    tech : The technology to calculate complete LCC for.
+    model : The model containing component parts of competition LCC.
+    node : The name of the node for which competition LCC will be calculated.
+    year : The year to calculate competition LCC for.
+    tech : The technology to calculate competition LCC for.
 
     Returns
     -------
-    float : The complete LCC, calculated as cLCC = cUC + cAC + SC + EC
+    float : The competition LCC, calculated as cLCC = cUC + cAC + SC + EC
 
     See Also
     --------
     calc_financial_lcc: Calculates financial LCC, which does not include intangible costs.
     """
-    complete_upfront_cost = model.get_param('complete upfront cost', node, year, tech=tech,
+    competition_upfront_cost = model.get_param('competition upfront cost', node, year, tech=tech,
                                             do_calc=True)
-    complete_annual_cost = model.get_param('complete annual cost', node, year, tech=tech,
+    competition_annual_cost = model.get_param('competition annual cost', node, year, tech=tech,
                                            do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
-    emissions_cost = calc_complete_emissions_cost(model, node, year, tech, allow_foresight=True)
+    emissions_cost = calc_competition_emissions_cost(model, node, year, tech, allow_foresight=True)
 
-    complete_lcc = complete_upfront_cost + complete_annual_cost + annual_service_cost + \
+    competition_lcc = competition_upfront_cost + competition_annual_cost + annual_service_cost + \
                    fixed_cost_rate + emissions_cost
 
-    return complete_lcc
+    return competition_lcc
 
 
-def calc_complete_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_competition_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
-    Calculates complete upfront cost, which includes intangible costs.
+    Calculates competition upfront cost, which includes intangible costs.
 
     Parameters
     ----------
-    model : The model containing component parts of complete upfront cost.
-    node : The node to calculate complete upfront cost for.
-    year : The year to calculate complete upfront cost for.
-    tech : The technology to calculate complete upfront cost for.
+    model : The model containing component parts of competition upfront cost.
+    node : The node to calculate competition upfront cost for.
+    year : The year to calculate competition upfront cost for.
+    tech : The technology to calculate competition upfront cost for.
 
     Returns
     -------
-    float : The complete upfront cost, defined as
+    float : The competition upfront cost, defined as
             cUC = (CC - AllocC, + UIC_fixed + UIC_declining) / output * CRF
 
     See Also
@@ -322,9 +322,9 @@ def calc_complete_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: 
     subsidy = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
     output = model.get_param('output', node, year, tech=tech)
 
-    complete_uc = (capital_cost + subsidy) / output * crf
+    competition_uc = (capital_cost + subsidy) / output * crf
 
-    return complete_uc
+    return competition_uc
 
 
 def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
@@ -344,7 +344,7 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
 
     See Also
     --------
-    calc_complete_upfront_cost
+    calc_competition_upfront_cost
     """
     crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
     capital_cost, capital_cost_source = model.get_param('capital cost', node, year, tech=tech, return_source=True, do_calc=True)
@@ -360,20 +360,20 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
     return financial_uc
 
 
-def calc_complete_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
+def calc_competition_annual_cost(model:'CIMS.Model', node: str, year: str, tech: str) -> float:
     """
-    Calculates complete annual cost, which includes intangible costs.
+    Calculates competition annual cost, which includes intangible costs.
 
     Parameters
     ----------
-    model : The model containing component parts of complete annual cost.
-    node : The node to calculate complete annual cost for.
-    year : The year to calculate complete annual cost for.
-    tech : The technology to calculate complete annual cost for.
+    model : The model containing component parts of competition annual cost.
+    node : The node to calculate competition annual cost for.
+    year : The year to calculate competition annual cost for.
+    tech : The technology to calculate competition annual cost for.
 
     Returns
     -------
-    float : The complete annual cost, defined as cAC = (OM + AIC_fixed + AIC_declining) / output
+    float : The competition annual cost, defined as cAC = (OM + AIC_fixed + AIC_declining) / output
 
     See Also
     --------
@@ -388,10 +388,10 @@ def calc_complete_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: s
     val_dict = {'year_value': declining_intangible_cost, 'param_source': dic_source}
     model.set_param_internal(val_dict, 'dic', node, year, tech)
 
-    complete_ac = (
+    competition_ac = (
         operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
 
-    return complete_ac
+    return competition_ac
 
 
 def calc_financial_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
@@ -411,7 +411,7 @@ def calc_financial_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: 
 
     See Also
     --------
-    calc_complete_annual_cost
+    calc_competition_annual_cost
     """
     operating_maintenance = model.get_param('fom', node, year, tech=tech)
     output = model.get_param('output', node, year, tech=tech)
@@ -535,7 +535,7 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
     return total_service_cost
 
 
-def calc_complete_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
+def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: str,
                                       tech: str = None) -> float:
     """
     Find the service cost associated with a given technology.

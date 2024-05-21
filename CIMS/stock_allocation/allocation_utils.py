@@ -70,7 +70,7 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
         year_avail = model.get_param('available', node_branch, str(model.base_year), tech=tech)
         year_unavail = model.get_param('unavailable', node_branch, str(model.base_year), tech=tech)
         if year_avail <= int(year) < year_unavail:
-            tech_lcc = model.get_param('lcc_complete', node_branch, year, tech=tech)
+            tech_lcc = model.get_param('competition_lcc', node_branch, year, tech=tech)
             weight = _calculate_lcc_weight(tech_lcc, heterogeneity)
             weights[(node_branch, tech)] = weight
             total_weight += weight
