@@ -156,7 +156,7 @@ calculation_directory = {
     'emissions cost': lcc_calculation.calc_competition_emissions_cost,
     'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
     'lcc_financial': lcc_calculation.calc_financial_lcc,
-    'competition_lcc': lcc_calculation.calc_competition_lcc,
+    'lcc_competition': lcc_calculation.calc_lcc_competition,
     'price': lcc_calculation.calc_price,
     'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
     'price_subsidy': lcc_calculation.calc_price_subsidy
