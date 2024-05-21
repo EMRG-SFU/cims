@@ -150,12 +150,11 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
-        # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen)
-        if node in model.supply_nodes:
-            if weighted_lccs == 0 and int(year) != model.base_year:
-                prev_year = str(int(year) - model.step)
-                weighted_lccs = model.get_param('lcc_financial', node, prev_year,
-                                                context=node.split('.')[-1])
+        # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen) and some sub-trees of demand_nodes
+        if weighted_lccs == 0 and int(year) != model.base_year:
+            prev_year = str(int(year) - model.step)
+            weighted_lccs = model.get_param('lcc_financial', node, prev_year,
+                                            context=node.split('.')[-1])
 
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
