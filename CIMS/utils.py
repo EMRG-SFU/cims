@@ -290,10 +290,13 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             if context:
                 try:
                     val = val[context]
+                    if sub_context:
+                        try:
+                            val = val[sub_context]
+                        except KeyError:
+                            val = None
                 except KeyError:
                     val = None
-                if sub_context:
-                    val = val[sub_context]
             elif None in val:
                 val = val[None]
 
