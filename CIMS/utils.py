@@ -156,7 +156,7 @@ calculation_directory = {
     'emissions cost': lcc_calculation.calc_competition_emissions_cost,
     'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
     'lcc_financial': lcc_calculation.calc_financial_lcc,
-    'competition_lcc': lcc_calculation.calc_competition_lcc,
+    'lcc_competition': lcc_calculation.calc_lcc_competition,
     'price': lcc_calculation.calc_price,
     'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
     'price_subsidy': lcc_calculation.calc_price_subsidy
@@ -170,7 +170,6 @@ inheritable_params = [
     'retrofit_existing_min',
     'retrofit_existing_max',
     'retrofit_heterogeneity',
-    'retirement intercept',
 ]
 
 
@@ -291,10 +290,13 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             if context:
                 try:
                     val = val[context]
+                    if sub_context:
+                        try:
+                            val = val[sub_context]
+                        except KeyError:
+                            val = None
                 except KeyError:
                     val = None
-                if sub_context:
-                    val = val[sub_context]
             elif None in val:
                 val = val[None]
 

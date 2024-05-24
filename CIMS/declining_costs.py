@@ -147,7 +147,7 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
     dic_min = model.get_param('dic_min', node, year, tech=tech)
 
     # In base year, dic==dic_0
-    if int(year) == int(model.base_year):
+    if int(year) <= int(model.base_year + model.step):
         return dic_initial
 
     # Find the tech's NMS & DIC in the previous year
