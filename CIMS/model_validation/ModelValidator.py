@@ -16,8 +16,8 @@ class ModelValidator:
                             '.xlsm': 'xlrd'}
         self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
-        if default_values:
-            self.default_values = default_values
+        self.default_param_df = self.get_default_df(default_values)
+
         self.sheet_map = sheet_map
         self.node_col = node_col
         self.target_col = target_col
@@ -70,6 +70,28 @@ class ModelValidator:
         mdf['Parameter'] = mdf['Parameter'].str.lower()
 
         return mdf
+
+    def get_default_df(self, default_values):
+        if default_values is None:
+            return pd.DataFrame()
+
+        # Read model_description from excel
+        mixed_type_columns = ['Default value']
+        df = pd.read_excel(
+            default_values,
+            header=0,
+            converters={c: _bool_as_string for c in mixed_type_columns},
+            engine=self.excel_engine).replace(
+                {np.nan: None, 'False': False, 'True': True})
+
+        # Remove empty rows
+        df = df.dropna(axis=0, how="all")
+
+        # Convert parameter strings to lower case
+        df['Parameter'] = df['Parameter'].str.lower()
+
+        # Return
+        return df
 
     def _create_branch_to_node_index_map(self):
         branch_index = {b: i for i, b in self.model_df[self.node_col].drop_duplicates(keep='first').items()}
@@ -125,6 +147,7 @@ class ModelValidator:
         self._run_check(validate.market_child_requested, validator=self)
         self._run_check(validate.revenue_recycling_at_techs, validator=self)
         self._run_check(validate.both_cop_p2000_defined, validator=self)
-
-
-
+        self._run_check(validate.inconsistent_service_req_context, validator=self)
+        self._run_check(validate.inconsistent_tech_refs, validator=self)
+        self._run_check(validate.service_req_at_tech_node, validator=self)
+        self._run_check(validate.missing_parameter_default, validator=self)

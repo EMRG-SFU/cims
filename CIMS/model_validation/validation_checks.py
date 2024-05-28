@@ -160,7 +160,6 @@ def supply_nodes_no_lcc_or_price(validator):
     return no_prod_cost, concern_key, concern_desc
 
 
-
 def techs_no_base_market_share(validator):
     """
     Identify technologies which have a marketshare line, but do not have a base year market share.
@@ -350,3 +349,129 @@ def both_cop_p2000_defined(validator):
     concern_key, concern_desc = ('nodes_with_cop_and_p2000',
                                  'node(s) have both COP & P2000 exogenously defined')
     return nodes_with_cop_and_p2000, concern_key, concern_desc
+
+
+def inconsistent_service_req_context(validator):
+    """
+    Identify nodes/technologies that have a service requested parameter with
+    inconsistent context & target values.
+    """
+    # The model's DataFrame
+    data = validator.model_df
+
+    # Filter to Only Include Service Requested
+    services_req = data[data['Parameter'] == SERV_REQUESTED]
+
+    # Select Target & Context
+    rows_with_bad_values = services_req[~(services_req['Target'].str.split('.').str[-1] == services_req['Context'])]
+
+    # Create our Warning information
+    inconsistent_context = list(zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col], rows_with_bad_values['Target'].str.split('.').str[-1], rows_with_bad_values['Context']))
+
+    concern_key, concern_desc = ('inconsistent_service_req_context',
+                                 "nodes/technologies have inconsistent values"
+                                 "for Target & Context")
+
+    return inconsistent_context, concern_key, concern_desc
+
+
+def inconsistent_tech_refs(validator):
+    """
+    Identify nodes which include "technology" column values which reference a
+    technology which does not exist at that node.
+    """
+    # The model's DataFrame
+    data = validator.model_df
+    tech_data = data[~data['Technology'].isna()]
+
+    # Build a Node -> [Technologies] map
+    tech_rows = tech_data[tech_data['Parameter']=='technology']
+    node_tech_map = {}
+    for node, tech_context in zip(tech_rows[validator.node_col], tech_rows['Context']):
+        if node not in node_tech_map:
+            node_tech_map[node] = []
+        node_tech_map[node].append(tech_context)
+
+    # Find Unique Node/Branch + Technology rows
+    inconsistent_tech_refs = []
+    for idx, node, tech in zip(tech_data.index, tech_data[validator.node_col], tech_data['Technology']):
+        if tech not in node_tech_map[node]:
+            inconsistent_tech_refs.append((idx, node, tech))
+
+    # Create Warning information
+    concern_key, concern_desc = ('inconsistent_tech_refs',
+                                 "rows reference non-existent technologies")
+
+    return inconsistent_tech_refs, concern_key, concern_desc
+
+
+def service_req_at_tech_node(validator):
+    """
+    Identify tech or node-tech compete nodes where a service request is
+    specified at the node level.
+
+    The implication of this is that values such as cumul_emissions_cost_rate
+    will be incorrect.
+    """
+    # The model's DataFrame
+    data = validator.model_df
+
+    # Find all [Node-]Tech compete nodes
+    tech_nodes = data[(data['Parameter']==COMP_TYPE) &
+                      (data['Context'].str.lower().isin(['node tech compete', 'tech compete']))][validator.node_col].unique()
+
+
+    # Find service request rows specified at the node level of a [node-]tech
+    # compete node
+    req_at_tech_node_rows = data[(data['Parameter'] == SERV_REQUESTED) &
+                                 (data['Technology'].isna()) &
+                                 (data[validator.node_col].isin(tech_nodes))]
+
+    # Find Unique Node/Branch + Technology rows
+    service_req_at_tech_node = []
+    for idx, node in zip(req_at_tech_node_rows.index,
+                               req_at_tech_node_rows[validator.node_col]):
+        service_req_at_tech_node.append((idx, node))
+
+    # Create Warning information
+    concern_key, concern_desc = ('service_req_at_tech_node',
+                                 "rows make node-level service requests from"
+                                 "tech compete or node-tech compete nodes")
+
+    return service_req_at_tech_node, concern_key, concern_desc
+
+# node_tech_defaults
+def missing_parameter_default(validator):
+    """
+    Identify parameters in the model file which are missing from the default
+    parameter file.
+
+    If no default parameters have been specified, than this check is ignored.
+    """
+    if len(validator.default_param_df) == 0:
+        missing_parameter_default = []
+        # Create Warning information
+        concern_key, concern_desc = ('missing_parameter_default',
+                                    "parameters are in the model but are"
+                                    "missing from the default parameter file. "
+                                    "Note, no default parameter file was provided")
+
+    else:
+        # The model's DataFrame
+        data = validator.model_df.dropna(how='all')
+
+        # Find all parameter names
+        params_no_defs = data[~data['Parameter'].isin(validator.default_param_df['Parameter'])]['Parameter'].value_counts()
+
+        # Find Unique Node/Branch + Technology rows
+        missing_parameter_default = []
+        for parameter, occurences in params_no_defs.items():
+            missing_parameter_default.append((parameter,
+                                              f"{occurences} occurences"))
+
+        # Create Warning information
+        concern_key, concern_desc = ('missing_parameter_default',
+                                    "parameters are in the model, but do not "
+                                    "have default values")
+
+    return missing_parameter_default, concern_key, concern_desc
