@@ -10,8 +10,10 @@ from pathlib import Path
 
 class ModelValidator:
     def __init__(self, infile, sheet_map, col_list, year_list, sector_list,
-                 default_values=None, node_col="Branch", target_col="Target", root_node="CIMS"):
+                 scenario_files=None, default_values=None, node_col="Branch",
+                 target_col="Target", root_node="CIMS"):
         self.infile = infile
+        self.scenario_files = scenario_files or []
         excel_engine_map = {'.xlsb': 'pyxlsb',
                             '.xlsm': 'xlrd'}
         self.excel_engine = excel_engine_map[Path(self.infile).suffix]
@@ -38,20 +40,21 @@ class ModelValidator:
     def _get_model_df(self):
         # Read in list of sheets from 'Lists' sheet in model description
         appended_data = []
-        for sheet in self.sheet_map:
-            try:
-                mixed_type_columns = ['Context']
-                sheet_df = pd.read_excel(
-                    self.infile,
-                    sheet_name=sheet,
-                    header=1,
-                    converters={c:_bool_as_string for c in mixed_type_columns},
-                    engine=self.excel_engine).replace(
-                        {np.nan: None, 'False': False, 'True': True})
-                appended_data.append(sheet_df)
+        for file in [self.infile] + self.scenario_files:
+            for sheet in self.sheet_map:
+                try:
+                    mixed_type_columns = ['Context']
+                    sheet_df = pd.read_excel(
+                        file,
+                        sheet_name=sheet,
+                        header=1,
+                        converters={c:_bool_as_string for c in mixed_type_columns},
+                        engine=self.excel_engine).replace(
+                            {np.nan: None, 'False': False, 'True': True})
+                    appended_data.append(sheet_df)
 
-            except ValueError:
-                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
+                except ValueError:
+                    print(f"Warning: {sheet} not included in {file}. Sheet was not imported into model.")
 
         model_df = pd.concat(appended_data,
                              ignore_index=True)  # Add province sheets together and re-index
@@ -151,3 +154,4 @@ class ModelValidator:
         self._run_check(validate.inconsistent_tech_refs, validator=self)
         self._run_check(validate.service_req_at_tech_node, validator=self)
         self._run_check(validate.missing_parameter_default, validator=self)
+        self._run_check(validate.min_max_conflicts, validator=self)

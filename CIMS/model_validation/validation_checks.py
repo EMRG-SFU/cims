@@ -440,7 +440,7 @@ def service_req_at_tech_node(validator):
 
     return service_req_at_tech_node, concern_key, concern_desc
 
-# node_tech_defaults
+
 def missing_parameter_default(validator):
     """
     Identify parameters in the model file which are missing from the default
@@ -475,3 +475,43 @@ def missing_parameter_default(validator):
                                     "have default values")
 
     return missing_parameter_default, concern_key, concern_desc
+
+
+def min_max_conflicts(validator):
+    """
+    Identify technologies where the market share limits set conflict with one
+    another. For example, max=0.5<min=0.7.
+    """
+    # The model's DataFrame
+    data = validator.model_df
+
+    # Min/Max Marketshare Limits
+    ms_min_limits = data[data['Parameter'] == 'market share new_min']
+    ms_max_limits = data[data['Parameter'] == 'market share new_max']
+
+    # Build a Node -> [Technologies] map
+    df = pd.merge(ms_min_limits, ms_max_limits,
+                  how='inner', validate='many_to_many',
+                  on=['Branch', 'Region', 'Sector', 'Technology'],
+                  suffixes=["_min", "_max"])
+
+    issues = {}
+    for y in get_year_cols(data):
+        incongruent_nodes = df[df[f"{y}_min"] > df[f"{y}_max"]]
+        for branch, tech in zip(incongruent_nodes['Branch'], incongruent_nodes['Technology']):
+            if (branch, tech) not in issues:
+                issues[(branch, tech)] = []
+            issues[(branch, tech)].append(y)
+
+
+    # Find Unique Node/Branch + Technology rows
+    min_max_conflicts = []
+    for ((node, tech), years) in issues.items():
+        min_max_conflicts.append((node, tech, years))
+
+    # Create Warning information
+    concern_key, concern_desc = ('min_max_marketshare_conflict',
+                                 "Technologies contain marketshare limits that "
+                                 "conflict with one another (i.e. min > max)")
+
+    return min_max_conflicts, concern_key, concern_desc
