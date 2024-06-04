@@ -395,8 +395,12 @@ def inconsistent_tech_refs(validator):
     # Find Unique Node/Branch + Technology rows
     inconsistent_tech_refs = []
     for idx, node, tech in zip(tech_data.index, tech_data[validator.node_col], tech_data['Technology']):
-        if tech not in node_tech_map[node]:
+        try:
+            if tech not in node_tech_map[node]:
+                inconsistent_tech_refs.append((idx, node, tech))
+        except KeyError:
             inconsistent_tech_refs.append((idx, node, tech))
+
 
     # Create Warning information
     concern_key, concern_desc = ('inconsistent_tech_refs',
@@ -511,7 +515,70 @@ def min_max_conflicts(validator):
 
     # Create Warning information
     concern_key, concern_desc = ('min_max_marketshare_conflict',
-                                 "Technologies contain marketshare limits that "
+                                 "technologies contain marketshare limits that "
                                  "conflict with one another (i.e. min > max)")
 
     return min_max_conflicts, concern_key, concern_desc
+
+
+def new_nodes_in_scenario(validator):
+    """
+    Identify new nodes included in the scenario models (i.e. were not in the
+    base models) but which don't have a service provided parameter.
+    """
+    # The model dataframes
+    base_data = validator._get_model_df(read_scenario_files=False)
+    scenario_data = validator._get_model_df(read_base_file=False)
+
+    # Find nodes from base and scenario files
+    base_nodes = set(base_data[validator.node_col].dropna())
+    scen_nodes = set(scenario_data[validator.node_col].dropna())
+    declared_new_nodes = set(scenario_data[scenario_data['Parameter']=='service provided']\
+        [validator.node_col].dropna())
+
+    # Find new nodes which haven't been declared without a service provided line
+    new_nodes_in_scenario = list(scen_nodes\
+                                .difference(declared_new_nodes)\
+                                .difference(base_nodes))
+
+    # Create Warning information
+    concern_key, concern_desc = ('new_nodes_in_scenario',
+                                 "new nodes were included in scenario models "
+                                 "without a service provided parameter")
+
+    return new_nodes_in_scenario, concern_key, concern_desc
+
+
+def new_techs_in_scenario(validator):
+    """
+    Identify new technologies included in the scenario models (i.e. were not in
+    the base models) but which don't have a technology parameter.
+    """
+    # The model dataframes
+    base_data = validator._get_model_df(read_scenario_files=False)
+    scenario_data = validator._get_model_df(read_base_file=False)
+
+    # Find nodes from base and scenario files
+    base_techs = set([tuple(x) for x in
+                      base_data[[validator.node_col, 'Technology']]\
+                        .dropna().drop_duplicates().values])
+    scen_techs = set([tuple(x) for x in
+                      scenario_data[[validator.node_col, 'Technology']]\
+                        .dropna().drop_duplicates().values])
+
+    scen_declared_techs = scenario_data[scenario_data['Parameter']=='technology']
+    declared_new_techs = set([tuple(x) for x in
+                              scen_declared_techs[[validator.node_col, 'Technology']]\
+                                .dropna().drop_duplicates().values])
+
+    # Find new nodes which haven't been declared without a service provided line
+    new_techs_in_scenario = list(scen_techs\
+                                .difference(declared_new_techs)\
+                                .difference(base_techs))
+
+    # Create Warning information
+    concern_key, concern_desc = ('new_techs_in_scenario',
+                                 "new technologies were included in scenario"
+                                 "models without a technology parameter")
+
+    return new_techs_in_scenario, concern_key, concern_desc

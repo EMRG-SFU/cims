@@ -37,10 +37,16 @@ class ModelValidator:
         self.index2branch_map = self._create_index_to_branch_map()
         self.branch2node_index_map = self._create_branch_to_node_index_map()
 
-    def _get_model_df(self):
+    def _get_model_df(self, read_base_file=True, read_scenario_files=True):
+        files_to_read = []
+        if read_base_file:
+            files_to_read.append(self.infile)
+        if read_scenario_files:
+            files_to_read += self.scenario_files
+
         # Read in list of sheets from 'Lists' sheet in model description
         appended_data = []
-        for file in [self.infile] + self.scenario_files:
+        for file in files_to_read:
             for sheet in self.sheet_map:
                 try:
                     mixed_type_columns = ['Context']
@@ -155,3 +161,5 @@ class ModelValidator:
         self._run_check(validate.service_req_at_tech_node, validator=self)
         self._run_check(validate.missing_parameter_default, validator=self)
         self._run_check(validate.min_max_conflicts, validator=self)
+        self._run_check(validate.new_nodes_in_scenario, validator=self)
+        self._run_check(validate.new_techs_in_scenario, validator=self)
