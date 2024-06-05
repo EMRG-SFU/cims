@@ -142,7 +142,7 @@ class ModelValidator:
 
         self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
         self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
-        self._run_check(validate.unreferenced_nodes, providers=providers, requested=requested, root_node=self.root)
+        self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
         self._run_check(validate.nodes_no_provided_service, validator=self)
         self._run_check(validate.invalid_competition_type, df=self.model_df)
         self._run_check(validate.nodes_requesting_self, validator=self)
@@ -163,3 +163,4 @@ class ModelValidator:
         self._run_check(validate.min_max_conflicts, validator=self)
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
+        self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)

@@ -39,20 +39,26 @@ def unspecified_nodes(providers, requested):
     the model description.
     """
     referenced_unspecified = [(i, v) for i, v in requested.items() if v not in providers.values]
-    concern_key, concern_desc = 'unspecified_nodes', 'non-root nodes are never referenced'
+    concern_key, concern_desc = ("undefined_nodes",
+                                 "nodes are requested by other nodes without "
+                                 "being defined in the model")
+
     return referenced_unspecified, concern_key, concern_desc
 
 
-def unreferenced_nodes(providers, requested, root_node):
+def unrequested_nodes(providers, requested, root_node):
     """
-    Identify any non-root nodes which are specified in the model description but are never
-    requested by other nodes.
+    Identify any non-root nodes which are specified in the model description but
+    are never requested by other nodes.
     """
-    specified_unreferenced = [(i, v) for i, v in providers.items() if
-                              (v not in requested.values) and (v != root_node)]
+    unrequested_nodes = [(i, v) for i, v in providers.items() if
+                            (v not in requested.values) and (v != root_node)]
 
-    concern_key, concern_desc = 'unreferenced_nodes', 'non-root nodes are never referenced'
-    return specified_unreferenced, concern_key, concern_desc
+    concern_key, concern_desc = ("unrequested_nodes",
+                                "nodes are defined in the model, but are not "
+                                "requested by any other nodes")
+
+    return unrequested_nodes, concern_key, concern_desc
 
 
 def mismatched_node_names(validator, providers):
@@ -582,3 +588,30 @@ def new_techs_in_scenario(validator):
                                  "models without a technology parameter")
 
     return new_techs_in_scenario, concern_key, concern_desc
+
+def zero_requested_nodes(validator, providers, root_node):
+    """
+    Identify any non-root nodes which are specified in the model description
+    but are only requested by node's via service request rows exogenously set to
+    0.
+    """
+    data = validator.model_df
+    request_lines = data[data['Parameter']=='service requested']
+    all_requested = set(request_lines[validator.target_col])
+
+    zero_request_line = request_lines[get_year_cols(data)].sum(axis=1)==0
+    non_zero_request_lines = request_lines[~zero_request_line]
+    non_zero_requested = set(non_zero_request_lines[validator.target_col])
+
+
+    zero_requested = [(i, v) for i, v in providers.items() if
+                      (v in all_requested) and
+                      (v not in non_zero_requested) and
+                      (v != root_node)]
+
+    concern_key, concern_desc = ("zero_requested_nodes",
+                                "nodes are defined in the model, but are only "
+                                "requested by nodes where all service request "
+                                "values are set to 0")
+
+    return zero_requested, concern_key, concern_desc
