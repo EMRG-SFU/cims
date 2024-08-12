@@ -275,7 +275,7 @@ class Model:
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
-        self.loops = graph_utils.find_loops(self.graph, warn=show_warnings)
+        self.loops = graph_utils.find_loops(self.graph, warn=True)
 
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
