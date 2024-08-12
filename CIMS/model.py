@@ -168,9 +168,6 @@ class Model:
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,str(self.base_year))
         self.graph = graph
 
-        # Identify Loops
-        self.loops = graph_utils.find_loops(graph, warn=True)
-
     def _initialize_tax(self):
         # Initialize Taxes
         for year in self.years:
@@ -277,6 +274,8 @@ class Model:
         """
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
+
+        self.loops = graph_utils.find_loops(self.graph, warn=show_warnings)
 
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
