@@ -416,7 +416,7 @@ def add_node_data(graph, current_node, node_dfs):
                    'target': target,
                    'source': source,
                    'unit': unit,
-                   'year_value': year_value,
+                   'year_value': utils.infer_type(year_value),
                    'param_source': 'model'}
 
             if param not in year_dict:
@@ -513,7 +513,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
                    'target': target,
                    'source': source,
                    'unit': unit,
-                   'year_value': year_value,
+                   'year_value': utils.infer_type(year_value),
                    'param_source': 'model'}
 
             # If the parameter isn't in the year_dict yet, add it

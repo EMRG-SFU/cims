@@ -655,6 +655,9 @@ class Model:
                                     emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
                                 except KeyError:
                                     continue
+                                except:
+                                    print((type(emission_data[ghg][emission_type]['year_value']), type(gwp[ghg])))
+                                    raise RuntimeError(str((emission_data[ghg][emission_type]['year_value'], gwp[ghg])))
 
             # Emissions from a node
             elif 'emissions' in graph.nodes[node][year]:

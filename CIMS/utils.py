@@ -11,6 +11,34 @@ from . import lcc_calculation
 from . import declining_costs
 from . import vintage_weighting
 
+def infer_type(d):
+    """
+    `d` is a value assumed to be a string (but could be anything). We try to parse it to a float that is returned.
+    If that fails, we strip out any commas or percent signs, and try again. If that still fails, we just give it back
+    without doing anything to it.
+    """
+    if (type(d) == str) and ('%' in d):
+        try:
+            return( float(d.replace("%","")) / 100.0)
+        except:
+            return( d )
+    elif (type(d) == str) and (',' in d):
+        try:
+            return( float(d.replace(",","")) )
+        except:
+            return( d )
+    else:
+        try:
+            return( float(d) )
+        except:
+            return( d )
+
+def infer_type_pdCol(col):
+    """
+    `col` is a pandas dataframe column of possibly mixed type. We iterate through the items in the column, applying the
+    infer_type function, and return the transformed column.
+    """
+    return( col.apply(lambda x: infer_type(x)) )
 
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
