@@ -118,8 +118,9 @@ class ModelValidator:
 
         info_str = f"{len(concerns)} {concern_desc}. {more_info}"
 
-        if self.verbose:
+        if self.verbose or len(concerns) > 0:
             print(info_str)
+            self.validate_count = 1
         if self.raise_warnings:
             warnings.warn(info_str)
 
@@ -140,27 +141,39 @@ class ModelValidator:
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
 
-        self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
-        self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
-        self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
-        self._run_check(validate.nodes_no_provided_service, validator=self)
+        print("*** Errors ***")
+        self.validate_count = 0
         self._run_check(validate.invalid_competition_type, df=self.model_df)
+        self._run_check(validate.nodes_no_provided_service, validator=self)
+        self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
         self._run_check(validate.nodes_requesting_self, validator=self)
-        self._run_check(validate.nodes_no_requested_service, validator=self)
-        self._run_check(validate.nodes_with_zero_output, validator=self)
         self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
-        self._run_check(validate.techs_no_base_market_share, validator=self)
-        self._run_check(validate.duplicate_service_requests, validator=self)
-        self._run_check(validate.bad_service_req, validator=self)
+        self._run_check(validate.nodes_with_zero_output, validator=self)
+        self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
+        self._run_check(validate.inconsistent_tech_refs, validator=self)
         self._run_check(validate.tech_compete_nodes_no_techs, validator=self)
-        self._run_check(validate.market_child_requested, validator=self)
+        self._run_check(validate.techs_no_base_market_share, validator=self)
+        self._run_check(validate.service_req_at_tech_node, validator=self)
         self._run_check(validate.revenue_recycling_at_techs, validator=self)
         self._run_check(validate.both_cop_p2000_defined, validator=self)
-        self._run_check(validate.inconsistent_service_req_context, validator=self)
-        self._run_check(validate.inconsistent_tech_refs, validator=self)
-        self._run_check(validate.service_req_at_tech_node, validator=self)
-        self._run_check(validate.missing_parameter_default, validator=self)
         self._run_check(validate.min_max_conflicts, validator=self)
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
+        if self.validate_count == 0:
+            print("No errors found!")
+
+        print()
+        print("*** Warnings ***")
+        self.validate_count = 0
+        self._run_check(validate.missing_parameter_default, validator=self)
+        self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
+        self._run_check(validate.nodes_no_requested_service, validator=self)
+        self._run_check(validate.duplicate_service_requests, validator=self)
+        self._run_check(validate.bad_service_req, validator=self)
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
+        if self.validate_count == 0:
+            print("No warnings found!")
+
+        # Remove?
+        # self._run_check(validate.market_child_requested, validator=self)
+        
