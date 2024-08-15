@@ -168,7 +168,7 @@ def get_demand_side_nodes(graph: nx.DiGraph) -> List[str]:
     supply_nodes = set([n for n, d in graph.nodes(data=True) if (SUPPLY_SPECIFIER in d) and d[SUPPLY_SPECIFIER]])
 
     # Find the structural descendants of supply_nodes
-    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d['type']]
     structural_graph = graph.edge_subgraph(structural_edges)
 
     descendants = set()
@@ -198,7 +198,7 @@ def get_supply_side_nodes(graph: nx.DiGraph) -> List[str]:
     supply_nodes = [n for n, d in graph.nodes(data=True) if (SUPPLY_SPECIFIER in d) and d[SUPPLY_SPECIFIER]]
 
     # Find the structural ancestors of the supply nodes
-    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d['type']]
     structural_graph = graph.edge_subgraph(structural_edges)
 
     structural_ancestors = set()
@@ -361,8 +361,8 @@ def add_node_data(graph, current_node, node_dfs):
     graph = add_node_constant(graph, current_node_df, current_node, SUPPLY_SPECIFIER)
     current_node_df = current_node_df[current_node_df['Parameter'] != SUPPLY_SPECIFIER]
     # 3.2 structural aggregation
-    graph = add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
+    # graph = add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
+    # current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
     # 3.3 competition type
     graph = add_node_constant(graph, current_node_df, current_node, COMPETITION_TYPE, required=True)
     current_node_df = current_node_df[current_node_df['Parameter'] != COMPETITION_TYPE]
@@ -689,7 +689,7 @@ def add_node_constant(graph, node_df, node, parameter, required=False):
 
 
 # ****************************
-# 3 - Making the graph - Edges
+# 4 - Making the graph - Edges
 # ****************************
 def make_or_update_edges(graph, node_dfs, tech_dfs):
     """
@@ -733,9 +733,10 @@ def add_or_update_edge(graph, edge, edge_data):
 def add_structural_edges_from_dfs(graph, node_dfs, tech_dfs):
     # From Node DFs
     for node in node_dfs:
-        graph = add_edges_of_one_type(graph, node, 
+        graph = add_edges_of_one_type(graph, 
+                                      node, 
                                       node_dfs[node], 
-                                      edge_type='structure')
+                                      edge_type='structural')
 
     # From Tech DFs
     for node in tech_dfs:
@@ -743,7 +744,7 @@ def add_structural_edges_from_dfs(graph, node_dfs, tech_dfs):
             graph = add_edges_of_one_type(graph, 
                                           node, 
                                           tech_dfs[node][tech], 
-                                          edge_type='structure')
+                                          edge_type='structural')
     
     return graph
 
@@ -751,7 +752,8 @@ def add_structural_edges_from_dfs(graph, node_dfs, tech_dfs):
 def add_request_provide_edges_from_dfs(graph, node_dfs, tech_dfs):
     # From Node DFs
     for node in node_dfs:
-        graph = add_edges_of_one_type(graph, node, 
+        graph = add_edges_of_one_type(graph, 
+                                      node, 
                                       node_dfs[node], 
                                       edge_type='request_provide')
 
@@ -769,7 +771,8 @@ def add_request_provide_edges_from_dfs(graph, node_dfs, tech_dfs):
 def add_aggregation_edges_from_dfs(graph, node_dfs):
     # From Node DFs
     for node in node_dfs:
-        graph = add_edges_of_one_type(graph, node, 
+        graph = add_edges_of_one_type(graph, 
+                                      node, 
                                       node_dfs[node], 
                                       edge_type='aggregation')
     
@@ -792,13 +795,13 @@ def add_edges_of_one_type(graph, node, df, edge_type):
 
 def find_edges(graph, node, df, edge_type):
     edges = []
-    if edge_type == 'structure':
+    if edge_type == 'structural':
         # Find edge based on branch structure.
         # e.g. If our node was CIMS.Canada.Alberta.Residential we create an edge Alberta->Residential
         parent = '.'.join(node.split('.')[:-1])
         if parent:
             edge = (parent, node)
-            edge_data = {'type': 'structure'}
+            edge_data = {'type': 'structural'}
             edges.append((edge, edge_data))
     
     elif edge_type == 'request_provide':
