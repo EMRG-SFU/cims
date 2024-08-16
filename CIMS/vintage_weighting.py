@@ -10,7 +10,7 @@ def _get_vintage_weights(model, node, year, tech):
     """
     # Total Stock
     total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
-    if (total_stock is None) or (round(total_stock, 5) == 0):
+    if (total_stock is None) or (math.isclose(total_stock, 0, abs_tol=1e-3)):
         vintage_weights = {year: 1}
     elif src == 'previous_year':
         stock_by_vintage = {}

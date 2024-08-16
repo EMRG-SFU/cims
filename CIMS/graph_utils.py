@@ -9,7 +9,10 @@ from . import utils
 from . import loop_resolution
 from . import cost_curves
 
-SUPPLY_SPECIFIER = 'is supply'
+IS_SUPPLY_PARAM = 'is supply'
+TREE_IDX_PARAM = 'tree index'
+COMP_TYPE_PARAM = 'competition type'
+EMISSIONS_GWP_PARAM = 'emissions gwp'
 
 # **************************
 # 1- Perform action in graph
@@ -88,12 +91,12 @@ def get_supply_nodes(graph):
     """
     supply_nodes = []
     for node in graph.nodes:
-        if graph.nodes[node][SUPPLY_SPECIFIER]:
+        if graph.nodes[node][IS_SUPPLY_PARAM]:
             supply_nodes.append(node)
     return supply_nodes
 
 
-def get_GHG_and_Emissions(graph, year):
+def get_ghg_and_emissions(graph, year):
     """
     Return 2 lists consisting of all the GHGs (CO2, CH4, etc.) and all the emission types (Process, Fugitive, etc.)
     Return 1 dictionary containing the GHGs as keys and GWPs as values
@@ -141,9 +144,9 @@ def get_GHG_and_Emissions(graph, year):
             emission_type = list(set(emission_type + node_emission_type))
 
         #GWP from CIMS node
-        if 'emissions_gwp' in data[year]:
-            for ghg2 in data[year]['emissions_gwp']:
-                gwp[ghg2] = data[year]['emissions_gwp'][ghg2]['year_value']
+        if EMISSIONS_GWP_PARAM in data[year]:
+            for ghg2 in data[year][EMISSIONS_GWP_PARAM]:
+                gwp[ghg2] = data[year][EMISSIONS_GWP_PARAM][ghg2]['year_value']
 
     return ghg, emission_type, gwp
 
@@ -163,7 +166,7 @@ def get_demand_side_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only non-supply nodes.
     """
     # Find Supply Nodes
-    supply_nodes = set([n for n, d in graph.nodes(data=True) if (SUPPLY_SPECIFIER in d) and d[SUPPLY_SPECIFIER]])
+    supply_nodes = set([n for n, d in graph.nodes(data=True) if (IS_SUPPLY_PARAM in d) and d[IS_SUPPLY_PARAM]])
 
     # Find the structural descendants of supply_nodes
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
@@ -193,7 +196,7 @@ def get_supply_side_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only supply nodes, their structural ancestors, and their descendants
     """
     # Find Supply Nodes
-    supply_nodes = [n for n, d in graph.nodes(data=True) if (SUPPLY_SPECIFIER in d) and d[SUPPLY_SPECIFIER]]
+    supply_nodes = [n for n, d in graph.nodes(data=True) if (IS_SUPPLY_PARAM in d) and d[IS_SUPPLY_PARAM]]
 
     # Find the structural ancestors of the supply nodes
     structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structure' in d['type']]
@@ -344,31 +347,32 @@ def add_node_data(graph, current_node, node_dfs):
 
     Returns
     -------
-    networkx.Graph
-        `graph` with `node` added, along with its associated data.
+    None. But has the consequence of adding node (and its associated data) to 
+    graph. 
     """
     # 1 Copy the current graph & the current node's dataframe
     current_node_df = copy.copy(node_dfs[current_node])
-    graph = copy.copy(graph)
 
     # 2 Add an empty node to the graph
     graph.add_node(current_node)
 
     # 2.1 Add index for use in the results viewer file
-    if 'tree index' not in graph.nodes[current_node]:
-        graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
-        graph.nodes[current_node]['tree index'] = current_node_df.index[0].item() + graph.cur_tree_index[0]
+    try:
+        if TREE_IDX_PARAM not in graph.nodes[current_node]:
+            graph.nodes[current_node][TREE_IDX_PARAM] = current_node_df.index[0].item()
+    except IndexError:
+        pass
 
     # 3 Set boolean node constants
     # 3.1 is supply
-    graph = add_node_constant(graph, current_node_df, current_node, SUPPLY_SPECIFIER)
-    current_node_df = current_node_df[current_node_df['Parameter'] != SUPPLY_SPECIFIER]
+    graph = _add_node_constant(graph, current_node_df, current_node, IS_SUPPLY_PARAM)
+    current_node_df = current_node_df[current_node_df['Parameter'] != IS_SUPPLY_PARAM]
     # 3.2 structural aggregation
-    graph = add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
+    graph = _add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
     current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
     # 3.3 competition type
-    graph = add_node_constant(graph, current_node_df, current_node, 'competition type', required=True)
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'competition type']
+    graph = _add_node_constant(graph, current_node_df, current_node, COMP_TYPE_PARAM, required=True)
+    current_node_df = current_node_df[current_node_df['Parameter'] != COMP_TYPE_PARAM]
 
     # 4 Set node's region and sector
     region_list = []
@@ -381,7 +385,7 @@ def add_node_data(graph, current_node, node_dfs):
         pass
     current_node_df = current_node_df.drop(columns=['Region'])
 
-    if graph.nodes[current_node]['competition type'] not in ['root', 'region']:
+    if graph.nodes[current_node][COMP_TYPE_PARAM] not in ['root', 'region']:
         sector_list = []
         for item in current_node_df['Sector']:
             if item not in sector_list and item != None:
@@ -393,7 +397,7 @@ def add_node_data(graph, current_node, node_dfs):
     current_node_df = current_node_df.drop(columns=['Sector'])
     
     # 5 Find the cost curve function
-    comp_type = graph.nodes[current_node]['competition type']
+    comp_type = graph.nodes[current_node][COMP_TYPE_PARAM]
     if comp_type in ['supply - cost curve annual', 'supply - cost curve cumulative']:
         cc_func = cost_curves.build_cost_curve_function(current_node_df)
         graph.nodes[current_node]['cost_curve_function'] = cc_func
@@ -405,72 +409,137 @@ def add_node_data(graph, current_node, node_dfs):
     # 6 For the remaining data, group by year.
     years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
     non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
-
     non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
-        current_year_data = non_year_data + [current_node_df[year]]
-        if year in graph.nodes[current_node]:
-            year_dict = graph.nodes[current_node][year]
-        else:
-            year_dict = {}
-
-        for branch, technology, param, context, sub_context, target, source, unit, year_value \
-                in zip(*current_year_data):
-            dct = {'context': context,
-                   'sub_context': sub_context,
-                   'target': target,
-                   'source': source,
-                   'unit': unit,
-                   'year_value': year_value,
-                   'param_source': 'model'}
-
-            if param not in year_dict:
-                year_dict[param] = {}
-
-            # If a Context value is present, there are 3 possibilities for what needs to happen
-            if context:
-                # 1. We need to place our information in a nested dictionary, keyed by the
-                # context and the sub-context.
-                if sub_context:
-                    if context not in year_dict[param]:
-                        year_dict[param][context] = {}
-                    year_dict[param][context][sub_context] = dct
-
-                # 2. We need to place the information in a dictionary, keyed by only context. In
-                #    these cases, sub_context isn't defined, but there will be values in year_
-                #    value that we need to record.
-                elif year_value is not None:
-                    if 'year_value' in year_dict[param]:
-                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
-                    year_dict[param][context] = dct
-
-                # No year value has been specified, but there are other instances of this parameter
-                # already saved to the model for this node
-                elif year_dict[param]:
-                    # Check that it's not a base dictionary.
-                    if 'year_value' in year_dict[param]:
-                        year_dict[param] = {year_dict[param]['context']: year_dict[param]}
-                    year_dict[param][context] = dct
-
-                # 3. Context contains the value we actually want to record. Additionally, this
-                # value will remain constant across all years.
-                else:
-                    if context in year_dict[param]:
-                        raise ValueError(
-                            f'Multiple values have been set for {param}. Please rectify'
-                            f'this.')
-                    # 1. year_value isn't present, so context is the actual value we want to
-                    # record.
-                    dct['context'] = context
-                    year_dict[param] = dct
-            else:
-                year_dict[param] = dct
-
-        # 6 Add data to node
-        graph.nodes[current_node][year] = year_dict
+        year_data_to_update = non_year_data + [current_node_df[year]]
+        existing_year_dict = _get_current_year_dict(graph, current_node, year)
+        updated_year_dict = _update_year_dict(existing_year_dict, year_data_to_update)
+        graph.nodes[current_node][year] = updated_year_dict
 
     # 7 Return the new graph
     return graph
+
+
+def _get_current_year_dict(graph, node, year, tech=None):
+    if year in graph.nodes[node]:
+        node_year_dict = graph.nodes[node][year]
+
+        if tech is not None:
+            if 'technologies' not in node_year_dict:
+                year_dict = {}
+            elif tech not in node_year_dict['technologies']:
+                year_dict = {}
+            else:
+                year_dict = node_year_dict['technologies'][tech]
+        else:
+            year_dict = node_year_dict
+    else:
+        year_dict = {}
+
+    return year_dict 
+
+
+def _get_existing_value(year_dict, param, context, sub_context):
+    if context: 
+        if sub_context:
+            existing_value = year_dict.get(param, {}).get(context, {}).get(sub_context, {}).get('year_value')
+        else:
+            context_result = year_dict.get(param, {}).get(context, {})
+            if isinstance(context_result, dict):
+                existing_value = year_dict.get(param, {}).get(context, {}).get('year_value')
+            else:
+                existing_value = year_dict.get(param, {}).get('year_value')
+    else:
+        existing_value = year_dict.get(param, {}).get('year_value')
+
+    return existing_value
+
+
+# def _update(year_dict, param, value_dict, context=None, sub_context=None):
+    if context and sub_context:
+        year_dict[param][context][sub_context] = value_dict
+    elif context:
+        year_dict[param][context] = value_dict
+    else:
+        year_dict[param] = value_dict
+    return year_dict
+    
+
+def _allowable_update(existing_value, update_value):
+    # If the value to update is None
+        # if there exists a value -> don't update
+        # if there doesn't exist a value -> update
+    # If the value to update is "None" -> change value to None & update
+    # Otherwise -> update as is
+    if isinstance(update_value, dict):
+        year_value = update_value['year_value']
+        has_existing_val = bool(existing_value)
+    else:
+        year_value = update_value
+        has_existing_val = existing_value is not None
+    
+    if year_value is None:
+        if has_existing_val:
+            return False, None
+        else:
+            return True, update_value
+    elif isinstance(year_value, str) and year_value.lower() == 'none':
+        if isinstance(update_value, dict):
+            update_value['year_value'] = None
+            return True, update_value
+        else:
+            return True, None
+    else:
+        return True, update_value
+
+
+def _update_year_dict(existing_year_dict, update_data):
+    year_dict = copy.deepcopy(existing_year_dict)
+ 
+    for _, _, param, context, sub_context, target, source, unit, year_value \
+        in zip(*update_data):
+        value_dict = {
+            'context': context,
+            'sub_context': sub_context,
+            'target': target,
+            'source': source,
+            'unit': unit,
+            'year_value': year_value,
+            'param_source': 'model'
+            }
+        if param not in year_dict:
+            year_dict[param] = {}
+
+        # Determine whether update should proceed
+        existing_value = _get_existing_value(year_dict, param, context, sub_context)
+        update_ok, value_dict = _allowable_update(existing_value, value_dict)
+        if not update_ok:
+            continue
+        
+        # If a Context value is present, there are 3 possibilities for what needs to happen
+        if context:
+            
+            # 1. We place our value dictionary inside a nested dictionary keyed
+            #    by context & sub-context.
+            if sub_context:
+                if context not in year_dict[param]:
+                    year_dict[param][context] = {}
+                year_dict[param][context][sub_context] = value_dict
+
+            # 2. We place our value dictionary keyed only by context.
+            elif (value_dict['year_value'] is not None) or \
+                ((param in existing_year_dict) and ('year_value' not in existing_year_dict[param])):
+                year_dict[param][context] = value_dict
+
+            # 3. We save context as the year_value, which will remain constant
+            #    across all years.
+            else:
+                value_dict['context'] = context
+                year_dict[param] = value_dict
+        else:
+            year_dict[param] = value_dict
+
+    return year_dict
 
 
 def add_tech_data(graph, node, tech_dfs, tech):
@@ -489,8 +558,7 @@ def add_tech_data(graph, node, tech_dfs, tech):
 
     """
     # 1 Copy the current graph & the current tech's dataframe
-    t_df = copy.copy(tech_dfs[node][tech])
-    graph = copy.copy(graph)
+    t_df = tech_dfs[node][tech]
 
     graph.max_tree_index[0] = max(graph.max_tree_index[0], t_df.index[0].item())
 
@@ -502,65 +570,24 @@ def add_tech_data(graph, node, tech_dfs, tech):
     # we aren't using the value column (its redundant here).
     years = [c for c in t_df.columns if utils.is_year(c)]             # Get Year Columns
     non_years = [c for c in t_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
-
     non_year_data = [t_df[c] for c in non_years]
     for year in years:
-        current_year_data = non_year_data + [t_df[year]]
-        try:
-            year_dict = graph.nodes[node][year]['technologies'][tech]
-        except KeyError:
-            year_dict = {}
-
-        for branch, technology, param, context, sub_context, target, source, unit, year_value \
-                in zip(*current_year_data):
-            dct = {'context': context,
-                   'sub_context': sub_context,
-                   'target': target,
-                   'source': source,
-                   'unit': unit,
-                   'year_value': year_value,
-                   'param_source': 'model'}
-
-            # If the parameter isn't in the year_dict yet, add it
-            if param not in year_dict:
-                year_dict[param] = {}
-
-            # If Context is present, there are 3 possibilities for what needs to happen
-            if context:
-                # 1. We need to place our information in a nested dictionary, keyed by the
-                # context and the sub-context.
-                if sub_context:
-                    if context not in year_dict[param]:
-                        year_dict[param][context] = {}
-                    year_dict[param][context][sub_context] = dct
-
-                # 2. We need to place the information in a dictionary, keyed by only context. In
-                #    these cases, sub_context isn't defined, but there will be values in year_
-                #    value that we need to record.
-                elif year_value is not None:
-                    year_dict[param][context] = dct
-                # 3. Context contains the value we actually want to record. Additionally, this
-                # value will remain constant across all years.
-                else:
-                    if context in year_dict[param]:
-                        raise ValueError(
-                            f'Multiple values have been set for {param}. Please rectify'
-                            f'this.')
-                    dct['context'] = context
-                    year_dict[param] = dct
-            else:
-                year_dict[param] = dct
+        year_data_to_update = non_year_data + [t_df[year]]
+        existing_year_dict = _get_current_year_dict(graph, node, year, tech=tech)
+        updated_year_dict = _update_year_dict(existing_year_dict, year_data_to_update)
 
         # Add technologies key (to the node's data) if needed
         if 'technologies' not in graph.nodes[node][year].keys():
             graph.nodes[node][year]['technologies'] = {}
-
-        # Add the technology specific data for that year
-        graph.nodes[node][year]['technologies'][tech] = year_dict
+        # Add the technology-specific data for that year
+        graph.nodes[node][year]['technologies'][tech] = updated_year_dict
 
         # Add index for use in the results viewer file
-        if 'tree index' not in graph.nodes[node][year]['technologies'][tech]:
-            graph.nodes[node][year]['technologies'][tech]['tree index'] = t_df.index[0].item() + graph.cur_tree_index[0]
+        try:
+            if TREE_IDX_PARAM not in graph.nodes[node][year]['technologies'][tech]:
+                graph.nodes[node][year]['technologies'][tech][TREE_IDX_PARAM] = tree_index
+        except IndexError:
+            pass
 
     # 4 Return the new graph
     return graph
@@ -669,7 +696,7 @@ def make_or_update_nodes(graph, node_dfs, tech_dfs):
     while len(node_dfs_to_add) > 0:
         node_data = node_dfs_to_add.pop(0)
         try:
-            new_graph = add_node_data(graph, node_data, node_dfs)
+            add_node_data(graph, node_data, node_dfs)
         except KeyError:
             node_dfs_to_add.append(node_data)
 
@@ -683,18 +710,22 @@ def make_or_update_nodes(graph, node_dfs, tech_dfs):
     return new_graph
 
 
-def standardize_param_value(val):
+def _standardize_param_value(val):
     if isinstance(val, str):
         return val.lower()
     else:
         return val
 
 
-def add_node_constant(graph, node_df, node, parameter, required=False):
+def _add_node_constant(graph, node_df, node, parameter, required=False):
     parameter_list = list(node_df[node_df['Parameter'] == parameter]['Context'])
 
     if len(set(parameter_list)) == 1:
-        parameter_val = standardize_param_value(parameter_list[0])
+        parameter_val = _standardize_param_value(parameter_list[0])
+        if parameter in graph.nodes[node]:
+            update_ok, parameter_val = _allowable_update(graph.nodes[node][parameter], parameter_val)
+            if not update_ok:
+                return graph 
     elif len(set(parameter_list)) > 1:
         raise ValueError(f"{parameter} has too many values at {node}.")
     elif parameter in graph.nodes[node]:
