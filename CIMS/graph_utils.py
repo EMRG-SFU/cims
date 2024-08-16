@@ -325,7 +325,7 @@ def find_next_node(degrees):
 
 def find_loops(graph, warn=False):
     loops = list(nx.simple_cycles(graph))
-    if warn:
+    if warn and len(loops) > 0:
         warning_str = f"Found {len(loops)} loops (see model.loops for the full list)"
         warnings.warn(warning_str)
     return loops
