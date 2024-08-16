@@ -171,8 +171,7 @@ class Model:
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,
-                                                                                     str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,str(self.base_year))
         self.graph = graph
 
     def _initialize_tax(self):
