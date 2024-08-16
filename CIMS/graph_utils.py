@@ -252,9 +252,8 @@ def top_down_traversal(graph, node_process_func, *args, root=None,
         if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
-            warnings.warn("Found a Loop -- ")
             # Resolve a loop
-            cycles = nx.simple_cycles(sg_cur)
+            cycles = find_loops(sg_cur)
             n_cur = loop_resolution_func(cycles, dist_from_root)
 
             # Process chosen node in the sub-graph, using estimated values from their parents
@@ -308,9 +307,8 @@ def bottom_up_traversal(graph, node_process_func, *args, root=None,
         if n_cur is not None:
             node_process_func(sub_graph, n_cur, *args, **kwargs)
         else:
-            warnings.warn("Found a Loop")
             # Resolve a loop
-            cycles = nx.simple_cycles(sg_cur)
+            cycles = find_loops(sg_cur)
             n_cur = loop_resolution_func(cycles, dist_from_root, **kwargs)
 
             # Process chosen node in the sub-graph, using estimated values from their parents
@@ -324,6 +322,13 @@ def find_next_node(degrees):
         if degree == 0:
             return node
 
+
+def find_loops(graph, warn=False):
+    loops = list(nx.simple_cycles(graph))
+    if warn:
+        warning_str = f"Found {len(loops)} loops (see model.loops for the full list)"
+        warnings.warn(warning_str)
+    return loops
 
 # **************************
 # 3 - Making the graph
