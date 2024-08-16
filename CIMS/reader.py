@@ -51,9 +51,8 @@ def get_node_cols(mdf, first_data_col_name="Branch"):
 
 
 class ModelReader:
-    def __init__(self, infile, csv_file_paths, col_list, year_list, sector_list,
+    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
                  default_values_csv_path=None, node_col="Branch", root_node="CIMS"):
-        self.infile = infile
 
         if default_values_csv_path:
             self.default_values_csv = default_values_csv_path
@@ -87,7 +86,7 @@ class ModelReader:
                 appended_data.append(sheet_df)
 
             except ValueError:
-                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
+                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
 
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
