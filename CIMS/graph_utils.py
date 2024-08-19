@@ -359,7 +359,7 @@ def add_node_data(graph, current_node, node_dfs):
     # 2.1 Add index for use in the results viewer file
     if TREE_IDX_PARAM not in graph.nodes[current_node]:
         graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
-        graph.nodes[current_node][TREE_INDEX] = current_node_df.index[0].item() + graph.cur_tree_index[0]
+        graph.nodes[current_node][TREE_IDX_PARAM] = current_node_df.index[0].item() + graph.cur_tree_index[0]
 
     # 3 Set boolean node constants
     # 3.1 is supply
