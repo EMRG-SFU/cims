@@ -182,10 +182,16 @@ def _get_existing_stock(model, node, year, comp_type):
             node_year_data['technologies'][child].pop("new_stock_remaining", None)
             node_year_data['technologies'][child].pop("new_stock_remaining_pre_surplus", None)
 
-            child_node = model.get_param('service requested', node,
+            services_requested = model.get_param('service requested', node,
                                          year=year,
                                          tech=child,
-                                         dict_expected=True)[child]['target']
+                                         dict_expected=True)
+            if len(services_requested) == 1:
+                child_node = list(services_requested.keys())[0]
+
+            else:
+                raise ValueError("Technologies part of a Node-Tech Competition must have a single service request row defined")
+             
 
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
