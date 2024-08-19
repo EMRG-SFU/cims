@@ -27,14 +27,14 @@ def _retrofit_lcc(model, node, year, existing_tech):
     float :
         The LCC to use for the current technology during a retrofit competition.
     """
-    complete_annual_cost = model.get_param('complete annual cost', node, year,
+    competition_annual_cost = model.get_param('competition annual cost', node, year,
                                            tech=existing_tech, do_calc=True)
     annual_service_cost = model.get_param('service cost', node, year,
                                           tech=existing_tech, do_calc=True)
     emissions_cost = model.get_param('emissions cost', node, year,
                                      tech=existing_tech, do_calc=True)
-    retrofit_complete_lcc = complete_annual_cost + annual_service_cost + emissions_cost
-    return retrofit_complete_lcc
+    retrofit_lcc_competition = competition_annual_cost + annual_service_cost + emissions_cost
+    return retrofit_lcc_competition
 
 
 def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):

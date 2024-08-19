@@ -412,7 +412,7 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
     return indirect_emissions
 
 
-def calc_complete_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
+def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, tech: str,
                                  allow_foresight=False) -> float:
     """
     Calculates the emission cost at a node.
@@ -795,7 +795,6 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 net_emissions[node_name][ghg][emission_type]['year_value'] -= \
                     avoided_emissions[node_name][ghg][emission_type]['year_value'] + \
                     negative_emissions[node_name][ghg][emission_type]['year_value']
-
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
         Emissions(emissions_dict=net_emissions)
@@ -877,8 +876,6 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                                 supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
-    # model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
-    #     Emissions(emissions=net_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['avoided_emissions_rate'] = \
         Emissions(emissions_dict=avoided_emissions)
     model.graph.nodes[node][year]['technologies'][tech]['negative_emissions_rate'] = \

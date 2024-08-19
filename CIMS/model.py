@@ -43,8 +43,7 @@ class Model:
 
     node_dfs : dict {str: pandas.DataFrame}
         Node names (branch notation) are the keys in the dictionary. Associated DataFrames (specified in
-        the excel model description) are the values. DataFrames do not include 'technology' or
-        'service' information for a node.
+        the excel model description) are the values. DataFrames do not include 'technology' information for a node.
 
     tech_dfs : dict {str: dict {str: pandas.DataFrame}}
         Technology & service information from the excel model description. Node names (branch notation)
@@ -126,10 +125,12 @@ class Model:
             scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
+        self.graph.max_tree_index[0] = 0
         graph = graph_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
+        self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
         # Update the Model's metadata
@@ -163,8 +164,11 @@ class Model:
         graph = nx.DiGraph()
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
+        graph.cur_tree_index = [0]
+        graph.max_tree_index = [0]
         graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
+        graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
         self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,
@@ -277,6 +281,8 @@ class Model:
         """
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
+
+        self.loops = graph_utils.find_loops(self.graph, warn=True)
 
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)

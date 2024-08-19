@@ -48,7 +48,6 @@ def all_tech_compete_allocation(model, node, year):
         comp_type = 'tech compete'
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    # assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
     assessed_demand = calc_total_stock_demanded(model, node, year)
 
     # Existing Tech Specific Stocks -- find existing stock remaining after vintage-based retirement
@@ -119,7 +118,7 @@ def general_allocation(model, node, year):
                                                                             node) == 'fixed amount':
         assessed_demand = 1
     else:
-        assessed_demand = model.get_param('provided_quantities', node, year).get_total_quantity()
+        assessed_demand = calc_total_stock_demanded(model, node, year)
 
     # Based on assessed demand, determine the amount this node requests from other services
     if 'technologies' in node_year_data:

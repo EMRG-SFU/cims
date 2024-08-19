@@ -12,11 +12,13 @@ import pandas as pd
 from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from CIMS.emissions import Emissions, EmissionsCost
 
-excluded_parameters = ['emissions_cost_rate', 'cumul_emissions_cost_rate',
-                       'net_emissions_rate', 'cumul_net_emissions_rate',
-                       'bio_emissions_rate', 'cumul_bio_emissions_rate',
-                       'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
-                       'negative_emissions_rate', 'cumul_negative_emissions_rate']
+excluded_parameters = [
+# 'emissions_cost_rate', 'cumul_emissions_cost_rate',
+#                        'net_emissions_rate', 'cumul_net_emissions_rate',
+#                        'bio_emissions_rate', 'cumul_bio_emissions_rate',
+#                        'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
+#                        'negative_emissions_rate', 'cumul_negative_emissions_rate'
+]
 
 
 class ValueLog:
@@ -221,13 +223,14 @@ def log_dict(val):
                         if 'target' in inner_value.keys() else None
                     val_log.unit = inner_value['unit'] if 'unit' in inner_value.keys() else None
                     val_log.value = inner_value['year_value']
+                    val_pairs.append(deepcopy(val_log))
                 else:
                     for sub_context, base_val in inner_value.items():
                         val_log.sub_context = sub_context
                         val_log.target = base_val['target'] if 'target' in base_val.keys() else None
                         val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
                         val_log.value = base_val['year_value']
-                val_pairs.append(deepcopy(val_log))
+                        val_pairs.append(deepcopy(val_log))
 
             elif isinstance(inner_value, numbers.Number):
                 val_log.value = float(inner_value)
