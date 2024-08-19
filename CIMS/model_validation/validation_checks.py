@@ -278,37 +278,6 @@ def tech_compete_nodes_no_techs(validator):
     return tc_nodes_no_techs, concern_key, concern_desc
 
 
-def market_child_requested(validator):
-    """
-    Identify any requests made to children of Markets (doesn't include requests from the market
-    itself)
-    """
-    data = validator.model_df
-
-    # Find Markets
-    markets = validator.model_df[(validator.model_df['Parameter'] == COMP_TYPE) &
-                                 (validator.model_df['Context'] == 'Market')][validator.node_col]
-
-    # Find Market Children
-    all_service_req = data[data['Parameter'] == SERV_REQUESTED]
-    market_children = [all_service_req[validator.target_col].loc[i]
-                       for i, b in all_service_req[validator.node_col].items()
-                       if b in markets.values]
-
-    # Find Service Requests for Market Children
-    market_children_requests = []
-    for i, src, tgt in zip(all_service_req.index,
-                           all_service_req[validator.node_col],
-                           all_service_req[validator.target_col]):
-        if (src not in markets.values) and (tgt in market_children):
-                market_children_requests.append((i, src, tgt))
-
-    concern_key, concern_desc = ('market_child_requested',
-                                 "nodes/technologies requested services from nodes which are part of a market")
-
-    return market_children_requests, concern_key, concern_desc
-
-
 def revenue_recycling_at_techs(validator):
     """Revenue recycling should only happen at nodes, never at techs"""
 

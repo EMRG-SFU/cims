@@ -173,7 +173,4 @@ class ModelValidator:
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
             print("No warnings found!")
-
-        # Remove?
-        # self._run_check(validate.market_child_requested, validator=self)
         
