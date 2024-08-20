@@ -240,7 +240,7 @@ def bad_service_req(validator):
     year_values = services_req[year_cols]
 
     # Identify rows that have 0's or missing values
-    row_has_bad_values = year_values.replace(0, np.nan).isna().all(axis=1)
+    row_has_bad_values = year_values.isin([0, np.nan]).all(axis=1)
     rows_with_bad_values = services_req[row_has_bad_values]
 
     # Create our Warning information
