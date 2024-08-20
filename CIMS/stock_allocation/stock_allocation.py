@@ -12,6 +12,7 @@ from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import _apply_min_max_limits
 import copy
 
+from ..node_utils import find_node_tech_compete_tech_child_node
 
 #############################
 # Stock Allocation
@@ -179,17 +180,8 @@ def _get_existing_stock(model, node, year, comp_type):
             node_year_data['technologies'][child].pop("new_stock_remaining", None)
             node_year_data['technologies'][child].pop("new_stock_remaining_pre_surplus", None)
 
-            services_requested = model.get_param('service requested', node,
-                                         year=year,
-                                         tech=child,
-                                         dict_expected=True)
-            if len(services_requested) == 1:
-                child_node = list(services_requested.keys())[0]
-
-            else:
-                raise ValueError("Technologies part of a Node-Tech Competition must have a single service request row defined")
+            child_node = find_node_tech_compete_tech_child_node(model, node, year, tech=child)
              
-
             child_year_data = model.graph.nodes[child_node][year]
             for tech in child_year_data['technologies']:
                 t_existing = _do_natural_retirement(model, child_node, year, tech, comp_type)
@@ -735,10 +727,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                     new_market_shares[tech_child] = tech_weights[(node, tech_child)] / total_weight
 
             elif comp_type == 'node tech compete':
-                child_node = model.get_param('service requested', node,
-                                             year=year,
-                                             tech=tech_child,
-                                             dict_expected=True)[tech_child]['target']
+                child_node = find_node_tech_compete_tech_child_node(model, node, year, tech=tech_child)
                 child_new_market_shares = _find_exogenous_market_shares(model, child_node, year)
                 child_weights = {t: w for (n, t), w in tech_weights.items() if n == child_node}
 
