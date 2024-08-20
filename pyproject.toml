@@ -20,6 +20,7 @@ classifiers = [
 dependencies = [
     'networkx',
     'numpy',
+    'polars',
     'pandas>=1.2',
     'xlrd',
     'pyxlsb',
