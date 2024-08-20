@@ -174,3 +174,6 @@ class ModelValidator:
         if self.validate_count == 0:
             print("No warnings found!")
         
+
+        self._run_check(validate.lcc_at_tech_node, validator=self)
+        self._run_check(validate.lcc_at_tech, validator=self)
