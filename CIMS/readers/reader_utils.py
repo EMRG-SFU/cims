@@ -1,7 +1,6 @@
 import re 
 
 
-
 def is_year(cn):
     re_year = re.compile(r'^\d{4}$')
     """Check if input int or str is 4 digits [0-9] between begin ^ and end $ of string"""

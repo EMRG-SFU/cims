@@ -863,3 +863,4 @@ def find_edges(graph, node, df, edge_type):
             f"{edge_type=} not recognized. Please use \"structure\", \"request_provide\", or \"aggregation\".")
         
     return edges
+
