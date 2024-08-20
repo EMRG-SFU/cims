@@ -148,6 +148,8 @@ class ModelValidator:
         self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
         self._run_check(validate.nodes_requesting_self, validator=self)
         self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
+        self._run_check(validate.lcc_at_tech_node, validator=self)
+        self._run_check(validate.lcc_at_tech, validator=self)
         self._run_check(validate.nodes_with_zero_output, validator=self)
         self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
         self._run_check(validate.inconsistent_tech_refs, validator=self)
@@ -173,7 +175,3 @@ class ModelValidator:
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
             print("No warnings found!")
-        
-
-        self._run_check(validate.lcc_at_tech_node, validator=self)
-        self._run_check(validate.lcc_at_tech, validator=self)
