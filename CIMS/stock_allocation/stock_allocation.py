@@ -44,9 +44,6 @@ def all_tech_compete_allocation(model, node, year):
     """
     comp_type = model.get_param('competition type', node).lower()
 
-    if comp_type == 'market':
-        comp_type = 'tech compete'
-
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
     assessed_demand = calc_total_stock_demanded(model, node, year)
 
