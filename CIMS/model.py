@@ -5,6 +5,7 @@ import pandas as pd
 import re
 import time
 import pickle
+import os.path
 
 from . import graph_utils
 from . import utils
@@ -16,6 +17,7 @@ from . import cost_curves
 from . import aggregation
 from . import visualize
 
+from .readers.scenario_reader import ScenarioReader
 from .aggregation import quantity_aggregation as qa
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
@@ -85,7 +87,7 @@ class Model:
 
         self.show_run_warnings = True
 
-        self.model_description_file = model_reader.infile
+        self.model_description_file_prefix = os.path.commonprefix(model_reader.csv_files)
         self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
@@ -112,6 +114,10 @@ class Model:
             raise ValueError("You've attempted to update a model which has already been run. "
                              "To prevent inconsistencies, this update has not been done.")
 
+        if not isinstance(scenario_model_reader, ScenarioReader):
+            raise ValueError("You are attempting to update a model with"
+                             "somethin other than a ScenarioReader object.")
+
         # Make a copy, so we don't alter self
         model = copy.deepcopy(self)
 
@@ -131,7 +137,8 @@ class Model:
         # Update the Model's metadata
         model.supply_nodes = graph_utils.get_supply_nodes(graph)
 
-        model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,str(model.base_year))
+        model.GHGs, model.emission_types, model.gwp = graph_utils.get_ghg_and_emissions(graph,
+                                                                                        str(model.base_year))
         model.dcc_classes = model._dcc_classes()
         model.dic_classes = model._dic_classes()
 
@@ -165,7 +172,8 @@ class Model:
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,
+                                                                                     str(self.base_year))
         self.graph = graph
 
     def _initialize_tax(self):
@@ -274,6 +282,8 @@ class Model:
         """
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
+
+        self.loops = graph_utils.find_loops(self.graph, warn=True)
 
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
@@ -1222,7 +1232,7 @@ class Model:
             and a timestamp in the filename.
         """
         if output_file == '':
-            filename = self.model_description_file.split('/')[-1].split('.')[0]
+            filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
             timestamp = time.strftime("%Y%m%d-%H%M%S")
             output_file = './change_log_' + filename + '_' + timestamp + '.csv'
         self.change_history.to_csv(output_file, index=False)
@@ -1244,7 +1254,7 @@ class Model:
             print('model_file must end with .pkl extension. No model was saved.')
         else:
             if model_file == '':
-                filename = self.model_description_file.split('/')[-1].split('.')[0]
+                filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 model_file = 'model_' + filename + '_' + timestamp + '.pkl'
             with open(model_file, 'wb') as f:
