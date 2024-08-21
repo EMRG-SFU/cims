@@ -171,7 +171,8 @@ class Model:
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,
+                                                                                     str(self.base_year))
         self.graph = graph
 
     def _initialize_tax(self):
@@ -823,10 +824,6 @@ class Model:
             and new stock competitions.
         """
         comp_type = self.get_param('competition type', node).lower()
-
-        # Market acts the same as tech compete
-        if comp_type == 'market':
-            comp_type = 'tech compete'
 
         if comp_type in ['tech compete', 'node tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)

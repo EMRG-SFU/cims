@@ -798,7 +798,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     # Save Net Emissions (Lets us do vintage-based weighting)
     model.graph.nodes[node][year]['technologies'][tech]['net_emissions_rate'] = \
         Emissions(emissions_dict=net_emissions)
-    
+
     # EMISSIONS COST
     emissions_cost = calculate_vintage_weighted_parameter('net_emissions_rate', model, node, year,
                                                           tech, default_value=Emissions()).emissions

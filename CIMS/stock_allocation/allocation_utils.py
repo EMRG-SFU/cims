@@ -25,7 +25,7 @@ def _find_competing_techs(model, node, comp_type):
     node_year_data = model.graph.nodes[node][base_year]
     competing_technologies = []
 
-    if comp_type in ['tech compete', 'market']:
+    if comp_type == 'tech compete':
         for tech in node_year_data['technologies']:
             competing_technologies.append((node, tech))
 

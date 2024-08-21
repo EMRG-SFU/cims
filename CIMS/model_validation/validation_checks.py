@@ -19,7 +19,6 @@ def invalid_competition_type(df):
         'Tech Compete',
         'Node Tech Compete',
         'Fixed Ratio',
-        'Market',
         'Supply - Fixed Price',
         'Supply - Cost Curve Annual',
         'Supply - Cost Curve Cumulative'

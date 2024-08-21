@@ -326,16 +326,16 @@ def find_next_node(degrees):
             return node
 
 
+# ****************************
+# 3 - Making the graph - Nodes
+# ****************************
 def find_loops(graph, warn=False):
     loops = list(nx.simple_cycles(graph))
-    if warn:
+    if warn and len(loops) > 0:
         warning_str = f"Found {len(loops)} loops (see model.loops for the full list)"
         warnings.warn(warning_str)
     return loops
 
-# **************************
-# 3 - Making the graph
-# **************************
 def add_node_data(graph, current_node, node_dfs):
     # args and kwargs for including new fields (e.g. LCC, Service Cost, etc)
     """ Add and populate a new node to `graph`
@@ -357,19 +357,17 @@ def add_node_data(graph, current_node, node_dfs):
     graph.add_node(current_node)
 
     # 2.1 Add index for use in the results viewer file
-    try:
-        if TREE_IDX_PARAM not in graph.nodes[current_node]:
-            graph.nodes[current_node][TREE_IDX_PARAM] = current_node_df.index[0].item()
-    except IndexError:
-        pass
+    if TREE_IDX_PARAM not in graph.nodes[current_node]:
+        graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
+        graph.nodes[current_node][TREE_IDX_PARAM] = current_node_df.index[0].item() + graph.cur_tree_index[0]
 
     # 3 Set boolean node constants
     # 3.1 is supply
     graph = _add_node_constant(graph, current_node_df, current_node, IS_SUPPLY_PARAM)
     current_node_df = current_node_df[current_node_df['Parameter'] != IS_SUPPLY_PARAM]
     # 3.2 structural aggregation
-    # graph = add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
-    # current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
+    graph = _add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
+    current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
     # 3.3 competition type
     graph = _add_node_constant(graph, current_node_df, current_node, COMP_TYPE_PARAM, required=True)
     current_node_df = current_node_df[current_node_df['Parameter'] != COMP_TYPE_PARAM]
@@ -583,8 +581,8 @@ def add_tech_data(graph, node, tech_dfs, tech):
         graph.nodes[node][year]['technologies'][tech] = updated_year_dict
 
         # Add index for use in the results viewer file
-        if TREE_INDEX not in graph.nodes[node][year]['technologies'][tech]:
-            graph.nodes[node][year]['technologies'][tech][TREE_INDEX] = t_df.index[0].item() + graph.cur_tree_index[0]
+        if TREE_IDX_PARAM not in graph.nodes[node][year]['technologies'][tech]:
+            graph.nodes[node][year]['technologies'][tech][TREE_IDX_PARAM] = t_df.index[0].item() + graph.cur_tree_index[0]
 
     # 4 Return the new graph
     return graph
