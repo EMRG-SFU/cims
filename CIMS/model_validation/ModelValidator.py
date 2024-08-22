@@ -161,10 +161,10 @@ class ModelValidator:
         self._run_check(validate.min_max_conflicts, validator=self)
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
+        self._run_check(valid)
         if self.validate_count == 0:
             print("No errors found!")
 
-        print()
         print("*** Warnings ***")
         self.validate_count = 0
         self._run_check(validate.missing_parameter_default, validator=self)

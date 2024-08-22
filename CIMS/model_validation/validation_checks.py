@@ -575,14 +575,13 @@ def lcc_at_tech_node(validator):
     tech_nodes = validator.model_df['Branch'][(validator.model_df['Parameter'] == 'competition type') & (validator.model_df['Context'].str.lower().str.contains('tech compete'))]
     lcc_nodes = validator.model_df['Branch'][
         validator.model_df['Technology'].isna() &
-        (validator.model_df['Parameter'].str.lower().str.contains('lcc') | 
-         validator.model_df['Parameter'].str.lower().str.contains('life.cycle.cost'))]
+        validator.model_df['Parameter'].str.lower().str.contains('lcc')]
     
     lcc_at_tech_nodes = [(i, n) for i, n in lcc_nodes.items() if n in tech_nodes]
 
     concern_key, concern_desc = ("lcc_at_tech_node",
                                  "tech compete nodes have exogenously defined "
-                                 "LCC values.")
+                                 "LCC values")
 
     return lcc_at_tech_nodes, concern_key, concern_desc
 
@@ -595,14 +594,13 @@ def lcc_at_tech(validator):
     
     lcc_techs = validator.model_df['Branch'][
         ~validator.model_df['Technology'].isna() &
-        (validator.model_df['Parameter'].str.lower().str.contains('lcc') | 
-         validator.model_df['Parameter'].str.lower().str.contains('life.cycle.cost'))]
+        validator.model_df['Parameter'].str.lower().str.contains('lcc')]
     
     lcc_at_techs = [(i, n) for i, n in lcc_techs.items() if n in techs]
 
     concern_key, concern_desc = ("lcc_at_tech",
                                  "technologies have exogenously defined LCC "
-                                 "values.")
+                                 "values")
 
     return lcc_at_techs, concern_key, concern_desc
 
