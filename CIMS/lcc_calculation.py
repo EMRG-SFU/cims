@@ -429,7 +429,7 @@ def calc_capital_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> f
     -------
     float : Capital cost, defined as CC = max{CC_declining, cc_fixed * CC_declining_limit}.
     """
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
+    dcc_class = model.get_param('dcc_class', node, year, tech=tech)
 
     if dcc_class is None:
         capital_cost = model.get_param('fcc', node, year, tech=tech)

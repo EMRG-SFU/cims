@@ -204,11 +204,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dccc = self.graph.nodes[node][base_year]['technologies'][tech]['dcc_class'][
-                            'context']
-                    except:
-                        dccc = None
+                    dccc = self.get_param("dcc_class", node, base_year, tech=tech)
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -235,11 +231,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dicc = self.graph.nodes[node][base_year]['technologies'][tech]['dic_class'][
-                            'context']
-                    except:
-                        dicc = None
+                    dicc = self.get_param("dic_class", node, base_year, tech=tech)
                     if dicc is not None:
                         if dicc in dic_classes:
                             dic_classes[dicc].append((node, tech))

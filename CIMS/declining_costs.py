@@ -91,7 +91,7 @@ def _dcc_segment(all_stock, pr, bc_A=None, bc_B=None):
 
 
 def _calc_all_stock(model, node, year, tech):
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech, context='context')
+    dcc_class = model.get_param('dcc_class', node, year, tech=tech)
     dcc_class_techs = model.dcc_classes[dcc_class]
 
     stock_sums = {'base_stock': 0,
@@ -167,7 +167,7 @@ def _find_dic_class_new_market_share(model, node, year, tech):
     Find the total new market share attributed to technologies from the node's DIC class (relative to
     all technologies and nodes competing for market share with technologies within the DIC class)
     """
-    dic_class = model.get_param('dic_class', node, year, tech=tech, context='context')
+    dic_class = model.get_param('dic_class', node, year, tech=tech)
     if dic_class:
         # We already know there is a DIC class
         dic_class_techs = model.dic_classes[dic_class]
