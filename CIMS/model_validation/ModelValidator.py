@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from ..reader import get_node_cols, _bool_as_string
-import warnings
-import os
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 from pathlib import Path
@@ -32,7 +30,6 @@ class ModelValidator:
 
         self.warnings = {}
         self.verbose = False
-        self.raise_warnings = False
 
         self.index2branch_map = self._create_index_to_branch_map()
         self.branch2node_index_map = self._create_branch_to_node_index_map()
@@ -121,8 +118,6 @@ class ModelValidator:
         if self.verbose or len(concerns) > 0:
             print(info_str)
             self.validate_count = 1
-        if self.raise_warnings:
-            warnings.warn(info_str)
 
     def _run_check(self, check_function, **kwargs):
         # Collect list
@@ -134,9 +129,8 @@ class ModelValidator:
         # Return list
         self.warnings[concern_key] = concern_list
 
-    def validate(self, verbose=True, raise_warnings=False):
+    def validate(self, verbose=True):
         self.verbose = verbose
-        self.raise_warnings = raise_warnings
 
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
