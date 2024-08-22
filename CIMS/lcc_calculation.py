@@ -10,6 +10,8 @@ from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
 from .vintage_weighting import calculate_vintage_weighted_parameter
 
+from collections.abc import Iterable
+
 
 def lcc_calculation(sub_graph, node, year, model, **kwargs):
     """
@@ -46,9 +48,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
     """
     # Check if the node has an exogenously defined Life Cycle Cost
     if 'lcc_financial' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('lcc_financial', node, year,
-                                          context=node.split('.')[-1],
-                                          return_source=True)  # context is the supply node's name
+        lcc, lcc_source = model.get_param('lcc_financial', node, year, return_source=True)
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
             calc_cumul_emissions_cost_rate(model, node, year)
@@ -153,8 +153,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen) and some sub-trees of demand_nodes
         if weighted_lccs == 0 and int(year) != model.base_year:
             prev_year = str(int(year) - model.step)
-            weighted_lccs = model.get_param('lcc_financial', node, prev_year,
-                                            context=node.split('.')[-1])
+            weighted_lccs = model.get_param('lcc_financial', node, prev_year)
 
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
@@ -166,16 +165,12 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                 src == 'calculation') and (pq.get_total_quantity() <= 0):
             lcc = 0
 
-        service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['lcc_financial'] = {
-            service_name: utils.create_value_dict(lcc, param_source='calculation')}
+        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='calculation')
 
     elif 'cost curve' in model.get_param('competition type', node):
         lcc = calc_cost_curve_lcc(model, node, year,
                                   cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
-        service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['lcc_financial'] = {
-            service_name: utils.create_value_dict(lcc, param_source='cost curve function')}
+        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='cost curve function')
 
     else:
         # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
@@ -194,9 +189,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                 src == 'calculation') and (pq.get_total_quantity() <= 0):
             lcc = 0
 
-        service_name = node.split('.')[-1]
-        sub_graph.nodes[node][year]['lcc_financial'] = {
-            service_name: utils.create_value_dict(lcc, param_source=sc_source)}
+        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source=sc_source)
 
     # fLCC -> Price
     price, price_source = model.get_param('price', node, year, return_source=True, do_calc=True)
@@ -489,29 +482,20 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
     """
     """
 
-    def do_sc_calculation(service_requested):
+    def do_sc_calculation(target):
         service_requested_value = calculate_vintage_weighted_parameter('service requested',
                                                                        model, node, year,
-                                                                       tech, serv)
+                                                                       tech=tech, context=target)
         service_cost = 0
 
-        if service_requested['target'] in model.supply_nodes:
-            target_supply = service_requested['target']
-            supply_price = model.get_param('price', target_supply, year, do_calc=True)
-
-            # Price Multiplier
-            try:
-                supply_name = target_supply.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['price multiplier'][supply_name][
-                    'year_value']
-            except KeyError:
-                price_multiplier = 1
+        if target in model.supply_nodes:
+            supply_price = model.get_param('price', target, year, do_calc=True)
+            price_multiplier = model.get_param("price multiplier", node, year, context=target)
             service_requested_price = supply_price * price_multiplier
 
         else:
-            service_request_target = service_requested['target']
-            if 'price' in model.graph.nodes[service_request_target][year]:
-                service_requested_price = model.get_param('price', service_request_target, year)
+            if 'price' in model.graph.nodes[target][year]:
+                service_requested_price = model.get_param('price', target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -520,17 +504,10 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
         return service_cost
 
     total_service_cost = 0
-    graph = model.graph
-
-    if tech is not None:
-        data = graph.nodes[node][year]['technologies'][tech]
-    else:
-        data = graph.nodes[node][year]
-
-    if 'service requested' in data:
-        service_req = data['service requested']
-        for serv, req in service_req.items():
-            total_service_cost += do_sc_calculation(req)
+    services_requested = model.get_param("service requested", node, year, tech=tech, dict_expected=True)
+    if isinstance(services_requested, Iterable):
+        for tgt in services_requested:
+            total_service_cost += do_sc_calculation(tgt)
 
     return total_service_cost
 
@@ -557,28 +534,18 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
     float : The service cost, defined as SC = SUM_over_services(fLCC * request_amount)
     """
 
-    def do_sc_calculation(service_requested):
-        service_requested_value = service_requested['year_value'] or model.get_parameter_default('service requested')
+    def do_sc_calculation(target):
+        service_requested_value = model.get_param("service requested", node, year, tech=tech, context=target)
         service_cost = 0
 
-        if service_requested['target'] in model.supply_nodes:
-            target_supply = service_requested['target']
-            supply_price = model.get_param('price', target_supply, year, do_calc=True)
-
-            # Price Multiplier
-            try:
-                supply_name = target_supply.split('.')[-1]
-                price_multiplier = model.graph.nodes[node][year]['price multiplier'][supply_name][
-                    'year_value']
-            except KeyError:
-                price_multiplier = 1
-
+        if target in model.supply_nodes:
+            supply_price = model.get_param('price', target, year, do_calc=True)
+            price_multiplier = model.get_param("price multiplier", node, year, context=target)
             service_requested_price = supply_price * price_multiplier
 
         else:
-            service_request_target = service_requested['target']
-            if 'price' in model.graph.nodes[service_request_target][year]:
-                service_requested_price = model.get_param('price', service_request_target, year)
+            if 'price' in model.graph.nodes[target][year]:
+                service_requested_price = model.get_param('price', target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -587,17 +554,10 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
         return service_cost
 
     total_service_cost = 0
-    graph = model.graph
-
-    if tech is not None:
-        data = graph.nodes[node][year]['technologies'][tech]
-    else:
-        data = graph.nodes[node][year]
-
-    if 'service requested' in data:
-        service_req = data['service requested']
-        for req in service_req.values():
-            total_service_cost += do_sc_calculation(req)
+    services_requested = model.get_param('service requested', node, year, tech=tech, dict_expected=True)
+    if isinstance(services_requested, Iterable):
+        for tgt in services_requested:
+            total_service_cost += do_sc_calculation(tgt)
 
     return total_service_cost
 
@@ -673,8 +633,7 @@ def calc_price(model, node, year, tech=None):
     not exogenously defined) parameters in the model. If calculating price for a base year,
     P2000, and COP are also set (if they weren't exogenously defined).
     """
-    service = node.split('.')[-1]
-    fLCC = model.get_param('lcc_financial', node, year, tech=tech, context=service)
+    fLCC = model.get_param('lcc_financial', node, year, tech=tech)
 
     if tech is not None:
         price = fLCC
@@ -720,10 +679,10 @@ def calc_price(model, node, year, tech=None):
     else:
         # Find Base Year Values
         non_energy_cost_2000 = model.get_param('non-energy cost', node, base_year)
-        fLCC_2000 = model.get_param('lcc_financial', node, base_year, context=service)
+        fLCC_2000 = model.get_param('lcc_financial', node, base_year)
 
         # Current Year Values
-        fLCC = model.get_param('lcc_financial', node, year, context=service)
+        fLCC = model.get_param('lcc_financial', node, year)
         prev_year = str(int(year) - model.step)
         non_energy_cost = model.get_param('non-energy cost', node, prev_year) + model.get_param('non-energy cost change', node, year)
 

@@ -615,15 +615,12 @@ class Model:
 
             if node in self.supply_nodes:
                 if 'lcc_financial' in graph.nodes[node][year]:
-                    supply_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
-                    if graph.nodes[node][year]['lcc_financial'][supply_name]['year_value'] is None:
+                    if self.get_param("lcc_financial", node, year) is None:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    service_name = node.split('.')[-1]
-                    graph.nodes[node][year]['lcc_financial'] = {
-                        service_name: utils.create_value_dict(lcc,
-                                                              param_source='cost curve function')}
+                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc,
+                                                              param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()

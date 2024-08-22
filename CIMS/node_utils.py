@@ -140,6 +140,8 @@ def _update_year_dict(existing_year_dict, update_data):
 
         if param == 'service requested':
             year_dict[param].update({target: value_dict})
+        elif param == 'price multiplier':
+            year_dict[param].update({target: value_dict})
         else:
             # If a Context value is present, there are 3 possibilities for what needs to happen
             if context:
@@ -159,7 +161,7 @@ def _update_year_dict(existing_year_dict, update_data):
                 # 3. We save context as the year_value, which will remain constant
                 #    across all years.
                 else:
-                    value_dict['context'] = context
+                    value_dict['year_value'] = context
                     year_dict[param] = value_dict
             else:
                 year_dict[param] = value_dict
