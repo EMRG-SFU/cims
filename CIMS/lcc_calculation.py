@@ -62,7 +62,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             return
 
     # Check if the node is a tech compete node:
-    if model.get_param('competition type', node) in ['tech compete', 'node tech compete', 'market']:
+    if model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
         total_lcc_v = 0.0
         v = model.get_param('heterogeneity', node, year)
 
@@ -558,7 +558,7 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
     """
 
     def do_sc_calculation(service_requested):
-        service_requested_value = service_requested['year_value']
+        service_requested_value = service_requested['year_value'] or model.get_parameter_default('service requested')
         service_cost = 0
 
         if service_requested['target'] in model.supply_nodes:

@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from ..reader import get_node_cols, _bool_as_string
+from ..readers.reader_utils import get_node_cols, _bool_as_string
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 from pathlib import Path

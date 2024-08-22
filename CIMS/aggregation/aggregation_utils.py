@@ -24,7 +24,7 @@ def find_structural_children(graph, node):
     """
     children = graph.successors(node)
     structural_children = [c for c in children
-                           if 'structure' in graph.get_edge_data(node, c)['type']]
+                           if 'structural' in graph.get_edge_data(node, c)['type']]
     return structural_children
 
 
