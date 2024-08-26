@@ -21,6 +21,7 @@ dependencies = [
     'networkx',
     'numpy',
     'polars',
+    'pyarrow',
     'pandas>=1.2',
     'xlrd',
     'pyxlsb',

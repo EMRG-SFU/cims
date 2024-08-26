@@ -8,6 +8,7 @@ dependencies:
   - seaborn>=0.13.2
   - numpy
   - polars
+  - pyarrow
   - pandas>=2
   - pip
   - scipy
