@@ -1,8 +1,6 @@
 import pandas as pd
 import numpy as np
 from ..readers.reader_utils import get_node_cols, _bool_as_string
-import warnings
-import os
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 from pathlib import Path
@@ -32,7 +30,6 @@ class ModelValidator:
 
         self.warnings = {}
         self.verbose = False
-        self.raise_warnings = False
 
         self.index2branch_map = self._create_index_to_branch_map()
         self.branch2node_index_map = self._create_branch_to_node_index_map()
@@ -121,8 +118,6 @@ class ModelValidator:
         if self.verbose or len(concerns) > 0:
             print(info_str)
             self.validate_count = 1
-        if self.raise_warnings:
-            warnings.warn(info_str)
 
     def _run_check(self, check_function, **kwargs):
         # Collect list
@@ -134,9 +129,8 @@ class ModelValidator:
         # Return list
         self.warnings[concern_key] = concern_list
 
-    def validate(self, verbose=True, raise_warnings=False):
+    def validate(self, verbose=True):
         self.verbose = verbose
-        self.raise_warnings = raise_warnings
 
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
@@ -148,6 +142,8 @@ class ModelValidator:
         self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
         self._run_check(validate.nodes_requesting_self, validator=self)
         self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
+        self._run_check(validate.lcc_at_tech_node, validator=self)
+        self._run_check(validate.lcc_at_tech, validator=self)
         self._run_check(validate.nodes_with_zero_output, validator=self)
         self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
         self._run_check(validate.inconsistent_tech_refs, validator=self)
@@ -162,7 +158,6 @@ class ModelValidator:
         if self.validate_count == 0:
             print("No errors found!")
 
-        print()
         print("*** Warnings ***")
         self.validate_count = 0
         self._run_check(validate.missing_parameter_default, validator=self)
@@ -173,7 +168,3 @@ class ModelValidator:
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
             print("No warnings found!")
-
-        # Remove?
-        # self._run_check(validate.market_child_requested, validator=self)
-        

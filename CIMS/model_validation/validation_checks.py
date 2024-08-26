@@ -239,7 +239,7 @@ def bad_service_req(validator):
     year_values = services_req[year_cols]
 
     # Identify rows that have 0's or missing values
-    row_has_bad_values = year_values.replace(0, np.nan).isna().all(axis=1)
+    row_has_bad_values = year_values.isin([0, np.nan]).all(axis=1)
     rows_with_bad_values = services_req[row_has_bad_values]
 
     # Create our Warning information
@@ -275,37 +275,6 @@ def tech_compete_nodes_no_techs(validator):
                                  "tech compete nodes contain no technologies")
 
     return tc_nodes_no_techs, concern_key, concern_desc
-
-
-def market_child_requested(validator):
-    """
-    Identify any requests made to children of Markets (doesn't include requests from the market
-    itself)
-    """
-    data = validator.model_df
-
-    # Find Markets
-    markets = validator.model_df[(validator.model_df['Parameter'] == COMP_TYPE) &
-                                 (validator.model_df['Context'] == 'Market')][validator.node_col]
-
-    # Find Market Children
-    all_service_req = data[data['Parameter'] == SERV_REQUESTED]
-    market_children = [all_service_req[validator.target_col].loc[i]
-                       for i, b in all_service_req[validator.node_col].items()
-                       if b in markets.values]
-
-    # Find Service Requests for Market Children
-    market_children_requests = []
-    for i, src, tgt in zip(all_service_req.index,
-                           all_service_req[validator.node_col],
-                           all_service_req[validator.target_col]):
-        if (src not in markets.values) and (tgt in market_children):
-                market_children_requests.append((i, src, tgt))
-
-    concern_key, concern_desc = ('market_child_requested',
-                                 "nodes/technologies requested services from nodes which are part of a market")
-
-    return market_children_requests, concern_key, concern_desc
 
 
 def revenue_recycling_at_techs(validator):
@@ -568,6 +537,7 @@ def new_techs_in_scenario(validator):
 
     return new_techs_in_scenario, concern_key, concern_desc
 
+
 def zero_requested_nodes(validator, providers, root_node):
     """
     Identify any non-root nodes which are specified in the model description
@@ -594,3 +564,43 @@ def zero_requested_nodes(validator, providers, root_node):
                                 "values are 0")
 
     return zero_requested, concern_key, concern_desc
+
+
+def lcc_at_tech_node(validator):
+    """
+    Identify any tech-compete or node-tech-compete nodes where an LCC value
+    has been set exogenously.
+    """
+    tech_nodes = validator.model_df['Branch'][(validator.model_df['Parameter'] == 'competition type') & (validator.model_df['Context'].str.lower().str.contains('tech compete'))]
+    lcc_nodes = validator.model_df['Branch'][
+        validator.model_df['Technology'].isna() &
+        validator.model_df['Parameter'].str.lower().str.contains('lcc')]
+    
+    lcc_at_tech_nodes = [(i, n) for i, n in lcc_nodes.items() if n in tech_nodes]
+
+    concern_key, concern_desc = ("lcc_at_tech_node",
+                                 "tech compete nodes have exogenously defined "
+                                 "LCC values")
+
+    return lcc_at_tech_nodes, concern_key, concern_desc
+
+
+def lcc_at_tech(validator):
+    """
+    Identify any technologies where an LCC value has been set exogenously.
+    """
+    techs = validator.model_df[['Branch', 'Technology']].drop_duplicates().dropna(how='any')
+    
+    lcc_techs = validator.model_df['Branch'][
+        ~validator.model_df['Technology'].isna() &
+        validator.model_df['Parameter'].str.lower().str.contains('lcc')]
+    
+    lcc_at_techs = [(i, n) for i, n in lcc_techs.items() if n in techs]
+
+    concern_key, concern_desc = ("lcc_at_tech",
+                                 "technologies have exogenously defined LCC "
+                                 "values")
+
+    return lcc_at_techs, concern_key, concern_desc
+
+
