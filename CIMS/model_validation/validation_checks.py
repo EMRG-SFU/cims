@@ -54,24 +54,6 @@ def unreferenced_nodes(providers, requested, root_node):
     return specified_unreferenced, concern_key, concern_desc
 
 
-def mismatched_node_names(validator, providers):
-    """
-    Identify any nodes whose service provided name doesn't match the last component of their
-    branch.
-    """
-
-    mismatched = []
-    for i, branch in providers.items():
-        branch_node_name = branch.split('.')[-1]
-        service_name = validator.model_df['Context'].loc[i]
-        node_index = validator.branch2node_index_map[branch]
-        if branch_node_name != service_name:
-            mismatched.append((node_index, branch_node_name, service_name))
-
-    concern_key, concern_desc = 'mismatched_node_names', 'service name/branch mismatches'
-    return mismatched, concern_key, concern_desc
-
-
 def nodes_no_provided_service(validator):
     """
     Identify any nodes which are specified but do not provide a service.
