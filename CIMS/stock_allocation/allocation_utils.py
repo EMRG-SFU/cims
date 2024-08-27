@@ -1,3 +1,5 @@
+from ..node_utils import find_node_tech_compete_tech_child_node
+
 def _find_competing_techs(model, node, comp_type):
     """
     A helper function used by _calculate_new_market_shares() to find all the technologies competing
@@ -31,7 +33,8 @@ def _find_competing_techs(model, node, comp_type):
 
     elif comp_type == 'node tech compete':
         for child in node_year_data['technologies']:
-            child_node = model.graph.nodes[node][base_year]['technologies'][child]['service requested'][child]['target']
+            child_node = find_node_tech_compete_tech_child_node(model, node, base_year, tech=child)
+
             for tech in model.graph.nodes[child_node][base_year]['technologies']:
                 competing_technologies.append((child_node, tech))
 
