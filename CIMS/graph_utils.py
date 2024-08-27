@@ -12,7 +12,7 @@ from . import cost_curves
 IS_SUPPLY_PARAM = 'is supply'
 TREE_IDX_PARAM = 'tree index'
 COMP_TYPE_PARAM = 'competition type'
-EMISSIONS_GWP_PARAM = 'emissions gwp'
+EMISSIONS_GWP_PARAM = 'emissions_gwp'
 
 # **************************
 # 1- Perform action in graph

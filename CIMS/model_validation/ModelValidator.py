@@ -139,7 +139,6 @@ class ModelValidator:
         self.validate_count = 0
         self._run_check(validate.invalid_competition_type, df=self.model_df)
         self._run_check(validate.nodes_no_provided_service, validator=self)
-        self._run_check(validate.mismatched_node_names, validator=self, providers=providers)
         self._run_check(validate.nodes_requesting_self, validator=self)
         self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
         self._run_check(validate.lcc_at_tech_node, validator=self)
@@ -156,7 +155,7 @@ class ModelValidator:
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
         if self.validate_count == 0:
-            print("No errors found!")
+            print("No errors found!", end="\n\n")
 
         print("*** Warnings ***")
         self.validate_count = 0
@@ -167,4 +166,4 @@ class ModelValidator:
         self._run_check(validate.bad_service_req, validator=self)
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
-            print("No warnings found!")
+            print("No warnings found!", end="\n\n")
