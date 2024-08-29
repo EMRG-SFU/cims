@@ -16,6 +16,7 @@ from . import tax_foresight
 from . import cost_curves
 from . import aggregation
 from . import visualize
+from . import node_utils
 
 from .readers.scenario_reader import ScenarioReader
 from .aggregation import quantity_aggregation as qa
@@ -127,7 +128,7 @@ class Model:
 
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0
-        graph = graph_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
+        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
@@ -167,7 +168,7 @@ class Model:
         tech_dfs = self.tech_dfs
         graph.cur_tree_index = [0]
         graph.max_tree_index = [0]
-        graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
@@ -204,11 +205,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dccc = self.graph.nodes[node][base_year]['technologies'][tech]['dcc_class'][
-                            'context']
-                    except:
-                        dccc = None
+                    dccc = self.get_param("dcc_class", node, base_year, tech=tech)
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -235,11 +232,7 @@ class Model:
         for node in nodes:
             if 'technologies' in nodes[node][base_year]:
                 for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dicc = self.graph.nodes[node][base_year]['technologies'][tech]['dic_class'][
-                            'context']
-                    except:
-                        dicc = None
+                    dicc = self.get_param("dic_class", node, base_year, tech=tech)
                     if dicc is not None:
                         if dicc in dic_classes:
                             dic_classes[dicc].append((node, tech))
@@ -615,15 +608,12 @@ class Model:
 
             if node in self.supply_nodes:
                 if 'lcc_financial' in graph.nodes[node][year]:
-                    supply_name = list(graph.nodes[node][year]['lcc_financial'].keys())[0]
-                    if graph.nodes[node][year]['lcc_financial'][supply_name]['year_value'] is None:
+                    if self.get_param("lcc_financial", node, year) is None:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    service_name = node.split('.')[-1]
-                    graph.nodes[node][year]['lcc_financial'] = {
-                        service_name: utils.create_value_dict(lcc,
-                                                              param_source='cost curve function')}
+                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc,
+                                                              param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
@@ -825,10 +815,6 @@ class Model:
             and new stock competitions.
         """
         comp_type = self.get_param('competition type', node).lower()
-
-        # Market acts the same as tech compete
-        if comp_type == 'market':
-            comp_type = 'tech compete'
 
         if comp_type in ['tech compete', 'node tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)

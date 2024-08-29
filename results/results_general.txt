@@ -4,7 +4,7 @@ tree index
 competition type
 price multiplier
 lcc_financial
-lcc_complete
+lcc_competition
 service provided
 service requested
 provided_quantities
