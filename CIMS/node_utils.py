@@ -126,7 +126,7 @@ def _update_year_dict(existing_year_dict, update_data):
             'target': target,
             'source': source,
             'unit': unit,
-            'year_value': year_value,
+            'year_value': utils.infer_type(year_value),
             'param_source': 'model'
             }
         if param not in year_dict:
@@ -161,7 +161,7 @@ def _update_year_dict(existing_year_dict, update_data):
                 # 3. We save context as the year_value, which will remain constant
                 #    across all years.
                 else:
-                    value_dict['year_value'] = context
+                    value_dict['year_value'] = utils.infer_type(context)
                     year_dict[param] = value_dict
             else:
                 year_dict[param] = value_dict
