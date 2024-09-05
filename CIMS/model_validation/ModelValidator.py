@@ -135,7 +135,7 @@ class ModelValidator:
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
 
-        print("*** Errors ***")
+        print("\n*** Errors ***")
         self.validate_count = 0
         self._run_check(validate.invalid_competition_type, df=self.model_df)
         self._run_check(validate.nodes_no_provided_service, validator=self)
@@ -155,9 +155,9 @@ class ModelValidator:
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
         if self.validate_count == 0:
-            print("No errors found!", end="\n\n")
+            print("No errors found!")
 
-        print("*** Warnings ***")
+        print("\n*** Warnings ***")
         self.validate_count = 0
         self._run_check(validate.missing_parameter_default, validator=self)
         self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
@@ -166,4 +166,4 @@ class ModelValidator:
         self._run_check(validate.bad_service_req, validator=self)
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
-            print("No warnings found!", end="\n\n")
+            print("No warnings found!")
