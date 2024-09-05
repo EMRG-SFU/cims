@@ -148,7 +148,7 @@ class Model:
         model._initialize_tax()
 
         model.show_run_warnings = True
-        model.scenario_model_description_file = scenario_model_reader.infile
+        model.scenario_model_description_file = scenario_model_reader.csv_files
 
         return model
 
