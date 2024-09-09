@@ -5,6 +5,7 @@ import pandas as pd
 import re
 import time
 import pickle
+import os.path
 
 from . import graph_utils
 from . import utils
@@ -87,7 +88,7 @@ class Model:
 
         self.show_run_warnings = True
 
-        self.model_description_file = model_reader.infile
+        self.model_description_file_prefix = os.path.commonprefix(model_reader.csv_files)
         self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
@@ -147,7 +148,7 @@ class Model:
         model._initialize_tax()
 
         model.show_run_warnings = True
-        model.scenario_model_description_file = scenario_model_reader.infile
+        model.scenario_model_description_file = scenario_model_reader.csv_files
 
         return model
 
@@ -1217,7 +1218,7 @@ class Model:
             and a timestamp in the filename.
         """
         if output_file == '':
-            filename = self.model_description_file.split('/')[-1].split('.')[0]
+            filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
             timestamp = time.strftime("%Y%m%d-%H%M%S")
             output_file = './change_log_' + filename + '_' + timestamp + '.csv'
         self.change_history.to_csv(output_file, index=False)
@@ -1239,7 +1240,7 @@ class Model:
             print('model_file must end with .pkl extension. No model was saved.')
         else:
             if model_file == '':
-                filename = self.model_description_file.split('/')[-1].split('.')[0]
+                filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 model_file = 'model_' + filename + '_' + timestamp + '.pkl'
             with open(model_file, 'wb') as f:
