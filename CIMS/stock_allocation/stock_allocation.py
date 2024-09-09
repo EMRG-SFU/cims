@@ -9,7 +9,7 @@ from CIMS.vintage_weighting import calculate_vintage_weighted_parameter
 from .retrofits import calc_retrofits
 from .macro_economics import calc_total_stock_demanded
 from .allocation_utils import _find_competing_techs, _find_competing_weights
-from .market_share_limits import _apply_min_max_limits
+from .market_share_limits import apply_min_max_limits, apply_min_max_class_limits
 import copy
 
 from ..node_utils import find_node_tech_compete_tech_child_node
@@ -67,8 +67,11 @@ def all_tech_compete_allocation(model, node, year):
     # New Tech Competition
     new_market_shares = _calculate_new_market_shares(model, node, year, comp_type)
 
+    # Min/Max Market Share Class Limits
+    adjusted_new_ms = apply_min_max_class_limits(model, node, year, new_market_shares)
+
     # Min/Max Market Share Limits
-    adjusted_new_ms = _apply_min_max_limits(model, node, year, new_market_shares)
+    adjusted_new_ms = apply_min_max_limits(model, node, year, adjusted_new_ms)
 
     # Calculate Total Market Shares
     total_market_shares_per_tech = _calculate_total_market_shares(node,

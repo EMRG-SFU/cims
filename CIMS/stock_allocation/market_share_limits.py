@@ -1,5 +1,164 @@
 from CIMS import utils
 
+#############################
+# Market Share Classes
+#############################
+
+def _get_market_share_class_maps(model, node, year):
+    tech_ms_class_map = {}
+    ms_class_tech_map = {}
+    techs = model.graph.nodes[node][year]['technologies']
+    for tech in techs:
+        ms_class = model.get_param("market share_class", node, year=year, tech=tech)
+        tech_ms_class_map[tech] = ms_class
+        ms_class_tech_map.setdefault(ms_class, []).append(tech)
+
+    return tech_ms_class_map, ms_class_tech_map
+    
+
+def _get_min_max_class_limits(model, node, year):
+    """
+    Find the minimum & maximum market share limits in a given year for all
+    market share classes at a node.
+    """
+    ms_classes = []
+    techs = model.graph.nodes[node][year]['technologies']
+    for tech in techs:
+        ms_class = model.get_param("market share_class", node, year=year, tech=tech)
+        if ms_class is not None:
+            ms_classes.append(ms_class)
+    
+    min_max_limits = {}
+    for ms_class in ms_classes:
+        min_ms = model.get_param("market share_class_min", node, year=year, context=ms_class)
+        max_ms = model.get_param("market share_class_max", node, year=year, context=ms_class)
+        min_max_limits[ms_class] = (min_ms, max_ms)
+
+    return min_max_limits
+
+
+def _get_percent_differences_class(aggregate_nms, min_max_limits, return_sorted=True):
+    percent_diffs = []
+    for ms_class in aggregate_nms:
+        min_nms, max_nms = min_max_limits[ms_class]
+        proposed_nms = aggregate_nms[ms_class]
+
+        if proposed_nms < min_nms:
+            percent_diffs.append((ms_class, proposed_nms - min_nms))
+        elif proposed_nms > max_nms:
+            percent_diffs.append((ms_class, proposed_nms - max_nms))
+        else:
+            percent_diffs.append((ms_class, 0))
+
+    if return_sorted:
+        percent_diffs.sort(key=lambda x: abs(x[1]), reverse=True)
+
+    return percent_diffs
+
+
+def _find_ms_class_market_shares(new_market_shares, ms_class_map):
+    aggregate_nms = {ms_class_map[t]: 0 for t in new_market_shares}
+    for tech in new_market_shares:
+        ms_class = ms_class_map[tech]
+        aggregate_nms[ms_class] += new_market_shares[tech]
+    return aggregate_nms
+
+def apply_min_max_class_limits(model, node, year, new_market_shares):
+    """
+    """
+    if year == "2020":
+        if node == "CIMS.CAN.ON.Transportation Personal.Transit.Public Bus":
+            jillian = 1
+    # Get marketshare classes
+    tech_class_map, class_tech_map = _get_market_share_class_maps(model, node, year)
+    
+    # Get min/max limits for each class
+    min_max_class_limits = _get_min_max_class_limits(model, node, year)
+
+    if len(min_max_class_limits) == 0:
+        return new_market_shares
+
+    # Only check & adjust new market shares which are not exogenous
+    adjusted_nms = _find_eligible_market_shares(model, node, year, new_market_shares)
+    ms_class_adjusted_nms = _find_ms_class_market_shares(adjusted_nms, tech_class_map)
+
+    # Check to see if all New M/S values comply with Min/Max limits. If yes, do nothing. If no
+    # continue to next step.
+    limit_adjusted_techs = []
+    while not _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_class_limits):
+        # Apply exogenous Min or Max New M/S limit values on the technology which has the largest
+        # % difference between its limit and its initial new market share value.
+        percent_differences = _get_percent_differences_class(ms_class_adjusted_nms,
+                                                       min_max_class_limits,
+                                                       return_sorted=True)
+    ### TODO: Update code below
+        largest_violator = percent_differences[0]
+        violator_class = largest_violator[0]
+        for tech in class_tech_map[violator_class]:
+            if tech in adjusted_nms:
+                adjusted_nms[tech] = _make_ms_min_max_class_compliant(
+                    ms_class_adjusted_nms[violator_class],
+                    min_max_class_limits[tech_class_map[tech]],
+                    adjusted_nms[tech]
+                )
+                limit_adjusted_techs.append(tech)
+
+        # For remaining technologies, calculate their individual Adjusted New M/S for technology(s)
+        adjusted_nms = _adjust_new_market_shares(adjusted_nms, limit_adjusted_techs)
+        ms_class_adjusted_nms = _find_ms_class_market_shares(adjusted_nms, tech_class_map)
+
+    updated_nms = new_market_shares.copy()
+    updated_nms.update(adjusted_nms)
+
+    return updated_nms
+
+
+def _adjust_new_market_shares_class(new_market_shares, limit_adjusted_techs):
+    remaining_techs = [t for t in new_market_shares if t not in limit_adjusted_techs]
+
+    sum_msj = sum([new_market_shares[t] for t in remaining_techs])
+    sum_msl = sum([new_market_shares[t] for t in limit_adjusted_techs])
+    adjust_amount = 1 - sum_msl
+    for remaining_tech in remaining_techs:
+        if adjust_amount > 0:
+            new_market_share_h = new_market_shares[remaining_tech]
+            try:
+                anms_h = (new_market_share_h / sum_msj) * (1 - sum_msl)
+            except ZeroDivisionError:
+                pass
+        else:
+            anms_h = 0
+        new_market_shares[remaining_tech] = anms_h
+
+    return new_market_shares
+
+
+
+def _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_limits):
+
+    for ms_class in ms_class_adjusted_nms:
+        min_ms, max_ms = min_max_limits[ms_class]
+        proposed_ms = ms_class_adjusted_nms[ms_class]
+
+        if proposed_ms < min_ms:
+            return False
+        if proposed_ms > max_ms:
+            return False
+        
+    return True
+
+def _make_ms_min_max_class_compliant(class_nms, min_max_class, nms):
+    min_nms, max_nms = min_max_class
+
+    if class_nms < min_nms:
+        return nms * min_nms/class_nms
+
+    if class_nms > max_nms:
+        return nms * max_nms/class_nms
+
+    return nms
+
+
 
 #############################
 # Min/Max Market Share Limits
@@ -185,45 +344,7 @@ def _adjust_new_market_shares(new_market_shares, limit_adjusted_techs):
     return new_market_shares
 
 
-def _find_eligible_market_shares(model, node, year, new_market_shares):
-    """
-    Finds the technologies whose market shares are eligible for adjustment. To be eligible for
-    adjustment, the technology's market share mustn't be exogenously defined and the technology must
-    be available in the relevant year.
-
-    Parameters
-    ----------
-    model : CIMS.Model
-        The CIMS model containing node.
-    node : str
-        The name of the node housing the market shares which may be eligible for adjustment.
-    year : str
-        The year containing the market shares of interest.
-    new_market_shares : dict
-        The dictionary containing new market shares. Keys in the dictionary are technologies, values
-        are proportions of the new stock allocated to that technology ([0, 1]).
-
-    Returns
-    -------
-    dict :
-        A filtered version of the new_market_shares dictionary, which only contains technologies
-        which are not exogenously defined and are available in the given year.
-    """
-    eligible_market_shares = {}
-    for tech in new_market_shares:
-        is_exogenous = utils.is_param_exogenous(model, 'market share', node, year=year, tech=tech)
-
-        first_year_available = model.get_param('available', node, year=year, tech=tech)
-        first_year_unavailable = model.get_param('unavailable', node, year=year, tech=tech)
-        is_available = first_year_available <= int(year) < first_year_unavailable
-
-        if (not is_exogenous) and is_available:
-            eligible_market_shares[tech] = new_market_shares[tech]
-
-    return eligible_market_shares
-
-
-def _apply_min_max_limits(model, node, year, new_market_shares):
+def apply_min_max_limits(model, node, year, new_market_shares):
     """
     Apply minimum & maximum market share limits to new market share percentages, adjusting final
     percentages to comply with the min/max limits.
@@ -266,6 +387,7 @@ def _apply_min_max_limits(model, node, year, new_market_shares):
                                                                  min_max_limits[violator_name])
         limit_adjusted_techs.append(violator_name)
 
+        # TODO: Adjust to work with Market Share Classes -- If tech is part of a MS Class, the classmates of tech are the only techs whose marketshare should be adjusted
         # For remaining technologies, calculate their individual Adjusted New M/S for technology(s)
         adjusted_nms = _adjust_new_market_shares(adjusted_nms, limit_adjusted_techs)
 
@@ -273,4 +395,45 @@ def _apply_min_max_limits(model, node, year, new_market_shares):
     updated_nms.update(adjusted_nms)
 
     return updated_nms
+
+
+#############################
+# Shared Code
+#############################
+def _find_eligible_market_shares(model, node, year, new_market_shares):
+    """
+    Finds the technologies whose market shares are eligible for adjustment. To be eligible for
+    adjustment, the technology's market share mustn't be exogenously defined and the technology must
+    be available in the relevant year.
+
+    Parameters
+    ----------
+    model : CIMS.Model
+        The CIMS model containing node.
+    node : str
+        The name of the node housing the market shares which may be eligible for adjustment.
+    year : str
+        The year containing the market shares of interest.
+    new_market_shares : dict
+        The dictionary containing new market shares. Keys in the dictionary are technologies, values
+        are proportions of the new stock allocated to that technology ([0, 1]).
+
+    Returns
+    -------
+    dict :
+        A filtered version of the new_market_shares dictionary, which only contains technologies
+        which are not exogenously defined and are available in the given year.
+    """
+    eligible_market_shares = {}
+    for tech in new_market_shares:
+        is_exogenous = utils.is_param_exogenous(model, 'market share', node, year=year, tech=tech)
+
+        first_year_available = model.get_param('available', node, year=year, tech=tech)
+        first_year_unavailable = model.get_param('unavailable', node, year=year, tech=tech)
+        is_available = first_year_available <= int(year) < first_year_unavailable
+
+        if (not is_exogenous) and is_available:
+            eligible_market_shares[tech] = new_market_shares[tech]
+
+    return eligible_market_shares
 
