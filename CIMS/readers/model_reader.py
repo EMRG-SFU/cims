@@ -120,6 +120,8 @@ class ModelReader:
         node_tech_defaults = {}
         for param, val in zip(df_has_defaults['Parameter'],
                               df_has_defaults[DEFAULT_VALUE_STRING]):
+            if val.lower() == 'none':
+                val = None
             node_tech_defaults[param] = infer_type(val)
 
         # Return
