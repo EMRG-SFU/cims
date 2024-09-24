@@ -14,6 +14,12 @@ import copy
 
 from ..node_utils import find_node_tech_compete_tech_child_node
 
+IS_SUPPLY_PARAM = 'is supply'
+TREE_IDX_PARAM = 'tree index'
+COMP_TYPE_PARAM = 'competition type'
+EMISSIONS_GWP_PARAM = 'emissions gwp'
+SERVICE_REQUEST_PARAM = 'service requested'
+
 #############################
 # Stock Allocation
 #############################
@@ -43,7 +49,7 @@ def all_tech_compete_allocation(model, node, year):
         Nothing is returned. `model` will be updated to reflect the results of stock retirement and
         new stock competitions.
     """
-    comp_type = model.get_param('competition type', node).lower()
+    comp_type = model.get_param(COMP_TYPE_PARAM, node).lower()
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
     assessed_demand = calc_total_stock_demanded(model, node, year)
@@ -115,7 +121,7 @@ def general_allocation(model, node, year):
     node_year_data = model.graph.nodes[node][year]
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    if model.get_param('competition type', node) == 'root' or model.get_param('competition type',
+    if model.get_param(COMP_TYPE_PARAM, node) == 'root' or model.get_param(COMP_TYPE_PARAM,
                                                                             node) == 'fixed amount':
         assessed_demand = 1
     else:
@@ -124,15 +130,15 @@ def general_allocation(model, node, year):
     # Based on assessed demand, determine the amount this node requests from other services
     if 'technologies' in node_year_data:
         for tech, tech_data in node_year_data['technologies'].items():
-            if 'service requested' in tech_data.keys():
-                services_being_requested = tech_data['service requested']
+            if SERVICE_REQUEST_PARAM in tech_data.keys():
+                services_being_requested = tech_data[SERVICE_REQUEST_PARAM]
                 t_ms = tech_data['market share']['year_value']
                 _record_provided_quantities(model, node, year, services_being_requested,
                                             assessed_demand, tech=tech, market_share=t_ms)
 
-    elif 'service requested' in node_year_data:
+    elif SERVICE_REQUEST_PARAM in node_year_data:
         # Calculate the provided_quantities being requested for each of the services
-        services_being_requested = node_year_data['service requested']
+        services_being_requested = node_year_data[SERVICE_REQUEST_PARAM]
         _record_provided_quantities(model, node, year, services_being_requested, assessed_demand)
 
 
@@ -488,7 +494,7 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
                 'year_value'] -= amount_tech_to_retire
 
         # Note early retirement for node-tech compete
-        comp_type = model.get_param('competition type', node)
+        comp_type = model.get_param(COMP_TYPE_PARAM, node)
         if comp_type == 'node tech compete':
             children = {e[0].split('.')[-1] for e in existing_stock}
             for child in children:
@@ -564,7 +570,7 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
                 'year_value'][purchase_year] -= amount_tech_to_retire
 
         # Note new stock remaining for node-tech compete
-        comp_type = model.get_param('competition type', node)
+        comp_type = model.get_param(COMP_TYPE_PARAM, node)
         if comp_type == 'node tech compete':
             children = {e[0].split('.')[-1] for e in existing_stock}
             for child in children:
@@ -849,7 +855,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
 
     for service, service_data in requested_services.items():
         vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
-            'service requested', model, node, year, tech=tech, context=service)
+            SERVICE_REQUEST_PARAM, model, node, year, tech=tech, context=service)
         quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
         year_node = model.graph.nodes[service_data['target']][year]
         if 'provided_quantities' not in year_node.keys():
@@ -918,7 +924,7 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         model.set_param_internal(total_stock_dict, 'total_stock', node, year, tech)
 
     # Retrofit Stock
-    comp_type = model.get_param('competition type', node)
+    comp_type = model.get_param(COMP_TYPE_PARAM, node)
 
     for n, t in added_retrofit_stocks:
         # Added retrofit stock
@@ -965,8 +971,8 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
-        if 'service requested' in tech_data.keys():
-            services_being_requested = tech_data['service requested']
+        if SERVICE_REQUEST_PARAM in tech_data.keys():
+            services_being_requested = tech_data[SERVICE_REQUEST_PARAM]
             # Calculate the provided_quantities being for each of the services
             t_ms = total_market_shares[tech]
             _record_provided_quantities(model, node, year, services_being_requested,
