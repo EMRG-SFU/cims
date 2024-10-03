@@ -933,32 +933,30 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         # We need to also store summary retrofit information at the Node Tech Compete parent node
         # Create Summary Added Retrofit dictionary
         summary_added_retrofit_stocks = {}
-        for n, t in added_retrofit_stocks:
-            child_service = n.split('.')[-1]
-            if child_service not in summary_added_retrofit_stocks:
-                summary_added_retrofit_stocks[child_service] = 0
-            summary_added_retrofit_stocks[child_service] += added_retrofit_stocks[(n, t)]
+        for child_node, child_tech in added_retrofit_stocks:
+            if child_node not in summary_added_retrofit_stocks:
+                summary_added_retrofit_stocks[child_node] = 0
+            summary_added_retrofit_stocks[child_node] += added_retrofit_stocks[(child_node, child_tech)]
 
         # Save the info to the model
-        for child_service in summary_added_retrofit_stocks:
+        for child_node in summary_added_retrofit_stocks:
             added_retrofit_stock_dict = utils.create_value_dict(
-                summary_added_retrofit_stocks[child_service],
+                summary_added_retrofit_stocks[child_node],
                 param_source='calculation')
-            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_service)
+            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_node)
 
         # Create Summary Retrofit dictionary
         summary_retrofit_stocks = {}
-        for n, t in retrofit_stocks:
-            child_service = n.split('.')[-1]
-            if child_service not in summary_retrofit_stocks:
-                summary_retrofit_stocks[child_service] = 0
-            summary_retrofit_stocks[child_service] += retrofit_stocks[(n, t)]
+        for child_node, child_tech in retrofit_stocks:
+            if child_node not in summary_retrofit_stocks:
+                summary_retrofit_stocks[child_node] = 0
+            summary_retrofit_stocks[child_node] += retrofit_stocks[(n, t)]
 
         # Save the info to the model
-        for child_service in summary_retrofit_stocks:
-            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_service],
+        for child_node in summary_retrofit_stocks:
+            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_node],
                                                           param_source='calculation')
-            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_service)
+            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_node)
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
