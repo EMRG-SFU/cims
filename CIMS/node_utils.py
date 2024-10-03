@@ -362,10 +362,7 @@ def _add_tech_data(graph, node, tech_dfs, current_tech):
 
 # Other
 def find_node_tech_compete_tech_child_node(model, node, year, tech):
-    services_requested = model.get_param('service requested', node,
-                                         year=year,
-                                         tech=tech,
-                                         dict_expected=True)
+    services_requested = model.get_param('service requested', node, year=year, tech=tech, dict_expected=True)
     if len(services_requested) == 1:
         child_node = list(services_requested.keys())[0]
     else:

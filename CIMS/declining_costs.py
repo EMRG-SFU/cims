@@ -233,11 +233,10 @@ def _find_dic_competing_techs(model, node):
     parents = [u for u, v in model.graph.in_edges(node)]
     for parent in parents:
         if model.get_param('competition type', parent) == 'node tech compete':
-            for sibling in model.graph.nodes[parent][base_year]['technologies']:
-                sibling_node = \
-                model.graph.nodes[parent][base_year]['technologies'][sibling]['service requested'][
-                    sibling]['target']
-                for tech in model.graph.nodes[sibling_node][base_year]['technologies']:
-                    competing_technologies.append((sibling_node, tech))
+            for sibling_tech in model.graph.nodes[parent][base_year]['technologies']:
+                sibling_nodes = model.get_param("service requested", parent, base_year, tech=sibling_tech)
+                for sibling_node in sibling_nodes:
+                    for tech in model.graph.nodes[sibling_node][base_year]['technologies']:
+                        competing_technologies.append((sibling_node, tech))
 
     return set(competing_technologies)
