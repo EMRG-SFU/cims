@@ -8,8 +8,8 @@ def find_req_prov_children(graph, node, year, tech=None):
 
     if tech:
         if 'service requested' in graph.nodes[node][year]['technologies'][tech]:
-            services = graph.nodes[node][year]['technologies'][tech]['service requested']
-            req_prov_children = [data['target'] for data in services.values()]
+            targets = graph.nodes[node][year]['technologies'][tech]['service requested']
+            req_prov_children = [t for t in targets]
     else:
         node_children = graph.successors(node)
         req_prov_children = [c for c in node_children

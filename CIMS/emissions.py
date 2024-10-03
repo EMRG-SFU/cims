@@ -366,8 +366,7 @@ def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
         The sum of indirect EmissionsCost objects across all requested services.
     """
     indirect_emissions_cost = EmissionsCost()
-    for req_data in services_requested.values():
-        child = req_data['target']
+    for child, req_data in services_requested.items():
         if child not in model.supply_nodes:
             req_ratio = req_data['year_value'] or model.get_parameter_default('service requested')
             child_emissions_cost = model.get_param('cumul_emissions_cost_rate', child, year,
@@ -400,8 +399,7 @@ def _find_indirect_emissions(model: 'CIMS.Model', year: str, services_requested:
 
     """
     indirect_emissions = Emissions()
-    for req_data in services_requested.values():
-        child = req_data['target']
+    for child, req_data in services_requested.items():
         if child not in model.supply_nodes:
             req_ratio = req_data['year_value']
             child_emissions = model.get_param(emissions_param, child, year,
@@ -475,9 +473,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
         # Child level
-        for child_info in data.values():
+        for child_node, child_info in data.items():
             req_val = child_info['year_value'] or model.get_parameter_default('service requested')
-            child_node = child_info['target']
 
             # GROSS EMISSIONS
             if 'emissions' in model.graph.nodes[child_node][year] and \
@@ -609,9 +606,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
         # BIO EMISSIONS child level
-        for child_info in data.values():
+        for child_node, child_info in data.items():
             req_val = child_info['year_value']
-            child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
                 year] and child_node in supply_nodes and req_val > 0:
                 supply_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
@@ -722,9 +718,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
         # Child level
-        for child_info in data.values():
+        for child_node, child_info in data.items():
             req_val = child_info['year_value'] or model.get_parameter_default('service requested')
-            child_node = child_info['target']
 
             # GROSS EMISSIONS
             if 'emissions' in model.graph.nodes[child_node][year] and \
@@ -860,9 +855,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
         data = model.graph.nodes[node][year]['technologies'][tech]['service requested']
 
         # BIO EMISSIONS child level
-        for child_info in data.values():
+        for child_node, child_info in data.items():
             req_val = child_info['year_value']
-            child_node = child_info['target']
             if 'emissions_biomass' in model.graph.nodes[child_node][
                 year] and child_node in supply_nodes and req_val > 0:
                 supply_emissions = model.graph.nodes[child_node][year]['emissions_biomass']
