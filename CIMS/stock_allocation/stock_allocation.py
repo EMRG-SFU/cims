@@ -380,33 +380,33 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
         if competition_type == 'node tech compete':
             # Add stock data @ parent for "node tech compete" nodes
             parent = '.'.join(node.split('.')[:-1])
-            child_tech_name = node.split('.')[-1]
+            tech_child = node.split('.')[-1]
 
-            child_tech_keys = model.graph.nodes[parent][year]['technologies'][child_tech_name].keys()
-            if 'base_stock_remaining' in child_tech_keys:
-                model.graph.nodes[parent][year]['technologies'][child_tech_name]['base_stock_remaining'][
+            tech_child_keys = model.graph.nodes[parent][year]['technologies'][tech_child].keys()
+            if 'base_stock_remaining' in tech_child_keys:
+                model.graph.nodes[parent][year]['technologies'][tech_child]['base_stock_remaining'][
                     'year_value'] += remaining_base_stock
             else:
-                model.graph.nodes[parent][year]['technologies'][child_tech_name][
+                model.graph.nodes[parent][year]['technologies'][tech_child][
                     'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
                                                                       param_source='calculation')
 
-            if 'new_stock_remaining_pre_surplus' in child_tech_keys:
+            if 'new_stock_remaining_pre_surplus' in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][child_tech_name][
+                    model.graph.nodes[parent][year]['technologies'][tech_child][
                         'new_stock_remaining_pre_surplus']['year_value'][vintage_year] += \
                         remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][child_tech_name][
+                model.graph.nodes[parent][year]['technologies'][tech_child][
                     'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
                     copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
-            if 'new_stock_remaining' in child_tech_keys:
+            if 'new_stock_remaining' in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][child_tech_name]['new_stock_remaining'][
+                    model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'][
                         'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][child_tech_name]['new_stock_remaining'] = \
+                model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'] = \
                     utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus),
                                             param_source='calculation')
 
@@ -487,11 +487,11 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
         # Note early retirement for node-tech compete
         comp_type = model.get_param('competition type', node)
         if comp_type == 'node tech compete':
-            ntc_child_tech_names = {e[0].split('.')[-1] for e in existing_stock}
-            for child_tech_name in ntc_child_tech_names:
-                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=child_tech_name)
+            ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
+            for tech_child in ntc_tech_children:
+                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=tech_child)
                 amount_child_to_retire = retirement_proportion * child_base_stock
-                model.graph.nodes[node][year]['technologies'][child_tech_name]['base_stock_remaining'][
+                model.graph.nodes[node][year]['technologies'][tech_child]['base_stock_remaining'][
                     'year_value'] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
@@ -563,11 +563,11 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
         # Note new stock remaining for node-tech compete
         comp_type = model.get_param('competition type', node)
         if comp_type == 'node tech compete':
-            children = {e[0].split('.')[-1] for e in existing_stock}
-            for child in children:
-                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=child, dict_expected=True)[purchase_year]
+            ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
+            for tech_child in ntc_tech_children:
+                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=tech_child, dict_expected=True)[purchase_year]
                 amount_child_to_retire = retirement_proportion * child_new_stock_remaining
-                model.graph.nodes[node][year]['technologies'][child]['new_stock_remaining'][
+                model.graph.nodes[node][year]['technologies'][tech_child]['new_stock_remaining'][
                     'year_value'][purchase_year] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
