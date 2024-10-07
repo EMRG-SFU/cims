@@ -107,19 +107,11 @@ def _calc_all_stock(model, node, year, tech):
         if bs_k is not None:
             stock_sums['base_stock'] += bs_k / unit_convert
 
-        # New Stock summed over all techs in DCC class and over all previous years (excluding base
-        # year)
-        # year_list = [str(x) for x in
-        #              range(int(model.base_year) + int(model.step),
-        #                    int(year),
-        #                    int(model.step))]
         year_list = [x for x in range(int(model.base_year), int(year))]
         for j in year_list:
             reference_year = (j - int(model.base_year)) // model.step * model.step + model.base_year
             ns_jk = model.get_param('new_stock', node_k, str(reference_year), tech=tech_k)
-            # ns_jk = model.get_param('new_stock', node_k, j, tech=tech_k)
             stock_sums['new_stock'] += ns_jk / unit_convert
-
     all_stock = stock_sums['base_stock'] + stock_sums['new_stock']
 
     return all_stock
