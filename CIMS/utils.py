@@ -145,19 +145,12 @@ def get_services_requested(model, node, year, tech=None, use_vintage_weighting=F
         if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['technologies'][tech][
-                'service requested']
+            services_requested = model.graph.nodes[node][year]['technologies'][tech]['service requested']
             if use_vintage_weighting:
                 weighted_services = {}
-                for serv in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(
-                        'service requested', model, node, year, tech=tech, context=serv
-                    )
-                    weighted_services[serv] = create_value_dict(
-                        year_val=weighted_req_ratio,
-                        target=services_requested[serv]['target'],
-                        param_source='vintage_weighting'
-                    )
+                for target in services_requested:
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter('service requested', model, node, year, tech=tech, context=target)
+                    weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 
     else:

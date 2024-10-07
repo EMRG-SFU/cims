@@ -89,8 +89,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
-            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech,
-                                              return_source=True, do_calc=True)
+            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech, return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
 

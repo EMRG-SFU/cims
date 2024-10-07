@@ -553,8 +553,7 @@ class Model:
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'price multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('price multiplier', node, year,
-                                                   dict_expected=True)
+                price_multipliers = self.get_param('price multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -612,8 +611,7 @@ class Model:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc,
-                                                              param_source='cost curve function')
+                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()

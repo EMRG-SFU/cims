@@ -78,7 +78,7 @@ def nodes_requesting_self(validator):
     Identifies any nodes which request services of themselves. Adds (index, Node Name) pairs
     to the warnings dictionary, under the key "nodes_requesting_self".
     """
-    request_rows = validator.model_df[validator.model_df['Parameter'] == 'service requested']
+    request_rows = validator.model_df[validator.model_df['Parameter'] == SERV_REQUESTED]
     self_requests = request_rows[
         request_rows[validator.node_col] == request_rows[validator.target_col]]
     self_requesting = [(i, node) for i, node in
@@ -527,7 +527,7 @@ def zero_requested_nodes(validator, providers, root_node):
     0.
     """
     data = validator.model_df
-    request_lines = data[data['Parameter']=='service requested']
+    request_lines = data[data['Parameter']==SERV_REQUESTED]
     all_requested = set(request_lines[validator.target_col])
 
     zero_request_line = request_lines[get_year_cols(data)].sum(axis=1)==0
