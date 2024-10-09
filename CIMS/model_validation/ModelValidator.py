@@ -66,6 +66,13 @@ class ModelValidator:
 
         model_df = pd.concat(appended_data,
                              ignore_index=True)  # Add province sheets together and re-index
+        
+        # Filter sectors (if applicable)
+        if self.sector_list:
+            if None not in self.sector_list:
+                self.sector_list.append(None)
+            model_df = model_df.apply(lambda row: row[model_df['Sector'].isin(self.sector_list)])
+
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
         model_df.columns = [str(c) for c in
