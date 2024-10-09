@@ -107,13 +107,16 @@ def _get_min_max_class_limits(model, node, year):
     techs = model.graph.nodes[node][year]['technologies']
     for tech in techs:
         ms_class = model.get_param("market share_class", node, year=year, tech=tech)
-        if ms_class is not None:
-            ms_classes.append(ms_class)
+        ms_classes.append(ms_class)
     
     min_max_limits = {}
     for ms_class in ms_classes:
-        min_ms = model.get_param("market share_class_min", node, year=year, context=ms_class)
-        max_ms = model.get_param("market share_class_max", node, year=year, context=ms_class)
+        if ms_class is None:
+            min_ms = model.get_parameter_default("market share_class_min")
+            max_ms = model.get_parameter_default("market share_class_max")
+        else:
+            min_ms = model.get_param("market share_class_min", node, year=year, context=ms_class)
+            max_ms = model.get_param("market share_class_max", node, year=year, context=ms_class)
         min_max_limits[ms_class] = (min_ms, max_ms)
 
     return min_max_limits
