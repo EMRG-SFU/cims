@@ -89,8 +89,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
-            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech,
-                                              return_source=True, do_calc=True)
+            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech, return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
             model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
 
@@ -347,7 +346,7 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
     # Record capital cost (FCC or DCC) value in dictionary
     val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
     model.set_param_internal(val_dict, 'capital cost', node, year, tech)
-    
+
     financial_uc = (capital_cost + subsidy) / output * crf
 
     return financial_uc

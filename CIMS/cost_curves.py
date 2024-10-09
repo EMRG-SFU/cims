@@ -29,8 +29,7 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
     quantity = calc_cost_curve_quantity(model, node, year)
     cc_func = model.get_param('cost_curve_function', node)
     cc_lcc = float(cc_func(quantity))
-    previous_lcc, prev_src = model.get_param('lcc_financial', node, year,
-                                             context=node.split('.')[-1], return_source=True)
+    previous_lcc, prev_src = model.get_param('lcc_financial', node, year, return_source=True)
 
     if cost_curve_min_max:
         lcc = calc_lcc_with_min_max(model, node, year, cc_lcc)
@@ -39,8 +38,7 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
         comp_type = model.get_param('competition type', node).lower()
         if (comp_type == 'supply - cost curve cumulative') and (int(year) > model.base_year):
             prev_year = str(int(year) - model.step)
-            prev_year_lcc = model.get_param('lcc_financial', node, prev_year,
-                                            context=node.split('.')[-1])
+            prev_year_lcc = model.get_param('lcc_financial', node, prev_year)
             lcc = max(prev_year_lcc, cc_lcc)
         else:
             lcc = cc_lcc
@@ -73,8 +71,7 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
     Additionally, the cost_curve_lcc_min and cost_curve_lcc_max values are updated.
     """
     # Find Previous Iteration's LCC
-    prev_lcc, prev_src = model.get_param('lcc_financial', node, year,
-                                         context=node.split('.')[-1], return_source=True)
+    prev_lcc, prev_src = model.get_param('lcc_financial', node, year, return_source=True)
 
     # Find Cost Curve min/max
     cc_min, cc_min_src = model.get_param('cost_curve_lcc_min', node, year, return_source=True)

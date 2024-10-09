@@ -5,6 +5,7 @@ import pandas as pd
 import re
 import time
 import pickle
+import os.path
 
 from . import graph_utils
 from . import utils
@@ -87,7 +88,7 @@ class Model:
 
         self.show_run_warnings = True
 
-        self.model_description_file = model_reader.infile
+        self.model_description_file_prefix = os.path.commonprefix(model_reader.csv_files)
         self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
@@ -147,7 +148,7 @@ class Model:
         model._initialize_tax()
 
         model.show_run_warnings = True
-        model.scenario_model_description_file = scenario_model_reader.infile
+        model.scenario_model_description_file = scenario_model_reader.csv_files
 
         return model
 
@@ -552,8 +553,7 @@ class Model:
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
             if 'price multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('price multiplier', node, year,
-                                                   dict_expected=True)
+                price_multipliers = self.get_param('price multiplier', node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
@@ -611,8 +611,7 @@ class Model:
                         calc_lcc_from_children()
                 elif 'cost_curve_function' in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc,
-                                                              param_source='cost curve function')
+                    graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
@@ -1217,7 +1216,7 @@ class Model:
             and a timestamp in the filename.
         """
         if output_file == '':
-            filename = self.model_description_file.split('/')[-1].split('.')[0]
+            filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
             timestamp = time.strftime("%Y%m%d-%H%M%S")
             output_file = './change_log_' + filename + '_' + timestamp + '.csv'
         self.change_history.to_csv(output_file, index=False)
@@ -1239,7 +1238,7 @@ class Model:
             print('model_file must end with .pkl extension. No model was saved.')
         else:
             if model_file == '':
-                filename = self.model_description_file.split('/')[-1].split('.')[0]
+                filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
                 model_file = 'model_' + filename + '_' + timestamp + '.pkl'
             with open(model_file, 'wb') as f:

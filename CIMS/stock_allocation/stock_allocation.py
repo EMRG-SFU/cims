@@ -389,33 +389,33 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
         if competition_type == 'node tech compete':
             # Add stock data @ parent for "node tech compete" nodes
             parent = '.'.join(node.split('.')[:-1])
-            child = node.split('.')[-1]
+            tech_child = node.split('.')[-1]
 
-            child_tech_keys = model.graph.nodes[parent][year]['technologies'][child].keys()
-            if 'base_stock_remaining' in child_tech_keys:
-                model.graph.nodes[parent][year]['technologies'][child]['base_stock_remaining'][
+            tech_child_keys = model.graph.nodes[parent][year]['technologies'][tech_child].keys()
+            if 'base_stock_remaining' in tech_child_keys:
+                model.graph.nodes[parent][year]['technologies'][tech_child]['base_stock_remaining'][
                     'year_value'] += remaining_base_stock
             else:
-                model.graph.nodes[parent][year]['technologies'][child][
+                model.graph.nodes[parent][year]['technologies'][tech_child][
                     'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
                                                                       param_source='calculation')
 
-            if 'new_stock_remaining_pre_surplus' in child_tech_keys:
+            if 'new_stock_remaining_pre_surplus' in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][child][
+                    model.graph.nodes[parent][year]['technologies'][tech_child][
                         'new_stock_remaining_pre_surplus']['year_value'][vintage_year] += \
                         remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][child][
+                model.graph.nodes[parent][year]['technologies'][tech_child][
                     'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
                     copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
-            if 'new_stock_remaining' in child_tech_keys:
+            if 'new_stock_remaining' in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'][
+                    model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'][
                         'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][child]['new_stock_remaining'] = \
+                model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'] = \
                     utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus),
                                             param_source='calculation')
 
@@ -496,11 +496,11 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
         # Note early retirement for node-tech compete
         comp_type = model.get_param(COMP_TYPE_PARAM, node)
         if comp_type == 'node tech compete':
-            children = {e[0].split('.')[-1] for e in existing_stock}
-            for child in children:
-                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=child)
+            ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
+            for tech_child in ntc_tech_children:
+                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=tech_child)
                 amount_child_to_retire = retirement_proportion * child_base_stock
-                model.graph.nodes[node][year]['technologies'][child]['base_stock_remaining'][
+                model.graph.nodes[node][year]['technologies'][tech_child]['base_stock_remaining'][
                     'year_value'] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
@@ -572,11 +572,11 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
         # Note new stock remaining for node-tech compete
         comp_type = model.get_param(COMP_TYPE_PARAM, node)
         if comp_type == 'node tech compete':
-            children = {e[0].split('.')[-1] for e in existing_stock}
-            for child in children:
-                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=child, dict_expected=True)[purchase_year]
+            ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
+            for tech_child in ntc_tech_children:
+                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=tech_child, dict_expected=True)[purchase_year]
                 amount_child_to_retire = retirement_proportion * child_new_stock_remaining
-                model.graph.nodes[node][year]['technologies'][child]['new_stock_remaining'][
+                model.graph.nodes[node][year]['technologies'][tech_child]['new_stock_remaining'][
                     'year_value'][purchase_year] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
@@ -793,17 +793,17 @@ def _calculate_total_market_shares(node, assessed_demand, new_stock_demanded,
     for node_branch, tech in existing_stock:
         if node_branch == node:
             total_stocks[tech] += existing_stock[(node_branch, tech)]
-        else:
-            child = node_branch.split('.')[-1]
-            total_stocks[child] += existing_stock[(node_branch, tech)]
+        else: # Node Tech Compete
+            tech_child = node_branch.split('.')[-1]
+            total_stocks[tech_child] += existing_stock[(node_branch, tech)]
 
     # Add retrofit stocks
     for node_branch, tech in added_retrofit_stock:
         if node_branch == node:
             total_stocks[tech] += added_retrofit_stock[(node_branch, tech)]
-        else:
-            child = node_branch.split('.')[-1]
-            total_stocks[child] += added_retrofit_stock[(node_branch, tech)]
+        else: # Node Tech Compete
+            tech_child = node_branch.split('.')[-1]
+            total_stocks[tech_child] += added_retrofit_stock[(node_branch, tech)]
 
     # Add new stocks
     for tech_child in adjusted_new_ms:
@@ -853,11 +853,11 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
         Nothing is returned. Instead, the model is updated with the provided quantities.
     """
 
-    for service, service_data in requested_services.items():
+    for target in requested_services:
         vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
-            SERVICE_REQUEST_PARAM, model, node, year, tech=tech, context=service)
+            SERVICE_REQUEST_PARAM, model, node, year, tech=tech, context=target)
         quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
-        year_node = model.graph.nodes[service_data['target']][year]
+        year_node = model.graph.nodes[target][year]
         if 'provided_quantities' not in year_node.keys():
             year_node['provided_quantities'] = \
                 utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
@@ -942,32 +942,30 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
         # We need to also store summary retrofit information at the Node Tech Compete parent node
         # Create Summary Added Retrofit dictionary
         summary_added_retrofit_stocks = {}
-        for n, t in added_retrofit_stocks:
-            child_service = n.split('.')[-1]
-            if child_service not in summary_added_retrofit_stocks:
-                summary_added_retrofit_stocks[child_service] = 0
-            summary_added_retrofit_stocks[child_service] += added_retrofit_stocks[(n, t)]
+        for child_node, child_tech in added_retrofit_stocks:
+            if child_node not in summary_added_retrofit_stocks:
+                summary_added_retrofit_stocks[child_node] = 0
+            summary_added_retrofit_stocks[child_node] += added_retrofit_stocks[(child_node, child_tech)]
 
         # Save the info to the model
-        for child_service in summary_added_retrofit_stocks:
+        for child_node in summary_added_retrofit_stocks:
             added_retrofit_stock_dict = utils.create_value_dict(
-                summary_added_retrofit_stocks[child_service],
+                summary_added_retrofit_stocks[child_node],
                 param_source='calculation')
-            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_service)
+            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_node)
 
         # Create Summary Retrofit dictionary
         summary_retrofit_stocks = {}
-        for n, t in retrofit_stocks:
-            child_service = n.split('.')[-1]
-            if child_service not in summary_retrofit_stocks:
-                summary_retrofit_stocks[child_service] = 0
-            summary_retrofit_stocks[child_service] += retrofit_stocks[(n, t)]
+        for child_node, child_tech in retrofit_stocks:
+            if child_node not in summary_retrofit_stocks:
+                summary_retrofit_stocks[child_node] = 0
+            summary_retrofit_stocks[child_node] += retrofit_stocks[(n, t)]
 
         # Save the info to the model
-        for child_service in summary_retrofit_stocks:
-            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_service],
+        for child_node in summary_retrofit_stocks:
+            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_node],
                                                           param_source='calculation')
-            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_service)
+            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_node)
 
     # Send Demand Below
     for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():

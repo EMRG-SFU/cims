@@ -1,21 +1,19 @@
 import numpy as np
 import pandas as pd
+import polars as pl
 from pathlib import Path
 from .reader_utils import is_year, _bool_as_string, get_node_cols
+from ..utils import infer_type
 
 DEFAULT_VALUE_STRING = "Default value"
 
 class ModelReader:
-    def __init__(self, infile, sheet_map, col_list, year_list, sector_list,
-                 default_values=None, node_col="Branch", root_node="CIMS"):
-        self.infile = infile
-        excel_engine_map = {'.xlsb': 'pyxlsb',
-                            '.xlsm': 'xlrd'}
-        self.excel_engine = excel_engine_map[Path(self.infile).suffix]
+    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
+                 default_values_csv_path=None, node_col="Branch", root_node="CIMS"):
 
-        if default_values:
-            self.default_values = default_values
-        self.sheet_map = sheet_map
+        if default_values_csv_path:
+            self.default_values_csv = default_values_csv_path
+        self.csv_files = csv_file_paths
         self.node_col = node_col
         self.col_list = col_list
         self.year_list = [str(x) for x in year_list]
@@ -29,20 +27,23 @@ class ModelReader:
 
     def _get_model_df(self):
         appended_data = []
-        for sheet in self.sheet_map:
+        for csv_file in self.csv_files:
             try:
                 mixed_type_columns = ['Context']
-                sheet_df = pd.read_excel(
-                    self.infile,
-                    sheet_name=sheet,
-                    header=1,
-                    converters={c: _bool_as_string for c in mixed_type_columns},
-                    engine=self.excel_engine).replace(
-                        {np.nan: None, 'False': False, 'True': True})
+
+                sheet_df = pl.read_csv(
+                    csv_file,
+                    skip_rows=1,
+                    use_pyarrow=False,
+                    infer_schema_length=0,
+                    ).with_columns(pl.all().replace(
+                            {np.nan: None}
+                        )).to_pandas()
+
                 appended_data.append(sheet_df)
 
             except ValueError:
-                print(f"Warning: {sheet} not included in {self.infile}. Sheet was not imported into model.")
+                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
 
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
@@ -100,14 +101,14 @@ class ModelReader:
 
     def get_default_params(self):
         # Read model_description from excel
-        mixed_type_columns = [DEFAULT_VALUE_STRING]
-        df = pd.read_excel(
-            self.default_values,
-            header=0,
-            converters={c: _bool_as_string for c in mixed_type_columns},
-            engine=self.excel_engine).replace(
-                {np.nan: None, 'False': False, 'True': True})
 
+        df = pl.read_csv(
+            self.default_values_csv,
+            use_pyarrow=False,
+            infer_schema_length=0,
+            ).with_columns(pl.all().replace(
+                    {np.nan: None}
+                )).to_pandas()
         # Remove empty rows
         df = df.dropna(axis=0, how="all")
 
@@ -119,7 +120,9 @@ class ModelReader:
         node_tech_defaults = {}
         for param, val in zip(df_has_defaults['Parameter'],
                               df_has_defaults[DEFAULT_VALUE_STRING]):
-            node_tech_defaults[param] = val
+            if val.lower() == 'none':
+                val = None
+            node_tech_defaults[param] = infer_type(val)
 
         # Return
         return node_tech_defaults

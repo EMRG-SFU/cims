@@ -1,4 +1,5 @@
 import pandas as pd
+import polars as pl
 import numpy as np
 from ..readers.reader_utils import get_node_cols, _bool_as_string
 from . import validation_checks as validate
@@ -7,18 +8,15 @@ from pathlib import Path
 
 
 class ModelValidator:
-    def __init__(self, infile, sheet_map, col_list, year_list, sector_list,
-                 scenario_files=None, default_values=None, node_col="Branch",
+    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
+                 scenario_files=None, default_values_csv_path=None, node_col="Branch",
                  target_col="Target", root_node="CIMS"):
-        self.infile = infile
+
+        self.csv_files = csv_file_paths
         self.scenario_files = scenario_files or []
-        excel_engine_map = {'.xlsb': 'pyxlsb',
-                            '.xlsm': 'xlrd'}
-        self.excel_engine = excel_engine_map[Path(self.infile).suffix]
 
-        self.default_param_df = self.get_default_df(default_values)
+        self.default_param_df = self.get_default_df(default_values_csv_path)
 
-        self.sheet_map = sheet_map
         self.node_col = node_col
         self.target_col = target_col
         self.col_list = col_list
@@ -37,27 +35,34 @@ class ModelValidator:
     def _get_model_df(self, read_base_file=True, read_scenario_files=True):
         files_to_read = []
         if read_base_file:
-            files_to_read.append(self.infile)
+            for file in self.csv_files:
+                files_to_read.append(file)
         if read_scenario_files:
-            files_to_read += self.scenario_files
+            for file in self.scenario_files:
+                files_to_read.append(file)
 
         # Read in list of sheets from 'Lists' sheet in model description
         appended_data = []
-        for file in files_to_read:
-            for sheet in self.sheet_map:
-                try:
-                    mixed_type_columns = ['Context']
-                    sheet_df = pd.read_excel(
-                        file,
-                        sheet_name=sheet,
-                        header=1,
-                        converters={c:_bool_as_string for c in mixed_type_columns},
-                        engine=self.excel_engine).replace(
-                            {np.nan: None, 'False': False, 'True': True})
-                    appended_data.append(sheet_df)
+        for csv_file in files_to_read:
+            try:
+                mixed_type_columns = ['Context']
+                sheet_df = pl.read_csv(
+                    csv_file,
+                    skip_rows=1,
+                    use_pyarrow=False,
+                    infer_schema_length=0,
+                    ).with_columns(pl.all().replace(
+                        {np.nan: None}
+                        )).to_pandas()
+                    #sheet_name=sheet,
+                    #header=1,
+                    #converters={c:_bool_as_string for c in mixed_type_columns},
+                    #engine=self.excel_engine).replace(
+                    #    {np.nan: None, 'False': False, 'True': True})
+                appended_data.append(sheet_df)
 
-                except ValueError:
-                    print(f"Warning: {sheet} not included in {file}. Sheet was not imported into model.")
+            except ValueError:
+                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
 
         model_df = pd.concat(appended_data,
                              ignore_index=True)  # Add province sheets together and re-index
@@ -77,18 +82,19 @@ class ModelValidator:
 
         return mdf
 
-    def get_default_df(self, default_values):
-        if default_values is None:
+    def get_default_df(self, default_values_csv_path):
+        if default_values_csv_path is None:
             return pd.DataFrame()
 
         # Read model_description from excel
         mixed_type_columns = ['Default value']
-        df = pd.read_excel(
-            default_values,
-            header=0,
-            converters={c: _bool_as_string for c in mixed_type_columns},
-            engine=self.excel_engine).replace(
-                {np.nan: None, 'False': False, 'True': True})
+        df = pl.read_csv(
+            default_values_csv_path,
+            use_pyarrow=False,
+            infer_schema_length=0,
+            ).with_columns(pl.all().replace(
+                {np.nan: None}
+            )).to_pandas()
 
         # Remove empty rows
         df = df.dropna(axis=0, how="all")
@@ -135,7 +141,7 @@ class ModelValidator:
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
 
-        print("*** Errors ***")
+        print("\n*** Errors ***")
         self.validate_count = 0
         self._run_check(validate.invalid_competition_type, df=self.model_df)
         self._run_check(validate.nodes_no_provided_service, validator=self)
@@ -155,9 +161,9 @@ class ModelValidator:
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
         if self.validate_count == 0:
-            print("No errors found!", end="\n\n")
+            print("No errors found!")
 
-        print("*** Warnings ***")
+        print("\n*** Warnings ***")
         self.validate_count = 0
         self._run_check(validate.missing_parameter_default, validator=self)
         self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
@@ -166,4 +172,4 @@ class ModelValidator:
         self._run_check(validate.bad_service_req, validator=self)
         self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
         if self.validate_count == 0:
-            print("No warnings found!", end="\n\n")
+            print("No warnings found!")

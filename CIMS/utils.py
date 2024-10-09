@@ -11,6 +11,44 @@ from . import lcc_calculation
 from . import declining_costs
 from . import vintage_weighting
 
+def infer_type(d): 
+    """ 
+
+    `d` is a value assumed to be a string.  
+    We first try to see if represents a boolean value, and if it does
+    we return the equivalent python boolean type. We then see if it contains a
+    percent sign, and if it does we try convert it to the fractional representation
+    of the percentage as a float (but simply return the string if that fails). We
+    then see if it contains any commas, and if so we strip them out and again try
+    parse as a float (assuming these are 'thousands' separators for legibility). If
+    that fails we again just return the input string.  Finally, we try to parse it
+    to a float that is returned, and if that fails, we just return the `d` input string
+    unmolested.  
+    
+    """ 
+    if (type(d) == str) and (d.lower() == "true"): 
+        return( True )
+
+    elif (type(d) == str) and (d.lower() == "false"):
+        return( False )
+
+    elif (type(d) == str) and ('%' in d):
+        try:
+            return( float(d.replace("%","")) / 100.0)
+        except:
+            return( d )
+
+    elif (type(d) == str) and (',' in d):
+        try:
+            return( float(d.replace(",","")) )
+        except:
+            return( d )
+
+    else:
+        try:
+            return( float(d) )
+        except:
+            return( d )
 
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
@@ -107,19 +145,12 @@ def get_services_requested(model, node, year, tech=None, use_vintage_weighting=F
         if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['technologies'][tech][
-                'service requested']
+            services_requested = model.graph.nodes[node][year]['technologies'][tech]['service requested']
             if use_vintage_weighting:
                 weighted_services = {}
-                for serv in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(
-                        'service requested', model, node, year, tech=tech, context=serv
-                    )
-                    weighted_services[serv] = create_value_dict(
-                        year_val=weighted_req_ratio,
-                        target=services_requested[serv]['target'],
-                        param_source='vintage_weighting'
-                    )
+                for target in services_requested:
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter('service requested', model, node, year, tech=tech, context=target)
+                    weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 
     else:
