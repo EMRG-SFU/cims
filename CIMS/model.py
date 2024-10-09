@@ -116,8 +116,8 @@ class Model:
                              "To prevent inconsistencies, this update has not been done.")
 
         if not isinstance(scenario_model_reader, ScenarioReader):
-            raise ValueError("You are attempting to update a model with"
-                             "somethin other than a ScenarioReader object.")
+            raise ValueError("You are attempting to update a model with "
+                             "something other than a ScenarioReader object.")
 
         # Make a copy, so we don't alter self
         model = copy.deepcopy(self)
