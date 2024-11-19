@@ -1,29 +1,53 @@
-# Getting Started
+# Getting Started with the CIMS Python Package
+Welcome to the CIMS Python package repository! This guide will help you get started with the CIMS package, which is used for economic climate modeling.
 
+## Overview
+This repository contains the source code for the CIMS Python package. If you are looking to run economic climate models using this package, please refer to the [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository for detailed instructions and model specification files.
 
-Once the `CIMS` Python package is installed ([instructions here](INSTALL.md)), 
-you are ready to run economic-climate models using `CIMS`. If you are new to 
-`CIMS`, we suggest following the 
-[Quickstart Jupyter Notebook Tutorial](../tutorials/Quickstart.ipynb). If you'd
-prefer to avoid Jupyter Notebooks, you can also follow our 
-[CIMS_basic.py](../tutorials/CIMS_basic.py) script, which provides a minimal
-code example for how to use `CIMS`.
+## Getting Started
 
-Regardless of how you choose to use `CIMS`, you will need a model file to use as
-input. Example model files can be found on the 
-[`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository. You can
-access these model files in two ways:
-1. If you've used the `download()` available through `CIMS` you will have already downloaded models compatible with the installed version of `CIMS`.
-   
-2. Alternatively, you can directly clone the 
-[`cims-models` repository](https://github.com/EMRG-SFU/cims-models/) from
-GitHub. 
-    ```shell
-    $ git clone https://github.com/EMRG-SFU/cims-models/
-    ```
-    This will download a directory containing sample model descriptions which
-    you can use as-is or customize for your own modelling needs.
+To get started with the CIMS Python package, follow these steps:
 
-> [!CAUTION]
-> If you are using an older version of `CIMS`, you may find the model files obtained through method 2 are incompatible with your `CIMS` version. 
+1. **Visit the cims-models Repository**:
+   - For comprehensive instructions on setting up and running models using CIMS, please visit the [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository.
+   - The [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository contains all the necessary model specification files and Jupyter notebooks to help you run the economic climate models.
 
+2. **Source Code**:
+   - This repository contains the source code for the CIMS Python package. You can browse the code, understand its structure, and see how it implements various functionalities.
+
+## Contributing
+
+We welcome contributions from the community! If you would like to contribute to the CIMS Python package, please follow these steps:
+
+1. **Fork the Repository**:
+   - Click the "Fork" button at the top right of this page to create a copy of this repository under your GitHub account.
+
+2. **Clone Your Fork**:
+   - Clone your forked repository to your local machine using the following command:
+     ```bash
+     git clone https://github.com/your-username/cims.git
+     ```
+
+3. **Create a Branch**:
+   - Create a new branch for your changes:
+     ```bash
+     git checkout -b your-branch-name
+     ```
+
+4. **Make Changes**:
+   - Make your changes to the codebase. Ensure your changes are well-documented and tested.
+
+5. **Commit and Push**:
+   - Commit your changes and push them to your forked repository:
+     ```bash
+     git add .
+     git commit -m "Description of your changes"
+     git push origin your-branch-name
+     ```
+
+6. **Create a Pull Request**:
+   - Go to the original repository and click on the "New Pull Request" button. Follow the instructions to create a pull request for your changes.
+
+## Support
+
+If you encounter any issues or have questions, please submit an issue on our GitHub Issues page.
