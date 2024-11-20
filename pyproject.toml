@@ -40,8 +40,9 @@ Repository = "https://github.com/EMRG-SFU/cims"
 "Model Repository" = "https://github.com/EMRG-SFU/cims-models/"
 
 
-[tool.setuptools]
-packages = ["CIMS"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["CIMS*"]
 
 [tool.setuptools.dynamic]
 version = {attr = "CIMS.about.__version__"}
