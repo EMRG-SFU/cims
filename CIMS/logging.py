@@ -343,8 +343,8 @@ def search_parameter(model, search: [str] = None):
         search_list += matching
 
     if len(search_list) == 0:
-        warnings.warn(
-            f"None of the provided search terms match with parameters in the model ({search_list})"
+        warnings.warn(f"None of the provided search terms match with \
+                      parameters in the model ({search_list})")
         return
 
     print(f"Here are all the parameters contain your search term : {search_list}")
