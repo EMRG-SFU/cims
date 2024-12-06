@@ -1,7 +1,7 @@
 from ..quantities import DistributedSupply
 from .aggregation_utils import find_structural_children, find_req_prov_children
-from ..utils import create_value_dict
-
+from ..old_utils import create_value_dict
+from ..utils import parameters as PARAM
 
 def aggregate_distributed_supplies(model, node, year):
     """
@@ -29,7 +29,7 @@ def aggregate_distributed_supplies(model, node, year):
             for service, amount in distributed_supplies:
                 tech_distributed_supply.record_distributed_supply(service, node, amount)
                 node_distributed_supply.record_distributed_supply(service, node, amount)
-            model.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
+            model.graph.nodes[node][year]['technologies'][tech][PARAM.distributed_supply] = \
                 tech_distributed_supply
     else:
         # @ a Node without techs
@@ -43,9 +43,9 @@ def aggregate_distributed_supplies(model, node, year):
     # Find distributed supply from structural children
     structural_children = find_structural_children(model.graph, node)
     for child in structural_children:
-        node_distributed_supply += model.get_param('distributed_supply', child, year)
+        node_distributed_supply += model.get_param(PARAM.distributed_supply, child, year)
 
-    model.graph.nodes[node][year]['distributed_supply'] = \
+    model.graph.nodes[node][year][PARAM.distributed_supply] = \
         create_value_dict(node_distributed_supply, param_source='calculation')
 
 
@@ -78,7 +78,7 @@ def _get_direct_distributed_supply(model, node, year, tech=None):
     distributed_supply = []
 
     for child in children:
-        child_provided_quantities = model.get_param("provided_quantities", child, year=year)
+        child_provided_quantities = model.get_param(PARAM.provided_quantities, child, year=year)
 
         # Find the quantities provided by child to the node/tech
         if tech is None:
