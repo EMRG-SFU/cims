@@ -11,6 +11,8 @@ from . import lcc_calculation
 from . import declining_costs
 from . import vintage_weighting
 
+from .utils import parameters as PARAM
+
 def infer_type(d): 
     """ 
 
@@ -142,29 +144,29 @@ def is_param_exogenous(model, param, node, year, tech=None):
 
 def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
-        if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
+        if PARAM.service_requested not in model.graph.nodes[node][year]['technologies'][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['technologies'][tech]['service requested']
+            services_requested = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
             if use_vintage_weighting:
                 weighted_services = {}
                 for target in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter('service requested', model, node, year, tech=tech, context=target)
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_requested, model, node, year, tech=tech, context=target)
                     weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 
     else:
-        if 'service requested' not in model.graph.nodes[node][year]:
+        if PARAM.service_requested not in model.graph.nodes[node][year]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['service requested']
+            services_requested = model.graph.nodes[node][year][PARAM.service_requested]
 
     return services_requested
 
 
 def prev_stock_existed(model, node, year):
     for year in [y for y in model.years if y < year]:
-        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+        pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
         if pq.get_total_quantity() > 0:
             return True
     return False
@@ -174,33 +176,33 @@ def prev_stock_existed(model, node, year):
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'capital cost_declining': declining_costs.calc_declining_capital_cost,
-    'capital cost': lcc_calculation.calc_capital_cost,
-    'crf': lcc_calculation.calc_crf,
-    'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
-    'competition upfront cost': lcc_calculation.calc_competition_upfront_cost,
-    'dic': declining_costs.calc_declining_intangible_cost,
-    'financial annual cost': lcc_calculation.calc_financial_annual_cost,
-    'competition annual cost': lcc_calculation.calc_competition_annual_cost,
-    'service cost': lcc_calculation.calc_competition_annual_service_cost,
-    'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
-    'emissions cost': lcc_calculation.calc_competition_emissions_cost,
-    'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
-    'lcc_financial': lcc_calculation.calc_financial_lcc,
-    'lcc_competition': lcc_calculation.calc_lcc_competition,
-    'price': lcc_calculation.calc_price,
-    'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
-    'price_subsidy': lcc_calculation.calc_price_subsidy
+    PARAM.capital_cost_declining: declining_costs.calc_declining_capital_cost,
+    PARAM.capital_cost: lcc_calculation.calc_capital_cost,
+    PARAM.crf: lcc_calculation.calc_crf,
+    PARAM.financial_upfront_cost: lcc_calculation.calc_financial_upfront_cost,
+    PARAM.competition_upfront_cost: lcc_calculation.calc_competition_upfront_cost,
+    PARAM.dic: declining_costs.calc_declining_intangible_cost,
+    PARAM.financial_annual_cost: lcc_calculation.calc_financial_annual_cost,
+    PARAM.competition_annual_cost: lcc_calculation.calc_competition_annual_cost,
+    PARAM.service_cost: lcc_calculation.calc_competition_annual_service_cost,
+    PARAM.financial_service_cost: lcc_calculation.calc_financial_annual_service_cost,
+    PARAM.emissions_cost: lcc_calculation.calc_competition_emissions_cost,
+    PARAM.financial_emissions_cost: lcc_calculation.calc_financial_emissions_cost,
+    PARAM.lcc_financial: lcc_calculation.calc_financial_lcc,
+    PARAM.lcc_competition: lcc_calculation.calc_lcc_competition,
+    PARAM.price: lcc_calculation.calc_price,
+    PARAM.fixed_cost_rate: lcc_calculation.calc_fixed_cost_rate,
+    PARAM.price_subsidy: lcc_calculation.calc_price_subsidy
 }
 
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
-    'price multiplier',
-    'discount rate_financial',
-    'discount rate_retrofit',
-    'retrofit_existing_min',
-    'retrofit_existing_max',
-    'retrofit_heterogeneity',
+    PARAM.price_multiplier,
+    PARAM.discount_rate_financial,
+    PARAM.discount_rate_retrofit,
+    PARAM.retrofit_existing_min, 
+    PARAM.retrofit_existing_max,
+    PARAM.retrofit_heterogeneity,
 ]
 
 
@@ -277,9 +279,9 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     return_source : bool, default=False
         Whether to return the method by which this value was originally obtained.
     do_calc : bool
@@ -288,7 +290,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         Whether to check that the parameter exists as is given the context (without
         calculation, inheritance, or checking past years)
     dict_expected : bool, default=False
-        Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+        Used to disable the warning get_param is returning a dict. Get_param should normally return a single value
         (float, str, etc.). If the user knows it expects a dict, then this flag is used.
 
     Returns
@@ -339,13 +341,14 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
 
     # Raise warning if user isn't using get_param correctly
     if isinstance(val, dict) and not dict_expected:
-        warning_message = ("Get Param is returning a dict, considering using more parameters in get_param." +
-                      "\nParameter: " + (param if param else "") +
-                      "\nNode: " + (node if node else "") +
-                      "\nYear: " + (year if year else "") +
-                      "\nContext: " + (context if context else "") +
-                      "\nSub-context: " + (sub_context if sub_context else "") +
-                      "\nTech: " + (tech if tech else ""))
+        warning_message = \
+            f"get_param() is returning a `dict`, considering using more parameters in get_param().\
+                \nParameter: {param if param else ''}\n\Node: {node if node else ''}\
+                \nYear: {year if year else ''}\
+                \nContext: {context if context else ''}\
+                \nSub-context: {sub_context if sub_context else ''}\
+                \nTech: {tech if tech else ''}"
+
         warnings.warn(warning_message)
 
     if val is not None:
@@ -458,15 +461,15 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
     year : str or list, optional
         The year(s) which you are interested in. `year` is not required for parameters specified at
         the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        competition type can be retrieved without specifying a year.
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     save : bool, optional
         This specifies whether the change should be saved in the change_log csv where True means
         the change will be saved and False means it will not be saved
@@ -494,9 +497,9 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
@@ -592,9 +595,9 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         tech : str
             The name of the technology you are interested in.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
@@ -704,17 +707,17 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     node : str
         The name of the node (branch notation) whose parameter you are interested in set.
     year : str or list, optional
-        The year(s) which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year(s) which you are setting a value for. `year` is not required
+        for parameters specified at the node level and which by definition
+        cannot change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     save : bool, optional
         This specifies whether the change should be saved in the change_log csv where True means
         the change will be saved and False means it will not be saved
@@ -741,9 +744,9 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
         context : str, optional
-                Used when there is context available in the node. Analogous to the 'context' column in the model description
+                Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         """
         # Set Parameter from Description
         # ******************************
@@ -802,9 +805,9 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         tech : str
             The name of the technology you are interested in.
         context : str, optional
-                Used when there is context available in the node. Analogous to the 'context' column in the model description
+                Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         """
         # Set Parameter from Description
         # ******************************
@@ -855,8 +858,8 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     for i in range(len(year)):
         node_data = model.graph.nodes[node][year[i]]
         if tech:
-            if tech in node_data["technologies"]:
-                tech_data = model.graph.nodes[node][year[i]]["technologies"][tech]
+            if tech in node_data['technologies']:
+                tech_data = model.graph.nodes[node][year[i]]['technologies'][tech]
                 if param in tech_data:
                     set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
                 else:
@@ -1016,20 +1019,20 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
     node : str
         The name of the node (branch notation) whose parameter you are interested in matching.
     year : str, optional
-        The year which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year(s) which you are setting a value for. `year` is not required
+        for parameters specified at the node level and which by definition
+        cannot change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
         specified node, param, year, context, and sub_context.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model
+        Used when there is context available in the node. Analogous to the `context` column in the model
         description. If context is `.*`, all possible context keys will be searched at the specified node, param,
         year, sub_context, and tech.
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description.
         If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
         year, context, and tech.
     create_missing : bool, optional
@@ -1204,20 +1207,20 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     node : str
         The name of the node (branch format) whose parameter you are interested in matching.
     year : str, optional
-        The year which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year which you are setting a value for. `year` is not required for
+        parameters specified at the node level and which by definition cannot
+        change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
         specified node, param, year, context, and sub_context.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model
+        Used when there is context available in the node. Analogous to the `context` column in the model
         description. If context is `.*`, all possible context keys will be searched at the specified node, param,
         year, sub_context, and tech.
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+        Must be used only if context is given. Analogous to the `sub_context` column in the model description.
         If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
         year, context, and tech.
     row_index : int, optional

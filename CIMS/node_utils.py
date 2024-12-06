@@ -3,14 +3,11 @@ import copy
 from typing import List
 
 
-from . import utils
+from . import old_utils
 from . import cost_curves
 from . import graph_utils
 
-IS_SUPPLY_PARAM = 'is supply'
-TREE_IDX_PARAM = 'tree index'
-COMP_TYPE_PARAM = 'competition type'
-EMISSIONS_GWP_PARAM = 'emissions gwp'
+from .utils import parameters as PARAM
 
 def make_or_update_nodes(graph, node_dfs, tech_dfs):
     """
@@ -57,24 +54,24 @@ def _init_node(graph, current_node_df, current_node):
     graph.add_node(current_node)
 
     # 2.1 Add index for use in the results viewer file
-    if TREE_IDX_PARAM not in graph.nodes[current_node]:
+    if PARAM.tree_index not in graph.nodes[current_node]:
         graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
-        graph.nodes[current_node][TREE_IDX_PARAM] = current_node_df.index[0].item() + graph.cur_tree_index[0]
+        graph.nodes[current_node][PARAM.tree_index] = current_node_df.index[0].item() + graph.cur_tree_index[0]
 
     return graph, current_node_df
 
 def _set_node_constants(graph, current_node_df, current_node):
     # 3.1 is supply
-    graph = _add_node_constant(graph, current_node_df, current_node, IS_SUPPLY_PARAM)
-    current_node_df = current_node_df[current_node_df['Parameter'] != IS_SUPPLY_PARAM]
+    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.is_supply)
+    current_node_df = current_node_df[current_node_df['Parameter'] != PARAM.is_supply]
 
     # 3.2 structural aggregation
-    graph = _add_node_constant(graph, current_node_df, current_node, 'structural_aggregation')
-    current_node_df = current_node_df[current_node_df['Parameter'] != 'structural_aggregation']
+    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.structural_aggregation)
+    current_node_df = current_node_df[current_node_df['Parameter'] != PARAM.structural_aggregation]
 
     # 3.3 competition type
-    graph = _add_node_constant(graph, current_node_df, current_node, COMP_TYPE_PARAM, required=True)
-    current_node_df = current_node_df[current_node_df['Parameter'] != COMP_TYPE_PARAM]
+    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.competition_type, required=True)
+    current_node_df = current_node_df[current_node_df['Parameter'] != PARAM.competition_type]
 
     return graph, current_node_df
 
@@ -90,7 +87,7 @@ def _set_node_region_sector(graph, current_node_df, current_node):
         pass
     current_node_df = current_node_df.drop(columns=['Region'])
 
-    if graph.nodes[current_node][COMP_TYPE_PARAM] not in ['root', 'region']:
+    if graph.nodes[current_node][PARAM.competition_type] not in ['root', 'region']:
         sector_list = []
         for item in current_node_df['Sector']:
             if item not in sector_list and item != None:
@@ -104,13 +101,13 @@ def _set_node_region_sector(graph, current_node_df, current_node):
     return graph, current_node_df
 
 def _build_cost_curve(graph, current_node_df, current_node):
-    comp_type = graph.nodes[current_node][COMP_TYPE_PARAM]
+    comp_type = graph.nodes[current_node][PARAM.competition_type]
     if comp_type in ['supply - cost curve annual', 'supply - cost curve cumulative']:
         cc_func = cost_curves.build_cost_curve_function(current_node_df)
-        graph.nodes[current_node]['cost_curve_function'] = cc_func
+        graph.nodes[current_node][PARAM.cost_curve_function] = cc_func
 
         # Get rid of cost curve rows
-        cost_curve_params = ['cost curve quantity', 'cost curve price']
+        cost_curve_params = [PARAM.cost_curve_quantity, PARAM.cost_curve_price]
         current_node_df = current_node_df[~current_node_df['Parameter'].isin(cost_curve_params)]
 
     return graph, current_node_df
@@ -126,7 +123,7 @@ def _update_year_dict(existing_year_dict, update_data):
             'target': target,
             'source': source,
             'unit': unit,
-            'year_value': utils.infer_type(year_value),
+            'year_value': old_utils.infer_type(year_value),
             'param_source': 'model'
             }
         if param not in year_dict:
@@ -138,9 +135,9 @@ def _update_year_dict(existing_year_dict, update_data):
         if not update_ok:
             continue
 
-        if param == 'service requested':
+        if param == PARAM.service_requested:
             year_dict[param].update({target: value_dict})
-        elif param == 'price multiplier':
+        elif param == PARAM.price_multiplier:
             year_dict[param].update({target: value_dict})
         else:
             # If a Context value is present, there are 3 possibilities for what needs to happen
@@ -161,7 +158,7 @@ def _update_year_dict(existing_year_dict, update_data):
                 # 3. We save context as the year_value, which will remain constant
                 #    across all years.
                 else:
-                    value_dict['year_value'] = utils.infer_type(context)
+                    value_dict['year_value'] = old_utils.infer_type(context)
                     year_dict[param] = value_dict
             else:
                 year_dict[param] = value_dict
@@ -205,8 +202,8 @@ def _add_node_data(graph, current_node, node_dfs):
 
 def _add_all_year_data(graph, current_node_df, current_node):
     # 6 For the remaining data, group by year
-    years = [c for c in current_node_df.columns if utils.is_year(c)]          # Get Year Columns
-    non_years = [c for c in current_node_df.columns if not utils.is_year(c)]  # Get Non-Year Columns
+    years = [c for c in current_node_df.columns if old_utils.is_year(c)]          # Get Year Columns
+    non_years = [c for c in current_node_df.columns if not old_utils.is_year(c)]  # Get Non-Year Columns
     non_year_data = [current_node_df[c] for c in non_years]
     for year in years:
         current_year_data = non_year_data + [current_node_df[year]]
@@ -309,8 +306,8 @@ def _init_tech(graph, current_tech_df):
     return graph, current_tech_df
 
 def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech):
-    years = [c for c in current_tech_df.columns if utils.is_year(c)]             # Get Year Columns
-    non_years = [c for c in current_tech_df.columns if not utils.is_year(c)]     # Get Non-Year Columns
+    years = [c for c in current_tech_df.columns if old_utils.is_year(c)]             # Get Year Columns
+    non_years = [c for c in current_tech_df.columns if not old_utils.is_year(c)]     # Get Non-Year Columns
 
     non_year_data = [current_tech_df[c] for c in non_years]
     for year in years:
@@ -326,8 +323,8 @@ def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech):
         graph.nodes[node][year]['technologies'][current_tech] = updated_year_dict
 
         # Add index for use in the results viewer file
-        if TREE_IDX_PARAM not in graph.nodes[node][year]['technologies'][current_tech]:
-            graph.nodes[node][year]['technologies'][current_tech][TREE_IDX_PARAM] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
+        if PARAM.tree_index not in graph.nodes[node][year]['technologies'][current_tech]:
+            graph.nodes[node][year]['technologies'][current_tech][PARAM.tree_index] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
 
     return graph, current_tech_df
 
@@ -362,7 +359,7 @@ def _add_tech_data(graph, node, tech_dfs, current_tech):
 
 # Other
 def find_node_tech_compete_tech_child_node(model, node, year, tech):
-    services_requested = model.get_param('service requested', node, year=year, tech=tech, dict_expected=True)
+    services_requested = model.get_param(PARAM.service_requested, node, year=year, tech=tech, dict_expected=True)
     if len(services_requested) == 1:
         child_node = list(services_requested.keys())[0]
     else:

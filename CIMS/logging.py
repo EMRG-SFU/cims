@@ -12,14 +12,20 @@ import pandas as pd
 from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from CIMS.emissions import Emissions, EmissionsCost
 
-excluded_parameters = [
-# 'emissions_cost_rate', 'cumul_emissions_cost_rate',
-#                        'net_emissions_rate', 'cumul_net_emissions_rate',
-#                        'bio_emissions_rate', 'cumul_bio_emissions_rate',
-#                        'avoided_emissions_rate', 'cumul_avoided_emissions_rate',
-#                        'negative_emissions_rate', 'cumul_negative_emissions_rate'
-]
+from .utils import parameters as PARAM
 
+excluded_parameters = [
+    PARAM.emissions_cost_rate, 
+    PARAM.cumul_emissions_cost_rate, 
+    PARAM.net_emissions_rate, 
+    PARAM.cumul_net_emissions_rate,
+    PARAM.bio_emissions_rate,
+    PARAM.cumul_bio_emissions_rate, 
+    PARAM.avoided_emissions_rate, 
+    PARAM.cumul_avoided_emissions_rate,
+    PARAM.negative_emissions_rate, 
+    PARAM.cumul_negative_emissions_rate
+]
 
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
@@ -257,8 +263,9 @@ def _slim_list(default_list):
     """Define slim list example, change the content in p_list if you want a different list"""
 
     if default_list == 'slim':
-        p_list = ['new_market_share', 'price', 'competition type',
-                  'service requested', 'fcc']
+        p_list = [PARAM.new_market_share, PARAM.price, 
+                  PARAM.competition_type, PARAM.service_requested, 
+                  PARAM.fcc]
 
     # this is for validating if we have defined the default name
     else:
@@ -337,7 +344,7 @@ def search_parameter(model, search: [str] = None):
 
     if len(search_list) == 0:
         warnings.warn(
-            "You search term doesn't match with any parameter in the model")
+            f"None of the provided search terms match with parameters in the model ({search_list})"
         return
 
     print(f"Here are all the parameters contain your search term : {search_list}")
@@ -362,9 +369,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         Path to a text file containing the list of parameters to log
     default_list : str, optional
         The name of a default parameter list. Currently two default lists are defined:
-        (1) 'all' will log all parameters and
-        (2) 'slim' will return 5 pre-defined parameters ('new_market_share', 'price',
-            'competition type', 'service requested', 'fcc'
+        (1) `all` will log all parameters and
+        (2) `slim` will return 5 pre-defined parameters (`new_market_share`, `price`,
+            `competition type`, `service requested`, `fcc`
 
     Returns
     -------
@@ -372,7 +379,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
         The DataFrame containing the model's current parameter values. Additionally, a CSV file is
         written to output_path.
     """
-    # if no argument chosen or defualt_list = 'all', return all parameters
+    # if no argument chosen or defualt_list = all, return all parameters
     if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
         all_logs = []
         for node in model.graph.nodes:
@@ -439,7 +446,7 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
                 # check if the input parameter exists.
                 if param_to_log not in total_parameter_list:
-                    message = "parameter {parameter:} does not exist".format(parameter=param_to_log)
+                    message = f"parameter {param_to_log:} does not exist"
                     warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():

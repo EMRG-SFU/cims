@@ -5,12 +5,13 @@ import warnings
 
 from .emissions import calc_competition_emissions_cost, calc_financial_emissions_cost, \
     calc_cumul_emissions_cost_rate
-from . import utils
+from . import old_utils
 from .revenue_recycling import calc_recycled_revenues
 from .cost_curves import calc_cost_curve_lcc
 from .vintage_weighting import calculate_vintage_weighted_parameter
 
 from collections.abc import Iterable
+from .utils import parameters as PARAM
 
 
 def lcc_calculation(sub_graph, node, year, model, **kwargs):
@@ -47,24 +48,24 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         None. Produces side effects of updating the node in sub_graph to have parameter values.
     """
     # Check if the node has an exogenously defined Life Cycle Cost
-    if 'lcc_financial' in sub_graph.nodes[node][year]:
-        lcc, lcc_source = model.get_param('lcc_financial', node, year, return_source=True)
+    if PARAM.lcc_financial in sub_graph.nodes[node][year]:
+        lcc, lcc_source = model.get_param(PARAM.lcc_financial, node, year, return_source=True)
         if lcc_source == 'model':
             # Retrieve the aggregate emissions cost at the node/tech
             calc_cumul_emissions_cost_rate(model, node, year)
 
             # Calculate Price
-            price, price_source = model.get_param('price', node, year, return_source=True,
+            price, price_source = model.get_param(PARAM.price, node, year, return_source=True,
                                                   do_calc=True)
             val_dict = {'year_value': price, 'param_source': price_source}
-            model.set_param_internal(val_dict, 'price', node, year)
+            model.set_param_internal(val_dict, PARAM.price, node, year)
 
             return
 
     # Check if the node is a tech compete node:
-    if model.get_param('competition type', node) in ['tech compete', 'node tech compete']:
+    if model.get_param(PARAM.competition_type, node) in ['tech compete', 'node tech compete']:
         total_lcc_v = 0.0
-        v = model.get_param('heterogeneity', node, year)
+        v = model.get_param(PARAM.heterogeneity, node, year)
 
         # Get all the technologies in the node
         node_techs = sub_graph.nodes[node][year]['technologies'].keys()
@@ -73,38 +74,38 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         for tech in node_techs:
             # Service Cost
             # ************
-            annual_service_cost, sc_source = model.get_param('service cost', node, year, tech=tech,
+            annual_service_cost, sc_source = model.get_param(PARAM.service_cost, node, year, tech=tech,
                                                              return_source=True, do_calc=True)
             val_dict = {'year_value': annual_service_cost,
                         'param_source': sc_source}
-            model.set_param_internal(val_dict, 'service cost', node, year, tech)
+            model.set_param_internal(val_dict, PARAM.service_cost, node, year, tech)
 
             # CRF
             # ************
-            crf, crf_source = model.get_param('crf', node, year, tech=tech,
+            crf, crf_source = model.get_param(PARAM.crf, node, year, tech=tech,
                                               return_source=True, do_calc=True)
             val_dict = {'year_value': crf, 'param_source': crf_source}
-            model.set_param_internal(val_dict, 'crf', node, year, tech)
+            model.set_param_internal(val_dict, PARAM.crf, node, year, tech)
 
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
-            lcc, lcc_source = model.get_param('lcc_financial', node, year, tech=tech, return_source=True, do_calc=True)
+            lcc, lcc_source = model.get_param(PARAM.lcc_financial, node, year, tech=tech, return_source=True, do_calc=True)
             val_dict = {'year_value': lcc, 'param_source': lcc_source}
-            model.set_param_internal(val_dict, 'lcc_financial', node, year, tech)
+            model.set_param_internal(val_dict, PARAM.lcc_financial, node, year, tech)
 
             # Competition LCC
             # ************
-            lcc_competition, lcc_competition_source = model.get_param('lcc_competition',
+            lcc_competition, lcc_competition_source = model.get_param(PARAM.lcc_competition,
                                                                 node, year, tech=tech,
                                                                 return_source=True,
                                                                 do_calc=True)
             val_dict = {'year_value': lcc_competition, 'param_source': lcc_competition_source}
-            model.set_param_internal(val_dict, 'lcc_competition', node, year, tech)
+            model.set_param_internal(val_dict, PARAM.lcc_competition, node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
-            first_year_avail = model.get_param('available', node, str(model.base_year), tech=tech)
-            first_year_unavail = model.get_param('unavailable', node, str(model.base_year),
+            first_year_avail = model.get_param(PARAM.available, node, str(model.base_year), tech=tech)
+            first_year_unavail = model.get_param(PARAM.unavailable, node, str(model.base_year),
                                                  tech=tech)
             if first_year_avail <= int(year) < first_year_unavail:
                 # Life Cycle Cost ^ -v
@@ -120,8 +121,8 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                 total_lcc_v += weight
 
         # Set sum of Life Cycle Cost raised to negative variance
-        val_dict = utils.create_value_dict(total_lcc_v, param_source='calculation')
-        sub_graph.nodes[node][year]["total_lcc_v"] = val_dict
+        val_dict = old_utils.create_value_dict(total_lcc_v, param_source='calculation')
+        sub_graph.nodes[node][year][PARAM.total_lcc_v] = val_dict
 
         # Weighted Life Cycle Cost
         # ************************
@@ -130,75 +131,75 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         # Cycle Cost
         for tech in node_techs:
             # Determine whether Market share is exogenous or not
-            ms, ms_source = model.get_param('market share', node, year, tech=tech,
+            ms, ms_source = model.get_param(PARAM.market_share, node, year, tech=tech,
                                             return_source=True)
             ms_exogenous = ms_source == 'model'
 
             # Determine what market share to use for weighing Life Cycle Costs
             # If market share is exogenous, set new & total market share to exogenous value
             if ms_exogenous:
-                val_dict = utils.create_value_dict(ms, param_source='calculation')
-                model.set_param_internal(val_dict, 'new_market_share', node, year, tech)
-                model.set_param_internal(val_dict, 'total_market_share', node, year, tech)
+                val_dict = old_utils.create_value_dict(ms, param_source='calculation')
+                model.set_param_internal(val_dict, PARAM.new_market_share, node, year, tech)
+                model.set_param_internal(val_dict, PARAM.total_market_share, node, year, tech)
 
-            market_share = model.get_param('total_market_share', node, year, tech=tech)
+            market_share = model.get_param(PARAM.total_market_share, node, year, tech=tech)
 
             # Weight Life Cycle Cost and Add to Node Total
             # ********************************************
-            curr_lcc = model.get_param('lcc_financial', node, year, tech=tech)
+            curr_lcc = model.get_param(PARAM.lcc_financial, node, year, tech=tech)
             weighted_lccs += market_share * curr_lcc
 
         # Maintain LCC for nodes where all techs have zero stock (and therefore no market share)
         # This issue affects endogenous supply_nodes that are not used until later years (like hydrogen) and some sub-trees of demand_nodes
         if weighted_lccs == 0 and int(year) != model.base_year:
             prev_year = str(int(year) - model.step)
-            weighted_lccs = model.get_param('lcc_financial', node, prev_year)
+            weighted_lccs = model.get_param(PARAM.lcc_financial, node, prev_year)
 
         # Subtract Recycled Revenues
         recycled_revenues = calc_recycled_revenues(model, node, year)
         lcc = weighted_lccs - recycled_revenues
 
         # Check that stock isn't 0 (GL Issue #110)
-        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
-        if utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+        pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
+        if old_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
                 src == 'calculation') and (pq.get_total_quantity() <= 0):
             lcc = 0
 
-        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='calculation')
+        sub_graph.nodes[node][year][PARAM.lcc_financial] = old_utils.create_value_dict(lcc, param_source='calculation')
 
-    elif 'cost curve' in model.get_param('competition type', node):
+    elif 'cost curve' in model.get_param(PARAM.competition_type, node):
         lcc = calc_cost_curve_lcc(model, node, year,
                                   cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
-        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source='cost curve function')
+        sub_graph.nodes[node][year][PARAM.lcc_financial] = old_utils.create_value_dict(lcc, param_source='cost curve function')
 
     else:
-        # When calculating a service cost for a technology or node using the "Fixed Ratio" decision
-        # rule, multiply the Life Cycle Costs of the service required by its 'service requested'
+        # When calculating a service cost for a technology or node using the Fixed Ratio decision
+        # rule, multiply the Life Cycle Costs of the service required by its PARAM.service_requested
         # line value. Sometimes, the Service Requested line values act as percent shares that add up
         # to 1 for a given fixed ratio decision node. Other times, they do not and the Service
         # Requested Line values sum to numbers greater or less than 1.
-        service_cost, sc_source = model.get_param('service cost', node, year,
+        service_cost, sc_source = model.get_param(PARAM.service_cost, node, year,
                                                   return_source=True, do_calc=True)
         recycled_revenues = calc_recycled_revenues(model, node, year)
-        fixed_cost_rate = model.get_param('fixed cost rate', node, year, do_calc=True)
+        fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, do_calc=True)
         lcc = service_cost + fixed_cost_rate - recycled_revenues
 
-        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
-        if utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+        pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
+        if old_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
                 src == 'calculation') and (pq.get_total_quantity() <= 0):
             lcc = 0
 
-        sub_graph.nodes[node][year]['lcc_financial'] = utils.create_value_dict(lcc, param_source=sc_source)
+        sub_graph.nodes[node][year][PARAM.lcc_financial] = old_utils.create_value_dict(lcc, param_source=sc_source)
 
     # fLCC -> Price
-    price, price_source = model.get_param('price', node, year, return_source=True, do_calc=True)
+    price, price_source = model.get_param(PARAM.price, node, year, return_source=True, do_calc=True)
     val_dict = {'year_value': price, 'param_source': price_source}
-    model.set_param_internal(val_dict, 'price', node, year)
+    model.set_param_internal(val_dict, PARAM.price, node, year)
 
 
 def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
     """
-    Calculate the Financial Life Cycle Cost (called 'lcc_financial' in the model & model
+    Calculate the Financial Life Cycle Cost (called PARAM.lcc_financial in the model & model
     description). This LCC does not contain intangible costs.
 
     Parameters
@@ -220,28 +221,28 @@ def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> 
     # Calculate the LCC of any new stock
 
     # Upfront Cost - vintage-weight full term
-    new_upfront_cost, uc_src = model.get_param('financial upfront cost', node, year, tech=tech,
+    new_upfront_cost, uc_src = model.get_param(PARAM.financial_upfront_cost, node, year, tech=tech,
                                                do_calc=True, return_source=True)
-    model.set_param_internal(param='new_stock_financial_upfront_cost', node=node, year=year,
+    model.set_param_internal(param=PARAM.new_stock_financial_upfront_cost, node=node, year=year,
                              tech=tech,
-                             val=utils.create_value_dict(new_upfront_cost, param_source=uc_src))
-    upfront_cost = calculate_vintage_weighted_parameter('new_stock_financial_upfront_cost', model,
+                             val=old_utils.create_value_dict(new_upfront_cost, param_source=uc_src))
+    upfront_cost = calculate_vintage_weighted_parameter(PARAM.new_stock_financial_upfront_cost, model,
                                                         node, year, tech)
 
     # Annual Cost - vintage-weight full term
-    new_annual_cost, ac_src = model.get_param('financial annual cost', node, year, tech=tech,
+    new_annual_cost, ac_src = model.get_param(PARAM.financial_annual_cost, node, year, tech=tech,
                                               do_calc=True, return_source=True)
-    model.set_param_internal(utils.create_value_dict(new_annual_cost, param_source=ac_src),
-                             'new_stock_financial_annual_cost', node, year, tech=tech)
-    annual_cost = calculate_vintage_weighted_parameter('new_stock_financial_annual_cost', model,
+    model.set_param_internal(old_utils.create_value_dict(new_annual_cost, param_source=ac_src),
+                             PARAM.new_stock_financial_annual_cost, node, year, tech=tech)
+    annual_cost = calculate_vintage_weighted_parameter(PARAM.new_stock_financial_annual_cost, model,
                                                        node, year, tech)
 
     # Annual Service Cost - vintage weight the service requested ratios
-    annual_service_cost = model.get_param('financial service cost', node, year, tech=tech,
+    annual_service_cost = model.get_param(PARAM.financial_service_cost, node, year, tech=tech,
                                           do_calc=True)
 
     # Fixed Cost Rate -- No Vintage Weighting
-    fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
+    fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, tech=tech, do_calc=True)
 
     # Emissions Cost -- Vintage-weight the emissions ratios, but leave the cost/emission the same
     emissions_cost = calc_financial_emissions_cost(model, node, year, tech, allow_foresight=False)
@@ -275,12 +276,12 @@ def calc_lcc_competition(model: "CIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_financial_lcc: Calculates financial LCC, which does not include intangible costs.
     """
-    competition_upfront_cost = model.get_param('competition upfront cost', node, year, tech=tech,
+    competition_upfront_cost = model.get_param(PARAM.competition_upfront_cost, node, year, tech=tech,
                                             do_calc=True)
-    competition_annual_cost = model.get_param('competition annual cost', node, year, tech=tech,
+    competition_annual_cost = model.get_param(competition_annual_cost, node, year, tech=tech,
                                            do_calc=True)
-    annual_service_cost = model.get_param('service cost', node, year, tech=tech, do_calc=True)
-    fixed_cost_rate = model.get_param('fixed cost rate', node, year, tech=tech, do_calc=True)
+    annual_service_cost = model.get_param(PARAM.service_cost, node, year, tech=tech, do_calc=True)
+    fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, tech=tech, do_calc=True)
     emissions_cost = calc_competition_emissions_cost(model, node, year, tech, allow_foresight=True)
 
     lcc_competition = competition_upfront_cost + competition_annual_cost + annual_service_cost + \
@@ -309,10 +310,10 @@ def calc_competition_upfront_cost(model: 'CIMS.Model', node: str, year: str, tec
     --------
     calc_financial_upfront_cost
     """
-    crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
-    capital_cost = model.get_param('capital cost', node, year, tech=tech, do_calc=True)
-    subsidy = model.get_param('subsidy', node, year, tech=tech, do_calc=True)
-    output = model.get_param('output', node, year, tech=tech)
+    crf = model.get_param(PARAM.crf, node, year, tech=tech, do_calc=True)
+    capital_cost = model.get_param(PARAM.capital_cost, node, year, tech=tech, do_calc=True)
+    subsidy = model.get_param(PARAM.subsidy, node, year, tech=tech, do_calc=True)
+    output = model.get_param(PARAM.output, node, year, tech=tech)
 
     competition_uc = (capital_cost + subsidy) / output * crf
 
@@ -338,14 +339,14 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
     --------
     calc_competition_upfront_cost
     """
-    crf = model.get_param('crf', node, year, tech=tech, do_calc=True)
-    capital_cost, capital_cost_source = model.get_param('capital cost', node, year, tech=tech, return_source=True, do_calc=True)
-    subsidy = model.get_param('subsidy', node, year, tech=tech)
-    output = model.get_param('output', node, year, tech=tech)
+    crf = model.get_param(PARAM.crf, node, year, tech=tech, do_calc=True)
+    capital_cost, capital_cost_source = model.get_param(PARAM.capital_cost, node, year, tech=tech, return_source=True, do_calc=True)
+    subsidy = model.get_param(PARAM.subsidy, node, year, tech=tech)
+    output = model.get_param(PARAM.output, node, year, tech=tech)
 
     # Record capital cost (FCC or DCC) value in dictionary
     val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
-    model.set_param_internal(val_dict, 'capital cost', node, year, tech)
+    model.set_param_internal(val_dict, PARAM.capital_cost, node, year, tech)
 
     financial_uc = (capital_cost + subsidy) / output * crf
 
@@ -371,14 +372,14 @@ def calc_competition_annual_cost(model:'CIMS.Model', node: str, year: str, tech:
     --------
     calc_financial_annual_cost
     """
-    operating_maintenance = model.get_param('fom', node, year, tech=tech)
-    fixed_intangible_cost = model.get_param('fic', node, year, tech=tech)
-    declining_intangible_cost, dic_source = model.get_param('dic', node, year, tech=tech, return_source=True, do_calc=True)
-    output = model.get_param('output', node, year, tech=tech)
+    operating_maintenance = model.get_param(PARAM.fom, node, year, tech=tech)
+    fixed_intangible_cost = model.get_param(PARAM.fic, node, year, tech=tech)
+    declining_intangible_cost, dic_source = model.get_param(PARAM.dic, node, year, tech=tech, return_source=True, do_calc=True)
+    output = model.get_param(PARAM.output, node, year, tech=tech)
     
     # Record DIC value in dictionary
     val_dict = {'year_value': declining_intangible_cost, 'param_source': dic_source}
-    model.set_param_internal(val_dict, 'dic', node, year, tech)
+    model.set_param_internal(val_dict, PARAM.dic, node, year, tech)
 
     competition_ac = (
         operating_maintenance + fixed_intangible_cost + declining_intangible_cost) / output
@@ -405,8 +406,8 @@ def calc_financial_annual_cost(model: 'CIMS.Model', node: str, year: str, tech: 
     --------
     calc_competition_annual_cost
     """
-    operating_maintenance = model.get_param('fom', node, year, tech=tech)
-    output = model.get_param('output', node, year, tech=tech)
+    operating_maintenance = model.get_param(PARAM.fom, node, year, tech=tech)
+    output = model.get_param(PARAM.output, node, year, tech=tech)
 
     financial_ac = operating_maintenance / output
 
@@ -428,15 +429,15 @@ def calc_capital_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> f
     -------
     float : Capital cost, defined as CC = max{CC_declining, cc_fixed * CC_declining_limit}.
     """
-    dcc_class = model.get_param('dcc_class', node, year, tech=tech)
+    dcc_class = model.get_param(PARAM.dcc_class, node, year, tech=tech)
 
     if dcc_class is None:
-        capital_cost = model.get_param('fcc', node, year, tech=tech)
+        capital_cost = model.get_param(PARAM.fcc, node, year, tech=tech)
     else:
-        cc_declining = model.get_param('capital cost_declining', node, year, tech=tech,
+        cc_declining = model.get_param(PARAM.capital_cost_declining, node, year, tech=tech,
                                        do_calc=True)
-        cc_fixed = model.get_param('fcc', node, year, tech=tech)
-        cc_declining_limit = model.get_param('dcc_limit', node, year, tech=tech)
+        cc_fixed = model.get_param(PARAM.fcc, node, year, tech=tech)
+        cc_declining_limit = model.get_param(PARAM.dcc_limit, node, year, tech=tech)
 
         capital_cost = max(cc_declining, cc_fixed * cc_declining_limit)
 
@@ -461,15 +462,15 @@ def calc_crf(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
 
     # Check if the node has an exogenously defined capital recovery, if not use lifetime
     try:
-        payback_period = model.get_param('capital recovery', node, year, tech=tech,
+        payback_period = model.get_param(PARAM.capital_recovery, node, year, tech=tech,
                                          check_exist=True)
     except:
-        payback_period = model.get_param('lifetime', node, year, tech=tech)
+        payback_period = model.get_param(PARAM.lifetime, node, year, tech=tech)
 
-    finance_discount = model.get_param('discount rate_financial', node, year, tech=tech)
+    finance_discount = model.get_param(PARAM.discount_rate_financial, node, year, tech=tech)
     if finance_discount == 0:
-        warnings.warn('Discount rate_financial has value of 0 at {} -- {}'.format(node, tech))
-        finance_discount = model.get_parameter_default('discount rate_financial')
+        warnings.warn(f"{PARAM.discount_rate_financial} has value of 0 at {node} -- {tech}")
+        finance_discount = model.get_parameter_default(PARAM.discount_rate_financial)
 
     crf = finance_discount / (1 - (1 + finance_discount) ** (-1.0 * payback_period))
 
@@ -482,19 +483,19 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
     """
 
     def do_sc_calculation(target):
-        service_requested_value = calculate_vintage_weighted_parameter('service requested',
+        service_requested_value = calculate_vintage_weighted_parameter(PARAM.service_requested,
                                                                        model, node, year,
                                                                        tech=tech, context=target)
         service_cost = 0
 
         if target in model.supply_nodes:
-            supply_price = model.get_param('price', target, year, do_calc=True)
-            price_multiplier = model.get_param("price multiplier", node, year, context=target)
+            supply_price = model.get_param(PARAM.price, target, year, do_calc=True)
+            price_multiplier = model.get_param(PARAM.price_multiplier, node, year, context=target)
             service_requested_price = supply_price * price_multiplier
 
         else:
-            if 'price' in model.graph.nodes[target][year]:
-                service_requested_price = model.get_param('price', target, year)
+            if PARAM.price in model.graph.nodes[target][year]:
+                service_requested_price = model.get_param(PARAM.price, target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -503,7 +504,7 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
         return service_cost
 
     total_service_cost = 0
-    services_requested = model.get_param("service requested", node, year, tech=tech, dict_expected=True)
+    services_requested = model.get_param(PARAM.service_requested, node, year, tech=tech, dict_expected=True)
     if isinstance(services_requested, Iterable):
         for tgt in services_requested:
             total_service_cost += do_sc_calculation(tgt)
@@ -534,17 +535,17 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
     """
 
     def do_sc_calculation(target):
-        service_requested_value = model.get_param("service requested", node, year, tech=tech, context=target)
+        service_requested_value = model.get_param(PARAM.service_requested, node, year, tech=tech, context=target)
         service_cost = 0
 
         if target in model.supply_nodes:
-            supply_price = model.get_param('price', target, year, do_calc=True)
-            price_multiplier = model.get_param("price multiplier", node, year, context=target)
+            supply_price = model.get_param(PARAM.price, target, year, do_calc=True)
+            price_multiplier = model.get_param(PARAM.price_multiplier, node, year, context=target)
             service_requested_price = supply_price * price_multiplier
 
         else:
-            if 'price' in model.graph.nodes[target][year]:
-                service_requested_price = model.get_param('price', target, year)
+            if PARAM.price in model.graph.nodes[target][year]:
+                service_requested_price = model.get_param(PARAM.price, target, year)
             else:
                 # Encountering a non-visited node
                 service_requested_price = 1
@@ -553,7 +554,7 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
         return service_cost
 
     total_service_cost = 0
-    services_requested = model.get_param('service requested', node, year, tech=tech, dict_expected=True)
+    services_requested = model.get_param(PARAM.service_requested, node, year, tech=tech, dict_expected=True)
     if isinstance(services_requested, Iterable):
         for tgt in services_requested:
             total_service_cost += do_sc_calculation(tgt)
@@ -584,13 +585,13 @@ def calc_price_subsidy(model: 'CIMS.Model', node: str, year: str, tech=None):
         The price subsidy for a particular node in a given year.
     """
     if tech is not None:
-        raise ValueError('Cannot calculate price subsidy for a technology.')
+        raise ValueError(f"Cannot calculate {PARAM.price_subsidy} for a technology.")
 
     price_subsidy = 0
-    benchmark = model.get_param('benchmark', node, year, dict_expected=True)
+    benchmark = model.get_param(PARAM.benchmark, node, year, dict_expected=True)
 
     if type(benchmark) is dict:
-        tax = model.get_param('tax', node, year, dict_expected=True)
+        tax = model.get_param(PARAM.tax, node, year, dict_expected=True)
         for ghg in benchmark:
             for emission_type in benchmark[ghg]:
                 try:
@@ -628,22 +629,22 @@ def calc_price(model, node, year, tech=None):
     -------
     None
 
-    This function has the side effect of setting the node/year's "price" and "non-energy cost" (if
+    This function has the side effect of setting the node/year's price and non-energy cost (if
     not exogenously defined) parameters in the model. If calculating price for a base year,
     P2000, and COP are also set (if they weren't exogenously defined).
     """
-    fLCC = model.get_param('lcc_financial', node, year, tech=tech)
+    fLCC = model.get_param(PARAM.lcc_financial, node, year, tech=tech)
 
     if tech is not None:
         price = fLCC
-        model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
-                                 'price', node, year, tech=tech)
+        model.set_param_internal(old_utils.create_value_dict(price, param_source='calculation'),
+                                 PARAM.price, node, year, tech=tech)
         return price
 
     base_year = str(model.base_year)
-    p2000, p2000_source = model.get_param('p2000', node, base_year, return_source=True)
+    p2000, p2000_source = model.get_param(PARAM.p2000, node, base_year, return_source=True)
     p2000_exogenous = (p2000 is not None) & (p2000_source == 'model')
-    cop, cop_source = model.get_param('cop', node, base_year, return_source=True)
+    cop, cop_source = model.get_param(PARAM.cop, node, base_year, return_source=True)
     cop_exogenous = (cop is not None) & (cop_source == 'model')
 
     if year == base_year:
@@ -667,23 +668,23 @@ def calc_price(model, node, year, tech=None):
             non_energy_cost = 0
 
         # Set parameters
-        model.set_param_internal(utils.create_value_dict(p2000, param_source=p2000_source), 'p2000',
+        model.set_param_internal(old_utils.create_value_dict(p2000, param_source=p2000_source), PARAM.p2000,
                                  node, year)
-        model.set_param_internal(utils.create_value_dict(cop, param_source=cop_source), 'cop', node,
+        model.set_param_internal(old_utils.create_value_dict(cop, param_source=cop_source), PARAM.cop, node,
                                  year)
         model.set_param_internal(
-            utils.create_value_dict(non_energy_cost, param_source='calculation'),
-            'non-energy cost', node, year)
+            old_utils.create_value_dict(non_energy_cost, param_source='calculation'),
+            PARAM.non_energy_cost, node, year)
 
     else:
         # Find Base Year Values
-        non_energy_cost_2000 = model.get_param('non-energy cost', node, base_year)
-        fLCC_2000 = model.get_param('lcc_financial', node, base_year)
+        non_energy_cost_2000 = model.get_param(PARAM.non_energy_cost, node, base_year)
+        fLCC_2000 = model.get_param(PARAM.lcc_financial, node, base_year)
 
         # Current Year Values
-        fLCC = model.get_param('lcc_financial', node, year)
+        fLCC = model.get_param(PARAM.lcc_financial, node, year)
         prev_year = str(int(year) - model.step)
-        non_energy_cost = model.get_param('non-energy cost', node, prev_year) + model.get_param('non-energy cost change', node, year)
+        non_energy_cost = model.get_param(PARAM.non_energy_cost, node, prev_year) + model.get_param(PARAM.non_energy_cost_change, node, year)
 
         # Calculate Price
         if p2000_exogenous or cop_exogenous:
@@ -694,17 +695,17 @@ def calc_price(model, node, year, tech=None):
             price = fLCC
 
         model.set_param_internal(
-            utils.create_value_dict(non_energy_cost, param_source='calculation'),
-            'non-energy cost', node, year)
+            old_utils.create_value_dict(non_energy_cost, param_source='calculation'),
+            PARAM.non_energy_cost, node, year)
 
     # Set parameters
-    price_subsidy = model.get_param('price_subsidy', node, year, do_calc=True)
-    model.set_param_internal(utils.create_value_dict(price_subsidy, param_source='calculation'),
-                             'price_subsidy', node, year)
+    price_subsidy = model.get_param(PARAM.price_subsidy, node, year, do_calc=True)
+    model.set_param_internal(old_utils.create_value_dict(price_subsidy, param_source='calculation'),
+                             PARAM.price_subsidy, node, year)
 
     price = price - price_subsidy
-    model.set_param_internal(utils.create_value_dict(price, param_source='calculation'),
-                             'price', node, year)
+    model.set_param_internal(old_utils.create_value_dict(price, param_source='calculation'),
+                             PARAM.price, node, year)
 
     return price
 
@@ -736,51 +737,51 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
         calculated fixed cost rate.
 
     """
-    total_fixed_cost = model.get_param('total fixed cost', node, year, tech=tech)
+    total_fixed_cost = model.get_param(PARAM.total_fixed_cost, node, year, tech=tech)
     if total_fixed_cost is not None:
         if tech:
             warnings.warn(
-                "This function was not intended for use with technologies. While we won't stop"
-                "you from using it for that purpose, you are doing so at your own risk. You"
-                "may want to consider re-organizing your model to avoid this case.")
+                f"This function was not intended for use with technologies. While we won't stop"
+                f"you from using it for that purpose, you are doing so at your own risk. You"
+                f"may want to consider re-organizing your model to avoid this case.")
 
         if int(year) == model.base_year:
             fixed_cost_rate = 0
-            fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+            fixed_cost_rate_dict = old_utils.create_value_dict(year_val=fixed_cost_rate,
                                                            param_source='default')
         else:
-            prov_quant_object, src = model.get_param('provided_quantities', node, year,
+            prov_quant_object, src = model.get_param(PARAM.provided_quantities, node, year,
                                                      return_source=True)
             prov_quant = prov_quant_object.get_total_quantity()
 
             if tech and prov_quant != 0:
-                total_market_share = model.get_param('total_market_share', node, year, tech=tech)
+                total_market_share = model.get_param(PARAM.total_market_share, node, year, tech=tech)
                 prov_quant = prov_quant * total_market_share
 
             if src == 'initialization':
                 prev_year = str(int(year) - model.step)
-                prov_quant = model.get_param('provided_quantities', node,
+                prov_quant = model.get_param(PARAM.provided_quantities, node,
                                              prev_year).get_total_quantity()
                 if prov_quant > 0:
                     fixed_cost_rate = total_fixed_cost / prov_quant
                 else:
                     fixed_cost_rate = 0
-                fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                fixed_cost_rate_dict = old_utils.create_value_dict(year_val=fixed_cost_rate,
                                                                param_source='calculation')
             else:
                 prov_quant = prov_quant_object.get_total_quantity()
 
                 if tech and prov_quant != 0:
-                    total_market_share = model.get_param('total_market_share', node, year, tech=tech)
+                    total_market_share = model.get_param(PARAM.total_market_share, node, year, tech=tech)
                     prov_quant = prov_quant * total_market_share
 
 
                 else:
                     fixed_cost_rate = total_fixed_cost / prov_quant
-                    fixed_cost_rate_dict = utils.create_value_dict(year_val=fixed_cost_rate,
+                    fixed_cost_rate_dict = old_utils.create_value_dict(year_val=fixed_cost_rate,
                                                                    param_source='calculation')
 
-        model.set_param_internal(fixed_cost_rate_dict, 'fixed cost rate', node, year, tech=tech)
+        model.set_param_internal(fixed_cost_rate_dict, PARAM.fixed_cost_rate, node, year, tech=tech)
 
     else:
         fixed_cost_rate = 0

@@ -3,42 +3,44 @@ This module contains the functions for conducting vintage-based weighting
 """
 import math
 
+from .utils import parameters as PARAM
+
 def _get_vintage_weights(model, node, year, tech):
     """
     Find the distribution (in percentages) of a node/technology's total stock over each possible
     vintage year. Returns a dictionary where keys are vintage years and values are percentages.
     """
     # Total Stock
-    total_stock, src = model.get_param('total_stock', node, year, tech=tech, return_source=True)
+    total_stock, src = model.get_param(PARAM.total_stock, node, year, tech=tech, return_source=True)
     if (total_stock is None) or (math.isclose(total_stock, 0, abs_tol=1e-3)):
         vintage_weights = {year: 1}
     elif src == 'previous_year':
         stock_by_vintage = {}
         if year == str(model.base_year+model.step):
-            stock_by_vintage[year] = model.get_param('base_stock', node, year, tech=tech)
+            stock_by_vintage[year] = model.get_param(PARAM.base_stock, node, year, tech=tech)
         else:
             stock_by_vintage.update(
-                model.get_param('new_stock_remaining', node, year, tech=tech,
+                model.get_param(PARAM.new_stock_remaining, node, year, tech=tech,
                                 dict_expected=True) or {})
-            base_stock = model.get_param('base_stock_remaining', node, year, tech=tech) or 0
+            base_stock = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech) or 0
             stock_by_vintage[str(model.base_year)] = base_stock
-            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech) + \
-                                     model.get_param('added_retrofit_stock', node, year,
+            stock_by_vintage[year] = model.get_param(PARAM.new_stock, node, year, tech=tech) + \
+                                     model.get_param(PARAM.added_retrofit_stock, node, year,
                                                      tech=tech)
         vintage_weights = {k: v / total_stock for k, v in stock_by_vintage.items()}
 
     else:
         stock_by_vintage = {}
         if year == str(model.base_year):
-            stock_by_vintage[year] = model.get_param('base_stock', node, year, tech=tech)
+            stock_by_vintage[year] = model.get_param(PARAM.base_stock, node, year, tech=tech)
         else:
             stock_by_vintage.update(
-                model.get_param('new_stock_remaining', node, year, tech=tech,
+                model.get_param(PARAM.new_stock_remaining, node, year, tech=tech,
                                 dict_expected=True) or {})
-            base_stock = model.get_param('base_stock_remaining', node, year, tech=tech) or 0
+            base_stock = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech) or 0
             stock_by_vintage[str(model.base_year)] = base_stock
-            stock_by_vintage[year] = model.get_param('new_stock', node, year, tech=tech) + \
-                                     model.get_param('added_retrofit_stock', node, year,
+            stock_by_vintage[year] = model.get_param(PARAM.new_stock, node, year, tech=tech) + \
+                                     model.get_param(PARAM.added_retrofit_stock, node, year,
                                                      tech=tech)
 
         vintage_weights = {k: round(v / total_stock, 5) for k, v in stock_by_vintage.items()}

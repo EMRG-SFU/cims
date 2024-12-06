@@ -5,14 +5,11 @@ import networkx as nx
 from typing import List
 
 
-from . import utils
+from . import old_utils
 from . import loop_resolution
 from . import cost_curves
 
-IS_SUPPLY_PARAM = 'is supply'
-TREE_IDX_PARAM = 'tree index'
-COMP_TYPE_PARAM = 'competition type'
-EMISSIONS_GWP_PARAM = 'emissions_gwp'
+from .utils import parameters as PARAM
 
 # **************************
 # 1- Perform action in graph
@@ -30,10 +27,11 @@ def _find_value_in_ancestors(graph, node, parameter, year=None):
     graph : networkx.Graph
         The graph where `node` resides.
     node : str
-        The name of the node to begin our search from. Must be contained within `graph`. (e.g.
-        'CIMS.Canada.Alberta')
+        The name of the node to begin our search from. Must be contained within
+        `graph`. (e.g. `CIMS.Canada.Alberta`)
     parameter : str
-        The name of the parameter whose value is being found. (e.g. 'Sector type')
+        The name of the parameter whose value is being found. (e.g. 
+        `Price Multiplier`)
     year : str, optional
         The year associated with sub-dictionary to search at `node`. Default is None, which implies
         that year sub-dictionaries should be searched. Instead, only search for `parameter` in
@@ -91,7 +89,7 @@ def get_supply_nodes(graph):
     """
     supply_nodes = []
     for node in graph.nodes:
-        if graph.nodes[node][IS_SUPPLY_PARAM]:
+        if graph.nodes[node][PARAM.is_supply]:
             supply_nodes.append(node)
     return supply_nodes
 
@@ -115,11 +113,11 @@ def get_ghg_and_emissions(graph, year):
             techs = data[year]['technologies']
             for tech in techs:
                 tech_data = data[year]['technologies'][tech]
-                if 'emissions' in tech_data or 'emissions_removal' in tech_data:
-                    if 'emissions' in tech_data:
-                        ghg_list = data[year]['technologies'][tech]['emissions']
+                if PARAM.emissions in tech_data or PARAM.emissions_removal in tech_data:
+                    if PARAM.emissions in tech_data:
+                        ghg_list = data[year]['technologies'][tech][PARAM.emissions]
                     else:
-                        ghg_list = data[year]['technologies'][tech]['emissions_removal']
+                        ghg_list = data[year]['technologies'][tech][PARAM.emissions_removal]
 
                     node_ghg = [ghg for ghg in ghg_list]
                     node_emission_type = [emission_type for emission_record in ghg_list.values() for
@@ -129,11 +127,11 @@ def get_ghg_and_emissions(graph, year):
                     emission_type = list(set(emission_type + node_emission_type))
 
         # Emissions from a supply node
-        elif 'emissions' in data[year] or 'emissions_removal' in data[year]:
-            if 'emissions' in data[year]:
-                ghg_dict = data[year]['emissions']
+        elif PARAM.emissions in data[year] or PARAM.emissions_removal in data[year]:
+            if PARAM.emissions in data[year]:
+                ghg_dict = data[year][PARAM.emissions]
             else:
-                ghg_dict = data[year]['emissions_removal']
+                ghg_dict = data[year][PARAM.emissions_removal]
 
             node_ghg = [ghg for ghg in ghg_dict.keys()]
 
@@ -144,17 +142,17 @@ def get_ghg_and_emissions(graph, year):
             emission_type = list(set(emission_type + node_emission_type))
 
         #GWP from CIMS node
-        if EMISSIONS_GWP_PARAM in data[year]:
-            for ghg2 in data[year][EMISSIONS_GWP_PARAM]:
-                gwp[ghg2] = data[year][EMISSIONS_GWP_PARAM][ghg2]['year_value']
+        if PARAM.emissions_gwp in data[year]:
+            for ghg2 in data[year][PARAM.emissions_gwp]:
+                gwp[ghg2] = data[year][PARAM.emissions_gwp][ghg2]['year_value']
 
     return ghg, emission_type, gwp
 
 
 def get_demand_side_nodes(graph: nx.DiGraph) -> List[str]:
     """
-    Find the nodes to use for demand-side traversals. The returned list of nodes will include all
-    nodes whose "node type" attribute is not "supply.
+    Find the nodes to use for demand-side traversals. The returned list of nodes
+    will include all nodes whose `node_type` attribute is not `supply`.
 
     Parameters
     ----------
@@ -166,10 +164,10 @@ def get_demand_side_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only non-supply nodes.
     """
     # Find Supply Nodes
-    supply_nodes = set([n for n, d in graph.nodes(data=True) if (IS_SUPPLY_PARAM in d) and d[IS_SUPPLY_PARAM]])
+    supply_nodes = set([n for n, d in graph.nodes(data=True) if (PARAM.is_supply in d) and d[PARAM.is_supply]])
 
     # Find the structural descendants of supply_nodes
-    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d['type']]
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d[PARAM.edge_type]]
     structural_graph = graph.edge_subgraph(structural_edges)
 
     descendants = set()
@@ -196,10 +194,10 @@ def get_supply_side_nodes(graph: nx.DiGraph) -> List[str]:
     A subgraph of graph which includes only supply nodes, their structural ancestors, and their descendants
     """
     # Find Supply Nodes
-    supply_nodes = [n for n, d in graph.nodes(data=True) if (IS_SUPPLY_PARAM in d) and d[IS_SUPPLY_PARAM]]
+    supply_nodes = [n for n, d in graph.nodes(data=True) if (PARAM.is_supply in d) and d[PARAM.is_supply]]
 
     # Find the structural ancestors of the supply nodes
-    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d['type']]
+    structural_edges = [(s, t) for s, t, d in graph.edges(data=True) if 'structural' in d[PARAM.edge_type]]
     structural_graph = graph.edge_subgraph(structural_edges)
 
     structural_ancestors = set()
@@ -353,13 +351,13 @@ def make_or_update_edges(graph, node_dfs, tech_dfs):
 
 
 def add_or_update_edge(graph, edge, edge_data):
-    if not isinstance(edge_data['type'], list):
-        edge_data['type'] = [edge_data['type']]
+    if not isinstance(edge_data[PARAM.edge_type], list):
+        edge_data[PARAM.edge_type] = [edge_data[PARAM.edge_type]]
 
     if graph.has_edge(*edge):
         # Update the edge's list of types
-        new_edge_types = list(set(graph.edges[edge]['type'] + edge_data['type']))
-        edge_data['type'] = new_edge_types
+        new_edge_types = list(set(graph.edges[edge][PARAM.edge_type] + edge_data[PARAM.edge_type]))
+        edge_data[PARAM.edge_type] = new_edge_types
     else:
         # Add the new edge
         graph.add_edge(*edge)
@@ -438,24 +436,24 @@ def find_edges(graph, node, df, edge_type):
         parent = '.'.join(node.split('.')[:-1])
         if parent:
             edge = (parent, node)
-            edge_data = {'type': 'structural'}
+            edge_data = {PARAM.edge_type: 'structural'}
             edges.append((edge, edge_data))
     
     elif edge_type == 'request_provide':
-        providers = df[df['Parameter'] == 'service requested']['Target'].unique()
-        edges += [((node, p), {'type': 'request_provide'}) for p in providers]
+        providers = df[df['Parameter'] == PARAM.service_requested]['Target'].unique()
+        edges += [((node, p), {PARAM.edge_type: 'request_provide'}) for p in providers]
 
     elif edge_type == 'aggregation':
 
-        agg_children = df[df['Parameter'] == 'aggregation requested']['Target'].unique()
+        agg_children = df[df['Parameter'] == PARAM.aggregation_requested]['Target'].unique()
 
         for agg_child in agg_children:
-            # For each "aggregation requested" line at node, add the following edges
+            # For each `aggregation requested`` line at node, add the following edges
             #   (1) 1 weighted edge between node & aggregation requested target (i.e. node -> child)
             #   (2) 0 weighted edge between all other parents of the aggregation requested target & the aggregation requested target (i.e. other parent of child -> child)
 
             # (1) node -> child {aggregation_weight: 1}
-            edges.append(((node, agg_child), {'type': 'aggregation', 'aggregation_weight': 1}))
+            edges.append(((node, agg_child), {PARAM.edge_type: 'aggregation', 'aggregation_weight': 1}))
 
             for agg_child_parent in graph.predecessors(agg_child):
                 if agg_child_parent == node:
@@ -464,7 +462,7 @@ def find_edges(graph, node, df, edge_type):
                     pass # already set as an aggregating node, don't zero it out
                 else:
                     # (2) other parents -> child {aggregation_weight: 0}
-                    edges.append(((agg_child_parent, agg_child), {'type': 'aggregation', 'aggregation_weight': 0}))
+                    edges.append(((agg_child_parent, agg_child), {PARAM.edge_type: 'aggregation', 'aggregation_weight': 0}))
 
     else:
         raise ValueError(
