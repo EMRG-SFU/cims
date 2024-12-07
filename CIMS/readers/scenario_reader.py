@@ -4,10 +4,11 @@ from .model_reader import ModelReader
 from .reader_utils import _bool_as_string, get_node_cols
 import copy
 import numpy as np
+from ..utils import model_columns as COL
 
 class ScenarioReader(ModelReader):
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 default_values_csv_path=None, node_col="Branch", root_node="CIMS"):
+                 default_values_csv_path=None, node_col=COL.branch, root_node="CIMS"):
         
         self.na_values = copy.deepcopy(pd._libs.parsers.STR_NA_VALUES)
         self.na_values.remove('None')
@@ -25,7 +26,7 @@ class ScenarioReader(ModelReader):
         appended_data = []
         for csv_file in self.csv_files:
             try:
-                mixed_type_columns = ['Context']
+                mixed_type_columns = [COL.context]
                 sheet_df = pl.read_csv(
                     csv_file,
                     skip_rows=1,
