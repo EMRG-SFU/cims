@@ -66,6 +66,9 @@ retrofit_heterogeneity = 'retrofit_heterogeneity'
 # ------------ Market Shares ------------ #
 new_market_share = "new_market_share"
 total_market_share = "total_market_share"
+market_share = "market share"
+market_share_new_min = "market share new_min"
+market_share_new_max = "market share new_max"
 
 # ------------ Financial Costs ------------ #
 lcc_financial = "lcc_financial"
@@ -93,13 +96,16 @@ cost_curve_lcc_max = "cost_curve_lcc_max"
 tax_foresight = "tax_foresight"
 tax = "tax"
 
+# ------------ Edge Parameters ------------ #
+aggregation_weight = "aggregation_weight"
+edge_type = "type"
+
 # ------------ Node-Node Relationships ------------ #
 provided_quantities = "provided_quantities"
 service_requested = "service requested"
 aggregation_requested = "aggregation requested"
-edge_type = "type"
 structural_aggregation = "structural_aggregation"
-
+requested_quantities = "requested_quantities"
 # ------------ Other ------------ #
 benchmark = "benchmark"
 
@@ -110,6 +116,7 @@ capital_recovery = "capital recovery"
 cop = "cop"
 crf = "crf"
 discount_rate_financial = "discount rate_financial"
+distributed_supply = "distributed_supply"
 fcc = "fcc"
 fic = "fic"
 fixed_cost_rate = 'fixed cost rate' 
@@ -122,7 +129,9 @@ price = "price"
 price_multiplier = "price multiplier"
 price_subsidy = "price_subsidy"
 revenue_recycle_rate = "revenue recycle rate"
+recycled_revenues = "recycled revenues"
 service_cost = "service cost"
+service_provided = "service provided"
 subsidy = "subsidy"
 total_fixed_cost = 'total fixed cost'
 total_lcc_v = "total_lcc_v"

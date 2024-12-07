@@ -1,14 +1,15 @@
 import warnings
-from ..utils import is_year
-
+from ..old_utils import is_year
+from ..utils import parameters as PARAM
+from ..utils import model_columns as COL
 
 def get_providers(df, node_col):
-    providers = df[df['Parameter'] == 'service provided'][node_col]
+    providers = df[df[COL.parameter] == PARAM.service_provided][node_col]
     return providers
 
 
 def get_requested(df, target_col):
-    requested = df[df['Parameter'] == 'service requested'][target_col]
+    requested = df[df[COL.parameter] == PARAM.service_requested][target_col]
     return requested
 
 

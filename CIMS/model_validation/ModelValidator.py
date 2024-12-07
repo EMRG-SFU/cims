@@ -5,12 +5,12 @@ from ..readers.reader_utils import get_node_cols, _bool_as_string
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 from pathlib import Path
-
+from ..utils import model_columns as COL
 
 class ModelValidator:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 scenario_files=None, default_values_csv_path=None, node_col="Branch",
-                 target_col="Target", root_node="CIMS"):
+                 scenario_files=None, default_values_csv_path=None, node_col=COL.branch,
+                 target_col=COL.target, root_node="CIMS"):
 
         self.csv_files = csv_file_paths
         self.scenario_files = scenario_files or []
@@ -41,11 +41,10 @@ class ModelValidator:
             for file in self.scenario_files:
                 files_to_read.append(file)
 
-        # Read in list of sheets from 'Lists' sheet in model description
         appended_data = []
         for csv_file in files_to_read:
             try:
-                mixed_type_columns = ['Context']
+                mixed_type_columns = [COL.context]
                 sheet_df = pl.read_csv(
                     csv_file,
                     skip_rows=1,
@@ -54,11 +53,6 @@ class ModelValidator:
                     ).with_columns(pl.all().replace(
                         {np.nan: None}
                         )).to_pandas()
-                    #sheet_name=sheet,
-                    #header=1,
-                    #converters={c:_bool_as_string for c in mixed_type_columns},
-                    #engine=self.excel_engine).replace(
-                    #    {np.nan: None, 'False': False, 'True': True})
                 appended_data.append(sheet_df)
 
             except ValueError:
@@ -71,7 +65,7 @@ class ModelValidator:
         if self.sector_list:
             if None not in self.sector_list:
                 self.sector_list.append(None)
-            model_df = model_df.apply(lambda row: row[model_df['Sector'].isin(self.sector_list)])
+            model_df = model_df.apply(lambda row: row[model_df[COL.sector].isin(self.sector_list)])
 
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
@@ -85,7 +79,7 @@ class ModelValidator:
 
         mdf = model_df.loc[1:,
               all_cols]  # Create df, drop irrelevant columns & skip first, empty row
-        mdf['Parameter'] = mdf['Parameter'].str.lower()
+        mdf[COL.parameter] = mdf[COL.parameter].str.lower()
 
         return mdf
 
@@ -94,7 +88,7 @@ class ModelValidator:
             return pd.DataFrame()
 
         # Read model_description from excel
-        mixed_type_columns = ['Default value']
+        mixed_type_columns = [COL.default_value]
         df = pl.read_csv(
             default_values_csv_path,
             use_pyarrow=False,
@@ -107,7 +101,7 @@ class ModelValidator:
         df = df.dropna(axis=0, how="all")
 
         # Convert parameter strings to lower case
-        df['Parameter'] = df['Parameter'].str.lower()
+        df[COL.parameter] = df[COL.parameter].str.lower()
 
         # Return
         return df
@@ -118,7 +112,7 @@ class ModelValidator:
         return index_to_node_index_map
 
     def _create_index_to_branch_map(self):
-        return {i: self.model_df['Branch'].loc[i] for i in self.model_df.index}
+        return {i: self.model_df[COL.branch].loc[i] for i in self.model_df.index}
 
     def _raise_concerns(self, concerns, concern_key, concern_desc):
         if len(concerns) <= 0:
@@ -134,13 +128,13 @@ class ModelValidator:
 
     def _run_check(self, check_function, **kwargs):
         # Collect list
-        concern_list, concern_key, concern_desc = check_function(**kwargs)
+        concern_list, _, concern_desc = check_function(**kwargs)
 
         # Raise Concerns
-        self._raise_concerns(concern_list, concern_key, concern_desc)
+        self._raise_concerns(concern_list, check_function.__name__, concern_desc)
 
         # Return list
-        self.warnings[concern_key] = concern_list
+        self.warnings[check_function.__name__] = concern_list
 
     def validate(self, verbose=True):
         self.verbose = verbose
@@ -153,11 +147,11 @@ class ModelValidator:
         self._run_check(validate.invalid_competition_type, df=self.model_df)
         self._run_check(validate.nodes_no_provided_service, validator=self)
         self._run_check(validate.nodes_requesting_self, validator=self)
-        self._run_check(validate.supply_nodes_no_lcc_or_price, validator=self)
+        self._run_check(validate.supply_without_lcc_or_price, validator=self)
         self._run_check(validate.lcc_at_tech_node, validator=self)
         self._run_check(validate.lcc_at_tech, validator=self)
         self._run_check(validate.nodes_with_zero_output, validator=self)
-        self._run_check(validate.unspecified_nodes, providers=providers, requested=requested)
+        self._run_check(validate.undefined_nodes, providers=providers, requested=requested)
         self._run_check(validate.inconsistent_tech_refs, validator=self)
         self._run_check(validate.tech_compete_nodes_no_techs, validator=self)
         self._run_check(validate.techs_no_base_market_share, validator=self)
