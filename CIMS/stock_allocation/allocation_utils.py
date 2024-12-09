@@ -1,4 +1,5 @@
 from ..node_utils import find_node_tech_compete_tech_child_node
+from ..utils import parameters as PARAM
 
 def _find_competing_techs(model, node, comp_type):
     """
@@ -70,10 +71,10 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
     weights = {}
 
     for node_branch, tech in competing_techs:
-        year_avail = model.get_param('available', node_branch, str(model.base_year), tech=tech)
-        year_unavail = model.get_param('unavailable', node_branch, str(model.base_year), tech=tech)
+        year_avail = model.get_param(PARAM.available, node_branch, str(model.base_year), tech=tech)
+        year_unavail = model.get_param(PARAM.unavailable, node_branch, str(model.base_year), tech=tech)
         if year_avail <= int(year) < year_unavail:
-            tech_lcc = model.get_param('lcc_competition', node_branch, year, tech=tech)
+            tech_lcc = model.get_param(PARAM.lcc_competition, node_branch, year, tech=tech)
             weight = _calculate_lcc_weight(tech_lcc, heterogeneity)
             weights[(node_branch, tech)] = weight
             total_weight += weight

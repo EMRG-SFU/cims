@@ -62,6 +62,7 @@ discount_rate_retrofit ='discount rate_retrofit'
 retrofit_existing_min = 'retrofit_existing_min'
 retrofit_existing_max = 'retrofit_existing_max'
 retrofit_heterogeneity = 'retrofit_heterogeneity'
+new_stock_remaining_pre_surplus = 'new_stock_remaining_pre_surplus'
 
 # ------------ Market Shares ------------ #
 new_market_share = "new_market_share"
@@ -107,8 +108,8 @@ aggregation_requested = "aggregation requested"
 structural_aggregation = "structural_aggregation"
 requested_quantities = "requested_quantities"
 # ------------ Other ------------ #
+adjustment_multiplier = 'adjustment_multiplier' # stock_allocation
 benchmark = "benchmark"
-
 capital_cost = "capital cost"
 capital_cost_declining = "capital cost_declining"
 capital_cost_min = "capital_cost_min"
@@ -117,22 +118,37 @@ cop = "cop"
 crf = "crf"
 discount_rate_financial = "discount rate_financial"
 distributed_supply = "distributed_supply"
+domestic_elasticity = "domestic elasticity" # macro-economics
+export_elasticity = 'export elasticity' # macro-economics
+export_subsidy = "export subsidy" # macro-economics
+export_benchmark = "export benchmark" # macro-economics
 fcc = "fcc"
 fic = "fic"
 fixed_cost_rate = 'fixed cost rate' 
 fom = "fom"
+global_price = "global price" # macro-economics
 load_factor = "load factor"
+market_share_class = "market share_class" # market share limits
+market_share_class_min = "market share_class_min" # market share limits
+market_share_class_max = "market share_class_max" # market share limits
 non_energy_cost = "non-energy cost"
 non_energy_cost_change = "non-energy cost change"
 p2000 = "p2000"
 price = "price"
 price_multiplier = "price multiplier"
 price_subsidy = "price_subsidy"
+ref_stock_exported = 'ref stock exported' # macro-economics
 revenue_recycle_rate = "revenue recycle rate"
 recycled_revenues = "recycled revenues"
+retirement_intercept = "retirement intercept" # stock_allocation
+retrofit_new_min = "retrofit_new_min"
+retrofit_new_max = "retrofit_new_max"
 service_cost = "service cost"
 service_provided = "service provided"
+stock_exported = "stock exported" # macro-economics
+stock_demanded = "stock demanded" # macro-economics
 subsidy = "subsidy"
 total_fixed_cost = 'total fixed cost'
 total_lcc_v = "total_lcc_v"
 tree_index = 'tree index'
+

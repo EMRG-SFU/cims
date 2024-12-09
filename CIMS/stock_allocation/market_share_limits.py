@@ -1,4 +1,5 @@
-from CIMS import utils
+from CIMS import old_utils
+from ..utils import parameters as PARAM
 
 #############################
 # Market Share Classes
@@ -91,7 +92,7 @@ def _get_market_share_class_maps(model, node, year):
     ms_class_tech_map = {}
     techs = model.graph.nodes[node][year]['technologies']
     for tech in techs:
-        ms_class = model.get_param("market share_class", node, year=year, tech=tech)
+        ms_class = model.get_param(PARAM.market_share_class, node, year=year, tech=tech)
         tech_ms_class_map[tech] = ms_class
         ms_class_tech_map.setdefault(ms_class, []).append(tech)
 
@@ -106,17 +107,17 @@ def _get_min_max_class_limits(model, node, year):
     ms_classes = []
     techs = model.graph.nodes[node][year]['technologies']
     for tech in techs:
-        ms_class = model.get_param("market share_class", node, year=year, tech=tech)
+        ms_class = model.get_param(PARAM.market_share_class, node, year=year, tech=tech)
         ms_classes.append(ms_class)
     
     min_max_limits = {}
     for ms_class in ms_classes:
         if ms_class is None:
-            min_ms = model.get_parameter_default("market share_class_min")
-            max_ms = model.get_parameter_default("market share_class_max")
+            min_ms = model.get_parameter_default(PARAM.market_share_class_min)
+            max_ms = model.get_parameter_default(PARAM.market_share_class_max)
         else:
-            min_ms = model.get_param("market share_class_min", node, year=year, context=ms_class)
-            max_ms = model.get_param("market share_class_max", node, year=year, context=ms_class)
+            min_ms = model.get_param(PARAM.market_share_class_min, node, year=year, context=ms_class)
+            max_ms = model.get_param(PARAM.market_share_class_max, node, year=year, context=ms_class)
         min_max_limits[ms_class] = (min_ms, max_ms)
 
     return min_max_limits
@@ -284,8 +285,8 @@ def _get_min_max_limits(model, node, year):
     techs = model.graph.nodes[node][year]['technologies']
     min_max_limits = {}
     for tech in techs:
-        min_nms = model.get_param('market share new_min', node, year=year, tech=tech)
-        max_nms = model.get_param('market share new_max', node, year=year, tech=tech)
+        min_nms = model.get_param(PARAM.market_share_new_min, node, year=year, tech=tech)
+        max_nms = model.get_param(PARAM.market_share_new_max, node, year=year, tech=tech)
         min_max_limits[tech] = (min_nms, max_nms)
     return min_max_limits
 
@@ -478,10 +479,10 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
     """
     eligible_market_shares = {}
     for tech in new_market_shares:
-        is_exogenous = utils.is_param_exogenous(model, 'market share', node, year=year, tech=tech)
+        is_exogenous = old_utils.is_param_exogenous(model, PARAM.market_share, node, year=year, tech=tech)
 
-        first_year_available = model.get_param('available', node, year=year, tech=tech)
-        first_year_unavailable = model.get_param('unavailable', node, year=year, tech=tech)
+        first_year_available = model.get_param(PARAM.available, node, year=year, tech=tech)
+        first_year_unavailable = model.get_param(PARAM.unavailable, node, year=year, tech=tech)
         is_available = first_year_available <= int(year) < first_year_unavailable
 
         if (not is_exogenous) and is_available:
