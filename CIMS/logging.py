@@ -50,7 +50,7 @@ class ValueLog:
 
 def _has_techs(node_year_data):
     """Checks if a node has technologies."""
-    return 'technologies' in node_year_data.keys()
+    return PARAM.technologies in node_year_data.keys()
 
 
 def log_int(val):
@@ -323,8 +323,8 @@ def _full_parameter_list(model):
                     model_list.append(param)
 
             for param in ny_data:
-                if param == 'technologies':
-                    for tech_data in ny_data['technologies'].values():
+                if param == PARAM.technologies:
+                    for tech_data in ny_data[PARAM.technologies].values():
                         for tech_param in tech_data:
                             if tech_param not in model_list:
                                 model_list.append(tech_param)
@@ -404,8 +404,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
             for year in model.years:
                 ny_data = model.graph.nodes[node][year]
                 for param, val in ny_data.items():
-                    if param == 'technologies':
-                        for tech, tech_data in ny_data['technologies'].items():
+                    if param == PARAM.technologies:
+                        for tech, tech_data in ny_data[PARAM.technologies].items():
                             for tech_param, tech_val in tech_data.items():
                                 if tech_param not in excluded_parameters:
                                     log = node, region, sector, year, tech, tech_param, tech_val
@@ -465,8 +465,8 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     ny_data = model.graph.nodes[node][year]
 
                     for param, val in ny_data.items():
-                        if param == 'technologies':
-                            for tech, tech_data in ny_data['technologies'].items():
+                        if param == PARAM.technologies:
+                            for tech, tech_data in ny_data[PARAM.technologies].items():
                                 for tech_param, tech_val in tech_data.items():
                                     if tech_param == param_to_log:
                                         log = node, region, sector, year, tech, tech_param, tech_val

@@ -206,8 +206,8 @@ class Model:
         nodes = self.graph.nodes
         base_year = str(self.base_year)
         for node in nodes:
-            if 'technologies' in nodes[node][base_year]:
-                for tech in nodes[node][base_year]['technologies']:
+            if PARAM.technologies in nodes[node][base_year]:
+                for tech in nodes[node][base_year][PARAM.technologies]:
                     dccc = self.get_param(PARAM.dcc_class, node, base_year, tech=tech)
                     if dccc is not None:
                         if dccc in dcc_classes:
@@ -233,8 +233,8 @@ class Model:
         nodes = self.graph.nodes
         base_year = str(self.base_year)
         for node in nodes:
-            if 'technologies' in nodes[node][base_year]:
-                for tech in nodes[node][base_year]['technologies']:
+            if PARAM.technologies in nodes[node][base_year]:
+                for tech in nodes[node][base_year][PARAM.technologies]:
                     dicc = self.get_param(PARAM.dic_class, node, base_year, tech=tech)
                     if dicc is not None:
                         if dicc in dic_classes:
@@ -643,8 +643,8 @@ class Model:
             """
 
             # Emissions from a node with technologies
-            if 'technologies' in graph.nodes[node][year]:
-                techs = graph.nodes[node][year]['technologies']
+            if PARAM.technologies in graph.nodes[node][year]:
+                techs = graph.nodes[node][year][PARAM.technologies]
                 for tech in techs:
                     tech_data = techs[tech]
                     if PARAM.emissions in tech_data:
@@ -702,8 +702,8 @@ class Model:
 
             if PARAM.load_factor in graph.nodes[node][year]:
                 # Ensure this load factor is recorded at each of the technologies within the node.
-                if 'technologies' in graph.nodes[node][year]:
-                    tech_data = graph.nodes[node][year]['technologies']
+                if PARAM.technologies in graph.nodes[node][year]:
+                    tech_data = graph.nodes[node][year][PARAM.technologies]
                     for tech in tech_data:
                         if PARAM.load_factor not in tech_data[tech]:
                             val = graph.nodes[node][year][PARAM.load_factor]['year_value']

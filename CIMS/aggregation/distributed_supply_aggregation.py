@@ -20,16 +20,16 @@ def aggregate_distributed_supplies(model, node, year):
 
     node_distributed_supply = DistributedSupply()
 
-    if 'technologies' in model.graph.nodes[node][year]:
+    if PARAM.technologies in model.graph.nodes[node][year]:
         # @ a Node with techs
         # Find distributed supply generated at the tech
-        for tech in model.graph.nodes[node][year]['technologies']:
+        for tech in model.graph.nodes[node][year][PARAM.technologies]:
             tech_distributed_supply = DistributedSupply()
             distributed_supplies = _get_direct_distributed_supply(model, node, year, tech)
             for service, amount in distributed_supplies:
                 tech_distributed_supply.record_distributed_supply(service, node, amount)
                 node_distributed_supply.record_distributed_supply(service, node, amount)
-            model.graph.nodes[node][year]['technologies'][tech][PARAM.distributed_supply] = \
+            model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.distributed_supply] = \
                 tech_distributed_supply
     else:
         # @ a Node without techs

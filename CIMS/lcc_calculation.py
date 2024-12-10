@@ -68,7 +68,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         v = model.get_param(PARAM.heterogeneity, node, year)
 
         # Get all the technologies in the node
-        node_techs = sub_graph.nodes[node][year]['technologies'].keys()
+        node_techs = sub_graph.nodes[node][year][PARAM.technologies].keys()
 
         # For every tech in the node, retrieve or compute required economic values
         for tech in node_techs:

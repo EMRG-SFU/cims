@@ -29,14 +29,14 @@ def _find_competing_techs(model, node, comp_type):
     competing_technologies = []
 
     if comp_type == 'tech compete':
-        for tech in node_year_data['technologies']:
+        for tech in node_year_data[PARAM.technologies]:
             competing_technologies.append((node, tech))
 
     elif comp_type == 'node tech compete':
-        for tech_child in node_year_data['technologies']:
+        for tech_child in node_year_data[PARAM.technologies]:
             child_node = find_node_tech_compete_tech_child_node(model, node, base_year, tech=tech_child)
 
-            for tech in model.graph.nodes[child_node][base_year]['technologies']:
+            for tech in model.graph.nodes[child_node][base_year][PARAM.technologies]:
                 competing_technologies.append((child_node, tech))
 
     return competing_technologies

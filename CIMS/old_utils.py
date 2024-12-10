@@ -144,10 +144,10 @@ def is_param_exogenous(model, param, node, year, tech=None):
 
 def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
-        if PARAM.service_requested not in model.graph.nodes[node][year]['technologies'][tech]:
+        if PARAM.service_requested not in model.graph.nodes[node][year][PARAM.technologies][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
+            services_requested = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
             if use_vintage_weighting:
                 weighted_services = {}
                 for target in services_requested:
@@ -314,7 +314,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     if year:
         data = data[year]
         if tech:  # assumption: any tech node always requires a year
-            data = data['technologies'][tech]
+            data = data[PARAM.technologies][tech]
 
     # Val can be the final return result (float, string, etc) or a dict, check for other params
     if param in data:
@@ -607,7 +607,7 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         # Set Parameter from Description
         # ******************************
         # If the parameter's value is in the model description for that node, year, & technology, use it
-        data = model.graph.nodes[node][year]['technologies'][tech]
+        data = model.graph.nodes[node][year][PARAM.technologies][tech]
         if param in data:
             val = data[param]
             # If the value is a dictionary, use its nested result
@@ -813,7 +813,7 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         # Set Parameter from Description
         # ******************************
         # If the parameter's value is in the model description for that node, year, & technology, use it
-        data = model.graph.nodes[node][year]['technologies'][tech]
+        data = model.graph.nodes[node][year][PARAM.technologies][tech]
         if param in data:
             val = data[param]
             # If the value is a dictionary, use its nested result
@@ -859,8 +859,8 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     for i in range(len(year)):
         node_data = model.graph.nodes[node][year[i]]
         if tech:
-            if tech in node_data['technologies']:
-                tech_data = model.graph.nodes[node][year[i]]['technologies'][tech]
+            if tech in node_data[PARAM.technologies]:
+                tech_data = model.graph.nodes[node][year[i]][PARAM.technologies][tech]
                 if param in tech_data:
                     set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
                 else:
@@ -1071,7 +1071,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
     if tech == '.*':
         try:
             # search through all technologies in node
-            techs = list(model.graph.nodes[node][year]['technologies'].keys())
+            techs = list(model.graph.nodes[node][year][PARAM.technologies].keys())
         except:
             return
         for tech_tmp in techs:
@@ -1253,7 +1253,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     # *********
     if tech:
         # add technology if it does not exist
-        if tech not in data['technologies']:
+        if tech not in data[PARAM.technologies]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
@@ -1263,28 +1263,28 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
                 param_dict = {param: context_dict}
             else:
                 param_dict = {param: val_dict}
-            data['technologies'][tech] = param_dict
+            data[PARAM.technologies][tech] = param_dict
         # add param if it does not exist
-        elif param not in data['technologies'][tech]:
+        elif param not in data[PARAM.technologies][tech]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
-                data['technologies'][tech][param] = context_dict
+                data[PARAM.technologies][tech][param] = context_dict
             elif context:
                 context_dict = {context: val_dict}
-                data['technologies'][tech][param] = context_dict
+                data[PARAM.technologies][tech][param] = context_dict
             else:
-                data['technologies'][tech][param] = val_dict
+                data[PARAM.technologies][tech][param] = val_dict
         # add context if it does not exist
-        elif context not in data['technologies'][tech][param]:
+        elif context not in data[PARAM.technologies][tech][param]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
-                data['technologies'][tech][param][context] = sub_context_dict
+                data[PARAM.technologies][tech][param][context] = sub_context_dict
             else:
-                data['technologies'][tech][param][context] = val_dict
+                data[PARAM.technologies][tech][param][context] = val_dict
         # add sub_context if it does not exist
-        elif sub_context not in data['technologies'][tech][param][context]:
-            data['technologies'][tech][param][context][sub_context] = val_dict
+        elif sub_context not in data[PARAM.technologies][tech][param][context]:
+            data[PARAM.technologies][tech][param][context][sub_context] = val_dict
 
     # *********
     # Check if param exists and create context (param, context, sub_context) accordingly

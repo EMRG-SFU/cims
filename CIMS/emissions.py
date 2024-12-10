@@ -309,7 +309,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
         agg_emissions_cost = EmissionsCost()
 
         # Emission Cost @ Tech
-        if PARAM.emissions_cost_rate in model.graph.nodes[node][year]['technologies'][tech]:
+        if PARAM.emissions_cost_rate in model.graph.nodes[node][year][PARAM.technologies][tech]:
             tech_emissions_cost = model.get_param(PARAM.emissions_cost_rate,
                                                   node, year, tech=tech)
             agg_emissions_cost = agg_emissions_cost + tech_emissions_cost
@@ -325,7 +325,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
         # (2) At a node with techs -- Weighted emissions cost from techs
         agg_emissions_cost = EmissionsCost()
         # Weighted emissions cost from techs
-        for technology in model.graph.nodes[node][year]['technologies']:
+        for technology in model.graph.nodes[node][year][PARAM.technologies]:
             tech_emissions_cost = model.get_param(PARAM.cumul_emissions_cost_rate, node, year,
                                                   tech=technology, dict_expected=True)
             market_share = model.get_param(PARAM.total_market_share, node, year, tech=technology)
@@ -451,9 +451,9 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
     gross_emissions = {}
     gross_bio_emissions = {}
     total = 0
-    if PARAM.emissions in model.graph.nodes[node][year]['technologies'][tech]:
+    if PARAM.emissions in model.graph.nodes[node][year][PARAM.technologies][tech]:
         gross_emissions[tech] = {}
-        emission_data = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions]
+        emission_data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions]
         for ghg in emission_data:
             for emission_type in emission_data[ghg]:
                 if ghg not in gross_emissions[tech]:
@@ -462,8 +462,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                 gross_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(gross_emission_val)
 
     # EMISSIONS REMOVAL @ the tech
-    if PARAM.emissions_removal in model.graph.nodes[node][year]['technologies'][tech]:
-        removal_dict = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions_removal]
+    if PARAM.emissions_removal in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        removal_dict = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_removal]
         for ghg in removal_dict:
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
@@ -472,8 +472,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                 removal_rates[ghg][emission_type] = old_utils.create_value_dict(rr_val)
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year]['technologies'][tech]:
-        data = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
+    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
 
         # Child level
         for child_node, child_info in data.items():
@@ -507,8 +507,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                                 bio_emission_data[ghg][emission_type]['year_value'] * req_val)
 
             # EMISSIONS REMOVAL child level
-            if 'technologies' in model.graph.nodes[child_node][year]:
-                child_techs = model.graph.nodes[child_node][year]['technologies']
+            if PARAM.technologies in model.graph.nodes[child_node][year]:
+                child_techs = model.graph.nodes[child_node][year][PARAM.technologies]
                 for _, tech_data in child_techs.items():
                     if PARAM.emissions_removal in tech_data:
                         removal_dict = tech_data[PARAM.emissions_removal]
@@ -593,9 +593,9 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
 
     # BIO EMISSIONS tech level
     bio_emissions = {}
-    if PARAM.emissions_biomass in model.graph.nodes[node][year]['technologies'][tech]:
+    if PARAM.emissions_biomass in model.graph.nodes[node][year][PARAM.technologies][tech]:
         bio_emissions[tech] = {}
-        bio_emission_data = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions_biomass]
+        bio_emission_data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_biomass]
 
         for ghg in bio_emission_data:
             for emission_type in bio_emission_data[ghg]:
@@ -605,8 +605,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     bio_emission_data[ghg][emission_type]['year_value'])
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year]['technologies'][tech]:
-        data = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
+    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
 
         # BIO EMISSIONS child level
         for child_node, child_info in data.items():
@@ -624,13 +624,13 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                                 supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.net_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.net_emissions_rate] = \
         Emissions(emissions_dict=net_emissions)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.avoided_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.avoided_emissions_rate] = \
         Emissions(emissions_dict=avoided_emissions)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.negative_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.negative_emissions_rate] = \
         Emissions(emissions_dict=negative_emissions)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.bio_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.bio_emissions_rate] = \
         Emissions(bio_emissions)
 
     # Record emission costs
@@ -695,9 +695,9 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     gross_emissions = {}
     gross_bio_emissions = {}
     total = 0
-    if PARAM.emissions in model.graph.nodes[node][year]['technologies'][tech]:
+    if PARAM.emissions in model.graph.nodes[node][year][PARAM.technologies][tech]:
         gross_emissions[tech] = {}
-        emission_data = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions]
+        emission_data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions]
 
         for ghg in emission_data:
             for emission_type in emission_data[ghg]:
@@ -707,8 +707,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 gross_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(gross_emissions_val)
 
     # EMISSIONS REMOVAL @ the tech
-    if PARAM.emissions_removal in model.graph.nodes[node][year]['technologies'][tech]:
-        removal_dict = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions_removal]
+    if PARAM.emissions_removal in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        removal_dict = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_removal]
         for ghg in removal_dict:
             for emission_type in removal_dict[ghg]:
                 if ghg not in removal_rates:
@@ -717,8 +717,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 removal_rates[ghg][emission_type] = old_utils.create_value_dict(rr_val)
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year]['technologies'][tech]:
-        data = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
+    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
 
         # Child level
         for child_node, child_info in data.items():
@@ -753,8 +753,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                             old_utils.create_value_dict(gross_bio_emission_val * req_val)
 
             # EMISSIONS REMOVAL child level
-            if 'technologies' in model.graph.nodes[child_node][year]:
-                child_techs = model.graph.nodes[child_node][year]['technologies']
+            if PARAM.technologies in model.graph.nodes[child_node][year]:
+                child_techs = model.graph.nodes[child_node][year][PARAM.technologies]
                 for _, tech_data in child_techs.items():
                     if PARAM.emissions_removal in tech_data:
                         removal_dict = tech_data[PARAM.emissions_removal]
@@ -794,7 +794,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     avoided_emissions[node_name][ghg][emission_type]['year_value'] + \
                     negative_emissions[node_name][ghg][emission_type]['year_value']
     # Save Net Emissions (Lets us do vintage-based weighting)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.net_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.net_emissions_rate] = \
         Emissions(emissions_dict=net_emissions)
 
     # EMISSIONS COST
@@ -842,9 +842,9 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
 
     # BIO EMISSIONS tech level
     bio_emissions = {}
-    if PARAM.emissions_biomass in model.graph.nodes[node][year]['technologies'][tech]:
+    if PARAM.emissions_biomass in model.graph.nodes[node][year][PARAM.technologies][tech]:
         bio_emissions[tech] = {}
-        bio_emission_data = model.graph.nodes[node][year]['technologies'][tech][PARAM.emissions_biomass]
+        bio_emission_data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_biomass]
 
         for ghg in bio_emission_data:
             for emission_type in bio_emission_data[ghg]:
@@ -854,8 +854,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     bio_emission_data[ghg][emission_type]['year_value'])
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year]['technologies'][tech]:
-        data = model.graph.nodes[node][year]['technologies'][tech][PARAM.service_requested]
+    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
 
         # BIO EMISSIONS child level
         for child_node, child_info in data.items():
@@ -873,11 +873,11 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                                 supply_emissions[ghg][emission_type]['year_value'] * req_val)
 
     # Record emission rates
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.avoided_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.avoided_emissions_rate] = \
         Emissions(emissions_dict=avoided_emissions)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.negative_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.negative_emissions_rate] = \
         Emissions(emissions_dict=negative_emissions)
-    model.graph.nodes[node][year]['technologies'][tech][PARAM.bio_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.bio_emissions_rate] = \
         Emissions(bio_emissions)
 
     # Record emission costs

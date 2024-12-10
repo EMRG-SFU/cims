@@ -262,12 +262,12 @@ def _get_current_year_dict(graph, node, year, tech=None):
         node_year_dict = graph.nodes[node][year]
 
         if tech is not None:
-            if 'technologies' not in node_year_dict:
+            if PARAM.technologies not in node_year_dict:
                 year_dict = {}
-            elif tech not in node_year_dict['technologies']:
+            elif tech not in node_year_dict[PARAM.technologies]:
                 year_dict = {}
             else:
-                year_dict = node_year_dict['technologies'][tech]
+                year_dict = node_year_dict[PARAM.technologies][tech]
         else:
             year_dict = node_year_dict
     else:
@@ -316,15 +316,15 @@ def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech):
         updated_year_dict = _update_year_dict(existing_year_dict, year_data_to_update)
 
         # Add technologies key (to the node's data) if needed
-        if 'technologies' not in graph.nodes[node][year].keys():
-            graph.nodes[node][year]['technologies'] = {}
+        if PARAM.technologies not in graph.nodes[node][year].keys():
+            graph.nodes[node][year][PARAM.technologies] = {}
 
         # Add the technology specific data for that year
-        graph.nodes[node][year]['technologies'][current_tech] = updated_year_dict
+        graph.nodes[node][year][PARAM.technologies][current_tech] = updated_year_dict
 
         # Add index for use in the results viewer file
-        if PARAM.tree_index not in graph.nodes[node][year]['technologies'][current_tech]:
-            graph.nodes[node][year]['technologies'][current_tech][PARAM.tree_index] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
+        if PARAM.tree_index not in graph.nodes[node][year][PARAM.technologies][current_tech]:
+            graph.nodes[node][year][PARAM.technologies][current_tech][PARAM.tree_index] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
 
     return graph, current_tech_df
 

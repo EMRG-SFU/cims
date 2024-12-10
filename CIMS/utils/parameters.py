@@ -1,6 +1,7 @@
 # ------------ Data Structure Constants ------------ #
-techs = "technologies"
+technologies = "technologies"
 year_value = "year_value"
+
 
 # ------------ Basic ------------ #
 competition_type = "competition type"

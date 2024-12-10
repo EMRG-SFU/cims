@@ -90,7 +90,7 @@ def apply_min_max_class_limits(model: "CIMS.Model", node: str, year: str, new_ma
 def _get_market_share_class_maps(model, node, year):
     tech_ms_class_map = {}
     ms_class_tech_map = {}
-    techs = model.graph.nodes[node][year]['technologies']
+    techs = model.graph.nodes[node][year][PARAM.technologies]
     for tech in techs:
         ms_class = model.get_param(PARAM.market_share_class, node, year=year, tech=tech)
         tech_ms_class_map[tech] = ms_class
@@ -105,7 +105,7 @@ def _get_min_max_class_limits(model, node, year):
     market share classes at a node.
     """
     ms_classes = []
-    techs = model.graph.nodes[node][year]['technologies']
+    techs = model.graph.nodes[node][year][PARAM.technologies]
     for tech in techs:
         ms_class = model.get_param(PARAM.market_share_class, node, year=year, tech=tech)
         ms_classes.append(ms_class)
@@ -282,7 +282,7 @@ def _get_min_max_limits(model, node, year):
         A dictionary mapping each technology at node to the a tuple containing the minimum and
         maximum market share limit for the specified year.
     """
-    techs = model.graph.nodes[node][year]['technologies']
+    techs = model.graph.nodes[node][year][PARAM.technologies]
     min_max_limits = {}
     for tech in techs:
         min_nms = model.get_param(PARAM.market_share_new_min, node, year=year, tech=tech)
