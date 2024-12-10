@@ -343,7 +343,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     if isinstance(val, dict) and not dict_expected:
         warning_message = \
             f"get_param() is returning a `dict`, considering using more parameters in get_param().\
-                \nParameter: {param if param else ''}\n\Node: {node if node else ''}\
+                \nParameter: {param if param else ''}\
+                \nNode: {node if node else ''}\
                 \nYear: {year if year else ''}\
                 \nContext: {context if context else ''}\
                 \nSub-context: {sub_context if sub_context else ''}\

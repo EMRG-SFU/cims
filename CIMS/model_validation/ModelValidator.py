@@ -128,7 +128,7 @@ class ModelValidator:
 
     def _run_check(self, check_function, **kwargs):
         # Collect list
-        concern_list, _, concern_desc = check_function(**kwargs)
+        concern_list, concern_desc = check_function(**kwargs)
 
         # Raise Concerns
         self._raise_concerns(concern_list, check_function.__name__, concern_desc)

@@ -278,7 +278,7 @@ def calc_lcc_competition(model: "CIMS.Model", node: str, year: str, tech: str) -
     """
     competition_upfront_cost = model.get_param(PARAM.competition_upfront_cost, node, year, tech=tech,
                                             do_calc=True)
-    competition_annual_cost = model.get_param(competition_annual_cost, node, year, tech=tech,
+    competition_annual_cost = model.get_param(PARAM.competition_annual_cost, node, year, tech=tech,
                                            do_calc=True)
     annual_service_cost = model.get_param(PARAM.service_cost, node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, tech=tech, do_calc=True)

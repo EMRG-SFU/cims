@@ -30,7 +30,16 @@ cumul_bio_emissions_rate = "cumul_bio_emissions_rate"
 cumul_avoided_emissions_rate = "cumul_avoided_emissions_rate"
 cumul_negative_emissions_rate = "cumul_negative_emissions_rate"
 aggregate_emissions_cost_rate = "aggregate_emissions_cost_rate"
-
+total_direct_net_emissions = "total_direct_net_emissions"
+total_direct_avoided_emissions = "total_direct_avoided_emissions"
+total_direct_negative_emissions = "total_direct_negative_emissions"
+total_direct_bio_emissions = "total_direct_bio_emissions"
+total_direct_emissions_cost = "total_direct_emissions_cost"
+total_cumul_net_emissions = "total_cumul_net_emissions"
+total_cumul_avoided_emissions = "total_cumul_avoided_emissions"
+total_cumul_negative_emissions = "total_cumul_negative_emissions"
+total_cumul_bio_emissions = "total_cumul_bio_emissions"
+total_cumul_emissions_cost = "total_cumul_emissions_cost"
 
 # ------------ Declining Capital Cost ------------ #
 dcc_class = "dcc_class"
@@ -143,6 +152,7 @@ recycled_revenues = "recycled revenues"
 retirement_intercept = "retirement intercept" # stock_allocation
 retrofit_new_min = "retrofit_new_min"
 retrofit_new_max = "retrofit_new_max"
+retrofit_stock = "retrofit_stock" # stock allocation
 service_cost = "service cost"
 service_provided = "service provided"
 stock_exported = "stock exported" # macro-economics
