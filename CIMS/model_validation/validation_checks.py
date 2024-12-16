@@ -233,7 +233,7 @@ def tech_compete_nodes_no_techs(validator):
                               (data[COL.context] == 'Tech Compete')][validator.node_col]
 
     # Find all Technology Header Rows
-    techs = data[data[COL.parameter] == 'technology']
+    techs = data[data[COL.parameter] == COL.technology.lower()]
 
     # Determine which Tech Compete nodes don't have a Technology header
     tc_nodes_no_techs = []
@@ -299,7 +299,7 @@ def both_cop_p2000_defined(validator):
 
 def inconsistent_tech_refs(validator):
     """
-    Identify nodes which include "technology" column values and reference a
+    Identify nodes which include `Technology` column values and reference a
     technology which does not exist at that node.
     """
     # The model's DataFrame
@@ -307,7 +307,7 @@ def inconsistent_tech_refs(validator):
     tech_data = data[~data[COL.technology].isna()]
 
     # Build a Node -> [Technologies] map
-    tech_rows = tech_data[tech_data[COL.parameter]=='technology']
+    tech_rows = tech_data[tech_data[COL.parameter]==COL.technology.lower()]
     node_tech_map = {}
     for node, tech_name in zip(tech_rows[validator.node_col], tech_rows[COL.technology]):
         if node not in node_tech_map:
@@ -485,7 +485,7 @@ def new_techs_in_scenario(validator):
                         scenario_data[[validator.node_col, COL.technology]]\
                             .dropna().drop_duplicates().values])
 
-        scen_declared_techs = scenario_data[scenario_data[COL.parameter]=='technology']
+        scen_declared_techs = scenario_data[scenario_data[COL.parameter]==COL.technology.lower()]
         declared_new_techs = set([tuple(x) for x in
                                 scen_declared_techs[[validator.node_col, COL.technology]]\
                                     .dropna().drop_duplicates().values])

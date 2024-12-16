@@ -200,12 +200,12 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_a
     base_stock_retrofitted = min(base_stock_remaining, retrofit_amount)
     retrofit_amount -= base_stock_retrofitted
     model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.base_stock_remaining][
-        'year_value'] -= base_stock_retrofitted
+        PARAM.year_value] -= base_stock_retrofitted
     if record_at_parent:
         parent_node = '.'.join(node.split('.')[:-1])
         parent_tech = node.split('.')[-1]
         model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][PARAM.base_stock_remaining][
-            'year_value'] -= base_stock_retrofitted
+            PARAM.year_value] -= base_stock_retrofitted
 
     # New Stock
     if retrofit_amount > 0:
@@ -216,17 +216,17 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_a
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)
             retrofit_amount -= y_ns_retrofitted
             model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining][
-                'year_value'][prev_year] -= y_ns_retrofitted
+                PARAM.year_value][prev_year] -= y_ns_retrofitted
             model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining_pre_surplus][
-                'year_value'][prev_year] -= y_ns_retrofitted
+                PARAM.year_value][prev_year] -= y_ns_retrofitted
 
             if record_at_parent:
                 parent_node = '.'.join(node.split('.')[:-1])
                 parent_tech = node.split('.')[-1]
                 model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][
-                    PARAM.new_stock_remaining]['year_value'][prev_year] -= y_ns_retrofitted
+                    PARAM.new_stock_remaining][PARAM.year_value][prev_year] -= y_ns_retrofitted
                 model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][
-                    PARAM.new_stock_remaining_pre_surplus]['year_value'][prev_year] -= y_ns_retrofitted
+                    PARAM.new_stock_remaining_pre_surplus][PARAM.year_value][prev_year] -= y_ns_retrofitted
 
 
 def calc_retrofits(model, node, year, existing_stock):

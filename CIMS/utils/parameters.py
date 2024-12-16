@@ -1,7 +1,14 @@
+from .import model_columns as COL
+
 # ------------ Data Structure Constants ------------ #
 technologies = "technologies"
 year_value = "year_value"
-
+context = COL.context.lower()
+sub_context = COL.sub_context.lower()
+target= COL.target.lower()
+source= "source"
+unit= COL.unit.lower()
+param_source= "param_source"
 
 # ------------ Basic ------------ #
 competition_type = "competition type"

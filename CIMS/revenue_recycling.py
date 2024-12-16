@@ -52,7 +52,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
     for ghg in aggregate_emissions_cost.summarize():
         for emission_type, emissions_cost in aggregate_emissions_cost.summarize()[ghg].items():
             try:
-                recycling_rate = recycling_rates[ghg][emission_type]['year_value']
+                recycling_rate = recycling_rates[ghg][emission_type][PARAM.year_value]
                 total_recycled_revenue += emissions_cost * recycling_rate
             except KeyError:
                 pass
@@ -61,9 +61,9 @@ def calc_recycled_revenues(model, node, year, tech=None):
         for ghg in aggregate_emissions_cost.emissions_cost[source_branch]:
             for emission_type in aggregate_emissions_cost.emissions_cost[source_branch][ghg]:
                 try:
-                    recycling_rate = recycling_rates[ghg][emission_type]['year_value']
-                    aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] = \
-                        aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] * \
+                    recycling_rate = recycling_rates[ghg][emission_type][PARAM.year_value]
+                    aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type][PARAM.year_value] = \
+                        aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type][PARAM.year_value] * \
                         (1 - recycling_rate)
                 except KeyError:
                     pass

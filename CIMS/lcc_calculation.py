@@ -57,7 +57,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # Calculate Price
             price, price_source = model.get_param(PARAM.price, node, year, return_source=True,
                                                   do_calc=True)
-            val_dict = {'year_value': price, 'param_source': price_source}
+            val_dict = {PARAM.year_value: price, PARAM.param_source: price_source}
             model.set_param_internal(val_dict, PARAM.price, node, year)
 
             return
@@ -76,22 +76,22 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
             # ************
             annual_service_cost, sc_source = model.get_param(PARAM.service_cost, node, year, tech=tech,
                                                              return_source=True, do_calc=True)
-            val_dict = {'year_value': annual_service_cost,
-                        'param_source': sc_source}
+            val_dict = {PARAM.year_value: annual_service_cost,
+                        PARAM.param_source: sc_source}
             model.set_param_internal(val_dict, PARAM.service_cost, node, year, tech)
 
             # CRF
             # ************
             crf, crf_source = model.get_param(PARAM.crf, node, year, tech=tech,
                                               return_source=True, do_calc=True)
-            val_dict = {'year_value': crf, 'param_source': crf_source}
+            val_dict = {PARAM.year_value: crf, PARAM.param_source: crf_source}
             model.set_param_internal(val_dict, PARAM.crf, node, year, tech)
 
             # LCC (financial)
             # ************
             # TODO: Change to Price, knowing that internally the fLCC will be calculated.
             lcc, lcc_source = model.get_param(PARAM.lcc_financial, node, year, tech=tech, return_source=True, do_calc=True)
-            val_dict = {'year_value': lcc, 'param_source': lcc_source}
+            val_dict = {PARAM.year_value: lcc, PARAM.param_source: lcc_source}
             model.set_param_internal(val_dict, PARAM.lcc_financial, node, year, tech)
 
             # Competition LCC
@@ -100,7 +100,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                                                                 node, year, tech=tech,
                                                                 return_source=True,
                                                                 do_calc=True)
-            val_dict = {'year_value': lcc_competition, 'param_source': lcc_competition_source}
+            val_dict = {PARAM.year_value: lcc_competition, PARAM.param_source: lcc_competition_source}
             model.set_param_internal(val_dict, PARAM.lcc_competition, node, year, tech)
 
             # If the technology is available in this year, add to the total LCC^-v value.
@@ -193,7 +193,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
     # fLCC -> Price
     price, price_source = model.get_param(PARAM.price, node, year, return_source=True, do_calc=True)
-    val_dict = {'year_value': price, 'param_source': price_source}
+    val_dict = {PARAM.year_value: price, PARAM.param_source: price_source}
     model.set_param_internal(val_dict, PARAM.price, node, year)
 
 
@@ -345,7 +345,7 @@ def calc_financial_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech:
     output = model.get_param(PARAM.output, node, year, tech=tech)
 
     # Record capital cost (FCC or DCC) value in dictionary
-    val_dict = {'year_value': capital_cost, 'param_source': capital_cost_source}
+    val_dict = {PARAM.year_value: capital_cost, PARAM.param_source: capital_cost_source}
     model.set_param_internal(val_dict, PARAM.capital_cost, node, year, tech)
 
     financial_uc = (capital_cost + subsidy) / output * crf
@@ -378,7 +378,7 @@ def calc_competition_annual_cost(model:'CIMS.Model', node: str, year: str, tech:
     output = model.get_param(PARAM.output, node, year, tech=tech)
     
     # Record DIC value in dictionary
-    val_dict = {'year_value': declining_intangible_cost, 'param_source': dic_source}
+    val_dict = {PARAM.year_value: declining_intangible_cost, PARAM.param_source: dic_source}
     model.set_param_internal(val_dict, PARAM.dic, node, year, tech)
 
     competition_ac = (
@@ -595,11 +595,11 @@ def calc_price_subsidy(model: 'CIMS.Model', node: str, year: str, tech=None):
         for ghg in benchmark:
             for emission_type in benchmark[ghg]:
                 try:
-                    tax_value = tax[ghg][emission_type]['year_value']
+                    tax_value = tax[ghg][emission_type][PARAM.year_value]
                 except KeyError:
                     tax_value = 0
 
-                benchmark_value = benchmark[ghg][emission_type]['year_value']
+                benchmark_value = benchmark[ghg][emission_type][PARAM.year_value]
                 price_subsidy += benchmark_value * tax_value
 
     return price_subsidy

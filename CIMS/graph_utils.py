@@ -10,6 +10,7 @@ from . import loop_resolution
 from . import cost_curves
 
 from .utils import parameters as PARAM
+from .utils import model_columns as COL
 
 # **************************
 # 1- Perform action in graph
@@ -144,7 +145,7 @@ def get_ghg_and_emissions(graph, year):
         #GWP from CIMS node
         if PARAM.emissions_gwp in data[year]:
             for ghg2 in data[year][PARAM.emissions_gwp]:
-                gwp[ghg2] = data[year][PARAM.emissions_gwp][ghg2]['year_value']
+                gwp[ghg2] = data[year][PARAM.emissions_gwp][ghg2][PARAM.year_value]
 
     return ghg, emission_type, gwp
 
@@ -440,12 +441,12 @@ def find_edges(graph, node, df, edge_type):
             edges.append((edge, edge_data))
     
     elif edge_type == 'request_provide':
-        providers = df[df['Parameter'] == PARAM.service_requested]['Target'].unique()
+        providers = df[df[COL.parameter] == PARAM.service_requested][COL.target].unique()
         edges += [((node, p), {PARAM.edge_type: 'request_provide'}) for p in providers]
 
     elif edge_type == 'aggregation':
 
-        agg_children = df[df['Parameter'] == PARAM.aggregation_requested]['Target'].unique()
+        agg_children = df[df[COL.parameter] == PARAM.aggregation_requested][COL.target].unique()
 
         for agg_child in agg_children:
             # For each `aggregation requested`` line at node, add the following edges
@@ -453,16 +454,16 @@ def find_edges(graph, node, df, edge_type):
             #   (2) 0 weighted edge between all other parents of the aggregation requested target & the aggregation requested target (i.e. other parent of child -> child)
 
             # (1) node -> child {aggregation_weight: 1}
-            edges.append(((node, agg_child), {PARAM.edge_type: 'aggregation', 'aggregation_weight': 1}))
+            edges.append(((node, agg_child), {PARAM.edge_type: 'aggregation', PARAM.aggregation_weight: 1}))
 
             for agg_child_parent in graph.predecessors(agg_child):
                 if agg_child_parent == node:
                     continue
-                elif graph.edges[(agg_child_parent, agg_child)].get('aggregation_weight') == 1:
+                elif graph.edges[(agg_child_parent, agg_child)].get(PARAM.aggregation_weight) == 1:
                     pass # already set as an aggregating node, don't zero it out
                 else:
                     # (2) other parents -> child {aggregation_weight: 0}
-                    edges.append(((agg_child_parent, agg_child), {PARAM.edge_type: 'aggregation', 'aggregation_weight': 0}))
+                    edges.append(((agg_child_parent, agg_child), {PARAM.edge_type: 'aggregation', PARAM.aggregation_weight: 0}))
 
     else:
         raise ValueError(

@@ -12,6 +12,7 @@ from . import declining_costs
 from . import vintage_weighting
 
 from .utils import parameters as PARAM
+from .utils import model_columns as COL
 
 def infer_type(d): 
     """ 
@@ -106,13 +107,13 @@ def create_value_dict(year_val, source=None, context=None, sub_context=None, tar
     """
     Creates a standard value dictionary from the inner values.
     """
-    value_dictionary = {'context': context,
-                        'sub_context': sub_context,
-                        'target': target,
-                        'source': source,
-                        'unit': unit,
-                        'year_value': year_val,
-                        'param_source': param_source
+    value_dictionary = {PARAM.context: context,
+                        PARAM.sub_context: sub_context,
+                        PARAM.target: target,
+                        PARAM.source: source,
+                        PARAM.unit: unit,
+                        PARAM.year_value: year_val,
+                        PARAM.param_source: param_source
                         }
 
     return value_dictionary
@@ -124,8 +125,8 @@ def dict_has_none_year_value(dictionary):
     year_value key is  None.
     """
     has_none_year_value = False
-    if 'year_value' in dictionary.keys():
-        year_value = dictionary['year_value']
+    if PARAM.year_value in dictionary.keys():
+        year_value = dictionary[PARAM.year_value]
         if year_value is None:
             has_none_year_value = True
     else:
@@ -217,33 +218,33 @@ def inherit_parameter(graph, node, year, param):
             parent_param_val.update(param_val)
 
         # Update Param Source
-        if 'param_source' in parent_param_val:
-            parent_param_val.update({'param_source': 'inheritance'})
+        if PARAM.param_source in parent_param_val:
+            parent_param_val.update({PARAM.param_source: 'inheritance'})
         else:
             for context in parent_param_val:
-                if 'param_source' in parent_param_val[context]:
-                    parent_param_val[context].update({'param_source': 'inheritance'})
+                if PARAM.param_source in parent_param_val[context]:
+                    parent_param_val[context].update({PARAM.param_source: 'inheritance'})
                 else:
                     for sub_context in parent_param_val[context]:
                         parent_param_val[context][sub_context].update(
-                            {'param_source': 'inheritance'})
+                            {PARAM.param_source: 'inheritance'})
 
         node_param_val = copy.deepcopy(parent_param_val)
         if param in graph.nodes[node][year]:
             param_val = graph.nodes[node][year][param]
 
             # Remove any previously inherited parameter values
-            if 'param_source' in param_val:
-                if param_val['param_source'] == 'inheritance':
+            if PARAM.param_source in param_val:
+                if param_val[PARAM.param_source] == 'inheritance':
                     param_val = {}
             elif param_val is not None:
                 for context in list(param_val):
-                    if 'param_source' in param_val[context]:
-                        if param_val[context]['param_source'] == 'inheritance':
+                    if PARAM.param_source in param_val[context]:
+                        if param_val[context][PARAM.param_source] == 'inheritance':
                             param_val.pop(context)
                     else:
                         for sub_context in list(param_val[context]):
-                            if param_val[context][sub_context]['param_source'] == 'inheritance':
+                            if param_val[context][sub_context][PARAM.param_source] == 'inheritance':
                                 param_val[context].pop(sub_context)
 
             node_param_val.update(param_val)
@@ -334,10 +335,10 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
-    if isinstance(val, dict) and ('year_value' in val):
-        param_source = val['param_source']
+    if isinstance(val, dict) and (PARAM.year_value in val):
+        param_source = val[PARAM.param_source]
         is_exogenous = param_source in ['model', 'initialization']
-        val = val['year_value']
+        val = val[PARAM.year_value]
 
     # Raise warning if user isn't using get_param correctly
     if isinstance(val, dict) and not dict_expected:
@@ -401,7 +402,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                     val = val[context]
                     if sub_context:
                         val = val[sub_context]
-                if val['param_source'] == 'inheritance':
+                if val[PARAM.param_source] == 'inheritance':
                     param_source = 'inheritance'
             except KeyError:
                 pass
@@ -520,37 +521,37 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context][sub_context], dict) and 'year_value' in val[context][sub_context]:
-                            prev_val = val[context][sub_context]['year_value']
-                            val[context][sub_context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context][sub_context], dict) and PARAM.year_value in val[context][sub_context]:
+                            prev_val = val[context][sub_context][PARAM.year_value]
+                            val[context][sub_context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context][sub_context]
                             val[context][sub_context] = new_val
                     else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context], dict) and 'year_value' in val[context]:
-                            prev_val = val[context]['year_value']
-                            val[context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context], dict) and PARAM.year_value in val[context]:
+                            prev_val = val[context][PARAM.year_value]
+                            val[context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context]
                             val[context] = new_val
-                elif 'year_value' in val:
-                    prev_val = val['year_value']
-                    val['year_value'] = new_val
+                elif PARAM.year_value in val:
+                    prev_val = val[PARAM.year_value]
+                    val[PARAM.year_value] = new_val
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict) and 'year_value' in val[None]:
-                        prev_val = val[None]['year_value']
-                        val[None]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if isinstance(val[None], dict) and PARAM.year_value in val[None]:
+                        prev_val = val[None][PARAM.year_value]
+                        val[None][PARAM.year_value] = new_val
                     else:
                         prev_val = val[None]
                         val[None] = new_val
                 elif len(val.keys()) == 1:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if 'year_value' in val[list(val.keys())[0]]:
-                        prev_val = val[list(val.keys())[0]]['year_value']
-                        val[list(val.keys())[0]]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if PARAM.year_value in val[list(val.keys())[0]]:
+                        prev_val = val[list(val.keys())[0]][PARAM.year_value]
+                        val[list(val.keys())[0]][PARAM.year_value] = new_val
                     else:
                         prev_val = val[list(val.keys())[0]]
                         val[list(val.keys())[0]] = new_val
@@ -563,9 +564,16 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
-                              'year': [year], 'technology': None, 'context': [context], 'sub_context': [sub_context],
-                              'old_value': [prev_val], 'new_value': [new_val]}
+                change_log = {
+                    'base_model_description': [filename], 
+                    COL.parameter.lower(): [param], 
+                    COL.branch.lower(): [node],
+                    'year': [year], 
+                    COL.technology.lower(): None, 
+                    COL.context.lower(): [context], 
+                    COL.context.lower(): [sub_context],
+                    'old_value': [prev_val], 
+                    'new_value': [new_val]}
                 model.change_history = pd.concat([model.change_history, pd.DataFrame(change_log)], ignore_index=True)
         else:
             print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
@@ -614,34 +622,34 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context][sub_context], dict) and ('year_value' in val[context][sub_context]):
-                            prev_val = val[context][sub_context]['year_value']
-                            val[context][sub_context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context][sub_context], dict) and (PARAM.year_value in val[context][sub_context]):
+                            prev_val = val[context][sub_context][PARAM.year_value]
+                            val[context][sub_context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context][sub_context]
                             val[context][sub_context] = new_val
                     else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context], dict) and ('year_value' in val[context]):
-                            prev_val = val[context]['year_value']
-                            val[context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context], dict) and (PARAM.year_value in val[context]):
+                            prev_val = val[context][PARAM.year_value]
+                            val[context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context]
                             val[context] = new_val
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict) and ('year_value' in val[None]):
-                        prev_val = val[None]['year_value']
-                        val[None]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if isinstance(val[None], dict) and (PARAM.year_value in val[None]):
+                        prev_val = val[None][PARAM.year_value]
+                        val[None][PARAM.year_value] = new_val
                     else:
                         prev_val = val[None]
                         val[None] = new_val
                 else:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if 'year_value' in val:
-                        prev_val = data[param]['year_value']
-                        data[param]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if PARAM.year_value in val:
+                        prev_val = data[param][PARAM.year_value]
+                        data[param][PARAM.year_value] = new_val
             else:
                 prev_val = data[param]
                 data[param] = new_val
@@ -651,9 +659,15 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
-                              'year': year, 'technology': [tech], 'context': [context], 'sub_context': [sub_context],
-                              'old_value': [prev_val], 'new_value': [new_val]}
+                change_log = {'base_model_description': [filename], 
+                              COL.parameter.lower(): [param], 
+                              COL.branch.lower(): [node],
+                              'year': year, 
+                              COL.technology.lower(): [tech], 
+                              COL.context.lower(): [context], 
+                              COL.sub_context.lower(): [sub_context],
+                              'old_value': [prev_val], 
+                              'new_value': [new_val]}
                 changes_to_concat = [model.change_history, pd.DataFrame(change_log)]
                 model.change_history = pd.concat([df for df in changes_to_concat if len(df) != 0], ignore_index=True)
 
@@ -864,16 +878,16 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
                 if param in tech_data:
                     set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
                 else:
-                    value = val[i]['year_value']
-                    param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                    target = val[i]['target'] if 'target' in val[i] else None
+                    value = val[i][PARAM.year_value]
+                    param_source = val[i][PARAM.param_source] if PARAM.param_source in val[i] else None
+                    target = val[i][PARAM.target] if PARAM.target in val[i] else None
                     model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
                                        context=context, sub_context=sub_context, target=target,
                                        param_source=param_source)
             else:
-                value = val[i]['year_value']
-                param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                target = val[i]['target'] if 'target' in val[i] else None
+                value = val[i][PARAM.year_value]
+                param_source = val[i][PARAM.param_source] if PARAM.param_source in val[i] else None
+                target = val[i][PARAM.target] if PARAM.target in val[i] else None
                 model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
                                    context=context, sub_context=sub_context, target=target,
                                    param_source=param_source)
@@ -881,9 +895,9 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if param in node_data:
                 set_node_param(model, val[i], param, node, year[i], context, sub_context)
             else:
-                value = val[i]['year_value']
+                value = val[i][PARAM.year_value]
                 model.create_param(val=value, param=param, node=node, year=year[i],
-                                   context=context, sub_context=sub_context, param_source=val[i]['param_source'])
+                                   context=context, sub_context=sub_context, param_source=val[i][PARAM.param_source])
 
 
 def set_param_file(model, filepath):
@@ -921,8 +935,8 @@ def set_param_file(model, filepath):
         node_regex = row['node_regex'] if row['node_regex'] != "None" else None
         param = row['param'].lower() if row['param'] != 'None' else None
         tech = row['tech'] if row['tech'] != 'None' else None
-        context = row['context'] if row['context'] != 'None' else None
-        sub_context = row['sub_context'] if row['sub_context'] != 'None' else None
+        context = row[PARAM.context] if row[PARAM.context] != 'None' else None
+        sub_context = row[PARAM.sub_context] if row[PARAM.sub_context] != 'None' else None
         year_operator = row['year_operator'] if row['year_operator'] != 'None' else None
         year = row['year'] if row['year'] != 'None' else None
         val_operator = row['val_operator'] if row['val_operator'] != 'None' else None

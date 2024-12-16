@@ -13,6 +13,7 @@ from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupp
 from CIMS.emissions import Emissions, EmissionsCost
 
 from .utils import parameters as PARAM
+from .utils import model_columns as COL
 
 excluded_parameters = [
     PARAM.emissions_cost_rate, 
@@ -173,11 +174,11 @@ def log_list(val):
     val_pairs = []
     for entry in val:
         val_log = ValueLog()
-        val_log.context = entry['context'] if 'context' in entry.keys() else None
-        val_log.sub_context = entry['sub_context'] if 'sub_context' in entry.keys() else None
-        val_log.target = entry['target'] if 'target' in entry.keys() else None
-        val_log.unit = entry['unit'] if 'unit' in entry.keys() else None
-        val_log.value = entry['year_value']
+        val_log.context = entry[PARAM.context] if PARAM.context in entry.keys() else None
+        val_log.sub_context = entry[PARAM.sub_context] if PARAM.sub_context in entry.keys() else None
+        val_log.target = entry[PARAM.target] if PARAM.target in entry.keys() else None
+        val_log.unit = entry[PARAM.unit] if PARAM.unit in entry.keys() else None
+        val_log.value = entry[PARAM.year_value]
 
         val_pairs.append(deepcopy(val_log))
 
@@ -189,13 +190,13 @@ def log_dict(val):
     # Check if base dictionary
     val_log = ValueLog()
 
-    if 'year_value' in val.keys():
-        val_log.context = val['context'] if 'context' in val.keys() else None
-        val_log.sub_context = val['sub_context'] if 'sub_context' in val.keys() else None
-        val_log.target = val['target'] if 'target' in val.keys() else None
-        val_log.unit = val['unit'] if 'unit' in val.keys() else None
+    if PARAM.year_value in val.keys():
+        val_log.context = val[PARAM.context] if PARAM.context in val.keys() else None
+        val_log.sub_context = val[PARAM.sub_context] if PARAM.sub_context in val.keys() else None
+        val_log.target = val[PARAM.target] if PARAM.target in val.keys() else None
+        val_log.unit = val[PARAM.unit] if PARAM.unit in val.keys() else None
 
-        year_value = val['year_value']
+        year_value = val[PARAM.year_value]
 
         if year_value is None:
             return [val_log]
@@ -222,20 +223,20 @@ def log_dict(val):
             val_log.context = key
 
             if isinstance(inner_value, dict):
-                if 'year_value' in inner_value:
-                    val_log.sub_context = inner_value['sub_context'] \
-                        if 'sub_context' in inner_value.keys() else None
-                    val_log.target = inner_value['target'] \
-                        if 'target' in inner_value.keys() else None
-                    val_log.unit = inner_value['unit'] if 'unit' in inner_value.keys() else None
-                    val_log.value = inner_value['year_value']
+                if PARAM.year_value in inner_value:
+                    val_log.sub_context = inner_value[PARAM.sub_context] \
+                        if PARAM.sub_context in inner_value.keys() else None
+                    val_log.target = inner_value[PARAM.target] \
+                        if PARAM.target in inner_value.keys() else None
+                    val_log.unit = inner_value[PARAM.unit] if PARAM.unit in inner_value.keys() else None
+                    val_log.value = inner_value[PARAM.year_value]
                     val_pairs.append(deepcopy(val_log))
                 else:
                     for sub_context, base_val in inner_value.items():
                         val_log.sub_context = sub_context
-                        val_log.target = base_val['target'] if 'target' in base_val.keys() else None
-                        val_log.unit = base_val['unit'] if 'unit' in base_val.keys() else None
-                        val_log.value = base_val['year_value']
+                        val_log.target = base_val[PARAM.target] if PARAM.target in base_val.keys() else None
+                        val_log.unit = base_val[PARAM.unit] if PARAM.unit in base_val.keys() else None
+                        val_log.value = base_val[PARAM.year_value]
                         val_pairs.append(deepcopy(val_log))
 
             elif isinstance(inner_value, numbers.Number):
@@ -391,9 +392,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                 if val is None:
                     val = model.get_param(param, node)
                     
-                if param == 'region':
+                if param == COL.region.lower():
                     region = val
-                if param == 'sector':
+                if param == COL.sector.lower():
                     sector = val
 
                 if param not in model.years:
@@ -450,9 +451,9 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
                     warnings.warn(message)
 
                 for param, val in model.graph.nodes[node].items():
-                    if param == 'region':
+                    if param == COL.region.lower():
                         region = val
-                    if param == 'sector':
+                    if param == COL.sector.lower():
                         sector = val
 
                     if param == param_to_log:
@@ -478,15 +479,32 @@ def log_model(model, output_file, parameter_list: [str] = None, path: str = None
 
     # data_tuples = [log.tuple() for log in all_logs]
     log_df = pd.DataFrame(all_logs)
-    log_df.columns = ['node', 'region', 'sector', 'year', 'technology', 'parameter', 'value']
+    log_df.columns = [
+        COL.node.lower(), 
+        COL.region.lower(), 
+        COL.sector.lower(), 
+        'year', 
+        COL.technology.lower(), 
+        COL.parameter.lower(), 
+        'value']
 
     # Split Value Log values
-    split_columns = ['context', 'sub_context', 'target', 'unit', 'value']
+    split_columns = [PARAM.context, PARAM.sub_context, PARAM.target, PARAM.unit, 'value']
     log_df[split_columns] = pd.DataFrame(log_df['value'].apply(lambda x: x.tuple()).to_list())
 
     # Select final columns
-    columns = ['node', 'region', 'sector', 'year', 'technology', 'parameter', 'context',
-               'sub_context', 'target', 'unit', 'value']
+    columns = [
+        COL.node.lower(), 
+        COL.region.lower(), 
+        COL.sector.lower(), 
+        'year', 
+        COL.technology.lower(), 
+        COL.parameter.lower(), 
+        COL.context.lower(),
+        COL.sub_context.lower(),
+        COL.target.lower(),
+        COL.unit.lower(),
+        'value']
     log_df = log_df[columns]
 
     # Write to file

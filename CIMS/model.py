@@ -26,6 +26,7 @@ from .emissions import EmissionsCost
 from .old_utils import create_value_dict, inheritable_params, inherit_parameter
 
 from .utils import parameters as PARAM
+from .utils import model_columns as COL
 
 
 class Model:
@@ -93,8 +94,15 @@ class Model:
         self.model_description_file_prefix = os.path.commonprefix(model_reader.csv_files)
         self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
-            columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
-                     'context', 'sub_context', 'old_value', 'new_value'])
+            columns=['base_model_description', 
+                     COL.parameter.lower(), 
+                     'node', 
+                     'year', 
+                     COL.technology.lower(),
+                     COL.context.lower(),
+                     COL.sub_context.lower(),
+                     'old_value', 
+                     'new_value'])
 
         self.status = 'instantiated'
 
@@ -477,7 +485,7 @@ class Model:
         # Update parameter source for values from parent
         for ghg in parent_dict:
             for emission_type in parent_dict[ghg]:
-                parent_dict[ghg][emission_type]['param_source'] = 'inheritance'
+                parent_dict[ghg][emission_type][PARAM.param_source] = 'inheritance'
 
         # Store away tax at current node to overwrite parent tax later
         node_dict = {}
@@ -486,7 +494,7 @@ class Model:
             # Remove any inherited values from the update
             for ghg in list(node_dict):
                 for emission_type in list(node_dict[ghg]):
-                    if node_dict[ghg][emission_type]['param_source'] == 'inheritance':
+                    if node_dict[ghg][emission_type][PARAM.param_source] == 'inheritance':
                         node_dict[ghg].pop(emission_type)
                         if len(node_dict[ghg]) == 0:
                             node_dict.pop(ghg)
@@ -652,7 +660,7 @@ class Model:
                         for ghg in emission_data:
                             for emission_type in emission_data[ghg]:
                                 try:
-                                    emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                                    emission_data[ghg][emission_type][PARAM.year_value] *= gwp[ghg]
                                 except KeyError:
                                     continue
 
@@ -662,7 +670,7 @@ class Model:
                 for ghg in emission_data:
                     for emission_type in emission_data[ghg]:
                         try:
-                            emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                            emission_data[ghg][emission_type][PARAM.year_value] *= gwp[ghg]
                         except KeyError:
                             continue
 
@@ -694,8 +702,8 @@ class Model:
                 if len(parents) > 0:
                     parent = parents[0]
                     if PARAM.load_factor in graph.nodes[parent][year]:
-                        val = graph.nodes[parent][year][PARAM.load_factor]['year_value']
-                        units = graph.nodes[parent][year][PARAM.load_factor]['unit']
+                        val = graph.nodes[parent][year][PARAM.load_factor][PARAM.year_value]
+                        units = graph.nodes[parent][year][PARAM.load_factor][PARAM.unit]
                         graph.nodes[node][year][PARAM.load_factor] = old_utils.create_value_dict(val,
                                                                                          unit=units,
                                                                                          param_source='inheritance')
@@ -706,8 +714,8 @@ class Model:
                     tech_data = graph.nodes[node][year][PARAM.technologies]
                     for tech in tech_data:
                         if PARAM.load_factor not in tech_data[tech]:
-                            val = graph.nodes[node][year][PARAM.load_factor]['year_value']
-                            units = graph.nodes[node][year][PARAM.load_factor]['unit']
+                            val = graph.nodes[node][year][PARAM.load_factor][PARAM.year_value]
+                            units = graph.nodes[node][year][PARAM.load_factor][PARAM.unit]
                             tech_data[tech][PARAM.load_factor] = old_utils.create_value_dict(val,
                                                                                      unit=units,
                                                                                      param_source='inheritance')
@@ -1014,10 +1022,10 @@ class Model:
             technology.
         context : str, optional
             Used when there is context available in the node. Analogous to the
-            'context' column in the model description
+            `context` column in the model description
         sub_context : str, optional
             Must be used only if context is given. Analogous to the
-            'sub_context' column in the model description
+            `sub_context` column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log
             csv where True means the change will be saved and False means it

@@ -3,6 +3,7 @@ from statistics import mean
 from scipy.interpolate import interp1d
 
 from .utils import parameters as PARAM
+from .utils import model_columns as COL
 from . import old_utils
 
 
@@ -167,11 +168,11 @@ def build_cost_curve_function(node_df):
     years = [c for c in node_df.columns if old_utils.is_year(c)]
 
     # Get quantities
-    cc_quant_line = node_df[node_df['Parameter'] == PARAM.cost_curve_quantity]
+    cc_quant_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_quantity]
     cc_quants = [cc_quant_line[y].iloc[0] for y in years]
 
     # Get prices
-    cc_price_line = node_df[node_df['Parameter'] == PARAM.cost_curve_price]
+    cc_price_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_price]
     cc_prices = [cc_price_line[y].iloc[0] for y in years]
 
     # Create interpolator
