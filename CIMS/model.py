@@ -484,7 +484,7 @@ class Model:
             # Remove any inherited values from the update
             for ghg in list(node_dict):
                 for emission_type in list(node_dict[ghg]):
-                    if node_dict[ghg][emission_type]['param_source'] == 'inheritance':
+                    if node_dict[ghg][emission_type]['param_source'] == 'inheritance' or node_dict[ghg][emission_type]['year_value'] is None:
                         node_dict[ghg].pop(emission_type)
                         if len(node_dict[ghg]) == 0:
                             node_dict.pop(ghg)

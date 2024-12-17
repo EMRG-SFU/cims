@@ -230,21 +230,22 @@ def inherit_parameter(graph, node, year, param):
         if param in graph.nodes[node][year]:
             param_val = graph.nodes[node][year][param]
 
-            # Remove any previously inherited parameter values
-            if 'param_source' in param_val:
-                if param_val['param_source'] == 'inheritance':
-                    param_val = {}
-            elif param_val is not None:
-                for context in list(param_val):
-                    if 'param_source' in param_val[context]:
-                        if param_val[context]['param_source'] == 'inheritance':
-                            param_val.pop(context)
-                    else:
-                        for sub_context in list(param_val[context]):
-                            if param_val[context][sub_context]['param_source'] == 'inheritance':
-                                param_val[context].pop(sub_context)
+            if param_val is not None:
+                # Remove any previously inherited parameter values
+                if 'param_source' in param_val:
+                    if param_val['param_source'] == 'inheritance':
+                        param_val = {}
+                elif param_val is not None:
+                    for context in list(param_val):
+                        if 'param_source' in param_val[context]:
+                            if param_val[context]['param_source'] == 'inheritance':
+                                param_val.pop(context)
+                        else:
+                            for sub_context in list(param_val[context]):
+                                if param_val[context][sub_context]['param_source'] == 'inheritance':
+                                    param_val[context].pop(sub_context)
 
-            node_param_val.update(param_val)
+                node_param_val.update(param_val)
 
         if node_param_val:
             graph.nodes[node][year][param] = node_param_val
