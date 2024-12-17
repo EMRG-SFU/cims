@@ -107,7 +107,7 @@ def _calc_all_stock(model, node, year, tech):
         if bs_k is not None:
             stock_sums['base_stock'] += bs_k / unit_convert
 
-        year_list = [x for x in range(int(model.base_year), int(year))]
+        year_list = [x for x in range(int(model.base_year), int(year))] # Range function is exclusive of final year (i.e., up to but not including final year)
         for j in year_list:
             reference_year = (j - int(model.base_year)) // model.step * model.step + int(model.base_year)
             ns_jk = model.get_param('new_stock', node_k, str(reference_year), tech=tech_k)
