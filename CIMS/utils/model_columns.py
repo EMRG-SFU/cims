@@ -1,13 +1,16 @@
-# ------------ Reader Constants ------------ #
+# ------------ Regular CSVs ------------ #
 branch = "Branch"
-target = "Target"
+region = "Region"
+sector = "Sector"
+service = "Service"
+technology = "Technology"
+parameter = "Parameter"
 context = "Context"
 sub_context = "Sub_Context"
-sector = "Sector"
-region = "Region"
-node = "Node"
-parameter = "Parameter"
-technology = "Technology"
-default_value = "Default value"
+target = "Target"
+source = "Source"
 unit = "Unit"
+node = "Node"
 
+# ------------ Default Parameters CSVs ------------ #
+default_value = "Default value"
