@@ -5,8 +5,8 @@ from CIMS import utils
 #############################
 def apply_min_max_class_limits(model: "CIMS.Model", node: str, year: str, new_market_shares: dict):
     """
-    Adjusts new market shares to comply with minimum and maximum class limits
-    for a given model, node, and year.
+    Adjusts new market shares to comply with class-level minimum and maximum
+    market share limits.
 
     This function ensures that the market shares of classes comply with the
     exogenously set minimum and maximum limits. It iteratively adjusts the
@@ -16,32 +16,31 @@ def apply_min_max_class_limits(model: "CIMS.Model", node: str, year: str, new_ma
     Parameters
     ----------
     model : CIMS.Model
-        The model object containing information about the technologies, min/max
-        marketshare limits, and their min/max classes.
+        The model object containing the classes, technologies, and marketshare
+        limits.
     node : str
-        The node in the model for which the market shares are applied.
+        The node in the model for which the market share limits are applied.
     year : str
         The year for which the market shares and limits are being evaluated.
     new_market_shares : dict
-        A dictionary where  keys are technology identifiers and values are the
+        A dictionary where keys are technology identifiers and values are the
         proposed new market shares for each technology in the given year.
 
     Returns
     -------
     updated_nms : dict
         A dictionary of updated market shares for the technologies after
-        applying minimum and maximum class limits. If no limits are violated,
-        the function returns the original `new_market_shares`. Otherwise, the
-        values are adjusted to ensure compliance with the limits.
+        applying min/max class limits. If no limits are violated, the function
+        returns the original `new_market_shares`. Otherwise, the values are
+        adjusted to ensure compliance with the limits.
 
     Notes
     -----
-    - Only non-exogenous market shares are adjusted, and the adjustment is
-      performed iteratively until all classes comply with the min/max limits or
-      no more classes remain to use for adjustments.
+    - Only non-exogenous market shares are adjusted. The adjustment is performed
+      iteratively until all classes comply with their min/max limits, or
+      until no more classes remain to use for adjustments.
     - The market share class with the largest percentage difference between its
-      initial and constrained market share value is prioritized for adjustment
-      in each iteration.
+      initial and constrained market share value is prioritized for adjustment.
     """
     # Get marketshare classes
     tech_class_map, class_tech_map = _get_market_share_class_maps(model, node, year)
@@ -49,36 +48,50 @@ def apply_min_max_class_limits(model: "CIMS.Model", node: str, year: str, new_ma
     # Get min/max limits for each class
     min_max_class_limits = _get_min_max_class_limits(model, node, year)
 
-    if len(min_max_class_limits) == 0:
+    if not min_max_class_limits:
         return new_market_shares
 
     # Only check & adjust new market shares which are not exogenous
     adjusted_nms = _find_eligible_market_shares(model, node, year, new_market_shares)
     ms_class_adjusted_nms = _find_ms_class_market_shares(adjusted_nms, tech_class_map)
 
-    # Check to see if all New M/S values comply with Min/Max limits. If yes, do nothing. If no
-    # continue to next step.
-    limit_adjusted_techs = []
-    while not _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_class_limits):
-        # Apply exogenous Min or Max New M/S limit values on the technology which has the largest
-        # % difference between its limit and its initial new market share value.
-        percent_differences = _get_percent_differences_class(ms_class_adjusted_nms,
-                                                       min_max_class_limits,
-                                                       return_sorted=True)
-        largest_violator = percent_differences[0]
-        violator_class = largest_violator[0]
-        for tech in class_tech_map[violator_class]:
-            if tech in adjusted_nms:
-                adjusted_nms[tech] = _make_ms_min_max_class_compliant(
-                    ms_class_adjusted_nms[violator_class],
-                    min_max_class_limits[tech_class_map[tech]],
-                    adjusted_nms[tech]
-                )
-                limit_adjusted_techs.append(tech)
+    # Check if all new market shares comply with min/max class limits, disregard
+    # classes which have already been limit adjusted.
+    limit_adjusted_techs = set()
+    limit_adjusted_classes = set()
+    while not _min_max_ms_class_compliant(
+        ms_class_adjusted_nms, min_max_class_limits, limit_adjusted_classes):
+        # Apply exogenous min/max limits to technologies from the class with the
+        # largest difference between its limit and its new market share value.
+        percent_differences = _get_percent_differences_class(
+            ms_class_adjusted_nms, min_max_class_limits, return_sorted=True)
+    
+        violator_class = percent_differences[0][0]
+        
+        # Check if there are other classes available for stock redistribution
+        available_classes = class_tech_map.keys() - \
+            limit_adjusted_classes - {violator_class}
+        # If yes, we can proceed with re-distribution
+        if available_classes:
+            for tech in class_tech_map[violator_class]:
+                if tech in adjusted_nms:
+                    adjusted_nms[tech] = _make_ms_min_max_class_compliant(
+                        ms_class_adjusted_nms[violator_class],
+                        min_max_class_limits[tech_class_map[tech]],
+                        adjusted_nms[tech]
+                    )
+                else:
+                    adjusted_nms[tech] = 0
+                limit_adjusted_techs.add(tech)
 
-        # For remaining technologies, calculate their individual Adjusted New M/S for technology(s)
-        adjusted_nms = _adjust_new_market_shares(adjusted_nms, limit_adjusted_techs)
-        ms_class_adjusted_nms = _find_ms_class_market_shares(adjusted_nms, tech_class_map)
+        # For remaining classes, calculate adjusted new market share values for
+        # each of their technologies
+        adjusted_nms = _adjust_new_market_shares(
+            adjusted_nms, limit_adjusted_techs)
+        ms_class_adjusted_nms = _find_ms_class_market_shares(
+            adjusted_nms, tech_class_map)
+
+        limit_adjusted_classes.add(violator_class)
 
     updated_nms = new_market_shares.copy()
     updated_nms.update(adjusted_nms)
@@ -149,9 +162,11 @@ def _find_ms_class_market_shares(new_market_shares, ms_class_map):
     return aggregate_nms
 
 
-def _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_limits):
+def _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_limits, limit_adjusted_classes):
 
-    for ms_class in ms_class_adjusted_nms:
+    classes_to_review = [c for c in ms_class_adjusted_nms if c not in limit_adjusted_classes]
+
+    for ms_class in classes_to_review:
         min_ms, max_ms = min_max_limits[ms_class]
         proposed_ms = ms_class_adjusted_nms[ms_class]
 
