@@ -75,7 +75,6 @@ def is_year(val: str or int) -> bool:
     re_year = re.compile(r'^[0-9]{4}$')
     return bool(re_year.match(str(val)))
 
-
 def search_nodes(search_term, graph):
     """
     Search `graph` to find the nodes which contain `search_term` in the node name's final component.
@@ -203,6 +202,58 @@ inheritable_params = [
     'retrofit_heterogeneity',
 ]
 
+def recursive_key_value_filter(value_dict, key, value):
+    """
+    Recursively filters a nested dictionary by removing entries that contain a
+    specified key-value pair.
+
+    This function traverses a nested dictionary and removes any entries that
+    contain the specified key with the specified value. If this removal results
+    in an empty dictionary for any context or sub-context, that context or
+    sub-context is also removed.
+
+
+    Parameters
+    ----------
+    value_dict : dict
+        The dictionary to be filtered, created by utils.create_value_dict().
+    key : str
+        The key to check within the dictionary.
+    value : any
+        The value to check for the specified key. Can be any type, including
+        None.
+
+    Returns
+    -------
+    dict
+    The filtered dictionary with value_dicts containing the specified key-value
+    pairs removed.
+    
+    Examples
+    --------
+    >>> value_dict_1 = CIMS.utils.create_value_dict(10, param_source='initialization')
+    >>> result = recursive_key_value_filter(value_dict_1, 'param_source', 'initialization')
+    >>> print(result)
+    {}
+
+    >>> value_dict_2 = {
+    ...     "C1": CIMS.utils.create_value_dict(10, param_source='initialization'), 
+    ...     "C2": CIMS.utils.create_value_dict(None, param_source='default'), 
+    ...     "C3": CIMS.utils.create_value_dict(15, param_source="calculation")
+    ... }
+    >>> result = recursive_key_value_filter(value_dict_2, 'year_value', None)
+    >>> print(result)
+    {'C1': {'year_value': 10, 'param_source': 'initialization'}, 'C3': {'year_value': 15, 'param_source': 'calculation'}}
+    """
+    if 'year_value' in value_dict:
+        if (value_dict.get(key) == value) or \
+           ((value_dict.get(key) is None) and (value is None)):
+            return {}
+    else:
+        value_dict = {context: recursive_key_value_filter(context_dict, key, value) for context, context_dict in value_dict.items()}
+        value_dict = {k: v for k, v in value_dict.items() if v}
+    return value_dict
+
 
 def inherit_parameter(graph, node, year, param):
     assert param in inheritable_params
@@ -226,29 +277,22 @@ def inherit_parameter(graph, node, year, param):
                         parent_param_val[context][sub_context].update(
                             {'param_source': 'inheritance'})
 
-        node_param_val = copy.deepcopy(parent_param_val)
+        param_value = copy.deepcopy(parent_param_val)
         if param in graph.nodes[node][year]:
-            param_val = graph.nodes[node][year][param]
+            uninheritable_param_vals = graph.nodes[node][year][param]
+            # Remove any previously inherited values or any None values, which
+            # allows these parameters to become available for inheritance
+            uninheritable_param_vals = recursive_key_value_filter(
+                uninheritable_param_vals, key="param_source", 
+                value="inheritance")
+            uninheritable_param_vals = recursive_key_value_filter(
+                uninheritable_param_vals, key='year_value', value=None)
 
-            if param_val is not None:
-                # Remove any previously inherited parameter values
-                if 'param_source' in param_val:
-                    if param_val['param_source'] == 'inheritance':
-                        param_val = {}
-                elif param_val is not None:
-                    for context in list(param_val):
-                        if 'param_source' in param_val[context]:
-                            if param_val[context]['param_source'] == 'inheritance':
-                                param_val.pop(context)
-                        else:
-                            for sub_context in list(param_val[context]):
-                                if param_val[context][sub_context]['param_source'] == 'inheritance':
-                                    param_val[context].pop(sub_context)
+            # Update inherited-values with any node-specific values
+            param_value.update(uninheritable_param_vals)
 
-                node_param_val.update(param_val)
-
-        if node_param_val:
-            graph.nodes[node][year][param] = node_param_val
+        if param_value:
+            graph.nodes[node][year][param] = param_value
 
 
 def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,
