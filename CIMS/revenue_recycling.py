@@ -2,6 +2,7 @@
 Module to provide the calculation of recycled revenues from emissions.
 """
 from .emissions import calc_cumul_emissions_cost_rate
+from .utils import parameters as PARAM
 
 
 def calc_recycled_revenues(model, node, year, tech=None):
@@ -29,21 +30,21 @@ def calc_recycled_revenues(model, node, year, tech=None):
     """
     # Retrieve the recycling rates
     if tech is not None:
-        if 'revenue recycle rate' not in model.graph.nodes[node][year]['technologies'][tech]:
+        if PARAM.revenue_recycle_rate not in model.graph.nodes[node][year][PARAM.technologies][tech]:
             recycling_rates = {}
         else:
-            recycling_rates = model.get_param('revenue recycle rate',
+            recycling_rates = model.get_param(PARAM.revenue_recycle_rate,
                                               node, year, tech=tech, dict_expected=True)
     else:
-        if 'revenue recycle rate' not in model.graph.nodes[node][year]:
+        if PARAM.revenue_recycle_rate not in model.graph.nodes[node][year]:
             recycling_rates = {}
         else:
-            recycling_rates = model.get_param('revenue recycle rate', node, year, dict_expected=True)
+            recycling_rates = model.get_param(PARAM.revenue_recycle_rate, node, year, dict_expected=True)
 
     # Retrieve the aggregate emissions cost at the node/tech
     calc_cumul_emissions_cost_rate(model, node, year, tech)
 
-    aggregate_emissions_cost = model.get_param('cumul_emissions_cost_rate',
+    aggregate_emissions_cost = model.get_param(PARAM.cumul_emissions_cost_rate,
                                                node, year, tech=tech, dict_expected=True)
 
     # Apply the recycling rates to the aggregate emissions to find the recycled revenues
@@ -51,7 +52,7 @@ def calc_recycled_revenues(model, node, year, tech=None):
     for ghg in aggregate_emissions_cost.summarize():
         for emission_type, emissions_cost in aggregate_emissions_cost.summarize()[ghg].items():
             try:
-                recycling_rate = recycling_rates[ghg][emission_type]['year_value']
+                recycling_rate = recycling_rates[ghg][emission_type][PARAM.year_value]
                 total_recycled_revenue += emissions_cost * recycling_rate
             except KeyError:
                 pass
@@ -60,18 +61,18 @@ def calc_recycled_revenues(model, node, year, tech=None):
         for ghg in aggregate_emissions_cost.emissions_cost[source_branch]:
             for emission_type in aggregate_emissions_cost.emissions_cost[source_branch][ghg]:
                 try:
-                    recycling_rate = recycling_rates[ghg][emission_type]['year_value']
-                    aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] = \
-                        aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type]['year_value'] * \
+                    recycling_rate = recycling_rates[ghg][emission_type][PARAM.year_value]
+                    aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type][PARAM.year_value] = \
+                        aggregate_emissions_cost.emissions_cost[source_branch][ghg][emission_type][PARAM.year_value] * \
                         (1 - recycling_rate)
                 except KeyError:
                     pass
 
     if tech is not None:
-        model.graph.nodes[node][year]['technologies'][tech]['cumul_emissions_cost_rate'] = \
+        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.cumul_emissions_cost_rate] = \
             aggregate_emissions_cost
     else:
-        model.graph.nodes[node][year]['cumul_emissions_cost_rate'] = \
+        model.graph.nodes[node][year][PARAM.cumul_emissions_cost_rate] = \
             aggregate_emissions_cost
 
     return total_recycled_revenue
