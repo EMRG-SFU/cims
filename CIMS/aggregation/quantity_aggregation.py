@@ -4,6 +4,7 @@ supply which can be attributed to a node).
 """
 from ..quantities import RequestedQuantity
 from .aggregation_utils import record_aggregate_values, find_children_for_aggregation
+from ..utils import parameters as PARAM
 
 
 def aggregate_requested_quantities(model, node, year):
@@ -22,7 +23,7 @@ def aggregate_requested_quantities(model, node, year):
 
     (3) via weighted aggregate relationships - if specified in the model description, nodes will
     aggregate quantities structurally. For example, if a market node has
-    "structural_aggregation" turned on, any quantities (direct or in-direct) from the market
+    `structural_aggregation` turned on, any quantities (direct or in-direct) from the market
     children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
     which it has a request/provide relationship with (CAN.Natural Gas).
 
@@ -39,7 +40,7 @@ def aggregate_requested_quantities(model, node, year):
     agg_quantities = _aggregate_quantities(node, quantities)
 
     # Record Quantities
-    record_aggregate_values(model, node, year, agg_quantities, 'requested_quantities', RequestedQuantity)
+    record_aggregate_values(model, node, year, agg_quantities, PARAM.requested_quantities, RequestedQuantity)
     # _record_quantities(model, agg_quantities, year)
 
 
@@ -48,7 +49,7 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
     Find the list of quantities to be recorded for a node/tech based on it's request for services
     from child.
     """
-    child_provided_quantities = model.get_param("provided_quantities", child, year=year)
+    child_provided_quantities = model.get_param(PARAM.provided_quantities, child, year=year)
     quantities_to_record = []
 
     # Find the quantities provided by child to the node/tech
@@ -75,7 +76,7 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
             child_total_quantity_provided = child_provided_quantities.get_total_quantity()
             if child_total_quantity_provided != 0:
                 proportion = child_provided_quantities.calculate_proportion(node, tech)
-                child_requested_quant = model.get_param('requested_quantities', child, year=year)
+                child_requested_quant = model.get_param(PARAM.requested_quantities, child, year=year)
                 quantities_requested = child_requested_quant.get_total_quantities_requested()
                 for child_rq_node, amount in quantities_requested.items():
                     quantities_to_record.append((child_rq_node, child, proportion * amount))
@@ -99,16 +100,16 @@ def _find_aggregation_quantities(model, year, children_for_aggregation):
         if agg_type == 'structural':
             # all quantities requested of child, should be recorded as requested of node
             child_requested_quantities = model.get_param(
-                'requested_quantities', child_node, year).get_total_quantities_requested()
+                PARAM.requested_quantities, child_node, year).get_total_quantities_requested()
             for providing_node, request_amount in child_requested_quantities.items():
                 agg_info['quantities'].append((providing_node, request_amount))
 
         elif agg_type == 'aggregation':
-            agg_weight = model.graph.edges[(parent_node, child_node)]['aggregation_weight']
+            agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregation_weight]
 
             # all quantities requested of child, should be multiplied by the aggregation weight and
             # recorded as requested of node
-            quantities = model.get_param('requested_quantities', child_node,
+            quantities = model.get_param(PARAM.requested_quantities, child_node,
                                          year).get_total_quantities_requested()
             for providing_node, request_amount in quantities.items():
                 agg_info['quantities'].append((providing_node, agg_weight * request_amount))

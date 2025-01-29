@@ -11,6 +11,9 @@ from . import lcc_calculation
 from . import declining_costs
 from . import vintage_weighting
 
+from .utils import parameters as PARAM
+from .utils import model_columns as COL
+
 def infer_type(d): 
     """ 
 
@@ -50,6 +53,7 @@ def infer_type(d):
         except:
             return( d )
 
+
 def is_year(val: str or int) -> bool:
     """ Determines whether `cn` is a year
 
@@ -74,6 +78,7 @@ def is_year(val: str or int) -> bool:
     """
     re_year = re.compile(r'^[0-9]{4}$')
     return bool(re_year.match(str(val)))
+
 
 def search_nodes(search_term, graph):
     """
@@ -103,13 +108,13 @@ def create_value_dict(year_val, source=None, context=None, sub_context=None, tar
     """
     Creates a standard value dictionary from the inner values.
     """
-    value_dictionary = {'context': context,
-                        'sub_context': sub_context,
-                        'target': target,
-                        'source': source,
-                        'unit': unit,
-                        'year_value': year_val,
-                        'param_source': param_source
+    value_dictionary = {PARAM.context: context,
+                        PARAM.sub_context: sub_context,
+                        PARAM.target: target,
+                        PARAM.source: source,
+                        PARAM.unit: unit,
+                        PARAM.year_value: year_val,
+                        PARAM.param_source: param_source
                         }
 
     return value_dictionary
@@ -121,8 +126,8 @@ def dict_has_none_year_value(dictionary):
     year_value key is  None.
     """
     has_none_year_value = False
-    if 'year_value' in dictionary.keys():
-        year_value = dictionary['year_value']
+    if PARAM.year_value in dictionary.keys():
+        year_value = dictionary[PARAM.year_value]
         if year_value is None:
             has_none_year_value = True
     else:
@@ -141,66 +146,68 @@ def is_param_exogenous(model, param, node, year, tech=None):
 
 def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
-        if 'service requested' not in model.graph.nodes[node][year]['technologies'][tech]:
+        if PARAM.service_requested not in model.graph.nodes[node][year][PARAM.technologies][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['technologies'][tech]['service requested']
+            services_requested = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
             if use_vintage_weighting:
                 weighted_services = {}
                 for target in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter('service requested', model, node, year, tech=tech, context=target)
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_requested, model, node, year, tech=tech, context=target)
                     weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 
     else:
-        if 'service requested' not in model.graph.nodes[node][year]:
+        if PARAM.service_requested not in model.graph.nodes[node][year]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year]['service requested']
+            services_requested = model.graph.nodes[node][year][PARAM.service_requested]
 
     return services_requested
 
 
 def prev_stock_existed(model, node, year):
     for year in [y for y in model.years if y < year]:
-        pq, src = model.get_param('provided_quantities', node, year, return_source=True)
+        pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
         if pq.get_total_quantity() > 0:
             return True
     return False
 
 
+#------ GOOD TO HERE
 # ******************
 # Parameter Fetching
 # ******************
 calculation_directory = {
-    'capital cost_declining': declining_costs.calc_declining_capital_cost,
-    'capital cost': lcc_calculation.calc_capital_cost,
-    'crf': lcc_calculation.calc_crf,
-    'financial upfront cost': lcc_calculation.calc_financial_upfront_cost,
-    'competition upfront cost': lcc_calculation.calc_competition_upfront_cost,
-    'dic': declining_costs.calc_declining_intangible_cost,
-    'financial annual cost': lcc_calculation.calc_financial_annual_cost,
-    'competition annual cost': lcc_calculation.calc_competition_annual_cost,
-    'service cost': lcc_calculation.calc_competition_annual_service_cost,
-    'financial service cost': lcc_calculation.calc_financial_annual_service_cost,
-    'emissions cost': lcc_calculation.calc_competition_emissions_cost,
-    'financial emissions cost': lcc_calculation.calc_financial_emissions_cost,
-    'lcc_financial': lcc_calculation.calc_financial_lcc,
-    'lcc_competition': lcc_calculation.calc_lcc_competition,
-    'price': lcc_calculation.calc_price,
-    'fixed cost rate': lcc_calculation.calc_fixed_cost_rate,
-    'price_subsidy': lcc_calculation.calc_price_subsidy
+    PARAM.capital_cost_declining: declining_costs.calc_declining_capital_cost,
+    PARAM.capital_cost: lcc_calculation.calc_capital_cost,
+    PARAM.crf: lcc_calculation.calc_crf,
+    PARAM.financial_upfront_cost: lcc_calculation.calc_financial_upfront_cost,
+    PARAM.competition_upfront_cost: lcc_calculation.calc_competition_upfront_cost,
+    PARAM.dic: declining_costs.calc_declining_intangible_cost,
+    PARAM.financial_annual_cost: lcc_calculation.calc_financial_annual_cost,
+    PARAM.competition_annual_cost: lcc_calculation.calc_competition_annual_cost,
+    PARAM.service_cost: lcc_calculation.calc_competition_annual_service_cost,
+    PARAM.financial_service_cost: lcc_calculation.calc_financial_annual_service_cost,
+    PARAM.emissions_cost: lcc_calculation.calc_competition_emissions_cost,
+    PARAM.financial_emissions_cost: lcc_calculation.calc_financial_emissions_cost,
+    PARAM.lcc_financial: lcc_calculation.calc_financial_lcc,
+    PARAM.lcc_competition: lcc_calculation.calc_lcc_competition,
+    PARAM.price: lcc_calculation.calc_price,
+    PARAM.fixed_cost_rate: lcc_calculation.calc_fixed_cost_rate,
+    PARAM.price_subsidy: lcc_calculation.calc_price_subsidy
 }
 
 # TODO: Move inheritable params to sheet in model description to get with reader
 inheritable_params = [
-    'price multiplier',
-    'discount rate_financial',
-    'discount rate_retrofit',
-    'retrofit_existing_min',
-    'retrofit_existing_max',
-    'retrofit_heterogeneity',
+    PARAM.price_multiplier,
+    PARAM.discount_rate_financial,
+    PARAM.discount_rate_retrofit,
+    PARAM.retrofit_existing_min, 
+    PARAM.retrofit_existing_max,
+    PARAM.retrofit_heterogeneity,
 ]
+
 
 def recursive_key_value_filter(value_dict, key, value):
     """
@@ -245,7 +252,7 @@ def recursive_key_value_filter(value_dict, key, value):
     >>> print(result)
     {'C1': {'year_value': 10, 'param_source': 'initialization'}, 'C3': {'year_value': 15, 'param_source': 'calculation'}}
     """
-    if 'year_value' in value_dict:
+    if PARAM.year_value in value_dict:
         if (value_dict.get(key) == value) or \
            ((value_dict.get(key) is None) and (value is None)):
             return {}
@@ -266,16 +273,16 @@ def inherit_parameter(graph, node, year, param):
             parent_param_val.update(param_val)
 
         # Update Param Source
-        if 'param_source' in parent_param_val:
-            parent_param_val.update({'param_source': 'inheritance'})
+        if PARAM.param_source in parent_param_val:
+            parent_param_val.update({PARAM.param_source: 'inheritance'})
         else:
             for context in parent_param_val:
-                if 'param_source' in parent_param_val[context]:
-                    parent_param_val[context].update({'param_source': 'inheritance'})
+                if PARAM.param_source in parent_param_val[context]:
+                    parent_param_val[context].update({PARAM.param_source: 'inheritance'})
                 else:
                     for sub_context in parent_param_val[context]:
                         parent_param_val[context][sub_context].update(
-                            {'param_source': 'inheritance'})
+                            {PARAM.param_source: 'inheritance'})
 
         param_value = copy.deepcopy(parent_param_val)
         if param in graph.nodes[node][year]:
@@ -283,10 +290,10 @@ def inherit_parameter(graph, node, year, param):
             # Remove any previously inherited values or any None values, which
             # allows these parameters to become available for inheritance
             uninheritable_param_vals = recursive_key_value_filter(
-                uninheritable_param_vals, key="param_source", 
+                uninheritable_param_vals, key=PARAM.param_source, 
                 value="inheritance")
             uninheritable_param_vals = recursive_key_value_filter(
-                uninheritable_param_vals, key='year_value', value=None)
+                uninheritable_param_vals, key=PARAM.year_value, value=None)
 
             # Update inherited-values with any node-specific values
             param_value.update(uninheritable_param_vals)
@@ -322,9 +329,9 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     return_source : bool, default=False
         Whether to return the method by which this value was originally obtained.
     do_calc : bool
@@ -333,7 +340,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         Whether to check that the parameter exists as is given the context (without
         calculation, inheritance, or checking past years)
     dict_expected : bool, default=False
-        Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
+        Used to disable the warning get_param is returning a dict. Get_param should normally return a single value
         (float, str, etc.). If the user knows it expects a dict, then this flag is used.
 
     Returns
@@ -357,7 +364,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     if year:
         data = data[year]
         if tech:  # assumption: any tech node always requires a year
-            data = data['technologies'][tech]
+            data = data[PARAM.technologies][tech]
 
     # Val can be the final return result (float, string, etc) or a dict, check for other params
     if param in data:
@@ -377,20 +384,22 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
-    if isinstance(val, dict) and ('year_value' in val):
-        param_source = val['param_source']
+    if isinstance(val, dict) and (PARAM.year_value in val):
+        param_source = val[PARAM.param_source]
         is_exogenous = param_source in ['model', 'initialization']
-        val = val['year_value']
+        val = val[PARAM.year_value]
 
     # Raise warning if user isn't using get_param correctly
     if isinstance(val, dict) and not dict_expected:
-        warning_message = ("Get Param is returning a dict, considering using more parameters in get_param." +
-                      "\nParameter: " + (param if param else "") +
-                      "\nNode: " + (node if node else "") +
-                      "\nYear: " + (year if year else "") +
-                      "\nContext: " + (context if context else "") +
-                      "\nSub-context: " + (sub_context if sub_context else "") +
-                      "\nTech: " + (tech if tech else ""))
+        warning_message = \
+            f"get_param() is returning a `dict`, considering using more parameters in get_param().\
+                \nParameter: {param if param else ''}\
+                \nNode: {node if node else ''}\
+                \nYear: {year if year else ''}\
+                \nContext: {context if context else ''}\
+                \nSub-context: {sub_context if sub_context else ''}\
+                \nTech: {tech if tech else ''}"
+
         warnings.warn(warning_message)
 
     if val is not None:
@@ -442,7 +451,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                     val = val[context]
                     if sub_context:
                         val = val[sub_context]
-                if val['param_source'] == 'inheritance':
+                if val[PARAM.param_source] == 'inheritance':
                     param_source = 'inheritance'
             except KeyError:
                 pass
@@ -503,15 +512,15 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
     year : str or list, optional
         The year(s) which you are interested in. `year` is not required for parameters specified at
         the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        competition type can be retrieved without specifying a year.
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     save : bool, optional
         This specifies whether the change should be saved in the change_log csv where True means
         the change will be saved and False means it will not be saved
@@ -539,9 +548,9 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
@@ -561,37 +570,37 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context][sub_context], dict) and 'year_value' in val[context][sub_context]:
-                            prev_val = val[context][sub_context]['year_value']
-                            val[context][sub_context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context][sub_context], dict) and PARAM.year_value in val[context][sub_context]:
+                            prev_val = val[context][sub_context][PARAM.year_value]
+                            val[context][sub_context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context][sub_context]
                             val[context][sub_context] = new_val
                     else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context], dict) and 'year_value' in val[context]:
-                            prev_val = val[context]['year_value']
-                            val[context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context], dict) and PARAM.year_value in val[context]:
+                            prev_val = val[context][PARAM.year_value]
+                            val[context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context]
                             val[context] = new_val
-                elif 'year_value' in val:
-                    prev_val = val['year_value']
-                    val['year_value'] = new_val
+                elif PARAM.year_value in val:
+                    prev_val = val[PARAM.year_value]
+                    val[PARAM.year_value] = new_val
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict) and 'year_value' in val[None]:
-                        prev_val = val[None]['year_value']
-                        val[None]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if isinstance(val[None], dict) and PARAM.year_value in val[None]:
+                        prev_val = val[None][PARAM.year_value]
+                        val[None][PARAM.year_value] = new_val
                     else:
                         prev_val = val[None]
                         val[None] = new_val
                 elif len(val.keys()) == 1:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if 'year_value' in val[list(val.keys())[0]]:
-                        prev_val = val[list(val.keys())[0]]['year_value']
-                        val[list(val.keys())[0]]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if PARAM.year_value in val[list(val.keys())[0]]:
+                        prev_val = val[list(val.keys())[0]][PARAM.year_value]
+                        val[list(val.keys())[0]][PARAM.year_value] = new_val
                     else:
                         prev_val = val[list(val.keys())[0]]
                         val[list(val.keys())[0]] = new_val
@@ -604,9 +613,16 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
-                              'year': [year], 'technology': None, 'context': [context], 'sub_context': [sub_context],
-                              'old_value': [prev_val], 'new_value': [new_val]}
+                change_log = {
+                    'base_model_description': [filename], 
+                    COL.parameter.lower(): [param], 
+                    COL.branch.lower(): [node],
+                    'year': [year], 
+                    COL.technology.lower(): None, 
+                    COL.context.lower(): [context], 
+                    COL.context.lower(): [sub_context],
+                    'old_value': [prev_val], 
+                    'new_value': [new_val]}
                 model.change_history = pd.concat([model.change_history, pd.DataFrame(change_log)], ignore_index=True)
         else:
             print('No param ' + str(param) + ' at node ' + str(node) + ' for year ' + str(
@@ -637,9 +653,9 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         tech : str
             The name of the technology you are interested in.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         save : bool, optional
             This specifies whether the change should be saved in the change_log csv where True means
             the change will be saved and False means it will not be saved
@@ -648,41 +664,41 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
         # Set Parameter from Description
         # ******************************
         # If the parameter's value is in the model description for that node, year, & technology, use it
-        data = model.graph.nodes[node][year]['technologies'][tech]
+        data = model.graph.nodes[node][year][PARAM.technologies][tech]
         if param in data:
             val = data[param]
             # If the value is a dictionary, use its nested result
             if isinstance(val, dict):
                 if context:
                     if sub_context:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context][sub_context], dict) and ('year_value' in val[context][sub_context]):
-                            prev_val = val[context][sub_context]['year_value']
-                            val[context][sub_context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context][sub_context], dict) and (PARAM.year_value in val[context][sub_context]):
+                            prev_val = val[context][sub_context][PARAM.year_value]
+                            val[context][sub_context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context][sub_context]
                             val[context][sub_context] = new_val
                     else:
-                        # If the value is a dictionary, check if 'year_value' can be accessed.
-                        if isinstance(val[context], dict) and ('year_value' in val[context]):
-                            prev_val = val[context]['year_value']
-                            val[context]['year_value'] = new_val
+                        # If the value is a dictionary, check if `year_value` can be accessed.
+                        if isinstance(val[context], dict) and (PARAM.year_value in val[context]):
+                            prev_val = val[context][PARAM.year_value]
+                            val[context][PARAM.year_value] = new_val
                         else:
                             prev_val = val[context]
                             val[context] = new_val
                 elif None in val:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if isinstance(val[None], dict) and ('year_value' in val[None]):
-                        prev_val = val[None]['year_value']
-                        val[None]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if isinstance(val[None], dict) and (PARAM.year_value in val[None]):
+                        prev_val = val[None][PARAM.year_value]
+                        val[None][PARAM.year_value] = new_val
                     else:
                         prev_val = val[None]
                         val[None] = new_val
                 else:
-                    # If the value is a dictionary, check if 'year_value' can be accessed.
-                    if 'year_value' in val:
-                        prev_val = data[param]['year_value']
-                        data[param]['year_value'] = new_val
+                    # If the value is a dictionary, check if `year_value` can be accessed.
+                    if PARAM.year_value in val:
+                        prev_val = data[param][PARAM.year_value]
+                        data[param][PARAM.year_value] = new_val
             else:
                 prev_val = data[param]
                 data[param] = new_val
@@ -692,9 +708,15 @@ def set_param(model, val, param, node, year=None, tech=None, context=None, sub_c
             # Append the change made to model.change_history DataFrame if save is set to True
             if save:
                 filename = model.model_description_file.split('/')[-1].split('.')[0]
-                change_log = {'base_model_description': [filename], 'parameter': [param], 'node': [node],
-                              'year': year, 'technology': [tech], 'context': [context], 'sub_context': [sub_context],
-                              'old_value': [prev_val], 'new_value': [new_val]}
+                change_log = {'base_model_description': [filename], 
+                              COL.parameter.lower(): [param], 
+                              COL.branch.lower(): [node],
+                              'year': year, 
+                              COL.technology.lower(): [tech], 
+                              COL.context.lower(): [context], 
+                              COL.sub_context.lower(): [sub_context],
+                              'old_value': [prev_val], 
+                              'new_value': [new_val]}
                 changes_to_concat = [model.change_history, pd.DataFrame(change_log)]
                 model.change_history = pd.concat([df for df in changes_to_concat if len(df) != 0], ignore_index=True)
 
@@ -749,17 +771,17 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     node : str
         The name of the node (branch notation) whose parameter you are interested in set.
     year : str or list, optional
-        The year(s) which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year(s) which you are setting a value for. `year` is not required
+        for parameters specified at the node level and which by definition
+        cannot change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model description
+        Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description
     save : bool, optional
         This specifies whether the change should be saved in the change_log csv where True means
         the change will be saved and False means it will not be saved
@@ -786,9 +808,9 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             The year which you are interested in. `year` must be provided for all parameters stored at
             the technology level, even if the parameter doesn't change year to year.
         context : str, optional
-                Used when there is context available in the node. Analogous to the 'context' column in the model description
+                Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         """
         # Set Parameter from Description
         # ******************************
@@ -847,14 +869,14 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
         tech : str
             The name of the technology you are interested in.
         context : str, optional
-                Used when there is context available in the node. Analogous to the 'context' column in the model description
+                Used when there is context available in the node. Analogous to the `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the `subcontext` column in the model description
         """
         # Set Parameter from Description
         # ******************************
         # If the parameter's value is in the model description for that node, year, & technology, use it
-        data = model.graph.nodes[node][year]['technologies'][tech]
+        data = model.graph.nodes[node][year][PARAM.technologies][tech]
         if param in data:
             val = data[param]
             # If the value is a dictionary, use its nested result
@@ -900,21 +922,21 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
     for i in range(len(year)):
         node_data = model.graph.nodes[node][year[i]]
         if tech:
-            if tech in node_data["technologies"]:
-                tech_data = model.graph.nodes[node][year[i]]["technologies"][tech]
+            if tech in node_data[PARAM.technologies]:
+                tech_data = model.graph.nodes[node][year[i]][PARAM.technologies][tech]
                 if param in tech_data:
                     set_tech_param(model, val[i], param, node, year[i], tech, context, sub_context)
                 else:
-                    value = val[i]['year_value']
-                    param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                    target = val[i]['target'] if 'target' in val[i] else None
+                    value = val[i][PARAM.year_value]
+                    param_source = val[i][PARAM.param_source] if PARAM.param_source in val[i] else None
+                    target = val[i][PARAM.target] if PARAM.target in val[i] else None
                     model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
                                        context=context, sub_context=sub_context, target=target,
                                        param_source=param_source)
             else:
-                value = val[i]['year_value']
-                param_source = val[i]['param_source'] if 'param_source' in val[i] else None
-                target = val[i]['target'] if 'target' in val[i] else None
+                value = val[i][PARAM.year_value]
+                param_source = val[i][PARAM.param_source] if PARAM.param_source in val[i] else None
+                target = val[i][PARAM.target] if PARAM.target in val[i] else None
                 model.create_param(val=value, param=param, node=node, year=year[i], tech=tech,
                                    context=context, sub_context=sub_context, target=target,
                                    param_source=param_source)
@@ -922,9 +944,9 @@ def set_param_internal(model, val, param, node, year=None, tech=None, context=No
             if param in node_data:
                 set_node_param(model, val[i], param, node, year[i], context, sub_context)
             else:
-                value = val[i]['year_value']
+                value = val[i][PARAM.year_value]
                 model.create_param(val=value, param=param, node=node, year=year[i],
-                                   context=context, sub_context=sub_context, param_source=val[i]['param_source'])
+                                   context=context, sub_context=sub_context, param_source=val[i][PARAM.param_source])
 
 
 def set_param_file(model, filepath):
@@ -962,8 +984,8 @@ def set_param_file(model, filepath):
         node_regex = row['node_regex'] if row['node_regex'] != "None" else None
         param = row['param'].lower() if row['param'] != 'None' else None
         tech = row['tech'] if row['tech'] != 'None' else None
-        context = row['context'] if row['context'] != 'None' else None
-        sub_context = row['sub_context'] if row['sub_context'] != 'None' else None
+        context = row[PARAM.context] if row[PARAM.context] != 'None' else None
+        sub_context = row[PARAM.sub_context] if row[PARAM.sub_context] != 'None' else None
         year_operator = row['year_operator'] if row['year_operator'] != 'None' else None
         year = row['year'] if row['year'] != 'None' else None
         val_operator = row['val_operator'] if row['val_operator'] != 'None' else None
@@ -1061,20 +1083,20 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
     node : str
         The name of the node (branch notation) whose parameter you are interested in matching.
     year : str, optional
-        The year which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year(s) which you are setting a value for. `year` is not required
+        for parameters specified at the node level and which by definition
+        cannot change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
         specified node, param, year, context, and sub_context.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model
+        Used when there is context available in the node. Analogous to the `context` column in the model
         description. If context is `.*`, all possible context keys will be searched at the specified node, param,
         year, sub_context, and tech.
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+        Must be used only if context is given. Analogous to the `subcontext` column in the model description.
         If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
         year, context, and tech.
     create_missing : bool, optional
@@ -1112,7 +1134,7 @@ def set_param_search(model, val, param, node, year=None, tech=None, context=None
     if tech == '.*':
         try:
             # search through all technologies in node
-            techs = list(model.graph.nodes[node][year]['technologies'].keys())
+            techs = list(model.graph.nodes[node][year][PARAM.technologies].keys())
         except:
             return
         for tech_tmp in techs:
@@ -1249,20 +1271,20 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     node : str
         The name of the node (branch format) whose parameter you are interested in matching.
     year : str, optional
-        The year which you are interested in. `year` is not required for parameters specified at
-        the node level and which by definition cannot change year to year. For example,
-        'competition type' can be retrieved without specifying a year.
+        The year which you are setting a value for. `year` is not required for
+        parameters specified at the node level and which by definition cannot
+        change year to year (e.g. competition type).
     tech : str, optional
         The name of the technology you are interested in. `tech` is not required for parameters
         that are specified at the node level. `tech` is required to get any parameter that is
         stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
         specified node, param, year, context, and sub_context.
     context : str, optional
-        Used when there is context available in the node. Analogous to the 'context' column in the model
+        Used when there is context available in the node. Analogous to the `context` column in the model
         description. If context is `.*`, all possible context keys will be searched at the specified node, param,
         year, sub_context, and tech.
     sub_context : str, optional
-        Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
+        Must be used only if context is given. Analogous to the `sub_context` column in the model description.
         If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
         year, context, and tech.
     row_index : int, optional
@@ -1294,7 +1316,7 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
     # *********
     if tech:
         # add technology if it does not exist
-        if tech not in data['technologies']:
+        if tech not in data[PARAM.technologies]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
@@ -1304,28 +1326,28 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
                 param_dict = {param: context_dict}
             else:
                 param_dict = {param: val_dict}
-            data['technologies'][tech] = param_dict
+            data[PARAM.technologies][tech] = param_dict
         # add param if it does not exist
-        elif param not in data['technologies'][tech]:
+        elif param not in data[PARAM.technologies][tech]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
                 context_dict = {context: sub_context_dict}
-                data['technologies'][tech][param] = context_dict
+                data[PARAM.technologies][tech][param] = context_dict
             elif context:
                 context_dict = {context: val_dict}
-                data['technologies'][tech][param] = context_dict
+                data[PARAM.technologies][tech][param] = context_dict
             else:
-                data['technologies'][tech][param] = val_dict
+                data[PARAM.technologies][tech][param] = val_dict
         # add context if it does not exist
-        elif context not in data['technologies'][tech][param]:
+        elif context not in data[PARAM.technologies][tech][param]:
             if sub_context:
                 sub_context_dict = {sub_context: val_dict}
-                data['technologies'][tech][param][context] = sub_context_dict
+                data[PARAM.technologies][tech][param][context] = sub_context_dict
             else:
-                data['technologies'][tech][param][context] = val_dict
+                data[PARAM.technologies][tech][param][context] = val_dict
         # add sub_context if it does not exist
-        elif sub_context not in data['technologies'][tech][param][context]:
-            data['technologies'][tech][param][context][sub_context] = val_dict
+        elif sub_context not in data[PARAM.technologies][tech][param][context]:
+            data[PARAM.technologies][tech][param][context][sub_context] = val_dict
 
     # *********
     # Check if param exists and create context (param, context, sub_context) accordingly
@@ -1358,4 +1380,3 @@ def create_param(model, val, param, node, year=None, tech=None, context=None, su
         data[param][context][sub_context] = val_dict
 
     return True
-

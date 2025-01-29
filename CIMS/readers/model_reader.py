@@ -3,13 +3,15 @@ import pandas as pd
 import polars as pl
 from pathlib import Path
 from .reader_utils import is_year, _bool_as_string, get_node_cols
-from ..utils import infer_type
+from ..old_utils import infer_type
 
-DEFAULT_VALUE_STRING = "Default value"
+from ..utils import model_columns as COL
+from ..utils import parameters as PARAM
+
 
 class ModelReader:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 default_values_csv_path=None, node_col="Branch", root_node="CIMS"):
+                 default_values_csv_path=None, node_col=COL.branch, root_node="CIMS"):
 
         if default_values_csv_path:
             self.default_values_csv = default_values_csv_path
@@ -29,7 +31,7 @@ class ModelReader:
         appended_data = []
         for csv_file in self.csv_files:
             try:
-                mixed_type_columns = ['Context']
+                mixed_type_columns = [COL.context]
 
                 sheet_df = pl.read_csv(
                     csv_file,
@@ -66,13 +68,13 @@ class ModelReader:
         if self.sector_list:
             if None not in self.sector_list:
                 self.sector_list.append(None)
-            self.model_df = self.model_df.apply(lambda row: row[self.model_df['Sector'].isin(self.sector_list)])
+            self.model_df = self.model_df.apply(lambda row: row[self.model_df[COL.sector].isin(self.sector_list)])
 
         # ------------------------
         # Extract Node DFs
         # ------------------------
-        self.model_df['Parameter'] = self.model_df['Parameter'].str.lower()
-        node_dfs = {n: gb for n, gb in self.model_df.groupby(by='Branch')}
+        self.model_df[COL.parameter] = self.model_df[COL.parameter].str.lower()
+        node_dfs = {n: gb for n, gb in self.model_df.groupby(by=COL.branch)}
 
         # ------------------------
         # Extract Tech DFs
@@ -80,14 +82,14 @@ class ModelReader:
         # Extract tech dfs from node dfs and rewrite node df without techs
         tech_dfs = {}
         for node_name, node_df in node_dfs.items():
-            if not all(node_df['Technology'].isnull()):
-                tech_dfs[node_name] = {t: gb for t, gb in node_df.groupby(by='Technology')}
-                node_dfs[node_name] = node_df[node_df['Technology'].isnull()]#.drop(columns='Technology')
+            if not all(node_df[COL.technology].isnull()):
+                tech_dfs[node_name] = {t: gb for t, gb in node_df.groupby(by=COL.technology)}
+                node_dfs[node_name] = node_df[node_df[COL.technology].isnull()]#.drop(columns=COL.technology)
 
                 # Remove region and sector columns from tech dfs
                 for t in tech_dfs[node_name]:
-                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=['Region'])
-                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=['Sector'])
+                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=[COL.region])
+                    tech_dfs[node_name][t] = tech_dfs[node_name][t].drop(columns=[COL.sector])
 
         if inplace:
             self.node_dfs = node_dfs
@@ -113,13 +115,13 @@ class ModelReader:
         df = df.dropna(axis=0, how="all")
 
         # Convert parameter strings to lower case
-        df['Parameter'] = df['Parameter'].str.lower()
+        df[COL.parameter] = df[COL.parameter].str.lower()
 
         # Default Parameters
-        df_has_defaults = df[~df[DEFAULT_VALUE_STRING].isna()]
+        df_has_defaults = df[~df[COL.default_value].isna()]
         node_tech_defaults = {}
-        for param, val in zip(df_has_defaults['Parameter'],
-                              df_has_defaults[DEFAULT_VALUE_STRING]):
+        for param, val in zip(df_has_defaults[COL.parameter],
+                              df_has_defaults[COL.default_value]):
             if val.lower() == 'none':
                 val = None
             node_tech_defaults[param] = infer_type(val)

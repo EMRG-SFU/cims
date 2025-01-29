@@ -4,7 +4,7 @@ surplus) and allocating new stock through a market share competition between tec
 """
 import math
 from ..quantities import ProvidedQuantity
-from CIMS import utils
+from CIMS import old_utils
 from CIMS.vintage_weighting import calculate_vintage_weighted_parameter
 from .retrofits import calc_retrofits
 from .macro_economics import calc_total_stock_demanded
@@ -13,20 +13,15 @@ from .market_share_limits import apply_min_max_limits, apply_min_max_class_limit
 import copy
 
 from ..node_utils import find_node_tech_compete_tech_child_node
-
-IS_SUPPLY_PARAM = 'is supply'
-TREE_IDX_PARAM = 'tree index'
-COMP_TYPE_PARAM = 'competition type'
-EMISSIONS_GWP_PARAM = 'emissions gwp'
-SERVICE_REQUEST_PARAM = 'service requested'
+from ..utils import parameters as PARAM
 
 #############################
 # Stock Allocation
 #############################
 def all_tech_compete_allocation(model, node, year):
     """
-    Performs stock retirement and allocation for "tech compete" and "node tech compete" nodes,
-    updating the model data to reflect the results.
+    Performs stock retirement and allocation for `tech compete` nodes, updating
+    the model data to reflect the results.
 
     Stock retirement and allocation performs (1) Vintage-based requirements, (2) Surplus stock
     retirement, (3) New stock competition between technologies, (4) Market share limit adjustments,
@@ -49,7 +44,7 @@ def all_tech_compete_allocation(model, node, year):
         Nothing is returned. `model` will be updated to reflect the results of stock retirement and
         new stock competitions.
     """
-    comp_type = model.get_param(COMP_TYPE_PARAM, node).lower()
+    comp_type = model.get_param(PARAM.competition_type, node).lower()
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
     assessed_demand = calc_total_stock_demanded(model, node, year)
@@ -97,7 +92,7 @@ def all_tech_compete_allocation(model, node, year):
 def general_allocation(model, node, year):
     """
     Performs stock retirement and allocation for non tech competition nodes. This includes
-    'fixed ratio', 'region', 'sector', 'supply - fixed price', and 'root' competition types.
+    `fixed ratio`, `region`, `sector`, `supply - fixed price`, and `root` competition types.
 
     No competition is required for any of these types. Instead, any demand is automatically filled
     according to exogenously defined paramters.
@@ -121,24 +116,24 @@ def general_allocation(model, node, year):
     node_year_data = model.graph.nodes[node][year]
 
     # Demand Assessment -- find amount demanded of the node by requesting nodes/techs
-    if model.get_param(COMP_TYPE_PARAM, node) == 'root' or model.get_param(COMP_TYPE_PARAM,
+    if model.get_param(PARAM.competition_type, node) == 'root' or model.get_param(PARAM.competition_type,
                                                                             node) == 'fixed amount':
         assessed_demand = 1
     else:
         assessed_demand = calc_total_stock_demanded(model, node, year)
 
     # Based on assessed demand, determine the amount this node requests from other services
-    if 'technologies' in node_year_data:
-        for tech, tech_data in node_year_data['technologies'].items():
-            if SERVICE_REQUEST_PARAM in tech_data.keys():
-                services_being_requested = tech_data[SERVICE_REQUEST_PARAM]
-                t_ms = tech_data['market share']['year_value']
+    if PARAM.technologies in node_year_data:
+        for tech, tech_data in node_year_data[PARAM.technologies].items():
+            if PARAM.service_requested in tech_data.keys():
+                services_being_requested = tech_data[PARAM.service_requested]
+                t_ms = tech_data[PARAM.market_share][PARAM.year_value]
                 _record_provided_quantities(model, node, year, services_being_requested,
                                             assessed_demand, tech=tech, market_share=t_ms)
 
-    elif SERVICE_REQUEST_PARAM in node_year_data:
+    elif PARAM.service_requested in node_year_data:
         # Calculate the provided_quantities being requested for each of the services
-        services_being_requested = node_year_data[SERVICE_REQUEST_PARAM]
+        services_being_requested = node_year_data[PARAM.service_requested]
         _record_provided_quantities(model, node, year, services_being_requested, assessed_demand)
 
 
@@ -170,7 +165,7 @@ def _get_existing_stock(model, node, year, comp_type):
         A dictionary mapping competing technologies to the amount of their stock remaining at node
         in the given year.
 
-        The dictionary will follow the structure of `{("parent_node", "tech"): float}`, where each
+        The dictionary will follow the structure of `{(parent_node, tech): float}`, where each
         (parent_node, tech) tuple corresponds to a competing technology. For a 'tech compete',
         parent_node will be the same for each tech while for 'node tech compete', parent_node will
         correspond to the parent service of the competing technology.
@@ -179,20 +174,20 @@ def _get_existing_stock(model, node, year, comp_type):
     existing_stock = {}
 
     if comp_type == 'tech compete':
-        for tech in node_year_data['technologies']:
+        for tech in node_year_data[PARAM.technologies]:
             t_existing = _do_natural_retirement(model, node, year, tech, comp_type)
             existing_stock[(node, tech)] = t_existing
 
     elif comp_type == 'node tech compete':
-        for child in node_year_data['technologies']:
-            node_year_data['technologies'][child].pop("base_stock_remaining", None)
-            node_year_data['technologies'][child].pop("new_stock_remaining", None)
-            node_year_data['technologies'][child].pop("new_stock_remaining_pre_surplus", None)
+        for child in node_year_data[PARAM.technologies]:
+            node_year_data[PARAM.technologies][child].pop(PARAM.base_stock_remaining, None)
+            node_year_data[PARAM.technologies][child].pop(PARAM.new_stock_remaining, None)
+            node_year_data[PARAM.technologies][child].pop(PARAM.new_stock_remaining_pre_surplus, None)
 
             child_node = find_node_tech_compete_tech_child_node(model, node, year, tech=child)
              
             child_year_data = model.graph.nodes[child_node][year]
-            for tech in child_year_data['technologies']:
+            for tech in child_year_data[PARAM.technologies]:
                 t_existing = _do_natural_retirement(model, child_node, year, tech, comp_type)
                 existing_stock[(child_node, tech)] = t_existing
 
@@ -250,8 +245,8 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
         The amount of base stock adopted in initial_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('lifetime', node, initial_year, tech=tech)
-    base_stock = model.get_param('base_stock', node, initial_year, tech=tech)
+    lifetime = model.get_param(PARAM.lifetime, node, initial_year, tech=tech)
+    base_stock = model.get_param(PARAM.base_stock, node, initial_year, tech=tech)
 
     # Calculate amount of remaining base stock after natural retirements
     remaining_rate = 1 - (int(current_year) - int(initial_year)) / lifetime
@@ -260,10 +255,10 @@ def _base_stock_retirement(model, node, tech, initial_year, current_year):
     # Retrieve amount of base stock in the previous year, after surplus retirement
     prev_year = str(int(current_year) - model.step)
     if int(prev_year) == int(initial_year):
-        prev_year_unretired_base_stock = model.get_param('base_stock', node,
+        prev_year_unretired_base_stock = model.get_param(PARAM.base_stock, node,
                                                          year=prev_year, tech=tech)
     else:
-        prev_year_unretired_base_stock = model.get_param('base_stock_remaining', node,
+        prev_year_unretired_base_stock = model.get_param(PARAM.base_stock_remaining, node,
                                                          year=prev_year, tech=tech)
 
     base_stock_remaining = max(min(naturally_unretired_base_stock,
@@ -299,9 +294,9 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
         The amount of new stock adopted in purchased_year which remains in current_year, after
         natural retirements are performed.
     """
-    lifetime = model.get_param('lifetime', node, purchased_year, tech=tech)
-    purchased_stock = model.get_param('new_stock', node,purchased_year, tech=tech)
-    purchased_stock += model.get_param('added_retrofit_stock', node, purchased_year, tech=tech)
+    lifetime = model.get_param(PARAM.lifetime, node, purchased_year, tech=tech)
+    purchased_stock = model.get_param(PARAM.new_stock, node,purchased_year, tech=tech)
+    purchased_stock += model.get_param(PARAM.added_retrofit_stock, node, purchased_year, tech=tech)
     prev_year = str(int(current_year) - model.step)
 
     # Calculate the remaining purchased stock with only natural retirements
@@ -312,7 +307,7 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
     adj_multiplier = 1
 
     if int(prev_year) > int(purchased_year):
-        prev_y_unretired_new_stock = model.get_param('new_stock_remaining', node,
+        prev_y_unretired_new_stock = model.get_param(PARAM.new_stock_remaining, node,
                                                      year=prev_year, tech=tech, dict_expected=True)[purchased_year]
 
         if prev_y_fictional_purchased_stock_remain > 0:
@@ -320,10 +315,10 @@ def _purchased_stock_retirement(model, node, tech, purchased_year, current_year,
                              prev_y_fictional_purchased_stock_remain
 
     # Update the tech data
-    tech_data = model.graph.nodes[node][current_year]['technologies'][tech]
-    if 'adjustment_multiplier' not in tech_data:
-        tech_data['adjustment_multiplier'] = {}
-    tech_data['adjustment_multiplier'][purchased_year] = adj_multiplier
+    tech_data = model.graph.nodes[node][current_year][PARAM.technologies][tech]
+    if PARAM.adjustment_multiplier not in tech_data:
+        tech_data[PARAM.adjustment_multiplier] = {}
+    tech_data[PARAM.adjustment_multiplier][purchased_year] = adj_multiplier
 
     # Calculate the remaining purchased stock
     exponent = intercept * (1 - (int(current_year) - int(purchased_year)) / lifetime)
@@ -371,52 +366,52 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
             existing_stock += remain_base_stock_vintage_y
 
             # New Stock (Including Previous Years' Retrofitted Stock)
-            retirement_intercept = model.get_param('retirement intercept', node, year)
+            retirement_intercept = model.get_param(PARAM.retirement_intercept, node, year)
             remain_new_stock = _purchased_stock_retirement(model, node, tech, earlier_year, year,
                                                            intercept=retirement_intercept)
             remaining_new_stock_pre_surplus[earlier_year] = remain_new_stock
             existing_stock += remain_new_stock
 
         # Save to Graph
-        model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'] = \
-            utils.create_value_dict(remaining_base_stock, param_source='calculation')
-        model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'] = \
-            utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
-        # Note: retired stock will be removed later from ['new_stock_remaining']
-        model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'] = \
-            utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
+        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.base_stock_remaining] = \
+            old_utils.create_value_dict(remaining_base_stock, param_source='calculation')
+        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining_pre_surplus] = \
+            old_utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+        # Note: retired stock will be removed later from [PARAM.new_stock_remaining]
+        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining] = \
+            old_utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
         if competition_type == 'node tech compete':
             # Add stock data @ parent for "node tech compete" nodes
             parent = '.'.join(node.split('.')[:-1])
             tech_child = node.split('.')[-1]
 
-            tech_child_keys = model.graph.nodes[parent][year]['technologies'][tech_child].keys()
-            if 'base_stock_remaining' in tech_child_keys:
-                model.graph.nodes[parent][year]['technologies'][tech_child]['base_stock_remaining'][
-                    'year_value'] += remaining_base_stock
+            tech_child_keys = model.graph.nodes[parent][year][PARAM.technologies][tech_child].keys()
+            if PARAM.base_stock_remaining in tech_child_keys:
+                model.graph.nodes[parent][year][PARAM.technologies][tech_child][PARAM.base_stock_remaining][
+                    PARAM.year_value] += remaining_base_stock
             else:
-                model.graph.nodes[parent][year]['technologies'][tech_child][
-                    'base_stock_remaining'] = utils.create_value_dict(remaining_base_stock,
+                model.graph.nodes[parent][year][PARAM.technologies][tech_child][
+                    PARAM.base_stock_remaining] = old_utils.create_value_dict(remaining_base_stock,
                                                                       param_source='calculation')
 
-            if 'new_stock_remaining_pre_surplus' in tech_child_keys:
+            if PARAM.new_stock_remaining_pre_surplus in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][tech_child][
-                        'new_stock_remaining_pre_surplus']['year_value'][vintage_year] += \
+                    model.graph.nodes[parent][year][PARAM.technologies][tech_child][
+                        PARAM.new_stock_remaining_pre_surplus][PARAM.year_value][vintage_year] += \
                         remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][tech_child][
-                    'new_stock_remaining_pre_surplus'] = utils.create_value_dict(
+                model.graph.nodes[parent][year][PARAM.technologies][tech_child][
+                    PARAM.new_stock_remaining_pre_surplus] = old_utils.create_value_dict(
                     copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
-            if 'new_stock_remaining' in tech_child_keys:
+            if PARAM.new_stock_remaining in tech_child_keys:
                 for vintage_year in remaining_new_stock_pre_surplus:
-                    model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'][
-                        'year_value'][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
+                    model.graph.nodes[parent][year][PARAM.technologies][tech_child][PARAM.new_stock_remaining][
+                        PARAM.year_value][vintage_year] += remaining_new_stock_pre_surplus[vintage_year]
             else:
-                model.graph.nodes[parent][year]['technologies'][tech_child]['new_stock_remaining'] = \
-                    utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus),
+                model.graph.nodes[parent][year][PARAM.technologies][tech_child][PARAM.new_stock_remaining] = \
+                    old_utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus),
                                             param_source='calculation')
 
     return existing_stock
@@ -475,12 +470,12 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
     total_base_stock = 0
     amount_surplus_to_retire = 0
     for node_branch, tech in existing_stock:
-        tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech=tech)
+        tech_base_stock = model.get_param(PARAM.base_stock_remaining, node_branch, year, tech=tech)
         total_base_stock += tech_base_stock
     if total_base_stock != 0:
         retirement_proportion = _calc_surplus_retirement_proportion(surplus, total_base_stock)
         for node_branch, tech in existing_stock:
-            tech_base_stock = model.get_param('base_stock_remaining', node_branch, year, tech=tech)
+            tech_base_stock = model.get_param(PARAM.base_stock_remaining, node_branch, year, tech=tech)
             amount_tech_to_retire = tech_base_stock * retirement_proportion
 
             # Remove from existing stock
@@ -490,18 +485,18 @@ def _retire_surplus_base_stock(model, node, year, existing_stock, surplus):
             amount_surplus_to_retire += amount_tech_to_retire
 
             # Note early retirement in the model
-            model.graph.nodes[node_branch][year]['technologies'][tech]['base_stock_remaining'][
-                'year_value'] -= amount_tech_to_retire
+            model.graph.nodes[node_branch][year][PARAM.technologies][tech][PARAM.base_stock_remaining][
+                PARAM.year_value] -= amount_tech_to_retire
 
         # Note early retirement for node-tech compete
-        comp_type = model.get_param(COMP_TYPE_PARAM, node)
+        comp_type = model.get_param(PARAM.competition_type, node)
         if comp_type == 'node tech compete':
             ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
             for tech_child in ntc_tech_children:
-                child_base_stock = model.get_param('base_stock_remaining', node, year, tech=tech_child)
+                child_base_stock = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech_child)
                 amount_child_to_retire = retirement_proportion * child_base_stock
-                model.graph.nodes[node][year]['technologies'][tech_child]['base_stock_remaining'][
-                    'year_value'] -= amount_child_to_retire
+                model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.base_stock_remaining][
+                    PARAM.year_value] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
 
@@ -540,7 +535,7 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
         if surplus > 0:
             for node_branch, tech in existing_stock:
                 tech_rem_new_stock_pre_surplus = \
-                    model.get_param('new_stock_remaining_pre_surplus',
+                    model.get_param(PARAM.new_stock_remaining_pre_surplus,
                                     node_branch,
                                     year=year,
                                     tech=tech,
@@ -551,7 +546,7 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
                                                                     total_new_stock_pre_surplus)
 
         for node_branch, tech in existing_stock:
-            t_rem_new_stock_pre_surplus = model.get_param('new_stock_remaining_pre_surplus',
+            t_rem_new_stock_pre_surplus = model.get_param(PARAM.new_stock_remaining_pre_surplus,
                                                           node_branch,
                                                           year=year,
                                                           tech=tech,
@@ -566,18 +561,18 @@ def _retire_surplus_new_stock(model, node, year, existing_stock, surplus):
             amount_surplus_to_retire += amount_tech_to_retire
 
             # Note new stock remaining (post surplus) in the model
-            model.graph.nodes[node_branch][year]['technologies'][tech]['new_stock_remaining'][
-                'year_value'][purchase_year] -= amount_tech_to_retire
+            model.graph.nodes[node_branch][year][PARAM.technologies][tech][PARAM.new_stock_remaining][
+                PARAM.year_value][purchase_year] -= amount_tech_to_retire
 
         # Note new stock remaining for node-tech compete
-        comp_type = model.get_param(COMP_TYPE_PARAM, node)
+        comp_type = model.get_param(PARAM.competition_type, node)
         if comp_type == 'node tech compete':
             ntc_tech_children = {e[0].split('.')[-1] for e in existing_stock}
             for tech_child in ntc_tech_children:
-                child_new_stock_remaining = model.get_param('new_stock_remaining_pre_surplus', node, year, tech=tech_child, dict_expected=True)[purchase_year]
+                child_new_stock_remaining = model.get_param(PARAM.new_stock_remaining_pre_surplus, node, year, tech=tech_child, dict_expected=True)[purchase_year]
                 amount_child_to_retire = retirement_proportion * child_new_stock_remaining
-                model.graph.nodes[node][year]['technologies'][tech_child]['new_stock_remaining'][
-                    'year_value'][purchase_year] -= amount_child_to_retire
+                model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.new_stock_remaining][
+                    PARAM.year_value][purchase_year] -= amount_child_to_retire
 
     return amount_surplus_to_retire, existing_stock
 
@@ -683,8 +678,8 @@ def _find_exogenous_market_shares(model, node, year):
     """
     node_year_data = model.graph.nodes[node][year]
     exo_market_shares = {}
-    for tech in node_year_data['technologies']:
-        market_share, ms_source = model.get_param('market share', node, year, tech=tech,
+    for tech in node_year_data[PARAM.technologies]:
+        market_share, ms_source = model.get_param(PARAM.market_share, node, year, tech=tech,
                                                   return_source=True)
         if ms_source == 'model':  # model --> exogenous
             exo_market_shares[tech] = market_share
@@ -716,7 +711,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
         techs @ services for Node Tech Compete), new market shares are agregated to the tech/service
         specified at `node` before being returned as a dictionary.
     """
-    heterogeneity = model.get_param('heterogeneity', node, year)
+    heterogeneity = model.get_param(PARAM.heterogeneity, node, year)
 
     # Find each of the technologies which will be competed for
     competing_techs = _find_competing_techs(model, node, comp_type)
@@ -727,7 +722,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
 
     # Find the new market shares for each tech
     new_market_shares = _find_exogenous_market_shares(model, node, year)
-    for tech_child in model.graph.nodes[node][year]['technologies']:
+    for tech_child in model.graph.nodes[node][year][PARAM.technologies]:
         if tech_child not in new_market_shares:
             new_market_shares[tech_child] = 0
 
@@ -747,12 +742,12 @@ def _calculate_new_market_shares(model, node, year, comp_type):
                         new_market_share = child_new_market_shares[tech]
                     new_market_shares[tech_child] += new_market_share
         # Initialize stocks in the Model
-        model.graph.nodes[node][year]['technologies'][tech_child]['base_stock'] = \
-            utils.create_value_dict(0, param_source='initialization')
-        model.graph.nodes[node][year]['technologies'][tech_child]['new_stock'] = \
-            utils.create_value_dict(0, param_source='initialization')
-        model.graph.nodes[node][year]['technologies'][tech_child]['added_retrofit_stock'] = \
-            utils.create_value_dict(0, param_source='initialization')
+        model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.base_stock] = \
+            old_utils.create_value_dict(0, param_source='initialization')
+        model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.new_stock] = \
+            old_utils.create_value_dict(0, param_source='initialization')
+        model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.added_retrofit_stock] = \
+            old_utils.create_value_dict(0, param_source='initialization')
 
     return new_market_shares
 
@@ -855,16 +850,16 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
 
     for target in requested_services:
         vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
-            SERVICE_REQUEST_PARAM, model, node, year, tech=tech, context=target)
+            PARAM.service_requested, model, node, year, tech=tech, context=target)
         quant_requested = market_share * vintage_weighted_service_request_ratio * assessed_demand
         year_node = model.graph.nodes[target][year]
-        if 'provided_quantities' not in year_node.keys():
-            year_node['provided_quantities'] = \
-                utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
-        year_node['provided_quantities']['year_value'].provide_quantity(amount=quant_requested,
+        if PARAM.provided_quantities not in year_node.keys():
+            year_node[PARAM.provided_quantities] = \
+                old_utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
+        year_node[PARAM.provided_quantities][PARAM.year_value].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
-        year_node['provided_quantities']['param_source'] = 'calculation'
+        year_node[PARAM.provided_quantities][PARAM.param_source] = 'calculation'
 
 
 def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_shares,
@@ -897,46 +892,46 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
     """
     for tech in adjusted_new_ms:
         # New Market Shares
-        new_ms_dict = utils.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
-        model.set_param_internal(new_ms_dict, 'new_market_share', node, year, tech)
+        new_ms_dict = old_utils.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
+        model.set_param_internal(new_ms_dict, PARAM.new_market_share, node, year, tech)
 
         # Base Stock
         if int(year) == model.base_year:
-            base_stock_dict = utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+            base_stock_dict = old_utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
                                                       param_source='calculation')
-            model.set_param_internal(base_stock_dict, 'base_stock', node, year, tech)
+            model.set_param_internal(base_stock_dict, PARAM.base_stock, node, year, tech)
 
         # New Stock
         else:
-            new_stock_dict = utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+            new_stock_dict = old_utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
                                                      param_source='calculation')
-            model.set_param_internal(new_stock_dict, 'new_stock', node, year, tech)
+            model.set_param_internal(new_stock_dict, PARAM.new_stock, node, year, tech)
 
     for tech in total_market_shares:
         # Record Total Market Shares
-        total_ms_dict = utils.create_value_dict(total_market_shares[tech],
+        total_ms_dict = old_utils.create_value_dict(total_market_shares[tech],
                                                 param_source='calculation')
-        model.set_param_internal(total_ms_dict, 'total_market_share', node, year, tech)
+        model.set_param_internal(total_ms_dict, PARAM.total_market_share, node, year, tech)
 
         # Total Stock
-        total_stock_dict = utils.create_value_dict(assessed_demand * total_market_shares[tech],
+        total_stock_dict = old_utils.create_value_dict(assessed_demand * total_market_shares[tech],
                                                   param_source='calculation')
-        model.set_param_internal(total_stock_dict, 'total_stock', node, year, tech)
+        model.set_param_internal(total_stock_dict, PARAM.total_stock, node, year, tech)
 
     # Retrofit Stock
-    comp_type = model.get_param(COMP_TYPE_PARAM, node)
+    comp_type = model.get_param(PARAM.competition_type, node)
 
     for n, t in added_retrofit_stocks:
         # Added retrofit stock
-        added_retrofit_stock_dict = utils.create_value_dict(added_retrofit_stocks[(n, t)],
+        added_retrofit_stock_dict = old_utils.create_value_dict(added_retrofit_stocks[(n, t)],
                                                       param_source='calculation')
-        model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', n, year, t)
+        model.set_param_internal(added_retrofit_stock_dict, PARAM.added_retrofit_stock, n, year, t)
 
     for n, t in retrofit_stocks:
         # Net retrofit stock
-        retrofit_stock_dict = utils.create_value_dict(retrofit_stocks[(n, t)],
+        retrofit_stock_dict = old_utils.create_value_dict(retrofit_stocks[(n, t)],
                                                             param_source='calculation')
-        model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', n, year, t)
+        model.set_param_internal(retrofit_stock_dict, PARAM.retrofit_stock, n, year, t)
 
     if comp_type == 'node tech compete':
         # We need to also store summary retrofit information at the Node Tech Compete parent node
@@ -949,10 +944,10 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
         # Save the info to the model
         for child_node in summary_added_retrofit_stocks:
-            added_retrofit_stock_dict = utils.create_value_dict(
+            added_retrofit_stock_dict = old_utils.create_value_dict(
                 summary_added_retrofit_stocks[child_node],
                 param_source='calculation')
-            model.set_param_internal(added_retrofit_stock_dict, 'added_retrofit_stock', node, year, child_node)
+            model.set_param_internal(added_retrofit_stock_dict, PARAM.added_retrofit_stock, node, year, child_node)
 
         # Create Summary Retrofit dictionary
         summary_retrofit_stocks = {}
@@ -963,14 +958,14 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
         # Save the info to the model
         for child_node in summary_retrofit_stocks:
-            retrofit_stock_dict = utils.create_value_dict(summary_retrofit_stocks[child_node],
+            retrofit_stock_dict = old_utils.create_value_dict(summary_retrofit_stocks[child_node],
                                                           param_source='calculation')
-            model.set_param_internal(retrofit_stock_dict, 'retrofit_stock', node, year, child_node)
+            model.set_param_internal(retrofit_stock_dict, PARAM.retrofit_stock, node, year, child_node)
 
     # Send Demand Below
-    for tech, tech_data in model.graph.nodes[node][year]['technologies'].items():
-        if SERVICE_REQUEST_PARAM in tech_data.keys():
-            services_being_requested = tech_data[SERVICE_REQUEST_PARAM]
+    for tech, tech_data in model.graph.nodes[node][year][PARAM.technologies].items():
+        if PARAM.service_requested in tech_data.keys():
+            services_being_requested = tech_data[PARAM.service_requested]
             # Calculate the provided_quantities being for each of the services
             t_ms = total_market_shares[tech]
             _record_provided_quantities(model, node, year, services_being_requested,

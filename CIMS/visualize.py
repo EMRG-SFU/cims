@@ -2,6 +2,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
+from .utils import parameters as PARAM
+
 def visualize_prices_change_over_time(model, out_file, show=False):
     """Creates a visualization of supply prices over time as a multi-line
     graph.
@@ -131,7 +133,7 @@ def get_supply_prices(model, out_file=None):
         for supply_node in model.supply_nodes:
             supply_prices["supply_type"].append(supply_node)
             supply_prices["year"].append(year)
-            supply_prices["price"].append(model.get_param('price', supply_node, year))
+            supply_prices["price"].append(model.get_param(PARAM.price, supply_node, year))
     supply_prices = pd.DataFrame(supply_prices)
 
     if out_file is not None:

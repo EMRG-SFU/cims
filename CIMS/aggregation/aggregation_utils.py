@@ -1,5 +1,5 @@
-from ..utils import create_value_dict
-
+from ..old_utils import create_value_dict
+from ..utils import parameters as PARAM
 
 def find_req_prov_children(graph, node, year, tech=None):
     """
@@ -7,13 +7,13 @@ def find_req_prov_children(graph, node, year, tech=None):
     req_prov_children = []
 
     if tech:
-        if 'service requested' in graph.nodes[node][year]['technologies'][tech]:
-            targets = graph.nodes[node][year]['technologies'][tech]['service requested']
+        if PARAM.service_requested in graph.nodes[node][year][PARAM.technologies][tech]:
+            targets = graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
             req_prov_children = [t for t in targets]
     else:
         node_children = graph.successors(node)
         req_prov_children = [c for c in node_children
-                             if 'request_provide' in graph.get_edge_data(node, c)['type']]
+                             if 'request_provide' in graph.get_edge_data(node, c)[PARAM.edge_type]]
 
     return req_prov_children
 
@@ -24,7 +24,7 @@ def find_structural_children(graph, node):
     """
     children = graph.successors(node)
     structural_children = [c for c in children
-                           if 'structural' in graph.get_edge_data(node, c)['type']]
+                           if 'structural' in graph.get_edge_data(node, c)[PARAM.edge_type]]
     return structural_children
 
 
@@ -34,7 +34,7 @@ def find_aggregation_children(graph, node):
     """
     children = graph.successors(node)
     agg_children = [c for c in children
-                    if 'aggregation' in graph.get_edge_data(node, c)['type']]
+                    if 'aggregation' in graph.get_edge_data(node, c)[PARAM.edge_type]]
 
     return agg_children
 
@@ -72,7 +72,7 @@ def _add_children_for_aggregation(children, parent_node, parent_tech, aggregatio
 def find_children_for_aggregation(model, node, year, include_self=False):
     children_for_aggregation = []
 
-    competition_type = model.get_param('competition type', node)
+    competition_type = model.get_param(PARAM.competition_type, node)
 
     ###
     if competition_type in ['root', 'region']:
@@ -92,8 +92,8 @@ def find_children_for_aggregation(model, node, year, include_self=False):
 
         children_for_aggregation += temp_children.values()
 
-    elif 'technologies' in model.graph.nodes[node][year]:
-        for tech in model.graph.nodes[node][year]['technologies']:
+    elif PARAM.technologies in model.graph.nodes[node][year]:
+        for tech in model.graph.nodes[node][year][PARAM.technologies]:
             temp_children = {}
 
             req_prov_children = find_children(model.graph, node, year, tech, request_provide=True)
@@ -124,8 +124,8 @@ def find_children_for_aggregation(model, node, year, include_self=False):
         children_for_aggregation += temp_children.values()
 
     if include_self:
-        if 'technologies' in model.graph.nodes[node][year]:
-            for tech in model.graph.nodes[node][year]['technologies']:
+        if PARAM.technologies in model.graph.nodes[node][year]:
+            for tech in model.graph.nodes[node][year][PARAM.technologies]:
                 children_for_aggregation += _add_children_for_aggregation(
                     [None], parent_node=node, parent_tech=tech,
                     aggregation_type='self').values()
@@ -145,5 +145,5 @@ def record_aggregate_values(model, node, year, aggregate_values, rate_param, bas
         if tech is None:
             model.graph.nodes[node][year][rate_param] = create_value_dict(aggregate_val)
         else:
-            model.graph.nodes[node][year]['technologies'][tech][rate_param] = (
+            model.graph.nodes[node][year][PARAM.technologies][tech][rate_param] = (
                 create_value_dict(aggregate_val))
