@@ -65,7 +65,26 @@ class Model:
 
     """
 
-    def __init__(self, model_reader):
+    def __init__(self,
+                 csv_init_file_paths,
+                 csv_update_file_paths,
+                 col_list,
+                 year_list,
+                 sector_list,
+                 default_values_csv_path
+                 ):
+
+        self.graph = nx.DiGraph()
+
+        self._model_reader = CIMS.ModelReader(csv_file_paths = csv_init_file_paths,
+                                              col_list = col_list,
+                                              year_list = year_list,
+                                              sector_list = sector_list,
+                                              default_values_csv_path = default_values_csv_path)
+        self.root = self._model_reader.root
+        self.node_dfs, self.tech_dfs = self._model_reader.get_model_description()
+
+    def __oldinit__(self, model_reader):
         self.graph = nx.DiGraph()
         self.root = model_reader.root
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
@@ -292,6 +311,7 @@ class Model:
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
 
+        print("This is the refactor branch")
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
 
