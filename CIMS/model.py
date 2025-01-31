@@ -76,13 +76,81 @@ class Model:
 
         self.graph = nx.DiGraph()
 
-        self._model_reader = CIMS.ModelReader(csv_file_paths = csv_init_file_paths,
-                                              col_list = col_list,
-                                              year_list = year_list,
-                                              sector_list = sector_list,
-                                              default_values_csv_path = default_values_csv_path)
+        self._model_reader = CIMS.ModelReader(
+                csv_file_paths = csv_init_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list,
+                default_values_csv_path = default_values_csv_path)
+
+        self._scenario_reader = CIMS.ScenarioReader(
+                csv_file_paths = csv_update_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list)
+
         self.root = self._model_reader.root
         self.node_dfs, self.tech_dfs = self._model_reader.get_model_description()
+        self.scenario_node_dfs, self.scenario_tech_dfs = self._scenario_reader.get_model_description()
+        self.node_tech_defaults = self._model_reader.get_default_params()
+        self.step = 5 # ::TODO:: Make this an input or calculate
+        self.supply_nodes = []
+        self.GHGs = []
+        self.emission_types = []
+        self.gwp = {}
+        self.years = self._model_reader.get_years()
+        self.base_year = int(self.years[0])
+        self.prices = {}
+        self.equilibrium_count = 0
+
+        ## GRAPH BUILDING HERE
+        self.build_graph()
+
+
+        self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+        self._inherit_parameter_values()
+        self._initialize_tax()
+
+        self.show_run_warnings = True
+        self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
+        self.scenario_model_description_file = self._scenario_model_reader.csv_files
+
+        self.change_history = pd.DataFrame(
+            columns=['base_model_description', 
+                     COL.parameter.lower(), 
+                     'node', 
+                     'year', 
+                     COL.technology.lower(),
+                     COL.context.lower(),
+                     COL.sub_context.lower(),
+                     'old_value', 
+                     'new_value'])
+
+        self.status = 'instantiated'
+
+        # ::TODO:: Now do the stuff that happens otherwise in the `update` method.
+
+        if not isinstance(self._scenario_reader, ScenarioReader):
+            raise ValueError("You are attempting to update a model with \
+                    something other than a ScenarioReader object.")
+
+        # ::TODO:: What does this do??
+        self.graph.max_tree_index[0] = 0
+        graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        graph = node_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        # ::TODO:: What does this do??
+        self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
+
+        self.graph = graph
+        self.supply_nodes = graph_utils.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = graph_utils.git_ghg_and_emissions(graph, str(self.base_year))
+        self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+        self._inherit_parameter_values()
+        self._initialize_tax()
+        self.show_run_warnings = True
+
 
     def __oldinit__(self, model_reader):
         self.graph = nx.DiGraph()
