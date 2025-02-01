@@ -19,6 +19,7 @@ from . import visualize
 from . import node_utils
 
 from .readers.scenario_reader import ScenarioReader
+from .readers.model_reader import ModelReader
 from .aggregation import quantity_aggregation as qa
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
@@ -76,14 +77,14 @@ class Model:
 
         self.graph = nx.DiGraph()
 
-        self._model_reader = CIMS.ModelReader(
+        self._model_reader = ModelReader(
                 csv_file_paths = csv_init_file_paths,
                 col_list = col_list,
                 year_list = year_list,
                 sector_list = sector_list,
                 default_values_csv_path = default_values_csv_path)
 
-        self._scenario_reader = CIMS.ScenarioReader(
+        self._scenario_reader = ScenarioReader(
                 csv_file_paths = csv_update_file_paths,
                 col_list = col_list,
                 year_list = year_list,
@@ -114,7 +115,7 @@ class Model:
 
         self.show_run_warnings = True
         self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
-        self.scenario_model_description_file = self._scenario_model_reader.csv_files
+        self.scenario_model_description_file = self._scenario_reader.csv_files
 
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 
@@ -138,13 +139,13 @@ class Model:
         # ::TODO:: What does this do??
         self.graph.max_tree_index[0] = 0
         graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        graph = node_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        graph = graph_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
         # ::TODO:: What does this do??
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
 
         self.graph = graph
         self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.git_ghg_and_emissions(graph, str(self.base_year))
+        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph, str(self.base_year))
         self.dcc_classes = self._dcc_classes()
         self.dic_classes = self._dic_classes()
         self._inherit_parameter_values()
