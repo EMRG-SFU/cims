@@ -321,7 +321,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     elif old_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
             src == 'calculation') and (pq.get_total_quantity() <= 0):
         agg_emissions_cost = EmissionsCost()
-    elif model.get_param(PARAM.competition_type, node) in ['tech compete', 'node tech compete']:
+    elif model.get_param(PARAM.competition_type, node) in ['tech compete']:
         # (2) At a node with techs -- Weighted emissions cost from techs
         agg_emissions_cost = EmissionsCost()
         # Weighted emissions cost from techs

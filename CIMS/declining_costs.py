@@ -226,14 +226,4 @@ def _find_dic_competing_techs(model, node):
         for tech in model.graph.nodes[node][base_year][PARAM.technologies]:
             competing_technologies.append((node, tech))
 
-    # Find any technologies from Node-Tech-Compete siblings
-    parents = [u for u, v in model.graph.in_edges(node)]
-    for parent in parents:
-        if model.get_param(PARAM.competition_type, parent) == 'node tech compete':
-            for sibling_tech in model.graph.nodes[parent][base_year][PARAM.technologies]:
-                sibling_nodes = model.get_param(PARAM.service_requested, parent, base_year, tech=sibling_tech)
-                for sibling_node in sibling_nodes:
-                    for tech in model.graph.nodes[sibling_node][base_year][PARAM.technologies]:
-                        competing_technologies.append((sibling_node, tech))
-
     return set(competing_technologies)
