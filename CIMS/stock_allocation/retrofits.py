@@ -167,7 +167,7 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     return retrofit_market_shares
 
 
-def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_at_parent=True):
+def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
     """
     Update the amount of base stock and new stock remaining in the model based on how much stock
     is retrofitted. The amount of retrofitted stock is first subtracted from base_stock_remaining.
@@ -201,11 +201,6 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_a
     retrofit_amount -= base_stock_retrofitted
     model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.base_stock_remaining][
         PARAM.year_value] -= base_stock_retrofitted
-    if record_at_parent:
-        parent_node = '.'.join(node.split('.')[:-1])
-        parent_tech = node.split('.')[-1]
-        model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][PARAM.base_stock_remaining][
-            PARAM.year_value] -= base_stock_retrofitted
 
     # New Stock
     if retrofit_amount > 0:
@@ -220,13 +215,6 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_a
             model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining_pre_surplus][
                 PARAM.year_value][prev_year] -= y_ns_retrofitted
 
-            if record_at_parent:
-                parent_node = '.'.join(node.split('.')[:-1])
-                parent_tech = node.split('.')[-1]
-                model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][
-                    PARAM.new_stock_remaining][PARAM.year_value][prev_year] -= y_ns_retrofitted
-                model.graph.nodes[parent_node][year][PARAM.technologies][parent_tech][
-                    PARAM.new_stock_remaining_pre_surplus][PARAM.year_value][prev_year] -= y_ns_retrofitted
 
 
 def calc_retrofits(model, node, year, existing_stock):
@@ -262,10 +250,6 @@ def calc_retrofits(model, node, year, existing_stock):
     added_retrofit_stocks = {}
     retrofit_stocks = {}
 
-    # If node part of a node tech competition (i.e. parent is node tech compete), skip retrofitting
-    if part_of_node_tech_competition(model, node):
-        return existing_stock, added_retrofit_stocks, retrofit_stocks
-
     # Otherwise, we continue to do retrofits across all technologies
     for existing_node_tech in existing_stock.keys():
 
@@ -285,7 +269,7 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # Find Market shares based off of weights
         retrofit_market_shares = {}
-        if comp_type in ['tech compete', 'node tech compete']:
+        if comp_type in ['tech compete']:
             for tech in competing_weights:
                 retrofit_market_shares[tech] = competing_weights[tech] / total_weight
 
@@ -310,8 +294,7 @@ def calc_retrofits(model, node, year, existing_stock):
                 retrofit_stocks[tech] += post_retro_existing_stock - pre_retro_existing_stock
 
                 _record_retrofitted_stock(model, existing_node, year, existing_tech,
-                                          pre_retro_existing_stock - post_retro_existing_stock,
-                                          record_at_parent=comp_type=='node tech compete')
+                                          pre_retro_existing_stock - post_retro_existing_stock)
 
             else:
                 if tech not in added_retrofit_stocks:
@@ -324,16 +307,3 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # note the remaining stock in the model
     return existing_stock, added_retrofit_stocks, retrofit_stocks
-
-
-def part_of_node_tech_competition(model, node):
-    request_provide_parents = []
-    for parent in model.graph.predecessors(node):
-        if 'request_provide' in model.graph.edges[(parent, node)][PARAM.edge_type]:
-            request_provide_parents.append(parent)
-
-    for parent in request_provide_parents:
-        if model.get_param(PARAM.competition_type, parent) == 'node tech compete':
-            return True
-
-    return False

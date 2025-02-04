@@ -824,7 +824,7 @@ class Model:
         """
         comp_type = self.get_param(PARAM.competition_type, node).lower()
 
-        if comp_type in ['tech compete', 'node tech compete']:
+        if comp_type in ['tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
             stock_allocation.general_allocation(self, node, year)

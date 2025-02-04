@@ -17,7 +17,6 @@ def invalid_competition_type(df):
         'Region',
         'Sector',
         'Tech Compete',
-        'Node Tech Compete',
         'Fixed Ratio',
         'Supply - Fixed Price',
         'Supply - Cost Curve Annual',
@@ -333,8 +332,7 @@ def inconsistent_tech_refs(validator):
 
 def service_req_at_tech_node(validator):
     """
-    Identify tech or node-tech compete nodes where a service request is
-    specified at the node level.
+    Identify tech nodes where a service request is specified at the node level.
 
     The implication of this is that values such as cumul_emissions_cost_rate
     will be incorrect.
@@ -342,9 +340,9 @@ def service_req_at_tech_node(validator):
     # The model's DataFrame
     data = validator.model_df
 
-    # Find all [Node-]Tech compete nodes
+    # Find all Tech compete nodes
     tech_nodes = data[(data[COL.parameter]==PARAM.competition_type) &
-                      (data[COL.context].str.lower().isin(['node tech compete', 'tech compete']))][validator.node_col].unique()
+                      (data[COL.context].str.lower().isin(['tech compete']))][validator.node_col].unique()
 
 
     # Find service request rows specified at the node level of a [node-]tech
@@ -532,8 +530,7 @@ def zero_requested_nodes(validator, providers, root_node):
 
 def lcc_at_tech_node(validator):
     """
-    Identify any tech-compete or node-tech-compete nodes where an LCC value
-    has been set exogenously.
+    Identify any tech-compete nodes where an LCC value has been set exogenously.
     """
     tech_nodes = validator.model_df[COL.branch][(validator.model_df[COL.parameter] == PARAM.competition_type) & (validator.model_df[COL.context].str.lower().str.contains('tech compete'))]
     lcc_nodes = validator.model_df[COL.branch][

@@ -1,4 +1,3 @@
-from ..node_utils import find_node_tech_compete_tech_child_node
 from ..utils import parameters as PARAM
 
 def _find_competing_techs(model, node, comp_type):
@@ -13,15 +12,15 @@ def _find_competing_techs(model, node, comp_type):
     node : str
         Name of the node (branch notation) whose competing technologies we want to find.
     comp_type : str
-        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
+        The type of competition occurring at the node. One of {'tech compete'}.
 
     Returns
     -------
     list :
         The list of technologies competing for market share at `node`.
-        If comp_type is Tech Compete, this will simply be the technologies defined at the node. If
-        comp_type is Node Tech Compete, this will include the technologies of the services requested
-        by node. This does not verify the technology is available in the given year.
+        If comp_type is Tech Compete, this will simply be the technologies
+        defined at the node. This does not verify the technology is available
+        in the given year.
 
     """
     base_year = str(model.base_year)
@@ -31,13 +30,6 @@ def _find_competing_techs(model, node, comp_type):
     if comp_type == 'tech compete':
         for tech in node_year_data[PARAM.technologies]:
             competing_technologies.append((node, tech))
-
-    elif comp_type == 'node tech compete':
-        for tech_child in node_year_data[PARAM.technologies]:
-            child_node = find_node_tech_compete_tech_child_node(model, node, base_year, tech=tech_child)
-
-            for tech in model.graph.nodes[child_node][base_year][PARAM.technologies]:
-                competing_technologies.append((child_node, tech))
 
     return competing_technologies
 

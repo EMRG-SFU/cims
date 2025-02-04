@@ -357,12 +357,3 @@ def _add_tech_data(graph, node, tech_dfs, current_tech):
 
     # 4 Return the new graph
     return graph
-
-# Other
-def find_node_tech_compete_tech_child_node(model, node, year, tech):
-    services_requested = model.get_param(PARAM.service_requested, node, year=year, tech=tech, dict_expected=True)
-    if len(services_requested) == 1:
-        child_node = list(services_requested.keys())[0]
-    else:
-        raise ValueError("Technologies part of a Node-Tech Competition must have a single service request row defined")
-    return child_node
