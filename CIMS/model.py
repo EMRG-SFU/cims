@@ -23,7 +23,7 @@ from .aggregation import quantity_aggregation as qa
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
 
-from .old_utils import create_value_dict, inheritable_params, inherit_parameter
+from .old_utils import create_value_dict, inherit_parameter
 
 from .utils import parameters as PARAM
 from .utils import model_columns as COL
@@ -70,7 +70,12 @@ class Model:
         self.root = model_reader.root
         self.node_dfs, self.tech_dfs = model_reader.get_model_description()
         self.scenario_node_dfs, self.scenario_tech_dfs = None, None
+        # Parameter Lists & Defaults
         self.node_tech_defaults = model_reader.get_default_params()
+        self.inheritable_params = model_reader.get_inheritable_params()
+        self.competition_types = model_reader.get_valid_competition_types()
+        self.output_params = []
+
         self.step = 5  # TODO: Make this an input or calculate
         self.supply_nodes = []
         self.GHGs = []
@@ -794,8 +799,8 @@ class Model:
 
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):
-            for param in inheritable_params:
-                inherit_parameter(graph, node, year, param)
+            for param in self.inheritable_params:
+                inherit_parameter(self, graph, node, year, param)
 
         for year in self.years:
             graph_utils.top_down_traversal(self.graph, inherit_function, year)

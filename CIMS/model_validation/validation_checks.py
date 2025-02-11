@@ -8,23 +8,13 @@ from ..utils import model_columns as COL
 from ..utils import parameters as PARAM
 
 
-def invalid_competition_type(df):
+def invalid_competition_type(df, valid_competition_list):
     """
     Find list of nodes with an invalid competition type.
     """
-    valid_comp_types = [
-        'Root',
-        'Region',
-        'Sector',
-        'Tech Compete',
-        'Fixed Ratio',
-        'Supply - Fixed Price',
-        'Supply - Cost Curve Annual',
-        'Supply - Cost Curve Cumulative'
-    ]
 
     invalid_rows = df[(df[COL.parameter] == PARAM.competition_type) &
-                      (~df[COL.context].isin(valid_comp_types))]
+                      (~df[COL.context].str.lower().isin(valid_competition_list))]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
 
     concern_desc = "nodes have an invalid 'Competition Type'"

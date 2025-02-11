@@ -198,17 +198,6 @@ calculation_directory = {
     PARAM.price_subsidy: lcc_calculation.calc_price_subsidy
 }
 
-# TODO: Move inheritable params to sheet in model description to get with reader
-inheritable_params = [
-    PARAM.price_multiplier,
-    PARAM.discount_rate_financial,
-    PARAM.discount_rate_retrofit,
-    PARAM.retrofit_existing_min, 
-    PARAM.retrofit_existing_max,
-    PARAM.retrofit_heterogeneity,
-]
-
-
 def recursive_key_value_filter(value_dict, key, value):
     """
     Recursively filters a nested dictionary by removing entries that contain a
@@ -262,8 +251,8 @@ def recursive_key_value_filter(value_dict, key, value):
     return value_dict
 
 
-def inherit_parameter(graph, node, year, param):
-    assert param in inheritable_params
+def inherit_parameter(model, graph, node, year, param):
+    assert param in model.inheritable_params
     parent = '.'.join(node.split('.')[:-1])
 
     if parent:
@@ -432,7 +421,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # Inherit Parameter Value
     # ******************************
     # If the value has been defined at a structural parent node for that year, use that value.
-    if (param_source is None) and (param in inheritable_params):
+    if (param_source is None) and (param in model.inheritable_params):
         if tech:
             try:
                 val, source = model.get_param(param, node, year=year, context=context,

@@ -10,12 +10,13 @@ from ..utils import model_columns as COL
 class ModelValidator:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
                  scenario_files=None, default_values_csv_path=None, node_col=COL.branch,
-                 target_col=COL.target, root_node="CIMS"):
+                 target_col=COL.target, root_node="CIMS", list_csv_path=None):
 
         self.csv_files = csv_file_paths
         self.scenario_files = scenario_files or []
 
         self.default_param_df = self.get_default_df(default_values_csv_path)
+        self.competition_types = self._get_list(list_csv_path, column_identifier="Competition")
 
         self.node_col = node_col
         self.target_col = target_col
@@ -106,6 +107,24 @@ class ModelValidator:
         # Return
         return df
 
+    def _get_list(self, list_csv_path, column_identifier):
+        if list_csv_path is None:
+            return []
+
+        # Read List File from CSV
+        df = pl.read_csv(
+            list_csv_path, 
+            use_pyarrow=False,
+            infer_schema_length=0).to_pandas()
+        
+        # Remove empty rows
+        df.dropna(axis=0, how='all')
+
+        # Extract inheritable parameters
+        list_clean = df[column_identifier].str.lower()
+
+        return list_clean    
+    
     def _create_branch_to_node_index_map(self):
         branch_index = {b: i for i, b in self.model_df[self.node_col].drop_duplicates(keep='first').items()}
         index_to_node_index_map = {self.index2branch_map[i]: branch_index[self.index2branch_map[i]] for i in self.model_df.index}
@@ -144,7 +163,7 @@ class ModelValidator:
 
         print("\n*** Errors ***")
         self.validate_count = 0
-        self._run_check(validate.invalid_competition_type, df=self.model_df)
+        self._run_check(validate.invalid_competition_type, df=self.model_df, valid_competition_list=self.competition_types)
         self._run_check(validate.nodes_no_provided_service, validator=self)
         self._run_check(validate.nodes_requesting_self, validator=self)
         self._run_check(validate.supply_without_lcc_or_price, validator=self)
