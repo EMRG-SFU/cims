@@ -1,0 +1,69 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: CIMS energy-economy model
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Brad
+    family-names: Griffin
+    email: bradford_griffin@sfu.ca
+    affiliation: Simon Fraser University
+  - given-names: Jillian
+    family-names: Anderson
+    email: jillian_anderson@sfu.ca
+    affiliation: Simon Fraser University
+    orcid: 'https://orcid.org/0000-0002-2528-2580'
+  - given-names: Matthew
+    family-names: Sniatynski
+    email: matt@exmath.org
+    affiliation: The Laboratory for Experimental Mathematics Inc.
+  - given-names: Thomas
+    family-names: Budd
+    email: tbudd@sfu.ca
+    affiliation: Simon Fraser University
+  - given-names: Emma
+    family-names: Starke
+    email: emma_starke@sfu.ca
+    affiliation: Simon Fraser University
+repository-code: 'https://github.com/EMRG-SFU/cims'
+repository: 'https://github.com/EMRG-SFU/cims-models'
+abstract: >-
+  CIMS is an integrated energy-economy model designed to
+  provide information to policy makers on the likely
+  response of firms and households to policies that
+  influence their technology acquisition and use decisions.
+  As a technology simulation model, it reflects how people
+  actually behave rather than how they ought to behave (as
+  in cost minimization modelling). CIMS is able to provide
+  policy makers with information on: (1) the ability of
+  policies to achieve specific objectives (like greenhouse
+  gas emissions reductions), (2) the likely costs of
+  achieving these objectives, and (3) the uncertainties
+  associated with the model’s simulations. 
+
+  CIMS is maintained and operated by the Energy and
+  Materials Research Group at the School of Resource and
+  Environmental Management at Simon Fraser University in
+  Burnaby, B.C., Canada.
+
+  Funding for the development of the initial version of this
+  project was provided by the Pacific Institute for Climate
+  Solutions Opportunity Projects Program, Natural Resources
+  Canada, and Environment and Climate Change Canada.
+keywords:
+  - energy
+  - emissions
+  - policy
+  - simulation
+  - jupyter-notebook
+  - networkx
+  - polars
+  - ipwidgets
+  - plotly
+license: MIT
+version: '0.1'
+date-released: '2025-03-03'
