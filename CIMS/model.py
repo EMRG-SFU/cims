@@ -20,6 +20,7 @@ from . import node_utils
 
 from .readers.scenario_reader import ScenarioReader
 from .readers.model_reader import ModelReader
+from .model_validation import ModelValidator
 from .aggregation import quantity_aggregation as qa
 from .quantities import ProvidedQuantity, DistributedSupply
 from .emissions import EmissionsCost
@@ -74,6 +75,15 @@ class Model:
                  sector_list,
                  default_values_csv_path
                  ):
+
+        self.validator = ModelValidator(
+                csv_file_paths = csv_init_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list,
+                scenario_files = csv_update_file_paths,
+                default_values_csv_path = default_values_csv_path
+                )
 
         self.graph = nx.DiGraph()
 
@@ -152,47 +162,8 @@ class Model:
         self._initialize_tax()
         self.show_run_warnings = True
 
-
-    def __oldinit__(self, model_reader):
-        self.graph = nx.DiGraph()
-        self.root = model_reader.root
-        self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.scenario_node_dfs, self.scenario_tech_dfs = None, None
-        self.node_tech_defaults = model_reader.get_default_params()
-        self.step = 5  # TODO: Make this an input or calculate
-        self.supply_nodes = []
-        self.GHGs = []
-        self.emission_types = []
-        self.gwp = {}
-        self.years = model_reader.get_years()
-        self.base_year = int(self.years[0])
-
-        self.prices = {}
-        self.equilibrium_count = 0
-
-        self.build_graph()
-        self.dcc_classes = self._dcc_classes()
-        self.dic_classes = self._dic_classes()
-
-        self._inherit_parameter_values()
-        self._initialize_tax()
-
-        self.show_run_warnings = True
-
-        self.model_description_file_prefix = os.path.commonprefix(model_reader.csv_files)
-        self.scenario_model_description_file = None
-        self.change_history = pd.DataFrame(
-            columns=['base_model_description', 
-                     COL.parameter.lower(), 
-                     'node', 
-                     'year', 
-                     COL.technology.lower(),
-                     COL.context.lower(),
-                     COL.sub_context.lower(),
-                     'old_value', 
-                     'new_value'])
-
-        self.status = 'instantiated'
+    def validate_files(self, verbose=False):
+        self.validator.validate(verbose=verbose)
 
     def update(self, scenario_model_reader):
         """
@@ -380,7 +351,6 @@ class Model:
         demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
         supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
 
-        print("This is the refactor branch")
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
 
