@@ -796,7 +796,7 @@ class Model:
         def inherit_function(graph, node, year):
             for param in inheritable_params:
                 try:
-                    no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][PARAM.retirement_intercept][PARAM.year_value]
+                    no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][param][PARAM.year_value]
                 except KeyError:
                     no_inheritance = False
                 inherit_parameter(graph, node, year, param, no_inheritance)
