@@ -854,7 +854,11 @@ class Model:
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):
             for param in inheritable_params:
-                inherit_parameter(graph, node, year, param)
+                try:
+                    no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][param][PARAM.year_value]
+                except KeyError:
+                    no_inheritance = False
+                inherit_parameter(graph, node, year, param, no_inheritance)
 
         for year in self.years:
             graph_utils.top_down_traversal(self.graph, inherit_function, year)
