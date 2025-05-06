@@ -131,7 +131,7 @@ def _update_year_dict(existing_year_dict, update_data):
             year_dict[param] = {}
 
         # Determine whether update should proceed
-        existing_value = _get_existing_value(year_dict, param, context, sub_context)
+        existing_value = _get_existing_value(year_dict, param, context, sub_context, target)
         update_ok, value_dict = _allowable_update(existing_value, value_dict)
         if not update_ok:
             continue
@@ -242,18 +242,28 @@ def _allowable_update(existing_value, update_value):
     else:
         return True, update_value
 
-def _get_existing_value(year_dict, param, context, sub_context):
+def _get_existing_value(year_dict, param, context, sub_context, target):
+
+    # If `target` is defined, we expect to find what we want nested under
+    # year_dict[`param`][`target`]. If it's not defined, it will just be under `param`.
+    if target:
+        target_result = year_dict.get(param, {}).get(target, {})
+    else:
+        target_result = year_dict.get(param, {})
+
+    # As above, if `context`/`sub_context` are defined, the `PARAM.year_value` will
+    # be similarly nested.
     if context: 
         if sub_context:
-            existing_value = year_dict.get(param, {}).get(context, {}).get(sub_context, {}).get(PARAM.year_value)
+            existing_value = target_result.get(context, {}).get(sub_context, {}).get(PARAM.year_value)
         else:
-            context_result = year_dict.get(param, {}).get(context, {})
+            context_result = target_result.get(context, {})
             if isinstance(context_result, dict):
-                existing_value = year_dict.get(param, {}).get(context, {}).get(PARAM.year_value)
+                existing_value = target_result.get(context, {}).get(PARAM.year_value)
             else:
-                existing_value = year_dict.get(param, {}).get(PARAM.year_value)
+                existing_value = target_result.get(PARAM.year_value)
     else:
-        existing_value = year_dict.get(param, {}).get(PARAM.year_value)
+        existing_value = target_result.get(PARAM.year_value)
 
     return existing_value
 

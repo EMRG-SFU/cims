@@ -24,6 +24,7 @@ service_provided = "service provided" # general
 service_requested = "service requested"
 tree_index = 'tree index' # general
 unavailable = "unavailable" # general
+no_inheritance = "no_inheritance" # general
 
 # ==========================================
 # Life Cycle Cost

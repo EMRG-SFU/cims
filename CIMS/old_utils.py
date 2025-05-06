@@ -251,44 +251,46 @@ def recursive_key_value_filter(value_dict, key, value):
     return value_dict
 
 
-def inherit_parameter(model, graph, node, year, param):
+def inherit_parameter(model, graph, node, year, param, no_inheritance=False):
     assert param in model.inheritable_params
-    parent = '.'.join(node.split('.')[:-1])
+    
+    if not no_inheritance:
+        parent = '.'.join(node.split('.')[:-1])
 
-    if parent:
-        parent_param_val = {}
-        if param in graph.nodes[parent][year]:
-            param_val = copy.deepcopy(graph.nodes[parent][year][param])
-            parent_param_val.update(param_val)
+        if parent:
+            parent_param_val = {}
+            if param in graph.nodes[parent][year]:
+                param_val = copy.deepcopy(graph.nodes[parent][year][param])
+                parent_param_val.update(param_val)
 
-        # Update Param Source
-        if PARAM.param_source in parent_param_val:
-            parent_param_val.update({PARAM.param_source: 'inheritance'})
-        else:
-            for context in parent_param_val:
-                if PARAM.param_source in parent_param_val[context]:
-                    parent_param_val[context].update({PARAM.param_source: 'inheritance'})
-                else:
-                    for sub_context in parent_param_val[context]:
-                        parent_param_val[context][sub_context].update(
-                            {PARAM.param_source: 'inheritance'})
+            # Update Param Source
+            if PARAM.param_source in parent_param_val:
+                parent_param_val.update({PARAM.param_source: 'inheritance'})
+            else:
+                for context in parent_param_val:
+                    if PARAM.param_source in parent_param_val[context]:
+                        parent_param_val[context].update({PARAM.param_source: 'inheritance'})
+                    else:
+                        for sub_context in parent_param_val[context]:
+                            parent_param_val[context][sub_context].update(
+                                {PARAM.param_source: 'inheritance'})
 
-        param_value = copy.deepcopy(parent_param_val)
-        if param in graph.nodes[node][year]:
-            uninheritable_param_vals = graph.nodes[node][year][param]
-            # Remove any previously inherited values or any None values, which
-            # allows these parameters to become available for inheritance
-            uninheritable_param_vals = recursive_key_value_filter(
-                uninheritable_param_vals, key=PARAM.param_source, 
-                value="inheritance")
-            uninheritable_param_vals = recursive_key_value_filter(
-                uninheritable_param_vals, key=PARAM.year_value, value=None)
+            param_value = copy.deepcopy(parent_param_val)
+            if param in graph.nodes[node][year]:
+                uninheritable_param_vals = graph.nodes[node][year][param]
+                # Remove any previously inherited values or any None values, which
+                # allows these parameters to become available for inheritance
+                uninheritable_param_vals = recursive_key_value_filter(
+                    uninheritable_param_vals, key=PARAM.param_source, 
+                    value="inheritance")
+                uninheritable_param_vals = recursive_key_value_filter(
+                    uninheritable_param_vals, key=PARAM.year_value, value=None)
 
-            # Update inherited-values with any node-specific values
-            param_value.update(uninheritable_param_vals)
+                # Update inherited-values with any node-specific values
+                param_value.update(uninheritable_param_vals)
 
-        if param_value:
-            graph.nodes[node][year][param] = param_value
+            if param_value:
+                graph.nodes[node][year][param] = param_value
 
 
 def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,

@@ -502,7 +502,8 @@ def zero_requested_nodes(validator, providers, root_node):
     request_lines = data[data[COL.parameter]==PARAM.service_requested]
     all_requested = set(request_lines[validator.target_col])
 
-    zero_request_line = request_lines[get_year_cols(data)].sum(axis=1)==0
+    numeric_values = request_lines[get_year_cols(data)].replace("None", None).astype(float)
+    zero_request_line = numeric_values.sum(axis=1)==0
     non_zero_request_lines = request_lines[~zero_request_line]
     non_zero_requested = set(non_zero_request_lines[validator.target_col])
 
