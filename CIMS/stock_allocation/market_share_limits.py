@@ -1,5 +1,4 @@
-from CIMS import old_utils
-from ..utils import parameters as PARAM
+from ..utils.parameter import query, list as PARAM
 
 #############################
 # Market Share Classes
@@ -494,7 +493,7 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
     """
     eligible_market_shares = {}
     for tech in new_market_shares:
-        is_exogenous = old_utils.is_param_exogenous(model, PARAM.market_share, node, year=year, tech=tech)
+        is_exogenous = query.is_param_exogenous(model, PARAM.market_share, node, year=year, tech=tech)
 
         first_year_available = model.get_param(PARAM.available, node, year=year, tech=tech)
         first_year_unavailable = model.get_param(PARAM.unavailable, node, year=year, tech=tech)

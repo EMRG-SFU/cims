@@ -2,7 +2,7 @@
 Module to provide the calculation of recycled revenues from emissions.
 """
 from .emissions import calc_cumul_emissions_cost_rate
-from .utils import parameters as PARAM
+from .utils.parameter import list as PARAM
 
 
 def calc_recycled_revenues(model, node, year, tech=None):

@@ -2,9 +2,9 @@
 from statistics import mean
 from scipy.interpolate import interp1d
 
-from .utils import parameters as PARAM
-from .utils import model_columns as COL
-from . import old_utils
+from .utils.model_description import column_list as COL
+from .utils.parameter import construction, parse
+from .utils.parameter import list as PARAM
 
 
 def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
@@ -91,13 +91,13 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
     if expected_lcc > prev_lcc:
         cc_min = max(x for x in [prev_lcc, cc_min] if x is not None)
         model.set_param_internal(
-            old_utils.create_value_dict(cc_min, param_source='cost curve function'),
+            construction.create_value_dict(cc_min, param_source='cost curve function'),
             PARAM.cost_curve_lcc_min, node, year)
 
     elif expected_lcc < prev_lcc:
         cc_max = min(x for x in [prev_lcc, cc_max] if x is not None)
         model.set_param_internal(
-            old_utils.create_value_dict(cc_max, param_source='cost curve function'),
+            construction.create_value_dict(cc_max, param_source='cost curve function'),
             PARAM.cost_curve_lcc_max, node, year)
 
     # If the last price was calculated with cost curve, provide an average
@@ -165,7 +165,7 @@ def build_cost_curve_function(node_df):
         An interpolator that inputs a quantity & outputs a price.
 
     """
-    years = [c for c in node_df.columns if old_utils.is_year(c)]
+    years = [c for c in node_df.columns if parse.is_year(c)]
 
     # Get quantities
     cc_quant_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_quantity]

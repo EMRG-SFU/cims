@@ -12,8 +12,8 @@ import pandas as pd
 from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from CIMS.emissions import Emissions, EmissionsCost
 
-from .utils import parameters as PARAM
-from .utils import model_columns as COL
+from .utils.parameter import list as PARAM
+from .utils.model_description import column_list as COL
 
 excluded_parameters = [
     PARAM.emissions_cost_rate, 
@@ -332,7 +332,7 @@ def _full_parameter_list(model):
     return model_list
 
 
-def search_parameter(model, search: [str] = None):
+def search_parameter(model, search: list[str] = None):
     """Function to search for model parameters that contain any strings present in the search list.
     """
     model_list = _full_parameter_list(model)
@@ -353,7 +353,7 @@ def search_parameter(model, search: [str] = None):
     return search_list
 
 
-def log_model(model, output_file, parameter_list: [str] = None, path: str = None,
+def log_model(model, output_file, parameter_list: list[str] = None, path: str = None,
               default_list: str = None):
     """
     Log a model's current state to an output CSV file.

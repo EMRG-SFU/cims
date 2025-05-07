@@ -3,7 +3,7 @@ This module contains the functions for conducting vintage-based weighting
 """
 import math
 
-from .utils import parameters as PARAM
+from .utils.parameter import list as PARAM
 
 def _get_vintage_weights(model, node, year, tech):
     """

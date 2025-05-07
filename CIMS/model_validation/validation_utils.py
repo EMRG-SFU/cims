@@ -1,7 +1,6 @@
-import warnings
-from ..old_utils import is_year
-from ..utils import parameters as PARAM
-from ..utils import model_columns as COL
+from ..utils.model_description import column_list as COL
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.parse import is_year
 
 def get_providers(df, node_col):
     providers = df[df[COL.parameter] == PARAM.service_provided][node_col]

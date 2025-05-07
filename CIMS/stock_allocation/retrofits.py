@@ -4,7 +4,7 @@ Retrofit module. Contains functions for retrofitting previously adopted stock.
 from .allocation_utils import _find_competing_techs, _find_competing_weights, _calculate_lcc_weight
 from .market_share_limits import _min_max_ms_compliant, _get_percent_differences, \
     _make_ms_min_max_compliant, _adjust_new_market_shares
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
 
 def _retrofit_lcc(model, node, year, existing_tech):
     """

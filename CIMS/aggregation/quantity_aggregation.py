@@ -4,7 +4,7 @@ supply which can be attributed to a node).
 """
 from ..quantities import RequestedQuantity
 from .aggregation_utils import record_aggregate_values, find_children_for_aggregation
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
 
 
 def aggregate_requested_quantities(model, node, year):

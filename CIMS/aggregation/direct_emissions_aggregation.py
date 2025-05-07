@@ -1,6 +1,6 @@
 from ..emissions import Emissions, EmissionsCost
-from ..old_utils import create_value_dict
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.construction import create_value_dict
 
 
 def _abstract_direct_emission_aggregation(base_emission_class, model, graph, node, year,

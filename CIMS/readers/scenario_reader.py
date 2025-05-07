@@ -1,10 +1,12 @@
 import pandas as pd
 import polars as pl
-from .model_reader import ModelReader
-from .reader_utils import _bool_as_string, get_node_cols
 import copy
 import numpy as np
-from ..utils import model_columns as COL
+
+from .model_reader import ModelReader
+
+from ..utils.model_description import column_list as COL
+from ..utils.model_description.query import get_node_cols
 
 class ScenarioReader(ModelReader):
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,

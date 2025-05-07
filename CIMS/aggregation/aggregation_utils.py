@@ -1,5 +1,5 @@
-from ..old_utils import create_value_dict
-from ..utils import parameters as PARAM
+from ..utils.parameter.construction import create_value_dict
+from ..utils.parameter import list as PARAM
 
 def find_req_prov_children(graph, node, year, tech=None):
     """

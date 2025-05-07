@@ -1,20 +1,22 @@
 import numpy as np
 import pandas as pd
 import polars as pl
-from pathlib import Path
-from .reader_utils import is_year, _bool_as_string, get_node_cols
-from ..old_utils import infer_type
 
-from ..utils import model_columns as COL
-from ..utils import parameters as PARAM
+from ..utils.model_description import column_list as COL
+from ..utils.model_description.query import get_node_cols
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.parse import infer_type, is_year
 
 
 class ModelReader:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 default_values_csv_path=None, node_col=COL.branch, root_node="CIMS"):
+                 default_values_csv_path=None, node_col=COL.branch, root_node="CIMS", list_csv_path=None):
 
         if default_values_csv_path:
             self.default_values_csv = default_values_csv_path
+        if list_csv_path:
+            self.list_csv = list_csv_path
+
         self.csv_files = csv_file_paths
         self.node_col = node_col
         self.col_list = col_list
@@ -128,4 +130,27 @@ class ModelReader:
 
         # Return
         return node_tech_defaults
+        
+    def get_inheritable_params(self):
+        return self._get_list(column_identifier="Inheritable")
+    
+    def get_valid_competition_types(self):
+        return self._get_list(column_identifier="Competition")
 
+    def _get_list(self, column_identifier):
+        # Read List File from CSV
+        df = pl.read_csv(
+            self.list_csv, 
+            use_pyarrow=False,
+            infer_schema_length=0).to_pandas()
+        
+        # Remove empty rows
+        df.dropna(axis=0, how='all')
+
+        # Extract inheritable parameters
+        list_clean = df[column_identifier].str.lower()
+
+        return list_clean
+
+    def get_output_params(self):
+        pass
