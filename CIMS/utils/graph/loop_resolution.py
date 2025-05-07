@@ -1,6 +1,7 @@
 """
 Module containing loop resolution functions.
 """
+
 import networkx as nx
 
 

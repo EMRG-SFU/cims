@@ -5,10 +5,12 @@ from __future__ import annotations  # For Type Hinting
 from typing import List
 import copy
 
-from . import old_utils
+from .utils.graph.query import get_services_requested
+
+from .utils.parameter import construction, list as PARAM
+from .utils.general_utils import prev_stock_existed
 from . import tax_foresight
 from .vintage_weighting import calculate_vintage_weighted_parameter
-from .utils import parameters as PARAM
 
 
 class EmissionsCost:
@@ -60,14 +62,14 @@ class EmissionsCost:
                 for emission_type in other.emissions_cost[source_branch][ghg]:
                     if emission_type not in result.emissions_cost[source_branch][ghg]:
                         result.emissions_cost[source_branch][ghg][
-                            emission_type] = old_utils.create_value_dict(0)
+                            emission_type] = construction.create_value_dict(0)
                     emission_amount = other.emissions_cost[source_branch][ghg][emission_type][
                         PARAM.year_value]
                     result.emissions_cost[source_branch][ghg][emission_type][
                         PARAM.year_value] += emission_amount
         return result
 
-    def __mul__(self, other: int or float) -> EmissionsCost:
+    def __mul__(self, other: int | float) -> EmissionsCost:
         """
         Multiplies each value in the emissions_cost attribute (which is a nested dictionary) by
         other.
@@ -96,7 +98,7 @@ class EmissionsCost:
                     prev_val = self.emissions_cost[source_branch][ghg][emission_type][
                         PARAM.year_value]
                     result.emissions_cost[source_branch][ghg][emission_type] = \
-                        old_utils.create_value_dict(prev_val * other)
+                        construction.create_value_dict(prev_val * other)
 
         return result
 
@@ -188,7 +190,7 @@ class Emissions:
                 for emission_type in self.emissions[source_branch][ghg]:
                     emission_amount = self.emissions[source_branch][ghg][emission_type][
                         PARAM.year_value]
-                    result.emissions[source_branch][ghg][emission_type] = old_utils.create_value_dict(
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
                         emission_amount)
 
         # Then, go through each of the emissions in other and add those to the result
@@ -201,7 +203,7 @@ class Emissions:
                 for emission_type in other.emissions[source_branch][ghg]:
                     if emission_type not in result.emissions[source_branch][ghg]:
                         result.emissions[source_branch][ghg][
-                            emission_type] = old_utils.create_value_dict(0)
+                            emission_type] = construction.create_value_dict(0)
                     emission_amount = other.emissions[source_branch][ghg][emission_type][
                         PARAM.year_value]
                     result.emissions[source_branch][ghg][emission_type][
@@ -209,7 +211,7 @@ class Emissions:
 
         return result
 
-    def __mul__(self, other: int or float) -> Emissions:
+    def __mul__(self, other: int | float) -> Emissions:
         """
         Multiplies each value in the emissions attribute (which is a nested dictionary) by
         other.
@@ -234,7 +236,7 @@ class Emissions:
                 for emission_type in self.emissions[source_branch][ghg]:
                     emission_amount = self.emissions[source_branch][ghg][emission_type][
                                           PARAM.year_value] * other
-                    result.emissions[source_branch][ghg][emission_type] = old_utils.create_value_dict(
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
                         emission_amount)
 
         return result
@@ -315,10 +317,10 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
             agg_emissions_cost = agg_emissions_cost + tech_emissions_cost
 
         # Emissions Cost from any non-supply children
-        services_requested = old_utils.get_services_requested(model, node, year, tech=tech)
+        services_requested = get_services_requested(model, node, year, tech=tech)
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
-    elif old_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
+    elif prev_stock_existed(model, node, year) and (pq is not None) and (
             src == 'calculation') and (pq.get_total_quantity() <= 0):
         agg_emissions_cost = EmissionsCost()
     elif model.get_param(PARAM.competition_type, node) in ['tech compete']:
@@ -334,13 +336,13 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     else:
         # (3) At a node without techs -- Emissions Cost from Non-Supply children
         agg_emissions_cost = EmissionsCost()
-        services_requested = old_utils.get_services_requested(model, node, year)
+        services_requested = get_services_requested(model, node, year)
 
         # Emissions Cost from Non-Supply children
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
     # Save the Aggregate Emission Cost Rates
-    new_val_dict = old_utils.create_value_dict(year_val=agg_emissions_cost, param_source='calculation')
+    new_val_dict = construction.create_value_dict(year_val=agg_emissions_cost, param_source='calculation')
 
     if tech:
         model.set_param_internal(new_val_dict, PARAM.cumul_emissions_cost_rate, node, year, tech)
@@ -444,7 +446,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
     supply_nodes = model.supply_nodes
 
     tax_rates = _find_tax_rates(model, node, year)
-    removal_rates = {ghg: {em_type: old_utils.create_value_dict(0) for em_type in model.emission_types}
+    removal_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types}
                      for ghg in model.GHGs}
 
     # GROSS EMISSIONS tech level
@@ -459,7 +461,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                 if ghg not in gross_emissions[tech]:
                     gross_emissions[tech][ghg] = {}
                 gross_emission_val = emission_data[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions)
-                gross_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(gross_emission_val)
+                gross_emissions[tech][ghg][emission_type] = construction.create_value_dict(gross_emission_val)
 
     # EMISSIONS REMOVAL @ the tech
     if PARAM.emissions_removal in model.graph.nodes[node][year][PARAM.technologies][tech]:
@@ -469,7 +471,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                 if ghg not in removal_rates:
                     removal_rates[ghg] = {}
                 rr_val = removal_dict[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions_removal)
-                removal_rates[ghg][emission_type] = old_utils.create_value_dict(rr_val)
+                removal_rates[ghg][emission_type] = construction.create_value_dict(rr_val)
 
     # Check all services requested for
     if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
@@ -489,7 +491,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     for emission_type in emission_data[ghg]:
                         if ghg not in gross_emissions[child_node]:
                             gross_emissions[child_node][ghg] = {}
-                        gross_emissions[child_node][ghg][emission_type] = old_utils.create_value_dict(
+                        gross_emissions[child_node][ghg][emission_type] = construction.create_value_dict(
                             emission_data[ghg][emission_type][PARAM.year_value] * req_val)
 
             # GROSS BIOMASS EMISSIONS
@@ -503,7 +505,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                         if ghg not in gross_bio_emissions[child_node]:
                             gross_bio_emissions[child_node][ghg] = {}
                         gross_bio_emissions[child_node][ghg][emission_type] = \
-                            old_utils.create_value_dict(
+                            construction.create_value_dict(
                                 bio_emission_data[ghg][emission_type][PARAM.year_value] * req_val)
 
             # EMISSIONS REMOVAL child level
@@ -515,7 +517,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                         for ghg in removal_dict:
                             for emission_type in removal_dict[ghg]:
                                 removal_rates[ghg][emission_type] = \
-                                    old_utils.create_value_dict(
+                                    construction.create_value_dict(
                                         removal_dict[ghg][emission_type][PARAM.year_value])
 
     # AVOIDED EMISSIONS
@@ -601,7 +603,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
             for emission_type in bio_emission_data[ghg]:
                 if ghg not in bio_emissions[tech]:
                     bio_emissions[tech][ghg] = {}
-                bio_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(
+                bio_emissions[tech][ghg][emission_type] = construction.create_value_dict(
                     bio_emission_data[ghg][emission_type][PARAM.year_value])
 
     # Check all services requested for
@@ -620,7 +622,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                         if ghg not in bio_emissions[child_node]:
                             bio_emissions[child_node][ghg] = {}
                         bio_emissions[child_node][ghg][emission_type] = \
-                            old_utils.create_value_dict(
+                            construction.create_value_dict(
                                 supply_emissions[ghg][emission_type][PARAM.year_value] * req_val)
 
     # Record emission rates
@@ -634,11 +636,11 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
         Emissions(bio_emissions)
 
     # Record emission costs
-    val_dict = old_utils.create_value_dict(year_val=total, param_source='calculation')
+    val_dict = construction.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, PARAM.emissions_cost, node, year, tech)
 
     model.set_param_internal(
-        old_utils.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
+        construction.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
         PARAM.emissions_cost_rate, node, year, tech)
 
     return total
@@ -673,7 +675,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     """
 
     supply_nodes = model.supply_nodes
-    tax_rates = {ghg: {em_type: old_utils.create_value_dict(0) for em_type in model.emission_types} for
+    tax_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
     removal_rates = copy.deepcopy(tax_rates)
 
@@ -684,7 +686,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 try:
                     tax = model.get_param(PARAM.tax, node, year, context=ghg, sub_context=em_type)
                     if tax:
-                        tax_rates[ghg][em_type] = old_utils.create_value_dict(tax)
+                        tax_rates[ghg][em_type] = construction.create_value_dict(tax)
                 except KeyError:
                     # context or sub_context isn't at the node
                     continue
@@ -704,7 +706,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 if ghg not in gross_emissions[tech]:
                     gross_emissions[tech][ghg] = {}
                 gross_emissions_val = emission_data[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions)
-                gross_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(gross_emissions_val)
+                gross_emissions[tech][ghg][emission_type] = construction.create_value_dict(gross_emissions_val)
 
     # EMISSIONS REMOVAL @ the tech
     if PARAM.emissions_removal in model.graph.nodes[node][year][PARAM.technologies][tech]:
@@ -714,7 +716,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 if ghg not in removal_rates:
                     removal_rates[ghg] = {}
                 rr_val = removal_dict[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions_removal)
-                removal_rates[ghg][emission_type] = old_utils.create_value_dict(rr_val)
+                removal_rates[ghg][emission_type] = construction.create_value_dict(rr_val)
 
     # Check all services requested for
     if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
@@ -735,7 +737,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                         if ghg not in gross_emissions[child_node]:
                             gross_emissions[child_node][ghg] = {}
                         em_val = emission_data[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions)
-                        gross_emissions[child_node][ghg][emission_type] = old_utils.create_value_dict(
+                        gross_emissions[child_node][ghg][emission_type] = construction.create_value_dict(
                             em_val * req_val)
 
             # GROSS BIOMASS EMISSIONS
@@ -750,7 +752,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                             gross_bio_emissions[child_node][ghg] = {}
                         gross_bio_emission_val = bio_emission_data[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions_biomass)
                         gross_bio_emissions[child_node][ghg][emission_type] = \
-                            old_utils.create_value_dict(gross_bio_emission_val * req_val)
+                            construction.create_value_dict(gross_bio_emission_val * req_val)
 
             # EMISSIONS REMOVAL child level
             if PARAM.technologies in model.graph.nodes[child_node][year]:
@@ -762,7 +764,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                             for emission_type in removal_dict[ghg]:
                                 rr_val = removal_dict[ghg][emission_type][PARAM.year_value] or model.get_parameter_default(PARAM.emissions_removal)
                                 removal_rates[ghg][emission_type] = \
-                                    old_utils.create_value_dict(rr_val)
+                                    construction.create_value_dict(rr_val)
 
     # AVOIDED EMISSIONS
     avoided_emissions = copy.deepcopy(gross_emissions)
@@ -850,7 +852,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
             for emission_type in bio_emission_data[ghg]:
                 if ghg not in bio_emissions[tech]:
                     bio_emissions[tech][ghg] = {}
-                bio_emissions[tech][ghg][emission_type] = old_utils.create_value_dict(
+                bio_emissions[tech][ghg][emission_type] = construction.create_value_dict(
                     bio_emission_data[ghg][emission_type][PARAM.year_value])
 
     # Check all services requested for
@@ -869,7 +871,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                         if ghg not in bio_emissions[child_node]:
                             bio_emissions[child_node][ghg] = {}
                         bio_emissions[child_node][ghg][emission_type] = \
-                            old_utils.create_value_dict(
+                            construction.create_value_dict(
                                 supply_emissions[ghg][emission_type][PARAM.year_value] * req_val)
 
     # Record emission rates
@@ -881,11 +883,11 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
         Emissions(bio_emissions)
 
     # Record emission costs
-    val_dict = old_utils.create_value_dict(year_val=total, param_source='calculation')
+    val_dict = construction.create_value_dict(year_val=total, param_source='calculation')
     model.set_param_internal(val_dict, PARAM.emissions_cost, node, year, tech)
 
     model.set_param_internal(
-        old_utils.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
+        construction.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
         PARAM.emissions_cost_rate, node, year, tech)
 
     return total
@@ -907,7 +909,7 @@ def _find_tax_rates(model: "CIMS.Model", node: str, year: str) -> dict[str: dict
         dict: A nested dictionary of the form {GHG: {emission_type: float}}.
     """
     # Initialize all taxes and emission removal rates to 0
-    tax_rates = {ghg: {em_type: old_utils.create_value_dict(0) for em_type in model.emission_types} for
+    tax_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
 
     # Grab correct tax values
@@ -916,7 +918,7 @@ def _find_tax_rates(model: "CIMS.Model", node: str, year: str) -> dict[str: dict
             try:
                 tax = model.get_param(PARAM.tax, node, year, context=ghg, sub_context=em_type)
                 if tax:
-                    tax_rates[ghg][em_type] = old_utils.create_value_dict(tax)
+                    tax_rates[ghg][em_type] = construction.create_value_dict(tax)
             except TypeError:
                 continue
             except KeyError:

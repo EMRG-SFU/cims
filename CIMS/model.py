@@ -7,28 +7,23 @@ import time
 import pickle
 import os.path
 
-from . import graph_utils
-from . import old_utils
+from .utils.model_description import column_list as COL
+from .utils.parameter import construction, list as PARAM, setters, query as param_query
+from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
+
 from . import lcc_calculation
 from . import stock_allocation
-from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
 from . import aggregation
 from . import visualize
-from . import node_utils
 
 from .readers.scenario_reader import ScenarioReader
 from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator
-from .aggregation import quantity_aggregation as qa
-from .quantities import ProvidedQuantity, DistributedSupply
+from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
 
-from .old_utils import create_value_dict, inherit_parameter
-
-from .utils import parameters as PARAM
-from .utils import model_columns as COL
 
 
 class Model:
@@ -73,7 +68,8 @@ class Model:
                  col_list,
                  year_list,
                  sector_list,
-                 default_values_csv_path
+                 default_values_csv_path,
+                 list_csv_path
                  ):
 
         self.validator = ModelValidator(
@@ -92,7 +88,8 @@ class Model:
                 col_list = col_list,
                 year_list = year_list,
                 sector_list = sector_list,
-                default_values_csv_path = default_values_csv_path)
+                default_values_csv_path = default_values_csv_path,
+                list_csv_path=list_csv_path)
 
         self._scenario_reader = ScenarioReader(
                 csv_file_paths = csv_update_file_paths,
@@ -106,9 +103,9 @@ class Model:
         self.node_tech_defaults = self._model_reader.get_default_params()
         
         # Parameter Lists & Defaults
-        self.node_tech_defaults = model_reader.get_default_params()
-        self.inheritable_params = model_reader.get_inheritable_params()
-        self.competition_types = model_reader.get_valid_competition_types()
+        self.node_tech_defaults = self._model_reader.get_default_params()
+        self.inheritable_params = self._model_reader.get_inheritable_params()
+        self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
         
         self.step = 5 # ::TODO:: Make this an input or calculate
@@ -156,13 +153,13 @@ class Model:
         # ::TODO:: What does this do??
         self.graph.max_tree_index[0] = 0
         graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
         # ::TODO:: What does this do??
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
 
         self.graph = graph
-        self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph, str(self.base_year))
+        self.supply_nodes = graph_query.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
         self.dcc_classes = self._dcc_classes()
         self.dic_classes = self._dic_classes()
         self._inherit_parameter_values()
@@ -207,15 +204,15 @@ class Model:
         self.graph.max_tree_index[0] = 0
         graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, model.scenario_node_dfs,
+        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
         # Update the Model's metadata
-        model.supply_nodes = graph_utils.get_supply_nodes(graph)
+        model.supply_nodes = graph_query.get_supply_nodes(graph)
 
-        model.GHGs, model.emission_types, model.gwp = graph_utils.get_ghg_and_emissions(graph,
+        model.GHGs, model.emission_types, model.gwp = param_query.get_ghg_and_emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
         model.dic_classes = model._dic_classes()
@@ -246,11 +243,11 @@ class Model:
         graph.cur_tree_index = [0]
         graph.max_tree_index = [0]
         graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
-        self.supply_nodes = graph_utils.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_ghg_and_emissions(graph,
+        self.supply_nodes = graph_query.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
 
@@ -258,7 +255,7 @@ class Model:
         # Initialize Taxes
         for year in self.years:
             # Pass tax to all children for carbon cost
-            graph_utils.top_down_traversal(self.graph,
+            traversals.top_down_traversal(self.graph,
                                            self._init_tax_emissions,
                                            year)
         # Initialize Tax Foresight
@@ -353,10 +350,10 @@ class Model:
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
-        self.loops = graph_utils.find_loops(self.graph, warn=True)
+        self.loops = traversals.find_loops(self.graph, warn=True)
 
-        demand_nodes = graph_utils.get_demand_side_nodes(self.graph)
-        supply_nodes = graph_utils.get_supply_side_nodes(self.graph)
+        demand_nodes = graph_query.get_demand_side_nodes(self.graph)
+        supply_nodes = graph_query.get_supply_side_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -381,18 +378,18 @@ class Model:
                 # DEMAND
                 # ******************
                 # Calculate Life Cycle Cost values on demand side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self)
 
                 # Calculate Quantities (Total Stock Needed)
-                graph_utils.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
                                                self.stock_allocation_and_retirement,
                                                year)
 
                 # Calculate Service Costs on Demand Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self)
@@ -400,19 +397,19 @@ class Model:
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
                                                 cost_curve_min_max=True)
                 # Calculate Supply Quantities
-                graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
+                traversals.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
                                                )
 
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
@@ -443,25 +440,25 @@ class Model:
                 iteration += 1
 
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_cumulative_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
                                             supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
         self.status = 'Run completed'
@@ -675,7 +672,7 @@ class Model:
                 descendant_tree = nx.subgraph(graph, descendants)
 
                 # Calculate the Life Cycle Costs for the sub-tree
-                graph_utils.bottom_up_traversal(descendant_tree,
+                traversals.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
@@ -687,7 +684,7 @@ class Model:
                         calc_lcc_from_children()
                 elif PARAM.cost_curve_function in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    graph.nodes[node][year][PARAM.lcc_financial] = old_utils.create_value_dict(lcc, param_source='cost curve function')
+                    graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
@@ -770,7 +767,7 @@ class Model:
                     if PARAM.load_factor in graph.nodes[parent][year]:
                         val = graph.nodes[parent][year][PARAM.load_factor][PARAM.year_value]
                         units = graph.nodes[parent][year][PARAM.load_factor][PARAM.unit]
-                        graph.nodes[node][year][PARAM.load_factor] = old_utils.create_value_dict(val,
+                        graph.nodes[node][year][PARAM.load_factor] = construction.create_value_dict(val,
                                                                                          unit=units,
                                                                                          param_source='inheritance')
 
@@ -782,7 +779,7 @@ class Model:
                         if PARAM.load_factor not in tech_data[tech]:
                             val = graph.nodes[node][year][PARAM.load_factor][PARAM.year_value]
                             units = graph.nodes[node][year][PARAM.load_factor][PARAM.unit]
-                            tech_data[tech][PARAM.load_factor] = old_utils.create_value_dict(val,
+                            tech_data[tech][PARAM.load_factor] = construction.create_value_dict(val,
                                                                                      unit=units,
                                                                                      param_source='inheritance')
 
@@ -835,27 +832,27 @@ class Model:
             # Reset the aggregate_emissions_cost at each node
             for n in self.graph.nodes():
                 self.graph.nodes[n][year][PARAM.aggregate_emissions_cost_rate] = \
-                    create_value_dict({}, param_source='initialization')
+                    construction.create_value_dict({}, param_source='initialization')
                 self.graph.nodes[n][year][PARAM.cumul_emissions_cost_rate] = \
-                    create_value_dict(EmissionsCost(), param_source='initialization')
+                    construction.create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
 
-        graph_utils.top_down_traversal(graph,
+        traversals.top_down_traversal(graph,
                                        init_convert_to_CO2e,
                                        year,
                                        self.gwp)
-        graph_utils.top_down_traversal(graph,
+        traversals.top_down_traversal(graph,
                                        init_load_factor,
                                        year)
-        graph_utils.bottom_up_traversal(graph,
+        traversals.bottom_up_traversal(graph,
                                         init_supply_node_lcc,
                                         year)
 
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year][PARAM.provided_quantities] = create_value_dict(ProvidedQuantity(),
+            self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
 
     def _inherit_parameter_values(self):
@@ -865,10 +862,10 @@ class Model:
                     no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][param][PARAM.year_value]
                 except KeyError:
                     no_inheritance = False
-                inherit_parameter(self, graph, node, year, param, no_inheritance)
+                construction.inherit_parameter(self, graph, node, year, param, no_inheritance)
 
         for year in self.years:
-            graph_utils.top_down_traversal(self.graph, inherit_function, year)
+            traversals.top_down_traversal(self.graph, inherit_function, year)
 
     def stock_allocation_and_retirement(self, sub_graph, node, year):
         """
@@ -1053,7 +1050,7 @@ class Model:
             inheritance, calculation, default, or previous_year}.
         """
 
-        param_val = old_utils.get_param(self, param, node, year,
+        param_val = param_query.get_param(self, param, node, year,
                                     tech=tech,
                                     context=context,
                                     sub_context=sub_context,
@@ -1102,7 +1099,7 @@ class Model:
             will not be saved
         """
 
-        param_val = old_utils.set_param(self, val, param, node, year,
+        param_val = setters.set_param(self, val, param, node, year,
                                     tech=tech,
                                     context=context,
                                     sub_context=sub_context,
@@ -1148,7 +1145,7 @@ class Model:
             means it will not be saved
         """
 
-        param_val = old_utils.set_param_internal(self, val, param, node, year,
+        param_val = setters.set_param_internal(self, val, param, node, year,
                                              tech=tech,
                                              context=context,
                                              sub_context=sub_context)
@@ -1207,7 +1204,7 @@ class Model:
         filepath : str
             This is the path to the CSV file containing all context and value change information
         """
-        param_val = old_utils.set_param_file(self, filepath)
+        param_val = setters.set_param_file(self, filepath)
 
         return param_val
 
@@ -1259,7 +1256,7 @@ class Model:
             row number in error messages.
         """
 
-        param_val = old_utils.set_param_search(self, val, param, node, year,
+        param_val = setters.set_param_search(self, val, param, node, year,
                                            tech=tech,
                                            context=context,
                                            sub_context=sub_context,
@@ -1310,7 +1307,7 @@ class Model:
             The index of the current row of the CSV. This is used to print the
             row number in error messages.
         """
-        param_val = old_utils.create_param(self, val, param, node, year,
+        param_val = construction.create_param(self, val, param, node, year,
                                        tech=tech,
                                        context=context,
                                        sub_context=sub_context,

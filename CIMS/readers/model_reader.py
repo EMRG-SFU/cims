@@ -1,12 +1,11 @@
 import numpy as np
 import pandas as pd
 import polars as pl
-from pathlib import Path
-from .reader_utils import is_year, _bool_as_string, get_node_cols
-from ..old_utils import infer_type
 
-from ..utils import model_columns as COL
-from ..utils import parameters as PARAM
+from ..utils.model_description import column_list as COL
+from ..utils.model_description.query import get_node_cols
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.parse import infer_type, is_year
 
 
 class ModelReader:

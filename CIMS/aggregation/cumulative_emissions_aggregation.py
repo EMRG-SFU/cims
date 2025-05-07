@@ -1,7 +1,7 @@
 from ..emissions import Emissions, EmissionsCost
-from ..old_utils import create_value_dict
 from .aggregation_utils import find_children_for_aggregation, record_aggregate_values
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.construction import create_value_dict
 
 
 def aggregate_cumulative_emissions_cost(model, node, year, rate_param, total_param):

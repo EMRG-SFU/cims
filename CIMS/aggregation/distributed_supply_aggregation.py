@@ -1,7 +1,7 @@
 from ..quantities import DistributedSupply
 from .aggregation_utils import find_structural_children, find_req_prov_children
-from ..old_utils import create_value_dict
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.construction import create_value_dict
 
 def aggregate_distributed_supplies(model, node, year):
     """

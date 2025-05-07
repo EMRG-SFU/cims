@@ -1,8 +1,7 @@
 """
 Module containing the functions required for performing Macro Economics calculations.
 """
-from CIMS import old_utils
-from ..utils import parameters as PARAM
+from ..utils.parameter import construction, list as PARAM
 
 
 def calc_total_stock_demanded(model, node, year):
@@ -68,7 +67,7 @@ def calc_stock_demanded(model, node, year):
 
     stock_demanded = sum_service_stock_requested * macro_multiplier
 
-    model.set_param_internal(old_utils.create_value_dict(stock_demanded, param_source='calculation'),
+    model.set_param_internal(construction.create_value_dict(stock_demanded, param_source='calculation'),
                              PARAM.stock_demanded, node, year)
 
     return stock_demanded
@@ -156,7 +155,7 @@ def calc_stock_exported(model, node, year):
             model.graph.nodes[node][year][PARAM.stock_exported] = {}
 
         model.graph.nodes[node][year][PARAM.stock_exported][region] = \
-            old_utils.create_value_dict(stock_exported_region,
+            construction.create_value_dict(stock_exported_region,
                                     context=region,
                                     param_source='calculation')
 

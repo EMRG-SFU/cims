@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 
-from .utils import parameters as PARAM
+from .utils.parameter import list as PARAM
 
 def visualize_prices_change_over_time(model, out_file, show=False):
     """Creates a visualization of supply prices over time as a multi-line

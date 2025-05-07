@@ -1,11 +1,11 @@
 import pandas as pd
 import numpy as np
 
-from ..old_utils import is_year
 from .validation_utils import get_providers, get_year_cols, get_nodes
 
-from ..utils import model_columns as COL
-from ..utils import parameters as PARAM
+from ..utils.model_description import column_list as COL
+from ..utils.parameter import list as PARAM
+from ..utils.parameter.parse import is_year
 
 
 def invalid_competition_type(df, valid_competition_list):

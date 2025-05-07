@@ -1,4 +1,4 @@
-from .import model_columns as COL
+from ..model_description import column_list as COL
 # ==========================================
 # Data Structure Constants
 # ==========================================

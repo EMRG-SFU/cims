@@ -5,8 +5,8 @@ from __future__ import annotations  # For Type Hinting
 import networkx
 from numpy import linspace, mean
 
-from . import graph_utils
-from .utils import parameters as PARAM
+from .utils.graph import traversals
+from .utils.parameter import list as PARAM
 
 
 def initialize_tax_foresight(model: 'CIMS.Model') -> None:
@@ -39,7 +39,7 @@ def initialize_tax_foresight(model: 'CIMS.Model') -> None:
                         model.graph.nodes[node][year][PARAM.tax_foresight] = foresight_dict[sector]
 
         # Pass foresight methods down to all other nodes in a sector
-        graph_utils.top_down_traversal(model.graph,
+        traversals.top_down_traversal(model.graph,
                                        _inherit_tax_foresight,
                                        year, model=model)
 
@@ -70,7 +70,7 @@ def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str, model:
             graph.nodes[node][year][PARAM.tax_foresight] = parent_dict
 
 
-def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str or None, ghg: str,
+def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str | None, ghg: str,
                          emission_type: str) -> float:
     """
     Use the "Discounted Tax Foresight" method to calculates an expected tax value for a given

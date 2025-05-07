@@ -3,16 +3,15 @@ Stock retirement and allocation module. Contains all the core logic for retiring
 surplus) and allocating new stock through a market share competition between technologies.
 """
 import math
-from ..quantities import ProvidedQuantity
-from CIMS import old_utils
-from CIMS.vintage_weighting import calculate_vintage_weighted_parameter
+import copy
+
 from .retrofits import calc_retrofits
 from .macro_economics import calc_total_stock_demanded
 from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import apply_min_max_limits, apply_min_max_class_limits
-import copy
-
-from ..utils import parameters as PARAM
+from ..quantities import ProvidedQuantity
+from ..vintage_weighting import calculate_vintage_weighted_parameter
+from ..utils.parameter import list as PARAM, construction
 
 #############################
 # Stock Allocation
@@ -357,12 +356,12 @@ def _do_natural_retirement(model, node, year, tech, competition_type):
 
         # Save to Graph
         model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.base_stock_remaining] = \
-            old_utils.create_value_dict(remaining_base_stock, param_source='calculation')
+            construction.create_value_dict(remaining_base_stock, param_source='calculation')
         model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining_pre_surplus] = \
-            old_utils.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
+            construction.create_value_dict(remaining_new_stock_pre_surplus, param_source='calculation')
         # Note: retired stock will be removed later from [PARAM.new_stock_remaining]
         model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining] = \
-            old_utils.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
+            construction.create_value_dict(copy.deepcopy(remaining_new_stock_pre_surplus), param_source='calculation')
 
     return existing_stock
 
@@ -663,11 +662,11 @@ def _calculate_new_market_shares(model, node, year, comp_type):
 
         # Initialize stocks in the Model
         model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.base_stock] = \
-            old_utils.create_value_dict(0, param_source='initialization')
+            construction.create_value_dict(0, param_source='initialization')
         model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.new_stock] = \
-            old_utils.create_value_dict(0, param_source='initialization')
+            construction.create_value_dict(0, param_source='initialization')
         model.graph.nodes[node][year][PARAM.technologies][tech_child][PARAM.added_retrofit_stock] = \
-            old_utils.create_value_dict(0, param_source='initialization')
+            construction.create_value_dict(0, param_source='initialization')
 
     return new_market_shares
 
@@ -769,7 +768,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
         year_node = model.graph.nodes[target][year]
         if PARAM.provided_quantities not in year_node.keys():
             year_node[PARAM.provided_quantities] = \
-                old_utils.create_value_dict(ProvidedQuantity(), param_source='calculation')
+                construction.create_value_dict(ProvidedQuantity(), param_source='calculation')
         year_node[PARAM.provided_quantities][PARAM.year_value].provide_quantity(amount=quant_requested,
                                                                         requesting_node=node,
                                                                         requesting_technology=tech)
@@ -806,29 +805,29 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
     """
     for tech in adjusted_new_ms:
         # New Market Shares
-        new_ms_dict = old_utils.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
+        new_ms_dict = construction.create_value_dict(adjusted_new_ms[tech], param_source='calculation')
         model.set_param_internal(new_ms_dict, PARAM.new_market_share, node, year, tech)
 
         # Base Stock
         if int(year) == model.base_year:
-            base_stock_dict = old_utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+            base_stock_dict = construction.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
                                                       param_source='calculation')
             model.set_param_internal(base_stock_dict, PARAM.base_stock, node, year, tech)
 
         # New Stock
         else:
-            new_stock_dict = old_utils.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
+            new_stock_dict = construction.create_value_dict(new_stock_demanded * adjusted_new_ms[tech],
                                                      param_source='calculation')
             model.set_param_internal(new_stock_dict, PARAM.new_stock, node, year, tech)
 
     for tech in total_market_shares:
         # Record Total Market Shares
-        total_ms_dict = old_utils.create_value_dict(total_market_shares[tech],
+        total_ms_dict = construction.create_value_dict(total_market_shares[tech],
                                                 param_source='calculation')
         model.set_param_internal(total_ms_dict, PARAM.total_market_share, node, year, tech)
 
         # Total Stock
-        total_stock_dict = old_utils.create_value_dict(assessed_demand * total_market_shares[tech],
+        total_stock_dict = construction.create_value_dict(assessed_demand * total_market_shares[tech],
                                                   param_source='calculation')
         model.set_param_internal(total_stock_dict, PARAM.total_stock, node, year, tech)
 
@@ -837,13 +836,13 @@ def _record_allocation_results(model, node, year, adjusted_new_ms, total_market_
 
     for n, t in added_retrofit_stocks:
         # Added retrofit stock
-        added_retrofit_stock_dict = old_utils.create_value_dict(added_retrofit_stocks[(n, t)],
+        added_retrofit_stock_dict = construction.create_value_dict(added_retrofit_stocks[(n, t)],
                                                       param_source='calculation')
         model.set_param_internal(added_retrofit_stock_dict, PARAM.added_retrofit_stock, n, year, t)
 
     for n, t in retrofit_stocks:
         # Net retrofit stock
-        retrofit_stock_dict = old_utils.create_value_dict(retrofit_stocks[(n, t)],
+        retrofit_stock_dict = construction.create_value_dict(retrofit_stocks[(n, t)],
                                                             param_source='calculation')
         model.set_param_internal(retrofit_stock_dict, PARAM.retrofit_stock, n, year, t)
 

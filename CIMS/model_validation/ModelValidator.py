@@ -1,11 +1,10 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-from ..readers.reader_utils import get_node_cols, _bool_as_string
 from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
-from pathlib import Path
-from ..utils import model_columns as COL
+from ..utils.model_description import column_list as COL
+from ..utils.model_description.query import get_node_cols
 
 class ModelValidator:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,

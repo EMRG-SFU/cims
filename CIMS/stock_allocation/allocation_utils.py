@@ -1,4 +1,4 @@
-from ..utils import parameters as PARAM
+from ..utils.parameter import list as PARAM
 
 def _find_competing_techs(model, node, comp_type):
     """

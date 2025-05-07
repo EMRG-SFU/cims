@@ -3,8 +3,8 @@ Module containing all declining capital cost & declining intangible cost functio
 part of LCC calculation.
 """
 from math import log2, exp
-from . import old_utils
-from .utils import parameters as PARAM
+from .utils.parameter import construction
+from .utils.parameter import list as PARAM
 
 
 
@@ -45,7 +45,7 @@ def _calc_cc_min(model, node, year, tech):
                                       tech=tech)
         cc_min = prev_cc_min * (1 - min_learning) ** model.step
 
-    model.set_param_internal(old_utils.create_value_dict(cc_min, param_source='calculation'),
+    model.set_param_internal(construction.create_value_dict(cc_min, param_source='calculation'),
                              PARAM.capital_cost_min, node, year, tech=tech)
 
     return cc_min
