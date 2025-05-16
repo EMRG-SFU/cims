@@ -173,7 +173,7 @@ def _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_limits, limit_adj
 
         if (not numpy.isclose(proposed_ms, min_ms)) and (proposed_ms < min_ms):
             return False
-        if (not numpy.isclose(propesed_ms, max_ms)) and (proposed_ms > max_ms):
+        if (not numpy.isclose(proposed_ms, max_ms)) and (proposed_ms > max_ms):
             return False
         
     return True
