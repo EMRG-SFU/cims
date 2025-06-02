@@ -4,6 +4,7 @@ surplus) and allocating new stock through a market share competition between tec
 """
 import math
 import copy
+import numpy as np
 
 from .retrofits import calc_retrofits
 from .macro_economics import calc_total_stock_demanded
@@ -575,7 +576,7 @@ def _retire_surplus_stock(model, node, year, new_stock_demanded, existing_stock,
     surplus -= added_retrofit_stock_to_retire
     new_stock_demanded += added_retrofit_stock_to_retire
 
-    assert(round(new_stock_demanded) >= 0)
+    assert(new_stock_demanded >= 0 or np.isclose(new_stock_demanded, 0))
 
     return new_stock_demanded, existing_stock, added_retrofit_stock, retrofit_stock
 
