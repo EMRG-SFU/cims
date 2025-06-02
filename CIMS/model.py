@@ -332,21 +332,28 @@ class Model:
         Raises
         ------
         ValueError
-            If fewer than two years are provided, if the years are not strictly
-            ascending, or if the step is inconsistent between elements.
+            If year_list has fewer than two elements, is not strictly ascending, 
+            or has inconsistent step sizes.
         """
         if len(year_list) < 2:
-            raise ValueError("At least two years are required.")
+            raise ValueError(
+                f"Invalid year_list (too short): {year_list}. Must contain at least two years."
+            )
 
         step = year_list[1] - year_list[0]
-        for prev, curr in zip(year_list, year_list[1:]):
+        for i, (prev, curr) in enumerate(zip(year_list, year_list[1:]), start=1):
             if curr <= prev:
-                raise ValueError("Years must be strictly ascending.")
+                raise ValueError(
+                    f"Invalid year_list (not strictly ascending): {year_list}. "
+                    f"Found {prev} >= {curr} at index {i}."
+                )
             if curr - prev != step:
-                raise ValueError("Inconsistent step between years.")
+                raise ValueError(
+                    f"Invalid year_list (inconsistent step): {year_list}. "
+                    f"Expected step of {step}, but found {curr - prev} between indices {i-1} and {i}."
+                )
 
         return step
-
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
             max_iterations=10, show_warnings=True, print_eq=False):
