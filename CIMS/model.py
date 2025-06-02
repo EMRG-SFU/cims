@@ -108,7 +108,7 @@ class Model:
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
         
-        self.step = 5 # ::TODO:: Make this an input or calculate
+        self.step = self._infer_year_step(year_list)
 
         self.supply_nodes = []
         self.GHGs = []
@@ -314,6 +314,39 @@ class Model:
                             dic_classes[dicc] = [(node, tech)]
 
         return dic_classes
+
+    def _infer_year_step(self, year_list: list[int]) -> int:
+        """
+        Infers the step between consecutive years in a strictly ascending list.
+
+        Parameters
+        ----------
+        year_list : list[int]
+            A list of years in strictly increasing order.
+
+        Returns
+        -------
+        int
+            The constant step between years.
+
+        Raises
+        ------
+        ValueError
+            If fewer than two years are provided, if the years are not strictly
+            ascending, or if the step is inconsistent between elements.
+        """
+        if len(year_list) < 2:
+            raise ValueError("At least two years are required.")
+
+        step = year_list[1] - year_list[0]
+        for prev, curr in zip(year_list, year_list[1:]):
+            if curr <= prev:
+                raise ValueError("Years must be strictly ascending.")
+            if curr - prev != step:
+                raise ValueError("Inconsistent step between years.")
+
+        return step
+
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
             max_iterations=10, show_warnings=True, print_eq=False):
@@ -632,7 +665,7 @@ class Model:
             # Set Price Multiplier of node in the graph
             graph.nodes[node][year][PARAM.price_multiplier] = node_price_multipliers
 
-        def init_supply_node_lcc(graph, node, year, step=5):
+        def init_supply_node_lcc(graph, node, year):
             """
             Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
@@ -648,9 +681,6 @@ class Model:
 
             year: str
                 The string representing the current simulation year (e.g. "2005").
-
-            step: int, optional
-                The number of years between simulation years. Default is 5.
 
             Returns
             -------
