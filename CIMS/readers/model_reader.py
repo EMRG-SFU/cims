@@ -148,7 +148,7 @@ class ModelReader:
         df.dropna(axis=0, how='all')
 
         # Extract inheritable parameters
-        list_clean = df[column_identifier].str.lower()
+        list_clean = df[column_identifier].str.lower().tolist()
 
         return list_clean
 
