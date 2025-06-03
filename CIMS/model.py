@@ -108,7 +108,7 @@ class Model:
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
         
-        self.step = 5 # ::TODO:: Make this an input or calculate
+        self.step = self._infer_year_step(year_list)
 
         self.supply_nodes = []
         self.GHGs = []
@@ -314,6 +314,46 @@ class Model:
                             dic_classes[dicc] = [(node, tech)]
 
         return dic_classes
+
+    def _infer_year_step(self, year_list: list[int]) -> int:
+        """
+        Infers the step between consecutive years in a strictly ascending list.
+
+        Parameters
+        ----------
+        year_list : list[int]
+            A list of years in strictly increasing order.
+
+        Returns
+        -------
+        int
+            The constant step between years.
+
+        Raises
+        ------
+        ValueError
+            If year_list has fewer than two elements, is not strictly ascending, 
+            or has inconsistent step sizes.
+        """
+        if len(year_list) < 2:
+            raise ValueError(
+                f"Invalid year_list (too short): {year_list}. Must contain at least two years."
+            )
+
+        step = year_list[1] - year_list[0]
+        for i, (prev, curr) in enumerate(zip(year_list, year_list[1:]), start=1):
+            if curr <= prev:
+                raise ValueError(
+                    f"Invalid year_list (not strictly ascending): {year_list}. "
+                    f"Found {prev} >= {curr} at index {i}."
+                )
+            if curr - prev != step:
+                raise ValueError(
+                    f"Invalid year_list (inconsistent step): {year_list}. "
+                    f"Expected step of {step}, but found {curr - prev} between indices {i-1} and {i}."
+                )
+
+        return step
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
             max_iterations=10, show_warnings=True, print_eq=False):
@@ -632,7 +672,7 @@ class Model:
             # Set Price Multiplier of node in the graph
             graph.nodes[node][year][PARAM.price_multiplier] = node_price_multipliers
 
-        def init_supply_node_lcc(graph, node, year, step=5):
+        def init_supply_node_lcc(graph, node, year):
             """
             Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
@@ -648,9 +688,6 @@ class Model:
 
             year: str
                 The string representing the current simulation year (e.g. "2005").
-
-            step: int, optional
-                The number of years between simulation years. Default is 5.
 
             Returns
             -------
