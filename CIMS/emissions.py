@@ -102,6 +102,39 @@ class EmissionsCost:
 
         return result
 
+    def __truediv__(self, other: int | float) -> EmissionsCost:
+        """
+        Multiplies each value in the emissions_cost attribute (which is a nested dictionary) by
+        other.
+
+        Parameters
+        ----------
+        other : float
+
+        Returns
+        -------
+        EmissionsCost
+        """
+        if not isinstance(other, (float, int)):
+            print(type(other))
+            raise ValueError
+
+        result = EmissionsCost()
+
+        for source_branch in self.emissions_cost:
+            if source_branch not in result.emissions_cost:
+                result.emissions_cost[source_branch] = {}
+            for ghg in self.emissions_cost[source_branch]:
+                if ghg not in result.emissions_cost[source_branch]:
+                    result.emissions_cost[source_branch][ghg] = {}
+                for emission_type in self.emissions_cost[source_branch][ghg]:
+                    prev_val = self.emissions_cost[source_branch][ghg][emission_type][
+                        PARAM.year_value]
+                    result.emissions_cost[source_branch][ghg][emission_type] = \
+                        construction.create_value_dict(prev_val / other)
+
+        return result
+
     def summarize(self) -> dict:
         """
         Aggregate the `EmissionsCost.emissions_cost` dictionary for each GHG and emission type
@@ -236,6 +269,36 @@ class Emissions:
                 for emission_type in self.emissions[source_branch][ghg]:
                     emission_amount = self.emissions[source_branch][ghg][emission_type][
                                           PARAM.year_value] * other
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
+                        emission_amount)
+
+        return result
+
+    def __truediv__(self, other: int | float) -> Emissions:
+        """
+        Multiplies each value in the emissions attribute (which is a nested dictionary) by
+        other.
+
+        Parameters
+        ----------
+        other : int or float
+
+        Returns
+        -------
+        Emissions
+        """
+        result = Emissions()
+
+        # Start by recording all the emissions from self in our result
+        for source_branch in self.emissions:
+            if source_branch not in result.emissions:
+                result.emissions[source_branch] = {}
+            for ghg in self.emissions[source_branch]:
+                if ghg not in result.emissions[source_branch]:
+                    result.emissions[source_branch][ghg] = {}
+                for emission_type in self.emissions[source_branch][ghg]:
+                    emission_amount = self.emissions[source_branch][ghg][emission_type][
+                                          PARAM.year_value] / other
                     result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
                         emission_amount)
 
