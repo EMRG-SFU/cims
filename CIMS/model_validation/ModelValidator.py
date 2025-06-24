@@ -179,6 +179,7 @@ class ModelValidator:
         self._run_check(validate.min_max_conflicts, validator=self)
         self._run_check(validate.new_nodes_in_scenario, validator=self)
         self._run_check(validate.new_techs_in_scenario, validator=self)
+        self._run_check(validate.base_year_market_share_not_one, validator=self)
         if self.validate_count == 0:
             print("No errors found!")
 
