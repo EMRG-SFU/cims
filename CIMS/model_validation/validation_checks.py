@@ -552,3 +552,35 @@ def lcc_at_tech(validator):
     return lcc_at_techs, concern_desc
 
 
+def base_year_market_share_not_one(validator):
+    """
+    Identifies branches where the sum of base year market shares 
+    for competing technologies does not equal 1.
+    """
+    # Extract market share data from model
+    model_df = validator.model_df
+    market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share]
+
+    # Identify base year column
+    base_year_col = next(col for col in market_share_df.columns if is_year(col))
+
+    # Select relevant columns and ensure numeric market shares
+    selected_cols = [COL.branch, COL.technology, base_year_col]
+    market_share_df = market_share_df[selected_cols].copy()
+    market_share_df[base_year_col] = pd.to_numeric(market_share_df[base_year_col], errors='coerce')
+
+    # Sum market shares for each branch
+    grouped = market_share_df.groupby(COL.branch)[base_year_col].sum().reset_index()
+
+    # Identify branches where the market share sum is not ~1
+    invalid = grouped[~np.isclose(grouped[base_year_col], 1.0, atol=0.001)]
+
+    # Build result: list of (node index, branch name, summed market share)
+    nodes_with_bad_shares = [
+        (validator.branch2node_index_map[branch], branch, total_share)
+        for branch, total_share in zip(invalid[COL.branch], invalid[base_year_col])
+    ]
+
+    concern_desc = "nodes whose base year market shares do not sum to 1"
+
+    return nodes_with_bad_shares, concern_desc
