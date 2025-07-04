@@ -15,19 +15,6 @@ from CIMS.emissions import Emissions, EmissionsCost
 from .utils.parameter import list as PARAM
 from .utils.model_description import column_list as COL
 
-excluded_parameters = [
-    PARAM.emissions_cost_rate, 
-    PARAM.cumul_emissions_cost_rate, 
-    PARAM.net_emissions_rate, 
-    PARAM.cumul_net_emissions_rate,
-    PARAM.bio_emissions_rate,
-    PARAM.cumul_bio_emissions_rate, 
-    PARAM.avoided_emissions_rate, 
-    PARAM.cumul_avoided_emissions_rate,
-    PARAM.negative_emissions_rate, 
-    PARAM.cumul_negative_emissions_rate
-]
-
 class ValueLog:
     """Class used to store the information needed to log a single parameter value."""
 
@@ -408,13 +395,11 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
                     if param == PARAM.technologies:
                         for tech, tech_data in ny_data[PARAM.technologies].items():
                             for tech_param, tech_val in tech_data.items():
-                                if tech_param not in excluded_parameters:
-                                    log = node, region, sector, year, tech, tech_param, tech_val
-                                    add_log_item(all_logs, log)
+                                log = node, region, sector, year, tech, tech_param, tech_val
+                                add_log_item(all_logs, log)
                     else:
                         log = node, region, sector, year, None, param, val
-                        if param not in excluded_parameters:
-                            add_log_item(all_logs, log)
+                        add_log_item(all_logs, log)
 
     else:
         # path argument exist
@@ -442,9 +427,6 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
 
             # Log Year Agnostic Values
             for param_to_log in p_list:
-                if param_to_log in excluded_parameters:
-                    continue
-
                 # check if the input parameter exists.
                 if param_to_log not in total_parameter_list:
                     message = f"parameter {param_to_log:} does not exist"
