@@ -144,17 +144,16 @@ class Model:
 
         self.status = 'instantiated'
 
-        # ::TODO:: Now do the stuff that happens otherwise in the `update` method.
-
         if not isinstance(self._scenario_reader, ScenarioReader):
             raise ValueError("You are attempting to update a model with \
                     something other than a ScenarioReader object.")
 
-        # ::TODO:: What does this do??
+        # Add index for Excel results viewer to build correctly sorted list of nodes
         self.graph.max_tree_index[0] = 0
         graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
         graph = edge_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        # ::TODO:: What does this do??
+        
+        # Add index for Excel results viewer to build correctly sorted list of nodes
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
 
         self.graph = graph
