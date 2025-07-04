@@ -4,7 +4,6 @@ from ..model_description import column_list as COL
 # ==========================================
 context = COL.context.lower()
 param_source= "param_source"
-source= "source"
 sub_context = COL.sub_context.lower()
 target= COL.target.lower()
 technologies = "technologies"
