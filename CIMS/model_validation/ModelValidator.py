@@ -8,11 +8,11 @@ from ..utils.model_description.query import get_node_cols
 
 class ModelValidator:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 scenario_files=None, default_values_csv_path=None, node_col=COL.branch,
+                 csv_update_file_paths=None, default_values_csv_path=None, node_col=COL.branch,
                  target_col=COL.target, root_node="CIMS", list_csv_path=None):
 
         self.csv_files = csv_file_paths
-        self.scenario_files = scenario_files or []
+        self.scenario_files = csv_update_file_paths or []
 
         self.default_param_df = self.get_default_df(default_values_csv_path)
         self.competition_types = self._get_list(list_csv_path, column_identifier="Competition")

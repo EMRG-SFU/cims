@@ -74,11 +74,12 @@ class Model:
 
         self.validator = ModelValidator(
                 csv_file_paths = csv_init_file_paths,
+                csv_update_file_paths = csv_update_file_paths,
                 col_list = col_list,
                 year_list = year_list,
                 sector_list = sector_list,
-                scenario_files = csv_update_file_paths,
-                default_values_csv_path = default_values_csv_path
+                default_values_csv_path = default_values_csv_path,
+                list_csv_path = list_csv_path,
                 )
 
         self.graph = nx.DiGraph()
