@@ -4,7 +4,7 @@ Retrofit module. Contains functions for retrofitting previously adopted stock.
 from .allocation_utils import _find_competing_techs, _find_competing_weights, _calculate_lcc_weight
 from .market_share_limits import _min_max_ms_compliant, _get_percent_differences, \
     _make_ms_min_max_compliant, _adjust_new_market_shares
-
+from ..utils.parameter import list as PARAM
 
 def _retrofit_lcc(model, node, year, existing_tech):
     """
@@ -27,14 +27,14 @@ def _retrofit_lcc(model, node, year, existing_tech):
     float :
         The LCC to use for the current technology during a retrofit competition.
     """
-    complete_annual_cost = model.get_param('complete annual cost', node, year,
+    competition_annual_cost = model.get_param(PARAM.competition_annual_cost, node, year,
                                            tech=existing_tech, do_calc=True)
-    annual_service_cost = model.get_param('service cost', node, year,
+    annual_service_cost = model.get_param(PARAM.service_cost, node, year,
                                           tech=existing_tech, do_calc=True)
-    emissions_cost = model.get_param('emissions cost', node, year,
+    emissions_cost = model.get_param(PARAM.emissions_cost, node, year,
                                      tech=existing_tech, do_calc=True)
-    retrofit_complete_lcc = complete_annual_cost + annual_service_cost + emissions_cost
-    return retrofit_complete_lcc
+    retrofit_lcc_competition = competition_annual_cost + annual_service_cost + emissions_cost
+    return retrofit_lcc_competition
 
 
 def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
@@ -67,9 +67,9 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
                 # There are no technologies competing to retrofit, limits don't apply
                 limits[(node, tech)] = (0, 1)
             else:
-                min_retrofit = model.get_param('retrofit_existing_min', node, year, tech=tech)
+                min_retrofit = model.get_param(PARAM.retrofit_existing_min, node, year, tech=tech)
                 existing_tech_max_ms = 1 - min_retrofit
-                max_retrofit = model.get_param('retrofit_existing_max', node, year, tech=tech)
+                max_retrofit = model.get_param(PARAM.retrofit_existing_max, node, year, tech=tech)
                 existing_tech_min_ms = 1 - max_retrofit
                 limits[(node, tech)] = (existing_tech_min_ms, existing_tech_max_ms)
         else:
@@ -95,7 +95,7 @@ def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
 
 def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_shares):
     """
-    If an existing_stock was retrofitted, check that each of the "other" technologies adhere to the
+    If an existing_stock was retrofitted, check that each of the other technologies adhere to the
     limits specified by their `Market share retro_Max` and `Market share retro_Min` values. These
     limits are compared with the relative market shares amongst the retrofitting technologies.
 
@@ -136,10 +136,10 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     adopting_tech_ms_limits = {}
     for (node, tech), market_share in retrofit_market_shares.items():
         if (node, tech) == existing_tech:
-            pass
+            continue
         else:
-            ms_retrofit_min = model.get_param('retrofit_new_min', node, year, tech=tech)
-            ms_retrofit_max = model.get_param('retrofit_new_max', node, year, tech=tech)
+            ms_retrofit_min = model.get_param(PARAM.retrofit_new_min, node, year, tech=tech)
+            ms_retrofit_max = model.get_param(PARAM.retrofit_new_max, node, year, tech=tech)
             adopting_tech_ms_limits[(node, tech)] = (ms_retrofit_min, ms_retrofit_max)
             adopting_tech_market_shares[(node, tech)] = market_share / ms_of_all_adopting_techs
 
@@ -167,7 +167,7 @@ def _adjust_retrofit_marketshares(model, year, existing_tech, retrofit_market_sh
     return retrofit_market_shares
 
 
-def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_at_parent=True):
+def _record_retrofitted_stock(model, node, year, tech, retrofit_amount):
     """
     Update the amount of base stock and new stock remaining in the model based on how much stock
     is retrofitted. The amount of retrofitted stock is first subtracted from base_stock_remaining.
@@ -196,37 +196,25 @@ def _record_retrofitted_stock(model, node, year, tech, retrofit_amount, record_a
         return
 
     # Base stock
-    base_stock_remaining = model.get_param('base_stock_remaining', node, year, tech=tech)
+    base_stock_remaining = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech)
     base_stock_retrofitted = min(base_stock_remaining, retrofit_amount)
     retrofit_amount -= base_stock_retrofitted
-    model.graph.nodes[node][year]['technologies'][tech]['base_stock_remaining'][
-        'year_value'] -= base_stock_retrofitted
-    if record_at_parent:
-        parent_node = '.'.join(node.split('.')[:-1])
-        parent_tech = node.split('.')[-1]
-        model.graph.nodes[parent_node][year]['technologies'][parent_tech]['base_stock_remaining'][
-            'year_value'] -= base_stock_retrofitted
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.base_stock_remaining][
+        PARAM.year_value] -= base_stock_retrofitted
 
     # New Stock
     if retrofit_amount > 0:
-        new_stock_remaining = model.get_param('new_stock_remaining', node, year, tech=tech,
+        new_stock_remaining = model.get_param(PARAM.new_stock_remaining, node, year, tech=tech,
                                               dict_expected=True)
         for prev_year in new_stock_remaining:
             y_ns_remaining = new_stock_remaining[prev_year]
             y_ns_retrofitted = min(y_ns_remaining, retrofit_amount)
             retrofit_amount -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining'][
-                'year_value'][prev_year] -= y_ns_retrofitted
-            model.graph.nodes[node][year]['technologies'][tech]['new_stock_remaining_pre_surplus'][
-                'year_value'][prev_year] -= y_ns_retrofitted
+            model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining][
+                PARAM.year_value][prev_year] -= y_ns_retrofitted
+            model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.new_stock_remaining_pre_surplus][
+                PARAM.year_value][prev_year] -= y_ns_retrofitted
 
-            if record_at_parent:
-                parent_node = '.'.join(node.split('.')[:-1])
-                parent_tech = node.split('.')[-1]
-                model.graph.nodes[parent_node][year]['technologies'][parent_tech][
-                    'new_stock_remaining']['year_value'][prev_year] -= y_ns_retrofitted
-                model.graph.nodes[parent_node][year]['technologies'][parent_tech][
-                    'new_stock_remaining_pre_surplus']['year_value'][prev_year] -= y_ns_retrofitted
 
 
 def calc_retrofits(model, node, year, existing_stock):
@@ -257,13 +245,15 @@ def calc_retrofits(model, node, year, existing_stock):
         A new retrofit_stock dictionary that contains the amount of stock adopted by each technology
         during the retrofit competition.
     """
-    comp_type = model.get_param('competition type', node).lower()
-    heterogeneity = model.get_param('retrofit_heterogeneity', node, year)
+    comp_type = model.get_param(PARAM.competition_type, node).lower()
+    heterogeneity = model.get_param(PARAM.retrofit_heterogeneity, node, year)
     added_retrofit_stocks = {}
     retrofit_stocks = {}
-    for existing_node_tech in existing_stock.keys():
-        existing_node, existing_tech = existing_node_tech
 
+    # Otherwise, we continue to do retrofits across all technologies
+    for existing_node_tech in existing_stock.keys():
+
+        existing_node, existing_tech = existing_node_tech
         # Find Other Competing
         other_competing_techs = _find_competing_techs(model, node, comp_type)
         other_competing_techs.remove(existing_node_tech)
@@ -279,10 +269,7 @@ def calc_retrofits(model, node, year, existing_stock):
 
         # Find Market shares based off of weights
         retrofit_market_shares = {}
-        if comp_type == 'tech compete':
-            for tech in competing_weights:
-                retrofit_market_shares[tech] = competing_weights[tech] / total_weight
-        elif comp_type == 'node tech compete':
+        if comp_type in ['tech compete']:
             for tech in competing_weights:
                 retrofit_market_shares[tech] = competing_weights[tech] / total_weight
 
@@ -307,8 +294,7 @@ def calc_retrofits(model, node, year, existing_stock):
                 retrofit_stocks[tech] += post_retro_existing_stock - pre_retro_existing_stock
 
                 _record_retrofitted_stock(model, existing_node, year, existing_tech,
-                                          pre_retro_existing_stock - post_retro_existing_stock,
-                                          record_at_parent=comp_type=='node tech compete')
+                                          pre_retro_existing_stock - post_retro_existing_stock)
 
             else:
                 if tech not in added_retrofit_stocks:

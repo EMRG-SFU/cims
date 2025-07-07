@@ -5,21 +5,25 @@ import pandas as pd
 import re
 import time
 import pickle
+import os.path
 
-from . import graph_utils
-from . import utils
+from .utils.model_description import column_list as COL
+from .utils.parameter import construction, list as PARAM, setters, query as param_query
+from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
+
 from . import lcc_calculation
 from . import stock_allocation
-from . import loop_resolution
 from . import tax_foresight
 from . import cost_curves
+from . import aggregation
+from . import visualize
 
-from .quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
-from .emissions import Emissions, EmissionsCost, calc_cumul_emissions_rate
+from .readers.scenario_reader import ScenarioReader
+from .readers.model_reader import ModelReader
+from .model_validation import ModelValidator
+from .quantities import ProvidedQuantity
+from .emissions import EmissionsCost
 
-from .utils import create_value_dict, inheritable_params, inherit_parameter
-from .quantity_aggregation import find_children, get_quantities_to_record, \
-    get_direct_distributed_supply
 
 
 class Model:
@@ -40,57 +44,130 @@ class Model:
         relationships are edges in the `graph`.
 
     node_dfs : dict {str: pandas.DataFrame}
-        Node names (branch form) are the keys in the dictionary. Associated DataFrames (specified in
-        the excel model description) are the values. DataFrames do not include 'technology' or
-        'service' information for a node.
+        Node names (branch notation) are the keys in the dictionary. Associated DataFrames (specified in
+        the excel model description) are the values. DataFrames do not include technology information for a node.
 
     tech_dfs : dict {str: dict {str: pandas.DataFrame}}
-        Technology & service information from the excel model description. Node names (branch form)
+        Technology & service information from the excel model description. Node names (branch notation)
         are keys in `tech_dfs` to sub-dictionaries. These sub-dictionaries have technology/service
         names as keys and pandas DataFrames as values. These DataFrames contain information from the
         excel model description.
 
-    fuels : list [str]
-        List of supply-side sector nodes (fuels, etc) requested by the demand side of the Model
-        Graph.  Populated using the `build_graph` method.
+    supply_nodes : list [str]
+        List of supply nodes requested by the demand side of the Model Graph. 
+        Populated using the `build_graph` method.
 
     years : list [str or int]
         List of the years for which the model will be run.
 
     """
 
-    def __init__(self, model_reader):
+    def __init__(self,
+                 csv_init_file_paths,
+                 csv_update_file_paths,
+                 col_list,
+                 year_list,
+                 sector_list,
+                 default_values_csv_path,
+                 list_csv_path
+                 ):
+
+        self.validator = ModelValidator(
+                csv_file_paths = csv_init_file_paths,
+                csv_update_file_paths = csv_update_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list,
+                default_values_csv_path = default_values_csv_path,
+                list_csv_path = list_csv_path,
+                )
+
         self.graph = nx.DiGraph()
-        self.node_dfs, self.tech_dfs = model_reader.get_model_description()
-        self.scenario_node_dfs, self.scenario_tech_dfs = None, None
-        self.node_tech_defaults = model_reader.get_default_params()
-        self.step = 5  # TODO: Make this an input or calculate
-        self.fuels = []
+
+        self._model_reader = ModelReader(
+                csv_file_paths = csv_init_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list,
+                default_values_csv_path = default_values_csv_path,
+                list_csv_path=list_csv_path)
+
+        self._scenario_reader = ScenarioReader(
+                csv_file_paths = csv_update_file_paths,
+                col_list = col_list,
+                year_list = year_list,
+                sector_list = sector_list)
+
+        self.root = self._model_reader.root
+        self.node_dfs, self.tech_dfs = self._model_reader.get_model_description()
+        self.scenario_node_dfs, self.scenario_tech_dfs = self._scenario_reader.get_model_description()
+        self.node_tech_defaults = self._model_reader.get_default_params()
+        
+        # Parameter Lists & Defaults
+        self.node_tech_defaults = self._model_reader.get_default_params()
+        self.inheritable_params = self._model_reader.get_inheritable_params()
+        self.competition_types = self._model_reader.get_valid_competition_types()
+        self.output_params = []
+        
+        self.step = self._infer_year_step(year_list)
+
+        self.supply_nodes = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
-        self.years = model_reader.get_years()
+        self.years = self._model_reader.get_years()
         self.base_year = int(self.years[0])
-
         self.prices = {}
         self.equilibrium_count = 0
 
+        ## GRAPH BUILDING HERE
         self.build_graph()
+
         self.dcc_classes = self._dcc_classes()
         self.dic_classes = self._dic_classes()
-
         self._inherit_parameter_values()
-        self._initialize_model()
+        self._initialize_tax()
 
         self.show_run_warnings = True
+        self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
+        self.scenario_model_description_file = self._scenario_reader.csv_files
 
-        self.model_description_file = model_reader.infile
-        self.scenario_model_description_file = None
         self.change_history = pd.DataFrame(
-            columns=['base_model_description', 'parameter', 'node', 'year', 'technology',
-                     'context', 'sub_context', 'old_value', 'new_value'])
+            columns=['base_model_description', 
+                     COL.parameter.lower(), 
+                     'node', 
+                     'year', 
+                     COL.technology.lower(),
+                     COL.context.lower(),
+                     COL.sub_context.lower(),
+                     'old_value', 
+                     'new_value'])
 
         self.status = 'instantiated'
+
+        if not isinstance(self._scenario_reader, ScenarioReader):
+            raise ValueError("You are attempting to update a model with \
+                    something other than a ScenarioReader object.")
+
+        # Add index for Excel results viewer to build correctly sorted list of nodes
+        self.graph.max_tree_index[0] = 0
+        graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
+        
+        # Add index for Excel results viewer to build correctly sorted list of nodes
+        self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
+
+        self.graph = graph
+        self.supply_nodes = graph_query.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
+        self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+        self._inherit_parameter_values()
+        self._initialize_tax()
+        self.show_run_warnings = True
+
+    def validate_files(self, verbose=False):
+        self.validator.validate(verbose=verbose)
 
     def update(self, scenario_model_reader):
         """
@@ -108,8 +185,13 @@ class Model:
             An updated version of self.
         """
         if self.status.lower() in ['run initiated', 'run completed']:
-            raise ValueError("You've attempted to update a model which has already been run. "
-                             "To prevent inconsistencies, this update has not been done.")
+            raise ValueError("You've attempted to update a model which has \
+                             already been run. To prevent inconsistencies, \
+                             this update has not been done.")
+
+        if not isinstance(scenario_model_reader, ScenarioReader):
+            raise ValueError("You are attempting to update a model with \
+                             something other than a ScenarioReader object.")
 
         # Make a copy, so we don't alter self
         model = copy.deepcopy(self)
@@ -119,25 +201,28 @@ class Model:
             scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
-        graph = graph_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
+        self.graph.max_tree_index[0] = 0
+        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, model.scenario_node_dfs,
+        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs,
                                                  model.scenario_tech_dfs)
+        self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
         # Update the Model's metadata
-        model.fuels = graph_utils.get_fuels(graph)
-        model.GHGs, model.emission_types, model.gwp = graph_utils.get_GHG_and_Emissions(graph,
+        model.supply_nodes = graph_query.get_supply_nodes(graph)
+
+        model.GHGs, model.emission_types, model.gwp = param_query.get_ghg_and_emissions(graph,
                                                                                         str(model.base_year))
         model.dcc_classes = model._dcc_classes()
         model.dic_classes = model._dic_classes()
 
         # Re-initialize the model
         model._inherit_parameter_values()
-        model._initialize_model()
+        model._initialize_tax()
 
         model.show_run_warnings = True
-        model.scenario_model_description_file = scenario_model_reader.infile
+        model.scenario_model_description_file = scenario_model_reader.csv_files
 
         return model
 
@@ -145,7 +230,7 @@ class Model:
         """
 
         Builds graph based on the model reader used in instantiation of the class. Stores this graph
-        in `self.graph`. Additionally, initializes `self.fuels`.
+        in `self.graph`. Additionally, initializes `self.supply_nodes`.
 
         Returns
         -------
@@ -155,19 +240,22 @@ class Model:
         graph = nx.DiGraph()
         node_dfs = self.node_dfs
         tech_dfs = self.tech_dfs
-        graph = graph_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
-        graph = graph_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
+        graph.cur_tree_index = [0]
+        graph.max_tree_index = [0]
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
+        graph.cur_tree_index[0] += graph.max_tree_index[0]
 
-        self.fuels = graph_utils.get_fuels(graph)
-        self.GHGs, self.emission_types, self.gwp = graph_utils.get_GHG_and_Emissions(graph,
+        self.supply_nodes = graph_query.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph,
                                                                                      str(self.base_year))
         self.graph = graph
 
-    def _initialize_model(self):
+    def _initialize_tax(self):
         # Initialize Taxes
         for year in self.years:
             # Pass tax to all children for carbon cost
-            graph_utils.top_down_traversal(self.graph,
+            traversals.top_down_traversal(self.graph,
                                            self._init_tax_emissions,
                                            year)
         # Initialize Tax Foresight
@@ -189,13 +277,9 @@ class Model:
         nodes = self.graph.nodes
         base_year = str(self.base_year)
         for node in nodes:
-            if 'technologies' in nodes[node][base_year]:
-                for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dccc = self.graph.nodes[node][base_year]['technologies'][tech]['dcc_class'][
-                            'context']
-                    except:
-                        dccc = None
+            if PARAM.technologies in nodes[node][base_year]:
+                for tech in nodes[node][base_year][PARAM.technologies]:
+                    dccc = self.get_param(PARAM.dcc_class, node, base_year, tech=tech)
                     if dccc is not None:
                         if dccc in dcc_classes:
                             dcc_classes[dccc].append((node, tech))
@@ -220,13 +304,9 @@ class Model:
         nodes = self.graph.nodes
         base_year = str(self.base_year)
         for node in nodes:
-            if 'technologies' in nodes[node][base_year]:
-                for tech in nodes[node][base_year]['technologies']:
-                    try:
-                        dicc = self.graph.nodes[node][base_year]['technologies'][tech]['dic_class'][
-                            'context']
-                    except:
-                        dicc = None
+            if PARAM.technologies in nodes[node][base_year]:
+                for tech in nodes[node][base_year][PARAM.technologies]:
+                    dicc = self.get_param(PARAM.dic_class, node, base_year, tech=tech)
                     if dicc is not None:
                         if dicc in dic_classes:
                             dic_classes[dicc].append((node, tech))
@@ -234,6 +314,46 @@ class Model:
                             dic_classes[dicc] = [(node, tech)]
 
         return dic_classes
+
+    def _infer_year_step(self, year_list: list[int]) -> int:
+        """
+        Infers the step between consecutive years in a strictly ascending list.
+
+        Parameters
+        ----------
+        year_list : list[int]
+            A list of years in strictly increasing order.
+
+        Returns
+        -------
+        int
+            The constant step between years.
+
+        Raises
+        ------
+        ValueError
+            If year_list has fewer than two elements, is not strictly ascending, 
+            or has inconsistent step sizes.
+        """
+        if len(year_list) < 2:
+            raise ValueError(
+                f"Invalid year_list (too short): {year_list}. Must contain at least two years."
+            )
+
+        step = year_list[1] - year_list[0]
+        for i, (prev, curr) in enumerate(zip(year_list, year_list[1:]), start=1):
+            if curr <= prev:
+                raise ValueError(
+                    f"Invalid year_list (not strictly ascending): {year_list}. "
+                    f"Found {prev} >= {curr} at index {i}."
+                )
+            if curr - prev != step:
+                raise ValueError(
+                    f"Invalid year_list (inconsistent step): {year_list}. "
+                    f"Expected step of {step}, but found {curr - prev} between indices {i-1} and {i}."
+                )
+
+        return step
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
             max_iterations=10, show_warnings=True, print_eq=False):
@@ -258,7 +378,7 @@ class Model:
             that year will stop, and iteration for the next year will begin.
 
         verbose : bool, optional
-            Whether or not to have verbose printing during iterations. If true, fuel prices are
+            Whether or not to have verbose printing during iterations. If true, supply node prices are
             printed at the end of each iteration.
 
         Returns
@@ -270,8 +390,10 @@ class Model:
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
-        demand_nodes = graph_utils.get_demand_nodes(self.graph)
-        supply_nodes = graph_utils.get_supply_nodes(self.graph)
+        self.loops = traversals.find_loops(self.graph, warn=True)
+
+        demand_nodes = graph_query.get_demand_side_nodes(self.graph)
+        supply_nodes = graph_query.get_supply_side_nodes(self.graph)
 
         for year in self.years:
             print(f"***** ***** year: {year} ***** *****")
@@ -283,31 +405,31 @@ class Model:
 
             # Initialize Graph Values
             self.initialize_graph(self.graph, year)
-            while self.equilibrium_count < num_equilibrium_iterations:
-                print(f'iter {iteration}')
+            while self.equilibrium_count < num_equilibrium_iterations or \
+                    iteration <= min_iterations:
                 # Early exit if we reach the maximum number of iterations
-                if iteration >= max_iterations:
-                    warnings.warn("Max iterations reached for year {}. "
-                                  "Continuing to next year.".format(year))
+                if iteration > max_iterations:
+                    warnings.warn(f"Max iterations reached for year {year}. Continuing to next year.")
                     break
+                print(f'iter {iteration}')
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
                 # DEMAND
                 # ******************
                 # Calculate Life Cycle Cost values on demand side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self)
 
                 # Calculate Quantities (Total Stock Needed)
-                graph_utils.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.top_down_traversal(nx.subgraph(self.graph, demand_nodes),
                                                self.stock_allocation_and_retirement,
                                                year)
 
                 # Calculate Service Costs on Demand Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self)
@@ -315,46 +437,38 @@ class Model:
                 # Supply
                 # ******************
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
                                                 cost_curve_min_max=True)
-                # Calculate Fuel Quantities
-                graph_utils.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
+                # Calculate Supply Quantities
+                traversals.top_down_traversal(nx.subgraph(self.graph, supply_nodes),
                                                self.stock_allocation_and_retirement,
                                                year,
                                                )
 
                 # Calculate Service Costs on Supply Side
-                graph_utils.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
+                traversals.bottom_up_traversal(nx.subgraph(self.graph, supply_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
                                                 )
 
-                # Check for an Equilibrium -- Across all nodes, not just fuels
+                # Check for an Equilibrium -- Across all nodes, not just supply nodes
                 # ************************
                 # Find the previous prices
                 prev_prices = self.prices
                 # Go get all the new prices
-                new_prices = {node: self.get_param('price', node, year, do_calc=True) for node in
+                new_prices = {node: self.get_param(PARAM.price, node, year, do_calc=True) for node in
                               self.graph.nodes()}
 
                 # Check for an equilibrium in prices
+                equilibrium = int(year) == self.base_year or \
+                              self.check_equilibrium(prev_prices, new_prices, iteration,
+                                                     equilibrium_threshold, print_eq)
 
-                equilibrium = min_iterations <= iteration and \
-                              (int(year) == self.base_year or
-                               self.check_equilibrium(prev_prices,
-                                                      new_prices,
-                                                      iteration,
-                                                      equilibrium_threshold,
-                                                      print_eq))
-
-                if int(year) == self.base_year:
-                    # Force the model to continue after a single iteration in the base year
-                    self.equilibrium_count = num_equilibrium_iterations
-                elif equilibrium:
+                if equilibrium:
                     self.equilibrium_count += 1
                 else:
                     self.equilibrium_count = 0
@@ -366,96 +480,82 @@ class Model:
                 iteration += 1
 
             # Once we've reached an equilibrium, calculate the quantities requested by each node.
-            graph_utils.bottom_up_traversal(self.graph,
-                                            self.calc_requested_quantities,
+            traversals.bottom_up_traversal(self.graph,
+                                            self._aggregate_requested_quantities,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_direct_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_direct_emissions_cost,
+            traversals.bottom_up_traversal(self.graph,
+                                            self._aggregate_cumulative_emissions,
                                             year,
                                             loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
+                                            supply_nodes=self.supply_nodes)
 
-            graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_cumul_emissions,
-                                            year,
-                                            loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
-
-            graph_utils.bottom_up_traversal(self.graph,
-                                            self._aggregate_cumul_emissions_cost,
-                                            year,
-                                            loop_resolution_func=loop_resolution.aggregation_resolution,
-                                            fuels=self.fuels)
-
-            graph_utils.bottom_up_traversal(self.graph,
+            traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
         self.status = 'Run completed'
 
-    def check_equilibrium(self, prev, new, iteration, threshold, print_eq):
+    def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
+                          print_equilibrium_details: bool) -> bool:
         """
         Return False unless an equilibrium has been reached.
             1. Check if prev is empty or year not in previous (first year or first
                iteration)
-            2. For every fuel, check if the relative difference exceeds the threshold
+            2. For every node, check if the relative difference in price exceeds the threshold
                 (A) If it does, return False
                 (B) Otherwise, keep checking
-            3. If all fuels are checked and no relative difference exceeds the
-               threshold, return True
+            3. If all nodes are checked and no relative difference exceeds the threshold, return
+               True
 
         Parameters
         ----------
-        prev : dict
+        prev : Prices from the previous iteration.
 
-        new : dict
+        new : Prices from the current iteration.
 
-        threshold : float
+        threshold : The threshold to use for determining whether an equilibrium has been reached.
+
+        print_equilibrium_details : Whether to print details regarding the nodes responsible for an
+        equilibrium not being reached.
 
         Returns
         -------
-        True if all fuels changed less than `threshold`. False otherwise.
+        True if all nodes changed less than `threshold`. False otherwise.
         """
-        # For every fuel, check if the relative difference exceeds the threshold
-        equil_check = 0
+        # For every node, check if the relative difference in price exceeds the threshold
+        equilibrium_reached = True
+        for node in new:
+            prev_price = prev[node]
+            new_price = new[node]
+            if (prev_price is None) or (new_price is None):
+                print(f"\tNot at equilibrium: {node} does not have an LCC calculated")
+                equilibrium_reached = False
+            abs_diff = abs(new_price - prev_price)
 
-        for fuel in new:
-            prev_fuel_price = prev[fuel]
-            new_fuel_price = new[fuel]
-            if (prev_fuel_price is None) or (new_fuel_price is None):
-                print(f"   Not at equilibrium: {fuel} does not have an LCC calculated")
-                return False
-            abs_diff = abs(new_fuel_price - prev_fuel_price)
-
-            if prev_fuel_price == 0:
+            if prev_price == 0:
                 if self.show_run_warnings:
-                    warnings.warn("Previous fuel price is 0 for {}".format(fuel))
+                    warnings.warn(f"Previous price is 0 for {node}")
                 rel_diff = 0
             else:
-                rel_diff = abs_diff / prev_fuel_price
+                rel_diff = abs_diff / prev_price
 
-            # If any fuel's relative difference exceeds the threshold, an equilibrium
-            # has not been reached
+            # If any node's relative difference exceeds threshold, equilibrium has not been reached
             if rel_diff > threshold:
-                equil_check += 1
-                if iteration > 1 and print_eq == True:
-                    rel_diff_formatted = "{:.1f}".format(rel_diff * 100)
+                equilibrium_reached = False
+                if print_equilibrium_details and iteration > 1:
                     print(
-                        f"   Not at equilibrium: {fuel} has {rel_diff_formatted}% difference between iterations")
+                        f"\tNot at equilibrium: {node} has {rel_diff:.1%} difference between"
+                        f" iterations")
 
-        if equil_check > 0:
-            return False
-
-        # Otherwise, an equilibrium has been reached
-        return True
+        return equilibrium_reached
 
     def _init_tax_emissions(self, graph, node, year):
         """
@@ -482,22 +582,22 @@ class Model:
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'tax' in graph.nodes[parent][year]:
-                parent_dict = copy.deepcopy(graph.nodes[parent][year]['tax'])
+            if PARAM.tax in graph.nodes[parent][year]:
+                parent_dict = copy.deepcopy(graph.nodes[parent][year][PARAM.tax])
 
         # Update parameter source for values from parent
         for ghg in parent_dict:
             for emission_type in parent_dict[ghg]:
-                parent_dict[ghg][emission_type]['param_source'] = 'inheritance'
+                parent_dict[ghg][emission_type][PARAM.param_source] = 'inheritance'
 
         # Store away tax at current node to overwrite parent tax later
         node_dict = {}
-        if 'tax' in graph.nodes[node][year]:
-            node_dict = copy.deepcopy(graph.nodes[node][year]['tax'])
+        if PARAM.tax in graph.nodes[node][year]:
+            node_dict = copy.deepcopy(graph.nodes[node][year][PARAM.tax])
             # Remove any inherited values from the update
             for ghg in list(node_dict):
                 for emission_type in list(node_dict[ghg]):
-                    if node_dict[ghg][emission_type]['param_source'] == 'inheritance':
+                    if node_dict[ghg][emission_type][PARAM.param_source] == 'inheritance' or node_dict[ghg][emission_type][PARAM.year_value] is None:
                         node_dict[ghg].pop(emission_type)
                         if len(node_dict[ghg]) == 0:
                             node_dict.pop(ghg)
@@ -512,13 +612,12 @@ class Model:
                     final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
         if final_tax:
-            graph.nodes[node][year]['tax'] = final_tax
-
+            graph.nodes[node][year][PARAM.tax] = final_tax
 
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) fuel nodes' Life Cycle Cost
+        Specifically, initializes (1) price multiplier values and (2) supply nodes' Life Cycle Cost
         value.
 
         Parameters
@@ -559,24 +658,23 @@ class Model:
             parent_price_multipliers = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if 'price multiplier' in graph.nodes[parent][year]:
+                if PARAM.price_multiplier in graph.nodes[parent][year]:
                     price_multipliers = copy.deepcopy(
-                        self.graph.nodes[parent][year]['price multiplier'])
+                        self.graph.nodes[parent][year][PARAM.price_multiplier])
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
-            if 'price multiplier' in graph.nodes[node][year]:
-                price_multipliers = self.get_param('price multiplier', node, year,
-                                                   dict_expected=True)
+            if PARAM.price_multiplier in graph.nodes[node][year]:
+                price_multipliers = self.get_param(PARAM.price_multiplier, node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
-            graph.nodes[node][year]['price multiplier'] = node_price_multipliers
+            graph.nodes[node][year][PARAM.price_multiplier] = node_price_multipliers
 
-        def init_fuel_lcc(graph, node, year, step=5):
+        def init_supply_node_lcc(graph, node, year):
             """
-            Function for initializing Life Cycle Cost for a node in a graph, if that node is a fuel
+            Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
             function.
 
@@ -591,13 +689,10 @@ class Model:
             year: str
                 The string representing the current simulation year (e.g. "2005").
 
-            step: int, optional
-                The number of years between simulation years. Default is 5.
-
             Returns
             -------
             Nothing is returned, but `graph.nodes[node]` will be updated with the initialized Life
-            Cycle Cost if node is a fuel node.
+            Cycle Cost if node is a supply node.
             """
 
             def calc_lcc_from_children():
@@ -608,43 +703,28 @@ class Model:
                 -------
                 Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
                 """
-                # Find the subtree rooted at the fuel node
-                descendants = [n for n in graph.nodes if node in n]
+                # Find the subtree rooted at the supply node
+                descendants = nx.descendants(graph, node) | {node}
+
                 descendant_tree = nx.subgraph(graph, descendants)
 
                 # Calculate the Life Cycle Costs for the sub-tree
-                graph_utils.bottom_up_traversal(descendant_tree,
+                traversals.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
                                                 self,
                                                 root=node)
 
-            if node in self.fuels:
-                if 'lcc_financial' in graph.nodes[node][year]:
-                    lcc_dict = graph.nodes[node][year]['lcc_financial']
-                    fuel_name = list(lcc_dict.keys())[0]
-                    if lcc_dict[fuel_name]['year_value'] is None:
-                        lcc_dict[fuel_name]['to_estimate'] = True
-                        last_year = str(int(year) - step)
-                        last_year_value = self.get_param('lcc_financial',
-                                                         node, last_year)[fuel_name]['year_value']
-                        graph.nodes[node][year]['lcc_financial'][fuel_name][
-                            'year_value'] = last_year_value
-                    else:
-                        graph.nodes[node][year]['lcc_financial'][fuel_name][
-                            'to_estimate'] = False
-                elif 'cost_curve_function' in graph.nodes[node]:
+            if node in self.supply_nodes:
+                if PARAM.lcc_financial in graph.nodes[node][year]:
+                    if self.get_param(PARAM.lcc_financial, node, year) is None:
+                        calc_lcc_from_children()
+                elif PARAM.cost_curve_function in graph.nodes[node]:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
-                    service_name = node.split('.')[-1]
-                    graph.nodes[node][year]['lcc_financial'] = {
-                        service_name: utils.create_value_dict(lcc,
-                                                              param_source='cost curve function')}
+                    graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source='cost curve function')
                 else:
                     # Life Cycle Cost needs to be calculated from children
                     calc_lcc_from_children()
-                    lcc_dict = graph.nodes[node][year]['lcc_financial']
-                    fuel_name = list(lcc_dict.keys())[0]
-                    lcc_dict[fuel_name]['to_estimate'] = True
 
         def init_convert_to_CO2e(graph, node, year, gwp):
             """
@@ -671,26 +751,26 @@ class Model:
             """
 
             # Emissions from a node with technologies
-            if 'technologies' in graph.nodes[node][year]:
-                techs = graph.nodes[node][year]['technologies']
+            if PARAM.technologies in graph.nodes[node][year]:
+                techs = graph.nodes[node][year][PARAM.technologies]
                 for tech in techs:
                     tech_data = techs[tech]
-                    if 'emissions' in tech_data:
-                        emission_data = tech_data['emissions']
+                    if PARAM.emissions in tech_data:
+                        emission_data = tech_data[PARAM.emissions]
                         for ghg in emission_data:
                             for emission_type in emission_data[ghg]:
                                 try:
-                                    emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                                    emission_data[ghg][emission_type][PARAM.year_value] *= gwp[ghg]
                                 except KeyError:
                                     continue
 
             # Emissions from a node
-            elif 'emissions' in graph.nodes[node][year]:
-                emission_data = graph.nodes[node][year]['emissions']
+            elif PARAM.emissions in graph.nodes[node][year]:
+                emission_data = graph.nodes[node][year][PARAM.emissions]
                 for ghg in emission_data:
                     for emission_type in emission_data[ghg]:
                         try:
-                            emission_data[ghg][emission_type]['year_value'] *= gwp[ghg]
+                            emission_data[ghg][emission_type][PARAM.year_value] *= gwp[ghg]
                         except KeyError:
                             continue
 
@@ -715,28 +795,28 @@ class Model:
             Nothing. Will update graph.nodes[node][year] with the initialized value of `Load Factor`
             (if there is one).
             """
-            if 'load factor' not in graph.nodes[node][year]:
+            if PARAM.load_factor not in graph.nodes[node][year]:
                 # Check if a load factor was defined at the node's structural parent (its first
                 # parent). If so, use this load factor for the node.
                 parents = list(graph.predecessors(node))
                 if len(parents) > 0:
                     parent = parents[0]
-                    if 'load factor' in graph.nodes[parent][year]:
-                        val = graph.nodes[parent][year]['load factor']['year_value']
-                        units = graph.nodes[parent][year]['load factor']['unit']
-                        graph.nodes[node][year]['load factor'] = utils.create_value_dict(val,
+                    if PARAM.load_factor in graph.nodes[parent][year]:
+                        val = graph.nodes[parent][year][PARAM.load_factor][PARAM.year_value]
+                        units = graph.nodes[parent][year][PARAM.load_factor][PARAM.unit]
+                        graph.nodes[node][year][PARAM.load_factor] = construction.create_value_dict(val,
                                                                                          unit=units,
                                                                                          param_source='inheritance')
 
-            if 'load factor' in graph.nodes[node][year]:
+            if PARAM.load_factor in graph.nodes[node][year]:
                 # Ensure this load factor is recorded at each of the technologies within the node.
-                if 'technologies' in graph.nodes[node][year]:
-                    tech_data = graph.nodes[node][year]['technologies']
+                if PARAM.technologies in graph.nodes[node][year]:
+                    tech_data = graph.nodes[node][year][PARAM.technologies]
                     for tech in tech_data:
-                        if 'load factor' not in tech_data[tech]:
-                            val = graph.nodes[node][year]['load factor']['year_value']
-                            units = graph.nodes[node][year]['load factor']['unit']
-                            tech_data[tech]['load factor'] = utils.create_value_dict(val,
+                        if PARAM.load_factor not in tech_data[tech]:
+                            val = graph.nodes[node][year][PARAM.load_factor][PARAM.year_value]
+                            units = graph.nodes[node][year][PARAM.load_factor][PARAM.unit]
+                            tech_data[tech][PARAM.load_factor] = construction.create_value_dict(val,
                                                                                      unit=units,
                                                                                      param_source='inheritance')
 
@@ -765,13 +845,13 @@ class Model:
             parent_dict = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if 'tax' in graph.nodes[parent][year]:
-                    parent_dict = graph.nodes[parent][year]['tax']
+                if PARAM.tax in graph.nodes[parent][year]:
+                    parent_dict = graph.nodes[parent][year][PARAM.tax]
 
             # Store away tax at current node to overwrite parent tax later
             node_dict = {}
-            if 'tax' in graph.nodes[node][year]:
-                node_dict = graph.nodes[node][year]['tax']
+            if PARAM.tax in graph.nodes[node][year]:
+                node_dict = graph.nodes[node][year][PARAM.tax]
 
             # Make final dict where we prioritize keeping node_dict and only unique parent taxes
             final_tax = copy.deepcopy(node_dict)
@@ -783,42 +863,46 @@ class Model:
                         final_tax[ghg][emission_type] = parent_dict[ghg][emission_type]
 
             if final_tax:
-                graph.nodes[node][year]['tax'] = final_tax
+                graph.nodes[node][year][PARAM.tax] = final_tax
 
         def init_agg_emissions_cost(graph):
             # Reset the aggregate_emissions_cost at each node
             for n in self.graph.nodes():
-                self.graph.nodes[n][year]['aggregate_emissions_cost_rate'] = \
-                    create_value_dict({}, param_source='initialization')
-                self.graph.nodes[n][year]['cumul_emissions_cost_rate'] = \
-                    create_value_dict(EmissionsCost(), param_source='initialization')
+                self.graph.nodes[n][year][PARAM.aggregate_emissions_cost_rate] = \
+                    construction.create_value_dict({}, param_source='initialization')
+                self.graph.nodes[n][year][PARAM.cumul_emissions_cost_rate] = \
+                    construction.create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
 
-        graph_utils.top_down_traversal(graph,
+        traversals.top_down_traversal(graph,
                                        init_convert_to_CO2e,
                                        year,
                                        self.gwp)
-        graph_utils.top_down_traversal(graph,
+        traversals.top_down_traversal(graph,
                                        init_load_factor,
                                        year)
-        graph_utils.bottom_up_traversal(graph,
-                                        init_fuel_lcc,
+        traversals.bottom_up_traversal(graph,
+                                        init_supply_node_lcc,
                                         year)
 
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year]['provided_quantities'] = create_value_dict(ProvidedQuantity(),
+            self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(),
                                                                                  param_source='initialization')
 
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):
-            for param in inheritable_params:
-                inherit_parameter(graph, node, year, param)
+            for param in self.inheritable_params:
+                try:
+                    no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][param][PARAM.year_value]
+                except KeyError:
+                    no_inheritance = False
+                construction.inherit_parameter(self, graph, node, year, param, no_inheritance)
 
         for year in self.years:
-            graph_utils.top_down_traversal(self.graph, inherit_function, year)
+            traversals.top_down_traversal(self.graph, inherit_function, year)
 
     def stock_allocation_and_retirement(self, sub_graph, node, year):
         """
@@ -831,7 +915,7 @@ class Model:
             `graph_utils.top_down_traversal()`.
 
         node: str
-            The name of the node (in branch form) where stock stock retirement and allocation will
+            The name of the node (branch notation) where stock stock retirement and allocation will
             be performed.
 
         year: str
@@ -842,292 +926,101 @@ class Model:
             Nothing is returned. `self` will be updated to reflect the results of stock retirement
             and new stock competitions.
         """
-        comp_type = self.get_param('competition type', node).lower()
+        comp_type = self.get_param(PARAM.competition_type, node).lower()
 
-        # Market acts the same as tech compete
-        if comp_type == 'market':
-            comp_type = 'tech compete'
-
-        if comp_type in ['tech compete', 'node tech compete']:
+        if comp_type in ['tech compete']:
             stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
             stock_allocation.general_allocation(self, node, year)
 
-    def calc_requested_quantities(self, graph, node, year, **kwargs):
+    def _aggregate_requested_quantities(self, graph, node, year, **kwargs):
         """
-        Calculates and records fuel quantities requested by a node in the specified year.
+        Calculates and records supply quantities attributable to a node in the specified year. Supply
+        quantities can be attributed to a node in 3 ways:
 
-        This includes fuel quantities directly requested of the node (e.g. a Lighting requests
-        services directly from Electricity) and fuel quantities that are indirectly requested, but
-        can be attributed to the node (e.g. Alberta indirectly requests Electricity via its
-        children). In other words, this not only includes quantities a node requests, but also
-        quantities requested by it's successors (children, grandchildren, etc).
+        (1) via request/provide relationships - any supply quantity directly requested of the node
+        (e.g. Lighting requests services directly from Electricity) and supply quantities that
+        are indirectly requested, but can be attributed to the node (e.g. Housing requests
+        Electricity via its request of Lighting).
 
-        This method was built to be used with the bottom up traversal method
-        (CIMS.graph_utils.bottom_up_traversal()), which ensures that a node is only visited once
-        all its children have been visited (except when it needs to break a loop).
+        (2) via structural relationships - supply nodes pass indirect quantities to their structural
+        parents, rather than request/provide parents. Additionally, root & region nodes collect
+        quantities via their structural children, rather than their request/provide children.
 
-        Important things to note:
-           * Fuel nodes pass along quantities requested by their successors via their structural
-             parent rather than through request/provide parents.
+        (3) via weighted aggregate relationships - if specified in the model description, nodes will
+        aggregate quantities structurally. For example, if a market node has
+        `structural_aggregation` turned on, any quantities (direct or in-direct) from the market
+        children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
+        which it has a request/provide relationship with (CAN.Natural Gas).
 
-        Parameters
-        ----------
-        graph : networkX.Graph
-            The graph containing node & its children.
-        node : str
-            The name of the node (in branch/path notation) for which the total requested quantities
-            will be calculated.
-        year : str
-            The year of interest.
-
-        Returns
-        -------
-        Nothing. Does set the requested_quantities parameter in the Model according to the
-        quantities requested of node & all it's successors.
+        This method was built to be used with the bottom-up traversal method, which ensures a node
+        is only visited once all its children have been visited (except when needs to break a loop).
         """
-        requested_quantity = RequestedQuantity()
-
-        if self.get_param('competition type', node) in ['root', 'region']:
-            structural_children = find_children(graph, node, structural=True)
-            for child in structural_children:
-                # Find quantities provided to the node via its structural children
-                child_requested_quant = self.get_param('requested_quantities',
-                                                       child, year).get_total_quantities_requested()
-                for child_rq_node, child_rq_amount in child_requested_quant.items():
-                    # Record requested quantities
-                    requested_quantity.record_requested_quantity(child_rq_node,
-                                                                 child,
-                                                                 child_rq_amount)
-
-        elif 'technologies' in graph.nodes[node][year]:
-            for tech in graph.nodes[node][year]['technologies']:
-                tech_requested_quantity = RequestedQuantity()
-
-                # Aggregate Fuel Quantities
-                req_prov_children = find_children(graph, node, year, tech, request_provide=True)
-                for child in req_prov_children:
-                    quantities_to_record = get_quantities_to_record(self, child, node, year, tech)
-                    # Record requested quantities
-                    for providing_node, child, attributable_amount in quantities_to_record:
-                        tech_requested_quantity.record_requested_quantity(providing_node,
-                                                                          child,
-                                                                          attributable_amount)
-                        requested_quantity.record_requested_quantity(providing_node,
-                                                                     child,
-                                                                     attributable_amount)
-
-                # Save the tech requested quantities
-                self.graph.nodes[node][year]['technologies'][tech]['requested_quantities'] = \
-                    tech_requested_quantity
-
-        else:
-            req_prov_children = find_children(graph, node, year, request_provide=True)
-            for child in req_prov_children:
-                # Record requested quantities
-                quantities_to_record = get_quantities_to_record(self, child, node, year)
-                for providing_node, child, attributable_amount in quantities_to_record:
-                    requested_quantity.record_requested_quantity(providing_node,
-                                                                 child,
-                                                                 attributable_amount)
-
-        self.graph.nodes[node][year]['requested_quantities'] = \
-            utils.create_value_dict(requested_quantity, param_source='calculation')
-
-    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
-        """
-        We want to aggregate up the structural relationships in the tree. This means there are two
-        different locations within the tree we need to think about:
-
-        (1) @ a Node without techs — Find any distributed supply that has been generated at the
-            node. Add any distributed supplies from structural children.
-        (2) @ a Node with tech — For each tech, find the distributed supply generated at that node
-           (See Q below). Sum up the distributed supplies across all techs.
-
-        When doing sums, there is no need to worry about multiply by weights or service request
-        ratios, since each node only has a single structural parent, everything will flow through
-        that path.
-
-        Question: I'm guessing that we want to store a "distributed_supply" value at the tech-level,
-        even though technologies will only include distributed supply if they are directly
-        producing it (since techs are never structural parents). Is this logic correct?
-        """
-        node_distributed_supply = DistributedSupply()
-        if 'technologies' in self.graph.nodes[node][year]:
-            # @ a Node with techs
-            # Find distributed supply generated at the tech
-            for tech in self.graph.nodes[node][year]['technologies']:
-                tech_distributed_supply = DistributedSupply()
-                distributed_supplies = get_direct_distributed_supply(self, node, year, tech)
-                for service, amount in distributed_supplies:
-                    tech_distributed_supply.record_distributed_supply(service, node, amount)
-                    node_distributed_supply.record_distributed_supply(service, node, amount)
-                self.graph.nodes[node][year]['technologies'][tech]['distributed_supply'] = \
-                    tech_distributed_supply
-        else:
-            # @ a Node without techs
-            node_distributed_supply = DistributedSupply()
-            # Find distributed supply generated at the node
-            distributed_supplies = get_direct_distributed_supply(self, node, year)
-            for service, amount in distributed_supplies:
-                node_distributed_supply.record_distributed_supply(service, node, amount)
-            # Find distributed supply from structural children
-            structural_children = find_children(graph, node, structural=True)
-            for child in structural_children:
-                node_distributed_supply += self.get_param('distributed_supply', child, year)
-
-        self.graph.nodes[node][year]['distributed_supply'] = \
-            utils.create_value_dict(node_distributed_supply, param_source='calculation')
-
-    def _aggregate_cumul_emissions_cost(self, graph, node, year, **kwargs):
-        """
-        Calculates and records the total emissions cost for a particular node. This is done by
-        taking the per-unit emissions cost and multiplying it by the number of units provided by a
-        particular node or technology.
-
-        To be used as part of a bottom_up_traversal once an equilibrium has been reached.
-
-        Parameters
-        ----------
-        graph : NetworkX.Digraph
-            The graph being traversed.
-
-        node : str
-            The node whose total_cumul_emissions_cost is being calculated.
-
-        year : str
-            Tthe year of interest.
-
-        Returns
-        -------
-        None
-            Returns nothing but does record total_cumul_emissions_cost for the node (and any
-            technologies).
-        """
-        total_cumul_emissions_cost = EmissionsCost()
-
-        comp_type = self.get_param('competition type', node)
-        if comp_type in ['root', 'region']:
-            structural_children = find_children(graph, node, structural=True)
-            for child in structural_children:
-                # Find quantities provided to the node via its structural children
-                total_cumul_emissions_cost += self.get_param('total_cumul_emissions_cost', child,
-                                                             year)
-        else:
-            pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-            emissions_cost = self.get_param('cumul_emissions_cost_rate', node, year)
-            total_cumul_emissions_cost = emissions_cost * pq
-            total_cumul_emissions_cost.num_units = pq
-
-            if 'technologies' in graph.nodes[node][year]:
-                for tech in graph.nodes[node][year]['technologies']:
-                    ec = self.get_param('cumul_emissions_cost_rate', node, year, tech=tech)
-                    ms = self.get_param('total_market_share', node, year, tech=tech)
-                    tech_total_emissions_cost = ec * ms * pq
-                    tech_total_emissions_cost.num_units = ms * pq
-                    value_dict = create_value_dict(tech_total_emissions_cost)
-                    graph.nodes[node][year]['technologies'][tech][
-                        'total_cumul_emissions_cost'] = value_dict
-
-        value_dict = create_value_dict(total_cumul_emissions_cost)
-        graph.nodes[node][year]['total_cumul_emissions_cost'] = value_dict
-
-    def _aggregate_direct_emissions_cost(self, graph, node, year, **kwargs):
-
-        emissions_cost_params = [
-            {'rate_param_name': 'emissions_cost_rate',
-             'total_param_name': 'total_direct_emissions_cost'}
-        ]
-        pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-        for e in emissions_cost_params:
-            rate_param = e['rate_param_name']
-            total_param = e['total_param_name']
-            node_total_direct_emissions_cost = EmissionsCost()
-            if 'technologies' in graph.nodes[node][year]:
-                for tech in graph.nodes[node][year]['technologies']:
-                    total_direct_emissions_cost = EmissionsCost()
-                    ms = self.get_param('total_market_share', node, year, tech=tech)
-                    direct_emissions_cost = self.get_param(rate_param, node, year, tech=tech)
-                    if direct_emissions_cost is not None:
-                        total_direct_emissions_cost = direct_emissions_cost * (pq * ms)
-                        node_total_direct_emissions_cost += total_direct_emissions_cost
-                    value_dict = create_value_dict(total_direct_emissions_cost)
-                    graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
-
-            value_dict = create_value_dict(node_total_direct_emissions_cost)
-            graph.nodes[node][year][total_param] = value_dict
-
-    def _aggregate_cumul_emissions(self, graph, node, year, **kwargs):
-        # Calculate Cumulative Emissions
-        if 'technologies' in graph.nodes[node][year]:
-            for tech in graph.nodes[node][year]['technologies']:
-                calc_cumul_emissions_rate(self, node, year, tech)
-        calc_cumul_emissions_rate(self, node, year)
-
-        # Aggregate Cumulative Emissions
-        emission_params = ['net_emissions', 'avoided_emissions',
-                           'negative_emissions', 'bio_emissions']
-        for e in emission_params:
-            rate_param = f"cumul_{e}_rate"
-            total_param = f"total_cumul_{e}"
-            total_cumul_emissions = Emissions()
-
-            comp_type = self.get_param('competition type', node)
-            if comp_type in ['root', 'region']:
-                structural_children = find_children(graph, node, structural=True)
-                for child in structural_children:
-                    # Find quantities provided to the node via its structural children
-                    total_cumul_emissions += self.get_param(total_param, child, year)
-
-            else:
-                pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-                cumul_emissions = self.get_param(rate_param, node, year)
-                total_cumul_emissions = cumul_emissions * pq
-
-                if 'technologies' in graph.nodes[node][year]:
-                    for tech in graph.nodes[node][year]['technologies']:
-                        ms = self.get_param('total_market_share', node, year, tech=tech)
-                        em = self.get_param(rate_param, node, year, tech=tech)
-                        if em is not None:
-                            tech_total_cumul_emissions = em * pq * ms
-                        else:
-                            tech_total_cumul_emissions = Emissions()
-                        value_dict = create_value_dict(tech_total_cumul_emissions)
-                        graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
-
-            value_dict = create_value_dict(total_cumul_emissions)
-            graph.nodes[node][year][total_param] = value_dict
+        aggregation.aggregate_requested_quantities(self, node, year)
 
     def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
-        # Direct Emissions
-        emissions = [
-            {'rate_param_name': 'net_emissions_rate',
-             'total_param_name': 'total_direct_net_emissions'},
-            {'rate_param_name': 'avoided_emissions_rate',
-             'total_param_name': 'total_direct_avoided_emissions'},
-            {'rate_param_name': 'negative_emissions_rate',
-             'total_param_name': 'total_direct_negative_emissions'},
-            {'rate_param_name': 'bio_emissions_rate',
-             'total_param_name': 'total_direct_bio_emissions'}
-        ]
-        pq = self.get_param('provided_quantities', node, year).get_total_quantity()
-        for e in emissions:
-            rate_param = e['rate_param_name']
-            total_param = e['total_param_name']
-            node_total_direct_emissions = Emissions()
-            if 'technologies' in graph.nodes[node][year]:
-                for tech in graph.nodes[node][year]['technologies']:
-                    total_direct_emissions = Emissions()
-                    ms = self.get_param('total_market_share', node, year, tech=tech)
-                    direct_emissions = self.get_param(rate_param, node, year, tech=tech)
-                    if direct_emissions is not None:
-                        total_direct_emissions = direct_emissions * pq * ms
-                        node_total_direct_emissions += total_direct_emissions
-                    value_dict = create_value_dict(total_direct_emissions)
-                    graph.nodes[node][year]['technologies'][tech][total_param] = value_dict
+        # Net Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param=PARAM.net_emissions_rate,
+                                               total_param=PARAM.total_direct_net_emissions)
+        # Avoided Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param=PARAM.avoided_emissions_rate,
+                                               total_param=PARAM.total_direct_avoided_emissions)
 
-            value_dict = create_value_dict(node_total_direct_emissions)
-            graph.nodes[node][year][total_param] = value_dict
+        # Negative Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param=PARAM.negative_emissions_rate,
+                                               total_param=PARAM.total_direct_negative_emissions)
+
+        # Bio Emissions
+        aggregation.aggregate_direct_emissions(self, graph, node, year,
+                                               rate_param=PARAM.bio_emissions_rate,
+                                               total_param=PARAM.total_direct_bio_emissions)
+
+        # Emissions Cost
+        aggregation.aggregate_direct_emissions_cost(self, graph, node, year,
+                                                    rate_param=PARAM.emissions_cost_rate,
+                                                    total_param=PARAM.total_direct_emissions_cost)
+
+    def _aggregate_cumulative_emissions(self, graph, node, year, **kwargs):
+        # Net Emissions
+        aggregation.aggregate_cumulative_emissions(
+            self, node, year,
+            rate_param=PARAM.cumul_net_emissions_rate,
+            total_param=PARAM.total_cumul_net_emissions
+        )
+
+        # Avoided Emissions
+        aggregation.aggregate_cumulative_emissions(
+            self, node, year,
+            rate_param=PARAM.cumul_avoided_emissions_rate,
+            total_param=PARAM.total_cumul_avoided_emissions
+        )
+
+        # Negative Emissions
+        aggregation.aggregate_cumulative_emissions(
+            self, node, year,
+            rate_param=PARAM.cumul_negative_emissions_rate,
+            total_param=PARAM.total_cumul_negative_emissions
+        )
+
+        # Bio Emissions
+        aggregation.aggregate_cumulative_emissions(
+            self, node, year,
+            rate_param=PARAM.cumul_bio_emissions_rate,
+            total_param=PARAM.total_cumul_bio_emissions
+        )
+
+        # Emissions Cost
+        aggregation.aggregate_cumulative_emissions_cost(
+            self, node, year,
+            rate_param=PARAM.cumul_emissions_cost_rate,
+            total_param=PARAM.total_cumul_emissions_cost
+        )
+
+    def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
+        aggregation.aggregate_distributed_supplies(self, node, year)
 
     def get_parameter_default(self, parameter):
         return self.node_tech_defaults[parameter]
@@ -1135,57 +1028,66 @@ class Model:
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
                   return_source=False, do_calc=False, check_exist=False, dict_expected=False):
         """
-        Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
-        calculating the parameter's value if needed.
+        Gets a parameter's value from the model, given a specific context (node,
+        year, tech, context, sub-context), calculating the parameter's value if
+        needed.
 
         This will not re-calculate the parameter's value, but will only retrieve
-        values which are already stored in the model or obtained via inheritance, default values,
-        or estimation using the previous year's value. If return_source is True, this function will
-        also, return how this value was originally obtained (e.g. via calculation)
+        values which are already stored in the model or obtained via
+        inheritance, default values, or estimation using the previous
+        year's value. If return_source is True, this function will also,
+        return how this value was originally obtained (e.g. via calculation)
 
         Parameters
         ----------
         param : str
             The name of the parameter whose value is being retrieved.
         node : str
-            The name of the node (branch format) whose parameter you are interested in retrieving.
+            The name of the node (branch format) whose parameter you are
+            interested in retrieving.
         year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year which you are interested in. `year` is not required
+            for parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type).
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level. 
+            `tech` is required to get any parameter that is stored within a 
+            technology.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the 
+            `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the 
+            `sub_context` column in the model description
         return_source : bool, default=False
-            Whether or not to return the method by which this value was originally obtained.
+            Whether or not to return the method by which this value was 
+            originally obtained.
         do_calc : bool, default=False
-            If False, the function will only retrieve the value using the current value in the model,
-            inheritance, default, or the previous year's value. It will _not_ calculate the parameter
-            value. If True, calculation is allowed.
+            If False, the function will only retrieve the value using the
+            current value in the model, inheritance, default, or the previous
+            year's value. It will _not_ calculate the parameter value. If True,
+            calculation is allowed.
         check_exist : bool, default=False
-            Whether or not to check that the parameter exists as is given the context (without calculation,
-            inheritance, or checking past years)
+            Whether or not to check that the parameter exists as is given the
+            context (without calculation, inheritance, or checking past years)
         dict_expected : bool, default=False
-            Used to disable the warning get_param is returning a dict. Get_param should normally return a 'single value'
-            (float, str, etc.). If the user knows it expects a dict, then this flag is used.
+            Used to disable the warning get_param is returning a dict. Get_param
+            should normally return a single value (float, str, etc.). If the
+            user knows it expects a dict, then this flag is used.
 
         Returns
         -------
         any :
-            The value of the specified `param` at `node`, given the context provided by `year` and
-            `tech`.
+            The value of the specified `param` at `node`, given the provided
+            `year` and `tech`.
         str :
-            If return_source is `True`, will return a string indicating how the parameter's value
-            was originally obtained. Can be one of {model, initialization, inheritance, calculation,
-            default, or previous_year}.
+            If return_source is `True`, returns a string indicating how the
+            parameter's value was originally obtained {model, initialization, 
+            inheritance, calculation, default, or previous_year}.
         """
 
-        param_val = utils.get_param(self, param, node, year,
+        param_val = param_query.get_param(self, param, node, year,
                                     tech=tech,
                                     context=context,
                                     sub_context=sub_context,
@@ -1199,37 +1101,42 @@ class Model:
     def set_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
                   save=True):
         """
-        Sets a parameter's value, given a specific context (node, year, tech, context, sub-context).
-        This is intended for when you are using this function outside of model.run to make single changes
-        to the model description.
+        Sets a parameter's value, given a specific context (node, year, tech,
+        context, sub-context). This is intended for when you are using this 
+        function outside of model.run to make single changes to the model description.
 
         Parameters
         ----------
         val : any or list of any
-            The new value(s) to be set at the specified `param` at `node`, given the context provided by
-            `year`, `tech`, `context`, and `sub_context`.
+            The new value(s) to be set at the specified `param` at `node`, 
+            given the `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch format) whose parameter you are
+            interested in set.
         year : str or list, optional
-            The year(s) which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year(s) which you are interested in. `year` is not required for
+            parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type)
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level. 
+            `tech` is required to get any parameter that is stored within a
+            technology.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the
+            `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the
+            `sub_context` column in the model description
         save : bool, optional
-            This specifies whether the change should be saved in the change_log csv where True means
-            the change will be saved and False means it will not be saved
+            This specifies whether the change should be saved in the change_log
+            csv where True means the change will be saved and False means it
+            will not be saved
         """
 
-        param_val = utils.set_param(self, val, param, node, year,
+        param_val = setters.set_param(self, val, param, node, year,
                                     tech=tech,
                                     context=context,
                                     sub_context=sub_context,
@@ -1240,37 +1147,42 @@ class Model:
     def set_param_internal(self, val, param, node, year=None, tech=None, context=None,
                            sub_context=None):
         """
-        Sets a parameter's value, given a specific context (node, year, tech, context, sub_context).
-        This is used from within the model.run function and is not intended to make changes to the model
-        description externally (see `set_param`).
+        Sets a parameter's value, given a specific context (node, year, tech, 
+        context, sub_context). This is used from within the model.run function
+        and is not intended to make changes to the model description externally
+        (see `set_param`).
 
         Parameters
         ----------
         val : dict
-            The new value(s) to be set at the specified `param` at `node`, given the context provided by
-            `year`, `tech`, `context`, and `sub_context`.
+            The new value(s) to be set at the specified `param` at `node`, given
+            the provided `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in set.
+            The name of the node (branch format) whose parameter you are
+            interested in set.
         year : str or list, optional
-            The year(s) which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year(s) which you are interested in. `year` is not required for
+            parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type).
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level. `tech`
+            is required to get any parameter that is stored within a technology.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the
+            `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the 
+            `sub_context` column in the model description
         save : bool, optional
-            This specifies whether the change should be saved in the change_log csv where True means
-            the change will be saved and False means it will not be saved
+            This specifies whether the change should be saved in the
+            change_log csv where True means the change will be saved and False
+            means it will not be saved
         """
 
-        param_val = utils.set_param_internal(self, val, param, node, year,
+        param_val = setters.set_param_internal(self, val, param, node, year,
                                              tech=tech,
                                              context=context,
                                              sub_context=sub_context)
@@ -1281,33 +1193,38 @@ class Model:
                            sub_context=None,
                            save=True):
         """
-        Sets a parameter's value, for all contexts (node, year, tech, context, sub_context)
-        that satisfy/match the node_regex pattern
+        Sets a parameter's value, for all contexts (node, year, tech, context, 
+        sub_context) that satisfy/match the node_regex pattern
 
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by
-            `year`, `tech`, `context`, and `sub_context`.
+            The new value to be set at the specified `param` at `node`, given
+            the provided `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node_regex : str
-            The regex pattern of the node (branch format) whose parameter you are interested in matching.
+            The regex pattern of the node (branch format) whose parameter you
+            are interested in matching.
         year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year which you are interested in. `year` is not required for
+            parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type). 
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology.
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level. 
+            `tech` is required to get any parameter that is stored within a
+            technology.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model description
+            Used when there is context available in the node. Analogous to the
+            `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description
+            Must be used only if context is given. Analogous to the
+            `sub_context` column in the model description
         save : bool, optional
-            This specifies whether the change should be saved in the change_log csv where True means
-            the change will be saved and False means it will not be saved
+            This specifies whether the change should be saved in the change_log
+            csv where True means the change will be saved and False means it
+            will not be saved
         """
         for node in self.graph.nodes:
             if re.search(node_regex, node) != None:
@@ -1324,7 +1241,7 @@ class Model:
         filepath : str
             This is the path to the CSV file containing all context and value change information
         """
-        param_val = utils.set_param_file(self, filepath)
+        param_val = setters.set_param_file(self, filepath)
 
         return param_val
 
@@ -1338,38 +1255,45 @@ class Model:
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by
-            `year`, `context, `sub_context`, and `tech`.
+            The new value to be set at the specified `param` at `node`, given
+            the provided `year`, `context, `sub_context`, and `tech`.
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in matching.
+            The name of the node (branch format) whose parameter you are
+            interested in matching.
         year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year which you are interested in. `year` is not required for
+            parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type).
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level. `tech`
+            is required to get any parameter that is stored within a technology.
+            If tech is `.*`, all possible tech keys will be searched at the
             specified node, param, year, context, and sub_context.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model
-            description. If context is `.*`, all possible context keys will be searched at the specified node, param,
+            Used when there is context available in the node. Analogous to the 
+            `context` column in the model description. If context is `.*`, all
+            possible context keys will be searched at the specified node, param,
             year, sub_context, and tech.
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
-            If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
-            year, context, and tech.
+            Must be used only if context is given. Analogous to the
+            `sub_context` column in the model description. If sub_context is
+            `.*`, all possible sub_context keys will be searched at the
+            specified node, param, year, context, and tech.
         create_missing : bool, optional
-            Will create a new parameter in the model if it is missing. Defaults to False.
+            Will create a new parameter in the model if it is missing. Defaults
+            to False.
         val_operator : str, optional
-            This specifies how the value should be set. The possible values are '>=', '<=' and '=='.
+            This specifies how the value should be set. The possible values are 
+            `>=`, `<=` and `==`.
         row_index : int, optional
-            The index of the current row of the CSV. This is used to print the row number in error messages.
+            The index of the current row of the CSV. This is used to print the
+            row number in error messages.
         """
 
-        param_val = utils.set_param_search(self, val, param, node, year,
+        param_val = setters.set_param_search(self, val, param, node, year,
                                            tech=tech,
                                            context=context,
                                            sub_context=sub_context,
@@ -1380,48 +1304,53 @@ class Model:
         return param_val
 
     def create_param(self, val, param, node, year=None, tech=None, context=None, sub_context=None,
-                     row_index=None, param_source=None, branch=None):
+                     row_index=None, param_source=None, target=None):
         """
-        Creates parameter in graph, for given context (node, year, tech, context, sub_context),
-        and sets the value to val. Returns True if param was created successfully and False otherwise.
+        Creates parameter in graph, for given context (node, year, tech,
+        context, sub_context), and sets the value to val. Returns True if
+        param was created successfully and False otherwise.
 
         Parameters
         ----------
         val : any
-            The new value to be set at the specified `param` at `node`, given the context provided by
-            `year`, `tech`, `context`, and `sub_context`.
+            The new value to be set at the specified `param` at `node`, given
+            the provided `year`, `tech`, `context`, and `sub_context`.
         param : str
             The name of the parameter whose value is being set.
         node : str
-            The name of the node (branch format) whose parameter you are interested in matching.
+            The name of the node (branch format) whose parameter you are
+            interested in matching.
         year : str, optional
-            The year which you are interested in. `year` is not required for parameters specified at
-            the node level and which by definition cannot change year to year. For example,
-            'competition type' can be retrieved without specifying a year.
+            The year which you are interested in. `year` is not required for
+            parameters specified at the node level and which by definition
+            cannot change year to year (e.g. competition type).
         tech : str, optional
-            The name of the technology you are interested in. `tech` is not required for parameters
-            that are specified at the node level. `tech` is required to get any parameter that is
-            stored within a technology. If tech is `.*`, all possible tech keys will be searched at the
-            specified node, param, year, context, and sub_context.
+            The name of the technology you are interested in. `tech` is not
+            required for parameters that are specified at the node level.
+            `tech` is required to get any parameter that is stored within a
+            technology. If tech is `.*`, all possible tech keys will be searched
+            at the specified node, param, year, context, and sub_context.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 'context' column in the model
-            description. If context is `.*`, all possible context keys will be searched at the specified node, param,
+            Used when there is context available in the node. Analogous to the
+            `context` column in the model description. If context is `.*`, all
+            possible context keys will be searched at the specified node, param,
             year, sub_context, and tech.
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 'sub_context' column in the model description.
-            If sub_context is `.*`, all possible sub_context keys will be searched at the specified node, param,
-            year, context, and tech.
+            Must be used only if context is given. Analogous to the 
+            `sub_context` column in the model description. If sub_context is 
+            `.*`, all possible sub_context keys will be searched at the 
+            specified node, param, year, context, and tech.
         row_index : int, optional
-            The index of the current row of the CSV. This is used to print the row number in error messages.
-
+            The index of the current row of the CSV. This is used to print the
+            row number in error messages.
         """
-        param_val = utils.create_param(self, val, param, node, year,
+        param_val = construction.create_param(self, val, param, node, year,
                                        tech=tech,
                                        context=context,
                                        sub_context=sub_context,
+                                       target=target,
                                        row_index=row_index,
-                                       param_source=param_source,
-                                       branch=branch)
+                                       param_source=param_source)
 
         return param_val
 
@@ -1437,9 +1366,9 @@ class Model:
             and a timestamp in the filename.
         """
         if output_file == '':
-            filename = self.model_description_file.split('/')[-1].split('.')[0]
+            filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
             timestamp = time.strftime("%Y%m%d-%H%M%S")
-            output_file = './change_log_' + filename + '_' + timestamp + '.csv'
+            output_file = f"./change_log_{filename}_{timestamp}.csv"
         self.change_history.to_csv(output_file, index=False)
 
     def save_model(self, model_file='', save_changes=True):
@@ -1459,14 +1388,55 @@ class Model:
             print('model_file must end with .pkl extension. No model was saved.')
         else:
             if model_file == '':
-                filename = self.model_description_file.split('/')[-1].split('.')[0]
+                filename = self.model_description_file_prefix.split('/')[-1].split('.')[0]
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
-                model_file = 'model_' + filename + '_' + timestamp + '.pkl'
+                model_file = f"model_{filename}_{timestamp}.pkl"
             with open(model_file, 'wb') as f:
                 pickle.dump(self, f)
         if save_changes:
-            self.set_param_log(output_file='change_log_' + model_file)
+            self.set_param_log(output_file=f"change_log_{model_file}")
 
+    def visualize_prices_change_over_time(
+            self,
+            out_file="supply_prices_over_years.png",
+            show=False):
+        """Creates a visualization of supply prices over time as a multi-line
+        graph. A wrapper for the visualize.visualize_prices_change_over_time()
+        function.
+
+        Parameters
+        ----------
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default "supply_prices_over_years.png".
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_prices_change_over_time(
+            self, out_file=out_file, show=show)
+
+    def visualize_price_comparison_with_benchmark(
+            self,
+            benchmark_file='./benchmark/prices.csv',
+            out_file='price_comparison_to_baseline.png',
+            show=False):
+        """Creates a visualization comparing prices with their benchmark values.
+        A wrapper for the visualize.visualize_price_comparison_with_benchmark()
+        function.
+
+        Parameters
+        ----------
+        benchmark_file : str, optional
+            The location of the CSV file containing benchmark values for each
+            supply node, by default tests/data/benchmark_prices.csv.
+        out_file : str, optional
+            Filepath to the location where the visualization will be saved, by
+            default price_comparison_to_baseline.png.
+        show : bool, optional
+            If True, displays the generated figure, by default False
+        """
+        visualize.visualize_price_comparison_with_benchmark(
+            self, benchmark_file=benchmark_file, out_file=out_file, show=show)
 
 def load_model(model_file):
     """

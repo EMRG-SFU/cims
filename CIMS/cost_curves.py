@@ -2,7 +2,9 @@
 from statistics import mean
 from scipy.interpolate import interp1d
 
-from . import utils
+from .utils.model_description import column_list as COL
+from .utils.parameter import construction, parse
+from .utils.parameter import list as PARAM
 
 
 def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
@@ -12,7 +14,7 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
     Depending on the node's competition type, annual or cumulative provided quantity values will be
     used in the call to the cost curve interpolation function.
 
-    Note, cost curve LCC is only used for fuels, so this LCC is the same as the financial LCC we use
+    Note, cost curve LCC is only used supply nodes, so this LCC is the same as the financial LCC we use
     for other nodes.
 
     Parameters
@@ -27,20 +29,18 @@ def calc_cost_curve_lcc(model: "CIMS.Model", node: str, year: str,
     float : LCC (financial) calculated from the node's cost curve function.
     """
     quantity = calc_cost_curve_quantity(model, node, year)
-    cc_func = model.get_param('cost_curve_function', node)
+    cc_func = model.get_param(PARAM.cost_curve_function, node)
     cc_lcc = float(cc_func(quantity))
-    previous_lcc, prev_src = model.get_param('lcc_financial', node, year,
-                                             context=node.split('.')[-1], return_source=True)
+    previous_lcc, prev_src = model.get_param(PARAM.lcc_financial, node, year, return_source=True)
 
     if cost_curve_min_max:
         lcc = calc_lcc_with_min_max(model, node, year, cc_lcc)
 
     elif prev_src == 'default':
-        comp_type = model.get_param('competition type', node).lower()
-        if (comp_type == 'fuel - cost curve cumulative') and (int(year) > model.base_year):
+        comp_type = model.get_param(PARAM.competition_type, node).lower()
+        if (comp_type == 'supply - cost curve cumulative') and (int(year) > model.base_year):
             prev_year = str(int(year) - model.step)
-            prev_year_lcc = model.get_param('lcc_financial', node, prev_year,
-                                            context=node.split('.')[-1])
+            prev_year_lcc = model.get_param(PARAM.lcc_financial, node, prev_year)
             lcc = max(prev_year_lcc, cc_lcc)
         else:
             lcc = cc_lcc
@@ -73,14 +73,13 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
     Additionally, the cost_curve_lcc_min and cost_curve_lcc_max values are updated.
     """
     # Find Previous Iteration's LCC
-    prev_lcc, prev_src = model.get_param('lcc_financial', node, year,
-                                         context=node.split('.')[-1], return_source=True)
+    prev_lcc, prev_src = model.get_param(PARAM.lcc_financial, node, year, return_source=True)
 
     # Find Cost Curve min/max
-    cc_min, cc_min_src = model.get_param('cost_curve_lcc_min', node, year, return_source=True)
+    cc_min, cc_min_src = model.get_param(PARAM.cost_curve_lcc_min, node, year, return_source=True)
     if cc_min_src == 'previous_year':
         cc_min = None
-    cc_max, cc_max_src = model.get_param('cost_curve_lcc_max', node, year, return_source=True)
+    cc_max, cc_max_src = model.get_param(PARAM.cost_curve_lcc_max, node, year, return_source=True)
     if cc_max_src == 'previous_year':
         cc_max = None
 
@@ -92,14 +91,14 @@ def calc_lcc_with_min_max(model, node, year, cc_lcc):
     if expected_lcc > prev_lcc:
         cc_min = max(x for x in [prev_lcc, cc_min] if x is not None)
         model.set_param_internal(
-            utils.create_value_dict(cc_min, param_source='cost curve function'),
-            'cost_curve_lcc_min', node, year)
+            construction.create_value_dict(cc_min, param_source='cost curve function'),
+            PARAM.cost_curve_lcc_min, node, year)
 
     elif expected_lcc < prev_lcc:
         cc_max = min(x for x in [prev_lcc, cc_max] if x is not None)
         model.set_param_internal(
-            utils.create_value_dict(cc_max, param_source='cost curve function'),
-            'cost_curve_lcc_max', node, year)
+            construction.create_value_dict(cc_max, param_source='cost curve function'),
+            PARAM.cost_curve_lcc_max, node, year)
 
     # If the last price was calculated with cost curve, provide an average
     if prev_src == 'cost curve function':
@@ -130,11 +129,11 @@ def calc_cost_curve_quantity(model: "CIMS.Model", node: str, year: str):
     float :
         Total quantity needed to calcualte cost curve price.
     """
-    comp_type = model.get_param('competition type', node).lower()
-    if comp_type == 'fuel - cost curve annual':
+    comp_type = model.get_param(PARAM.competition_type, node).lower()
+    if comp_type == 'supply - cost curve annual':
         min_year = year
         max_year = year
-    elif comp_type == 'fuel - cost curve cumulative':
+    elif comp_type == 'supply - cost curve cumulative':
         min_year = model.base_year
         max_year = year
     else:
@@ -142,8 +141,8 @@ def calc_cost_curve_quantity(model: "CIMS.Model", node: str, year: str):
 
     total_quantity = 0
     for year_i in range(int(min_year), int(max_year) + 1, model.step):
-        if 'provided_quantities' in model.graph.nodes[node][str(year_i)]:
-            year_provided_quant = model.get_param('provided_quantities', node, str(year_i))
+        if PARAM.provided_quantities in model.graph.nodes[node][str(year_i)]:
+            year_provided_quant = model.get_param(PARAM.provided_quantities, node, str(year_i))
             total_quantity += year_provided_quant.get_total_quantity()
 
     return total_quantity
@@ -166,14 +165,14 @@ def build_cost_curve_function(node_df):
         An interpolator that inputs a quantity & outputs a price.
 
     """
-    years = [c for c in node_df.columns if utils.is_year(c)]
+    years = [c for c in node_df.columns if parse.is_year(c)]
 
     # Get quantities
-    cc_quant_line = node_df[node_df['Parameter'] == 'cost curve quantity']
+    cc_quant_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_quantity]
     cc_quants = [cc_quant_line[y].iloc[0] for y in years]
 
     # Get prices
-    cc_price_line = node_df[node_df['Parameter'] == 'cost curve price']
+    cc_price_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_price]
     cc_prices = [cc_price_line[y].iloc[0] for y in years]
 
     # Create interpolator

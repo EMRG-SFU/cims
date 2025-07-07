@@ -1,2 +1,0 @@
-base_stock
-new_stock

@@ -5,7 +5,10 @@ dependencies:
   - python>=3.11
   - jupyter
   - matplotlib
+  - seaborn>=0.13.2
   - numpy
+  - polars
+  - pyarrow
   - pandas>=2
   - pip
   - scipy

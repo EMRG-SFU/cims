@@ -1,11 +1,12 @@
 """
-Tax Foresight functionality. Used to calculate emissions cost for complete LCC.
+Tax Foresight functionality. Used to calculate emissions cost for Competition LCC.
 """
 from __future__ import annotations  # For Type Hinting
 import networkx
 from numpy import linspace, mean
 
-from . import graph_utils
+from .utils.graph import traversals
+from .utils.parameter import list as PARAM
 
 
 def initialize_tax_foresight(model: 'CIMS.Model') -> None:
@@ -24,26 +25,26 @@ def initialize_tax_foresight(model: 'CIMS.Model') -> None:
     """
     # Find all sectors in model
     all_sectors = [node for node, data in model.graph.nodes(data=True)
-                   if 'sector' in data['competition type'].lower()]
+                   if 'sector' in data[PARAM.competition_type].lower()]
 
     for year in model.years:
         # Find the tax foresight methods defined in a particular year
-        foresight_dict = model.get_param('tax_foresight', 'CIMS', year, dict_expected=True)
+        foresight_dict = model.get_param(PARAM.tax_foresight, model.root, year, dict_expected=True)
 
         # Record the tax foresight methods for specified sectors
         if foresight_dict is not None:
             for sector in foresight_dict:
                 for node in all_sectors:
                     if node.split('.')[-1] == sector:
-                        model.graph.nodes[node][year]['tax_foresight'] = foresight_dict[sector]
+                        model.graph.nodes[node][year][PARAM.tax_foresight] = foresight_dict[sector]
 
         # Pass foresight methods down to all other nodes in a sector
-        graph_utils.top_down_traversal(model.graph,
+        traversals.top_down_traversal(model.graph,
                                        _inherit_tax_foresight,
-                                       year)
+                                       year, model=model)
 
 
-def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str) -> None:
+def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str, model: "CIMS.Model") -> None:
     """
     Updates node's tax_foresight parameter, based on the tax_foresight value of its sector. For use
     with a top-down traversal function.
@@ -58,23 +59,23 @@ def _inherit_tax_foresight(graph: networkx.DiGraph, node: str, year: str) -> Non
     If tax_foresight has been specified for node's sector than node's tax_foresight parameter
     will be updated to match.
     """
-    if 'tax_foresight' not in graph.nodes[node][year]:
+    if PARAM.tax_foresight not in graph.nodes[node][year]:
         parents = list(graph.predecessors(node))
         parent_dict = {}
         if len(parents) > 0:
             parent = parents[0]
-            if 'tax_foresight' in graph.nodes[parent][year] and parent != 'CIMS':
-                parent_dict = graph.nodes[parent][year]['tax_foresight']
+            if PARAM.tax_foresight in graph.nodes[parent][year] and parent != model.root:
+                parent_dict = graph.nodes[parent][year][PARAM.tax_foresight]
         if parent_dict:
-            graph.nodes[node][year]['tax_foresight'] = parent_dict
+            graph.nodes[node][year][PARAM.tax_foresight] = parent_dict
 
 
-def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str or None, ghg: str,
+def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str | None, ghg: str,
                          emission_type: str) -> float:
     """
     Use the "Discounted Tax Foresight" method to calculates an expected tax value for a given
     node/tech, ghg, & emission_type in a specified year. This function is called from
-    emissions.calc_emissions_cost() during the calculation of complete life cycle cost.
+    emissions.calc_emissions_cost() during the calculation of competition life cycle cost.
 
     Parameters
     ----------
@@ -96,8 +97,8 @@ def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str or
     )
 
     # Calculate expected tax based on future tax values, discounting taxes in future years.
-    lifetime = int(model.get_param('lifetime', node, year, tech=tech))
-    r_k = model.get_param('discount rate_financial', node, year)
+    lifetime = int(model.get_param(PARAM.lifetime, node, year, tech=tech))
+    r_k = model.get_param(PARAM.discount_rate_financial, node, year)
 
     expected_tax = sum(
         (tax / (1 + r_k) ** (n - int(year) + 1)
@@ -113,7 +114,7 @@ def average_foresight(model, node, year, tech, ghg, emission_type):
     """
     Use the "Average Tax Foresight" method to calculates an expected tax value for a given
     node/tech, ghg, & emission_type in a specified year. This function is called from
-    emissions.calc_emissions_cost() during the calculation of complete life cycle cost.
+    emissions.calc_emissions_cost() during the calculation of competition life cycle cost.
 
     Parameters
     ----------
@@ -167,18 +168,18 @@ def _tax_foresight_interpolation(model, node, year, tech, ghg, emission_type):
         node/tech's lifetime.
 
     """
-    lifetime = int(model.get_param('lifetime', node, year, tech=tech))
+    lifetime = int(model.get_param(PARAM.lifetime, node, year, tech=tech))
 
     tax_vals = []
     for year_n in range(int(year), int(year) + lifetime, model.step):
         if str(year_n) <= max(model.years):
-            cur_tax = model.get_param('tax', node, str(year_n),
+            cur_tax = model.get_param(PARAM.tax, node, str(year_n),
                                       context=ghg, sub_context=emission_type)
         else:  # when current year is out of range
-            cur_tax = model.get_param('tax', node, max(model.years),
+            cur_tax = model.get_param(PARAM.tax, node, max(model.years),
                                       context=ghg, sub_context=emission_type)
         if str(year_n + model.step) <= max(model.years):
-            next_tax = model.get_param('tax', node, str(year_n + model.step),
+            next_tax = model.get_param(PARAM.tax, node, str(year_n + model.step),
                                        context=ghg, sub_context=emission_type)
         else:  # when future year(s) are out of range
             next_tax = cur_tax

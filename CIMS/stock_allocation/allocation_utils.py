@@ -1,3 +1,5 @@
+from ..utils.parameter import list as PARAM
+
 def _find_competing_techs(model, node, comp_type):
     """
     A helper function used by _calculate_new_market_shares() to find all the technologies competing
@@ -10,15 +12,15 @@ def _find_competing_techs(model, node, comp_type):
     node : str
         Name of the node (branch notation) whose competing technologies we want to find.
     comp_type : str
-        The type of competition occurring at the node. One of {'node tech compete', 'tech compete'}.
+        The type of competition occurring at the node. One of {'tech compete'}.
 
     Returns
     -------
     list :
         The list of technologies competing for market share at `node`.
-        If comp_type is Tech Compete, this will simply be the technologies defined at the node. If
-        comp_type is Node Tech Compete, this will include the technologies of the services requested
-        by node. This does not verify the technology is available in the given year.
+        If comp_type is Tech Compete, this will simply be the technologies
+        defined at the node. This does not verify the technology is available
+        in the given year.
 
     """
     base_year = str(model.base_year)
@@ -26,14 +28,8 @@ def _find_competing_techs(model, node, comp_type):
     competing_technologies = []
 
     if comp_type == 'tech compete':
-        for tech in node_year_data['technologies']:
+        for tech in node_year_data[PARAM.technologies]:
             competing_technologies.append((node, tech))
-
-    elif comp_type == 'node tech compete':
-        for child in node_year_data['technologies']:
-            child_node = model.graph.nodes[node][base_year]['technologies'][child]['service requested'][child]['branch']
-            for tech in model.graph.nodes[child_node][base_year]['technologies']:
-                competing_technologies.append((child_node, tech))
 
     return competing_technologies
 
@@ -67,10 +63,10 @@ def _find_competing_weights(model, year, competing_techs, heterogeneity):
     weights = {}
 
     for node_branch, tech in competing_techs:
-        year_avail = model.get_param('available', node_branch, str(model.base_year), tech=tech)
-        year_unavail = model.get_param('unavailable', node_branch, str(model.base_year), tech=tech)
+        year_avail = model.get_param(PARAM.available, node_branch, str(model.base_year), tech=tech)
+        year_unavail = model.get_param(PARAM.unavailable, node_branch, str(model.base_year), tech=tech)
         if year_avail <= int(year) < year_unavail:
-            tech_lcc = model.get_param('complete life cycle cost', node_branch, year, tech=tech)
+            tech_lcc = model.get_param(PARAM.lcc_competition, node_branch, year, tech=tech)
             weight = _calculate_lcc_weight(tech_lcc, heterogeneity)
             weights[(node_branch, tech)] = weight
             total_weight += weight

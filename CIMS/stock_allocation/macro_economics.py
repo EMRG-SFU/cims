@@ -1,7 +1,8 @@
 """
 Module containing the functions required for performing Macro Economics calculations.
 """
-from CIMS import utils
+from ..utils.parameter import construction, list as PARAM
+
 
 def calc_total_stock_demanded(model, node, year):
     """
@@ -56,18 +57,18 @@ def calc_stock_demanded(model, node, year):
         other nodes in the model. The macro-multiplier is calculated using the node's relative price
         and elasticity terms.
     """
-    sum_service_stock_requested = model.get_param('provided_quantities', node,
+    sum_service_stock_requested = model.get_param(PARAM.provided_quantities, node,
                                                   year).get_total_quantity()
 
-    price_t = max([model.get_param('price', node, year), 0.01])
-    price_2000 = max([model.get_param('price', node, str(model.base_year)), 0.01])
-    domestic_elasticity = model.get_param('domestic elasticity', node, year)
+    price_t = max(model.get_param(PARAM.price, node, year), 0.01)
+    price_2000 = max(model.get_param(PARAM.price, node, str(model.base_year)), 0.01)
+    domestic_elasticity = model.get_param(PARAM.domestic_elasticity, node, year)
     macro_multiplier = (price_t / price_2000) ** domestic_elasticity
 
     stock_demanded = sum_service_stock_requested * macro_multiplier
 
-    model.set_param_internal(utils.create_value_dict(stock_demanded, param_source='calculation'),
-                             'stock demanded', node, year)
+    model.set_param_internal(construction.create_value_dict(stock_demanded, param_source='calculation'),
+                             PARAM.stock_demanded, node, year)
 
     return stock_demanded
 
@@ -76,8 +77,8 @@ def find_regions(model, node, year):
     """
     Determine which Macro-Economic regions have been specified at a node in a particular year.
 
-    This is done by looking at each of the 4 exogenous parameters which are specified when
-    calculating the "stock exported" parameter.
+    This is done by looking at each of the 5 exogenous parameters which are used
+    when calculated Stock Exported.
 
     Parameters
     ----------
@@ -91,11 +92,11 @@ def find_regions(model, node, year):
     Returns
     -------
     list :
-        A list of unique regions for which at least one of the "stock exported" related parameters
+        A list of unique regions for which at least one of the Stock Exported related parameters
         are defined.
     """
-    stock_export_params = ['ref stock exported', 'global price', 'export subsidy',
-                           'export elasticity']
+    stock_export_params = [PARAM.global_price, PARAM.export_subsidy, PARAM.export_benchmark,
+                           PARAM.ref_stock_exported, PARAM.export_elasticity]
     regions = []
     for param in stock_export_params:
         param_value = model.get_param(param, node, year, dict_expected=True)
@@ -124,34 +125,37 @@ def calc_stock_exported(model, node, year):
         Return a list of exported stock values, one for each region. Additionally, save the amount
         of stock exported by each region to the model.
     """
-    price_t = max(model.get_param('price', node, year), 0.01)
-    price_2000 = max(model.get_param('price', node, str(model.base_year)), 0.01)
+    price_t = max(model.get_param(PARAM.price, node, year), 0.01)
+    price_2000 = max(model.get_param(PARAM.price, node, str(model.base_year)), 0.01)
 
     all_stock_exported = []
     for region in find_regions(model, node, year):
-        ref_stock_exported = model.get_param('ref stock exported', node, year, context=region)
+        ref_stock_exported = model.get_param(PARAM.ref_stock_exported, node, year, context=region)
 
-        global_price_t = max(model.get_param('global price', node, year, context=region), 0.01)
-        global_price_2000 = max(model.get_param('global price', node, str(model.base_year),
+        global_price_t = max(model.get_param(PARAM.global_price, node, year, context=region), 0.01)
+        global_price_2000 = max(model.get_param(PARAM.global_price, node, str(model.base_year),
                                                 context=region), 0.01)
-        export_subsidy_t = model.get_param('export subsidy', node, year, context=region)
-        export_subsidy_2000 = model.get_param('export subsidy', node, str(model.base_year),
+        export_subsidy_t = model.get_param(PARAM.export_subsidy, node, year, context=region)
+        export_subsidy_2000 = model.get_param(PARAM.export_subsidy, node, str(model.base_year),
                                               context=region)
+        
+        export_benchmark_t= model.get_param(PARAM.export_benchmark, node, year, context=region)
+        export_benchmark_2000= model.get_param(PARAM.export_benchmark, node, str(model.base_year), context=region)
 
-        export_elasticity = model.get_param('export elasticity', node, year, context=region)
 
-        price_term = ((price_t - export_subsidy_t) / global_price_t) / \
-                     max((price_2000 - export_subsidy_2000) / global_price_2000, 0.01)
+        price_term = ((price_t - export_subsidy_t * export_benchmark_t) / global_price_t) / \
+        max((price_2000 - export_subsidy_2000 * export_benchmark_2000) / global_price_2000, 0.01)
 
+        export_elasticity = model.get_param(PARAM.export_elasticity, node, year, context=region)
         stock_exported_region = ref_stock_exported * price_term ** export_elasticity
 
         all_stock_exported.append(stock_exported_region)
 
-        if 'stock exported' not in model.graph.nodes[node][year]:
-            model.graph.nodes[node][year]['stock exported'] = {}
+        if PARAM.stock_exported not in model.graph.nodes[node][year]:
+            model.graph.nodes[node][year][PARAM.stock_exported] = {}
 
-        model.graph.nodes[node][year]['stock exported'][region] = \
-            utils.create_value_dict(stock_exported_region,
+        model.graph.nodes[node][year][PARAM.stock_exported][region] = \
+            construction.create_value_dict(stock_exported_region,
                                     context=region,
                                     param_source='calculation')
 
