@@ -83,13 +83,11 @@ def _get_existing_value(year_dict, param, context, sub_context, target):
 def _update_year_dict(existing_year_dict, update_data):
     year_dict = copy.deepcopy(existing_year_dict)
 
-    for _, _, param, context, sub_context, target, source, unit, year_value \
-        in zip(*update_data):
+    for _, _, param, context, sub_context, target, unit, year_value in zip(*update_data):
         value_dict = {
             PARAM.context: context,
             PARAM.sub_context: sub_context,
             PARAM.target: target,
-            PARAM.source: source,
             PARAM.unit: unit,
             PARAM.year_value: infer_type(year_value),
             PARAM.param_source: 'model'

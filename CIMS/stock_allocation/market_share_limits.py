@@ -1,4 +1,5 @@
 from ..utils.parameter import query, list as PARAM
+import numpy
 
 #############################
 # Market Share Classes
@@ -170,9 +171,9 @@ def _min_max_ms_class_compliant(ms_class_adjusted_nms, min_max_limits, limit_adj
         min_ms, max_ms = min_max_limits[ms_class]
         proposed_ms = ms_class_adjusted_nms[ms_class]
 
-        if proposed_ms < min_ms:
+        if (not numpy.isclose(proposed_ms, min_ms)) and (proposed_ms < min_ms):
             return False
-        if proposed_ms > max_ms:
+        if (not numpy.isclose(proposed_ms, max_ms)) and (proposed_ms > max_ms):
             return False
         
     return True
@@ -333,10 +334,10 @@ def _min_max_ms_compliant(new_market_shares, min_max_limits):
         min_nms, max_nms = min_max_limits[tech]
         proposed_nms = new_market_shares[tech]
 
-        if proposed_nms < min_nms:
+        if (not numpy.isclose( proposed_nms , min_nms)) and (proposed_nms < min_nms):
             return False
 
-        if proposed_nms > max_nms:
+        if (not numpy.isclose( proposed_nms , max_nms)) and (proposed_nms > max_nms):
             return False
 
     return True

@@ -58,7 +58,7 @@ def recursive_key_value_filter(value_dict, key, value):
 
 
 def inherit_parameter(model, graph, node, year, param, no_inheritance=False):
-    assert param in model.inheritable_params.values
+    assert param in model.inheritable_params
 
     if not no_inheritance:
         parent = '.'.join(node.split('.')[:-1])
@@ -99,7 +99,7 @@ def inherit_parameter(model, graph, node, year, param, no_inheritance=False):
                 graph.nodes[node][year][param] = param_value
 
 
-def create_value_dict(year_val, source=None, context=None, sub_context=None, target=None, unit=None,
+def create_value_dict(year_val, context=None, sub_context=None, target=None, unit=None,
                       param_source=None):
     """
     Creates a standard value dictionary from the inner values.
@@ -107,7 +107,6 @@ def create_value_dict(year_val, source=None, context=None, sub_context=None, tar
     value_dictionary = {PARAM.context: context,
                         PARAM.sub_context: sub_context,
                         PARAM.target: target,
-                        PARAM.source: source,
                         PARAM.unit: unit,
                         PARAM.year_value: year_val,
                         PARAM.param_source: param_source

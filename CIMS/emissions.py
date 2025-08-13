@@ -82,9 +82,8 @@ class EmissionsCost:
         -------
         EmissionsCost
         """
-        if not isinstance(other, (float, int)):
-            print(type(other))
-            raise ValueError
+        if not isinstance(other, (int, float)):
+            raise TypeError(f"EmissionsCost can only be multiplied by an int or float, not {type(other).__name__}.")
 
         result = EmissionsCost()
 
@@ -101,6 +100,45 @@ class EmissionsCost:
                         construction.create_value_dict(prev_val * other)
 
         return result
+
+    def __truediv__(self, other: int | float) -> EmissionsCost:
+        """
+        Divides each value in the emissions_cost attribute (a nested dictionary) by `other`.
+
+        Parameters
+        ----------
+        other : int or float
+            The divisor
+
+        Returns
+        -------
+        EmissionsCost
+            A new EmissionsCost object with each emission value divided by `other`
+        """
+        if not isinstance(other, (int, float)):
+            raise TypeError(f"EmissionsCost can only be divided by an int or float, not {type(other).__name__}.")
+
+        if other == 0:
+            raise ZeroDivisionError("Cannot divide EmissionsCost by zero.")
+
+        result = EmissionsCost()
+
+        for source_branch in self.emissions_cost:
+            if source_branch not in result.emissions_cost:
+                result.emissions_cost[source_branch] = {}
+            for ghg in self.emissions_cost[source_branch]:
+                if ghg not in result.emissions_cost[source_branch]:
+                    result.emissions_cost[source_branch][ghg] = {}
+                for emission_type in self.emissions_cost[source_branch][ghg]:
+                    prev_val = self.emissions_cost[source_branch][ghg][emission_type][
+                        PARAM.year_value]
+                    result.emissions_cost[source_branch][ghg][emission_type] = \
+                        construction.create_value_dict(prev_val / other)
+        if other > 1:
+            jillian = 1
+        return result
+
+        
 
     def summarize(self) -> dict:
         """
@@ -224,6 +262,9 @@ class Emissions:
         -------
         Emissions
         """
+        if not isinstance(other, (int, float)):
+            raise TypeError(f"Emissions can only be multiplied by an int or float, not {type(other).__name__}.")
+
         result = Emissions()
 
         # Start by recording all the emissions from self in our result
@@ -236,6 +277,43 @@ class Emissions:
                 for emission_type in self.emissions[source_branch][ghg]:
                     emission_amount = self.emissions[source_branch][ghg][emission_type][
                                           PARAM.year_value] * other
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
+                        emission_amount)
+
+        return result
+
+    def __truediv__(self, other: int | float) -> Emissions:
+        """
+        Divides each value in the emissions attribute (a nested dictionary) by `other`.
+
+        Parameters
+        ----------
+        other : int or float
+            The divisor
+
+        Returns
+        -------
+        Emissions
+            A new Emissions object with each emission value divided by `other`
+        """        
+        if not isinstance(other, (int, float)):
+            raise TypeError(f"Emissions can only be divided by an int or float, not {type(other).__name__}.")
+
+        if other == 0:
+            raise ZeroDivisionError("Cannot divide Emissions by zero.")
+
+        result = Emissions()
+
+        # Start by recording all the emissions from self in our result
+        for source_branch in self.emissions:
+            if source_branch not in result.emissions:
+                result.emissions[source_branch] = {}
+            for ghg in self.emissions[source_branch]:
+                if ghg not in result.emissions[source_branch]:
+                    result.emissions[source_branch][ghg] = {}
+                for emission_type in self.emissions[source_branch][ghg]:
+                    emission_amount = self.emissions[source_branch][ghg][emission_type][
+                                          PARAM.year_value] / other
                     result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
                         emission_amount)
 
