@@ -346,7 +346,7 @@ class Emissions:
         return summary_emissions
 
 
-def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
+def calc_emissions_rate_cumul_cost(model: 'CIMS.Model', node: str, year: str,
                                    tech: str = None) -> None:
     """
     Calculates the per unit emissions cost for a node or tech. This includes the
@@ -380,7 +380,7 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     Returns
     -------
     None :
-        Nothing is returned. Instead, the node's cumul_emissions_cost_rate
+        Nothing is returned. Instead, the node's emissions_rate_cumul_cost
         calculated and saved in the model.
     """
     pq, src = model.get_param(PARAM.provided_quantities, node, year, tech=tech, return_source=True)
@@ -389,8 +389,8 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
         agg_emissions_cost = EmissionsCost()
 
         # Emission Cost @ Tech
-        if PARAM.emissions_cost_rate in model.graph.nodes[node][year][PARAM.technologies][tech]:
-            tech_emissions_cost = model.get_param(PARAM.emissions_cost_rate,
+        if PARAM.emissions_rate_direct_cost in model.graph.nodes[node][year][PARAM.technologies][tech]:
+            tech_emissions_cost = model.get_param(PARAM.emissions_rate_direct_cost,
                                                   node, year, tech=tech)
             agg_emissions_cost = agg_emissions_cost + tech_emissions_cost
 
@@ -401,15 +401,15 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     elif prev_stock_existed(model, node, year) and (pq is not None) and (
             src == 'calculation') and (pq.get_total_quantity() <= 0):
         agg_emissions_cost = EmissionsCost()
-    elif model.get_param(PARAM.competition_type, node) in ['tech compete']:
+    elif model.get_param(PARAM.competition_type, node) == PARAM.competition_compete:
         # (2) At a node with techs -- Weighted emissions cost from techs
         agg_emissions_cost = EmissionsCost()
         # Weighted emissions cost from techs
         for technology in model.graph.nodes[node][year][PARAM.technologies]:
-            tech_emissions_cost = model.get_param(PARAM.cumul_emissions_cost_rate, node, year,
+            tech_emissions_cost = model.get_param(PARAM.emissions_rate_cumul_cost, node, year,
                                                   tech=technology, dict_expected=True)
-            market_share = model.get_param(PARAM.total_market_share, node, year, tech=technology)
-            agg_emissions_cost = agg_emissions_cost + (tech_emissions_cost * market_share)
+            market_share_total = model.get_param(PARAM.market_share_total, node, year, tech=technology)
+            agg_emissions_cost = agg_emissions_cost + (tech_emissions_cost * market_share_total)
 
     else:
         # (3) At a node without techs -- Emissions Cost from Non-Supply children
@@ -423,9 +423,9 @@ def calc_cumul_emissions_cost_rate(model: 'CIMS.Model', node: str, year: str,
     new_val_dict = construction.create_value_dict(year_val=agg_emissions_cost, param_source='calculation')
 
     if tech:
-        model.set_param_internal(new_val_dict, PARAM.cumul_emissions_cost_rate, node, year, tech)
+        model.set_param_internal(new_val_dict, PARAM.emissions_rate_cumul_cost, node, year, tech)
     else:
-        model.graph.nodes[node][year][PARAM.cumul_emissions_cost_rate] = new_val_dict
+        model.graph.nodes[node][year][PARAM.emissions_rate_cumul_cost] = new_val_dict
 
 
 def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
@@ -451,8 +451,8 @@ def _find_indirect_emissions_cost(model: "CIMS.Model", year: str,
     indirect_emissions_cost = EmissionsCost()
     for child, req_data in services_requested.items():
         if child not in model.supply_nodes:
-            req_ratio = req_data[PARAM.year_value] or model.get_parameter_default(PARAM.service_requested)
-            child_emissions_cost = model.get_param(PARAM.cumul_emissions_cost_rate, child, year,
+            req_ratio = req_data[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
+            child_emissions_cost = model.get_param(PARAM.emissions_rate_cumul_cost, child, year,
                                                    dict_expected=True)
 
             indirect_emissions_cost += child_emissions_cost * req_ratio
@@ -517,8 +517,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
     Returns
     -------
     float : the total emission cost. Has the side effect of updating the Emissions Cost,
-            net_emissions_rate, avoided_emissions_rate, negative_emissions_rate, and
-            bio_emissions_rate in the model.
+            emissions_rate_direct_net, emissions_rate_direct_avoided, emissions_rate_direct_negative, and emissions_rate_direct_bio in the model.
     """
 
     supply_nodes = model.supply_nodes
@@ -552,12 +551,12 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                 removal_rates[ghg][emission_type] = construction.create_value_dict(rr_val)
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
-        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+    if PARAM.service_request in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
 
         # Child level
         for child_node, child_info in data.items():
-            req_val = child_info[PARAM.year_value] or model.get_parameter_default(PARAM.service_requested)
+            req_val = child_info[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
 
             # GROSS EMISSIONS
             if PARAM.emissions in model.graph.nodes[child_node][year] and \
@@ -685,8 +684,8 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     bio_emission_data[ghg][emission_type][PARAM.year_value])
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
-        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+    if PARAM.service_request in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
 
         # BIO EMISSIONS child level
         for child_node, child_info in data.items():
@@ -704,22 +703,18 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                                 supply_emissions[ghg][emission_type][PARAM.year_value] * req_val)
 
     # Record emission rates
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.net_emissions_rate] = \
-        Emissions(emissions_dict=net_emissions)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.avoided_emissions_rate] = \
-        Emissions(emissions_dict=avoided_emissions)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.negative_emissions_rate] = \
-        Emissions(emissions_dict=negative_emissions)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.bio_emissions_rate] = \
-        Emissions(bio_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_net] = Emissions(emissions_dict=net_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_avoided] = Emissions(emissions_dict=avoided_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_negative] = Emissions(emissions_dict=negative_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_bio] = Emissions(bio_emissions)
 
     # Record emission costs
     val_dict = construction.create_value_dict(year_val=total, param_source='calculation')
-    model.set_param_internal(val_dict, PARAM.emissions_cost, node, year, tech)
+    model.set_param_internal(val_dict, PARAM.emissions_cost, node, year, tech) # TODO: rename this to `competition_cost_emissions` and clarify throughout code
 
     model.set_param_internal(
         construction.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
-        PARAM.emissions_cost_rate, node, year, tech)
+        PARAM.emissions_rate_direct_cost, node, year, tech)
 
     return total
 
@@ -748,8 +743,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     Returns
     -------
     float : the total emission cost. Has the side effect of updating the Emissions Cost,
-            net_emissions_rate, avoided_emissions_rate, negative_emissions_rate, and
-            bio_emissions_rate in the model.
+            emissions_rate_direct_net, emissions_rate_direct_avoided, emissions_rate_direct_negative, and emissions_rate_direct_bio in the model.
     """
 
     supply_nodes = model.supply_nodes
@@ -797,12 +791,12 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 removal_rates[ghg][emission_type] = construction.create_value_dict(rr_val)
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
-        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+    if PARAM.service_request in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
 
         # Child level
         for child_node, child_info in data.items():
-            req_val = child_info[PARAM.year_value] or model.get_parameter_default(PARAM.service_requested)
+            req_val = child_info[PARAM.year_value] or model.get_parameter_default(PARAM.service_request)
 
             # GROSS EMISSIONS
             if PARAM.emissions in model.graph.nodes[child_node][year] and \
@@ -874,11 +868,11 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] + \
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value]
     # Save Net Emissions (Lets us do vintage-based weighting)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.net_emissions_rate] = \
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_net] = \
         Emissions(emissions_dict=net_emissions)
 
     # EMISSIONS COST
-    emissions_cost = calculate_vintage_weighted_parameter(PARAM.net_emissions_rate, model, node, year,
+    emissions_cost = calculate_vintage_weighted_parameter(PARAM.emissions_rate_direct_net, model, node, year,
                                                           tech, default_value=Emissions()).emissions
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
@@ -934,8 +928,8 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     bio_emission_data[ghg][emission_type][PARAM.year_value])
 
     # Check all services requested for
-    if PARAM.service_requested in model.graph.nodes[node][year][PARAM.technologies][tech]:
-        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+    if PARAM.service_request in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        data = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
 
         # BIO EMISSIONS child level
         for child_node, child_info in data.items():
@@ -953,12 +947,9 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                                 supply_emissions[ghg][emission_type][PARAM.year_value] * req_val)
 
     # Record emission rates
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.avoided_emissions_rate] = \
-        Emissions(emissions_dict=avoided_emissions)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.negative_emissions_rate] = \
-        Emissions(emissions_dict=negative_emissions)
-    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.bio_emissions_rate] = \
-        Emissions(bio_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_avoided] = Emissions(emissions_dict=avoided_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_negative] = Emissions(emissions_dict=negative_emissions)
+    model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_direct_bio] = Emissions(bio_emissions)
 
     # Record emission costs
     val_dict = construction.create_value_dict(year_val=total, param_source='calculation')
@@ -966,7 +957,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
 
     model.set_param_internal(
         construction.create_value_dict(EmissionsCost(emissions_cost), param_source='calculation'),
-        PARAM.emissions_cost_rate, node, year, tech)
+        PARAM.emissions_rate_direct_cost, node, year, tech)
 
     return total
 

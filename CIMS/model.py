@@ -90,7 +90,7 @@ class Model:
                 year_list = year_list,
                 sector_list = sector_list,
                 default_values_csv_path = default_values_csv_path,
-                list_csv_path=list_csv_path)
+                list_csv_path = list_csv_path)
 
         self._scenario_reader = ScenarioReader(
                 csv_file_paths = csv_update_file_paths,
@@ -120,18 +120,30 @@ class Model:
         self.prices = {}
         self.equilibrium_count = 0
 
-        ## GRAPH BUILDING HERE
-        self.build_graph()
+        ## Build graph using model reader files
+        graph = nx.DiGraph()
+        node_dfs = self.node_dfs
+        tech_dfs = self.tech_dfs
+        graph.cur_tree_index = [0]
+        graph.max_tree_index = [0]
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
+        graph.cur_tree_index[0] += graph.max_tree_index[0]
 
+        # Update the model's metadata
+        self.supply_nodes = graph_query.get_supply_nodes(graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
+        self.graph = graph
         self.dcc_classes = self._dcc_classes()
         self.dic_classes = self._dic_classes()
+
+        # Initialize parameters
         self._inherit_parameter_values()
         self._initialize_tax()
 
         self.show_run_warnings = True
         self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
-        self.scenario_model_description_file = self._scenario_reader.csv_files
-
+        
         self.change_history = pd.DataFrame(
             columns=['base_model_description', 
                      COL.parameter.lower(), 
@@ -145,6 +157,7 @@ class Model:
 
         self.status = 'instantiated'
 
+        # Update graph using scenario reader files
         if not isinstance(self._scenario_reader, ScenarioReader):
             raise ValueError("You are attempting to update a model with \
                     something other than a ScenarioReader object.")
@@ -153,18 +166,21 @@ class Model:
         self.graph.max_tree_index[0] = 0
         graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
         graph = edge_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        
-        # Add index for Excel results viewer to build correctly sorted list of nodes
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
 
-        self.graph = graph
+        # Update the model's metadata
         self.supply_nodes = graph_query.get_supply_nodes(graph)
         self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
+        self.graph = graph
         self.dcc_classes = self._dcc_classes()
         self.dic_classes = self._dic_classes()
+        
+        # Re-initialize parameters
         self._inherit_parameter_values()
         self._initialize_tax()
+
         self.show_run_warnings = True
+        self.scenario_model_description_file = self._scenario_reader.csv_files
 
     def validate_files(self, verbose=False):
         self.validator.validate(verbose=verbose)
@@ -197,27 +213,22 @@ class Model:
         model = copy.deepcopy(self)
 
         # Update the model's node_df & tech_dfs
-        model.scenario_node_dfs, model.scenario_tech_dfs = \
-            scenario_model_reader.get_model_description()
+        model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0
-        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs,
-                                                 model.scenario_tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs,
-                                                 model.scenario_tech_dfs)
+        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs, model.scenario_tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs, model.scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
-        # Update the Model's metadata
+        # Update the model's metadata
         model.supply_nodes = graph_query.get_supply_nodes(graph)
-
-        model.GHGs, model.emission_types, model.gwp = param_query.get_ghg_and_emissions(graph,
-                                                                                        str(model.base_year))
+        model.GHGs, model.emission_types, model.gwp = param_query.get_ghg_and_emissions(graph, str(model.base_year))
         model.dcc_classes = model._dcc_classes()
         model.dic_classes = model._dic_classes()
 
-        # Re-initialize the model
+        # Re-initialize parameters
         model._inherit_parameter_values()
         model._initialize_tax()
 
@@ -225,31 +236,6 @@ class Model:
         model.scenario_model_description_file = scenario_model_reader.csv_files
 
         return model
-
-    def build_graph(self):
-        """
-
-        Builds graph based on the model reader used in instantiation of the class. Stores this graph
-        in `self.graph`. Additionally, initializes `self.supply_nodes`.
-
-        Returns
-        -------
-        None
-
-        """
-        graph = nx.DiGraph()
-        node_dfs = self.node_dfs
-        tech_dfs = self.tech_dfs
-        graph.cur_tree_index = [0]
-        graph.max_tree_index = [0]
-        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
-        graph.cur_tree_index[0] += graph.max_tree_index[0]
-
-        self.supply_nodes = graph_query.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph,
-                                                                                     str(self.base_year))
-        self.graph = graph
 
     def _initialize_tax(self):
         # Initialize Taxes
@@ -417,7 +403,7 @@ class Model:
 
                 # DEMAND
                 # ******************
-                # Calculate Life Cycle Cost values on demand side
+                # Calculate Lifecycle Cost values on demand side
                 traversals.bottom_up_traversal(nx.subgraph(self.graph, demand_nodes),
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -617,7 +603,7 @@ class Model:
     def initialize_graph(self, graph, year):
         """
         Initializes the graph at the start of a simulation year.
-        Specifically, initializes (1) price multiplier values and (2) supply nodes' Life Cycle Cost
+        Specifically, initializes (1) price multiplier values and (2) supply nodes' Lifecycle Cost
         value.
 
         Parameters
@@ -658,23 +644,23 @@ class Model:
             parent_price_multipliers = {}
             if len(parents) > 0:
                 parent = parents[0]
-                if PARAM.price_multiplier in graph.nodes[parent][year]:
+                if PARAM.multiplier_price in graph.nodes[parent][year]:
                     price_multipliers = copy.deepcopy(
-                        self.graph.nodes[parent][year][PARAM.price_multiplier])
+                        self.graph.nodes[parent][year][PARAM.multiplier_price])
                     parent_price_multipliers.update(price_multipliers)
 
             # Grab the price multipliers from the current node (if they exist) and replace the parent price multipliers
             node_price_multipliers = copy.deepcopy(parent_price_multipliers)
-            if PARAM.price_multiplier in graph.nodes[node][year]:
-                price_multipliers = self.get_param(PARAM.price_multiplier, node, year, dict_expected=True)
+            if PARAM.multiplier_price in graph.nodes[node][year]:
+                price_multipliers = self.get_param(PARAM.multiplier_price, node, year, dict_expected=True)
                 node_price_multipliers.update(price_multipliers)
 
             # Set Price Multiplier of node in the graph
-            graph.nodes[node][year][PARAM.price_multiplier] = node_price_multipliers
+            graph.nodes[node][year][PARAM.multiplier_price] = node_price_multipliers
 
         def init_supply_node_lcc(graph, node, year):
             """
-            Function for initializing Life Cycle Cost for a node in a graph, if that node is a supply
+            Function for initializing Lifecycle Cost for a node in a graph, if that node is a supply
             node. This function assumes all of node's children have already been processed by this
             function.
 
@@ -697,18 +683,18 @@ class Model:
 
             def calc_lcc_from_children():
                 """
-                Helper function to calculate a node's Life Cycle Cost from its children.
+                Helper function to calculate a node's Lifecycle Cost from its children.
 
                 Returns
                 -------
-                Nothing is returned, but the node will be updated with a new Life Cycle Cost value.
+                Nothing is returned, but the node will be updated with a new Lifecycle Cost value.
                 """
                 # Find the subtree rooted at the supply node
                 descendants = nx.descendants(graph, node) | {node}
 
                 descendant_tree = nx.subgraph(graph, descendants)
 
-                # Calculate the Life Cycle Costs for the sub-tree
+                # Calculate the Lifecycle Costs for the sub-tree
                 traversals.bottom_up_traversal(descendant_tree,
                                                 lcc_calculation.lcc_calculation,
                                                 year,
@@ -723,7 +709,7 @@ class Model:
                     lcc = cost_curves.calc_cost_curve_lcc(self, node, year)
                     graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source='cost curve function')
                 else:
-                    # Life Cycle Cost needs to be calculated from children
+                    # Lifecycle Cost needs to be calculated from children
                     calc_lcc_from_children()
 
         def init_convert_to_CO2e(graph, node, year, gwp):
@@ -795,30 +781,57 @@ class Model:
             Nothing. Will update graph.nodes[node][year] with the initialized value of `Load Factor`
             (if there is one).
             """
-            if PARAM.load_factor not in graph.nodes[node][year]:
+            if PARAM.multiplier_load_factor not in graph.nodes[node][year]:
                 # Check if a load factor was defined at the node's structural parent (its first
                 # parent). If so, use this load factor for the node.
                 parents = list(graph.predecessors(node))
                 if len(parents) > 0:
                     parent = parents[0]
-                    if PARAM.load_factor in graph.nodes[parent][year]:
-                        val = graph.nodes[parent][year][PARAM.load_factor][PARAM.year_value]
-                        units = graph.nodes[parent][year][PARAM.load_factor][PARAM.unit]
-                        graph.nodes[node][year][PARAM.load_factor] = construction.create_value_dict(val,
-                                                                                         unit=units,
-                                                                                         param_source='inheritance')
+                    if PARAM.multiplier_load_factor in graph.nodes[parent][year]:
+                        val = graph.nodes[parent][year][PARAM.multiplier_load_factor][PARAM.year_value]
+                        units = graph.nodes[parent][year][PARAM.multiplier_load_factor][PARAM.unit]
+                        graph.nodes[node][year][PARAM.multiplier_load_factor] = construction.create_value_dict(val, unit=units, param_source='inheritance')
 
-            if PARAM.load_factor in graph.nodes[node][year]:
+            if PARAM.multiplier_load_factor in graph.nodes[node][year]:
                 # Ensure this load factor is recorded at each of the technologies within the node.
                 if PARAM.technologies in graph.nodes[node][year]:
                     tech_data = graph.nodes[node][year][PARAM.technologies]
                     for tech in tech_data:
-                        if PARAM.load_factor not in tech_data[tech]:
-                            val = graph.nodes[node][year][PARAM.load_factor][PARAM.year_value]
-                            units = graph.nodes[node][year][PARAM.load_factor][PARAM.unit]
-                            tech_data[tech][PARAM.load_factor] = construction.create_value_dict(val,
-                                                                                     unit=units,
-                                                                                     param_source='inheritance')
+                        if PARAM.multiplier_load_factor not in tech_data[tech]:
+                            val = graph.nodes[node][year][PARAM.multiplier_load_factor][PARAM.year_value]
+                            units = graph.nodes[node][year][PARAM.multiplier_load_factor][PARAM.unit]
+                            tech_data[tech][PARAM.multiplier_load_factor] = construction.create_value_dict(val, unit=units, param_source='inheritance')
+
+        def init_market_shares(graph, node, year):
+            """
+            Function for initializing the market share values by setting New Market Share equal to Total Market Share (if provided exogenously) for a given node in a graph.
+
+            Parameters
+            ----------
+            self :
+                A graph object containing the node of interest.
+            node : str
+                Name of the node to be initialized.
+            year: str
+                The string representing the current simulation year (e.g. "2005").
+
+            Returns
+            -------
+            Nothing is returned, but `graph.nodes[node]` will be updated with the initialized new and total market share values.
+            """
+            
+            if PARAM.technologies in graph.nodes[node][year]:
+                for tech in graph.nodes[node][year][PARAM.technologies]:
+                    # Determine whether total market share is exogenous
+                    ms_total, ms_total_source = self.get_param(PARAM.market_share_total, node, year, tech=tech, return_source=True)
+                    # If exogenous, set new market share to total market share value
+                    if ms_total_source == 'model':
+                        # Check if new market share already exists
+                        ms_new, ms_new_source = self.get_param(PARAM.market_share_new, node, year, tech=tech, return_source=True)
+
+                        if ms_new is None or ms_new_source != 'model':
+                            val_dict = construction.create_value_dict(ms_total, param_source='initialization')
+                            self.set_param_internal(val_dict, PARAM.market_share_new, node, year, tech)
 
         def init_tax_emissions(graph, node, year):
             """
@@ -868,10 +881,8 @@ class Model:
         def init_agg_emissions_cost(graph):
             # Reset the aggregate_emissions_cost at each node
             for n in self.graph.nodes():
-                self.graph.nodes[n][year][PARAM.aggregate_emissions_cost_rate] = \
-                    construction.create_value_dict({}, param_source='initialization')
-                self.graph.nodes[n][year][PARAM.cumul_emissions_cost_rate] = \
-                    construction.create_value_dict(EmissionsCost(), param_source='initialization')
+                self.graph.nodes[n][year][PARAM.emissions_aggregated_cost_rate] = construction.create_value_dict({}, param_source='initialization')
+                self.graph.nodes[n][year][PARAM.emissions_rate_cumul_cost] = construction.create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
 
@@ -882,6 +893,9 @@ class Model:
         traversals.top_down_traversal(graph,
                                        init_load_factor,
                                        year)
+        traversals.top_down_traversal(graph,
+                                       init_market_shares,
+                                       year)
         traversals.bottom_up_traversal(graph,
                                         init_supply_node_lcc,
                                         year)
@@ -889,17 +903,16 @@ class Model:
     def iteration_initialization(self, year):
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
-            self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(),
-                                                                                 param_source='initialization')
+            self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(), param_source='initialization')
 
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):
             for param in self.inheritable_params:
                 try:
-                    no_inheritance = graph.nodes[node][year][PARAM.no_inheritance][param][PARAM.year_value]
+                    inheritance = graph.nodes[node][year][PARAM.inheritance][param][PARAM.year_value]
                 except KeyError:
-                    no_inheritance = False
-                construction.inherit_parameter(self, graph, node, year, param, no_inheritance)
+                    inheritance = True
+                construction.inherit_parameter(self, graph, node, year, param, inheritance)
 
         for year in self.years:
             traversals.top_down_traversal(self.graph, inherit_function, year)
@@ -928,7 +941,7 @@ class Model:
         """
         comp_type = self.get_param(PARAM.competition_type, node).lower()
 
-        if comp_type in ['tech compete']:
+        if comp_type == PARAM.competition_compete:
             stock_allocation.all_tech_compete_allocation(self, node, year)
         else:
             stock_allocation.general_allocation(self, node, year)
@@ -949,7 +962,7 @@ class Model:
 
         (3) via weighted aggregate relationships - if specified in the model description, nodes will
         aggregate quantities structurally. For example, if a market node has
-        `structural_aggregation` turned on, any quantities (direct or in-direct) from the market
+        `aggregate_structural` turned on, any quantities (direct or in-direct) from the market
         children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
         which it has a request/provide relationship with (CAN.Natural Gas).
 
@@ -961,63 +974,53 @@ class Model:
     def _aggregate_direct_emissions(self, graph, node, year, **kwargs):
         # Net Emissions
         aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param=PARAM.net_emissions_rate,
-                                               total_param=PARAM.total_direct_net_emissions)
+                                               rate_param=PARAM.emissions_rate_direct_net,
+                                               total_param=PARAM.emissions_total_direct_net)
         # Avoided Emissions
         aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param=PARAM.avoided_emissions_rate,
-                                               total_param=PARAM.total_direct_avoided_emissions)
+                                               rate_param=PARAM.emissions_rate_direct_avoided,
+                                               total_param=PARAM.emissions_total_direct_avoided)
 
         # Negative Emissions
         aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param=PARAM.negative_emissions_rate,
-                                               total_param=PARAM.total_direct_negative_emissions)
+                                               rate_param=PARAM.emissions_rate_direct_negative,
+                                               total_param=PARAM.emissions_total_direct_negative)
 
         # Bio Emissions
         aggregation.aggregate_direct_emissions(self, graph, node, year,
-                                               rate_param=PARAM.bio_emissions_rate,
-                                               total_param=PARAM.total_direct_bio_emissions)
+                                               rate_param=PARAM.emissions_rate_direct_bio,
+                                               total_param=PARAM.emissions_total_direct_bio)
 
         # Emissions Cost
         aggregation.aggregate_direct_emissions_cost(self, graph, node, year,
-                                                    rate_param=PARAM.emissions_cost_rate,
-                                                    total_param=PARAM.total_direct_emissions_cost)
+                                                    rate_param=PARAM.emissions_rate_direct_cost,
+                                                    total_param=PARAM.emissions_total_direct_cost)
 
     def _aggregate_cumulative_emissions(self, graph, node, year, **kwargs):
         # Net Emissions
-        aggregation.aggregate_cumulative_emissions(
-            self, node, year,
-            rate_param=PARAM.cumul_net_emissions_rate,
-            total_param=PARAM.total_cumul_net_emissions
-        )
+        aggregation.aggregate_cumulative_emissions(self, node, year,
+            rate_param=PARAM.emissions_rate_cumul_net,
+            total_param=PARAM.emissions_total_cumul_net)
 
         # Avoided Emissions
-        aggregation.aggregate_cumulative_emissions(
-            self, node, year,
-            rate_param=PARAM.cumul_avoided_emissions_rate,
-            total_param=PARAM.total_cumul_avoided_emissions
-        )
+        aggregation.aggregate_cumulative_emissions(self, node, year,
+            rate_param=PARAM.emissions_rate_cumul_avoided,
+            total_param=PARAM.emissions_total_cumul_avoided)
 
         # Negative Emissions
-        aggregation.aggregate_cumulative_emissions(
-            self, node, year,
-            rate_param=PARAM.cumul_negative_emissions_rate,
-            total_param=PARAM.total_cumul_negative_emissions
-        )
+        aggregation.aggregate_cumulative_emissions(self, node, year,
+            rate_param=PARAM.emissions_rate_cumul_negative,
+            total_param=PARAM.emissions_total_cumul_negative)
 
         # Bio Emissions
-        aggregation.aggregate_cumulative_emissions(
-            self, node, year,
-            rate_param=PARAM.cumul_bio_emissions_rate,
-            total_param=PARAM.total_cumul_bio_emissions
-        )
+        aggregation.aggregate_cumulative_emissions(self, node, year,
+            rate_param=PARAM.emissions_rate_cumul_bio,
+            total_param=PARAM.emissions_total_cumul_bio)
 
         # Emissions Cost
-        aggregation.aggregate_cumulative_emissions_cost(
-            self, node, year,
-            rate_param=PARAM.cumul_emissions_cost_rate,
-            total_param=PARAM.total_cumul_emissions_cost
-        )
+        aggregation.aggregate_cumulative_emissions_cost(self, node, year,
+            rate_param=PARAM.emissions_rate_cumul_cost,
+            total_param=PARAM.emissions_total_cumul_cost)
 
     def _aggregate_distributed_supplies(self, graph, node, year, **kwargs):
         aggregation.aggregate_distributed_supplies(self, node, year)

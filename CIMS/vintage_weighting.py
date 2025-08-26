@@ -11,39 +11,39 @@ def _get_vintage_weights(model, node, year, tech):
     vintage year. Returns a dictionary where keys are vintage years and values are percentages.
     """
     # Total Stock
-    total_stock, src = model.get_param(PARAM.total_stock, node, year, tech=tech, return_source=True)
-    if (total_stock is None) or (math.isclose(total_stock, 0, abs_tol=1e-3)):
+    stock_total, src = model.get_param(PARAM.stock_total, node, year, tech=tech, return_source=True)
+    if (stock_total is None) or (math.isclose(stock_total, 0, abs_tol=1e-3)):
         vintage_weights = {year: 1}
     elif src == 'previous_year':
         stock_by_vintage = {}
         if year == str(model.base_year+model.step):
-            stock_by_vintage[year] = model.get_param(PARAM.base_stock, node, year, tech=tech)
+            stock_by_vintage[year] = model.get_param(PARAM.stock_base, node, year, tech=tech)
         else:
             stock_by_vintage.update(
-                model.get_param(PARAM.new_stock_remaining, node, year, tech=tech,
+                model.get_param(PARAM.stock_new_remaining, node, year, tech=tech,
                                 dict_expected=True) or {})
-            base_stock = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech) or 0
-            stock_by_vintage[str(model.base_year)] = base_stock
-            stock_by_vintage[year] = model.get_param(PARAM.new_stock, node, year, tech=tech) + \
-                                     model.get_param(PARAM.added_retrofit_stock, node, year,
+            stock_base = model.get_param(PARAM.stock_base_remaining, node, year, tech=tech) or 0
+            stock_by_vintage[str(model.base_year)] = stock_base
+            stock_by_vintage[year] = model.get_param(PARAM.stock_new, node, year, tech=tech) + \
+                                     model.get_param(PARAM.stock_retrofit_added, node, year,
                                                      tech=tech)
-        vintage_weights = {k: v / total_stock for k, v in stock_by_vintage.items()}
+        vintage_weights = {k: v / stock_total for k, v in stock_by_vintage.items()}
 
     else:
         stock_by_vintage = {}
         if year == str(model.base_year):
-            stock_by_vintage[year] = model.get_param(PARAM.base_stock, node, year, tech=tech)
+            stock_by_vintage[year] = model.get_param(PARAM.stock_base, node, year, tech=tech)
         else:
             stock_by_vintage.update(
-                model.get_param(PARAM.new_stock_remaining, node, year, tech=tech,
+                model.get_param(PARAM.stock_new_remaining, node, year, tech=tech,
                                 dict_expected=True) or {})
-            base_stock = model.get_param(PARAM.base_stock_remaining, node, year, tech=tech) or 0
-            stock_by_vintage[str(model.base_year)] = base_stock
-            stock_by_vintage[year] = model.get_param(PARAM.new_stock, node, year, tech=tech) + \
-                                     model.get_param(PARAM.added_retrofit_stock, node, year,
+            stock_base = model.get_param(PARAM.stock_base_remaining, node, year, tech=tech) or 0
+            stock_by_vintage[str(model.base_year)] = stock_base
+            stock_by_vintage[year] = model.get_param(PARAM.stock_new, node, year, tech=tech) + \
+                                     model.get_param(PARAM.stock_retrofit_added, node, year,
                                                      tech=tech)
 
-        vintage_weights = {k: round(v / total_stock, 5) for k, v in stock_by_vintage.items()}
+        vintage_weights = {k: round(v / stock_total, 5) for k, v in stock_by_vintage.items()}
 
     return vintage_weights
 
@@ -65,7 +65,7 @@ def calculate_vintage_weighted_parameter(parameter: str, model: "CIMS.Model", no
     Parameters
     ----------
     parameter : The name of a numerical parameter whose vintage-weighted value will be calculated
-        (e.g. "financial life cycle cost").
+        (e.g. "financial lifecycle cost").
     model : The CIMS.Model storing the data required to calculate the vintage-weighted value of
         the parameter.
     node : The name of the node which contains the technology of interest

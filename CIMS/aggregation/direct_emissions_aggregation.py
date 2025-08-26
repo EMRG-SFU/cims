@@ -12,7 +12,7 @@ def _abstract_direct_emission_aggregation(base_emission_class, model, graph, nod
     if PARAM.technologies in graph.nodes[node][year]:
         for tech in graph.nodes[node][year][PARAM.technologies]:
             tech_total = base_emission_class()
-            total_ms = model.get_param(PARAM.total_market_share, node, year, tech=tech)
+            total_ms = model.get_param(PARAM.market_share_total, node, year, tech=tech)
             direct = model.get_param(rate_param, node, year, tech=tech)
             if direct is not None:
                 total_direct = direct * provided_quantities * total_ms

@@ -101,9 +101,9 @@ def _update_year_dict(existing_year_dict, update_data):
         if not update_ok:
             continue
 
-        if param == PARAM.service_requested:
+        if param == PARAM.service_request:
             year_dict[param].update({target: value_dict})
-        elif param == PARAM.price_multiplier:
+        elif param == PARAM.multiplier_price:
             year_dict[param].update({target: value_dict})
         else:
             # If a Context value is present, there are 3 possibilities for what needs to happen
@@ -214,8 +214,8 @@ def _set_node_constants(graph, current_node_df, current_node):
     current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.is_supply]
 
     # 3.2 structural aggregation
-    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.structural_aggregation)
-    current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.structural_aggregation]
+    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.aggregate_structural)
+    current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.aggregate_structural]
 
     # 3.3 competition type
     graph = _add_node_constant(graph, current_node_df, current_node, PARAM.competition_type, required=True)

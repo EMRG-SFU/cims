@@ -61,7 +61,7 @@ def nodes_requesting_self(validator):
     """
     Identifies any nodes which request services of themselves.
     """
-    request_rows = validator.model_df[validator.model_df[COL.parameter] == PARAM.service_requested]
+    request_rows = validator.model_df[validator.model_df[COL.parameter] == PARAM.service_request]
     self_requests = request_rows[
         request_rows[validator.node_col] == request_rows[validator.target_col]]
     self_requesting = [(i, node) for i, node in
@@ -82,13 +82,13 @@ def nodes_no_requested_service(validator):
     nodes = validator.model_df.groupby(validator.node_col)
     for node, df in nodes:
         if pd.isna(df[COL.technology]).all():
-            if PARAM.service_requested not in df[COL.parameter].values:
+            if PARAM.service_request not in df[COL.parameter].values:
                 nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, None))
 
     # Technologies
     node_techs = validator.model_df.groupby([validator.node_col, COL.technology])
     for (node, tech), df in node_techs:
-        if PARAM.service_requested not in df[COL.parameter].values:
+        if PARAM.service_request not in df[COL.parameter].values:
             nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, tech))
 
     nodes_techs_no_serv_req.sort(key=lambda x: x[0])
@@ -116,11 +116,11 @@ def supply_without_lcc_or_price(validator):
     Identify supply nodes (fixed price or cost curve) that have no price, 
     lcc financial, or cost curve price specified in the base year.
     """
-    supply_nodes = validator.model_df[(validator.model_df[COL.parameter] == PARAM.competition_type) &
-                                       (validator.model_df[COL.context].str.contains('supply', case=False, na=False))][COL.branch]
+    supply_nodes = validator.model_df[(validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False)) &
+                                       (validator.model_df[COL.context] is True)][COL.branch]
 
     cost_df = validator.model_df[validator.model_df[COL.parameter].isin([PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
-    has_base_year_cost = cost_df[~cost_df['2000'].isna()][COL.branch]
+    has_base_year_cost = cost_df[~cost_df[PARAM.base_year].isna()][COL.branch]
     no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
                     f not in has_base_year_cost.values]
 
@@ -136,7 +136,7 @@ def techs_no_base_market_share(validator):
     data = validator.model_df
 
     base_year = [c for c in data.columns if is_year(c)][0]
-    base_year_market_shares = data[data[COL.parameter] == PARAM.new_market_share]
+    base_year_market_shares = data[data[COL.parameter] == PARAM.market_share_new]
     no_base_year_ms = base_year_market_shares[base_year_market_shares[base_year].isna()]
 
     techs_no_base_year_ms = []
@@ -157,7 +157,7 @@ def duplicate_service_requests(validator):
     # The model's DataFrame
     data = validator.model_df
 
-    serv_request = data[data[COL.parameter] == PARAM.service_requested]
+    serv_request = data[data[COL.parameter] == PARAM.service_request]
     duplicated = serv_request[serv_request.duplicated(
         subset=[validator.node_col, COL.technology, validator.target_col],
         keep=False)]
@@ -191,7 +191,7 @@ def bad_service_req(validator):
     data = validator.model_df
 
     # Filter to Only Include Service Requested
-    services_req = data[data[COL.parameter] == PARAM.service_requested]
+    services_req = data[data[COL.parameter] == PARAM.service_request]
 
     # Select only the year columns
     year_cols = [c for c in services_req.columns if is_year(c)]
@@ -218,8 +218,8 @@ def tech_compete_nodes_no_techs(validator):
     data = validator.model_df
 
     # Find all Tech Compete Nodes
-    tech_compete_nodes = data[(data[COL.parameter] == PARAM.competition_type) &
-                              (data[COL.context] == 'Tech Compete')][validator.node_col]
+    tech_compete_nodes = data[(data[COL.parameter].str.lower().str.contains(PARAM.competition_type)) &
+                              (data[COL.context].str.lower().str.contains(PARAM.competition_compete))][validator.node_col]
 
     # Find all Technology Header Rows
     techs = data[data[COL.parameter] == COL.technology.lower()]
@@ -244,7 +244,7 @@ def revenue_recycling_at_techs(validator):
     data = validator.model_df
 
     # Find Recycled Revenues Rows
-    rr_tech_df = data[(data[COL.parameter] == PARAM.recycled_revenues) &
+    rr_tech_df = data[(data[COL.parameter] == PARAM.revenue_recycled) &
                                   (~data[COL.technology].isna())]
 
     techs_recycling_revenues = []
@@ -324,7 +324,7 @@ def service_req_at_tech_node(validator):
     """
     Identify tech nodes where a service request is specified at the node level.
 
-    The implication of this is that values such as cumul_emissions_cost_rate
+    The implication of this is that values such as emissions_rate_cumul_cost
     will be incorrect.
     """
     # The model's DataFrame
@@ -332,12 +332,12 @@ def service_req_at_tech_node(validator):
 
     # Find all Tech compete nodes
     tech_nodes = data[(data[COL.parameter]==PARAM.competition_type) &
-                      (data[COL.context].str.lower().isin(['tech compete']))][validator.node_col].unique()
+                      (data[COL.context].str.lower().str.contains(PARAM.competition_compete))][validator.node_col].unique()
 
 
     # Find service request rows specified at the node level of a [node-]tech
     # compete node
-    req_at_tech_node_rows = data[(data[COL.parameter] == PARAM.service_requested) &
+    req_at_tech_node_rows = data[(data[COL.parameter] == PARAM.service_request) &
                                  (data[COL.technology].isna()) &
                                  (data[validator.node_col].isin(tech_nodes))]
 
@@ -438,7 +438,7 @@ def new_nodes_in_scenario(validator):
         # Find nodes from base and scenario files
         base_nodes = set(base_data[validator.node_col].dropna())
         scen_nodes = set(scenario_data[validator.node_col].dropna())
-        declared_new_nodes = set(scenario_data[scenario_data[COL.parameter]==PARAM.service_provided]\
+        declared_new_nodes = set(scenario_data[scenario_data[COL.parameter]==PARAM.service_provide]\
             [validator.node_col].dropna())
 
         # Find new nodes which haven't been declared without a service provided line
@@ -499,7 +499,7 @@ def zero_requested_nodes(validator, providers, root_node):
     0.
     """
     data = validator.model_df
-    request_lines = data[data[COL.parameter]==PARAM.service_requested]
+    request_lines = data[data[COL.parameter]==PARAM.service_request]
     all_requested = set(request_lines[validator.target_col])
 
     numeric_values = request_lines[get_year_cols(data)].replace("None", None).astype(float)
@@ -523,7 +523,7 @@ def lcc_at_tech_node(validator):
     """
     Identify any tech-compete nodes where an LCC value has been set exogenously.
     """
-    tech_nodes = validator.model_df[COL.branch][(validator.model_df[COL.parameter] == PARAM.competition_type) & (validator.model_df[COL.context].str.lower().str.contains('tech compete'))]
+    tech_nodes = validator.model_df[COL.branch][(validator.model_df[COL.parameter] == PARAM.competition_type) & (validator.model_df[COL.context].str.lower().str.contains(PARAM.competition_compete))]
     lcc_nodes = validator.model_df[COL.branch][
         validator.model_df[COL.technology].isna() &
         validator.model_df[COL.parameter].str.lower().str.contains('lcc')]

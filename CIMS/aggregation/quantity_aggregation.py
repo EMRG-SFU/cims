@@ -23,7 +23,7 @@ def aggregate_requested_quantities(model, node, year):
 
     (3) via weighted aggregate relationships - if specified in the model description, nodes will
     aggregate quantities structurally. For example, if a market node has
-    `structural_aggregation` turned on, any quantities (direct or in-direct) from the market
+    `aggregate_structural` turned on, any quantities (direct or in-direct) from the market
     children aggregate through structural parents (i.e. BC.Natural Gas) instead of the market
     which it has a request/provide relationship with (CAN.Natural Gas).
 
@@ -105,7 +105,7 @@ def _find_aggregation_quantities(model, year, children_for_aggregation):
                 agg_info['quantities'].append((providing_node, request_amount))
 
         elif agg_type == 'aggregation':
-            agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregation_weight]
+            agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregate_weight]
 
             # all quantities requested of child, should be multiplied by the aggregation weight and
             # recorded as requested of node

@@ -1,7 +1,7 @@
 """
 Module to provide the calculation of recycled revenues from emissions.
 """
-from .emissions import calc_cumul_emissions_cost_rate
+from .emissions import calc_emissions_rate_cumul_cost
 from .utils.parameter import list as PARAM
 
 
@@ -42,9 +42,9 @@ def calc_recycled_revenues(model, node, year, tech=None):
             recycling_rates = model.get_param(PARAM.revenue_recycle_rate, node, year, dict_expected=True)
 
     # Retrieve the aggregate emissions cost at the node/tech
-    calc_cumul_emissions_cost_rate(model, node, year, tech)
+    calc_emissions_rate_cumul_cost(model, node, year, tech)
 
-    aggregate_emissions_cost = model.get_param(PARAM.cumul_emissions_cost_rate,
+    aggregate_emissions_cost = model.get_param(PARAM.emissions_rate_cumul_cost,
                                                node, year, tech=tech, dict_expected=True)
 
     # Apply the recycling rates to the aggregate emissions to find the recycled revenues
@@ -69,10 +69,10 @@ def calc_recycled_revenues(model, node, year, tech=None):
                     pass
 
     if tech is not None:
-        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.cumul_emissions_cost_rate] = \
+        model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.emissions_rate_cumul_cost] = \
             aggregate_emissions_cost
     else:
-        model.graph.nodes[node][year][PARAM.cumul_emissions_cost_rate] = \
+        model.graph.nodes[node][year][PARAM.emissions_rate_cumul_cost] = \
             aggregate_emissions_cost
 
     return total_recycled_revenue

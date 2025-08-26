@@ -27,7 +27,7 @@ def _find_competing_techs(model, node, comp_type):
     node_year_data = model.graph.nodes[node][base_year]
     competing_technologies = []
 
-    if comp_type == 'tech compete':
+    if comp_type == PARAM.competition_compete:
         for tech in node_year_data[PARAM.technologies]:
             competing_technologies.append((node, tech))
 
@@ -85,7 +85,7 @@ def _calculate_lcc_weight(tech_lcc, heterogeneity):
     Parameters
     ----------
     tech_lcc : float
-        The life cycle cost associated with a specific technology.
+        The lifecycle cost associated with a specific technology.
 
     heterogeneity : float
         The heterogeneity value the technology's node will use during market share competition.
