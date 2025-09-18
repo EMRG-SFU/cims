@@ -648,8 +648,7 @@ def _calculate_new_market_shares(model, node, year, comp_type):
     competing_techs = _find_competing_techs(model, node, comp_type)
 
     # Find the weights that we will be using to calculate market share
-    total_weight, tech_weights = _find_competing_weights(model, year, competing_techs,
-                                                         heterogeneity)
+    total_weight, tech_weights = _find_competing_weights(model, year, heterogeneity, competing_techs)
 
     # Find the new market shares for each tech
     new_market_shares = _find_exogenous_market_shares(model, node, year)

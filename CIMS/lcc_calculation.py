@@ -63,7 +63,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
 
     # Check if the node is a tech compete node:
     if model.get_param(PARAM.competition_type, node) in ['tech compete']:
-        total_lcc_v = 0.0
         v = model.get_param(PARAM.heterogeneity, node, year)
 
         # Get all the technologies in the node
@@ -101,27 +100,6 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
                                                                 do_calc=True)
             val_dict = {PARAM.year_value: lcc_competition, PARAM.param_source: lcc_competition_source}
             model.set_param_internal(val_dict, PARAM.lcc_competition, node, year, tech)
-
-            # If the technology is available in this year, add to the total LCC^-v value.
-            first_year_avail = model.get_param(PARAM.available, node, str(model.base_year), tech=tech)
-            first_year_unavail = model.get_param(PARAM.unavailable, node, str(model.base_year),
-                                                 tech=tech)
-            if first_year_avail <= int(year) < first_year_unavail:
-                # Life Cycle Cost ^ -v
-                if lcc < 0.01:
-                    # When lcc < 0.01, we will approximate its weight using a TREND line
-                    w1 = 0.1 ** (-1 * v)
-                    w2 = 0.01 ** (-1 * v)
-                    slope = (w2 - w1) / (0.01 - 0.1)
-                    weight = slope * lcc + (w1 - slope * 0.1)
-                else:
-                    weight = lcc ** (-1 * v)
-
-                total_lcc_v += weight
-
-        # Set sum of Life Cycle Cost raised to negative variance
-        val_dict = construction.create_value_dict(total_lcc_v, param_source='calculation')
-        sub_graph.nodes[node][year][PARAM.total_lcc_v] = val_dict
 
         # Weighted Life Cycle Cost
         # ************************
@@ -287,6 +265,37 @@ def calc_lcc_competition(model: "CIMS.Model", node: str, year: str, tech: str) -
                    fixed_cost_rate + emissions_cost
 
     return lcc_competition
+
+
+def calc_lcc_retrofit(model, node, year, existing_tech):
+    """
+    Calculates the LCC to be used by the current technology during a retrofit competition.
+    This differs from regular LCC by excluding all upfront costs.
+
+    Parameters
+    ----------
+    model : CIMS.Model
+        The model where LCC components are stored. Must contain node.
+    node : str
+        The name of the node (branch notation) where the LCC components can be found.
+    year : str
+        The year of interest.
+    existing_tech : str
+        The existing technology whose LCC is being calculated.
+
+    Returns
+    -------
+    float :
+        The LCC to use for the current technology during a retrofit competition.
+    """
+    competition_annual_cost = model.get_param(PARAM.competition_annual_cost, node, year,
+                                           tech=existing_tech, do_calc=True)
+    annual_service_cost = model.get_param(PARAM.service_cost, node, year,
+                                          tech=existing_tech, do_calc=True)
+    emissions_cost = model.get_param(PARAM.emissions_cost, node, year,
+                                     tech=existing_tech, do_calc=True)
+    retrofit_lcc_competition = competition_annual_cost + annual_service_cost + emissions_cost
+    return retrofit_lcc_competition
 
 
 def calc_competition_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
