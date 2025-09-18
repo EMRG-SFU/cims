@@ -1,41 +1,10 @@
 """
 Retrofit module. Contains functions for retrofitting previously adopted stock.
 """
-from .allocation_utils import _find_competing_techs, _find_competing_weights, _calculate_lcc_weight
+from .allocation_utils import _find_competing_techs, _find_competing_weights
 from .market_share_limits import _min_max_ms_compliant, _get_percent_differences, \
     _make_ms_min_max_compliant, _adjust_new_market_shares
 from ..utils.parameter import list as PARAM
-
-def _retrofit_lcc(model, node, year, existing_tech):
-    """
-    Calculates the LCC to be used by the current technology during a retrofit competition.
-    This differs from regular LCC by excluding all upfront costs.
-
-    Parameters
-    ----------
-    model : CIMS.Model
-        The model where LCC components are stored. Must contain node.
-    node : str
-        The name of the node (branch notation) where the LCC components can be found.
-    year : str
-        The year of interest.
-    existing_tech : str
-        The existing technology whose LCC is being calculated.
-
-    Returns
-    -------
-    float :
-        The LCC to use for the current technology during a retrofit competition.
-    """
-    competition_cost_annual = model.get_param(PARAM.competition_cost_annual, node, year,
-                                           tech=existing_tech, do_calc=True)
-    annual_service_cost = model.get_param(PARAM.service_cost, node, year,
-                                          tech=existing_tech, do_calc=True)
-    emissions_cost = model.get_param(PARAM.emissions_cost, node, year,
-                                     tech=existing_tech, do_calc=True)
-    retrofit_lcc_competition = competition_cost_annual + annual_service_cost + emissions_cost
-    return retrofit_lcc_competition
-
 
 def _apply_retrofit_limits(model, year, existing_tech, retrofit_market_shares):
     """
@@ -254,18 +223,9 @@ def calc_retrofits(model, node, year, stock_existing):
     for existing_node_tech in stock_existing.keys():
 
         existing_node, existing_tech = existing_node_tech
-        # Find Other Competing
-        other_competing_techs = _find_competing_techs(model, node, comp_type)
-        other_competing_techs.remove(existing_node_tech)
-        total_weight, competing_weights = _find_competing_weights(model, year,
-                                                                  other_competing_techs,
-                                                                  heterogeneity)
-
-        # Add Existing Tech's Weight
-        existing_tech_lcc = _retrofit_lcc(model, existing_node, year, existing_tech)
-        existing_tech_weight = _calculate_lcc_weight(existing_tech_lcc, heterogeneity)
-        total_weight += existing_tech_weight
-        competing_weights[existing_node_tech] = existing_tech_weight
+        # Find competing techs (including existing tech)
+        competing_techs = _find_competing_techs(model, node, comp_type)
+        total_weight, competing_weights = _find_competing_weights(model, year, heterogeneity, competing_techs, existing_tech)
 
         # Find Market shares based off of weights
         retrofit_market_shares = {}
@@ -274,12 +234,10 @@ def calc_retrofits(model, node, year, stock_existing):
                 retrofit_market_shares[tech] = competing_weights[tech] / total_weight
 
         # Adjust based on limits of existing technology
-        retrofit_market_shares = _apply_retrofit_limits(model, year, existing_node_tech,
-                                                        retrofit_market_shares)
+        retrofit_market_shares = _apply_retrofit_limits(model, year, existing_node_tech,retrofit_market_shares)
 
         # Adjust market shares based on limits of techs being retrofitted to
-        retrofit_market_shares = _adjust_retrofit_marketshares(model, year, existing_node_tech,
-                                                               retrofit_market_shares)
+        retrofit_market_shares = _adjust_retrofit_marketshares(model, year, existing_node_tech,retrofit_market_shares)
 
         pre_retro_existing_stock = stock_existing[existing_node_tech]
 
@@ -293,8 +251,7 @@ def calc_retrofits(model, node, year, stock_existing):
                     stock_retrofit[tech] = 0
                 stock_retrofit[tech] += post_retro_existing_stock - pre_retro_existing_stock
 
-                _record_retrofitted_stock(model, existing_node, year, existing_tech,
-                                          pre_retro_existing_stock - post_retro_existing_stock)
+                _record_retrofitted_stock(model, existing_node, year, existing_tech,pre_retro_existing_stock - post_retro_existing_stock)
 
             else:
                 if tech not in stock_retrofit_added:
