@@ -184,25 +184,17 @@ def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> 
     # Calculate the LCC of any new stock
 
     # Upfront Cost - vintage-weight full term
-    new_upfront_cost, uc_src = model.get_param(PARAM.financial_cost_upfront, node, year, tech=tech,
-                                               do_calc=True, return_source=True)
-    model.set_param_internal(param=PARAM.stock_new_financial_cost_upfront, node=node, year=year,
-                             tech=tech,
-                             val=construction.create_value_dict(new_upfront_cost, param_source=uc_src))
-    upfront_cost = calculate_vintage_weighted_parameter(PARAM.stock_new_financial_cost_upfront, model,
-                                                        node, year, tech)
+    new_upfront_cost, uc_src = model.get_param(PARAM.financial_cost_upfront, node, year, tech=tech, do_calc=True, return_source=True)
+    model.set_param_internal(param=PARAM.stock_new_financial_cost_upfront, node=node, year=year, tech=tech, val=construction.create_value_dict(new_upfront_cost, param_source=uc_src))
+    financial_cost_upfront = calculate_vintage_weighted_parameter(PARAM.stock_new_financial_cost_upfront, model, node, year, tech)
 
     # Annual Cost - vintage-weight full term
-    new_annual_cost, ac_src = model.get_param(PARAM.financial_cost_annual, node, year, tech=tech,
-                                              do_calc=True, return_source=True)
-    model.set_param_internal(construction.create_value_dict(new_annual_cost, param_source=ac_src),
-                             PARAM.stock_new_financial_cost_annual, node, year, tech=tech)
-    annual_cost = calculate_vintage_weighted_parameter(PARAM.stock_new_financial_cost_annual, model,
-                                                       node, year, tech)
+    new_annual_cost, ac_src = model.get_param(PARAM.financial_cost_annual, node, year, tech=tech, do_calc=True, return_source=True)
+    model.set_param_internal(construction.create_value_dict(new_annual_cost, param_source=ac_src), PARAM.stock_new_financial_cost_annual, node, year, tech=tech)
+    financial_cost_annual = calculate_vintage_weighted_parameter(PARAM.stock_new_financial_cost_annual, model, node, year, tech)
 
     # Annual Service Cost - vintage weight the service requested ratios
-    annual_service_cost = model.get_param(PARAM.financial_cost_service, node, year, tech=tech,
-                                          do_calc=True)
+    service_cost_annual = model.get_param(PARAM.financial_cost_service, node, year, tech=tech, do_calc=True)
 
     # Fixed Cost Rate -- No Vintage Weighting
     fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, tech=tech, do_calc=True)
@@ -214,10 +206,9 @@ def calc_financial_lcc(model: "CIMS.Model", node: str, year: str, tech: str) -> 
     revenue_recycled = calc_recycled_revenues(model, node, year, tech)
 
     # Add it all together
-    fLCC = upfront_cost + annual_cost + annual_service_cost + fixed_cost_rate + emissions_cost - \
-           revenue_recycled
+    lcc_financial = financial_cost_upfront + financial_cost_annual + service_cost_annual + fixed_cost_rate + emissions_cost - revenue_recycled
 
-    return fLCC
+    return lcc_financial
 
 
 def calc_lcc_competition(model: "CIMS.Model", node: str, year: str, tech: str) -> float:
@@ -239,16 +230,13 @@ def calc_lcc_competition(model: "CIMS.Model", node: str, year: str, tech: str) -
     --------
     calc_financial_lcc: Calculates financial LCC, which does not include intangible costs.
     """
-    competition_cost_upfront = model.get_param(PARAM.competition_cost_upfront, node, year, tech=tech,
-                                            do_calc=True)
-    competition_cost_annual = model.get_param(PARAM.competition_cost_annual, node, year, tech=tech,
-                                           do_calc=True)
-    annual_service_cost = model.get_param(PARAM.service_cost, node, year, tech=tech, do_calc=True)
+    competition_cost_upfront = model.get_param(PARAM.competition_cost_upfront, node, year, tech=tech, do_calc=True)
+    competition_cost_annual = model.get_param(PARAM.competition_cost_annual, node, year, tech=tech, do_calc=True)
+    service_cost_annual = model.get_param(PARAM.service_cost, node, year, tech=tech, do_calc=True)
     fixed_cost_rate = model.get_param(PARAM.fixed_cost_rate, node, year, tech=tech, do_calc=True)
     emissions_cost = calc_competition_emissions_cost(model, node, year, tech, allow_foresight=True)
 
-    lcc_competition = competition_cost_upfront + competition_cost_annual + annual_service_cost + \
-                   fixed_cost_rate + emissions_cost
+    lcc_competition = competition_cost_upfront + competition_cost_annual + service_cost_annual + fixed_cost_rate + emissions_cost
 
     return lcc_competition
 
@@ -274,14 +262,13 @@ def calc_lcc_retrofit(model, node, year, existing_tech):
     float :
         The LCC to use for the current technology during a retrofit competition.
     """
-    competition_annual_cost = model.get_param(PARAM.competition_annual_cost, node, year,
-                                           tech=existing_tech, do_calc=True)
-    annual_service_cost = model.get_param(PARAM.service_cost, node, year,
-                                          tech=existing_tech, do_calc=True)
-    emissions_cost = model.get_param(PARAM.emissions_cost, node, year,
-                                     tech=existing_tech, do_calc=True)
-    retrofit_lcc_competition = competition_annual_cost + annual_service_cost + emissions_cost
-    return retrofit_lcc_competition
+    competition_cost_annual = model.get_param(PARAM.competition_cost_annual, node, year, tech=existing_tech, do_calc=True)
+    service_cost_annual = model.get_param(PARAM.service_cost, node, year, tech=existing_tech, do_calc=True)
+    emissions_cost = model.get_param(PARAM.emissions_cost, node, year, tech=existing_tech, do_calc=True)
+    
+    lcc_retrofit = competition_cost_annual + service_cost_annual + emissions_cost
+
+    return lcc_retrofit
 
 
 def calc_competition_upfront_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
