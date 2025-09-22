@@ -120,7 +120,6 @@ quantity_aggregate = "quantity_aggregate"
 # ==========================================
 # Emissions
 # ==========================================
-emissions_aggregated_cost_rate = "emissions_aggregated_cost_rate" #TODO: check if we still use this?
 emissions = "emissions"
 emissions_biomass = "emissions_biomass"
 emissions_gwp = "emissions_gwp" 
