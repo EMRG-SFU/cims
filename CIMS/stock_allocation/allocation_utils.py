@@ -107,7 +107,7 @@ def _stable_transform(tech_lcc):
     """
     A helper function of _find_competing_weights(). To handle negative and zero value lcc's, use a piecewise function:
             - when positive or zero, use the softplus transform to reduce the effect of small positive input values. This function is monotonic (strictly increasing) and introduces minimal distortion for lifecycle costs greater than 3.
-            - when negative, use a monotonic, smooth equation based on softplus(-x), but approaching zero weight polynomially (rather than exponentially) to preserve behaviour of relative lifecycle costs similar to the positive number space.
+            - when negative, use a monotonic, smooth equation of (b+softplus(-x))^p. This function approaches zero weight polynomially (rather than exponentially) to preserve behaviour of relative lifecycle costs similar to the positive number space.
 
     Parameters
     ----------
@@ -119,12 +119,13 @@ def _stable_transform(tech_lcc):
     float :
         softplus transform of lcc_competition
     """
-    # The softplus transform function 'softplus(x)' is approximately equal 'x' for large values, but returns infinity for very large values of 'x'. To avoid an overflow error with the np.exp function, use a limit on the input value above where softplus(x) = x.
+    # The function 'softplus(x)' is approximately equal to 'x' for large values, but returns infinity for very large values of 'x'. To avoid an overflow error with the np.exp function, use a limit on the input value above where softplus(x) = x.
     if tech_lcc > 20:
         tech_lcc_transform = tech_lcc
     elif tech_lcc < 0:
-        # Use an exponent value of 0.7 for smooth weighting approximately equal to behaviour in positive number space
-        tech_lcc_transform = (1 + np.log1p( np.exp( -1 * np.clip( tech_lcc, -500, 0)))) ** (-0.7)
+        # Use an exponent value of p=-1 for smooth weighting, approximately equal to behaviour in positive number space.
+        # Use shift value of b=0.7495 so that softplus(x) = (0.7495 + softplus(-x))^-1 at 0.
+        tech_lcc_transform = (0.7495 + np.log1p( np.exp( -1 * np.clip( tech_lcc, -500, 0)))) ** (-1)
     else:
         # # np.log1p(y) = log(1 + y) but more accurate for small y
         # clip prevents underflow error for very negative x
