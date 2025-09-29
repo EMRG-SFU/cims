@@ -123,21 +123,21 @@ def parent_name(curr_node, return_empty=False):
 
 def get_services_requested(model, node, year, tech=None, use_vintage_weighting=False):
     if tech:
-        if PARAM.service_requested not in model.graph.nodes[node][year][PARAM.technologies][tech]:
+        if PARAM.service_request not in model.graph.nodes[node][year][PARAM.technologies][tech]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+            services_requested = model.graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
             if use_vintage_weighting:
                 weighted_services = {}
                 for target in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_requested, model, node, year, tech=tech, context=target)
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_request, model, node, year, tech=tech, context=target)
                     weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 
     else:
-        if PARAM.service_requested not in model.graph.nodes[node][year]:
+        if PARAM.service_request not in model.graph.nodes[node][year]:
             services_requested = {}
         else:
-            services_requested = model.graph.nodes[node][year][PARAM.service_requested]
+            services_requested = model.graph.nodes[node][year][PARAM.service_request]
 
     return services_requested

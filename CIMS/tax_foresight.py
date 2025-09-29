@@ -75,7 +75,7 @@ def discounted_foresight(model: 'CIMS.Model', node: str, year: str, tech: str | 
     """
     Use the "Discounted Tax Foresight" method to calculates an expected tax value for a given
     node/tech, ghg, & emission_type in a specified year. This function is called from
-    emissions.calc_emissions_cost() during the calculation of competition life cycle cost.
+    emissions.calc_emissions_cost() during the calculation of competition lifecycle cost.
 
     Parameters
     ----------
@@ -114,7 +114,7 @@ def average_foresight(model, node, year, tech, ghg, emission_type):
     """
     Use the "Average Tax Foresight" method to calculates an expected tax value for a given
     node/tech, ghg, & emission_type in a specified year. This function is called from
-    emissions.calc_emissions_cost() during the calculation of competition life cycle cost.
+    emissions.calc_emissions_cost() during the calculation of competition lifecycle cost.
 
     Parameters
     ----------

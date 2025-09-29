@@ -494,7 +494,7 @@ def _find_eligible_market_shares(model, node, year, new_market_shares):
     """
     eligible_market_shares = {}
     for tech in new_market_shares:
-        is_exogenous = query.is_param_exogenous(model, PARAM.market_share, node, year=year, tech=tech)
+        is_exogenous = query.is_param_exogenous(model, PARAM.market_share_new, node, year=year, tech=tech)
 
         first_year_available = model.get_param(PARAM.available, node, year=year, tech=tech)
         first_year_unavailable = model.get_param(PARAM.unavailable, node, year=year, tech=tech)

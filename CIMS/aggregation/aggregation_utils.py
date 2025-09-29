@@ -7,8 +7,8 @@ def find_req_prov_children(graph, node, year, tech=None):
     req_prov_children = []
 
     if tech:
-        if PARAM.service_requested in graph.nodes[node][year][PARAM.technologies][tech]:
-            targets = graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_requested]
+        if PARAM.service_request in graph.nodes[node][year][PARAM.technologies][tech]:
+            targets = graph.nodes[node][year][PARAM.technologies][tech][PARAM.service_request]
             req_prov_children = [t for t in targets]
     else:
         node_children = graph.successors(node)
