@@ -879,9 +879,8 @@ class Model:
                 graph.nodes[node][year][PARAM.tax] = final_tax
 
         def init_agg_emissions_cost(graph):
-            # Reset the aggregate_emissions_cost at each node
+            # Reset the emissions_rate_cumul_cost at each node
             for n in self.graph.nodes():
-                self.graph.nodes[n][year][PARAM.emissions_aggregated_cost_rate] = construction.create_value_dict({}, param_source='initialization')
                 self.graph.nodes[n][year][PARAM.emissions_rate_cumul_cost] = construction.create_value_dict(EmissionsCost(), param_source='initialization')
 
         init_agg_emissions_cost(graph)
