@@ -559,7 +559,7 @@ def base_year_market_share_not_one(validator):
     """
     # Extract market share data from model
     model_df = validator.model_df
-    market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share]
+    market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share_total]
 
     # Identify base year column
     base_year_col = next(col for col in market_share_df.columns if is_year(col))
