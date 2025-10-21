@@ -8,15 +8,15 @@ calculation_directory = {
     PARAM.capital_cost_declining: declining_costs.calc_declining_capital_cost,
     PARAM.capital_cost: lcc_calculation.calc_capital_cost,
     PARAM.crf: lcc_calculation.calc_crf,
-    PARAM.financial_upfront_cost: lcc_calculation.calc_financial_upfront_cost,
-    PARAM.competition_upfront_cost: lcc_calculation.calc_competition_upfront_cost,
+    PARAM.financial_cost_upfront: lcc_calculation.calc_financial_upfront_cost,
+    PARAM.competition_cost_upfront: lcc_calculation.calc_competition_upfront_cost,
     PARAM.dic: declining_costs.calc_declining_intangible_cost,
-    PARAM.financial_annual_cost: lcc_calculation.calc_financial_annual_cost,
-    PARAM.competition_annual_cost: lcc_calculation.calc_competition_annual_cost,
+    PARAM.financial_cost_annual: lcc_calculation.calc_financial_annual_cost,
+    PARAM.competition_cost_annual: lcc_calculation.calc_competition_annual_cost,
     PARAM.service_cost: lcc_calculation.calc_competition_annual_service_cost,
-    PARAM.financial_service_cost: lcc_calculation.calc_financial_annual_service_cost,
+    PARAM.financial_cost_service: lcc_calculation.calc_financial_annual_service_cost,
     PARAM.emissions_cost: lcc_calculation.calc_competition_emissions_cost,
-    PARAM.financial_emissions_cost: lcc_calculation.calc_financial_emissions_cost,
+    PARAM.financial_cost_emissions: lcc_calculation.calc_financial_emissions_cost,
     PARAM.lcc_financial: lcc_calculation.calc_financial_lcc,
     PARAM.lcc_competition: lcc_calculation.calc_lcc_competition,
     PARAM.price: lcc_calculation.calc_price,
@@ -215,7 +215,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
 def is_param_exogenous(model, param, node, year, tech=None):
     """Checks if a parameter is exogenously defined"""
     _, source = model.get_param(param, node, year=year, tech=tech, return_source=True)
-    ms_exogenous = source == 'model'
+    ms_exogenous = source in ['model', 'initialization']
     return ms_exogenous
 
 def _find_value_in_ancestors(graph, node, parameter, year=None):
@@ -235,7 +235,7 @@ def _find_value_in_ancestors(graph, node, parameter, year=None):
         `graph`. (e.g. `CIMS.Canada.Alberta`)
     parameter : str
         The name of the parameter whose value is being found. (e.g. 
-        `Price Multiplier`)
+        `multiplier_price`)
     year : str, optional
         The year associated with sub-dictionary to search at `node`. Default is None, which implies
         that year sub-dictionaries should be searched. Instead, only search for `parameter` in

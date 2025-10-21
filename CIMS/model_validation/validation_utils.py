@@ -3,12 +3,12 @@ from ..utils.parameter import list as PARAM
 from ..utils.parameter.parse import is_year
 
 def get_providers(df, node_col):
-    providers = df[df[COL.parameter] == PARAM.service_provided][node_col]
+    providers = df[df[COL.parameter] == PARAM.service_provide][node_col]
     return providers
 
 
 def get_requested(df, target_col):
-    requested = df[df[COL.parameter] == PARAM.service_requested][target_col]
+    requested = df[df[COL.parameter] == PARAM.service_request][target_col]
     return requested
 
 

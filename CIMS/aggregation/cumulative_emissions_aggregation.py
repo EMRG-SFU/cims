@@ -45,8 +45,8 @@ def _find_cumulative_emission_rates(model, year, children_for_aggregation, cumul
         agg_type = agg_info['aggregation_type']
 
         if agg_type == 'self':
-            # Record Emissions generated at the technology itself -- e.g. net_emissions_rate
-            base_rate_param = cumul_rate_param.split('cumul_')[-1]
+            # Record Emissions generated at the technology itself -- e.g. emissions_rate_direct_net
+            base_rate_param = cumul_rate_param.replace('cumul_', 'direct_')
             aggregate_value = _find_cumulative_rate_via_self(
                 model, agg_info['parent_node'], year, agg_info['parent_tech'], base_rate_param, base_emissions_class)
 
@@ -89,9 +89,9 @@ def _aggregate_cumulative_emission_rates(model, year, emissions_for_aggregation,
             total_cumulative_emissions[(parent_node, parent_tech)] = base_emissions_class()
 
         if parent_tech is not None:
-            total_market_share = model.get_param(PARAM.total_market_share, parent_node, year,
+            market_share_total = model.get_param(PARAM.market_share_total, parent_node, year,
                                                  tech=parent_tech)
-            total_cumulative_emissions[(parent_node, None)] += agg_values * total_market_share
+            total_cumulative_emissions[(parent_node, None)] += agg_values * market_share_total
             total_cumulative_emissions[(parent_node, parent_tech)] += agg_values
         else:
             total_cumulative_emissions[(parent_node, None)] += agg_values
@@ -119,7 +119,7 @@ def _find_cumulative_rate_via_self(model, node, year, tech, base_rate_param, bas
 
 
 def _find_cumulative_rate_via_structural_edge(model, parent_node, child_node, year, total_param):
-    pq = model.get_param('provided_quantities', parent_node, year).get_total_quantity()
+    pq = model.get_param(PARAM.provided_quantities, parent_node, year).get_total_quantity()
 
     # To ensure ALL emissions/quantities flow through a structural edge, we
     # use the child's total cumulative value divided by the provided quantities as the parent rate.
@@ -137,8 +137,8 @@ def _find_cumulative_rate_via_aggregation_edge(model, parent_node, child_node, y
     # All emissions requested of the child node should be multiplied by the
     # aggregation weight and recorded at the parent node. 
     
-    agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregation_weight]
-    pq = model.get_param('provided_quantities', parent_node, year).get_total_quantity()
+    agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregate_weight]
+    pq = model.get_param(PARAM.provided_quantities, parent_node, year).get_total_quantity()
 
     # To ensure ALL emissions/quantities flow through an aggregation edge, we
     # use the child's total cumulative value divided by the provided quantities as the parent rate.
@@ -158,10 +158,10 @@ def _find_cumulative_rate_via_request_provide_edge(model, agg_info, year, cumula
 
     emission_rates = base_emissions_class()
 
-    req_ratio = model.get_param(PARAM.service_requested, parent_node, year, tech=parent_tech, context=child_node)
+    req_ratio = model.get_param(PARAM.service_request, parent_node, year, tech=parent_tech, context=child_node)
     # If the child produces emissions (e.g. requests supply with emissions), we
     # multiply the child's direct emission rate by the service_request ratio.
-    direct_emission_rate_param = cumulative_rate_param.split('cumul_')[-1]
+    direct_emission_rate_param = cumulative_rate_param.replace('cumul_', 'direct_')
     if direct_emission_rate_param in model.graph.nodes[child_node][year]:
         child_direct_emissions_rate = model.get_param(direct_emission_rate_param, child_node, year)
         emission_rates += child_direct_emissions_rate * req_ratio

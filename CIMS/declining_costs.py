@@ -36,14 +36,14 @@ def calc_declining_capital_cost(model: 'CIMS.Model', node: str, year: str, tech:
 
 def _calc_cc_min(model, node, year, tech):
     year_avail = model.get_param(PARAM.available, node, str(model.base_year), tech=tech)
-    min_learning = model.get_param(PARAM.dcc_min_learning, node, year, tech=tech)
+    learning_min = model.get_param(PARAM.dcc_learning_min, node, year, tech=tech)
 
-    if int(year) == model.base_year or int(year) <= year_avail or min_learning == 0:
+    if int(year) == model.base_year or int(year) <= year_avail or learning_min == 0:
         cc_min = model.get_param(PARAM.fcc, node, year, tech=tech)
     else:
         prev_cc_min = model.get_param(PARAM.capital_cost_min, node, str(int(year) - model.step),
                                       tech=tech)
-        cc_min = prev_cc_min * (1 - min_learning) ** model.step
+        cc_min = prev_cc_min * (1 - learning_min) ** model.step
 
     model.set_param_internal(construction.create_value_dict(cc_min, param_source='calculation'),
                              PARAM.capital_cost_min, node, year, tech=tech)
@@ -96,25 +96,25 @@ def _calc_all_stock(model, node, year, tech):
     dcc_class = model.get_param(PARAM.dcc_class, node, year, tech=tech)
     dcc_class_techs = model.dcc_classes[dcc_class]
 
-    stock_sums = {PARAM.base_stock: 0,
-                  PARAM.new_stock: 0}
+    stock_sums = {PARAM.stock_base: 0,
+                  PARAM.stock_new: 0}
     for node_k, tech_k in dcc_class_techs:
         # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param(PARAM.load_factor, node_k, str(model.base_year), tech=tech_k)
+        unit_convert = model.get_param(PARAM.multiplier_load_factor, node_k, str(model.base_year), tech=tech_k)
         if unit_convert is None:
             unit_convert = 1
 
         # Base Stock summed over all techs in DCC class (base year only)
-        bs_k = model.get_param(PARAM.base_stock, node_k, str(model.base_year), tech=tech_k)
+        bs_k = model.get_param(PARAM.stock_base, node_k, str(model.base_year), tech=tech_k)
         if bs_k is not None:
-            stock_sums[PARAM.base_stock] += bs_k / unit_convert
+            stock_sums[PARAM.stock_base] += bs_k / unit_convert
 
         year_list = [x for x in range(int(model.base_year), int(year))] # Range function is exclusive of final year (i.e., up to but not including final year)
         for j in year_list:
             reference_year = (j - int(model.base_year)) // model.step * model.step + int(model.base_year)
-            ns_jk = model.get_param(PARAM.new_stock, node_k, str(reference_year), tech=tech_k)
-            stock_sums[PARAM.new_stock] += ns_jk / unit_convert
-    all_stock = stock_sums[PARAM.base_stock] + stock_sums[PARAM.new_stock]
+            ns_jk = model.get_param(PARAM.stock_new, node_k, str(reference_year), tech=tech_k)
+            stock_sums[PARAM.stock_new] += ns_jk / unit_convert
+    all_stock = stock_sums[PARAM.stock_base] + stock_sums[PARAM.stock_new]
 
     return all_stock
 
@@ -170,10 +170,10 @@ def _find_dic_class_new_market_share(model, node, year, tech):
         dic_class_techs = model.dic_classes[dic_class]
 
         # DIC Stock
-        dic_class_stock = _find_dic_class_new_stock(model, dic_class_techs, year)
+        dic_class_stock = _find_dic_class_stock_new(model, dic_class_techs, year)
 
         # All Stock
-        all_competing_stock = _find_dic_competing_new_stock(model, dic_class_techs, year)
+        all_competing_stock = _find_dic_competing_stock_new(model, dic_class_techs, year)
 
         # New Market Share
         if dic_class_stock == 0:
@@ -181,22 +181,22 @@ def _find_dic_class_new_market_share(model, node, year, tech):
         else:
             dic_nms = dic_class_stock / all_competing_stock
     else:
-        dic_nms = model.get_param(PARAM.new_market_share, node, year, tech=tech)
+        dic_nms = model.get_param(PARAM.market_share_new, node, year, tech=tech)
 
     return dic_nms
 
 
-def _find_dic_class_new_stock(model, dic_techs, year):
+def _find_dic_class_stock_new(model, dic_techs, year):
     """
     Calculate the new stock from all the technologies in the DIC class.
     """
     new_dic_stock = 0
     for node, tech in dic_techs:
-        new_dic_stock += model.get_param(PARAM.new_stock, node, year, tech=tech)
+        new_dic_stock += model.get_param(PARAM.stock_new, node, year, tech=tech)
     return new_dic_stock
 
 
-def _find_dic_competing_new_stock(model, dic_techs, year):
+def _find_dic_competing_stock_new(model, dic_techs, year):
     """
     Calculate the new stock from all the technologies competing for market share with the nodes in
     the DIC class (including the DIC techs).
@@ -208,7 +208,7 @@ def _find_dic_competing_new_stock(model, dic_techs, year):
         competing_techs = _find_dic_competing_techs(model, node)
         for c_node, c_tech in competing_techs:
             competing_stocks[(c_node, c_tech)] = \
-                model.get_param(PARAM.new_stock, c_node, year, tech=c_tech)
+                model.get_param(PARAM.stock_new, c_node, year, tech=c_tech)
 
     return sum(v for k, v in competing_stocks.items() if v is not None)
 
@@ -222,7 +222,7 @@ def _find_dic_competing_techs(model, node):
     competing_technologies = []
 
     # Find all technologies at the node
-    if model.get_param(PARAM.competition_type, node) == 'tech compete':
+    if model.get_param(PARAM.competition_type, node) == PARAM.competition_compete:
         for tech in model.graph.nodes[node][base_year][PARAM.technologies]:
             competing_technologies.append((node, tech))
 
