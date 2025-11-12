@@ -8,11 +8,13 @@ from ..utils.parameter import list as PARAM
 from ..utils.parameter.parse import is_year
 
 
-def invalid_competition_type(df, valid_competition_list):
+def invalid_competition_type(validator):
     """
     Find list of nodes with an invalid competition type.
     """
-
+    df = validator.model_df
+    valid_competition_list = validator.competition_types
+    
     invalid_rows = df[(df[COL.parameter] == PARAM.competition_type) &
                       (~df[COL.context].str.lower().isin(valid_competition_list))]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
@@ -21,7 +23,7 @@ def invalid_competition_type(df, valid_competition_list):
     return invalid_nodes, concern_desc
 
 
-def undefined_nodes(providers, requested):
+def undefined_nodes(validator, providers, requested):
     """
     Identify any nodes which are targets of other nodes, but have not been specified within
     the model description.
@@ -32,13 +34,13 @@ def undefined_nodes(providers, requested):
     return referenced_unspecified, concern_desc
 
 
-def unrequested_nodes(providers, requested, root_node):
+def unrequested_nodes(validator, providers, requested):
     """
     Identify any non-root nodes which are specified in the model description but
     are never requested by other nodes.
     """
     unrequested_nodes = [(i, v) for i, v in providers.items() if
-                            (v not in requested.values) and (v != root_node)]
+                            (v not in requested.values) and (v != validator.root_node)]
 
     concern_desc = "nodes are defined in the model, but are not requested by other nodes"
 
@@ -492,7 +494,7 @@ def new_techs_in_scenario(validator):
     return new_techs_in_scenario, concern_desc
 
 
-def zero_requested_nodes(validator, providers, root_node):
+def zero_requested_nodes(validator, providers):
     """
     Identify any non-root nodes which are specified in the model description
     but are only requested by node's via service request rows exogenously set to
@@ -511,7 +513,7 @@ def zero_requested_nodes(validator, providers, root_node):
     zero_requested = [(i, v) for i, v in providers.items() if
                       (v in all_requested) and
                       (v not in non_zero_requested) and
-                      (v != root_node)]
+                      (v != validator.root_node)]
 
     concern_desc = "nodes are defined in the model, but are only requested by \
         nodes where all Service requested values are 0"

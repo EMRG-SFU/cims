@@ -1,10 +1,12 @@
 import pandas as pd
 import polars as pl
 import numpy as np
-from . import validation_checks as validate
 from .validation_utils import get_providers, get_requested
 from ..utils.model_description import column_list as COL
 from ..utils.model_description.query import get_node_cols
+
+from .registry import REGISTRY, resolve_kwargs, Phase, Severity
+
 
 class ModelValidator:
     def __init__(self, csv_file_paths, col_list, year_list, sector_list,
@@ -65,7 +67,7 @@ class ModelValidator:
         if self.sector_list:
             if None not in self.sector_list:
                 self.sector_list.append(None)
-            model_df = model_df.apply(lambda row: row[model_df[COL.sector].isin(self.sector_list)])
+            model_df = model_df[model_df[COL.sector].isin(self.sector_list)]
 
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
@@ -117,7 +119,7 @@ class ModelValidator:
             infer_schema_length=0).to_pandas()
         
         # Remove empty rows
-        df.dropna(axis=0, how='all')
+        df = df.dropna(axis=0, how='all')
 
         # Extract inheritable parameters
         list_clean = df[column_identifier].str.lower()
@@ -154,42 +156,63 @@ class ModelValidator:
         # Return list
         self.warnings[check_function.__name__] = concern_list
 
-    def validate(self, verbose=True):
-        self.verbose = verbose
+    def validate(self, verbose: bool = True):
+        """
+        Backwards-compatible alias for validate_files().
+        """
+        return self.validate_files(verbose=verbose)
 
+    def validate_files(self, verbose: bool = True):
+        """
+        Run file-phase validation checks using the central registry.
+        """
+        self.verbose = verbose
+        
+        # Per-run context values that may be reused by multiple checks
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
+        context = {
+            'providers': providers, 
+            'requested': requested
+        }
 
+        # ---- Errors ----
         print("\n*** Errors ***")
         self.validate_count = 0
-        self._run_check(validate.invalid_competition_type, df=self.model_df, valid_competition_list=self.competition_types)
-        self._run_check(validate.nodes_no_provided_service, validator=self)
-        self._run_check(validate.nodes_requesting_self, validator=self)
-        self._run_check(validate.supply_without_lcc_or_price, validator=self)
-        self._run_check(validate.lcc_at_tech_node, validator=self)
-        self._run_check(validate.lcc_at_tech, validator=self)
-        self._run_check(validate.nodes_with_zero_output, validator=self)
-        self._run_check(validate.undefined_nodes, providers=providers, requested=requested)
-        self._run_check(validate.inconsistent_tech_refs, validator=self)
-        self._run_check(validate.tech_compete_nodes_no_techs, validator=self)
-        self._run_check(validate.techs_no_base_market_share, validator=self)
-        self._run_check(validate.service_req_at_tech_node, validator=self)
-        self._run_check(validate.revenue_recycling_at_techs, validator=self)
-        self._run_check(validate.both_cop_p2000_defined, validator=self)
-        self._run_check(validate.min_max_conflicts, validator=self)
-        self._run_check(validate.new_nodes_in_scenario, validator=self)
-        self._run_check(validate.new_techs_in_scenario, validator=self)
-        self._run_check(validate.base_year_market_share_not_one, validator=self)
+        for name, spec in REGISTRY.iter(phase=Phase.FILE, severity=Severity.ERROR):
+            kwargs = resolve_kwargs(self, spec.argmap, context)
+            self._run_check(spec.fn, **kwargs)
         if self.validate_count == 0:
             print("No errors found!")
-
+        
+        # ---- Warnings ----
         print("\n*** Warnings ***")
         self.validate_count = 0
-        self._run_check(validate.missing_parameter_default, validator=self)
-        self._run_check(validate.unrequested_nodes, providers=providers, requested=requested, root_node=self.root)
-        self._run_check(validate.nodes_no_requested_service, validator=self)
-        self._run_check(validate.duplicate_service_requests, validator=self)
-        self._run_check(validate.bad_service_req, validator=self)
-        self._run_check(validate.zero_requested_nodes, validator=self, providers=providers, root_node=self.root)
+        for name, spec in REGISTRY.iter(phase=Phase.FILE, severity=Severity.WARNING):
+            kwargs = resolve_kwargs(self, spec.argmap, context)
+            self._run_check(spec.fn, **kwargs)
         if self.validate_count == 0:
             print("No warnings found!")
+    
+    def validate_graph(self):
+        """
+        Run graph-phase validation checks using the central registry.
+        """
+        context = {}
+        # ---- Errors ----
+        print("\n*** Errors ***")
+        self.validate_count = 0
+        for name, spec in REGISTRY.iter(phase=Phase.GRAPH, severity=Severity.ERROR):
+            kwargs = resolve_kwargs(self, spec.argmap, context)
+            self._run_check(spec.fn, **kwargs)
+        if self.validate_count == 0:
+            print("No errors found!")
+        
+        # ---- Warnings ----
+        print("\n*** Warnings ***")
+        self.validate_count = 0
+        for name, spec in REGISTRY.iter(phase=Phase.GRAPH, severity=Severity.WARNING):
+            kwargs = resolve_kwargs(self, spec.argmap, context)
+            self._run_check(spec.fn, **kwargs)
+        if self.validate_count == 0:
+            print("No warnings found!")    
