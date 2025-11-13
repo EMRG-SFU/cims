@@ -1,6 +1,9 @@
 import pandas as pd
 import polars as pl
 import numpy as np
+import textwrap
+from typing import List
+
 from .validation_utils import get_providers, get_requested
 from ..utils.model_description import column_list as COL
 from ..utils.model_description.query import get_node_cols
@@ -26,7 +29,7 @@ class ModelValidator:
         self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
-        self.root = root_node
+        self.root_node = root_node
 
         self.warnings = {}
         self.verbose = False
@@ -134,17 +137,32 @@ class ModelValidator:
     def _create_index_to_branch_map(self):
         return {i: self.model_df[COL.branch].loc[i] for i in self.model_df.index}
 
-    def _raise_concerns(self, concerns, concern_key, concern_desc):
+    def _raise_concerns(self, concerns: List[object], concern_key: str, concern_desc: str):
+        """
+        Format and print a single validation result.
+
+        Prints the number of issues found, a short description, and (if applicable)
+        a pointer to `ModelValidator.warnings[...]`. Messages are wrapped with a
+        hanging indent for readability. Nothing is printed unless `verbose` is True
+        or issues were detected. Updates `validate_count` when concerns are present.
+        """
         if len(concerns) <= 0:
             more_info = ""
         else:
             more_info = f"See ModelValidator.warnings['{concern_key}'] for more info."
 
-        info_str = f"{len(concerns)} {concern_desc}. {more_info}"
+        count_buffer = 5
+        info_str = f"{len(concerns): count_buffer} {concern_desc}. {more_info}"
 
         if self.verbose or len(concerns) > 0:
-            print(info_str)
-            self.validate_count = 1
+            wrapped_print = textwrap.fill(
+                info_str, 
+                width=100, 
+                initial_indent="",
+                subsequent_indent=" " * (count_buffer + 1)
+            )
+            print(wrapped_print)
+            self.issue_flag = 1
 
     def _run_check(self, check_function, **kwargs):
         # Collect list
@@ -168,6 +186,8 @@ class ModelValidator:
         """
         self.verbose = verbose
         
+        print("\n=== Running file-phase validation ===")
+        
         # Per-run context values that may be reused by multiple checks
         providers = get_providers(self.model_df, self.node_col)
         requested = get_requested(self.model_df, self.target_col)
@@ -177,22 +197,25 @@ class ModelValidator:
         }
 
         # ---- Errors ----
-        print("\n*** Errors ***")
-        self.validate_count = 0
+        print("\n-- Errors --")
+        self.issue_flag = 0
         for name, spec in REGISTRY.iter(phase=Phase.FILE, severity=Severity.ERROR):
             kwargs = resolve_kwargs(self, spec.argmap, context)
             self._run_check(spec.fn, **kwargs)
-        if self.validate_count == 0:
+        if self.issue_flag == 0:
             print("No errors found!")
         
         # ---- Warnings ----
-        print("\n*** Warnings ***")
-        self.validate_count = 0
+        print("\n-- Warnings --")
+        self.issue_flag = 0
         for name, spec in REGISTRY.iter(phase=Phase.FILE, severity=Severity.WARNING):
             kwargs = resolve_kwargs(self, spec.argmap, context)
             self._run_check(spec.fn, **kwargs)
-        if self.validate_count == 0:
+        if self.issue_flag == 0:
             print("No warnings found!")
+        
+        print("\n=== Completed file-phase validation ===")
+
     
     def validate_graph(self):
         """
@@ -200,19 +223,19 @@ class ModelValidator:
         """
         context = {}
         # ---- Errors ----
-        print("\n*** Errors ***")
-        self.validate_count = 0
+        print("\n-- Errors --")
+        self.issue_flag = 0
         for name, spec in REGISTRY.iter(phase=Phase.GRAPH, severity=Severity.ERROR):
             kwargs = resolve_kwargs(self, spec.argmap, context)
             self._run_check(spec.fn, **kwargs)
-        if self.validate_count == 0:
+        if self.issue_flag == 0:
             print("No errors found!")
         
         # ---- Warnings ----
-        print("\n*** Warnings ***")
-        self.validate_count = 0
+        print("\n-- Warnings --")
+        self.issue_flag = 0
         for name, spec in REGISTRY.iter(phase=Phase.GRAPH, severity=Severity.WARNING):
             kwargs = resolve_kwargs(self, spec.argmap, context)
             self._run_check(spec.fn, **kwargs)
-        if self.validate_count == 0:
+        if self.issue_flag == 0:
             print("No warnings found!")    

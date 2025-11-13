@@ -118,109 +118,109 @@ REGISTRY = CheckRegistry()
 
 # ---- Errors ----
 REGISTRY.register("invalid_competition_type", CheckSpec(
-    fn=file_warnings.invalid_competition_type,
+    fn=file_errors.invalid_competition_type,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={},
 ))
 REGISTRY.register("nodes_no_provided_service", CheckSpec(
-    fn=file_warnings.nodes_no_provided_service,
+    fn=file_errors.nodes_no_provided_service,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("nodes_requesting_self", CheckSpec(
-    fn=file_warnings.nodes_requesting_self,
+    fn=file_errors.nodes_requesting_self,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("supply_without_lcc_or_price", CheckSpec(
-    fn=file_warnings.supply_without_lcc_or_price,
+    fn=file_errors.supply_without_lcc_or_price,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("lcc_at_tech_node", CheckSpec(
-    fn=file_warnings.lcc_at_tech_node,
+    fn=file_errors.lcc_at_tech_node,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("lcc_at_tech", CheckSpec(
-    fn=file_warnings.lcc_at_tech,
+    fn=file_errors.lcc_at_tech,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("nodes_with_zero_output", CheckSpec(
-    fn=file_warnings.nodes_with_zero_output,
+    fn=file_errors.nodes_with_zero_output,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("undefined_nodes", CheckSpec(
-    fn=file_warnings.undefined_nodes,
+    fn=file_errors.undefined_nodes,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={"providers": "providers", "requested": "requested"}
 ))
 REGISTRY.register("inconsistent_tech_refs", CheckSpec(
-    fn=file_warnings.inconsistent_tech_refs,
+    fn=file_errors.inconsistent_tech_refs,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("tech_compete_nodes_no_techs", CheckSpec(
-    fn=file_warnings.tech_compete_nodes_no_techs,
+    fn=file_errors.tech_compete_nodes_no_techs,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("techs_no_base_market_share", CheckSpec(
-    fn=file_warnings.techs_no_base_market_share,
+    fn=file_errors.techs_no_base_market_share,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("service_req_at_tech_node", CheckSpec(
-    fn=file_warnings.service_req_at_tech_node,
+    fn=file_errors.service_req_at_tech_node,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("revenue_recycling_at_techs", CheckSpec(
-    fn=file_warnings.revenue_recycling_at_techs,
+    fn=file_errors.revenue_recycling_at_techs,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("both_cop_p2000_defined", CheckSpec(
-    fn=file_warnings.both_cop_p2000_defined,
+    fn=file_errors.both_cop_p2000_defined,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("min_max_conflicts", CheckSpec(
-    fn=file_warnings.min_max_conflicts,
+    fn=file_errors.min_max_conflicts,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("new_nodes_in_scenario", CheckSpec(
-    fn=file_warnings.new_nodes_in_scenario,
+    fn=file_errors.new_nodes_in_scenario,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("new_techs_in_scenario", CheckSpec(
-    fn=file_warnings.new_techs_in_scenario,
+    fn=file_errors.new_techs_in_scenario,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
 ))
 REGISTRY.register("base_year_market_share_not_one", CheckSpec(
-    fn=file_warnings.base_year_market_share_not_one,
+    fn=file_errors.base_year_market_share_not_one,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}
@@ -262,7 +262,7 @@ REGISTRY.register("zero_requested_nodes", CheckSpec(
     fn = file_warnings.zero_requested_nodes, 
     phase=Phase.FILE,
     severity=Severity.WARNING,
-    argmap={}
+    argmap={"providers":"providers"}
 ))
 
 # ---------------------------------------------------------------------------

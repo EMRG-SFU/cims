@@ -25,7 +25,8 @@ def missing_parameter_default(validator):
         data = validator.model_df.dropna(how='all')
 
         # Find all parameter names
-        params_no_defs = data[~data[COL.parameter].isin(validator.default_param_df[COL.parameter])][COL.parameter].value_counts()
+        params_no_defs = data[~data[COL.parameter].isin(
+            validator.default_param_df[COL.parameter])][COL.parameter].value_counts()
 
         # Find Unique Node/Branch + Technology rows
         missing_parameter_default = []
@@ -39,17 +40,19 @@ def missing_parameter_default(validator):
 
     return missing_parameter_default, concern_desc
 
+
 def unrequested_nodes(validator, providers, requested):
     """
     Identify any non-root nodes which are specified in the model description but
     are never requested by other nodes.
     """
     unrequested_nodes = [(i, v) for i, v in providers.items() if
-                            (v not in requested.values) and (v != validator.root_node)]
+                         (v not in requested.values) and (v != validator.root_node)]
 
     concern_desc = "nodes are defined in the model, but are not requested by other nodes"
 
     return unrequested_nodes, concern_desc
+
 
 def nodes_no_requested_service(validator):
     """
@@ -63,18 +66,22 @@ def nodes_no_requested_service(validator):
     for node, df in nodes:
         if pd.isna(df[COL.technology]).all():
             if PARAM.service_request not in df[COL.parameter].values:
-                nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, None))
+                nodes_techs_no_serv_req.append(
+                    (validator.branch2node_index_map[node], node, None))
 
     # Technologies
-    node_techs = validator.model_df.groupby([validator.node_col, COL.technology])
+    node_techs = validator.model_df.groupby(
+        [validator.node_col, COL.technology])
     for (node, tech), df in node_techs:
         if PARAM.service_request not in df[COL.parameter].values:
-            nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, tech))
+            nodes_techs_no_serv_req.append(
+                (validator.branch2node_index_map[node], node, tech))
 
     nodes_techs_no_serv_req.sort(key=lambda x: x[0])
 
     concern_desc = "nodes or technologies request no services"
     return nodes_techs_no_serv_req, concern_desc
+
 
 def duplicate_service_requests(validator):
     """
@@ -104,8 +111,9 @@ def duplicate_service_requests(validator):
         duplicate_req = []
 
     concern_desc = "nodes/technologies request the same service more than once"
-    
+
     return duplicate_req, concern_desc
+
 
 def bad_service_req(validator):
     """
@@ -127,12 +135,14 @@ def bad_service_req(validator):
     rows_with_bad_values = services_req[row_has_bad_values]
 
     # Create our Warning information
-    bad_service_requests = list(zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col]))
+    bad_service_requests = list(
+        zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col]))
 
     concern_desc = "nodes/technologies have Service requested values of only \
         0's or are missing all values"
 
     return bad_service_requests, concern_desc
+
 
 def zero_requested_nodes(validator, providers):
     """
@@ -141,22 +151,20 @@ def zero_requested_nodes(validator, providers):
     0.
     """
     data = validator.model_df
-    request_lines = data[data[COL.parameter]==PARAM.service_request]
+    request_lines = data[data[COL.parameter] == PARAM.service_request]
     all_requested = set(request_lines[validator.target_col])
 
-    numeric_values = request_lines[get_year_cols(data)].replace("None", None).astype(float)
-    zero_request_line = numeric_values.sum(axis=1)==0
+    numeric_values = request_lines[get_year_cols(
+        data)].replace("None", None).astype(float)
+    zero_request_line = numeric_values.sum(axis=1) == 0
     non_zero_request_lines = request_lines[~zero_request_line]
     non_zero_requested = set(non_zero_request_lines[validator.target_col])
-
 
     zero_requested = [(i, v) for i, v in providers.items() if
                       (v in all_requested) and
                       (v not in non_zero_requested) and
                       (v != validator.root_node)]
 
-    concern_desc = "nodes are defined in the model, but are only requested by \
-        nodes where all Service requested values are 0"
+    concern_desc = "nodes are defined in the model, but are only requested by nodes where all Service requested values are 0"
 
     return zero_requested, concern_desc
-
