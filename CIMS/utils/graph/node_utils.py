@@ -35,7 +35,7 @@ def _allowable_update(existing_value, update_value):
     # Otherwise -> update as is
     if isinstance(update_value, dict):
         year_value = update_value[PARAM.year_value]
-        has_existing_val = bool(existing_value)
+        has_existing_val = existing_value is not None
     else:
         year_value = update_value
         has_existing_val = existing_value is not None
