@@ -1,4 +1,5 @@
 import copy
+from .utils.parameter import list as PARAM
 
 # TODO: make quantity classes into a superclass with methods on dictionaries
 
@@ -10,8 +11,8 @@ class ProvidedQuantity:
         node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
         self.provided_quantities[node_tech] = amount
 
-    def get_total_quantity(self):
-        # Note, the result of get_total_quantity() will not equal the sum across
+    def sum_provided_by_total(self):
+        # Note, the result of sum_provided_by_total() will not equal the sum across
         # self.provided_quantities values when distributed supply is greater than the sum of
         # positive provided quantities.
         total = 0
@@ -23,19 +24,35 @@ class ProvidedQuantity:
 
         return total
 
+    def sum_provided_to_node(self, node):
+        """
+        Find the quantity being provided to a specific node, across all it's technologies
+        """
+        total_provided_to_node = 0
+        for pq in self.provided_quantities:
+            pq_node, pq_tech = pq.split('[', 1)
+            if pq_node == node:
+                total_provided_to_node += self.provided_quantities[pq]
+        return total_provided_to_node
+
+    def sum_provided_to_tech(self, node, tech):
+        node_tech = '{}[{}]'.format(node, tech)
+
+        if node_tech in self.provided_quantities:
+            return self.provided_quantities[node_tech]
+        else:
+            return 0
+
     def calculate_proportion(self, node, tech=None):
         """
         Find the proportion of non-negative units provided to a particular node/tech combination.
         """
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
         proportion = 0
 
         if tech is None:
-            total_provided_node_tech = self.get_quantity_provided_to_node(node)
+            total_provided_node_tech = self.sum_provided_to_node(node)
         else:
-            total_provided_node_tech = self.get_quantity_provided_to_tech(node, tech)
+            total_provided_node_tech = self.sum_provided_to_tech(node, tech)
 
         non_negative_total = 0
         for amount in self.provided_quantities.values():
@@ -47,63 +64,56 @@ class ProvidedQuantity:
 
         return proportion
 
-    def get_quantity_provided_to_node(self, node):
-        """
-        Find the quantity being provided to a specific node, across all it's technologies
-        """
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
-
-        total_provided_to_node = 0
-        for pq in self.provided_quantities:
-            pq_node, pq_tech = pq.split('[', 1)
-            if pq_node == node:
-                total_provided_to_node += self.provided_quantities[pq]
-        return total_provided_to_node
-
-    def get_quantity_provided_to_tech(self, node, tech):
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
-        node_tech = '{}[{}]'.format(node, tech)
-
-        if node_tech in self.provided_quantities:
-            return self.provided_quantities[node_tech]
-        else:
-            return 0
-
 
 class RequestedQuantity:
     def __init__(self):
         self.requested_quantities = {}
 
-    def record_requested_quantity(self, providing_node, child, amount):
-        if providing_node in self.requested_quantities:
-            if child in self.requested_quantities[providing_node]:
-                self.requested_quantities[providing_node][child] += amount
+    def record_requested_quantity(self, energy, service, amount):
+        if energy in self.requested_quantities:
+            if service in self.requested_quantities[energy]:
+                self.requested_quantities[energy][service] += amount
             else:
-                self.requested_quantities[providing_node][child] = amount
+                self.requested_quantities[energy][service] = amount
 
         else:
-            self.requested_quantities[providing_node] = {child: amount}
+            self.requested_quantities[energy] = {service: amount}
 
-    def get_total_quantities_requested(self):
-        total_quants = {}
-        for service in self.requested_quantities:
-            total_service = 0
-            for child, quantity in self.requested_quantities[service].items():
-                total_service += quantity
-            total_quants[service] = total_service
-        return total_quants
+    def sum_requested_by_energy_service(self):
+        quantities = {}
+        for energy in self.requested_quantities:
+            for service in self.requested_quantities[energy]:
+                if energy not in quantities:
+                    quantities[energy] = {}
+                if service not in quantities[energy]:
+                    quantities[energy][service] = 0
+                quantities[energy][service] += self.requested_quantities[energy][service]
+        return quantities
 
-    def sum_requested_quantities(self):
-        total_quantity = 0
-        for supply_node in self.requested_quantities:
-            supply_rq = self.requested_quantities[supply_node]
-            for source in supply_rq:
-                total_quantity += supply_rq[source]
-        return total_quantity
+    def sum_requested_by_service(self):
+        quantities = {}
+        for energy in self.requested_quantities:
+            for service in self.requested_quantities[energy]:
+                if service not in quantities:
+                    quantities[service] = 0
+                quantities[service] += self.requested_quantities[energy][service]
+        return quantities
+
+    def sum_requested_by_energy(self):
+        quantities = {}
+        for energy in self.requested_quantities:
+            if energy not in quantities:
+                quantities[energy] = 0
+            for service in self.requested_quantities[energy]:
+                quantities[energy] += self.requested_quantities[energy][service]
+        return quantities
+
+    def sum_requested_by_total(self):
+        quantities = 0
+        for energy in self.requested_quantities:
+            for service in self.requested_quantities[energy]:
+                quantities += self.requested_quantities[energy][service]
+        return quantities
 
 
 class DistributedSupply:
@@ -136,15 +146,18 @@ class DistributedSupply:
         else:
             self.distributed_supply[supply_node] = {distributed_supply_node: amount}
 
-    def summarize_distributed_supply(self):
-        """
-        Summarize the distributed supply across all supplying_nodes, aggregating to the supply node/service
-        being provided.
-        """
-        distributed_supply = {}
-        for supply_node in self.distributed_supply:
-            node_distributed_supply = 0
-            for child, quantity in self.distributed_supply[supply_node].items():
-                node_distributed_supply += quantity
-            distributed_supply[supply_node] = node_distributed_supply
-        return distributed_supply
+    def sum_distributed_by_energy(self):
+        supply = {}
+        for energy in self.distributed_supply:
+            if energy not in supply:
+                supply[energy] = 0
+            for distributed_supply_node in self.distributed_supply[energy]:
+                supply[energy] += self.distributed_supply[energy][distributed_supply_node]
+        return supply
+
+    def sum_distributed_by_total(self):
+        supply = 0
+        for energy in self.distributed_supply:
+            for distributed_supply_node in self.distributed_supply[energy]:
+                supply += self.distributed_supply[energy][distributed_supply_node]
+        return supply

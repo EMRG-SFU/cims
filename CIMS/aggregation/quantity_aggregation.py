@@ -53,15 +53,13 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
     quantities_to_record = []
 
     # Find the quantities provided by child to the node/tech
-    # Note, the result of get_total_quantity() will not equal the sum across
+    # Note, the result of sum_provided_by_total() will not equal the sum across
     # self.provided_quantities values when distributed supply is greater than the sum of
     # positive provided quantities.
     if tech is None:
-        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_node(
-            node)
+        quantity_provided_to_node_tech = child_provided_quantities.sum_provided_to_node(node)
     else:
-        quantity_provided_to_node_tech = child_provided_quantities.get_quantity_provided_to_tech(
-            node, tech)
+        quantity_provided_to_node_tech = child_provided_quantities.sum_provided_to_tech(node, tech)
     # Return early if there isn't a positive quantity
     if quantity_provided_to_node_tech <= 0:
         return quantities_to_record
@@ -73,11 +71,11 @@ def _get_quantities_to_record(model, child, node, year, tech=None):
         # Find the indirectly requested quantities attributable to node/tech by way of its
         # request of services from child.
         try:
-            child_total_quantity_provided = child_provided_quantities.get_total_quantity()
+            child_total_quantity_provided = child_provided_quantities.sum_provided_by_total()
             if child_total_quantity_provided != 0:
                 proportion = child_provided_quantities.calculate_proportion(node, tech)
                 child_requested_quant = model.get_param(PARAM.requested_quantities, child, year=year)
-                quantities_requested = child_requested_quant.get_total_quantities_requested()
+                quantities_requested = child_requested_quant.sum_requested_by_energy()
                 for child_rq_node, amount in quantities_requested.items():
                     quantities_to_record.append((child_rq_node, child, proportion * amount))
         except KeyError:
@@ -100,7 +98,7 @@ def _find_aggregation_quantities(model, year, children_for_aggregation):
         if agg_type == 'structural':
             # all quantities requested of child, should be recorded as requested of node
             child_requested_quantities = model.get_param(
-                PARAM.requested_quantities, child_node, year).get_total_quantities_requested()
+                PARAM.requested_quantities, child_node, year).sum_requested_by_energy()
             for providing_node, request_amount in child_requested_quantities.items():
                 agg_info['quantities'].append((providing_node, request_amount))
 
@@ -109,14 +107,12 @@ def _find_aggregation_quantities(model, year, children_for_aggregation):
 
             # all quantities requested of child, should be multiplied by the aggregation weight and
             # recorded as requested of node
-            quantities = model.get_param(PARAM.requested_quantities, child_node,
-                                         year).get_total_quantities_requested()
+            quantities = model.get_param(PARAM.requested_quantities, child_node, year).sum_requested_by_energy()
             for providing_node, request_amount in quantities.items():
                 agg_info['quantities'].append((providing_node, agg_weight * request_amount))
 
         elif agg_type == 'request_provide':
-            quantities = _get_quantities_to_record(model, child_node, parent_node, year,
-                                                   tech=parent_tech)
+            quantities = _get_quantities_to_record(model, child_node, parent_node, year, tech=parent_tech)
             for providing_node, _, request_amount in quantities:
                 agg_info['quantities'].append((providing_node, request_amount))
         else:

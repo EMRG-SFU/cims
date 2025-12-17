@@ -57,8 +57,7 @@ def calc_stock_demanded(model, node, year):
         other nodes in the model. The macro-multiplier is calculated using the node's relative price
         and elasticity terms.
     """
-    sum_service_stock_requested = model.get_param(PARAM.provided_quantities, node,
-                                                  year).get_total_quantity()
+    sum_service_stock_requested = model.get_param(PARAM.provided_quantities, node, year).sum_provided_by_total()
 
     price_t = max(model.get_param(PARAM.price, node, year), 0.01)
     price_2000 = max(model.get_param(PARAM.price, node, str(model.base_year)), 0.01)
@@ -67,8 +66,7 @@ def calc_stock_demanded(model, node, year):
 
     stock_demanded = sum_service_stock_requested * macro_multiplier
 
-    model.set_param_internal(construction.create_value_dict(stock_demanded, param_source='calculation'),
-                             PARAM.stock_demanded, node, year)
+    model.set_param_internal(construction.create_value_dict(stock_demanded, param_source='calculation'), PARAM.stock_demanded, node, year)
 
     return stock_demanded
 

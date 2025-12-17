@@ -312,14 +312,39 @@ class Emissions:
                 if ghg not in result.emissions[source_branch]:
                     result.emissions[source_branch][ghg] = {}
                 for emission_type in self.emissions[source_branch][ghg]:
-                    emission_amount = self.emissions[source_branch][ghg][emission_type][
-                                          PARAM.year_value] / other
-                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
-                        emission_amount)
+                    emission_amount = self.emissions[source_branch][ghg][emission_type][PARAM.year_value] / other
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(emission_amount)
 
         return result
 
-    def summarize(self) -> dict:
+    def sum_emissions_by_energy_ghg_type(self) -> dict:
+        """
+        Return the `Emissions.emissions` dictionary for each energy and GHG and emission type combination.
+
+        Returns
+        -------
+
+        dict :
+            Returns a nested dictionary. First level keys are energy sources 
+            (e.g. CIMS.Generic Fuels.Diesel), second level keys are GHGs (e.g. CO2), 
+            third level keys are emission types (e.g. Combustion). Values are floats 
+            representing the aggregate energy/GHG/emission type combinations.
+        """
+        sum_emissions = {}
+        for energy in self.emissions:
+            if energy not in sum_emissions:
+                sum_emissions[energy] = {}
+            for ghg in self.emissions[energy]:
+                if ghg not in sum_emissions[energy]:
+                    sum_emissions[energy][ghg] = {}
+                for emission_type in self.emissions[energy][ghg]:
+                    if emission_type not in sum_emissions[energy][ghg]:
+                        sum_emissions[energy][ghg][emission_type] = 0
+                    sum_emissions[energy][ghg][emission_type] += self.emissions[energy][ghg][emission_type][PARAM.year_value]
+
+        return sum_emissions
+    
+    def sum_emissions_by_ghg_type(self) -> dict:
         """
         Aggregate the `Emissions.emissions` dictionary for each GHG and emission type combination.
 
@@ -327,23 +352,117 @@ class Emissions:
         -------
 
         dict :
-            Returns a nested dictionary. The first level keys are GHGs (e.g. CO2). The second level
-            keys are emission types (e.g. Combustion). The second level values are floats
-            representing the aggregate cost for the GHG/emission type combinations across all source
-            supply_nodes.
+            Returns a nested dictionary. First level keys are GHGs (e.g. CO2), second level
+            keys are emission types (e.g. Combustion). Values are floats representing
+            the aggregate GHG/emission type combinations across all energy nodes.
         """
-        summary_emissions = {}
-        for source in self.emissions:
-            for ghg in self.emissions[source]:
-                if ghg not in summary_emissions:
-                    summary_emissions[ghg] = {}
-                for emission_type in self.emissions[source][ghg]:
-                    if emission_type not in summary_emissions[ghg]:
-                        summary_emissions[ghg][emission_type] = 0
-                    summary_emissions[ghg][emission_type] += \
-                        self.emissions[source][ghg][emission_type][PARAM.year_value]
+        sum_emissions = {}
+        for energy in self.emissions:
+            for ghg in self.emissions[energy]:
+                if ghg not in sum_emissions:
+                    sum_emissions[ghg] = {}
+                for emission_type in self.emissions[energy][ghg]:
+                    if emission_type not in sum_emissions[ghg]:
+                        sum_emissions[ghg][emission_type] = 0
+                    sum_emissions[ghg][emission_type] += self.emissions[energy][ghg][emission_type][PARAM.year_value]
 
-        return summary_emissions
+        return sum_emissions
+    
+    def sum_emissions_by_energy(self) -> dict:
+        """
+        Aggregate the `Emissions.emissions` dictionary for each energy combination.
+
+        Returns
+        -------
+
+        dict :
+            Returns a nested dictionary. First level keys are energy sources 
+            (e.g. CIMS.Generic Fuels.Diesel). Values are floats representing the aggregate 
+            energy combinations across all GHGs and emissions types.
+        """
+        sum_emissions = {}
+        for energy in self.emissions:
+            if energy not in sum_emissions:
+                sum_emissions[energy] = 0
+            for ghg in self.emissions[energy]:
+                for emission_type in self.emissions[energy][ghg]:
+                    sum_emissions[energy] += self.emissions[energy][ghg][emission_type][PARAM.year_value]
+
+        return sum_emissions
+    
+    def sum_emissions_by_ghg(self) -> dict:
+        """
+        Aggregate the `Emissions.emissions` dictionary for each GHG combination.
+
+        Returns
+        -------
+
+        dict :
+            Returns a nested dictionary. First level keys are GHGs (e.g. CO2). Values are 
+            floats representing the aggregate GHG combinations across all energy nodes and
+            emissions types.
+        """
+        sum_emissions = {}
+        for energy in self.emissions:
+            for ghg in self.emissions[energy]:
+                if ghg not in sum_emissions:
+                    sum_emissions[ghg] = 0
+                for emission_type in self.emissions[energy][ghg]:
+                    sum_emissions[ghg] += self.emissions[energy][ghg][emission_type][PARAM.year_value]
+
+        return sum_emissions
+    
+    def sum_emissions_by_type(self) -> dict:
+        """
+        Aggregate the `Emissions.emissions` dictionary for each emission type combination.
+
+        Returns
+        -------
+
+        dict :
+            Returns a nested dictionary. First level keys are emission types (e.g. Combustion). 
+            Values are floats representing the aggregate emission type combinations across all 
+            energy nodes and GHGs.
+        """
+        sum_emissions = {}
+        for energy in self.emissions:
+            for ghg in self.emissions[energy]:
+                for emission_type in self.emissions[energy][ghg]:
+                    if emission_type not in sum_emissions:
+                        sum_emissions[emission_type] = 0
+                    sum_emissions[emission_type] += self.emissions[energy][ghg][emission_type][PARAM.year_value]
+
+        return sum_emissions
+    
+    def sum_emissions_by_total(self) -> dict:
+        """
+        Aggregate the `Emissions.emissions` dictionary for each GHG and emission type combination.
+
+        Returns
+        -------
+
+        dict :
+            Returns a nested dictionary. First level keys are GHGs (e.g. CO2), second level
+            keys are emission types (e.g. Combustion). Values are floats representing
+            the aggregate GHG/emission type combinations across all energy nodes.
+        """
+        sum_emissions = 0
+        for energy in self.emissions:
+            for ghg in self.emissions[energy]:
+                for emission_type in self.emissions[energy][ghg]:
+                    sum_emissions += self.emissions[energy][ghg][emission_type][PARAM.year_value]
+
+        return sum_emissions
+
+
+def sum_emissions_by_service(self, param, node, year, child):
+    emissions_child = self.get_param(param=param, node=child, year=year)
+    provided_child_total = self.get_param(param="quantity_provided", node=child, year=year).sum_provided_by_total()
+    provided_child_to_self = self.get_param(param="quantity_provided", node=child, year=year).sum_provided_to_node(node)
+
+    emissions_by_child = emissions_child * provided_child_to_self / provided_child_total
+
+    return emissions_by_child
 
 
 def calc_emissions_rate_cumul_cost(model: 'CIMS.Model', node: str, year: str,
@@ -398,8 +517,7 @@ def calc_emissions_rate_cumul_cost(model: 'CIMS.Model', node: str, year: str,
         services_requested = get_services_requested(model, node, year, tech=tech)
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
-    elif prev_stock_existed(model, node, year) and (pq is not None) and (
-            src == 'calculation') and (pq.get_total_quantity() <= 0):
+    elif prev_stock_existed(model, node, year) and (pq is not None) and (src == 'calculation') and (pq.sum_provided_by_total() <= 0):
         agg_emissions_cost = EmissionsCost()
     elif model.get_param(PARAM.competition_type, node) == PARAM.competition_compete:
         # (2) At a node with techs -- Weighted emissions cost from techs
