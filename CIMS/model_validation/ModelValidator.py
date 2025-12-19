@@ -3,6 +3,7 @@ import polars as pl
 import numpy as np
 import textwrap
 from typing import List
+import time 
 
 from .validation_utils import get_providers, get_requested
 from ..utils.model_description import column_list as COL
@@ -151,15 +152,14 @@ class ModelValidator:
         else:
             more_info = f"See ModelValidator.warnings['{concern_key}'] for more info."
 
-        count_buffer = 5
-        info_str = f"{len(concerns): count_buffer} {concern_desc}. {more_info}"
+        info_str = f"{len(concerns): 5} {concern_desc}. {more_info}"
 
         if self.verbose or len(concerns) > 0:
             wrapped_print = textwrap.fill(
                 info_str, 
                 width=100, 
                 initial_indent="",
-                subsequent_indent=" " * (count_buffer + 1)
+                subsequent_indent=" " * (5 + 1)
             )
             print(wrapped_print)
             self.issue_flag = 1
@@ -174,16 +174,17 @@ class ModelValidator:
         # Return list
         self.warnings[check_function.__name__] = concern_list
 
-    def validate(self, verbose: bool = True):
+    def validate(self, verbose: bool = True, show_timing: bool = False):
         """
         Backwards-compatible alias for validate_files().
         """
-        return self.validate_files(verbose=verbose)
+        return self.validate_files(verbose=verbose, show_timing=show_timing)
 
-    def validate_files(self, verbose: bool = True):
+    def validate_files(self, verbose: bool = True, show_timing: bool = False):
         """
         Run file-phase validation checks using the central registry.
         """
+        start = time.time()
         self.verbose = verbose
         
         print("\n=== Running file-phase validation ===")
@@ -214,13 +215,18 @@ class ModelValidator:
         if self.issue_flag == 0:
             print("No warnings found!")
         
-        print("\n=== Completed file-phase validation ===")
-
-    
-    def validate_graph(self):
+        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        print(f"\n=== Completed file-phase validation{timing} ===")
+   
+    def validate_graph(self, verbose: bool = False, show_timing: bool = False):
         """
         Run graph-phase validation checks using the central registry.
         """
+        start = time.time()
+        self.verbose = verbose
+        
+        print("\n=== Running graph-phase validation ===")
+
         context = {}
         # ---- Errors ----
         print("\n-- Errors --")
@@ -239,3 +245,6 @@ class ModelValidator:
             self._run_check(spec.fn, **kwargs)
         if self.issue_flag == 0:
             print("No warnings found!")    
+        
+        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        print(f"\n=== Completed graph-phase validation{timing} ===")

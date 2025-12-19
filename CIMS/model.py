@@ -72,119 +72,87 @@ class Model:
                  list_csv_path
                  ):
 
+        # --- Validators / Readers -------------------------------------------
         self.validator = ModelValidator(
-                csv_file_paths = csv_init_file_paths,
-                csv_update_file_paths = csv_update_file_paths,
-                col_list = col_list,
-                year_list = year_list,
-                sector_list = sector_list,
-                default_values_csv_path = default_values_csv_path,
-                list_csv_path = list_csv_path,
-                )
+            csv_file_paths=csv_init_file_paths,
+            csv_update_file_paths=csv_update_file_paths,
+            col_list=col_list,
+            year_list=year_list,
+            sector_list=sector_list,
+            default_values_csv_path=default_values_csv_path,
+            list_csv_path=list_csv_path,
+        )
 
+        # Graph starts empty; constructed later via construct_graph()
         self.graph = nx.DiGraph()
 
         self._model_reader = ModelReader(
-                csv_file_paths = csv_init_file_paths,
-                col_list = col_list,
-                year_list = year_list,
-                sector_list = sector_list,
-                default_values_csv_path = default_values_csv_path,
-                list_csv_path = list_csv_path)
+            csv_file_paths=csv_init_file_paths,
+            col_list=col_list,
+            year_list=year_list,
+            sector_list=sector_list,
+            default_values_csv_path=default_values_csv_path,
+            list_csv_path=list_csv_path,
+        )
 
         self._scenario_reader = ScenarioReader(
-                csv_file_paths = csv_update_file_paths,
-                col_list = col_list,
-                year_list = year_list,
-                sector_list = sector_list)
+            csv_file_paths=csv_update_file_paths,
+            col_list=col_list,
+            year_list=year_list,
+            sector_list=sector_list,
+        )
 
+        # --- Description / metadata loaded from readers ----------------------
         self.root = self._model_reader.root
         self.node_dfs, self.tech_dfs = self._model_reader.get_model_description()
         self.scenario_node_dfs, self.scenario_tech_dfs = self._scenario_reader.get_model_description()
-        self.node_tech_defaults = self._model_reader.get_default_params()
-        
-        # Parameter Lists & Defaults
+
+        # Parameter lists & defaults
         self.node_tech_defaults = self._model_reader.get_default_params()
         self.inheritable_params = self._model_reader.get_inheritable_params()
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
-        
-        self.step = self._infer_year_step(year_list)
 
+        self.step = self._infer_year_step(year_list)
+        self.years = self._model_reader.get_years()
+        self.base_year = int(self.years[0])
+
+        # These will be populated during construct_graph()
         self.supply_nodes = []
         self.GHGs = []
         self.emission_types = []
         self.gwp = {}
-        self.years = self._model_reader.get_years()
-        self.base_year = int(self.years[0])
         self.prices = {}
         self.equilibrium_count = 0
 
-        ## Build graph using model reader files
-        graph = nx.DiGraph()
-        node_dfs = self.node_dfs
-        tech_dfs = self.tech_dfs
-        graph.cur_tree_index = [0]
-        graph.max_tree_index = [0]
-        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
-        graph.cur_tree_index[0] += graph.max_tree_index[0]
-
-        # Update the model's metadata
-        self.supply_nodes = graph_query.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
-        self.graph = graph
-        self.dcc_classes = self._dcc_classes()
-        self.dic_classes = self._dic_classes()
-
-        # Initialize parameters
-        self._inherit_parameter_values()
-        self._initialize_tax()
-
+        # Run / logging metadata
         self.show_run_warnings = True
         self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
-        
+
         self.change_history = pd.DataFrame(
-            columns=['base_model_description', 
-                     COL.parameter.lower(), 
-                     'node', 
-                     'year', 
-                     COL.technology.lower(),
-                     COL.context.lower(),
-                     COL.sub_context.lower(),
-                     'old_value', 
-                     'new_value'])
+            columns=[
+                "base_model_description",
+                COL.parameter.lower(),
+                "node",
+                "year",
+                COL.technology.lower(),
+                COL.context.lower(),
+                COL.sub_context.lower(),
+                "old_value",
+                "new_value",
+            ]
+        )
 
-        self.status = 'instantiated'
-
-        # Update graph using scenario reader files
-        if not isinstance(self._scenario_reader, ScenarioReader):
-            raise ValueError("You are attempting to update a model with \
-                    something other than a ScenarioReader object.")
-
-        # Add index for Excel results viewer to build correctly sorted list of nodes
-        self.graph.max_tree_index[0] = 0
-        graph = node_utils.make_or_update_nodes(self.graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, self.scenario_node_dfs, self.scenario_tech_dfs)
-        self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
-
-        # Update the model's metadata
-        self.supply_nodes = graph_query.get_supply_nodes(graph)
-        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(graph, str(self.base_year))
-        self.graph = graph
-        self.dcc_classes = self._dcc_classes()
-        self.dic_classes = self._dic_classes()
-        
-        # Re-initialize parameters
-        self._inherit_parameter_values()
-        self._initialize_tax()
-
-        self.show_run_warnings = True
+        # Track current state of the model lifecycle
+        self.status = "instantiated"  # description loaded, graph not yet constructed
         self.scenario_model_description_file = self._scenario_reader.csv_files
 
-    def validate_files(self, verbose=False):
-        self.validator.validate(verbose=verbose)
-
+    def validate_files(self, verbose=True, show_timing=False):            
+        self.validator.validate(verbose=verbose, show_timing=show_timing)
+        
+    def validate_graph(self, verbose=True, show_timing=False):
+        self.validator.validate_graph(verbose=verbose, show_timing=show_timing)
+    
     def update(self, scenario_model_reader):
         """
         Create an updated version of self based off another ModelReader.
@@ -216,7 +184,7 @@ class Model:
         model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
-        self.graph.max_tree_index[0] = 0
+        self.graph.max_tree_index[0] = 0    # For Excel results viewer
         graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs, model.scenario_tech_dfs)
         graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs, model.scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
@@ -237,6 +205,77 @@ class Model:
 
         return model
 
+    def construct_graph(self, show_timing: bool = False):
+        """
+        Build the model graph from the base and scenario descriptions and
+        initialize model metadata/parameters.
+        """
+        start = time.time()
+        print("\n=== Constructing model graph ===")
+        
+        # --- Base graph from model description -------------------------------
+        graph = nx.DiGraph()
+        graph.cur_tree_index = [0]
+        graph.max_tree_index = [0]
+
+        graph = node_utils.make_or_update_nodes(graph, self.node_dfs, self.tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, self.node_dfs, self.tech_dfs)
+        graph.cur_tree_index[0] += graph.max_tree_index[0]
+
+        # Update metadata from base graph
+        self.graph = graph
+        self.supply_nodes = graph_query.get_supply_nodes(self.graph)
+        self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(
+            self.graph, str(self.base_year)
+        )
+        self.dcc_classes = self._dcc_classes()
+        self.dic_classes = self._dic_classes()
+
+        # Initialize parameters on the base graph
+        self._inherit_parameter_values()
+        self._initialize_tax()
+        print("  Base graph constructed")
+
+        # --- Apply scenario overlays (if any) --------------------------------
+        if not isinstance(self._scenario_reader, ScenarioReader):
+            raise ValueError(
+                "You are attempting to update a model with something other than a ScenarioReader object."
+            )
+
+        # Only do work if there is scenario content
+        if self.scenario_node_dfs or self.scenario_tech_dfs:
+            self.graph.max_tree_index[0] = 0
+            graph = node_utils.make_or_update_nodes(
+                self.graph, self.scenario_node_dfs, self.scenario_tech_dfs
+            )
+            graph = edge_utils.make_or_update_edges(
+                graph, self.scenario_node_dfs, self.scenario_tech_dfs
+            )
+            self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
+            self.graph = graph
+
+            # Refresh metadata after scenario overlay
+            self.supply_nodes = graph_query.get_supply_nodes(self.graph)
+            self.GHGs, self.emission_types, self.gwp = param_query.get_ghg_and_emissions(
+                self.graph, str(self.base_year)
+            )
+            self.dcc_classes = self._dcc_classes()
+            self.dic_classes = self._dic_classes()
+
+            # Re-initialize parameters after scenario changes
+            self._inherit_parameter_values()
+            self._initialize_tax()
+            print("  Scenario overlays applied")
+
+        else:
+            print("  No scenario overlays to apply")
+
+        # Final state after graph is ready
+        self.status = "graph constructed"
+
+        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        print(f"=== Graph construction complete{timing} ===")
+        
     def _initialize_tax(self):
         # Initialize Taxes
         for year in self.years:
@@ -342,7 +381,7 @@ class Model:
         return step
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
-            max_iterations=10, show_warnings=True, print_eq=False):
+            max_iterations=10, show_warnings=True, print_eq=False, show_timing=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -367,14 +406,21 @@ class Model:
             Whether or not to have verbose printing during iterations. If true, supply node prices are
             printed at the end of each iteration.
 
+        show_timing : bool, optional
+            Whether to display timing information for the model run.
+            
         Returns
         -------
             Nothing is returned, but `self.graph` will be updated with the resulting prices,
             provided_quantities, etc calculated for each year.
 
         """
+        start = time.time()
+        
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
+
+        print("\n=== Running model ===")
 
         self.loops = traversals.find_loops(self.graph, warn=True)
 
@@ -382,7 +428,8 @@ class Model:
         supply_nodes = graph_query.get_supply_side_nodes(self.graph)
 
         for year in self.years:
-            print(f"***** ***** year: {year} ***** *****")
+            year_start = time.time()
+            print(f"\n-- Year {year} --")
 
             # Initialize Basic Variables
             equilibrium = False
@@ -397,7 +444,7 @@ class Model:
                 if iteration > max_iterations:
                     warnings.warn(f"Max iterations reached for year {year}. Continuing to next year.")
                     break
-                print(f'iter {iteration}')
+                print(f'  Iteration {iteration}')
                 # Initialize Iteration Specific Values
                 self.iteration_initialization(year)
 
@@ -487,7 +534,12 @@ class Model:
             traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
+            year_timing = f" ({time.time() - year_start:.2f}s)" if show_timing else ""
+            print(f"  Year {year} complete{year_timing}")
+       
         self.status = 'Run completed'
+        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        print(f"\n=== Model run complete{timing} ===\n")
 
     def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
                           print_equilibrium_details: bool) -> bool:
