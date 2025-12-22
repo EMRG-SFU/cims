@@ -347,8 +347,6 @@ def log_model(model,
               parameter_list: list[str] = None, 
               parameter_file: str = None,
               default_list: str = None, 
-              verbose: bool = True, 
-              show_timing: bool = False,
               *, 
               ensure_dir: bool = True):
     """
@@ -366,10 +364,6 @@ def log_model(model,
         Path to a text file containing the list of parameters to log
     default_list : str, optional
         Name of a default parameter list ('all' or 'slim', etc.)
-    verbose : bool, optional
-        Whether to print a completion message
-    show_timing : bool, optional
-        Whether to include timing info in the completion message
     ensure_dir : bool, optional
         Whether to create parent directories for output_file if needed
 
@@ -396,7 +390,7 @@ def log_model(model,
     missing_params = set() 
     if parameter_list is None and parameter_file is None and (default_list is None or default_list == 'all'):
         all_logs = []
-        for node in tqdm(model.graph.nodes, desc="  Processing nodes", disable=not verbose):
+        for node in tqdm(model.graph.nodes, desc="  Processing nodes"):
             region = None
             sector = None
 
@@ -446,7 +440,7 @@ def log_model(model,
 
         all_logs = []
         total_parameter_list = _full_parameter_list(model)
-        for node in tqdm(model.graph.nodes, desc="  Processing nodes", disable=not verbose):
+        for node in tqdm(model.graph.nodes, desc="  Processing nodes"):
             region = None
             sector = None
 
@@ -486,7 +480,7 @@ def log_model(model,
     for param in sorted(missing_params):
         warnings.warn(f"parameter {param} does not exist")
     
-    if missing_params and verbose:
+    if missing_params:
         params_str = ", ".join(f"'{p}'" for p in sorted(missing_params))
         print(f"\n  {len(missing_params)} parameter(s) not found: {params_str}")  
 
@@ -523,7 +517,7 @@ def log_model(model,
     # Write to file
     log_df.to_csv(output_path, index=False)
     
-    timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+    timing = f" (completed in {time.time() - start:.2f}s)"
     print(f"=== Logging complete: {timing} ===\n")
         
     return log_df

@@ -147,11 +147,11 @@ class Model:
         self.status = "instantiated"  # description loaded, graph not yet constructed
         self.scenario_model_description_file = self._scenario_reader.csv_files
 
-    def validate_files(self, verbose=True, show_timing=False):            
-        self.validator.validate(verbose=verbose, show_timing=show_timing)
+    def validate_files(self):            
+        self.validator.validate()
         
-    def validate_graph(self, verbose=True, show_timing=False):
-        self.validator.validate_graph(verbose=verbose, show_timing=show_timing)
+    def validate_graph(self):
+        self.validator.validate_graph()
     
     def update(self, scenario_model_reader):
         """
@@ -205,7 +205,7 @@ class Model:
 
         return model
 
-    def construct_graph(self, show_timing: bool = False):
+    def construct_graph(self):
         """
         Build the model graph from the base and scenario descriptions and
         initialize model metadata/parameters.
@@ -273,7 +273,7 @@ class Model:
         # Final state after graph is ready
         self.status = "graph constructed"
 
-        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        timing = f" (completed in {time.time() - start:.2f}s)"
         print(f"=== Graph construction complete{timing} ===")
         
     def _initialize_tax(self):
@@ -381,7 +381,7 @@ class Model:
         return step
 
     def run(self, equilibrium_threshold=0.05, num_equilibrium_iterations=2, min_iterations=2,
-            max_iterations=10, show_warnings=True, print_eq=False, show_timing=False):
+            max_iterations=10, show_warnings=True, print_eq=False):
         """
         Runs the entire model, progressing year-by-year until an equilibrium has been reached for
         each year.
@@ -400,15 +400,7 @@ class Model:
         max_iterations : int, optional
             The maximum number of times to iterate between supply and demand in an attempt to reach
             an equilibrium. If max_iterations is reached, a warning will be raised, iteration for
-            that year will stop, and iteration for the next year will begin.
-
-        verbose : bool, optional
-            Whether or not to have verbose printing during iterations. If true, supply node prices are
-            printed at the end of each iteration.
-
-        show_timing : bool, optional
-            Whether to display timing information for the model run.
-            
+            that year will stop, and iteration for the next year will begin.            
         Returns
         -------
             Nothing is returned, but `self.graph` will be updated with the resulting prices,
@@ -534,11 +526,11 @@ class Model:
             traversals.bottom_up_traversal(self.graph,
                                             self._aggregate_distributed_supplies,
                                             year)
-            year_timing = f" ({time.time() - year_start:.2f}s)" if show_timing else ""
+            year_timing = f" ({time.time() - year_start:.2f}s)"
             print(f"  Year {year} complete{year_timing}")
        
         self.status = 'Run completed'
-        timing = f" (completed in {time.time() - start:.2f}s)" if show_timing else ""
+        timing = f" (completed in {time.time() - start:.2f}s)"
         print(f"\n=== Model run complete{timing} ===\n")
 
     def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
