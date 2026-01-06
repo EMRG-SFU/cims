@@ -268,8 +268,11 @@ REGISTRY.register("zero_requested_nodes", CheckSpec(
 # ---------------------------------------------------------------------------
 # GRAPH-PHASE CHECKS (to be added)
 # ---------------------------------------------------------------------------
-# All of these are run by ModelValidator.file_warningss() via:
+# All of these are run by ModelValidator.file_warnings() via:
 #   REGISTRY.iter(phase=Phase.GRAPH, severity=...)
 #
 # Errors first, then warnings.
 # ---------------------------------------------------------------------------
+# ---- Errors ----
+
+# ---- Warnings ----

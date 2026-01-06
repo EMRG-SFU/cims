@@ -408,7 +408,12 @@ class Model:
 
         """
         start = time.time()
-        
+
+        if self.status != "graph constructed" or self.graph.number_of_nodes() == 0:
+            raise ValueError(
+                "Model graph has not been constructed. Call construct_graph() before run()."
+            )
+
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
 
