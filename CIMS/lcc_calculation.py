@@ -581,6 +581,8 @@ def calc_price_subsidy(model: 'CIMS.Model', node: str, year: str, tech=None):
                     tax_value = 0
 
                 benchmark_value = benchmark[ghg][emission_type][PARAM.year_value]
+                if benchmark_value is None:
+                    benchmark_value = 0
                 price_subsidy += benchmark_value * tax_value
 
     return price_subsidy
