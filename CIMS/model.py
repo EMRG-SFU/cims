@@ -143,7 +143,7 @@ class Model:
             ]
         )
 
-        # Track current state of the model lifecycle
+        # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
         self.scenario_model_description_file = self._scenario_reader.csv_files
 
@@ -184,7 +184,7 @@ class Model:
         model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
         # Update the nodes & edges in the graph
-        self.graph.max_tree_index[0] = 0    # For Excel results viewer
+        self.graph.max_tree_index[0] = 0    # For Excel results viewer TODO: remove once we switch to notebook visualization
         graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs, model.scenario_tech_dfs)
         graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs, model.scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]

@@ -181,11 +181,11 @@ class ModelValidator:
 
     def validate_files(self):
         """
-        Run file-phase validation checks using the central registry.
+        Run file validation checks using the central registry.
         """
         start = time.time()
         
-        print("\n=== Running file-phase validation ===")
+        print("\n=== Validating model files ===")
         
         # Per-run context values that may be reused by multiple checks
         providers = get_providers(self.model_df, self.node_col)
@@ -214,7 +214,7 @@ class ModelValidator:
             print("No warnings found!")
         
         timing = f" (completed in {time.time() - start:.2f}s)"
-        print(f"\n=== Completed file-phase validation{timing} ===")
+        print(f"\n=== File validation complete{timing} ===")
    
     def validate_graph(self):
         """
