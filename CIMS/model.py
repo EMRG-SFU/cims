@@ -6,10 +6,13 @@ import re
 import time
 import pickle
 import os.path
+from typing import Iterable, Mapping
 
 from .utils.model_description import column_list as COL
 from .utils.parameter import construction, list as PARAM, setters, query as param_query
 from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
+from .utils.model_description.columns_builder import build_col_list
+from .readers.helpers import collect_base_paths, collect_update_paths, collect_all_paths
 
 from . import lcc_calculation
 from . import stock_allocation
@@ -28,54 +31,61 @@ from .emissions import EmissionsCost
 
 class Model:
     """
-    Relevant dataframes and associated information taken from the model description provided in
-    `reader`. Also includes methods needed for building and running the Model.
+    Assemble and manage a CIMS model from base and update CSVs, with helpers to build, validate, and run the model.
 
     Parameters
     ----------
-    reader : CIMS.reader
-        The Reader set up to ingest the description (excel file) for our model.
+    model_path : Root directory containing base model CSVs (<model_path>/<base_model>/<base_model>_<region>.csv).
+    base_model : Base model prefix used to locate base files.
+    region_list : Regions to include when collecting base/update CSVs.
+    update_files : Mapping of directory → iterable of update file prefixes; combined with regions to locate scenario/update CSVs.
+    year_list : Years to include; combined with defaults_Lists Columns to build the column list.
+    sector_list : Sectors to include/filter.
+    default_values_csv_path : Path to defaults values CSV (parameter defaults).
+    list_csv_path : Path to defaults_Lists.csv
 
     Attributes
     ----------
     graph : networkx.DiGraph
-        Model Graph populated using the `build_graph` method. Model services are nodes in `graph`,
-        with data contained within an associated dictionary. Structural and Request/Provide
-        relationships are edges in the `graph`.
-
-    node_dfs : dict {str: pandas.DataFrame}
-        Node names (branch notation) are the keys in the dictionary. Associated DataFrames (specified in
-        the excel model description) are the values. DataFrames do not include technology information for a node.
-
-    tech_dfs : dict {str: dict {str: pandas.DataFrame}}
-        Technology & service information from the excel model description. Node names (branch notation)
-        are keys in `tech_dfs` to sub-dictionaries. These sub-dictionaries have technology/service
-        names as keys and pandas DataFrames as values. These DataFrames contain information from the
-        excel model description.
-
-    supply_nodes : list [str]
-        List of supply nodes requested by the demand side of the Model Graph. 
-        Populated using the `build_graph` method.
-
-    years : list [str or int]
-        List of the years for which the model will be run.
-
+        Model graph populated via `construct_graph`; services are nodes, structural/request/provide edges in `graph`.
+    node_dfs : dict[str, pandas.DataFrame]
+        Base node data frames keyed by branch notation (no technology rows).
+    tech_dfs : dict[str, dict[str, pandas.DataFrame]]
+        Technology/service data frames keyed by node, then technology/service name.
+    supply_nodes : list[str]
+        Supply nodes requested by the demand side (set during `construct_graph`).
+    years : list[str or int]
+        Years for which the model will be run.
     """
 
-    def __init__(self,
-                 csv_init_file_paths,
-                 csv_update_file_paths,
-                 col_list,
-                 year_list,
-                 sector_list,
-                 default_values_csv_path,
-                 list_csv_path
-                 ):
+    def __init__(
+        self,
+        model_path: str,
+        base_model: str,
+        region_list: Iterable[str],
+        update_files: Mapping[str, Iterable[str]],
+        year_list: Iterable[str | int],
+        sector_list: Iterable[str],
+        default_values_csv_path: str,
+        list_csv_path: str,
+        ):
+        print("\n=== Instantiating Model ===")
+        start_init = time.time()
 
-        # --- Validators / Readers -------------------------------------------
+        print("  Building column list...")
+        col_list = build_col_list(list_csv_path, year_list)
+
+        print("  Collecting Base & Update CSV paths...")
+        base_paths, update_paths = collect_all_paths(
+            model_path=model_path,
+            base_model=base_model,
+            region_list=region_list,
+            update_files=update_files,
+        )
+        print("  Instantiating ModelValidator...")
         self.validator = ModelValidator(
-            csv_file_paths=csv_init_file_paths,
-            csv_update_file_paths=csv_update_file_paths,
+            csv_file_paths=base_paths,
+            csv_update_file_paths=update_paths,
             col_list=col_list,
             year_list=year_list,
             sector_list=sector_list,
@@ -86,8 +96,9 @@ class Model:
         # Graph starts empty; constructed later via construct_graph()
         self.graph = nx.DiGraph()
 
+        print("  Instantiating Readers...")
         self._model_reader = ModelReader(
-            csv_file_paths=csv_init_file_paths,
+            csv_file_paths=base_paths,
             col_list=col_list,
             year_list=year_list,
             sector_list=sector_list,
@@ -96,13 +107,13 @@ class Model:
         )
 
         self._scenario_reader = ScenarioReader(
-            csv_file_paths=csv_update_file_paths,
+            csv_file_paths=update_paths,
             col_list=col_list,
             year_list=year_list,
             sector_list=sector_list,
         )
 
-        # --- Description / metadata loaded from readers ----------------------
+        print("  Initializing model metadata and defaults...")
         self.root = self._model_reader.root
         self.node_dfs, self.tech_dfs = self._model_reader.get_model_description()
         self.scenario_node_dfs, self.scenario_tech_dfs = self._scenario_reader.get_model_description()
@@ -146,6 +157,8 @@ class Model:
         # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
         self.scenario_model_description_file = self._scenario_reader.csv_files
+
+        print(f"=== Model instantiation complete (completed in {time.time() - start_init:.2f}s) ===")
 
     def validate_files(self):            
         self.validator.validate()
