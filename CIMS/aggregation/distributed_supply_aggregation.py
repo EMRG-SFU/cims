@@ -83,10 +83,10 @@ def _get_direct_distributed_supply(model, node, year, tech=None):
         # Find the quantities provided by child to the node/tech
         if tech is None:
             quantity_provided_to_node_tech = \
-                child_provided_quantities.get_quantity_provided_to_node(node)
+                child_provided_quantities.sum_provided_to_node(node)
         else:
             quantity_provided_to_node_tech = \
-                child_provided_quantities.get_quantity_provided_to_tech(node, tech)
+                child_provided_quantities.sum_provided_to_tech(node, tech)
 
         if quantity_provided_to_node_tech < 0:
             # Record quantities provided directly to the node/tech from child

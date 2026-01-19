@@ -64,9 +64,8 @@ def log_bool(val):
 
 
 def log_ProvidedQuantity(val):
-    """Creates a logging-ready representation of a ProvidedQuantity object, using the total number
-       of units provided by a node."""
-    return [ValueLog(value=float(val.get_total_quantity()))]
+    """Creates a logging-ready representation of a ProvidedQuantity object, using the total number of units provided by a node."""
+    return [ValueLog(value=float(val.sum_provided_by_total()))]
 
 
 def log_RequestedQuantity(val):
@@ -88,14 +87,14 @@ def log_RequestedQuantity(val):
     rqs = []
 
     # Log quantities per tech
-    for key, quant in val.get_total_quantities_requested().items():
+    for key, quant in val.sum_requested_by_energy().items():
         rqs.append(ValueLog(target=key,
                             value=quant
                             ))
 
     # Log total quantities
     rqs.append(ValueLog(context='Total',
-                        value=val.sum_requested_quantities()
+                        value=val.sum_requested_by_total()
                         ))
 
     return rqs
@@ -104,7 +103,7 @@ def log_RequestedQuantity(val):
 def log_DistributedSupply(val):
     distributed_supplies = []
 
-    for k, v in val.summarize_distributed_supply().items():
+    for k, v in val.sum_distributed_by_energy().items():
         distributed_supplies.append(ValueLog(target=k, value=v))
 
     return distributed_supplies
@@ -115,7 +114,7 @@ def log_Emissions(val):
     tuple is created for each GHG/Emission Type combination that exists in the node."""
     result = []
 
-    emissions = val.summarize()
+    emissions = val.sum_emissions_by_ghg_type()
     for ghg in emissions:
         for emission_type in emissions[ghg]:
             val = emissions[ghg][emission_type]

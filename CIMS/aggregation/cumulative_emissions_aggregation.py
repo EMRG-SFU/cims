@@ -103,7 +103,7 @@ def _record_total_cumulative_emissions(model, node, year, rate_param, total_para
     if model.get_param(PARAM.competition_type, node) == 'root':
         provided_quantities = 1
     else:
-        provided_quantities = model.get_param(PARAM.provided_quantities, node, year).get_total_quantity()
+        provided_quantities = model.get_param(PARAM.provided_quantities, node, year).sum_provided_by_total()
     emissions_rate = model.get_param(rate_param, node, year)
     model.graph.nodes[node][year][total_param] = create_value_dict(emissions_rate *
                                                                    provided_quantities)
@@ -119,7 +119,7 @@ def _find_cumulative_rate_via_self(model, node, year, tech, base_rate_param, bas
 
 
 def _find_cumulative_rate_via_structural_edge(model, parent_node, child_node, year, total_param):
-    pq = model.get_param(PARAM.provided_quantities, parent_node, year).get_total_quantity()
+    pq = model.get_param(PARAM.provided_quantities, parent_node, year).sum_provided_by_total()
 
     # To ensure ALL emissions/quantities flow through a structural edge, we
     # use the child's total cumulative value divided by the provided quantities as the parent rate.
@@ -138,7 +138,7 @@ def _find_cumulative_rate_via_aggregation_edge(model, parent_node, child_node, y
     # aggregation weight and recorded at the parent node. 
     
     agg_weight = model.graph.edges[(parent_node, child_node)][PARAM.aggregate_weight]
-    pq = model.get_param(PARAM.provided_quantities, parent_node, year).get_total_quantity()
+    pq = model.get_param(PARAM.provided_quantities, parent_node, year).sum_provided_by_total()
 
     # To ensure ALL emissions/quantities flow through an aggregation edge, we
     # use the child's total cumulative value divided by the provided quantities as the parent rate.

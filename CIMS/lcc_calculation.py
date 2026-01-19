@@ -125,14 +125,13 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         # Check that stock isn't 0 (GL Issue #110)
         pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
         if general_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
-                src == 'calculation') and (pq.get_total_quantity() <= 0):
+                src == 'calculation') and (pq.sum_provided_by_total() <= 0):
             lcc = 0
 
         sub_graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source='calculation')
 
     elif 'cost curve' in model.get_param(PARAM.competition_type, node):
-        lcc = calc_cost_curve_lcc(model, node, year,
-                                  cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
+        lcc = calc_cost_curve_lcc(model, node, year, cost_curve_min_max=kwargs.get('cost_curve_min_max', None))
         sub_graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source='cost curve function')
 
     else:
@@ -148,8 +147,7 @@ def lcc_calculation(sub_graph, node, year, model, **kwargs):
         lcc = service_cost + fixed_cost_rate - revenue_recycled
 
         pq, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
-        if general_utils.prev_stock_existed(model, node, year) and (pq is not None) and (
-                src == 'calculation') and (pq.get_total_quantity() <= 0):
+        if general_utils.prev_stock_existed(model, node, year) and (pq is not None) and (src == 'calculation') and (pq.sum_provided_by_total() <= 0):
             lcc = 0
 
         sub_graph.nodes[node][year][PARAM.lcc_financial] = construction.create_value_dict(lcc, param_source=sc_source)
@@ -730,12 +728,10 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
 
         if int(year) == model.base_year:
             fixed_cost_rate = 0
-            fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate,
-                                                           param_source='default')
+            fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate, param_source='default')
         else:
-            prov_quant_object, src = model.get_param(PARAM.provided_quantities, node, year,
-                                                     return_source=True)
-            prov_quant = prov_quant_object.get_total_quantity()
+            prov_quant_object, src = model.get_param(PARAM.provided_quantities, node, year, return_source=True)
+            prov_quant = prov_quant_object.sum_provided_by_total()
 
             if tech and prov_quant != 0:
                 ms_total = model.get_param(PARAM.market_share_total, node, year, tech=tech)
@@ -743,16 +739,14 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
 
             if src == 'initialization':
                 prev_year = str(int(year) - model.step)
-                prov_quant = model.get_param(PARAM.provided_quantities, node,
-                                             prev_year).get_total_quantity()
+                prov_quant = model.get_param(PARAM.provided_quantities, node, prev_year).sum_provided_by_total()
                 if prov_quant > 0:
                     fixed_cost_rate = fixed_cost_total / prov_quant
                 else:
                     fixed_cost_rate = 0
-                fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate,
-                                                               param_source='calculation')
+                fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate, param_source='calculation')
             else:
-                prov_quant = prov_quant_object.get_total_quantity()
+                prov_quant = prov_quant_object.sum_provided_by_total()
 
                 if tech and prov_quant != 0:
                     ms_total = model.get_param(PARAM.market_share_total, node, year, tech=tech)
@@ -761,8 +755,7 @@ def calc_fixed_cost_rate(model, node, year, tech=None):
 
                 else:
                     fixed_cost_rate = fixed_cost_total / prov_quant
-                    fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate,
-                                                                   param_source='calculation')
+                    fixed_cost_rate_dict = construction.create_value_dict(year_val=fixed_cost_rate, param_source='calculation')
 
         model.set_param_internal(fixed_cost_rate_dict, PARAM.fixed_cost_rate, node, year, tech=tech)
 

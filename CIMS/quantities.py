@@ -1,150 +1,145 @@
+from typing import Dict, Iterable, Mapping, Tuple, Union
 import copy
+from .utils.parameter import list as PARAM
+
+Number = Union[int, float]
 
 # TODO: make quantity classes into a superclass with methods on dictionaries
 
 class ProvidedQuantity:
-    def __init__(self):
-        self.provided_quantities = {}
+    def __init__(self) -> None:
+        self.provided_quantities: Dict[str, Number] = {}
 
-    def provide_quantity(self, amount, requesting_node, requesting_technology=None):
-        node_tech = '{}[{}]'.format(requesting_node, requesting_technology)
+    def provide_quantity(self, 
+                         amount: Number, 
+                         requesting_node: str, 
+                         requesting_technology: str | None =None
+                         ) -> None:
+        """Record a provided amount for a requesting node/technology pair."""
+        node_tech = f"{requesting_node}[{requesting_technology}]"
         self.provided_quantities[node_tech] = amount
 
-    def get_total_quantity(self):
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
+    def sum_provided_by_total(self) -> Number:
+        """
+        Return the total provided amount (floored at zero).
+
+        Note: If distributed supply exceeds the sum of positive provided quantities,
+        this total may differ from the raw sum of provided values.
+        """
+        total: Number = sum(self.provided_quantities.values())
+        return total if total > 0 else 0
+
+    def sum_provided_to_node(self, node: str) -> Number:
+        """Return the total provided amount to a node across all technologies."""
         total = 0
-        for amount in self.provided_quantities.values():
-            total += amount
-
-        if total < 0:
-            total = 0
-
+        for key, amount in self.provided_quantities.items():
+            pq_node, _ = key.split('[', 1)
+            if pq_node == node:
+                total += amount
         return total
 
-    def calculate_proportion(self, node, tech=None):
-        """
-        Find the proportion of non-negative units provided to a particular node/tech combination.
-        """
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
-        proportion = 0
+    def sum_provided_to_tech(self, node: str, tech: str) -> Number:
+        """Return the provided amount to a specific node/technology (0 if none)."""
+        node_tech = f"{node}[{tech}]"
+        return self.provided_quantities.get(node_tech, 0)
 
-        if tech is None:
-            total_provided_node_tech = self.get_quantity_provided_to_node(node)
-        else:
-            total_provided_node_tech = self.get_quantity_provided_to_tech(node, tech)
-
-        non_negative_total = 0
-        for amount in self.provided_quantities.values():
-            if amount > 0:
-                non_negative_total += amount
-
-        if total_provided_node_tech >= 0:
-            proportion = total_provided_node_tech / non_negative_total
-
-        return proportion
-
-    def get_quantity_provided_to_node(self, node):
-        """
-        Find the quantity being provided to a specific node, across all it's technologies
-        """
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
-
-        total_provided_to_node = 0
-        for pq in self.provided_quantities:
-            pq_node, pq_tech = pq.split('[', 1)
-            if pq_node == node:
-                total_provided_to_node += self.provided_quantities[pq]
-        return total_provided_to_node
-
-    def get_quantity_provided_to_tech(self, node, tech):
-        # Note, the result of get_total_quantity() will not equal the sum across
-        # self.provided_quantities values when distributed supply is greater than the sum of
-        # positive provided quantities.
-        node_tech = '{}[{}]'.format(node, tech)
-
-        if node_tech in self.provided_quantities:
-            return self.provided_quantities[node_tech]
-        else:
-            return 0
-
+    def calculate_proportion(self, node: str, tech: str | None = None) -> Number:
+        """Return the share of non-negative provided units allocated to a node/technology."""
+        total_for_target = self.sum_provided_to_node(node) if tech is None else self.sum_provided_to_tech(node, tech)
+        non_negative_total = sum(a for a in self.provided_quantities.values() if a > 0)
+        return (total_for_target / non_negative_total) if non_negative_total and total_for_target >= 0 else 0
 
 class RequestedQuantity:
-    def __init__(self):
-        self.requested_quantities = {}
+    def __init__(self) -> None:
+        self.requested_quantities: Dict[str, Dict[str, Number]] = {}
 
-    def record_requested_quantity(self, providing_node, child, amount):
-        if providing_node in self.requested_quantities:
-            if child in self.requested_quantities[providing_node]:
-                self.requested_quantities[providing_node][child] += amount
-            else:
-                self.requested_quantities[providing_node][child] = amount
+    def record_requested_quantity(self, energy: str, service: str, amount: Number) -> None:
+        """Record a requested amount for an energy/service pair."""
+        self.requested_quantities.setdefault(energy, {}).setdefault(service, 0)
+        self.requested_quantities[energy][service] += amount
 
-        else:
-            self.requested_quantities[providing_node] = {child: amount}
+    def sum_requested_by_energy_service(self) -> Dict[str, Dict[str, Number]]:
+        """Return totals requested, grouped by energy then service (energy -> service -> amount)."""
+        quantities: Dict[str, Dict[str, Number]] = {}
+        
+        for energy, services in self.requested_quantities.items():
+            for service, amt in services.items():
+                quantities.setdefault(energy, {}).setdefault(service, 0)
+                quantities[energy][service] += amt 
+                
+        return quantities
 
-    def get_total_quantities_requested(self):
-        total_quants = {}
-        for service in self.requested_quantities:
-            total_service = 0
-            for child, quantity in self.requested_quantities[service].items():
-                total_service += quantity
-            total_quants[service] = total_service
-        return total_quants
+    def sum_requested_by_service(self) -> Dict[str, Number]:
+        """Return totals requested, grouped by service across all energies (service -> amount)."""
+        quantities: Dict[str, Number]= {}
+        
+        for services in self.requested_quantities.values():
+            for service, amt in services.items():
+                quantities.setdefault(service, 0)
+                quantities[service] += amt
 
-    def sum_requested_quantities(self):
-        total_quantity = 0
-        for supply_node in self.requested_quantities:
-            supply_rq = self.requested_quantities[supply_node]
-            for source in supply_rq:
-                total_quantity += supply_rq[source]
-        return total_quantity
+        return quantities
 
+    def sum_requested_by_energy(self) -> Dict[str, Number]:
+        """Return totals requested, grouped by energy across all services (energy -> amount)."""
+        quantities: Dict[str, Number] = {}
+        
+        for energy, services in self.requested_quantities.items():
+            quantities.setdefault(energy, 0)
+            for amt in services.values():
+                quantities[energy] += amt
+
+        return quantities
+
+    def sum_requested_by_total(self) -> Number:
+        """Return the total requested amount across all energies and services."""
+        total: Number = 0
+        for services in self.requested_quantities.values():
+            for amt in services.values():
+                total += amt
+        return total
 
 class DistributedSupply:
     """
-    Class to help record distributed supplies in the model.
-    Note, negative service request values are recorded as positive Distributed Supply values.
+    Class to record distributed supplies in the model.
+    Note: Negative service requests are stored as positive distributed supply values.
     """
-    def __init__(self):
-        self.distributed_supply = {}
+    def __init__(self) -> None:
+        self.distributed_supply: Dict[str, Dict[str, Number]] = {}
 
-    def __add__(self, other):
+    def __add__(self, other: "DistributedSupply") -> "DistributedSupply":
+        """Return a new DistributedSupply equal to the elementwise sum of two supplies."""
         result = copy.deepcopy(self)
-        for supply_node in other.distributed_supply:
-            if supply_node not in result.distributed_supply:
-                result.distributed_supply[supply_node] = {}
-            for node in other.distributed_supply[supply_node]:
-                if node not in result.distributed_supply[supply_node]:
-                    result.distributed_supply[supply_node][node] = 0
-                result.distributed_supply[supply_node][node] += other.distributed_supply[supply_node][node]
+        
+        for supply_node, nodes in other.distributed_supply.items():
+            result.distributed_supply.setdefault(supply_node, {})
+            for node, amt in nodes.items():
+                result.distributed_supply[supply_node].setdefault(node, 0)
+                result.distributed_supply[supply_node][node] += amt
+ 
         return result
 
-    def record_distributed_supply(self, supply_node, distributed_supply_node, amount):
-        """Records amount of supply provided by the distributed_supply_node"""
-        if supply_node in self.distributed_supply:
-            if distributed_supply_node in self.distributed_supply[supply_node]:
-                self.distributed_supply[supply_node][distributed_supply_node] += amount
-            else:
-                self.distributed_supply[supply_node][distributed_supply_node] = amount
+    def record_distributed_supply(self, supply_node: str, distributed_supply_node: str, amount: Number) -> None:
+        """Record an amount of supply provided by one node to another."""
+        self.distributed_supply.setdefault(supply_node, {}).setdefault(distributed_supply_node, 0)
+        self.distributed_supply[supply_node][distributed_supply_node] += amount
 
-        else:
-            self.distributed_supply[supply_node] = {distributed_supply_node: amount}
+    def sum_distributed_by_energy(self) -> Dict[str, Number]:
+        """Return totals distributed, grouped by energy (energy -> amount)."""
+        supply: Dict[str, Number] = {}
+        
+        for energy, nodes in self.distributed_supply.items():
+            supply.setdefault(energy, 0)
+            for amt in nodes.values():
+                supply[energy] += amt                
+        
+        return supply
 
-    def summarize_distributed_supply(self):
-        """
-        Summarize the distributed supply across all supplying_nodes, aggregating to the supply node/service
-        being provided.
-        """
-        distributed_supply = {}
-        for supply_node in self.distributed_supply:
-            node_distributed_supply = 0
-            for child, quantity in self.distributed_supply[supply_node].items():
-                node_distributed_supply += quantity
-            distributed_supply[supply_node] = node_distributed_supply
-        return distributed_supply
+    def sum_distributed_by_total(self) -> Number:
+        total: Number = 0
+        
+        for nodes in self.distributed_supply.values():
+            for amt in nodes.values():
+                total += amt
+                
+        return total

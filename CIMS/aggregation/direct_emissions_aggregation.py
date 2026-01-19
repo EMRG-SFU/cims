@@ -5,7 +5,7 @@ from ..utils.parameter.construction import create_value_dict
 
 def _abstract_direct_emission_aggregation(base_emission_class, model, graph, node, year,
                                           rate_param, total_param):
-    provided_quantities = model.get_param(PARAM.provided_quantities, node, year).get_total_quantity()
+    provided_quantities = model.get_param(PARAM.provided_quantities, node, year).sum_provided_by_total()
 
     node_total = base_emission_class()
 

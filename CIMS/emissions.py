@@ -12,6 +12,8 @@ from .utils.general_utils import prev_stock_existed
 from . import tax_foresight
 from .vintage_weighting import calculate_vintage_weighted_parameter
 
+from typing import Dict, Union
+Number = Union[int, float]
 
 class EmissionsCost:
     """
@@ -188,34 +190,14 @@ class EmissionsCost:
 
 
 class Emissions:
-    """Class for storing the emissions for a particular technology or node."""
+    """Store emissions by source branch, GHG, and emission type."""
 
-    def __init__(self, emissions_dict=None):
-        """
-        Initializes an Emissions object.
+    def __init__(self, emissions_dict: Dict[str, Dict[str, Dict[str, Number]]] | None = None) -> None: 
+        """Initialize with an optional nested emissions dict (source -> ghg -> type -> value_dict)."""
+        self.emissions: Dict[str, Dict[str, Dict[str, Dict[str, Number]]]] = emissions_dict or {}
 
-        Parameters
-        ----------
-        emissions_dict : dict
-            The dictionary containing the detailed emissions by supply node, GHG, and
-            emission_type.
-        """
-        self.emissions = emissions_dict if emissions_dict is not None else {}
-
-    def __add__(self, other: Emissions) -> Emissions:
-        """
-        Adds two Emissions objects together by combining their emissions (dictionaries)
-        attributes through addition. Any source/GHG/emission type combination that exists in only
-        one of the Emissions objects will be contained in the final result.
-
-        Parameters
-        ----------
-        other : Emissions
-
-        Returns
-        -------
-        Emissions
-        """
+    def __add__(self, other: "Emissions") -> "Emissions":
+        """Return a new Emissions equal to the elementwise sum of two Emissions objects."""
         result = Emissions()
 
         # Start by recording all the emissions from self in our result
@@ -249,19 +231,8 @@ class Emissions:
 
         return result
 
-    def __mul__(self, other: int | float) -> Emissions:
-        """
-        Multiplies each value in the emissions attribute (which is a nested dictionary) by
-        other.
-
-        Parameters
-        ----------
-        other : int or float
-
-        Returns
-        -------
-        Emissions
-        """
+    def __mul__(self, other: Number) -> "Emissions":
+        """Return a new Emissions scaled by a numeric factor."""
         if not isinstance(other, (int, float)):
             raise TypeError(f"Emissions can only be multiplied by an int or float, not {type(other).__name__}.")
 
@@ -282,20 +253,8 @@ class Emissions:
 
         return result
 
-    def __truediv__(self, other: int | float) -> Emissions:
-        """
-        Divides each value in the emissions attribute (a nested dictionary) by `other`.
-
-        Parameters
-        ----------
-        other : int or float
-            The divisor
-
-        Returns
-        -------
-        Emissions
-            A new Emissions object with each emission value divided by `other`
-        """        
+    def __truediv__(self, other: Number) -> "Emissions":
+        """Return a new Emissions divided by a numeric factor (raises on zero)."""
         if not isinstance(other, (int, float)):
             raise TypeError(f"Emissions can only be divided by an int or float, not {type(other).__name__}.")
 
@@ -312,38 +271,107 @@ class Emissions:
                 if ghg not in result.emissions[source_branch]:
                     result.emissions[source_branch][ghg] = {}
                 for emission_type in self.emissions[source_branch][ghg]:
-                    emission_amount = self.emissions[source_branch][ghg][emission_type][
-                                          PARAM.year_value] / other
-                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(
-                        emission_amount)
+                    emission_amount = self.emissions[source_branch][ghg][emission_type][PARAM.year_value] / other
+                    result.emissions[source_branch][ghg][emission_type] = construction.create_value_dict(emission_amount)
 
         return result
 
-    def summarize(self) -> dict:
-        """
-        Aggregate the `Emissions.emissions` dictionary for each GHG and emission type combination.
+    def sum_emissions_by_energy_ghg_type(self) -> Dict[str, Dict[str, Dict[str, Number]]]:
+        """Return totals grouped by energy → GHG → emission type."""
+        totals: Dict[str, Dict[str, Dict[str, Number]]] = {}
 
-        Returns
-        -------
+        for energy, ghgs in self.emissions.items():
+            totals.setdefault(energy, {})
+            for ghg, types in ghgs.items():
+                totals[energy].set_default(ghg, {})
+                for em_type, val_dict in types.items():
+                    totals[energy][ghg].setdefault(em_type, 0)
+                    totals[energy][ghg][em_type] += val_dict[PARAM.year_value]
 
-        dict :
-            Returns a nested dictionary. The first level keys are GHGs (e.g. CO2). The second level
-            keys are emission types (e.g. Combustion). The second level values are floats
-            representing the aggregate cost for the GHG/emission type combinations across all source
-            supply_nodes.
-        """
-        summary_emissions = {}
-        for source in self.emissions:
-            for ghg in self.emissions[source]:
-                if ghg not in summary_emissions:
-                    summary_emissions[ghg] = {}
-                for emission_type in self.emissions[source][ghg]:
-                    if emission_type not in summary_emissions[ghg]:
-                        summary_emissions[ghg][emission_type] = 0
-                    summary_emissions[ghg][emission_type] += \
-                        self.emissions[source][ghg][emission_type][PARAM.year_value]
+        return totals
+    
+    def sum_emissions_by_ghg_type(self) -> Dict[str, Dict[str, Number]]:
+        """Return totals grouped by GHG → emission type across all energies."""
+        totals: Dict[str, Dict[str, Number]] = {}
 
-        return summary_emissions
+        for ghg in self.emissions.values():
+            for ghg, types in ghg.items():
+                for em_type, val_dict in types.items():
+                    totals.setdefault(ghg, {}).setdefault(em_type, 0)
+                    totals[ghg][em_type] += val_dict[PARAM.year_value]
+
+        return totals
+    
+    def sum_emissions_by_energy(self) -> Dict[str, Number]:
+        """Return totals grouped by energy across all GHGs and emission types."""
+        totals: Dict[str, Number] = {}
+        for energy, ghgs in self.emissions.items():
+            totals.setdefault(energy, 0)
+            for types in ghgs.values():
+                for val_dict in types.values():
+                    totals[energy] += val_dict[PARAM.year_value]
+
+        return totals
+    
+    def sum_emissions_by_ghg(self) -> Dict[str, Number]:
+        """Return totals grouped by GHG across all energies and emission types."""
+        totals: Dict[str, Number] = {}
+
+        for ghgs in self.emissions.values():
+            for ghg, types in ghgs.items():
+                totals.setdefault(ghg, 0)
+                for val_dict in types.values():
+                    totals[ghg] += val_dict[PARAM.year_value]
+
+        return totals
+    
+    def sum_emissions_by_type(self) -> Dict[str, Number]:
+        """Return totals grouped by emission type across all energies and GHGs."""
+        totals: Dict[str, Number] = {}
+        
+        for ghgs in self.emissions.values():
+            for types in ghgs.values():
+                for em_type, val_dict in types.items():
+                    totals.setdefault(em_type, 0)
+                    totals[em_type] += val_dict[PARAM.year_value]
+
+        return totals
+    
+    def sum_emissions_by_total(self) -> Number:
+        """Return the total emissions across all energies, GHGs, and emission types."""
+        total: Number = 0
+        
+        for ghgs in self.emissions.values():
+            for types in ghgs.values():
+                for val_dict in types.values():
+                    total += val_dict[PARAM.year_value]
+
+        return total
+
+def sum_emissions_by_service(model: "CIMS.Model", emissions_param: str, node: str, year: str, child: str) -> "Emissions":
+    """
+    Allocate a child's emissions to a parent node based on the proportion of the child's
+    provided quantity consumed by that node.
+
+    Args:
+        model: The CIMS model instance.
+        emissions_param: Emissions parameter name to retrieve from the child.
+        node: Parent node requesting service.
+        year: Simulation year.
+        child: Child node providing the service.
+
+    Returns:
+        An Emissions object scaled to the share of the child's output consumed by the parent.
+    """
+    child_emissions = model.get_param(param=emissions_param, node=child, year=year)
+    provided_child = model.get_param(param="quantity_provided", node=child, year=year)
+    child_total_provided = provided_child.sum_provided_by_total()
+    child_provided_to_parent = provided_child.sum_provided_to_node(node)
+    
+    if child_total_provided == 0:
+        return Emissions()  # nothing to allocate
+
+    return child_emissions * (child_provided_to_parent / child_total_provided)
 
 
 def calc_emissions_rate_cumul_cost(model: 'CIMS.Model', node: str, year: str,
@@ -398,8 +426,7 @@ def calc_emissions_rate_cumul_cost(model: 'CIMS.Model', node: str, year: str,
         services_requested = get_services_requested(model, node, year, tech=tech)
         agg_emissions_cost += _find_indirect_emissions_cost(model, year, services_requested)
 
-    elif prev_stock_existed(model, node, year) and (pq is not None) and (
-            src == 'calculation') and (pq.get_total_quantity() <= 0):
+    elif prev_stock_existed(model, node, year) and (pq is not None) and (src == 'calculation') and (pq.sum_provided_by_total() <= 0):
         agg_emissions_cost = EmissionsCost()
     elif model.get_param(PARAM.competition_type, node) == PARAM.competition_compete:
         # (2) At a node with techs -- Weighted emissions cost from techs
