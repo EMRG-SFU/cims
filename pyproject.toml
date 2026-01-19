@@ -31,7 +31,8 @@ dependencies = [
     'wasabi',
     'tqdm',
     "packaging",
-    "requests"
+    "requests",
+    'tabulate'
     ]
 dynamic = ["version"]
 

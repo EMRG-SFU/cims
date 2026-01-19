@@ -8,11 +8,13 @@ from ..utils.parameter import list as PARAM
 from ..utils.parameter.parse import is_year
 
 
-def invalid_competition_type(df, valid_competition_list):
+def invalid_competition_type(validator):
     """
     Find list of nodes with an invalid competition type.
     """
-
+    df = validator.model_df
+    valid_competition_list = validator.competition_types
+    
     invalid_rows = df[(df[COL.parameter] == PARAM.competition_type) &
                       (~df[COL.context].str.lower().isin(valid_competition_list))]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
@@ -20,8 +22,7 @@ def invalid_competition_type(df, valid_competition_list):
     concern_desc = "nodes have an invalid 'Competition Type'"
     return invalid_nodes, concern_desc
 
-
-def undefined_nodes(providers, requested):
+def undefined_nodes(validator, providers, requested):
     """
     Identify any nodes which are targets of other nodes, but have not been specified within
     the model description.
@@ -30,20 +31,6 @@ def undefined_nodes(providers, requested):
     concern_desc = "nodes are requested by other nodes without being defined in the model"
 
     return referenced_unspecified, concern_desc
-
-
-def unrequested_nodes(providers, requested, root_node):
-    """
-    Identify any non-root nodes which are specified in the model description but
-    are never requested by other nodes.
-    """
-    unrequested_nodes = [(i, v) for i, v in providers.items() if
-                            (v not in requested.values) and (v != root_node)]
-
-    concern_desc = "nodes are defined in the model, but are not requested by other nodes"
-
-    return unrequested_nodes, concern_desc
-
 
 def nodes_no_provided_service(validator):
     """
@@ -55,7 +42,6 @@ def nodes_no_provided_service(validator):
 
     concern_desc = "nodes are specified but have no 'Service Provided'"
     return nodes_no_service, concern_desc
-
 
 def nodes_requesting_self(validator):
     """
@@ -70,33 +56,6 @@ def nodes_requesting_self(validator):
     concern_desc = "nodes have a Service requested of themselves"
     return self_requesting, concern_desc
 
-
-def nodes_no_requested_service(validator):
-    """
-    Identify nodes or technologies which have been specified in the model description but don't
-    request services from other nodes.
-    """
-    nodes_techs_no_serv_req = []
-
-    # Nodes (without techs)
-    nodes = validator.model_df.groupby(validator.node_col)
-    for node, df in nodes:
-        if pd.isna(df[COL.technology]).all():
-            if PARAM.service_request not in df[COL.parameter].values:
-                nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, None))
-
-    # Technologies
-    node_techs = validator.model_df.groupby([validator.node_col, COL.technology])
-    for (node, tech), df in node_techs:
-        if PARAM.service_request not in df[COL.parameter].values:
-            nodes_techs_no_serv_req.append((validator.branch2node_index_map[node], node, tech))
-
-    nodes_techs_no_serv_req.sort(key=lambda x: x[0])
-
-    concern_desc = "nodes or technologies request no services"
-    return nodes_techs_no_serv_req, concern_desc
-
-
 def nodes_with_zero_output(validator):
     """
     Identify nodes or technologies where the "Output" line has been set to 0 for
@@ -109,7 +68,6 @@ def nodes_with_zero_output(validator):
 
     concern_desc = "nodes have an Output value of 0"
     return zero_output_nodes, concern_desc
-
 
 def supply_without_lcc_or_price(validator):
     """
@@ -126,7 +84,6 @@ def supply_without_lcc_or_price(validator):
 
     concern_desc = "supply nodes (fixed price or cost curve) are missing a price"
     return no_prod_cost, concern_desc
-
 
 def techs_no_base_market_share(validator):
     """
@@ -148,67 +105,6 @@ def techs_no_base_market_share(validator):
     concern_desc = "technologies are missing a base year Market share"
 
     return techs_no_base_year_ms, concern_desc
-
-
-def duplicate_service_requests(validator):
-    """
-    Identify nodes and technologies which request the same service twice.
-    """
-    # The model's DataFrame
-    data = validator.model_df
-
-    serv_request = data[data[COL.parameter] == PARAM.service_request]
-    duplicated = serv_request[serv_request.duplicated(
-        subset=[validator.node_col, COL.technology, validator.target_col],
-        keep=False)]
-
-    if len(duplicated) > 0:
-        # Group & list rows (index) where duplicates exist
-        duplicated_with_idx = duplicated.reset_index()
-        duplicated_groups = duplicated_with_idx.groupby(
-            [validator.node_col, COL.technology, validator.target_col],
-            dropna=False)['index'].apply(list)
-        duplicated_groups = duplicated_groups.reset_index()
-
-        # Create our Warning information
-        duplicate_req = list(zip(duplicated_groups['index'],
-                                 duplicated_groups[COL.branch],
-                                 duplicated_groups[COL.technology]))
-    else:
-        duplicate_req = []
-
-    concern_desc = "nodes/technologies request the same service more than once"
-    
-    return duplicate_req, concern_desc
-
-
-def bad_service_req(validator):
-    """
-    Identify nodes/technologies that have a service requested line, but where the values in these
-    lines are either blank or exogenously specified as 0.
-    """
-    # The model's DataFrame
-    data = validator.model_df
-
-    # Filter to Only Include Service Requested
-    services_req = data[data[COL.parameter] == PARAM.service_request]
-
-    # Select only the year columns
-    year_cols = [c for c in services_req.columns if is_year(c)]
-    year_values = services_req[year_cols]
-
-    # Identify rows that have 0's or missing values
-    row_has_bad_values = year_values.isin([0, np.nan]).all(axis=1)
-    rows_with_bad_values = services_req[row_has_bad_values]
-
-    # Create our Warning information
-    bad_service_requests = list(zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col]))
-
-    concern_desc = "nodes/technologies have Service requested values of only \
-        0's or are missing all values"
-
-    return bad_service_requests, concern_desc
-
 
 def tech_compete_nodes_no_techs(validator):
     """
@@ -233,7 +129,6 @@ def tech_compete_nodes_no_techs(validator):
     concern_desc = "tech compete nodes contain no technologies"
 
     return tc_nodes_no_techs, concern_desc
-
 
 def revenue_recycling_at_techs(validator):
     """
@@ -260,7 +155,6 @@ def revenue_recycling_at_techs(validator):
 
     return techs_recycling_revenues, concern_desc
 
-
 def both_cop_p2000_defined(validator):
     """
     No node should have both COP & P2000 exogenously defined
@@ -284,7 +178,6 @@ def both_cop_p2000_defined(validator):
 
     concern_desc = "nodes have both COP & P2000 exogenously defined"
     return nodes_with_cop_and_p2000, concern_desc
-
 
 def inconsistent_tech_refs(validator):
     """
@@ -319,7 +212,6 @@ def inconsistent_tech_refs(validator):
 
     return inconsistent_tech_refs, concern_desc
 
-
 def service_req_at_tech_node(validator):
     """
     Identify tech nodes where a service request is specified at the node level.
@@ -352,39 +244,6 @@ def service_req_at_tech_node(validator):
         should only occur at the tech-level)"
 
     return service_req_at_tech_node, concern_desc
-
-
-def missing_parameter_default(validator):
-    """
-    Identify parameters in the model file which are missing from the default
-    parameter file.
-
-    If no default parameters have been specified, then this check is ignored.
-    """
-    if len(validator.default_param_df) == 0:
-        missing_parameter_default = []
-        # Create Warning information
-        concern_desc = "!!! No default parameters file was provided"
-
-    else:
-        # The model's DataFrame
-        data = validator.model_df.dropna(how='all')
-
-        # Find all parameter names
-        params_no_defs = data[~data[COL.parameter].isin(validator.default_param_df[COL.parameter])][COL.parameter].value_counts()
-
-        # Find Unique Node/Branch + Technology rows
-        missing_parameter_default = []
-        for parameter, occurences in params_no_defs.items():
-            missing_parameter_default.append((parameter,
-                                              f"{occurences} occurences"))
-
-        # Create Warning information
-        concern_desc = "parameters are in the model, but do not have default \
-            values"
-
-    return missing_parameter_default, concern_desc
-
 
 def min_max_conflicts(validator):
     """
@@ -424,7 +283,6 @@ def min_max_conflicts(validator):
 
     return min_max_conflicts, concern_desc
 
-
 def new_nodes_in_scenario(validator):
     """
     Identify new nodes included in the scenario models (i.e. were not in the
@@ -453,7 +311,6 @@ def new_nodes_in_scenario(validator):
         a Service provided parameter"
 
     return new_nodes_in_scenario, concern_desc
-
 
 def new_techs_in_scenario(validator):
     """
@@ -491,34 +348,6 @@ def new_techs_in_scenario(validator):
 
     return new_techs_in_scenario, concern_desc
 
-
-def zero_requested_nodes(validator, providers, root_node):
-    """
-    Identify any non-root nodes which are specified in the model description
-    but are only requested by node's via service request rows exogenously set to
-    0.
-    """
-    data = validator.model_df
-    request_lines = data[data[COL.parameter]==PARAM.service_request]
-    all_requested = set(request_lines[validator.target_col])
-
-    numeric_values = request_lines[get_year_cols(data)].replace("None", None).astype(float)
-    zero_request_line = numeric_values.sum(axis=1)==0
-    non_zero_request_lines = request_lines[~zero_request_line]
-    non_zero_requested = set(non_zero_request_lines[validator.target_col])
-
-
-    zero_requested = [(i, v) for i, v in providers.items() if
-                      (v in all_requested) and
-                      (v not in non_zero_requested) and
-                      (v != root_node)]
-
-    concern_desc = "nodes are defined in the model, but are only requested by \
-        nodes where all Service requested values are 0"
-
-    return zero_requested, concern_desc
-
-
 def lcc_at_tech_node(validator):
     """
     Identify any tech-compete nodes where an LCC value has been set exogenously.
@@ -533,7 +362,6 @@ def lcc_at_tech_node(validator):
     concern_desc = "tech compete nodes have exogenously defined LCC values"
 
     return lcc_at_tech_nodes, concern_desc
-
 
 def lcc_at_tech(validator):
     """
@@ -550,7 +378,6 @@ def lcc_at_tech(validator):
     concern_desc = "technologies have exogenously defined LCC values"
 
     return lcc_at_techs, concern_desc
-
 
 def base_year_market_share_not_one(validator):
     """
