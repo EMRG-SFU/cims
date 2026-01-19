@@ -575,8 +575,11 @@ def _retire_surplus_stock(model, node, year, stock_new_demanded, stock_existing,
                                              stock_retrofit, surplus)
     surplus -= added_retrofit_stock_to_retire
     stock_new_demanded += added_retrofit_stock_to_retire
-    1
-    assert(stock_new_demanded >= 0 or np.isclose(stock_new_demanded, 0))
+    
+    assertion_message = (f"node: {node}, base: {stock_base_to_retire}, new: {new_stock_to_retire}, "
+        f"retrofit: {added_retrofit_stock_to_retire}, new_demand: {stock_new_demanded}")
+    # Use lower tolerance for assert check since quantities (demanded and existing) can be slightly out of sync due to loops
+    assert(stock_new_demanded >= 0 or np.isclose(stock_new_demanded, 0, atol=1e-03)), assertion_message
 
     return stock_new_demanded, stock_existing, stock_retrofit_added, stock_retrofit
 

@@ -6,8 +6,10 @@ import warnings
 from copy import deepcopy
 from scipy.interpolate import interp1d
 import numbers
-
+from pathlib import Path
+import time
 import pandas as pd
+from tqdm import tqdm
 
 from CIMS.quantities import ProvidedQuantity, RequestedQuantity, DistributedSupply
 from CIMS.emissions import Emissions, EmissionsCost
@@ -339,8 +341,13 @@ def search_parameter(model, search: list[str] = None):
     return search_list
 
 
-def log_model(model, output_file, parameter_list: list[str] = None, path: str = None,
-              default_list: str = None):
+def log_model(model, 
+              output_file, 
+              parameter_list: list[str] = None, 
+              parameter_file: str = None,
+              default_list: str = None, 
+              *, 
+              ensure_dir: bool = True):
     """
     Log a model's current state to an output CSV file.
 
@@ -348,17 +355,16 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
     ----------
     model : CIMS.Model
         Model that is being logged to a CSV file
-    output_file : str
+    output_file : str | Path
         Path to the output CSV file location
     parameter_list : list of str, optional
-        A list of strings
-    path : str, optional
+        A list of parameters to log
+    parameter_path : str, optional
         Path to a text file containing the list of parameters to log
     default_list : str, optional
-        The name of a default parameter list. Currently two default lists are defined:
-        (1) `all` will log all parameters and
-        (2) `slim` will return 5 pre-defined parameters (`market_share_new`, `price`,
-            `competition type`, `service requested`, `fcc`
+        Name of a default parameter list ('all' or 'slim', etc.)
+    ensure_dir : bool, optional
+        Whether to create parent directories for output_file if needed
 
     Returns
     -------
@@ -366,10 +372,24 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
         The DataFrame containing the model's current parameter values. Additionally, a CSV file is
         written to output_path.
     """
-    # if no argument chosen or defualt_list = all, return all parameters
-    if parameter_list is None and path is None and (default_list is None or default_list == 'all'):
+    start = time.time()
+    
+    print("\n=== Logging Results ===")
+    
+    specified = sum(x is not None for x in (parameter_list, parameter_file, default_list))
+    if specified > 1:
+        raise ValueError("Specify only one of: parameter_list, parameter_file, or default_list.")
+
+    
+    output_path = Path(output_file)
+    if ensure_dir:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # if no argument chosen or default_list = all, return all parameters
+    missing_params = set() 
+    if parameter_list is None and parameter_file is None and (default_list is None or default_list == 'all'):
         all_logs = []
-        for node in model.graph.nodes:
+        for node in tqdm(model.graph.nodes, desc="  Processing nodes"):
             region = None
             sector = None
 
@@ -402,15 +422,15 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
 
     else:
         # path argument exist
-        if path and (parameter_list is None and default_list is None):
-            p_list = _open_file(path)
+        if parameter_file and (parameter_list is None and default_list is None):
+            p_list = _open_file(parameter_file)
 
         # parameter_list argument exist
-        elif parameter_list and (default_list is None and path is None):
+        elif parameter_list and (default_list is None and parameter_file is None):
             p_list = parameter_list
 
         # default_list argument exist
-        elif default_list and (parameter_list is None and path is None):
+        elif default_list and (parameter_list is None and parameter_file is None):
             p_list = _slim_list(default_list)
 
         # Warning if there are more than 2 argument specified
@@ -419,8 +439,7 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
 
         all_logs = []
         total_parameter_list = _full_parameter_list(model)
-
-        for node in model.graph.nodes:
+        for node in tqdm(model.graph.nodes, desc="  Processing nodes"):
             region = None
             sector = None
 
@@ -428,8 +447,7 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
             for param_to_log in p_list:
                 # check if the input parameter exists.
                 if param_to_log not in total_parameter_list:
-                    message = f"parameter {param_to_log:} does not exist"
-                    warnings.warn(message)
+                    missing_params.add(param_to_log)
 
                 for param, val in model.graph.nodes[node].items():
                     if param == COL.region.lower():
@@ -457,6 +475,13 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
                             if param == param_to_log:
                                 log = node, region, sector, year, None, param, val
                                 add_log_item(all_logs, log)
+    # Issue warnings after progress bar completes
+    for param in sorted(missing_params):
+        warnings.warn(f"parameter {param} does not exist")
+    
+    if missing_params:
+        params_str = ", ".join(f"'{p}'" for p in sorted(missing_params))
+        print(f"\n  {len(missing_params)} parameter(s) not found: {params_str}")  
 
     # data_tuples = [log.tuple() for log in all_logs]
     log_df = pd.DataFrame(all_logs)
@@ -489,6 +514,9 @@ def log_model(model, output_file, parameter_list: list[str] = None, path: str = 
     log_df = log_df[columns]
 
     # Write to file
-    log_df.to_csv(output_file, index=False)
-
+    log_df.to_csv(output_path, index=False)
+    
+    timing = f" (completed in {time.time() - start:.2f}s)"
+    print(f"=== Logging complete: {timing} ===\n")
+        
     return log_df
