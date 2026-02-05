@@ -23,7 +23,7 @@ from . import visualize
 
 from .readers.scenario_reader import ScenarioReader
 from .readers.model_reader import ModelReader
-from .model_validation import ModelValidator
+from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
 
@@ -223,6 +223,11 @@ class Model:
         Build the model graph from the base and scenario descriptions and
         initialize model metadata/parameters.
         """
+        if (not self.validator.file_validation_ran) or self.validator.file_validation_errors:
+            raise ValidationError(
+                "validate_files() must be run successfully (no errors) before construct_graph()"
+            )
+
         start = time.time()
         print("\n=== Constructing model graph ===")
         
@@ -421,6 +426,11 @@ class Model:
 
         """
         start = time.time()
+
+        if (not self.validator.graph_validation_ran) or self.validator.graph_validation_errors:
+            raise ValidationError(
+                "validate_graph() must be run successfully (no errors) before run()"
+            )
 
         if self.status != "graph constructed" or self.graph.number_of_nodes() == 0:
             raise ValueError(
