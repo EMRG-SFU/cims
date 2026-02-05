@@ -225,7 +225,8 @@ class Model:
         """
         if (not self.validator.file_validation_ran) or self.validator.file_validation_errors:
             raise ValidationError(
-                "validate_files() must be run successfully (no errors) before construct_graph()"
+                "CIMS.Model.validate_files() must be run successfully (no errors) before "
+                "CIMS.Model.construct_graph()"
             )
 
         start = time.time()
@@ -429,7 +430,8 @@ class Model:
 
         if (not self.validator.graph_validation_ran) or self.validator.graph_validation_errors:
             raise ValidationError(
-                "validate_graph() must be run successfully (no errors) before run()"
+                "CIMS.Model.validate_graph() must be run successfully (no errors) before "
+                "CIMS.Model.run()"
             )
 
         if self.status != "graph constructed" or self.graph.number_of_nodes() == 0:
