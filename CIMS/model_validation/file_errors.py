@@ -411,3 +411,33 @@ def base_year_market_share_not_one(validator):
     concern_desc = "nodes whose base year market shares do not sum to 1"
 
     return nodes_with_bad_shares, concern_desc
+
+def no_structural_parent_node_exists(validator):
+    """
+    Identify non-root nodes whose structural parent is missing.
+    """
+    data = validator.model_df
+
+    # All defined branches in the model (base + scenario files)
+    branch_set = set(data[COL.branch].dropna().unique())
+    
+    missing_parent_nodes = []
+    for node in branch_set:
+        # Root never requires a parent
+        if node == validator.root_node:
+            continue
+
+        # Parent is everything before the final dot segment
+        parent = ".".join(node.split(".")[:-1])
+        if not parent:
+            # Top-level node with no parent segment (allowed)
+            continue
+
+        # Flag when the parent node is not defined anywhere in the model
+        if parent not in branch_set:
+            missing_parent_nodes.append((validator.branch2node_index_map[node], node))
+
+    # Keep output ordered by source line/index for readability
+    missing_parent_nodes.sort(key=lambda x: x[0])
+    concern_desc = "nodes are missing a structural parent node"
+    return missing_parent_nodes, concern_desc
