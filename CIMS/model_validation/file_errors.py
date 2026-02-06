@@ -429,12 +429,8 @@ def no_structural_parent_node_exists(validator):
 
         # Parent is everything before the final dot segment
         parent = ".".join(node.split(".")[:-1])
-        if not parent:
-            # Top-level node with no parent segment (allowed)
-            continue
-
-        # Flag when the parent node is not defined anywhere in the model
-        if parent not in branch_set:
+        # Flag when the parent node is missing or undefined (non-root only)
+        if not parent or parent not in branch_set:
             missing_parent_nodes.append((validator.branch2node_index_map[node], node))
 
     # Keep output ordered by source line/index for readability
