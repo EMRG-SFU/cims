@@ -40,7 +40,7 @@ def nodes_no_provided_service(validator):
     nodes = get_nodes(validator.model_df, validator.node_col)
     nodes_no_service = [(i, n) for i, n in nodes.items() if n not in providers.values]
 
-    concern_desc = "nodes are specified but have no 'Service Provided'"
+    concern_desc = "nodes are specified but have no 'Service Provide'"
     return nodes_no_service, concern_desc
 
 def nodes_requesting_self(validator):
@@ -286,7 +286,7 @@ def min_max_conflicts(validator):
 def new_nodes_in_scenario(validator):
     """
     Identify new nodes included in the scenario models (i.e. were not in the
-    base model) but which don't have a service provided parameter.
+    base model) but which don't have a service provide parameter.
     """
     if validator.scenario_files:
         # The model dataframes
@@ -299,7 +299,7 @@ def new_nodes_in_scenario(validator):
         declared_new_nodes = set(scenario_data[scenario_data[COL.parameter]==PARAM.service_provide]\
             [validator.node_col].dropna())
 
-        # Find new nodes which haven't been declared without a service provided line
+        # Find new nodes which haven't been declared without a service provide line
         new_nodes_in_scenario = list(scen_nodes\
                                     .difference(declared_new_nodes)\
                                     .difference(base_nodes))
@@ -308,7 +308,7 @@ def new_nodes_in_scenario(validator):
 
     # Create Warning information
     concern_desc = "nodes were included in scenario/model update files without \
-        a Service provided parameter"
+        a Service provide parameter"
 
     return new_nodes_in_scenario, concern_desc
 
@@ -335,7 +335,7 @@ def new_techs_in_scenario(validator):
                                 scen_declared_techs[[validator.node_col, COL.technology]]\
                                     .dropna().drop_duplicates().values])
 
-        # Find new nodes which haven't been declared without a service provided line
+        # Find new nodes which haven't been declared without a service provide line
         new_techs_in_scenario = list(scen_techs\
                                     .difference(declared_new_techs)\
                                     .difference(base_techs))
@@ -411,3 +411,53 @@ def base_year_market_share_not_one(validator):
     concern_desc = "nodes whose base year market shares do not sum to 1"
 
     return nodes_with_bad_shares, concern_desc
+
+def nodes_missing_service_provide(validator):
+    """
+    Identify nodes missing a Service Provide parameter.
+    """
+    data = validator.model_df
+
+    # Only node-level rows (exclude tech-level rows)
+    node_rows = data[data[COL.technology].isna()]
+
+    # All nodes defined in the model
+    nodes = set(data[validator.node_col].dropna().unique())
+
+    # Nodes with Service Provide
+    service_rows = node_rows[node_rows[COL.parameter] == PARAM.service_provide]
+    nodes_with_service = set(service_rows[validator.node_col].dropna().unique())
+
+    missing = []
+    for node in sorted(nodes):
+        if node not in nodes_with_service:
+            missing.append((validator.branch2node_index_map[node], node))
+
+    concern_desc = "nodes are missing a Service Provide parameter"
+    return missing, concern_desc
+
+def nodes_missing_competition(validator):
+    """
+    Identify nodes missing a Competition parameter row with a non-empty Context value.
+    """
+    data = validator.model_df
+
+    # Only node-level rows (exclude tech-level rows)
+    node_rows = data[data[COL.technology].isna()]
+
+    # All nodes defined in the model
+    nodes = set(data[validator.node_col].dropna().unique())
+
+    # Nodes with non-empty Competition values (found in context column)
+    competition_rows = node_rows[node_rows[COL.parameter] == PARAM.competition_type]
+    context_str = competition_rows[COL.context].astype(str).str.strip()
+    competition_rows = competition_rows[competition_rows[COL.context].notna() & context_str.ne("")]
+    nodes_with_competition = set(competition_rows[validator.node_col].dropna().unique())
+
+    missing = []
+    for node in sorted(nodes):
+        if node not in nodes_with_competition:
+            missing.append((validator.branch2node_index_map[node], node))
+
+    concern_desc = "nodes are missing a Competition parameter"
+    return missing, concern_desc

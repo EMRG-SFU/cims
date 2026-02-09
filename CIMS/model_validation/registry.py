@@ -225,6 +225,18 @@ REGISTRY.register("base_year_market_share_not_one", CheckSpec(
     severity=Severity.ERROR,
     argmap={}
 ))
+REGISTRY.register("nodes_missing_service_provide", CheckSpec(
+    fn=file_errors.nodes_missing_service_provide,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={}
+))
+REGISTRY.register("nodes_missing_competition", CheckSpec(
+    fn=file_errors.nodes_missing_competition,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={}
+))
 
             
 # ---- Warnings ----
