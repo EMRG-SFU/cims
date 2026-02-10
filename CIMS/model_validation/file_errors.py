@@ -15,8 +15,11 @@ def invalid_competition_type(validator):
     df = validator.model_df
     valid_competition_list = validator.competition_types
     
-    invalid_rows = df[(df[COL.parameter] == PARAM.competition_type) &
-                      (~df[COL.context].str.lower().isin(valid_competition_list))]
+    comp_rows = df[df[COL.parameter] == PARAM.competition_type]
+    context_str = comp_rows[COL.context].astype(str).str.strip().str.lower()
+    missing_context = comp_rows[COL.context].isna() | context_str.eq("")
+    invalid_context = missing_context | ~context_str.isin(valid_competition_list)
+    invalid_rows = comp_rows[invalid_context]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
 
     concern_desc = "nodes have an invalid 'Competition Type'"
@@ -442,7 +445,7 @@ def nodes_missing_service_provide(validator):
 
 def nodes_missing_competition(validator):
     """
-    Identify nodes missing a Competition parameter row with a non-empty Context value.
+    Identify nodes missing a Competition parameter row.
     """
     data = validator.model_df
 
@@ -452,10 +455,8 @@ def nodes_missing_competition(validator):
     # All nodes defined in the model
     nodes = set(data[validator.node_col].dropna().unique())
 
-    # Nodes with non-empty Competition values (found in context column)
+    # Nodes with Competition (any context value, including blank)
     competition_rows = node_rows[node_rows[COL.parameter] == PARAM.competition_type]
-    context_str = competition_rows[COL.context].astype(str).str.strip()
-    competition_rows = competition_rows[competition_rows[COL.context].notna() & context_str.ne("")]
     nodes_with_competition = set(competition_rows[validator.node_col].dropna().unique())
 
     missing = []
