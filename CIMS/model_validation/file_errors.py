@@ -35,20 +35,6 @@ def undefined_nodes(validator, providers, requested):
 
     return referenced_unspecified, concern_desc
 
-def nodes_no_provided_service(validator):
-    """
-    Identify any nodes which are specified but do not provide a service.
-    """
-    # Only count node-level service_provide rows (exclude tech-level rows)
-    providers = validator.model_df[
-        (validator.model_df[COL.parameter] == PARAM.service_provide) &
-        (validator.model_df[COL.technology].isna())
-    ][validator.node_col]
-    nodes = get_nodes(validator.model_df, validator.node_col)
-    nodes_no_service = [(i, n) for i, n in nodes.items() if n not in providers.values]
-
-    concern_desc = "nodes are specified but have no 'Service Provide'"
-    return nodes_no_service, concern_desc
 
 def nodes_requesting_self(validator):
     """
@@ -290,34 +276,6 @@ def min_max_conflicts(validator):
 
     return min_max_conflicts, concern_desc
 
-def new_nodes_in_scenario(validator):
-    """
-    Identify new nodes included in the scenario models (i.e. were not in the
-    base model) but which don't have a service provide parameter.
-    """
-    if validator.scenario_files:
-        # The model dataframes
-        base_data = validator._get_model_df(read_scenario_files=False)
-        scenario_data = validator._get_model_df(read_base_file=False)
-
-        # Find nodes from base and scenario files
-        base_nodes = set(base_data[validator.node_col].dropna())
-        scen_nodes = set(scenario_data[validator.node_col].dropna())
-        declared_new_nodes = set(scenario_data[scenario_data[COL.parameter]==PARAM.service_provide]\
-            [validator.node_col].dropna())
-
-        # Find new nodes which haven't been declared without a service provide line
-        new_nodes_in_scenario = list(scen_nodes\
-                                    .difference(declared_new_nodes)\
-                                    .difference(base_nodes))
-    else:
-        new_nodes_in_scenario = []
-
-    # Create Warning information
-    concern_desc = "nodes were included in scenario/model update files without \
-        a Service provide parameter"
-
-    return new_nodes_in_scenario, concern_desc
 
 def new_techs_in_scenario(validator):
     """
