@@ -225,6 +225,13 @@ REGISTRY.register("nodes_missing_competition", CheckSpec(
     severity=Severity.ERROR,
     argmap={}
 ))
+    
+REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
+    fn=file_errors.no_structural_parent_node_exists,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={}
+))
 
             
 # ---- Warnings ----
