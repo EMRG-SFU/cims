@@ -123,12 +123,6 @@ REGISTRY.register("invalid_competition_type", CheckSpec(
     severity=Severity.ERROR,
     argmap={},
 ))
-REGISTRY.register("nodes_no_provided_service", CheckSpec(
-    fn=file_errors.nodes_no_provided_service,
-    phase=Phase.FILE,
-    severity=Severity.ERROR,
-    argmap={}
-))
 REGISTRY.register("nodes_requesting_self", CheckSpec(
     fn=file_errors.nodes_requesting_self,
     phase=Phase.FILE,
@@ -203,12 +197,6 @@ REGISTRY.register("both_cop_p2000_defined", CheckSpec(
 ))
 REGISTRY.register("min_max_conflicts", CheckSpec(
     fn=file_errors.min_max_conflicts,
-    phase=Phase.FILE,
-    severity=Severity.ERROR,
-    argmap={}
-))
-REGISTRY.register("new_nodes_in_scenario", CheckSpec(
-    fn=file_errors.new_nodes_in_scenario,
     phase=Phase.FILE,
     severity=Severity.ERROR,
     argmap={}

@@ -36,7 +36,11 @@ def nodes_no_provided_service(validator):
     """
     Identify any nodes which are specified but do not provide a service.
     """
-    providers = get_providers(validator.model_df, node_col=validator.node_col)
+    # Only count node-level service_provide rows (exclude tech-level rows)
+    providers = validator.model_df[
+        (validator.model_df[COL.parameter] == PARAM.service_provide) &
+        (validator.model_df[COL.technology].isna())
+    ][validator.node_col]
     nodes = get_nodes(validator.model_df, validator.node_col)
     nodes_no_service = [(i, n) for i, n in nodes.items() if n not in providers.values]
 
