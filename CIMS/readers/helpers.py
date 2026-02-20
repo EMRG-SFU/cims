@@ -78,9 +78,13 @@ def collect_update_paths(
     if update_files:
         for dir_name, files in update_files.items():
             for file in files:
+                if file in list(summary):
+                    summaryKey = str(Path(dir_name) / file)
+                else:
+                    summaryKey = file
                 for reg in regions:
                     cur = Path(dir_name) / file / f"{file}_{reg}.csv"
-                    _add_path(cur, summary, file, reg, found, missing)
+                    _add_path(cur, summary, summaryKey, reg, found, missing)
 
     rows = _build_rows(summary, total_regions)
     return found, missing, rows
