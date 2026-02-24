@@ -22,7 +22,7 @@ dependencies = [
     'numpy',
     'polars',
     'pyarrow',
-    'pandas>=1.2',
+    'pandas==2.3.3',
     'xlrd',
     'pyxlsb',
     'scipy',
