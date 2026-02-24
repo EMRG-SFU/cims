@@ -15,8 +15,11 @@ def invalid_competition_type(validator):
     df = validator.model_df
     valid_competition_list = validator.competition_types
     
-    invalid_rows = df[(df[COL.parameter] == PARAM.competition_type) &
-                      (~df[COL.context].str.lower().isin(valid_competition_list))]
+    comp_rows = df[df[COL.parameter] == PARAM.competition_type]
+    context_str = comp_rows[COL.context].astype(str).str.strip().str.lower()
+    missing_context = comp_rows[COL.context].isna() | context_str.eq("")
+    invalid_context = missing_context | ~context_str.isin(valid_competition_list)
+    invalid_rows = comp_rows[invalid_context]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
 
     concern_desc = "nodes have an invalid 'Competition Type'"
@@ -32,16 +35,6 @@ def undefined_nodes(validator, providers, requested):
 
     return referenced_unspecified, concern_desc
 
-def nodes_no_provided_service(validator):
-    """
-    Identify any nodes which are specified but do not provide a service.
-    """
-    providers = get_providers(validator.model_df, node_col=validator.node_col)
-    nodes = get_nodes(validator.model_df, validator.node_col)
-    nodes_no_service = [(i, n) for i, n in nodes.items() if n not in providers.values]
-
-    concern_desc = "nodes are specified but have no 'Service Provided'"
-    return nodes_no_service, concern_desc
 
 def nodes_requesting_self(validator):
     """
@@ -283,34 +276,6 @@ def min_max_conflicts(validator):
 
     return min_max_conflicts, concern_desc
 
-def new_nodes_in_scenario(validator):
-    """
-    Identify new nodes included in the scenario models (i.e. were not in the
-    base model) but which don't have a service provided parameter.
-    """
-    if validator.scenario_files:
-        # The model dataframes
-        base_data = validator._get_model_df(read_scenario_files=False)
-        scenario_data = validator._get_model_df(read_base_file=False)
-
-        # Find nodes from base and scenario files
-        base_nodes = set(base_data[validator.node_col].dropna())
-        scen_nodes = set(scenario_data[validator.node_col].dropna())
-        declared_new_nodes = set(scenario_data[scenario_data[COL.parameter]==PARAM.service_provide]\
-            [validator.node_col].dropna())
-
-        # Find new nodes which haven't been declared without a service provided line
-        new_nodes_in_scenario = list(scen_nodes\
-                                    .difference(declared_new_nodes)\
-                                    .difference(base_nodes))
-    else:
-        new_nodes_in_scenario = []
-
-    # Create Warning information
-    concern_desc = "nodes were included in scenario/model update files without \
-        a Service provided parameter"
-
-    return new_nodes_in_scenario, concern_desc
 
 def new_techs_in_scenario(validator):
     """
@@ -335,7 +300,7 @@ def new_techs_in_scenario(validator):
                                 scen_declared_techs[[validator.node_col, COL.technology]]\
                                     .dropna().drop_duplicates().values])
 
-        # Find new nodes which haven't been declared without a service provided line
+        # Find new nodes which haven't been declared without a service provide line
         new_techs_in_scenario = list(scen_techs\
                                     .difference(declared_new_techs)\
                                     .difference(base_techs))
@@ -411,6 +376,54 @@ def base_year_market_share_not_one(validator):
     concern_desc = "nodes whose base year market shares do not sum to 1"
 
     return nodes_with_bad_shares, concern_desc
+
+def nodes_missing_service_provide(validator):
+    """
+    Identify nodes missing a Service Provide parameter.
+    """
+    data = validator.model_df
+
+    # Only node-level rows (exclude tech-level rows)
+    node_rows = data[data[COL.technology].isna()]
+
+    # All nodes defined in the model
+    nodes = set(data[validator.node_col].dropna().unique())
+
+    # Nodes with Service Provide
+    service_rows = node_rows[node_rows[COL.parameter] == PARAM.service_provide]
+    nodes_with_service = set(service_rows[validator.node_col].dropna().unique())
+
+    missing = []
+    for node in sorted(nodes):
+        if node not in nodes_with_service:
+            missing.append((validator.branch2node_index_map[node], node))
+
+    concern_desc = "nodes are missing a Service Provide parameter"
+    return missing, concern_desc
+
+def nodes_missing_competition(validator):
+    """
+    Identify nodes missing a Competition parameter row.
+    """
+    data = validator.model_df
+
+    # Only node-level rows (exclude tech-level rows)
+    node_rows = data[data[COL.technology].isna()]
+
+    # All nodes defined in the model
+    nodes = set(data[validator.node_col].dropna().unique())
+
+    # Nodes with Competition (any context value, including blank)
+    competition_rows = node_rows[node_rows[COL.parameter] == PARAM.competition_type]
+    nodes_with_competition = set(competition_rows[validator.node_col].dropna().unique())
+
+    missing = []
+    for node in sorted(nodes):
+        if node not in nodes_with_competition:
+            missing.append((validator.branch2node_index_map[node], node))
+
+    concern_desc = "nodes are missing a Competition parameter"
+    return missing, concern_desc
 
 def no_structural_parent_node_exists(validator):
     """
