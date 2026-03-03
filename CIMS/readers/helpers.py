@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections import defaultdict, Counter
 from pathlib import Path
 from typing import Iterable, Mapping, List, Tuple
 from tabulate import tabulate
@@ -24,16 +24,28 @@ def _build_rows(summary: dict, total_regions: int) -> List[dict]:
 
 
 def _print_combined_summary(rows):
-    """Print a single table for base and update files, preserving row order and indenting output."""
+    """Print summary grouped by directory: base files first, then update files by directory."""
     if not rows:
         print("    No files found")
         return
 
+    # Format all rows together so column widths are consistent across groups
     table = [[r[COL_NAME], r[COL_LOADED_TOTAL], r[COL_LOADED], r[COL_NOT_FOUND]] for r in rows]
-    table_str = tabulate(table, headers=[COL_NAME, COL_LOADED_TOTAL, COL_LOADED, COL_NOT_FOUND], tablefmt="plain")
-    indented = "\n".join(f"    {line}" for line in table_str.splitlines())
+    lines = tabulate(table, headers=[COL_NAME, COL_LOADED_TOTAL, COL_LOADED, COL_NOT_FOUND], tablefmt="plain").splitlines()
+    header, data_lines = lines[0], lines[1:]
 
-    print(indented)
+    print(f"      {header}")
+
+    by_dir = {}
+    for i, row in enumerate(rows):
+        d = row.get("dir")
+        by_dir.setdefault(d, []).append(i)
+
+    for d, indices in by_dir.items():
+        if d:
+            print(f"    {d}/")
+        for i in indices:
+            print(f"      {data_lines[i]}")
 
 
 def _add_path(cur: Path, summary: dict, key: str, reg: str, found: List[str], missing: List[str]) -> None:
@@ -75,14 +87,23 @@ def collect_update_paths(
     summary = defaultdict(lambda: {"loaded_regions": set(), "missing_regions": set()})
     total_regions = len(regions)
 
+    key_to_dir = {}
     if update_files:
-        for dir_name, files in update_files.items():
-            for file in files:
-                for reg in regions:
-                    cur = Path(dir_name) / file / f"{file}_{reg}.csv"
-                    _add_path(cur, summary, file, reg, found, missing)
+        all_entries = [(d, f) for d, files in update_files.items() for f in files]
+        duplicates = {f for f, n in Counter(f for _, f in all_entries).items() if n > 1}
+        for dir_name, file in all_entries:
+            summary_key = str(Path(dir_name) / file) if file in duplicates else file
+            key_to_dir[summary_key] = dir_name
+            for reg in regions:
+                cur = Path(dir_name) / file / f"{file}_{reg}.csv"
+                _add_path(cur, summary, summary_key, reg, found, missing)
 
     rows = _build_rows(summary, total_regions)
+    for row in rows:
+        d = key_to_dir.get(row[COL_NAME])
+        row["dir"] = d
+        if d:
+            row[COL_NAME] = Path(row[COL_NAME]).name
     return found, missing, rows
 
 

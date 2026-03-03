@@ -42,6 +42,8 @@ class ScenarioReader(ModelReader):
             except ValueError:
                 print(f"Warning: Unable to parse scenario csv_path at {csv_file}. Skipping.")
 
+        if not appended_data:
+            return pd.DataFrame(columns=[COL.branch, COL.region, COL.sector, COL.technology, COL.parameter])
         model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
         model_df.index += 3  # Adjust index to correspond to Excel line numbers
         # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
