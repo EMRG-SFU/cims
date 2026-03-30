@@ -36,6 +36,9 @@ dependencies = [
     ]
 dynamic = ["version"]
 
+[project.optional-dependencies]
+notebooks = ['marimo']
+
 [project.urls]
 Repository = "https://github.com/EMRG-SFU/cims"
 "Model Repository" = "https://github.com/EMRG-SFU/cims-models/"

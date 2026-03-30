@@ -1,53 +1,86 @@
-# Getting Started with the CIMS Python Package
-Welcome to the CIMS Python package repository! This guide will help you get started with the CIMS package, which is used for economic climate modeling.
+# Getting Started with CIMS
 
-## Overview
-This repository contains the source code for the CIMS Python package. If you are looking to run economic climate models using this package, please refer to the [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository for detailed instructions and model specification files.
+Welcome to the CIMS repository! This guide will help you set up and run the CIMS Python package for energy-economy modelling.
 
-## Getting Started
+## Prerequisites
 
-To get started with the CIMS Python package, follow these steps:
+Before you begin, ensure you have the following installed:
 
-1. **Visit the cims-models Repository**:
-   - For comprehensive instructions on setting up and running models using CIMS, please visit the [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository.
-   - The [`cims-models`](https://github.com/EMRG-SFU/cims-models/) repository contains all the necessary model specification files and Jupyter notebooks to help you run the economic climate models.
+- **uv**: A Python package and environment manager. Install it with one command — no separate Python installation required.
+  - Mac/Linux:
+    ```bash
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+  - Windows (PowerShell):
+    ```powershell
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.sh | iex"
+    ```
+- **Git**: Used to clone the repository. Follow the [installation instructions](https://github.com/git-guides/install-git) for your operating system.
+- **Terminal or Command Prompt**:
+  - Windows: Git Bash or PowerShell
+  - macOS/Linux: Terminal
 
-2. **Source Code**:
-   - This repository contains the source code for the CIMS Python package. You can browse the code, understand its structure, and see how it implements various functionalities.
+## Setup
 
-## Contributing
+### 1. Clone the Repository
 
-We welcome contributions from the community! If you would like to contribute to the CIMS Python package, please follow these steps:
+Open your terminal and navigate to the directory where you want to work:
 
-1. **Fork the Repository**:
-   - Click the "Fork" button at the top right of this page to create a copy of this repository under your GitHub account.
+```bash
+cd ~/Documents/projects/
+```
 
-2. **Clone Your Fork**:
-   - Clone your forked repository to your local machine using the following command:
-     ```bash
-     git clone https://github.com/your-username/cims.git
-     ```
+Clone the repository:
 
-3. **Create a Branch**:
-   - Create a new branch for your changes:
-     ```bash
-     git checkout -b your-branch-name
-     ```
+```bash
+git clone https://github.com/EMRG-SFU/cims.git
+cd cims
+```
 
-4. **Make Changes**:
-   - Make your changes to the codebase. Ensure your changes are well-documented and tested.
+### 2. Install Dependencies
 
-5. **Commit and Push**:
-   - Commit your changes and push them to your forked repository:
-     ```bash
-     git add .
-     git commit -m "Description of your changes"
-     git push origin your-branch-name
-     ```
+From the `cims` directory, run:
 
-6. **Create a Pull Request**:
-   - Go to the original repository and click on the "New Pull Request" button. Follow the instructions to create a pull request for your changes.
+```bash
+uv sync --extra notebooks
+```
 
-## Support
+This will automatically select a compatible Python version, create a virtual environment, and install all dependencies. You only need to do this once, or again when dependencies are updated.
 
-If you encounter any issues or have questions, please submit an issue on our GitHub Issues page.
+### 3. Launch Marimo
+
+```bash
+uv run marimo edit
+```
+
+Marimo will open in your default browser. From there you can open, run, and edit notebooks.
+
+## Common Workflows
+
+| I want to... | Command |
+|---|---|
+| Set up or update my environment | `uv sync --extra notebooks` |
+| Launch Marimo | `uv run marimo edit` |
+| Run a Python script | `uv run python my_script.py` |
+| Open a Python shell | `uv run python` |
+| Use a specific Python version | `uv sync --python 3.12 --extra notebooks` |
+
+## Subsequent Runs
+
+To re-launch Marimo in future sessions, simply run from the `cims` directory:
+
+```bash
+uv run marimo edit
+```
+
+uv will use your existing environment and skip reinstalling dependencies unless something has changed.
+
+## Troubleshooting
+
+- **uv not found after install**: Restart your terminal session so the `uv` command is available on your PATH.
+- **Dependency conflicts**: Run `uv sync --extra notebooks` again to bring your environment up to date with the latest `pyproject.toml`.
+
+## Additional Resources
+
+- **Submit Issues**: If you encounter any problems, please submit an issue on our [GitHub Issues page](https://github.com/EMRG-SFU/cims/issues).
+- **Data Pipeline**: See [`data/README.md`](../data/README.md) for information on the data pipeline and directory structure.
