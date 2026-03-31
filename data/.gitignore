@@ -3,19 +3,9 @@ raw_data/*
 !raw_data/.gitkeep
 
 # Generated outputs — do not commit
-processed_data/energy_prices/*
-!processed_data/energy_prices/.gitkeep
-
-processed_data/nrcan/*
-!processed_data/nrcan/.gitkeep
-
-# Calibration outputs — do not commit
-calibration/residential/*
-!calibration/residential/.gitkeep
-
-# Model input outputs — do not commit
-model_inputs/residential/*
-!model_inputs/residential/.gitkeep
+processed_data/**/*.csv
+calibration/**/*.csv
+model_inputs/**/*.csv
 
 # Python cache
 __pycache__/

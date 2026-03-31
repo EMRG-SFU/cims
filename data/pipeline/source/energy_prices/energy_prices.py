@@ -25,22 +25,20 @@ if str(_project_root) not in sys.path:
 from utils.controls_conversions import (
     load_macro_indicators,
     convert_currency,
+    load_energy_conversions,
+    load_control_config,
+    load_energy_mapping,
 )
 from utils.extensions.dataframe_data_extensions import (
-    backfill_extend,
+    backfill_constant,
+    extend_constant,
     interpolate_5year_to_annual,
 )
 
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
-MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
-CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
-ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
-REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
-SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
-CONVERSIONS_FILE = MAPPINGS_PATH / 'energy_conversions.csv'
-MACRO_FILE = BASE_PATH / 'raw_data/cer_macro_indicators/macro-indicators-2026.csv'
+MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
 BENCHMARK_FILE = BASE_PATH / 'raw_data/energy_prices/cer/benchmark-prices-2023.csv'
 END_USE_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-prices-2026.csv'
 END_USE_DEMAND_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-demand-2023.csv'
@@ -99,8 +97,10 @@ def process_cer_benchmark_energy(
         (pl.col('Scenario') == scenario) &
         (pl.col('Variable') == variable_name)
     )
-    data_pd = data.to_pandas()
-    prices = data_pd.set_index('Year')['Value']
+    # Extract year and value as plain lists — avoids pyarrow dependency of to_pandas()
+    years  = data.get_column('Year').cast(pl.Int64).to_list()
+    values = data.get_column('Value').cast(pl.Float64).to_list()
+    prices = pd.Series(values, index=years, dtype=float)
 
     prices_cad_gj = convert_currency(
         prices,
@@ -112,7 +112,8 @@ def process_cer_benchmark_energy(
         constant_dollars=True,
     )
     prices_cad_gj = prices_cad_gj * gj_conversion
-    prices_full = backfill_extend(prices_cad_gj, 2000, 2100)
+    prices_full = backfill_constant(prices_cad_gj, 2000)
+    prices_full = extend_constant(prices_full, 2100)
 
     return prices_full
 
@@ -151,7 +152,8 @@ def process_end_use_weighted_avg(
     prices = weighted_average_by_province(
         prices_df, demand_df, scenario, sector, energy_price, energy_demand
     )
-    prices_full = backfill_extend(prices, 2000, 2100)
+    prices_full = backfill_constant(prices, 2000)
+    prices_full = extend_constant(prices_full, 2100)
 
     return prices_full
 
@@ -208,7 +210,8 @@ def process_jcims_energy(
         constant_dollars=True,
     )
     prices_annual = interpolate_5year_to_annual(prices_2025)
-    prices_full = backfill_extend(prices_annual, 2000, 2100)
+    prices_full = backfill_constant(prices_annual, 2000)
+    prices_full = extend_constant(prices_full, 2100)
 
     return prices_full
 
@@ -281,7 +284,8 @@ def process_electricity_regional(
             prices_dict[year] = value
 
     prices = pd.Series(prices_dict)
-    prices_full = backfill_extend(prices, 2000, 2100)
+    prices_full = backfill_constant(prices, 2000)
+    prices_full = extend_constant(prices_full, 2100)
 
     return prices_full
 
@@ -334,8 +338,8 @@ def process_hydrogen_regional(
         constant_dollars=True,
     )
     prices_annual = interpolate_5year_to_annual(prices_2025)
-    prices_full = backfill_extend(prices_annual, 2000, 2100)
-
+    prices_full = backfill_constant(prices_annual, 2000)
+    prices_full = extend_constant(prices_full, 2100)
     return prices_full
 
 
@@ -419,7 +423,8 @@ def process_afdc_energy(
     prices_gj = prices_2025_cad_gal / gj_per_gal
 
     start_year = 2000 if backfill_to_2000 else int(prices_gj.index.min())
-    prices_full = backfill_extend(prices_gj, start_year, 2100)
+    prices_full = backfill_constant(prices_gj, start_year)
+    prices_full = extend_constant(prices_full, 2100)
 
     return prices_full
 
@@ -492,107 +497,15 @@ def weighted_average_by_province(
         (pl.col('weighted_price') / pl.col('Sum of Demand')).alias('price')
     ]).select(['Year', 'price']).sort('Year')
 
-    return weighted_avg.to_pandas().set_index('Year')['price']
+    # Extract as plain lists — avoids pyarrow dependency of to_pandas()
+    years  = weighted_avg.get_column('Year').cast(pl.Int64).to_list()
+    prices = weighted_avg.get_column('price').cast(pl.Float64).to_list()
+    return pd.Series(prices, index=years, dtype=float)
 
 
 # ============================================================================
 # MAIN PROCESSING FUNCTIONS
 # ============================================================================
-
-def load_control_config() -> Dict:
-    """
-    Load control settings from the CONTROLS dict in control.py.
-
-    Returns
-    -------
-    dict
-        Control key/value pairs (e.g. currency years, scenario name).
-    """
-    import importlib.util
-    spec = importlib.util.spec_from_file_location('control', CONTROL_FILE)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod.CONTROLS
-
-
-def load_energy_conversions() -> Dict:
-    """
-    Load energy conversion factors from energy_conversions.csv.
-
-    Parses the 'Approximate Energy Content' section for GJ-per-m³ values
-    and the general volume/energy rows for unit-to-unit scalars used by
-    the pipeline (bbl_to_m3, mmbtu_to_gj, and per-fuel gj_per_m3 keys).
-
-    Returns
-    -------
-    dict
-        Flat dict of conversion factor keys to float values.
-    """
-    df = pd.read_csv(CONVERSIONS_FILE, header=None, dtype=str)
-
-    # --- Parse 'Approximate Energy Content' section --------------------------
-    # Find the header row for that section
-    content_start = None
-    for i, row in df.iterrows():
-        if str(row.iloc[0]).strip() == 'Approximate Energy Content':
-            content_start = i + 1   # next row is column headers
-            break
-
-    gj_per_m3: Dict[str, float] = {}
-    if content_start is not None:
-        for i in range(content_start + 1, len(df)):
-            row = df.iloc[i]
-            energy_name = str(row.iloc[0]).strip()
-            unit        = str(row.iloc[1]).strip()
-            equiv       = str(row.iloc[2]).strip()
-            if not energy_name or energy_name in ('nan', ''):
-                break
-            # Only capture rows whose unit is "1.0 Cubic metres (m³)" → GJ
-            if 'Cubic metres' in unit and 'Gigajoules' in equiv:
-                try:
-                    gj_val = float(equiv.split()[0].replace(',', ''))
-                    gj_per_m3[energy_name.lower()] = gj_val
-                except ValueError:
-                    pass
-
-    # --- Known scalar conversions (from the volume/energy rows) --------------
-    # 1 bbl = 0.159 m³  →  bbl_to_m3 = 0.159
-    # 1 MMBtu = 1.0551 GJ  →  mmbtu_to_gj = 1.0551
-    scalars = {
-        'bbl_to_m3':   0.159,
-        'mmbtu_to_gj': 1.0551,
-    }
-
-    # Map energy names in the CSV to the keys expected by the pipeline
-    name_to_key = {
-        'petrochemical feedstock': 'petrochemical_feedstock_gj_per_m3',
-        'naphtha specialties':     'naphtha_specialties_gj_per_m3',
-        'asphalt':                 'asphalt_gj_per_m3',
-        'lubes and greases':       'lubricants_gj_per_m3',
-        'other products':          'other_non_energy_products_gj_per_m3',
-        'ethanol':                 'ethanol_gj_per_m3',
-        'biodiesel':               'biodiesel_gj_per_m3',
-        'renewable diesel':        'renewable_diesel_gj_per_m3',
-    }
-
-    for csv_name, key in name_to_key.items():
-        if csv_name in gj_per_m3:
-            scalars[key] = gj_per_m3[csv_name]
-
-    return scalars
-
-
-def load_energy_mapping() -> pd.DataFrame:
-    """
-    Load the CIMS↔JCIMS↔CER energy mapping from energy_map.csv.
-
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame with columns: CIMS, JCIMS, CER Prices.
-    """
-    return pd.read_csv(ENERGY_MAP_FILE)
-
 
 def load_all_data() -> Dict:
     """
@@ -696,7 +609,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - 2022 US$/bbl',
         'bbl',
-        conversions['bbl_to_m3'] / conversions['petrochemical_feedstock_gj_per_m3'],
+        1/(conversions['bbl_to_m3'] * conversions['petrochemical_feedstock_gj_per_m3']),
         from_year, from_currency,
     )
     results.append(('Petrochemical Feedstock', 'generic', petro_prices))
@@ -706,7 +619,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - 2022 US$/bbl',
         'bbl',
-        conversions['bbl_to_m3'] / conversions['naphtha_specialties_gj_per_m3'],
+        1/(conversions['bbl_to_m3'] * conversions['naphtha_specialties_gj_per_m3']),
         from_year, from_currency,
     )
     results.append(('Naphtha Specialties', 'generic', naphtha_prices))
@@ -716,7 +629,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - 2022 US$/bbl',
         'bbl',
-        conversions['bbl_to_m3'] / conversions['asphalt_gj_per_m3'],
+        1/(conversions['bbl_to_m3'] * conversions['asphalt_gj_per_m3']),
         from_year, from_currency,
     )
     results.append(('Asphalt', 'generic', asphalt_prices))
@@ -726,7 +639,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - 2022 US$/bbl',
         'bbl',
-        conversions['bbl_to_m3'] / conversions['lubricants_gj_per_m3'],
+        1/(conversions['bbl_to_m3'] * conversions['lubricants_gj_per_m3']),
         from_year, from_currency,
     )
     results.append(('Lubricants', 'generic', lube_prices))
@@ -736,7 +649,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - 2022 US$/bbl',
         'bbl',
-        conversions['bbl_to_m3'] / conversions['other_non_energy_products_gj_per_m3'],
+        1/(conversions['bbl_to_m3'] * conversions['other_non_energy_products_gj_per_m3']),
         from_year, from_currency,
     )
     results.append(('Other Non-Energy Products', 'generic', other_prices))
@@ -783,7 +696,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         'Coke': 'Coke',
         'Jet Fuel': 'Jet Fuel',
         'LPG': 'LPG',
-        'NGL': 'Propane',
+        'Propane': 'Propane',
         'Refinery Fuel Gas': 'Refinery Fuel Gas',
         'Solid Biomass': 'Solid Biomass',
         'Uranium': 'Uranium',
@@ -795,6 +708,13 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         print(f"Processing {cims_energy}...")
         prices = process_jcims_energy(jcims_prod, macro_df, jcims_energy)
         results.append((cims_energy, 'generic', prices))
+    
+    # --- Add Ethane and Butane using Propane prices ---
+    propane_prices = process_jcims_energy(jcims_prod, macro_df, 'Propane')
+
+    for fuel in ['Ethane', 'Butane']:
+        print(f"Processing {fuel} (using Propane prices)...")
+        results.append((fuel, 'generic', propane_prices))
 
     print("Processing SAF...")
     jet_prices = [r[2] for r in results if r[0] == 'Jet Fuel'][0]

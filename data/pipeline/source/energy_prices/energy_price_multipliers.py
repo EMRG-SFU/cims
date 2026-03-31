@@ -28,8 +28,9 @@ from utils.controls_conversions import (
     load_macro_indicators,
     convert_currency,
 )
-from utils.extensions.dataframe_data_extensions import (
-    backfill_extend,
+from utils.extensions.data_extensions import (
+    backfill_constant,
+    extend_constant,
     interpolate_5year_to_annual,
 )
 from energy_prices import main as get_production_costs
@@ -42,7 +43,7 @@ CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
-MACRO_FILE = BASE_PATH / 'raw_data/cer_macro_indicators/macro-indicators-2026.csv'
+MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
 END_USE_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-prices-2026.csv'
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
@@ -295,8 +296,15 @@ def calculate_end_use_energy_multipliers(
         'Natural Gas': 'Natural Gas',
     }
 
-    end_use_pd = end_use_prices.to_pandas()
-    end_use_pd = end_use_pd[end_use_pd['Scenario'] == scenario]
+    # Filter to scenario in Polars, then extract rows as plain Python dicts
+    # using .to_struct().to_list() — no pyarrow needed.
+    end_use_rows = (
+        end_use_prices
+        .filter(pl.col('Scenario') == scenario)
+        .select(['Year', 'Area', 'Sector', 'Fuel', 'Sum of Price'])
+        .to_struct(name='r')
+        .to_list()
+    )
 
     sector_groups: Dict[str, str] = {}
     for _, row in sectors_df.iterrows():
@@ -308,15 +316,14 @@ def calculate_end_use_energy_multipliers(
     base_multipliers: Dict[Tuple, float] = {}
 
     for fuel_name in energy_mapping.keys():
-        end_use_fuel = end_use_pd[end_use_pd['Fuel'] == fuel_name]
-        if len(end_use_fuel) == 0:
-            continue
+        for price_row in end_use_rows:
+            if price_row['Fuel'] != fuel_name:
+                continue
 
-        for _, price_row in end_use_fuel.iterrows():
-            year = price_row['Year']
-            cer_region = price_row['Area']
-            cer_sector = price_row['Sector']
-            end_use_price = price_row['Sum of Price']
+            year           = price_row['Year']
+            cer_region     = price_row['Area']
+            cer_sector     = price_row['Sector']
+            end_use_price  = price_row['Sum of Price']
 
             if cer_region == 'Canada':
                 continue
@@ -352,7 +359,8 @@ def calculate_end_use_energy_multipliers(
     extended_base_multipliers: Dict[Tuple, float] = {}
     for (region, sector, energy), year_mults in grouped.items():
         mult_series = pd.Series(year_mults)
-        extended_series = backfill_extend(mult_series, 2000, 2100)
+        extended_series = backfill_constant(mult_series, 2000)
+        extended_series = extend_constant(extended_series, 2100)
         for year, mult in extended_series.items():
             if pd.notna(mult):
                 extended_base_multipliers[(region, sector, energy, int(year))] = mult
@@ -617,7 +625,7 @@ def calculate_jcims_multipliers(
             if key in base_multipliers:
                 return base_multipliers[key]
 
-        if fuel in ['NGL', 'Petroleum Coke', 'Uranium', 'Waste']:
+        if fuel in ['Propane', 'Petroleum Coke', 'Uranium', 'Waste', 'Coke']:
             return 1.0
 
         return None
@@ -665,7 +673,8 @@ def calculate_jcims_multipliers(
     for (region, sector, energy), group in df.groupby(['region', 'sector', 'energy']):
         multipliers_series = group.set_index('year')['multiplier'].sort_index()
         annual_mult = interpolate_5year_to_annual(multipliers_series)
-        extended_mult = backfill_extend(annual_mult, 2000, 2100)
+        extended_mult = backfill_constant(annual_mult, 2000)
+        extended_mult = extend_constant(extended_mult, 2100)
 
         for year, mult in extended_mult.items():
             if pd.notna(mult):
@@ -717,6 +726,8 @@ def apply_derivative_multipliers(
         'Ethanol': 'Gasoline',
         'Renewable Gasoline': 'Gasoline',
         'SAF': 'Jet Fuel',
+        'Ethane': 'Propane',
+        'Butane': 'Propane'
     }
 
     rows = []

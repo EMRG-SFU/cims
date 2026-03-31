@@ -3,29 +3,32 @@ Extract residential calibration data and save to CIMS-formatted CSV files.
 
 This script:
 1. Extracts data for ALL provinces/territories
-2. ALWAYS applies projections from residential_projection_params.json
+2. ALWAYS applies projections from residential_assumptions.csv
 3. Exports to CIMS-formatted CSV files
 
-Output columns: Branch, Type, Region, Sector, Service, Technology, Parameter, 
+Output columns: Branch, Type, Region, Sector, Service, Technology, Parameter,
                 Context, Sub_Context, Target, Source, Unit, Year, Value
 
 The following data is extracted:
-- Housing stock (thousands of households)
+- Housing stock (households)
 - Building shares by type (Single Detached, Single Attached, Apartments, Mobile Homes)
 - Floorspace per building
 - Appliances per household
-- Vintage bins (building age distributions) - LowMed and High density
-- Heating technologies - Cold climate (all provinces), Marine climate (BC only)
+- Vintage bins (building age distributions) — LowMed and High density
+- Heating technologies — Cold climate (all provinces), Marine climate (BC only)
   NOTE: BC exports BOTH Marine AND Cold climate heating data
 - Cooling technologies (Room and Central)
-- Water heating technologies
+- Water heating service request and technologies
 
-All percentage values are converted from 0-100 scale to 0-1 scale (fractions).
-
+All percentage values are on 0-1 scale (fractions) as produced by the pipeline.
 """
-# Robust path setup using __file__
+
 import sys
+import argparse
 from pathlib import Path
+
+import polars as pl
+import pandas as pd
 
 _current_file = Path(__file__)
 _project_root = _current_file.parent.parent.parent
@@ -33,357 +36,295 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from source.nrcan.ceud.residential.residential import extract_all_data, PROVINCES
-import pandas as pd
-from pathlib import Path
-import argparse
 
 
-def format_to_cims(data, output_file, province_code):
+# ==============================================================================
+# HELPERS
+# ==============================================================================
+
+def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
     """
-    Convert extracted data to CIMS-formatted CSV.
-    
+    Extract {year: value} from a long-format Polars DataFrame for one
+    variable/category combination.  Uses .to_list() on numeric-only columns
+    so pyarrow is never required.
+
     Parameters
     ----------
-    data : dict
-        Extracted data from extract_all_data()
-    output_file : str
-        Path to output CSV file
-    province_code : str
-        Province code
-        
+    df : pl.DataFrame
+        Province-level long-format DataFrame from extract_all_data().
+    variable : str
+    category : str
+        Empty string for scalar variables (e.g. housing_thousand).
+
     Returns
     -------
-    str
-        Path to the saved CSV file
+    dict  {int year: float value}  — empty dict if nothing matches.
     """
-    # Retrieve extracted data
-    housing_thousand = data.get('housing_thousand', {})
-    building_shares = data.get('building_shares', {})
-    floorspace_per_building = data.get('floorspace_per_building', {})
-    appliances_per_household = data.get('appliances_per_household', {})
-    vintage_bins_lowmed = data.get('vintage_bins_lowmed', [])
-    vintage_bins_high = data.get('vintage_bins_high', [])
-    cooling_share_data = data.get('cooling_share_data', {})
-    wh_lowmed = data.get('wh_lowmed', {})
-    wh_high = data.get('wh_high', {})
-    wh_tech_lowmed = data.get('wh_tech_lowmed', {})
-    wh_tech_high = data.get('wh_tech_high', {})
-    
-    # Check if BC for marine climate data
-    is_bc = (province_code.upper() == 'BC')
-    
-    # Get heating data based on province
-    if is_bc:
-        # BC exports BOTH marine and cold climate
-        heating_lowmed_marine = data.get('heating_lowmed_marine', {})
-        heating_high_marine = data.get('heating_high_marine', {})
-        heating_lowmed_cold = data.get('heating_lowmed_cold', {})
-        heating_high_cold = data.get('heating_high_cold', {})
-    else:
-        # Other provinces only have cold
-        heating_lowmed_cold = data.get('heating_lowmed_cold', {})
-        heating_high_cold = data.get('heating_high_cold', {})
-    
-    rows = []
-    
-    def make_row(meta, year_dict, scale=1.0):
-        """
-        Helper to create rows with year-value pairs.
-        
-        Note: The extraction pipeline already converts percentages to fractions (0-1 scale),
-        so most data uses scale=1.0. Only housing_thousand uses scale=1000.0 to convert
-        from thousands to actual household count.
-        """
+    mask = pl.col('variable') == variable
+    if category:
+        mask = mask & (pl.col('category') == category)
+    subset = df.filter(mask)
+    if len(subset) == 0:
+        return {}
+    years  = subset.get_column('year').cast(pl.Int64).to_list()
+    values = subset.get_column('value').cast(pl.Float64).to_list()
+    return {int(y): float(v) for y, v in zip(years, values) if v is not None}
+
+
+def _get_categories(df: pl.DataFrame, variable: str) -> list[str]:
+    """Return sorted list of unique category values for a given variable."""
+    subset = df.filter(pl.col('variable') == variable)
+    return sorted(subset.get_column('category').unique().to_list())
+
+
+# ==============================================================================
+# CIMS FORMATTER
+# ==============================================================================
+
+def format_to_cims(df: pl.DataFrame, output_file: str | Path,
+                   province_code: str) -> str:
+    """
+    Convert a province's long-format Polars DataFrame to a CIMS-formatted CSV.
+
+    Parameters
+    ----------
+    df : pl.DataFrame
+        Output of extract_all_data() for one province.
+    output_file : str or Path
+    province_code : str
+
+    Returns
+    -------
+    str  Path to the saved CSV file.
+    """
+    prov  = province_code.upper()
+    is_bc = prov == 'BC'
+    rows: list[dict] = []
+
+    def make_row(meta: dict, year_dict: dict, scale: float = 1.0) -> list[dict]:
+        """Build one CIMS output row per year from a {year: value} dict."""
         result = []
         for year, value in year_dict.items():
             if value is not None:
-                row = {
-                    'Branch': meta.get('Branch', ''),
-                    'Type': meta.get('Type', ''),
-                    'Region': province_code.upper(),
-                    'Sector': 'Residential',
-                    'Service': meta.get('Service', ''),
-                    'Technology': meta.get('Technology', ''),
-                    'Parameter': meta.get('Parameter', ''),
-                    'Context': meta.get('Context', ''),
+                result.append({
+                    'Branch':      meta.get('Branch', ''),
+                    'Type':        meta.get('Type', ''),
+                    'Region':      prov,
+                    'Sector':      'Residential',
+                    'Service':     meta.get('Service', ''),
+                    'Technology':  meta.get('Technology', ''),
+                    'Parameter':   meta.get('Parameter', ''),
+                    'Context':     meta.get('Context', ''),
                     'Sub_Context': meta.get('Sub_Context', ''),
-                    'Target': meta.get('Target', ''),
-                    'Source': 'CEUD',
-                    'Unit': meta.get('Unit', ''),
-                    'Year': year,
-                    'Value': value * scale
-                }
-                result.append(row)
+                    'Target':      meta.get('Target', ''),
+                    'Source':      'CEUD',
+                    'Unit':        meta.get('Unit', ''),
+                    'Year':        int(year),
+                    'Value':       float(value) * scale,
+                })
         return result
-    
-    # ===== 1. HOUSING STOCK =====
+
+    # ------------------------------------------------------------------
+    # 1. HOUSING STOCK
+    # ------------------------------------------------------------------
     rows.extend(make_row(
-        {'Branch': f'CIMS.CAN.{province_code.upper()}',
-         'Type': 'Region',
+        {'Branch':    f'CIMS.CAN.{prov}',
+         'Type':      'Region',
          'Parameter': 'service_request',
-         'Target': f'CIMS.CAN.{province_code.upper()}.Residential',
-         'Unit': 'household'},
-        housing_thousand, 1.0
+         'Target':    f'CIMS.CAN.{prov}.Residential',
+         'Unit':      'household'},
+        _get_series(df, 'housing_thousand'),
     ))
-    
-    # ===== 2. APPLIANCES =====
-    for appl_name, appl_data in appliances_per_household.items():
-        if appl_data:
-            rows.extend(make_row(
-                {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings',
-                 'Type': 'Service',
-                 'Service': 'Dwellings',
-                 'Parameter': 'service_request',
-                 'Target': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.{appl_name}',
-                 'Unit': 'unit/building'},
-                appl_data, 1.0
-            ))
-    
-    # ===== 3. BUILDING TYPES =====
+
+    # ------------------------------------------------------------------
+    # 2. APPLIANCES
+    # ------------------------------------------------------------------
+    for appl_name in _get_categories(df, 'appliances_per_household'):
+        rows.extend(make_row(
+            {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings',
+             'Type':      'Service',
+             'Service':   'Dwellings',
+             'Parameter': 'service_request',
+             'Target':    f'CIMS.CAN.{prov}.Residential.Dwellings.{appl_name}',
+             'Unit':      'unit/building'},
+            _get_series(df, 'appliances_per_household', appl_name),
+        ))
+
+    # ------------------------------------------------------------------
+    # 3. BUILDING TYPES — shares and floorspace per building
+    # ------------------------------------------------------------------
     building_map = {
-        "Apartments": ("Apartment", "High Density"),
-        "Single Detached": ("Detached", "LowMed Density"),
-        "Single Attached": ("Attached", "LowMed Density"),
-        "Mobile Homes": ("Mobile", "LowMed Density"),
+        'Apartments':      ('Apartment', 'High Density'),
+        'Single Detached': ('Detached',  'LowMed Density'),
+        'Single Attached': ('Attached',  'LowMed Density'),
+        'Mobile Homes':    ('Mobile',    'LowMed Density'),
     }
-    
+    base_branch = f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+
     for source_key, (tech_name, density) in building_map.items():
-        if source_key in building_shares:
-            base_branch = f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type'
-            
-            # Building shares
+        share = _get_series(df, 'building_shares', source_key)
+        if share:
             rows.extend(make_row(
-                {'Branch': base_branch,
-                 'Type': 'Service',
-                 'Service': 'Building Type',
+                {'Branch':    base_branch,
+                 'Type':      'Service',
+                 'Service':   'Building Type',
                  'Technology': tech_name,
                  'Parameter': 'market_share_total',
-                 'Unit': '%'},
-                building_shares[source_key], 1.0  # Already converted to 0-1 in extraction
+                 'Unit':      '%'},
+                share,
             ))
-            
-            # Floorspace per building
-            if source_key in floorspace_per_building:
-                rows.extend(make_row(
-                    {'Branch': base_branch,
-                     'Type': 'Service',
-                     'Service': 'Building Type',
-                     'Technology': tech_name,
-                     'Parameter': 'service_request',
-                     'Target': f'{base_branch}.{density}',
-                     'Unit': 'm2'},
-                    floorspace_per_building[source_key], 1.0
-                ))
-    
-    # ===== 4. COOLING - LowMed Density =====
-    for ac_tech in cooling_share_data.keys():
-        if ac_tech in cooling_share_data:
+
+        fs = _get_series(df, 'floorspace_per_building', source_key)
+        if fs:
             rows.extend(make_row(
-                {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.LowMed Density.Cooling',
-                 'Type': 'Service',
-                 'Service': 'Cooling',
+                {'Branch':    base_branch,
+                 'Type':      'Service',
+                 'Service':   'Building Type',
+                 'Technology': tech_name,
                  'Parameter': 'service_request',
-                 'Target': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.LowMed Density.Cooling.{ac_tech}',
-                 'Unit': 'GJ cooling/GJ cooling'},
-                cooling_share_data[ac_tech], 1.0
+                 'Target':    f'{base_branch}.{density}',
+                 'Unit':      'm2'},
+                fs,
             ))
-    
-    # ===== 5. COOLING - High Density =====
-    for ac_tech in cooling_share_data.keys():
-        if ac_tech in cooling_share_data:
+
+    # ------------------------------------------------------------------
+    # 4 & 5. COOLING — LowMed and High Density
+    # ------------------------------------------------------------------
+    for ac_tech in _get_categories(df, 'cooling_share_data'):
+        cooling = _get_series(df, 'cooling_share_data', ac_tech)
+        if not cooling:
+            continue
+        for density_label in ['LowMed Density', 'High Density']:
             rows.extend(make_row(
-                {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.High Density.Cooling',
-                 'Type': 'Service',
-                 'Service': 'Cooling',
+                {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Cooling',
+                 'Type':      'Service',
+                 'Service':   'Cooling',
                  'Parameter': 'service_request',
-                 'Target': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.High Density.Cooling.{ac_tech}',
-                 'Unit': 'GJ cooling/GJ cooling'},
-                cooling_share_data[ac_tech], 1.0
+                 'Target':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Cooling.{ac_tech}',
+                 'Unit':      'GJ cooling/GJ cooling'},
+                cooling,
             ))
-    
-    # ===== 6. WATER HEATING SERVICE REQUEST - LowMed =====
-    rows.extend(make_row(
-        {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.LowMed Density',
-         'Type': 'Service',
-         'Service': 'Water Heating',
-         'Parameter': 'service_request',
-         'Target': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.LowMed Density',
-         'Unit': 'GJ water heating/GJ water heating'},
-        wh_lowmed, 1.0
-    ))
-    
-    # ===== 7. WATER HEATING SERVICE REQUEST - High =====
-    rows.extend(make_row(
-        {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.High Density',
-         'Type': 'Service',
-         'Service': 'Water Heating',
-         'Parameter': 'service_request',
-         'Target': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.High Density',
-         'Unit': 'GJ water heating/GJ water heating'},
-        wh_high, 1.0
-    ))
-    
-    # ===== 8. WATER HEATING TECHNOLOGIES - LowMed =====
-    for wh_tech_name, wh_tech_data in wh_tech_lowmed.items():
-        if wh_tech_data:
+
+    # ------------------------------------------------------------------
+    # 6 & 7. WATER HEATING SERVICE REQUEST
+    # ------------------------------------------------------------------
+    for var, density_label in [('wh_lowmed', 'LowMed Density'), ('wh_high', 'High Density')]:
+        wh = _get_series(df, var)
+        if wh:
             rows.extend(make_row(
-                {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.LowMed Density',
-                 'Type': 'Service',
-                 'Service': 'LowMed Density',
-                 'Technology': wh_tech_name,
-                 'Parameter': 'market_share_total',
-                 'Unit': '% of GJ of water heating'},
-                wh_tech_data, 1.0
+                {'Branch':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
+                 'Type':      'Service',
+                 'Service':   'Water Heating',
+                 'Parameter': 'service_request',
+                 'Target':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
+                 'Unit':      'GJ water heating/GJ water heating'},
+                wh,
             ))
-    
-    # ===== 9. WATER HEATING TECHNOLOGIES - High =====
-    for wh_tech_name, wh_tech_data in wh_tech_high.items():
-        if wh_tech_data:
-            rows.extend(make_row(
-                {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Water Heating.High Density',
-                 'Type': 'Service',
-                 'Service': 'High Density',
-                 'Technology': wh_tech_name,
-                 'Parameter': 'market_share_total',
-                 'Unit': '% of GJ of water heating'},
-                wh_tech_data, 1.0
-            ))
-    
-    # ===== 10. VINTAGE BINS - High Density =====
-    for vint_tech, vint_data in vintage_bins_high.items():
-        rows.extend(make_row(
-            {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.High Density.Vintage',
-             'Type': 'Service',
-             'Service': 'Vintage',
-             'Technology': vint_tech,
-             'Parameter': 'market_share_total',
-             'Unit': '% of m2'},
-            vint_data, 1.0
-        ))
-    
-    # ===== 11. VINTAGE BINS - LowMed Density =====
-    for vint_tech, vint_data in vintage_bins_lowmed.items():
-        rows.extend(make_row(
-            {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.LowMed Density.Vintage',
-             'Type': 'Service',
-             'Service': 'Vintage',
-             'Technology': vint_tech,
-             'Parameter': 'market_share_total',
-             'Unit': '% of m2'},
-            vint_data, 1.0
-        ))
-    
-    # ===== 12-15. HEATING TECHNOLOGIES =====
-    
-    # Function to export heating for a specific climate
-    def export_heating_for_climate(heating_lowmed_data, heating_high_data, climate_label, heating_tech_map):
-        """Export heating technologies for one climate type"""
-        # LowMed Density Heating
-        for vint_tech in vintage_bins_lowmed.keys():
-            for h_tech_output, h_tech_source in heating_tech_map.items():
-                tech_data = heating_lowmed_data.get(h_tech_source, {}) if h_tech_source else {}
+
+    # ------------------------------------------------------------------
+    # 8 & 9. WATER HEATING TECHNOLOGIES
+    # ------------------------------------------------------------------
+    for var, density_label in [('wh_tech_lowmed', 'LowMed Density'),
+                                ('wh_tech_high',   'High Density')]:
+        for tech in _get_categories(df, var):
+            wh_tech = _get_series(df, var, tech)
+            if wh_tech:
                 rows.extend(make_row(
-                    {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.LowMed Density.Vintage.{vint_tech} Bldg Code.Heating ({climate_label})',
-                     'Type': 'Service',
-                     'Service': 'Heating',
-                     'Technology': h_tech_output,
+                    {'Branch':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
+                     'Type':      'Service',
+                     'Service':   density_label,
+                     'Technology': tech,
                      'Parameter': 'market_share_total',
-                     'Unit': '% of GJ of heat'},
-                    tech_data, 1.0
+                     'Unit':      '% of GJ of water heating'},
+                    wh_tech,
                 ))
-        
-        # High Density Heating
-        for vint_tech in vintage_bins_high.keys():
-            for h_tech_output, h_tech_source in heating_tech_map.items():
-                tech_data = heating_high_data.get(h_tech_source, {}) if h_tech_source else {}
+
+    # ------------------------------------------------------------------
+    # 10 & 11. VINTAGE BINS
+    # ------------------------------------------------------------------
+    for var, density_label in [('vintage_bins_high',   'High Density'),
+                                ('vintage_bins_lowmed', 'LowMed Density')]:
+        for vint in _get_categories(df, var):
+            vint_data = _get_series(df, var, vint)
+            if vint_data:
                 rows.extend(make_row(
-                    {'Branch': f'CIMS.CAN.{province_code.upper()}.Residential.Dwellings.Building Type.High Density.Vintage.{vint_tech} Bldg Code.Heating ({climate_label})',
-                     'Type': 'Service',
-                     'Service': 'Heating',
-                     'Technology': h_tech_output,
+                    {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Vintage',
+                     'Type':      'Service',
+                     'Service':   'Vintage',
+                     'Technology': vint,
                      'Parameter': 'market_share_total',
-                     'Unit': '% of GJ of heat'},
-                    tech_data, 1.0
+                     'Unit':      '% of m2'},
+                    vint_data,
                 ))
-    
-    # Define heating technology mappings
+
+    # ------------------------------------------------------------------
+    # 12–15. HEATING TECHNOLOGIES
+    # ------------------------------------------------------------------
+    lowmed_vintages = _get_categories(df, 'vintage_bins_lowmed')
+    high_vintages   = _get_categories(df, 'vintage_bins_high')
+
+    def export_heating(lowmed_var: str, high_var: str, climate_label: str) -> None:
+        """Export heating market shares for one climate (Cold or Marine)."""
+        lowmed_techs = _get_categories(df, lowmed_var)
+        high_techs   = _get_categories(df, high_var)
+
+        for vint in lowmed_vintages:
+            for tech in lowmed_techs:
+                tech_data = _get_series(df, lowmed_var, tech)
+                if tech_data:
+                    rows.extend(make_row(
+                        {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+                                      f'.LowMed Density.Vintage.{vint} Bldg Code.Heating ({climate_label})',
+                         'Type':      'Service',
+                         'Service':   'Heating',
+                         'Technology': tech,
+                         'Parameter': 'market_share_total',
+                         'Unit':      '% of GJ of heat'},
+                        tech_data,
+                    ))
+
+        for vint in high_vintages:
+            for tech in high_techs:
+                tech_data = _get_series(df, high_var, tech)
+                if tech_data:
+                    rows.extend(make_row(
+                        {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+                                      f'.High Density.Vintage.{vint} Bldg Code.Heating ({climate_label})',
+                         'Type':      'Service',
+                         'Service':   'Heating',
+                         'Technology': tech,
+                         'Parameter': 'market_share_total',
+                         'Unit':      '% of GJ of heat'},
+                        tech_data,
+                    ))
+
     if is_bc:
-        # BC: Export BOTH Marine and Cold climates
-        
-        # Marine climate tech map (9 technologies)
-        # IMPORTANT: Values must match keys in heating_lowmed_marine/heating_high_marine dictionaries
-        heating_tech_map_marine = {
-            "NG - Low Efficiency": "NG - Low Efficiency",
-            "NG - Medium Efficiency": "NG - Medium Efficiency",
-            "NG - High Efficiency": "NG - High Efficiency",
-            "Electric - Resistance": "Electric - Resistance",
-            "Heating Oil - Low Efficiency": "Heating Oil - Low Efficiency",
-            "Heating Oil - Medium Efficiency": "Heating Oil - Medium Efficiency",
-            "Wood": "Wood",
-            "NG - ASHP": "NG - ASHP",
-            "Electric - ASHP": "Electric - ASHP"
-        }
-        
-        # Cold climate tech map (10 technologies)
-        # IMPORTANT: Values must match keys in heating_lowmed_cold/heating_high_cold dictionaries
-        heating_tech_map_cold = {
-            "NG - Low Efficiency": "NG - Low Efficiency",
-            "NG - Medium Efficiency": "NG - Medium Efficiency",
-            "NG - High Efficiency": "NG - High Efficiency",
-            "Electric - Resistance": "Electric - Resistance",
-            "Heating Oil - Low Efficiency": "Heating Oil - Low Efficiency",
-            "Heating Oil - Medium Efficiency": "Heating Oil - Medium Efficiency",
-            "Wood": "Wood",
-            "NG - ASHP / NG - backup": "NG - ASHP / NG - backup",
-            "Electric - ASHP / NG - backup": "Electric - ASHP / NG - backup",
-            "Electric - ASHP / Electric - backup": "Electric - ASHP / Electric - backup"
-        }
-        
-        # Export Marine climate
-        export_heating_for_climate(heating_lowmed_marine, heating_high_marine, "Marine", heating_tech_map_marine)
-        
-        # Export Cold climate
-        export_heating_for_climate(heating_lowmed_cold, heating_high_cold, "Cold", heating_tech_map_cold)
-        
+        export_heating('heating_lowmed_marine', 'heating_high_marine', 'Marine')
+        export_heating('heating_lowmed_cold',   'heating_high_cold',   'Cold')
     else:
-        # Other provinces: Only Cold climate
-        # IMPORTANT: Values must match keys in heating_lowmed_cold/heating_high_cold dictionaries
-        heating_tech_map_cold = {
-            "NG - Low Efficiency": "NG - Low Efficiency",
-            "NG - Medium Efficiency": "NG - Medium Efficiency",
-            "NG - High Efficiency": "NG - High Efficiency",
-            "Electric - Resistance": "Electric - Resistance",
-            "Heating Oil - Low Efficiency": "Heating Oil - Low Efficiency",
-            "Heating Oil - Medium Efficiency": "Heating Oil - Medium Efficiency",
-            "Wood": "Wood",
-            "NG - ASHP / NG - backup": "NG - ASHP / NG - backup",
-            "Electric - ASHP / NG - backup": "Electric - ASHP / NG - backup",
-            "Electric - ASHP / Electric - backup": "Electric - ASHP / Electric - backup"
-        }
-        
-        # Export Cold climate only
-        export_heating_for_climate(heating_lowmed_cold, heating_high_cold, "Cold", heating_tech_map_cold)
-    
-    # Create DataFrame
-    df = pd.DataFrame(rows)
-    
-    # Ensure proper column order
-    column_order = ['Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology', 
-                    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit', 'Year', 'Value']
-    df = df[column_order]
-    
-    # Sort for better readability
-    if not df.empty:
-        df = df.sort_values(['Branch', 'Technology', 'Year'])
-    
-    # Save to CSV
+        export_heating('heating_lowmed_cold', 'heating_high_cold', 'Cold')
+
+    # ------------------------------------------------------------------
+    # Assemble output DataFrame
+    # ------------------------------------------------------------------
+    out = pd.DataFrame(rows)
+    column_order = ['Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
+                    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source',
+                    'Unit', 'Year', 'Value']
+    out = out[column_order]
+    if not out.empty:
+        out = out.sort_values(['Branch', 'Technology', 'Year'])
+
     output_path = Path(output_file)
-    df.to_csv(output_path, index=False)
-    
-    print(f"  ✅ Saved {len(df):,} rows to {output_path}")
-    
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    out.to_csv(output_path, index=False)
+    print(f"  ✅ Saved {len(out):,} rows to {output_path}")
     return str(output_path)
 
+
+# ==============================================================================
+# MAIN
+# ==============================================================================
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -392,61 +333,46 @@ if __name__ == "__main__":
     parser.add_argument(
         "--output-dir",
         default=r"C:\cims\data\calibration\residential",
-        help=r"Output directory for CSV files (default: C:\cims\data\calibration\residential)"
+        help=r"Output directory for CSV files (default: C:\cims\data\calibration\residential)",
     )
-    
     args = parser.parse_args()
-    
-    # Always extract all provinces with projections
+
     province_codes = list(PROVINCES.keys())
-    output_dir = args.output_dir
-    
-    # Create output directory
-    Path(output_dir).mkdir(parents=True, exist_ok=True)
-    
-    results = {}
-    failed = []
-    
-    print("="*80)
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    results: dict = {}
+    failed:  list = []
+
+    print("=" * 80)
     print("RESIDENTIAL DATA EXTRACTION - ALL PROVINCES")
-    print("="*80)
-    print(f"Provinces: {', '.join(province_codes)}")
-    print(f"Projections: ENABLED")
-    print(f"Output format: CIMS")
+    print("=" * 80)
+    print(f"Provinces:        {', '.join(province_codes)}")
+    print(f"Projections:      ENABLED")
+    print(f"Output format:    CIMS")
     print(f"Output directory: {output_dir}")
-    print("="*80)
-    
+    print("=" * 80)
+
     for prov in province_codes:
         try:
-            print(f"\n{prov} - {PROVINCES[prov.upper()]}:")
-            
-            # Extract data (always with projections)
-            data = extract_all_data(prov, apply_projections=True)
-            results[prov] = data
-            
+            print(f"\n{prov} — {PROVINCES[prov.upper()]}:")
+            df = extract_all_data(prov, apply_projections=True)
+            results[prov] = df
             print(f"  ✅ Extraction complete")
-            
-            # Save to CIMS-formatted CSV
-            output_file = Path(output_dir) / f"residential_{prov.upper()}.csv"
-            format_to_cims(data, output_file, prov)
-                
-        except Exception as e:
-            print(f"  ❌ Failed: {e}")
+            format_to_cims(df, output_dir / f"residential_{prov.upper()}.csv", prov)
+        except Exception as exc:
             import traceback
             traceback.print_exc()
-            failed.append((prov, str(e)))
-    
-    # Print summary
-    print("\n" + "="*80)
+            print(f"  ❌ Failed: {exc}")
+            failed.append((prov, str(exc)))
+
+    print("\n" + "=" * 80)
     print("SUMMARY")
-    print("="*80)
+    print("=" * 80)
     print(f"✅ Successful: {len(results)}/{len(province_codes)} provinces")
-    
     if failed:
         print(f"❌ Failed: {len(failed)} provinces")
-        for prov, error in failed:
-            print(f"  • {prov}: {error}")
-    
-    print("="*80)
-    print(f"\n✅ Complete! Extracted data for {len(results)} provinces.")
-    print(f"CSV files saved to: {output_dir}")
+        for prov, err in failed:
+            print(f"  • {prov}: {err}")
+    print("=" * 80)
+    print(f"\n✅ Complete! CSV files saved to: {output_dir}")

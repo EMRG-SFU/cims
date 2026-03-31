@@ -9,57 +9,129 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Optional
 
+# Configuration
+BASE_PATH = Path('C:/cims/data')
+MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
+CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
+ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
+SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
+CONVERSIONS_FILE = MAPPINGS_PATH / 'energy_conversions.csv'
 
-def load_control_config(filepath: str) -> Dict[str, str]:
-    """Load configuration from Control and Mappings file."""
-    # Use pandas for Excel reading (better Excel support)
-    df = pd.read_excel(filepath, sheet_name='control', header=None)
-    
-    config = {}
-    for _, row in df.iterrows():
-        if pd.notna(row[0]):
-            key = str(row[0]).strip()
-            value = str(row[1]).strip() if pd.notna(row[1]) else None
-            config[key] = value
-    
-    return config
+def load_control_config() -> Dict:
+    """
+    Load control settings from the CONTROLS dict in control.py.
+
+    Returns
+    -------
+    dict
+        Control key/value pairs (e.g. currency years, scenario name).
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('control', CONTROL_FILE)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.CONTROLS
 
 
-def load_energy_conversions(filepath: str) -> Dict[str, float]:
-    """Load energy conversion factors from Control and Mappings file."""
-    # Use pandas for Excel reading
-    df = pd.read_excel(filepath, sheet_name='energy conversions', header=None)
-    
-    conversions = {}
-    conversions['bbl_to_m3'] = 6.2898
-    conversions['mmbtu_to_gj'] = 1.055056
-    
-    energy_content_map = {
-        139: 'asphalt',
-        146: 'lubricants', 
-        148: 'naphtha_specialties',
-        149: 'petrochemical_feedstock',
-        152: 'other_non_energy_products',
-        153: 'ethanol',
-        156: 'biodiesel',
-        157: 'renewable_diesel',
-        158: 'renewable_gasoline'
+def load_energy_conversions() -> Dict:
+    """
+    Load energy conversion factors from energy_conversions.csv.
+
+    Parses the 'Approximate Energy Content' section for GJ-per-m³ values
+    and the general volume/energy rows for unit-to-unit scalars used by
+    the pipeline (bbl_to_m3, mmbtu_to_gj, and per-fuel gj_per_m3 keys).
+
+    Returns
+    -------
+    dict
+        Flat dict of conversion factor keys to float values.
+    """
+    df = pd.read_csv(CONVERSIONS_FILE, header=None, dtype=str)
+
+    # --- Parse 'Approximate Energy Content' section --------------------------
+    # Find the header row for that section
+    content_start = None
+    for i, row in df.iterrows():
+        if str(row.iloc[0]).strip() == 'Approximate Energy Content':
+            content_start = i + 1   # next row is column headers
+            break
+
+    gj_per_m3: Dict[str, float] = {}
+    if content_start is not None:
+        for i in range(content_start + 1, len(df)):
+            row = df.iloc[i]
+            energy_name = str(row.iloc[0]).strip()
+            unit        = str(row.iloc[1]).strip()
+            equiv       = str(row.iloc[2]).strip()
+            if not energy_name or energy_name in ('nan', ''):
+                break
+            # Only capture rows whose unit is "1.0 Cubic metres (m³)" → GJ
+            if 'Cubic metres' in unit and 'Gigajoules' in equiv:
+                try:
+                    gj_val = float(equiv.split()[0].replace(',', ''))
+                    gj_per_m3[energy_name.lower()] = gj_val
+                except ValueError:
+                    pass
+
+    # --- Known scalar conversions (from the volume/energy rows) --------------
+    # 1 bbl = 0.159 m³  →  bbl_to_m3 = 0.159
+    # 1 MMBtu = 1.0551 GJ  →  mmbtu_to_gj = 1.0551
+    scalars = {
+        'bbl_to_m3':   0.159,
+        'mmbtu_to_gj': 1.0551,
     }
-    
-    for row_idx, energy_key in energy_content_map.items():
-        value_str = str(df.iloc[row_idx, 2])
-        gj_value = float(value_str.split()[0])
-        conversions[f'{energy_key}_gj_per_m3'] = gj_value
-    
-    return conversions
 
+    # Map energy names in the CSV to the keys expected by the pipeline
+    name_to_key = {
+        'petrochemical feedstock': 'petrochemical_feedstock_gj_per_m3',
+        'naphtha specialties':     'naphtha_specialties_gj_per_m3',
+        'asphalt':                 'asphalt_gj_per_m3',
+        'lubes and greases':       'lubricants_gj_per_m3',
+        'other products':          'other_non_energy_products_gj_per_m3',
+        'ethanol':                 'ethanol_gj_per_m3',
+        'biodiesel':               'biodiesel_gj_per_m3',
+        'renewable diesel':        'renewable_diesel_gj_per_m3',
+    }
 
-def load_energy_mapping(filepath: str) -> pl.DataFrame:
-    """Load CIMS to JCIMS energy mapping."""
-    # Use pandas to read Excel, then convert to Polars
-    df_pd = pd.read_excel(filepath, sheet_name='energy')
-    return pl.from_pandas(df_pd)
+    for csv_name, key in name_to_key.items():
+        if csv_name in gj_per_m3:
+            scalars[key] = gj_per_m3[csv_name]
 
+    return scalars
+
+def load_energy_mapping() -> pd.DataFrame:
+    """
+    Load the CIMS↔JCIMS↔CER energy mapping from energy_map.csv.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns: CIMS, JCIMS, CER Prices.
+    """
+    return pd.read_csv(ENERGY_MAP_FILE)
+
+def load_sector_mapping() -> pd.DataFrame:
+    """
+    Load the sector map.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns: CIMS, JCIMS, CER Prices.
+    """
+    return pd.read_csv(SECTOR_MAP_FILE)
+
+def load_region_mapping() -> pd.DataFrame:
+    """
+    Load the region map.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame with columns: CIMS, JCIMS, CER Prices.
+    """
+    return pd.read_csv(REGION_MAP_FILE)
 
 def load_macro_indicators(filepath: str, scenario: str) -> pl.DataFrame:
     """Load macro indicators (deflators and exchange rates)."""
@@ -174,64 +246,67 @@ def convert_currency(
 ) -> pd.Series:
     """
     Convert prices from one currency/year to another.
-    Uses pandas Series for compatibility with both pandas and polars workflows.
-    
+
+    Queries macro_df directly with Polars — no to_pandas() call, so no
+    pyarrow dependency regardless of which columns are present.
+
     Args:
         prices: Price series indexed by year
         from_year: Base year of input prices (only used if constant_dollars=True)
         to_year: Target year for output prices
         from_currency: Source currency code
         to_currency: Target currency code
-        macro_df: Polars DataFrame with macro indicators
+        macro_df: Polars DataFrame with macro indicators (pivoted, numeric cols)
         constant_dollars: If True, all prices are in constant from_year dollars.
                          If False, each year's price is in that year's dollars (nominal).
     """
-    # Convert macro_df to pandas for easier indexing
-    macro_pd = macro_df.to_pandas()
-    
+    DEFLATOR_COL  = 'Gross Domestic Product Deflator (2017=100)'
+    EXCHANGE_COL  = 'Canada-US Exchange Rate (C$/US$)'
+
+    def _scalar(col: str, year: int) -> float:
+        """Return a single float from macro_df for (col, year). No pyarrow needed."""
+        vals = macro_df.filter(pl.col('Year') == year).get_column(col).to_list()
+        if not vals:
+            raise KeyError(f"No macro data for year {year}, column '{col}'")
+        return float(vals[0])
+
     if constant_dollars:
-        # All prices are in constant from_year dollars
-        # Apply single conversion factor to all values
-        deflator_col = 'Gross Domestic Product Deflator (2017=100)'
-        deflator_from = macro_pd[macro_pd['Year'] == from_year][deflator_col].values[0]
-        deflator_to = macro_pd[macro_pd['Year'] == to_year][deflator_col].values[0]
+        # Single conversion factor applied to all years
+        deflator_from = _scalar(DEFLATOR_COL, from_year)
+        deflator_to   = _scalar(DEFLATOR_COL, to_year)
         conversion_factor = deflator_to / deflator_from
-        
-        # Exchange rate (use from_year rate for constant dollars)
-        if from_currency != to_currency:
-            rate_col = 'Canada-US Exchange Rate (C$/US$)'
-            er_value = macro_pd[macro_pd['Year'] == from_year][rate_col].values[0]
-        else:
-            er_value = 1.0
-        
+
+        er_value = _scalar(EXCHANGE_COL, from_year) if from_currency != to_currency else 1.0
+
         converted = prices * conversion_factor * er_value
-        
+
     else:
-        # Nominal prices: each year's price is in that year's dollars
-        # Need to convert each year separately
-        deflator_col = 'Gross Domestic Product Deflator (2017=100)'
-        deflator_to = macro_pd[macro_pd['Year'] == to_year][deflator_col].values[0]
-        
-        converted_dict = {}
-        for year, price in prices.items():
-            year_data = macro_pd[macro_pd['Year'] == year]
-            if len(year_data) == 0:
+        # Nominal: convert year-by-year
+        deflator_to = _scalar(DEFLATOR_COL, to_year)
+
+        # Pre-build a lookup dict for the years we need — one Polars filter per
+        # unique year is much faster than converting the whole DataFrame.
+        needed_years = [int(y) for y in prices.index]
+
+        deflator_lookup: dict[int, float] = {}
+        exchange_lookup: dict[int, float] = {}
+        for year in needed_years:
+            row = macro_df.filter(pl.col('Year') == year)
+            if len(row) == 0:
                 continue
-            
-            deflator_year = year_data[deflator_col].values[0]
-            
-            # Deflate to target year
-            price_deflated = price * (deflator_to / deflator_year)
-            
-            # Exchange rate for this year
+            deflator_lookup[year] = float(row.get_column(DEFLATOR_COL).to_list()[0])
             if from_currency != to_currency:
-                exchange_rate_col = 'Canada-US Exchange Rate (C$/US$)'
-                exchange_rate = year_data[exchange_rate_col].values[0]
-            else:
-                exchange_rate = 1.0
-            
-            converted_dict[year] = price_deflated * exchange_rate
-        
+                exchange_lookup[year] = float(row.get_column(EXCHANGE_COL).to_list()[0])
+
+        converted_dict: dict[int, float] = {}
+        for year, price in prices.items():
+            year = int(year)
+            if year not in deflator_lookup:
+                continue
+            price_deflated = price * (deflator_to / deflator_lookup[year])
+            er = exchange_lookup.get(year, 1.0)
+            converted_dict[year] = price_deflated * er
+
         converted = pd.Series(converted_dict)
-    
+
     return converted
