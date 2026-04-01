@@ -5,8 +5,8 @@ This directory contains the data pipeline for CIMS. Raw data is **never committe
 ## Quick Start
 
 1. **Get raw data**:
-   - SFU team: access via SharePoint
-   - Local development: place files in `raw_data/` — this directory is gitignored
+   - Raw data may be sourced from SharePoint, FRDR, or another data repository
+   - Place files in `raw_data/` — this directory is gitignored
 
 2. **Run the pipeline**:
    - `pipeline/source/` — scripts that process raw source data into `processed_data/`
@@ -23,13 +23,13 @@ This directory contains the data pipeline for CIMS. Raw data is **never committe
 - Pipeline scripts (`pipeline/`)
 - Mappings and conversion files (`mappings_conversions/`)
 - Empty directory structure (`.gitkeep` files)
-- This README and `cims_data_mapping.txt`
+- This README
 
 ## What is NOT committed
 
 | Directory         | Reason                         |
 |-------------------|--------------------------------|
-| `raw_data/`       | Sensitive / large source files |
+| `raw_data/`       | Large source files — store locally or access via SharePoint/FRDR |
 | `processed_data/` | Generated — do not commit      |
 | `calibration/`    | Generated — do not commit      |
 | `model_inputs/`   | Generated — do not commit      |
