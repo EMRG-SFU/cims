@@ -16,23 +16,6 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ## Set Working Folder
-    """)
-    return
-
-
-@app.cell
-def _():
-    ### Edit the line below for the path to your "cims-models" folder ###
-    # os.chdir('-q "C:/CIMS/cims-models"')
-    # os.chdir('cims-models')
-
-    print("The current folder is", os.getcwd())
-    return
-
 
 @app.cell(hide_code=True)
 def _():
