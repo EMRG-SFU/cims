@@ -29,7 +29,7 @@ def _():
 def _():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
-    # Model files should be located at: cims-models/path/file/file_XX.csv
+    # Model files should be located at: data/model_inputs/
 
     ### Base model to start initialisation
     base_model = 'CIMS_base'
@@ -294,14 +294,6 @@ def _(model_path, update_files):
     scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
     return ref_path, region_list, scenario_name, sector_list, year_list
 
-
-@app.cell
-def _(model_path, ref_path, update_files):
-    update_files[model_path].append("fake file")
-    update_files[ref_path].append("fake file")
-    update_files["data/model_inputs/fake/path"] = ["fake file"]
-
-    return
 
 
 @app.cell(hide_code=True)

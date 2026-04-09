@@ -29,7 +29,7 @@ def _():
 def _():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
-    # Model files should be located at: cims-models/path/file/file_XX.csv
+    # Model files should be located at: data/model_inputs/
 
     ### Base model to start initialisation
     base_model = 'CIMS_base'
@@ -88,7 +88,7 @@ def _():
 
 
 
-    # Model files should be located at: cims-models/path/file/file_XX.csv
+    # Model files should be located at: data/model_inputs/
     if sector_req:
     ### Base model to start initialisation
         if model_path not in update_files:
