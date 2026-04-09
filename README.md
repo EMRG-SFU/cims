@@ -6,15 +6,8 @@ economic climate model.
 CIMS is not currently available on PyPi or other package indexes. Follow the [getting started guide](docs/GettingStarted.md) to get CIMS running on your machine.
 
 ## :technologist: Usage
-Once you've installed CIMS you can call its functions and classes from within your own Python script, notebook, or program. Follow the [quickstart guide](tutorials/Quickstart.ipynb) to familiarize yourself with CIMS's key functionality. 
+See the [getting started guide](docs/GettingStarted.md) for instructions on running CIMS scenarios.
 
-```
-import CIMS
-model_file = 'path/to/model.xlsb'
-my_reader = CIMS.ModelReader(infile=model_file)
-my_model = CIMS.Model(my_reader)
-my_model.run()
-```
 ## :memo: Contributing
 Contributions to CIMS are welcome, in many different forms: 
 * **Issues** &mdash; If you identify a bug, error in the documentation, or a potential improvement to CIMS, consider putting this information into an issue. First, search the list of [existing issues](https://github.com/EMRG-SFU/cims/issues) to see if there is an ongoing discussion to join. If a relevant issue doesn't already exist, please [create a new issue](https://github.com/EMRG-SFU/cims/issues/new).
