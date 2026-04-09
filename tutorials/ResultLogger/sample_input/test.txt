@@ -1,5 +1,0 @@
-new_market_share
-price
-competition type
-service requested
-provided_quantities
