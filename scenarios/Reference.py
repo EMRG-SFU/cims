@@ -5,12 +5,7 @@ app = marimo.App(width="medium")
 
 with app.setup:
     import marimo as mo
-
-    from datetime import datetime
-    import pandas as pd
-    import numpy as np
     import CIMS
-    import os
 
 
 @app.cell(hide_code=True)
