@@ -44,7 +44,7 @@ Repository = "https://github.com/EMRG-SFU/cims"
 
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["CIMS*"]
 
 [tool.setuptools.dynamic]
@@ -52,7 +52,7 @@ version = {attr = "CIMS.about.__version__"}
 
 
 [tool.fawltydeps]
-code = ["CIMS"]  # Only search for imports under ./CIMS
+code = ["src/CIMS"]  # Only search for imports under ./src/CIMS
 deps = ["pyproject.toml"]  # Only look for declared dependencies here
 ignore_unused = ["xlrd", "pyxlsb"]  # Pandas uses them, but they aren't imported
 output_format = "human_detailed"  # Detailed report by default
