@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.20.2"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -16,16 +16,15 @@ def _():
     return
 
 
-
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Set File Paths, Models, and Sectors
+    ## Set required file paths, models, and sectors
     """)
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
@@ -292,8 +291,7 @@ def _(model_path, update_files):
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
     scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
-    return ref_path, region_list, scenario_name, sector_list, year_list
-
+    return region_list, scenario_name, sector_list, year_list
 
 
 @app.cell(hide_code=True)

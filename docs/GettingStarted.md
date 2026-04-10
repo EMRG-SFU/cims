@@ -13,7 +13,7 @@ Before you begin, ensure you have the following installed:
     ```
   - Windows (PowerShell):
     ```powershell
-    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.sh | iex"
+    powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 - **Git**: Used to clone the repository. Follow the [installation instructions](https://github.com/git-guides/install-git) for your operating system.
 - **Terminal or Command Prompt**:

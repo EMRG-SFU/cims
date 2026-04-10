@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.19.6"
+__generated_with = "0.23.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -16,17 +16,16 @@ def _():
     return
 
 
-
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Set File Paths, Models, and Sectors
+    ## Set required file paths, models, and sectors
     """)
     return
 
 
-@app.cell
-def _():
+@app.cell(hide_code=True)
+def _(os):
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
     # Model files should be located at: data/model_inputs/
