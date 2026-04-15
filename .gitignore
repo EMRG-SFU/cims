@@ -140,3 +140,6 @@ tutorials/DataChangesByScript/*.pkl
 
 # Model Files
 models/*/*.xlsb
+
+# Marimo cache
+__marimo__/

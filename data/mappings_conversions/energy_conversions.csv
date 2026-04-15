@@ -1,0 +1,143 @@
+﻿Group,Energy,Unit,Equivalent to,Source
+volume,,1.0 Cubic metres (m³),6.2898 Barrels (bbl),CER Conversions
+volume,,1.0 Cubic metres (m³),"1,000 Litres (l)",CER Conversions
+volume,,1.0 Cubic metres (m³),219.9692 Imperial gallons,CER Conversions
+volume,,1.0 Cubic metres (m³),264.1721 US Gallons,CER Conversions
+volume,,1.0 Cubic metres (m³),35.3147 Cubic feet (cf) natural gas,CER Conversions
+volume,,(@ 101.325 kPaa and 15° C),(@ 14.73 psia and 60° F),CER Conversions
+volume,,1.0 Cubic feet (cf) natural gas,0.028317 Cubic metres (m³),CER Conversions
+volume,,(@ 14.73 psia and 60° F),(@ 101.325 kPaa and 15° C),CER Conversions
+volume,,1.0 US Gallons,0.0238 Barrels (bbl),CER Conversions
+volume,,1.0 US Gallons,0.8327 Imperial gallons,CER Conversions
+volume,,1.0 US Gallons,3.7854 Litres (l),CER Conversions
+volume,,1.0 US Gallons,3.7854 x 10-3 Cubic metres (m³),CER Conversions
+volume,,1.0 Litres (l),0.22 Imperial gallons,CER Conversions
+volume,,1.0 Litres (l),6.2898 x 10-3 Barrels (bbl),CER Conversions
+volume,,1.0 Litres (l),0.2642 US Gallons,CER Conversions
+volume,,1.0 Litres (l),1 x 10-3 Cubic metres (m³),CER Conversions
+volume,,1.0 Imperial gallons,4.5461 Litres (l),CER Conversions
+volume,,1.0 Imperial gallons,0.0286 Barrels (bbl),CER Conversions
+volume,,1.0 Imperial gallons,1.201 US Gallons,CER Conversions
+volume,,1.0 Imperial gallons,4.5461 x 10-3 Cubic metres (m³),CER Conversions
+volume,,1.0 Barrels (bbl),0.159 Cubic metres (m³),CER Conversions
+volume,,1.0 Barrels (bbl),158.9873 Litres (l),CER Conversions
+volume,,1.0 Barrels (bbl),34.9723 Imperial gallons,CER Conversions
+volume,,1.0 Barrels (bbl),42 US Gallons,CER Conversions
+weight & mass,,1.0 Kilograms (kg),1 x 10-3 Tonnes (t),CER Conversions
+weight & mass,,1.0 Kilograms (kg),2.2046 Pounds (lb),CER Conversions
+weight & mass,,1.0 Tonnes (t),"1,000 Kilograms (kg)",CER Conversions
+weight & mass,,1.0 Tonnes (t),"2,204.6226 Pounds (lb)",CER Conversions
+weight & mass,,1.0 Pounds (lb),0.4536 Kilograms (kg),CER Conversions
+weight & mass,,1.0 Pounds (lb),4.5359 x 10-4 Tonnes (t),CER Conversions
+vehicle mileage,,1.0 Kilometres/Litre (km/l),2.3522 Miles/Gallon (mi/gal),CER Conversions
+vehicle mileage,,1.0 Miles/Gallon (mi/gal),0.4252 Kilometres/Litre (km/l),CER Conversions
+energy terms,,1.0 Watts (w),1 Joules (J) per second,CER Conversions
+energy terms,,1.0 Gigajoules (GJ),1 x 109 Joules (J),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),0.9478 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),2.7778 x 105 Watt-hours (W.h),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),277.7778 Kilowatt-hours (kW.h),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),0.2778 Megawatt-hours (MW.h),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),2.7778 x 10-4 Gigawatt-hours (GW.h),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),2.7778 x 10-7 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Gigajoules (GJ),947.8171 Cubic feet (cf) natural gas,CER Conversions
+energy terms,,1.0 Gigajoules (GJ),26.853 Cubic metres (m³) natural gas,CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),1.0551 x 109 Joules (J),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),1.0551 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),2.9307 x 105 Watt-hours (W.h),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),293.0711 Kilowatt-hours (kW.h),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),0.2931 Megawatt-hours (MW.h),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),2.9307 x 10-4 Gigawatt-hours (GW.h),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),2.9307 x 10-7 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),"1,000 Cubic feet (cf) natural gas",CER Conversions
+energy terms,,1.0 Million British thermal units (MMBtu),28.3278 Cubic metres (m³),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),"3,600 Joules (J)",CER Conversions
+energy terms,,1.0 Watt-hours (W.h),3.6 x 10-6 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),3.4121 x 10-6 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),1 x 10-3 Kilowatt-hours (kW.h),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),1 x 10-6 Megawatt-hours (MW.h),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),1 x 10-9 Gigawatt-hours (GW.h),CER Conversions
+energy terms,,1.0 Watt-hours (W.h),1 x 10-12 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),3.6 x 106 Joules (J),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),3.6 x 10-3 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),3.4121 x 10-3 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),"1,000 Watt-hours (W.h)",CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),1 x 10-3 Megawatt-hours (MW.h),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),1 x 10-6 Gigawatt-hours (GW.h),CER Conversions
+energy terms,,1.0 Kilowatt-hours (kW.h),1 x 10-9 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),3.6 x 109 Joules (J),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),3.60 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),3.4122 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),1 x 106 Watt-hours (W.h),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),"1,000 Kilowatt-hours (kW.h)",CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),1 x 10-3 Gigawatt-hours (GW.h),CER Conversions
+energy terms,,1.0 Megawatt-hours (MW.h),1 x 10-6 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),3.6 x 1012 Joules (J),CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),"3,600 Gigajoules (GJ)",CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),"3,412.1416 Million British thermal units (MMBtu)",CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),1 x 109 Watt-hours (W.h),CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),1 x 106 Kilowatt-hours (kW.h),CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),"1,000 Megawatt-hours (MW.h)",CER Conversions
+energy terms,,1.0 Gigawatt-hours (GW.h),1 x 10-3 Terawatt-hours (TW.h),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),3.6 x 1015 Joules (J),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),3.6 x 106 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),3.4121 x 106 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),1 x 1012 Watt-hours (W.h),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),1 x 109 Kilowatt-hours (kW.h),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),1 x 106 Megawatt-hours (MW.h),CER Conversions
+energy terms,,1.0 Terawatt-hours (TW.h),"1,000 Gigawatt-hours (GW.h)",CER Conversions
+energy terms,,1.0 Cubic feet (cf) natural gas,1.0551 x 10-3 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Cubic feet (cf) natural gas,1 x 10-3 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Cubic metres (m³) natural gas,0.0373 Gigajoules (GJ),CER Conversions
+energy terms,,1.0 Cubic metres (m³) natural gas,0.0353 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Therms (thm),1 x 105 British thermal units (Btu),CER Conversions
+energy terms,,1.0 Therms (thm),0.10 Million British thermal units (MMBtu),CER Conversions
+energy terms,,1.0 Dekatherms (dth),10 Therms (thm),CER Conversions
+energy terms,,1.0 Dekatherms (dth),1 Million British thermal units (MMBtu),CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) natural gas,35.301 Cubic feet (cf) natural gas,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) natural gas,1.7111 x 10-3 Cubic metres (m³) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) natural gas,7.2487 x 10-4 Tonnes (t) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) LNG,2.0631 x 104 Cubic feet (cf) natural gas,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) LNG,584.431 Cubic metres (m³) natural gas,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) LNG,0.4049 Tonnes (t) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic metres (m³) LNG,2.0631 x 10-5 Billion cubic feet (Bcf) natural gas,CER Conversions
+liquefied natural gas (lng),,1.0 Tonnes (t) LNG,"1,379.549 Cubic metres (m³) natural gas",CER Conversions
+liquefied natural gas (lng),,1.0 Tonnes (t) LNG,2.4697 Cubic metres (m³) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Tonnes (t) LNG,4.8699 x 104 Cubic feet (cf) natural gas,CER Conversions
+liquefied natural gas (lng),,1.0 Cubic feet (cf) natural gas,2.0531 x 10-5 Tonnes (t) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Tonnes LNG per year,133.4232 Cubic feet natural gas per day (cf/d),CER Conversions
+liquefied natural gas (lng),,1.0 Million Tonnes LNG per year,0.1334 Billion cubic feet natural gas per day (Bcf/d),CER Conversions
+liquefied natural gas (lng),,1.0 Billion cubic feet (Bcf) natural gas,4.8471 x 104 Cubic metres (m³) LNG,CER Conversions
+liquefied natural gas (lng),,1.0 Billion cubic feet natural gas per day (Bcf/d),7.495 Million tonnes LNG per year,CER Conversions
+approximate energy content,Anthracite,1.0 Tonnes (t),27.70 Gigajoules (GJ),CER Conversions
+approximate energy content,Bituminous,1.0 Tonnes (t),27.60 Gigajoules (GJ),CER Conversions
+approximate energy content,Lignite,1.0 Tonnes (t),14.40 Gigajoules (GJ),CER Conversions
+approximate energy content,Subbituminous,1.0 Tonnes (t),18.80 Gigajoules (GJ),CER Conversions
+approximate energy content,Pentanes plus,1.0 Cubic metres (m³),35.17 Gigajoules (GJ),CER Conversions
+approximate energy content,Light,1.0 Cubic metres (m³),38.51 Gigajoules (GJ),CER Conversions
+approximate energy content,Heavy,1.0 Cubic metres (m³),40.90 Gigajoules (GJ),CER Conversions
+approximate energy content,Synthetic crude oil,1.0 Cubic metres (m³),39.40 Gigajoules (GJ),CER Conversions
+approximate energy content,Bitumen,1.0 Cubic metres (m³),42.80 Gigajoules (GJ),CER Conversions
+approximate energy content,Natural Gas,1.0 Cubic metres (m³),0.0373 Gigajoules (GJ),CER Conversions
+approximate energy content,Ethane,1.0 Cubic metres (m³),18.36 Gigajoules (GJ),CER Conversions
+approximate energy content,Propane,1.0 Cubic metres (m³),25.53 Gigajoules (GJ),CER Conversions
+approximate energy content,Butane,1.0 Cubic metres (m³),28.62 Gigajoules (GJ),CER Conversions
+approximate energy content,Asphalt,1.0 Cubic metres (m³),44.46 Gigajoules (GJ),CER Conversions
+approximate energy content,Aviation gasoline,1.0 Cubic metres (m³),33.52 Gigajoules (GJ),CER Conversions
+approximate energy content,Jet Fuel (Jet A-1),1.0 Cubic metres (m³),34.70 Gigajoules (GJ),CER Conversions
+approximate energy content,Diesel,1.0 Cubic metres (m³),38.68 Gigajoules (GJ),CER Conversions
+approximate energy content,Heavy fuel oil,1.0 Cubic metres (m³),41.73 Gigajoules (GJ),CER Conversions
+approximate energy content,Kerosene,1.0 Cubic metres (m³),37.68 Gigajoules (GJ),CER Conversions
+approximate energy content,Heating Oil,1.0 Cubic metres (m³),36.72 Gigajoules (GJ),CER Conversions
+approximate energy content,Lubes and greases,1.0 Cubic metres (m³),39.16 Gigajoules (GJ),CER Conversions
+approximate energy content,Motor gasoline,1.0 Cubic metres (m³),34.66 Gigajoules (GJ),CER Conversions
+approximate energy content,Naphtha specialties,1.0 Cubic metres (m³),35.17 Gigajoules (GJ),CER Conversions
+approximate energy content,Petrochemical feedstock,1.0 Cubic metres (m³),34.17 Gigajoules (GJ),CER Conversions
+approximate energy content,Petroleum coke,1.0 Cubic metres (m³),42.38 Gigajoules (GJ),CER Conversions
+approximate energy content,Still gas,1.0 Cubic metres (m³),41.73 Gigajoules (GJ),CER Conversions
+approximate energy content,Other products,1.0 Cubic metres (m³),39.82 Gigajoules (GJ),CER Conversions
+approximate energy content,Ethanol,1.0 Cubic metres (m³),23.60 Gigajoules (GJ),CER Conversions
+approximate energy content,Hydrogen (gas),1.0 Cubic metres (m³),0.012 Gigajoules (GJ),CER Conversions
+approximate energy content,Methanol,1.0 Cubic metres (m³),15.60 Gigajoules (GJ),CER Conversions
+approximate energy content,Biodiesel,1.0 Cubic metres (m³),34.00 Gigajoules (GJ),AFDC
+approximate energy content,Renewable Diesel,1.0 Cubic metres (m³),37.00 Gigajoules (GJ),AFDC
+approximate energy content,Renewable Gasoline,1.0 Cubic metres (m³),32.92 Gigajoules (GJ),AFDC - assume 5% lower than gasoline
