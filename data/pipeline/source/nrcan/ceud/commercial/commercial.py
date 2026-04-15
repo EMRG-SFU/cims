@@ -24,14 +24,17 @@ import pandas as pd
 import numpy as np
 
 _current_file = Path(__file__)
-_project_root = _current_file.parent.parent.parent.parent.parent
+_project_root = _current_file.parent.parent.parent.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
+    print("project root:", _project_root)
 
-from utils.extractors.nrcan_ceud import get_row_series
-from utils.extensions.data_extensions import (
+from mappings_conversions.control import CONTROLS
+from pipeline.utils.extractors.nrcan_ceud import get_row_series
+from pipeline.utils.extractors.stats_can_pop import build_population_shares
+from pipeline.utils.extensions.data_extensions import (
     extend_series_linear,
-    extend_series_trend_decline,
+    extend_series_trend_dampener,
 )
 
 # ==============================================================================
@@ -42,7 +45,11 @@ BASE_PATH        = Path('C:/cims/data/raw_data/nrcan/ceud/commercial')
 ASSUMPTIONS_CSV  = Path('C:/cims/data/raw_data/assumptions/commercial_assumptions.csv')
 NG_EFFICIENCY_CSV = Path('C:/cims/data/raw_data/assumptions/ng_eff_assumptions_commercial.csv')
 OUTPUT_DIR       = Path('C:/cims/data/processed_data/nrcan/ceud')
+RESD_CSV       = Path('C:/cims/data/raw_data/stats_can/resd/2510002901_commercial.csv')
+POP_CSV        = Path('C:/cims/data/raw_data/stats_can/population/1710000901.csv')
+EFFICIENCY_XLS = Path('C:/cims/data/raw_data/nrcan/ceud/residential/res_ca_e_32.xls')
 YEARS            = list(range(2000, 2101))
+LAST_HIST_YEAR   = CONTROLS["last_historical_year"]["CEUD"]
 
 REGIONS = {
     'AB': 'Alberta',
@@ -69,7 +76,7 @@ ACTIVITY_MAPPING = {
 
 TOTAL_FLOORSPACE_TABLE = 1
 FLOORSPACE_TABLES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
-HVAC_TABLES       = [36, 38, 40, 42, 44, 46, 48, 50, 52, 54]
+HVAC_TABLE       = 4
 HOT_WATER_TABLE   = 26
 
 FILE_NAME_MAP = {'BC': 'bct', 'AT': 'atl'}
@@ -135,20 +142,53 @@ def _long(region: str, variable: str, category: str, parameter: str,
 
 def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
     """
-    Parse commercial assumptions CSV and return projection parameters.
+    Parse the flat commercial assumptions CSV and return projection parameters.
+
+    Expected CSV columns:
+        Variable, Method, Variable.1,
+        1st period rate, 1st period start, 1st period end,
+        2nd period rate, 2nd period start, 2nd period end,
+        3rd period rate, 3rd period start, 3rd period end
+
+    'first' in a start column means LAST_HIST_YEAR + 1.
+    End values are stored inclusive and made exclusive (+1) here.
 
     Returns
     -------
     dict with keys 'floorspace' and 'building_shell_shares'.
     Empty dict if file not found.
     """
-    REGION_NAME_TO_CODE = {
-        'Alberta': 'AB', 'Atlantic': 'AT', 'British Columbia': 'BC',
-        'Manitoba': 'MB', 'Ontario': 'ON', 'Quebec': 'QC', 'Saskatchewan': 'SK',
-    }
+    def parse_pct(val) -> float | None:
+        if val is None or (isinstance(val, float) and np.isnan(val)):
+            return None
+        s = str(val).strip()
+        if s.lower() in ('trend', 'remainder', ''):
+            return None
+        try:
+            return float(s.replace('%', '').strip()) / 100.0
+        except ValueError:
+            return None
+
+    def parse_year(val) -> int | None:
+        if val is None or (isinstance(val, float) and np.isnan(val)):
+            return None
+        s = str(val).strip().lower()
+        if s == 'first':
+            return LAST_HIST_YEAR + 1
+        try:
+            return int(float(s))
+        except ValueError:
+            return None
+
+    def parse_period(row, prefix) -> tuple[int, int] | None:
+        start = parse_year(row.get(f'{prefix} start'))
+        end   = parse_year(row.get(f'{prefix} end'))
+        if start is None or end is None:
+            return None
+        return start, end + 1
 
     try:
-        raw = pd.read_csv(assumptions_csv, header=None, dtype=str)
+        raw = pd.read_csv(assumptions_csv)
     except FileNotFoundError:
         print(f"⚠️  Assumptions CSV {assumptions_csv} not found. "
               "Extensions will not be applied.")
@@ -157,50 +197,51 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
         print(f"❌ Error reading assumptions CSV: {exc}")
         return {}
 
-    def cell(row, col):
-        try:
-            v = raw.iloc[row, col]
-            return None if pd.isna(v) or str(v).strip() == '' else str(v).strip()
-        except (IndexError, KeyError):
-            return None
-
-    def pct(row, col):
-        v = cell(row, col)
-        if v is None:
-            return None
-        try:
-            return float(v.replace('%', '').strip()) / 100.0
-        except ValueError:
-            return None
-
     params = {}
 
-    # 1. Floorspace — linear growth, per-region
+    # -- 1. Floorspace — CAGR per region ---------------------------------------
     params['floorspace'] = {'method': 'linear'}
-    for row_idx in range(9, 25):
-        region_name = cell(row_idx, 5)
-        code = REGION_NAME_TO_CODE.get(region_name) if region_name else None
-        if code is None:
-            continue
-        rate1, rate2 = pct(row_idx, 9), pct(row_idx, 10)
-        if rate1 is not None and rate2 is not None:
-            params['floorspace'][code] = {
-                'periods': [(2023, 2051, rate1), (2051, 2101, rate2)]
-            }
+    for _, row in raw[raw['Variable'] == 'Floorspace'].iterrows():
+        code = str(row['Variable.1']).strip()
+        r1   = parse_pct(row['1st period rate'])
+        y1   = parse_period(row, '1st period')
+        r2   = parse_pct(row['2nd period rate'])
+        y2   = parse_period(row, '2nd period')
+        if r1 and y1:
+            periods = [(y1[0], y1[1], r1)]
+            if r2 and y2:
+                periods.append((y2[0], y2[1], r2))
+            params['floorspace'][code] = {'periods': periods}
 
-    # 2. Building shell shares — trend decline, global
-    bs_dec1 = abs(pct(23, 9) or -0.05)
-    bs_dec2 = abs(pct(23, 10) or -0.10)
+    # -- 2. Building shell shares — trend then dampener, per activity ----------
+    bs_rows = raw[raw['Variable'] == 'Building Shell']
+    first_bs     = bs_rows.iloc[0]
+    trend_yrs    = parse_period(first_bs, '1st period') or (LAST_HIST_YEAR + 1, 2031)
+    decline1_yrs = parse_period(first_bs, '2nd period') or (2031, 2051)
+    decline2_yrs = parse_period(first_bs, '3rd period') or (2051, 2101)
+
+    activity_rates = {}
+    for _, row in bs_rows.iterrows():
+        activity = str(row['Variable.1']).strip()
+        r1 = parse_pct(row['2nd period rate'])
+        r2 = parse_pct(row['3rd period rate'])
+        activity_rates[activity] = (
+            r1 if r1 is not None else -0.10,
+            r2 if r2 is not None else -0.10,
+        )
+
     params['building_shell_shares'] = {
-        'method': 'trend_decline',
-        'trend_start': 2000, 'trend_end': 2022, 'trend_period': (2023, 2031),
-        'decrease_periods': [(2031, 2051, bs_dec1), (2051, 2101, bs_dec2)],
+        'method': 'trend_dampener',
+        'trend_start': 2000,
+        'trend_end': LAST_HIST_YEAR,
+        'trend_period': trend_yrs,
+        'activity_rates': activity_rates,
+        'decline1_years': decline1_yrs,
+        'decline2_years': decline2_yrs,
     }
 
     print(f"✅ Loaded commercial projection parameters from {assumptions_csv}")
     return params
-
-
 def load_ng_efficiency_splits(ng_efficiency_csv: Path = NG_EFFICIENCY_CSV) -> dict:
     """
     Load NG efficiency tier splits from the assumptions CSV.
@@ -267,7 +308,7 @@ def load_tables(region_code: str) -> dict:
     if not file_path.exists():
         raise FileNotFoundError(f"Data file not found: {file_path}")
 
-    table_numbers = [TOTAL_FLOORSPACE_TABLE] + FLOORSPACE_TABLES + HVAC_TABLES + [HOT_WATER_TABLE]
+    table_numbers = [TOTAL_FLOORSPACE_TABLE] + FLOORSPACE_TABLES + [HVAC_TABLE] + [HOT_WATER_TABLE]
     table_names = [f"Table {n}" for n in sorted(set(table_numbers))]
 
     def load_and_clean(sheet_name: str) -> pl.DataFrame:
@@ -361,11 +402,12 @@ def extract_building_shell_shares(region: str,
 def extract_hvac_technologies(region: str, tables: dict,
                                ng_splits: dict) -> list[pl.DataFrame]:
     """
-    Extract HVAC technology shares per activity, then produce weighted-average
-    region-level shares.
+    Extract HVAC technology shares from Table 24, which provides the
+    region-level weighted average shares directly.
 
-    NG is split into Low / Medium / High efficiency using ng_splits.
-    BC gets both Cold and Marine climate data.
+    NG total share is split into Low / Medium / High efficiency tiers
+    using ng_splits. Steam is treated as NG Cogeneration.
+    BC gets both Cold (Table 24) and Marine (also Table 24) climate frames.
 
     Parameters
     ----------
@@ -377,24 +419,12 @@ def extract_hvac_technologies(region: str, tables: dict,
     list of pl.DataFrame
     """
     is_bc = region.upper() == 'BC'
+    tbl = tables[f"Table {HVAC_TABLE}"]
 
-    def _safe(tbl, label, n, zero_fill=False):
-        """Safely extract a percentage series, returning zeros or empty on miss."""
+    def _safe_pct(label, n=0):
         try:
             return _pct_series(tbl, label, match_n=n)
         except KeyError:
-            if label.startswith('Other'):
-                for alt in ['Other1', 'Other2', 'Other3']:
-                    try:
-                        return _pct_series(tbl, alt, match_n=n)
-                    except KeyError:
-                        continue
-            if zero_fill:
-                try:
-                    ref = _row_to_series(tbl, "Floor Space (million m2)", match_n=0)
-                    return pd.Series(0.0, index=ref.index)
-                except KeyError:
-                    pass
             return pd.Series(dtype=float)
 
     def _split_ng(ng_total: pd.Series):
@@ -407,139 +437,65 @@ def extract_hvac_technologies(region: str, tables: dict,
                 ng_low[year]  = val * sp['low']
                 ng_med[year]  = val * sp['medium']
                 ng_high[year] = val * sp['high']
-        return (pd.Series(ng_low), pd.Series(ng_med), pd.Series(ng_high))
+        return pd.Series(ng_low), pd.Series(ng_med), pd.Series(ng_high)
 
-    cims_activities = list(ACTIVITY_MAPPING.values())
+    # Table 24 Shares (%) section — match_n=1 selects the Shares rows
+    elec  = _safe_pct("Electricity",                n=1)
+    ng_t  = _safe_pct("Natural Gas",                n=1)
+    lfo   = _safe_pct("Light Fuel Oil and Kerosene", n=1)
+    hfo   = _safe_pct("Heavy Fuel Oil",              n=1)
+    steam = _safe_pct("Steam",                       n=1)
+    other = _safe_pct("Other2",                      n=1)
 
-    # Accumulate per-activity series for weighted averaging later
-    # Structure: {tech_name: {activity: pd.Series}}
-    cold_per_activity:   dict[str, dict[str, pd.Series]] = {}
-    marine_per_activity: dict[str, dict[str, pd.Series]] = {}
+    # Steam → NG Cogeneration; Other → Propane
+    ng_lo, ng_md, ng_hi = _split_ng(ng_t)
 
-    for tbl_num, activity in zip(HVAC_TABLES, cims_activities):
-        tbl = tables[f"Table {tbl_num}"]
+    tech_shares = {
+        'Natural Gas_Furnace_Low Efficiency':       ng_lo,
+        'Natural Gas_Furnace_Medium Efficiency':    ng_md,
+        'Natural Gas_Furnace_High Efficiency':      ng_hi,
+        'Natural Gas_Cogeneration':                 steam,
+        'Light Fuel Oil_Furnace_Low Efficiency':    lfo,
+        'Light Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
+        'Heavy Fuel Oil_Furnace_Low Efficiency':    hfo,
+        'Heavy Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
+        'Propane_Furnace_Medium Efficiency':        other,
+        'Propane_Furnace_High Efficiency':          pd.Series(dtype=float),
+        'Electricity_Furnace_High Efficiency':      elec,
+        'Electricity_GSHP':                         pd.Series(dtype=float),
+        'Electricity_ASHP_Natural Gas_Backup':      pd.Series(dtype=float),
+        'Electricity_ASHP_Electricity_Backup':      pd.Series(dtype=float),
+        'Natural Gas_ASHP_Natural Gas_Backup':      pd.Series(dtype=float),
+    }
 
-        elec  = _safe(tbl, "Electricity",               n=3)
-        ng_t  = _safe(tbl, "Natural Gas",               n=3)
-        lfo   = _safe(tbl, "Light Fuel Oil and Kerosene", n=1)
-        hfo   = _safe(tbl, "Heavy Fuel Oil",            n=1)
-        other = _safe(tbl, "Other1",                    n=1, zero_fill=True)
+    frames = []
+    for tech, s in tech_shares.items():
+        if s.dropna().empty:
+            continue
+        frames.append(_long(region, 'hvac_cold', tech,
+                            'market_share_total', '% of GJ HVAC', s))
 
-        # Steam: impute X (suppressed) as remainder
-        try:
-            raw_steam = _row_to_series(tbl, "Steam", match_n=1)
-        except KeyError:
-            raw_steam = pd.Series(dtype=float)
-
-        steam = {}
-        for year, val in raw_steam.items():
-            if val == -1.0:
-                other_sum = sum(
-                    (s.get(year) or 0.0) if isinstance(s, dict) else float(s[year] if year in s.index else 0.0)
-                    for s in [elec, ng_t, lfo, hfo, other]
-                )
-                steam[year] = max(0.0, 1.0 - other_sum)
-            elif pd.isna(val):
-                steam[year] = np.nan
-            else:
-                steam[year] = float(val) / 100.0
-        steam_s = pd.Series(steam)
-
-        ng_lo, ng_md, ng_hi = _split_ng(ng_t)
-
-        sector_cold = {
+    if is_bc:
+        marine_shares = {
+            'Natural Gas_Furnace_Low Efficiency':       ng_lo,
+            'Natural Gas_Furnace_Medium Efficiency':    ng_md,
+            'Natural Gas_Furnace_High Efficiency':      ng_hi,
+            'Natural Gas_Cogeneration':                 steam,
             'Light Fuel Oil_Furnace_Low Efficiency':    lfo,
             'Light Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
             'Heavy Fuel Oil_Furnace_Low Efficiency':    hfo,
             'Heavy Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
-            'Natural Gas_Furnace_Low Efficiency':       ng_lo,
-            'Natural Gas_Furnace_Medium Efficiency':    ng_md,
-            'Natural Gas_Furnace_High Efficiency':      ng_hi,
             'Propane_Furnace_Medium Efficiency':        other,
             'Propane_Furnace_High Efficiency':          pd.Series(dtype=float),
-            'Natural Gas_Cogeneration':                 steam_s,
-            'Electricity_GSHP':                         pd.Series(dtype=float),
             'Electricity_Furnace_High Efficiency':      elec,
-            'Electricity_ASHP_Natural Gas_Backup':      pd.Series(dtype=float),
-            'Electricity_ASHP_Electricity_Backup':      pd.Series(dtype=float),
-            'Natural Gas_ASHP_Natural Gas_Backup':      pd.Series(dtype=float),
+            'Electricity_GSHP':                         pd.Series(dtype=float),
+            'Electricity_ASHP':                         pd.Series(dtype=float),
+            'Natural Gas_ASHP':                         pd.Series(dtype=float),
         }
-        for tech, s in sector_cold.items():
-            cold_per_activity.setdefault(tech, {})[activity] = s
-
-        if is_bc:
-            sector_marine = {
-                'Light Fuel Oil_Furnace_Low Efficiency':    lfo,
-                'Light Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
-                'Heavy Fuel Oil_Furnace_Low Efficiency':    hfo,
-                'Heavy Fuel Oil_Furnace_Medium Efficiency': pd.Series(dtype=float),
-                'Natural Gas_Furnace_Low Efficiency':       ng_lo,
-                'Natural Gas_Furnace_Medium Efficiency':    ng_md,
-                'Natural Gas_Furnace_High Efficiency':      ng_hi,
-                'Propane_Furnace_Medium Efficiency':        other,
-                'Propane_Furnace_High Efficiency':          pd.Series(dtype=float),
-                'Natural Gas_Cogeneration':                 steam_s,
-                'Electricity_GSHP':                         pd.Series(dtype=float),
-                'Electricity_Furnace_High Efficiency':      elec,
-                'Electricity_ASHP':                         pd.Series(dtype=float),
-                'Natural Gas_ASHP':                         pd.Series(dtype=float),
-            }
-            for tech, s in sector_marine.items():
-                marine_per_activity.setdefault(tech, {})[activity] = s
-
-    return cold_per_activity, marine_per_activity, cims_activities
-
-
-def _weighted_hvac(per_activity: dict, building_shell_df: pl.DataFrame,
-                   region: str, climate_var: str) -> list[pl.DataFrame]:
-    """
-    Collapse per-activity HVAC shares into region-level weighted averages,
-    using building shell shares as weights, and return long-format frames.
-    """
-    cims_activities = list(ACTIVITY_MAPPING.values())
-    frames = []
-
-    # Build a weight lookup {activity: {year: weight}} from Polars without to_pandas
-    weight_lookup: dict[str, dict[int, float]] = {}
-    for activity in cims_activities:
-        subset = building_shell_df.filter(pl.col('category') == activity)
-        weight_lookup[activity] = {
-            int(yr): float(val)
-            for yr, val in zip(
-                subset.get_column('year').cast(pl.Int64).to_list(),
-                subset.get_column('value').cast(pl.Float64).to_list(),
-            )
-        }
-
-    for tech, act_dict in per_activity.items():
-        # Skip techs with no data at all
-        if not any(not s.dropna().empty for s in act_dict.values()):
-            continue
-
-        # Gather years common across activities with data
-        all_years: set[int] = set()
-        for s in act_dict.values():
-            all_years.update(int(y) for y in s.dropna().index)
-        if not all_years:
-            continue
-
-        weighted_vals: dict[int, float] = {}
-        for yr in sorted(all_years):
-            numerator = 0.0
-            denominator = 0.0
-            for activity in cims_activities:
-                tech_s = act_dict.get(activity, pd.Series(dtype=float))
-                tech_val = float(tech_s[yr]) if yr in tech_s.index and pd.notna(tech_s[yr]) else None
-                wt = weight_lookup.get(activity, {}).get(yr)
-                if tech_val is not None and wt is not None and wt > 0:
-                    numerator   += tech_val * wt
-                    denominator += wt
-            if denominator > 0:
-                weighted_vals[yr] = numerator / denominator
-
-        if weighted_vals:
-            s = pd.Series(weighted_vals)
-            frames.append(_long(region, climate_var, tech,
+        for tech, s in marine_shares.items():
+            if s.dropna().empty:
+                continue
+            frames.append(_long(region, 'hvac_marine', tech,
                                 'market_share_total', '% of GJ HVAC', s))
 
     return frames
@@ -634,8 +590,8 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
         s = _series(variable, category)
         if s.dropna().empty:
             return pl.DataFrame()
-        extended = fn(s, **kwargs)
         max_hist = int(s.dropna().index.max())
+        extended = fn(s, base_year=max_hist, **kwargs)
         new = extended[extended.index > max_hist]
         if new.empty:
             return pl.DataFrame()
@@ -652,20 +608,23 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
     # 1. Total floorspace — linear growth
     fs_params = params.get('floorspace', {})
     if region in fs_params:
-        periods = fs_params[region].get('periods', [(2023, 2051, 0.01), (2051, 2101, 0.005)])
+        periods = fs_params[region].get('periods', [(LAST_HIST_YEAR + 1, 2051, 0.01), (2051, 2101, 0.005)])
         frames.append(_apply('total_floorspace', '', extend_series_linear,
                              periods=periods))
         print("    ✓ Total floorspace extended (linear)")
 
-    # 2. Building shell shares — trend decline
+    # 2. Building shell shares — trend then dampener, per activity
     bs_params = params.get('building_shell_shares', {})
     if bs_params:
-        td_kwargs = dict(
-            trend_start=bs_params.get('trend_start', 2000),
-            trend_end=bs_params.get('trend_end', 2022),
-            trend_period=bs_params.get('trend_period', (2023, 2031)),
-            decrease_periods=bs_params.get('decrease_periods', [(2031, 2051, 0.05), (2051, 2101, 0.1)]),
+        trend_kwargs_base = dict(
+            trend_start  = bs_params.get('trend_start', 2000),
+            trend_end    = bs_params.get('trend_end', LAST_HIST_YEAR),
+            trend_period = bs_params.get('trend_period', (LAST_HIST_YEAR + 1, 2031)),
         )
+        activity_rates = bs_params.get('activity_rates', {})
+        decline1_yrs   = bs_params.get('decline1_years', (2031, 2051))
+        decline2_yrs   = bs_params.get('decline2_years', (2051, 2101))
+
         activities = list(ACTIVITY_MAPPING.values())
         declining  = [a for a in activities if a != 'Other Services']
 
@@ -674,10 +633,19 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
             s = _series('building_shell_shares', activity)
             if s.dropna().empty:
                 continue
-            ext = extend_series_trend_decline(s, **td_kwargs)
+            r1, r2 = activity_rates.get(activity, (-0.10, -0.10))
+            td_kwargs = {
+                **trend_kwargs_base,
+                'decline_periods': [
+                    (decline1_yrs[0], decline1_yrs[1], r1),
+                    (decline2_yrs[0], decline2_yrs[1], r2),
+                ],
+            }
+            max_hist_bs = int(s.dropna().index.max())
+            ext = extend_series_trend_dampener(s, base_year=max_hist_bs, **td_kwargs)
             projected_declining[activity] = ext
             frames.append(_apply('building_shell_shares', activity,
-                                 extend_series_trend_decline, **td_kwargs))
+                                 extend_series_trend_dampener, **td_kwargs))
 
         # Other Services = 1 - sum(all other activities)
         if projected_declining:
@@ -685,9 +653,12 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
                            ['year'].max())
             other_vals: dict[int, float] = {}
             for yr in range(max_hist + 1, 2101):
-                other_vals[yr] = max(0.0, 1.0 - sum(
-                    float(s.get(yr, np.nan) or 0) for s in projected_declining.values()
-                ))
+                total_other = 0.0
+                for s in projected_declining.values():
+                    v = s.get(yr) if yr in s.index else np.nan
+                    if pd.notna(v):
+                        total_other += float(v)
+                other_vals[yr] = max(0.0, 1.0 - total_other)
             other_series = pd.Series(other_vals)
             meta = df.filter(
                 (pl.col('variable') == 'building_shell_shares') &
@@ -751,18 +722,13 @@ def extract_all_data(
     shell_df = pl.concat(shell_frames)
 
     # -- HVAC ----------------------------------------------------------------
-    cold_per_act, marine_per_act, cims_activities = extract_hvac_technologies(
-        region, tables, ng_efficiency_splits
-    )
-    hvac_cold_frames   = _weighted_hvac(cold_per_act, shell_df, region, 'hvac_cold')
-    hvac_marine_frames = _weighted_hvac(marine_per_act, shell_df, region, 'hvac_marine') if is_bc else []
+    hvac_frames = extract_hvac_technologies(region, tables, ng_efficiency_splits)
 
     # -- Hot water -----------------------------------------------------------
     hw_frames = extract_hot_water(region, tables)
 
     # Assemble
-    all_frames = (floorspace_frames + shell_frames +
-                  hvac_cold_frames + hvac_marine_frames + hw_frames)
+    all_frames = (floorspace_frames + shell_frames + hvac_frames + hw_frames)
     df = pl.concat(all_frames, how='diagonal_relaxed')
 
     if apply_projections:
@@ -810,6 +776,500 @@ def extract_all_regions(
 
     return results
 
+# ==============================================================================
+# COMMERCIAL REGION DISAGGREGATION
+# ==============================================================================
+#
+# Splits two aggregated CEUD regions into individual provinces/territories:
+#
+#   AT (Atlantic) → NL, PE, NS, NB
+#   BC (BC + Territories) → BC, YT, NT, NU
+#
+# Rules per variable:
+#   total_floorspace          → split by population share
+#   floorspace_by_activity    → identical shares within group (copy parent value
+#                               scaled by total_floorspace split)
+#   building_shell_shares     → identical across all sub-regions
+#   hvac_cold                 → split by RESD fuel share, efficiency-corrected,
+#                               renormalized
+#   hvac_marine               → BC only (dropped for YT/NT/NU and AT provinces)
+#   hot_water_tech            → split by RESD fuel share, efficiency-corrected,
+#                               renormalized
+#
+# ==============================================================================
+
+# RESD fuel names → CEUD commercial category names
+COMM_RESD_FUEL_TO_CEUD = {
+    'Natural gas': [
+        'Natural Gas_Furnace_Low Efficiency',
+        'Natural Gas_Furnace_Medium Efficiency',
+        'Natural Gas_Furnace_High Efficiency',
+        'Natural Gas_Cogeneration',
+        'Natural Gas_ASHP_Natural Gas_Backup',
+        'Natural Gas_ASHP',
+        'Natural Gas_Boiler_Medium Efficiency',
+    ],
+    'Light fuel oil': [
+        'Light Fuel Oil_Furnace_Low Efficiency',
+        'Light Fuel Oil_Furnace_Medium Efficiency',
+        'Light Fuel Oil_Boiler_Medium Efficiency',
+    ],
+    'Kerosene and stove oil': [
+        'Light Fuel Oil_Furnace_Low Efficiency',
+        'Light Fuel Oil_Furnace_Medium Efficiency',
+        'Light Fuel Oil_Boiler_Medium Efficiency',
+    ],
+    'Heavy fuel oil': [
+        'Heavy Fuel Oil_Furnace_Low Efficiency',
+        'Heavy Fuel Oil_Furnace_Medium Efficiency',
+        'Heavy Fuel Oil_Boiler_Medium Efficiency',
+    ],
+    "Gas plant natural gas liquids (NGL's)": [
+        'Propane_Furnace_Medium Efficiency',
+        'Propane_Furnace_High Efficiency',
+        'Propane_Boiler_Medium Efficiency',
+    ],
+    'Primary electricity, hydro and nuclear': [
+        'Electricity_Furnace_High Efficiency',
+        'Electricity_ASHP_Natural Gas_Backup',
+        'Electricity_ASHP_Electricity_Backup',
+        'Electricity_ASHP',
+        'Electricity_GSHP',
+        'Electricity_Boiler_High Efficiency',
+    ],
+    '_wood_proxy': [],  # no wood in commercial RESD — proxy not needed
+}
+
+# Efficiency key for each commercial CEUD category (same Table 32 efficiencies)
+COMM_CATEGORY_EFFICIENCY_KEY = {
+    'Natural Gas_Furnace_Low Efficiency':       'ng_low',
+    'Natural Gas_Furnace_Medium Efficiency':    'ng_med',
+    'Natural Gas_Furnace_High Efficiency':      'ng_high',
+    'Natural Gas_Cogeneration':                 'ng_med',
+    'Natural Gas_ASHP_Natural Gas_Backup':      'ng_med',
+    'Natural Gas_ASHP':                         'ng_med',
+    'Natural Gas_Boiler_Medium Efficiency':     'ng_med',
+    'Light Fuel Oil_Furnace_Low Efficiency':    'oil_low',
+    'Light Fuel Oil_Furnace_Medium Efficiency': 'oil_med',
+    'Light Fuel Oil_Boiler_Medium Efficiency':  'oil_med',
+    'Heavy Fuel Oil_Furnace_Low Efficiency':    'oil_low',
+    'Heavy Fuel Oil_Furnace_Medium Efficiency': 'oil_med',
+    'Heavy Fuel Oil_Boiler_Medium Efficiency':  'oil_med',
+    'Propane_Furnace_Medium Efficiency':        'other',
+    'Propane_Furnace_High Efficiency':          'other',
+    'Propane_Boiler_Medium Efficiency':         'other',
+    'Electricity_Furnace_High Efficiency':      'elec',
+    'Electricity_ASHP_Natural Gas_Backup':      'heat_pump',
+    'Electricity_ASHP_Electricity_Backup':      'heat_pump',
+    'Electricity_ASHP':                         'heat_pump',
+    'Electricity_GSHP':                         'heat_pump',
+    'Electricity_Boiler_High Efficiency':       'elec',
+}
+
+# Variables identical across sub-regions (shares copied as-is)
+COMM_IDENTICAL_VARIABLES = {
+    'building_shell_shares',
+}
+
+# Market share variables needing efficiency correction + renormalization
+COMM_MARKET_SHARE_VARIABLES = {
+    'hvac_cold',
+    'hot_water_tech',
+}
+
+# hvac_marine is BC-only — dropped for all other sub-regions
+MARINE_ONLY_REGIONS = {'BC'}
+
+# Maps aggregated CEUD region → individual sub-region codes and their
+# full names as they appear in the population and RESD CSVs
+COMM_REGION_MAP = {
+    'AT': {
+        'Newfoundland and Labrador': 'NL',
+        'Prince Edward Island':      'PE',
+        'Nova Scotia':               'NS',
+        'New Brunswick':             'NB',
+    },
+    'BC': {
+        'Yukon':                 'YT',
+        'Northwest Territories': 'NT',
+        'Nunavut':               'NU',
+        # BC itself stays as BC — handled separately
+    },
+}
+
+COMM_PROJECTION_END = 2100
+
+
+def _build_comm_resd_shares(resd_csv: Path) -> pd.DataFrame:
+    """
+    Load the commercial RESD CSV, aggregate Public administration +
+    Commercial and other institutional, and return territorial energy
+    shares by fuel and year.
+
+    Returns
+    -------
+    pd.DataFrame with columns: year, geo, fuel, share
+        share = this geo's fraction of the group (AT or BC-territories) total
+        for this fuel/year.
+    """
+    df = pd.read_csv(resd_csv,
+                     usecols=['REF_DATE', 'GEO', 'Fuel type',
+                              'Supply and demand characteristics', 'VALUE'])
+    df.columns = ['year', 'geo', 'fuel', 'sector', 'demand_TJ']
+
+    # Aggregate both sectors
+    agg = (
+        df.groupby(['year', 'geo', 'fuel'])['demand_TJ']
+        .sum()
+        .reset_index()
+    )
+
+    # Assign each geo to its parent group
+    at_geos   = set(COMM_REGION_MAP['AT'].keys())
+    terr_geos = set(COMM_REGION_MAP['BC'].keys())
+
+    def get_group(geo):
+        if geo in at_geos:
+            return 'AT'
+        if geo in terr_geos:
+            return 'BC_terr'
+        return None
+
+    agg['group'] = agg['geo'].apply(get_group)
+    agg = agg[agg['group'].notna()].copy()
+
+    # Group total per fuel/year within each parent group
+    group_total = (
+        agg.groupby(['year', 'fuel', 'group'])['demand_TJ']
+        .sum()
+        .rename('group_total')
+        .reset_index()
+    )
+    agg = agg.merge(group_total, on=['year', 'fuel', 'group'])
+    agg['share'] = agg['demand_TJ'] / agg['group_total'].replace(0, np.nan)
+
+    return agg[['year', 'geo', 'fuel', 'group', 'share']].copy()
+
+
+def _get_comm_efficiency(efficiencies: dict, category: str, year: int) -> float:
+    """Look up efficiency for a commercial category/year."""
+    key = COMM_CATEGORY_EFFICIENCY_KEY.get(category)
+    if key is None:
+        return 1.0
+    series = efficiencies.get(key, {})
+    if not series:
+        return 1.0
+    if year in series:
+        return series[year]
+    return series[max(series.keys())]
+
+
+def _build_comm_cat_to_fuel_map() -> dict:
+    """Invert COMM_RESD_FUEL_TO_CEUD into {category: fuel}."""
+    cat_to_fuel = {}
+    for fuel, cats in COMM_RESD_FUEL_TO_CEUD.items():
+        for cat in cats:
+            cat_to_fuel[cat] = fuel
+    return cat_to_fuel
+
+def _load_efficiencies(efficiency_xls: Path) -> dict:
+    """
+    Load heating system efficiencies from CEUD Table 32.
+
+    Returns
+    -------
+    dict mapping efficiency_key → {year: efficiency_as_fraction}
+    e.g. {'ng_low': {2000: 0.62, 2001: 0.62, ...}, ...}
+    """
+    df = pd.read_excel(str(efficiency_xls), sheet_name='Table 32', header=None)
+
+    years_row = df.iloc[10]
+    year_cols = {
+        int(v): j for j, v in enumerate(years_row)
+        if pd.notna(v) and str(v).replace('.0', '').isdigit()
+    }
+
+    def get_series(row_idx: int) -> dict[int, float]:
+        row = df.iloc[row_idx]
+        return {
+            yr: float(row.iloc[col]) / 100.0
+            for yr, col in year_cols.items()
+            if pd.notna(row.iloc[col])
+        }
+
+    return {
+        'ng_low':    get_series(16),
+        'ng_med':    get_series(17),
+        'ng_high':   get_series(18),
+        'oil_low':   get_series(13),
+        'oil_med':   get_series(14),
+        'oil_high':  get_series(15),
+        'elec':      get_series(19),
+        'heat_pump': get_series(20),
+        'other':     get_series(21),
+        'wood':      get_series(22),
+    }
+
+def disaggregate_commercial(
+    region_dfs: dict,
+    resd_csv: Path,
+    pop_csv: Path,
+    efficiency_xls: Path,
+) -> dict:
+    """
+    Split AT and BC CEUD commercial data into individual provinces/territories.
+
+    Parameters
+    ----------
+    region_dfs : dict
+        Output of extract_all_data for each region — keys are region codes
+        ('AB', 'AT', 'BC', etc.), values are pl.DataFrames.
+    resd_csv : Path
+        Path to commercial RESD CSV (Statistics Canada table 25-10-0029-01).
+    pop_csv : Path
+        Path to population CSV (Statistics Canada table 17-10-0009-01).
+    efficiency_xls : Path
+        Path to CEUD national res_ca_e_32.xls (Table 32 efficiencies).
+
+    Returns
+    -------
+    dict
+        Same structure as region_dfs but with AT and BC replaced by their
+        constituent provinces/territories. BC itself is kept; only the
+        territory sub-regions are added.
+        Keys: 'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'QC',
+              'PE', 'SK', 'YT'
+    """
+    resd_shares  = _build_comm_resd_shares(resd_csv)
+    efficiencies = _load_efficiencies(efficiency_xls)
+    cat_to_fuel  = _build_comm_cat_to_fuel_map()
+
+    # Build population shares for each group
+    at_pop = build_population_shares(
+        pop_csv,
+        regions=list(COMM_REGION_MAP['AT'].keys()),
+        projection_end=COMM_PROJECTION_END,
+    )
+    terr_pop = build_population_shares(
+        pop_csv,
+        regions=list(COMM_REGION_MAP['BC'].keys()),
+        projection_end=COMM_PROJECTION_END,
+    )
+
+    results = {}
+
+    # Keep non-AT, non-BC regions unchanged
+    for code, df in region_dfs.items():
+        if code not in ('AT', 'BC'):
+            results[code] = df
+
+    # ------------------------------------------------------------------
+    # Split AT → NL, PE, NS, NB
+    # ------------------------------------------------------------------
+    if 'AT' in region_dfs:
+        at_df = region_dfs['AT']
+        at_pd = at_df.to_pandas()
+        at_pd = at_pd[at_pd['year'] <= COMM_PROJECTION_END].copy()
+
+        at_resd = resd_shares[resd_shares['group'] == 'AT'].copy()
+
+        for geo_name, prov_code in COMM_REGION_MAP['AT'].items():
+            sub_df = at_pd.copy()
+            sub_df['region'] = prov_code
+
+            def get_resd_share_at(row, geo=geo_name):
+                fuel = cat_to_fuel.get(row['category'])
+                if fuel is None:
+                    return np.nan
+                mask = (
+                    (at_resd['geo'] == geo) &
+                    (at_resd['fuel'] == fuel)
+                )
+                available = at_resd[mask].sort_values('year')
+                if available.empty:
+                    return np.nan
+                yr_match = available[available['year'] == row['year']]
+                if not yr_match.empty:
+                    return float(yr_match.iloc[0]['share'])
+                return float(available.iloc[-1]['share'])
+
+            def get_pop_share_at(row, geo=geo_name):
+                try:
+                    return at_pop.loc[
+                        (at_pop['territory'] == geo) &
+                        (at_pop['year'] == row['year']),
+                        'pop_share'
+                    ].iloc[0]
+                except (IndexError, KeyError):
+                    avail = at_pop[at_pop['territory'] == geo]
+                    return float(avail.iloc[-1]['pop_share']) if not avail.empty else np.nan
+
+            def apply_share_at(row, _get_pop=get_pop_share_at, _get_resd=get_resd_share_at):
+                var = row['variable']
+                if var in COMM_IDENTICAL_VARIABLES:
+                    return row['value']
+                if var in ('total_floorspace', 'floorspace_by_activity'):
+                    return row['value'] * _get_pop(row)
+                if var == 'hvac_marine':
+                    return np.nan
+                return row['value'] * _get_resd(row)
+
+            sub_df['value'] = sub_df.apply(apply_share_at, axis=1)
+            # Drop marine rows for Atlantic
+            sub_df = sub_df[sub_df['variable'] != 'hvac_marine']
+            results[prov_code] = pl.from_pandas(sub_df)
+
+    # ------------------------------------------------------------------
+    # Split BC territories → YT, NT, NU  (BC itself kept unchanged)
+    # ------------------------------------------------------------------
+    if 'BC' in region_dfs:
+        bc_df = region_dfs['BC']
+        bc_pd = bc_df.to_pandas()
+        bc_pd = bc_pd[bc_pd['year'] <= COMM_PROJECTION_END].copy()
+
+        terr_resd = resd_shares[resd_shares['group'] == 'BC_terr'].copy()
+
+        # Build BC-only population share from full population CSV
+        # BC's share of (BC + territories) total
+        bc_and_terr = ['British Columbia'] + list(COMM_REGION_MAP['BC'].keys())
+        bc_terr_pop = build_population_shares(
+            pop_csv,
+            regions=bc_and_terr,
+            projection_end=COMM_PROJECTION_END,
+        )
+
+        def get_pop_share_bc_province(row):
+            try:
+                return bc_terr_pop.loc[
+                    (bc_terr_pop['territory'] == 'British Columbia') &
+                    (bc_terr_pop['year'] == row['year']),
+                    'pop_share'
+                ].iloc[0]
+            except (IndexError, KeyError):
+                avail = bc_terr_pop[bc_terr_pop['territory'] == 'British Columbia']
+                return float(avail.iloc[-1]['pop_share']) if not avail.empty else np.nan
+
+        def apply_share_bc_province(row):
+            var = row['variable']
+            if var in COMM_IDENTICAL_VARIABLES:
+                return row['value']
+            if var in ('total_floorspace', 'floorspace_by_activity'):
+                return row['value'] * get_pop_share_bc_province(row)
+            # BC keeps marine, hvac_cold and hot_water_tech stay as BCT values
+            # (territories are cold-only; BC retains its marine/cold split)
+            return row['value']
+
+        bc_split = bc_pd.copy()
+        bc_split['region'] = 'BC'
+        bc_split['value'] = bc_split.apply(apply_share_bc_province, axis=1)
+        results['BC'] = pl.from_pandas(bc_split)
+
+        # Territory population shares relative to (BC + territories) total
+        # so each territory gets its fraction of the full BCT floorspace
+        terr_names = list(COMM_REGION_MAP['BC'].keys())
+        terr_of_bct_pop = build_population_shares(
+            pop_csv,
+            regions=bc_and_terr,
+            projection_end=COMM_PROJECTION_END,
+        )
+
+        for geo_name, terr_code in COMM_REGION_MAP['BC'].items():
+            sub_df = bc_pd.copy()
+            sub_df['region'] = terr_code
+
+            def get_resd_share_bc(row, geo=geo_name):
+                fuel = cat_to_fuel.get(row['category'])
+                if fuel is None:
+                    return np.nan
+                mask = (
+                    (terr_resd['geo'] == geo) &
+                    (terr_resd['fuel'] == fuel)
+                )
+                available = terr_resd[mask].sort_values('year')
+                if available.empty:
+                    return np.nan
+                yr_match = available[available['year'] == row['year']]
+                if not yr_match.empty:
+                    return float(yr_match.iloc[0]['share'])
+                return float(available.iloc[-1]['share'])
+
+            def get_pop_share_bc(row, geo=geo_name):
+                try:
+                    return terr_of_bct_pop.loc[
+                        (terr_of_bct_pop['territory'] == geo) &
+                        (terr_of_bct_pop['year'] == row['year']),
+                        'pop_share'
+                    ].iloc[0]
+                except (IndexError, KeyError):
+                    avail = terr_of_bct_pop[terr_of_bct_pop['territory'] == geo]
+                    return float(avail.iloc[-1]['pop_share']) if not avail.empty else np.nan
+              
+            def apply_share_bc(row, _get_pop=get_pop_share_bc, _get_resd=get_resd_share_bc):
+                var = row['variable']
+                if var in COMM_IDENTICAL_VARIABLES:
+                    return row['value']
+                if var in ('total_floorspace', 'floorspace_by_activity'):
+                    return row['value'] * _get_pop(row)
+                if var == 'hvac_marine':
+                    return np.nan
+                return row['value'] * _get_resd(row)
+
+            sub_df['value'] = sub_df.apply(apply_share_bc, axis=1)
+            # Drop marine rows for territories
+            sub_df = sub_df[sub_df['variable'] != 'hvac_marine']
+            results[terr_code] = pl.from_pandas(sub_df)
+
+    # ------------------------------------------------------------------
+    # Efficiency correction + renormalization for market share variables
+    # ------------------------------------------------------------------
+    # Efficiency correction + renormalization for disaggregated regions only.
+    # AT and BC sub-regions were split using RESD fuel shares, which are fuel
+    # energy shares — these need efficiency correction to convert to technology
+    # market shares. Non-split regions (AB, MB, ON, QC, SK) already have
+    # correct market shares from Table 24 and must NOT be modified.
+    disaggregated_codes = (
+        set(COMM_REGION_MAP['AT'].values()) |
+        set(COMM_REGION_MAP['BC'].values()) |
+        {'BC'}
+    )
+    for code in list(results.keys()):
+        if code not in disaggregated_codes:
+            continue
+        df_pd = results[code].to_pandas()
+        changed = False
+
+        for var in COMM_MARKET_SHARE_VARIABLES:
+            var_mask = df_pd['variable'] == var
+            if not var_mask.any():
+                continue
+            changed = True
+
+            # Divide by efficiency to convert fuel share → useful energy share
+            def eff_correct(row):
+                eff = _get_comm_efficiency(efficiencies, row['category'], row['year'])
+                return row['value'] / eff if eff > 0 else row['value']
+
+            df_pd.loc[var_mask, 'value'] = df_pd[var_mask].apply(eff_correct, axis=1)
+
+            # Renormalize per region/year
+            totals = (
+                df_pd[var_mask]
+                .groupby(['region', 'year'])['value']
+                .sum()
+                .rename('total')
+                .reset_index()
+            )
+            df_pd = df_pd.merge(totals, on=['region', 'year'], how='left')
+            df_pd.loc[var_mask, 'value'] = (
+                df_pd.loc[var_mask, 'value'] /
+                df_pd.loc[var_mask, 'total'].replace(0, np.nan)
+            )
+            df_pd = df_pd.drop(columns='total')
+
+        if changed:
+            results[code] = pl.from_pandas(df_pd)
+
+    return results
 
 # ==============================================================================
 # MAIN
@@ -855,17 +1315,25 @@ def main(
             print(f"  ❌ Failed: {exc}")
             failed.append((region, str(exc)))
 
+    # Disaggregate AT → NL/PE/NS/NB and BC territories → YT/NT/NU
+    if not failed or any(r not in [f[0] for f in failed] for r in ['AT', 'BC']):
+        print("\n  🗺️  Disaggregating AT and BC into provinces/territories...")
+        results = disaggregate_commercial(results, RESD_CSV, POP_CSV, EFFICIENCY_XLS)
+        print("  ✅ Disaggregation complete")
+
+    all_frames = list(results.values())
+
     if export_csv and all_frames:
         combined = pl.concat(all_frames, how='diagonal_relaxed')
         combined = combined.sort(['region', 'variable', 'category', 'year'])
         output_file = output_dir / "commercial.csv"
         combined.write_csv(str(output_file))
         print(f"\n  ✅ Saved {len(combined):,} rows to {output_file}")
-
+        
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
-    print(f"✅ Successful: {len(results)}/{len(region_codes)} regions")
+    print(f"✅ Successful: {len(results)}/{13} regions")
     if failed:
         print(f"❌ Failed: {len(failed)} regions")
         for region, err in failed:

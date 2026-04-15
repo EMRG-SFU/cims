@@ -2,9 +2,10 @@
 Extract commercial calibration data and save to CIMS-formatted CSV files.
 
 This script:
-1. Extracts data for ALL commercial regions
+1. Extracts data for ALL commercial regions including disaggregated
+   provinces/territories: AT → NL, PE, NS, NB and BC → BC + YT, NT, NU
 2. ALWAYS applies projections from commercial_assumptions.csv
-3. Exports to CIMS-formatted CSV files
+3. Exports one CIMS-formatted CSV file per province/territory
 
 Output columns: Branch, Type, Region, Sector, Service, Technology, Parameter,
                 Context, Sub_Context, Target, Source, Unit, Year, Value
@@ -32,7 +33,7 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from source.nrcan.ceud.commercial.commercial import extract_all_data, REGIONS
+from source.nrcan.ceud.commercial.commercial import main as commercial_main
 
 
 # ==============================================================================
@@ -42,16 +43,7 @@ from source.nrcan.ceud.commercial.commercial import extract_all_data, REGIONS
 def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
     """
     Extract {year: value} from a long-format Polars DataFrame for one
-    variable/category combination.  Uses .to_list() on numeric-only columns
-    so pyarrow is never required.
-
-    Parameters
-    ----------
-    df : pl.DataFrame
-        Region-level long-format DataFrame from extract_all_data().
-    variable : str
-    category : str
-        Empty string for scalar variables (e.g. total_floorspace).
+    variable/category combination.
 
     Returns
     -------
@@ -86,7 +78,7 @@ def format_to_cims(df: pl.DataFrame, output_file: str | Path,
     Parameters
     ----------
     df : pl.DataFrame
-        Output of extract_all_data() for one region.
+        Output of commercial main() for one region/province/territory.
     output_file : str or Path
     region_code : str
 
@@ -165,7 +157,7 @@ def format_to_cims(df: pl.DataFrame, output_file: str | Path,
         hw = _get_series(df, 'hot_water_tech', tech)
         if hw:
             rows.extend(make_row(
-                {'Branch':    f'CIMS.CAN.{region}.Commercial.Hot Water',
+                {'Branch':    f'CIMS.CAN.{region}.Commercial.Buildings.Hot Water',
                  'Type':      'Service',
                  'Service':   'Hot Water',
                  'Technology': tech,
@@ -178,7 +170,7 @@ def format_to_cims(df: pl.DataFrame, output_file: str | Path,
     # 4. HVAC TECHNOLOGIES
     # ------------------------------------------------------------------
     def export_hvac(climate_var: str, climate_label: str) -> None:
-        """Export weighted HVAC shares for one climate zone."""
+        """Export HVAC shares for one climate zone."""
         for tech in _get_categories(df, climate_var):
             hvac = _get_series(df, climate_var, tech)
             if hvac:
@@ -231,41 +223,37 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    region_codes = list(REGIONS.keys())
-    output_dir   = Path(args.output_dir)
+    output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    results: dict = {}
-    failed:  list = []
-
     print("=" * 80)
-    print("COMMERCIAL DATA EXTRACTION - ALL REGIONS")
+    print("COMMERCIAL CALIBRATION DATA EXTRACTION - ALL PROVINCES & TERRITORIES")
     print("=" * 80)
-    print(f"Regions:          {', '.join(region_codes)}")
     print(f"Projections:      ENABLED")
     print(f"Output format:    CIMS")
     print(f"Output directory: {output_dir}")
     print("=" * 80)
 
-    for region in region_codes:
+    # Run the full pipeline including AT → NL/PE/NS/NB and BC → BC/YT/NT/NU
+    # Returns {region_code: pl.DataFrame} for all disaggregated regions
+    results = commercial_main(apply_projections=True, export_csv=False)
+
+    failed = []
+    for region_code, df in results.items():
         try:
-            print(f"\n{region} — {REGIONS[region.upper()]}:")
-            df = extract_all_data(region, apply_projections=True)
-            results[region] = df
-            print(f"  ✅ Extraction complete")
-            format_to_cims(df, output_dir / f"commercial_{region.upper()}.csv", region)
+            format_to_cims(df, output_dir / f"commercial_{region_code.upper()}.csv", region_code)
         except Exception as exc:
             import traceback
             traceback.print_exc()
-            print(f"  ❌ Failed: {exc}")
-            failed.append((region, str(exc)))
+            print(f"  ❌ Failed formatting {region_code}: {exc}")
+            failed.append((region_code, str(exc)))
 
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
-    print(f"✅ Successful: {len(results)}/{len(region_codes)} regions")
+    print(f"✅ Successful: {len(results) - len(failed)}/{len(results)} regions")
     if failed:
-        print(f"❌ Failed: {len(failed)} regions")
+        print(f"❌ Failed: {len(failed)}")
         for region, err in failed:
             print(f"  • {region}: {err}")
     print("=" * 80)

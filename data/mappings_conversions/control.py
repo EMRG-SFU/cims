@@ -1,8 +1,7 @@
 import marimo
 
-__generated_with = "0.18.4"
+__generated_with = "0.21.1"
 app = marimo.App(width="medium", app_title="Control Table")
-
 
 with app.setup:
     import marimo as mo
@@ -26,6 +25,9 @@ with app.setup:
         "currency_year_cer_benchmark": 2022,
         "currency_country_cer_benchmark": "USD",
         "cer_ef_reference_scenario": "Current Measures",
+        "last_historical_year": {
+            "CEUD": 2023,
+        },
     }
 
 
@@ -67,6 +69,9 @@ def _():
         value=CONTROLS["cer_ef_reference_scenario"],
         label="CER EF Reference Scenario",
     )
+    last_hist_year_ceud = mo.ui.number(
+        value=CONTROLS["last_historical_year"]["CEUD"], label="Last Historical Year — CEUD"
+    )
     return (
         cer_ef_reference_scenario,
         currency_country_cer_benchmark,
@@ -75,6 +80,7 @@ def _():
         currency_year_cer_macro,
         currency_year_cims,
         currency_year_jcims,
+        last_hist_year_ceud,
     )
 
 
@@ -87,6 +93,7 @@ def _(
     currency_year_cer_macro,
     currency_year_cims,
     currency_year_jcims,
+    last_hist_year_ceud,
 ):
     mo.vstack([
         mo.md("## Parameters"),
@@ -103,6 +110,10 @@ def _(
                 cer_ef_reference_scenario,
             ]),
         ], gap=4),
+        mo.md("## Last Historical Year"),
+        mo.hstack([
+            last_hist_year_ceud,
+        ]),
     ])
     return
 
@@ -116,9 +127,10 @@ def _(
     currency_year_cer_macro,
     currency_year_cims,
     currency_year_jcims,
+    last_hist_year_ceud,
 ):
     # Build updated CONTROLS dict from current widget values
-    _current = {
+    current = {
         "currency_year_cims": int(currency_year_cims.value),
         "currency_year_jcims": int(currency_year_jcims.value),
         "currency_year_cer_enduse": int(currency_year_cer_enduse.value),
@@ -126,30 +138,34 @@ def _(
         "currency_year_cer_benchmark": int(currency_year_cer_benchmark.value),
         "currency_country_cer_benchmark": currency_country_cer_benchmark.value,
         "cer_ef_reference_scenario": cer_ef_reference_scenario.value,
+        "last_historical_year": {
+            "CEUD": int(last_hist_year_ceud.value),
+        },
     }
-    return (_current,)
+    return (current,)
 
 
 @app.cell
-def _(_current):
+def _(current):
     mo.vstack([
         mo.md("## Current Values"),
-        mo.md("```json\n" + json.dumps(_current, indent=2) + "\n```"),
+        mo.md("```json\n" + json.dumps(current, indent=2) + "\n```"),
     ])
     return
 
 
 @app.cell
-def _(_current):
+def _():
     save_button = mo.ui.run_button(label="💾 Save to control.py")
+    return (save_button,)
 
+
+@app.cell
+def _(current, save_button):
     def _save():
         this_file = Path(__file__)
         source = this_file.read_text(encoding='utf-8')
-
-        # Replace the CONTROLS dict inside the with app.setup block in-place.
-        # Matches from "    CONTROLS = {" up to the closing "    }" of that dict.
-        new_dict = '    CONTROLS = ' + json.dumps(_current, indent=4).replace('\n', '\n    ')
+        new_dict = '    CONTROLS = ' + json.dumps(current, indent=4).replace('\n', '\n    ')
         updated = re.sub(
             r'    CONTROLS = \{[^}]*\}',
             new_dict,
@@ -166,7 +182,7 @@ def _(_current):
         save_status = mo.md("_Click Save to write current values back into this file._")
 
     mo.vstack([save_button, save_status])
-    return (save_button,)
+    return
 
 
 @app.cell
@@ -189,11 +205,11 @@ def _():
         header=None,
         names=['col_a', 'col_b', 'col_c', 'col_d'],
     )
-    return energy_map_df, region_map_df, sector_map_df, conversions_df
+    return conversions_df, energy_map_df, region_map_df, sector_map_df
 
 
 @app.cell
-def _(energy_map_df, region_map_df, sector_map_df, conversions_df):
+def _(conversions_df, energy_map_df, region_map_df, sector_map_df):
     mo.vstack([
         mo.md("## Energy Map"),
         mo.ui.table(energy_map_df),
@@ -215,7 +231,7 @@ def _(energy_map_df, region_map_df, sector_map_df):
         'region_map': region_map_df,
         'sector_map': sector_map_df,
     }
-    return (MAPPINGS,)
+    return
 
 
 if __name__ == "__main__":

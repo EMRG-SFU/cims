@@ -2,9 +2,10 @@
 Extract residential calibration data and save to CIMS-formatted CSV files.
 
 This script:
-1. Extracts data for ALL provinces/territories
+1. Extracts data for ALL provinces and territories (including disaggregated
+   YT, NT, NU from TR)
 2. ALWAYS applies projections from residential_assumptions.csv
-3. Exports to CIMS-formatted CSV files
+3. Exports one CIMS-formatted CSV file per province/territory
 
 Output columns: Branch, Type, Region, Sector, Service, Technology, Parameter,
                 Context, Sub_Context, Target, Source, Unit, Year, Value
@@ -35,7 +36,7 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from source.nrcan.ceud.residential.residential import extract_all_data, PROVINCES
+from source.nrcan.ceud.residential.residential import main as residential_main
 
 
 # ==============================================================================
@@ -45,16 +46,7 @@ from source.nrcan.ceud.residential.residential import extract_all_data, PROVINCE
 def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
     """
     Extract {year: value} from a long-format Polars DataFrame for one
-    variable/category combination.  Uses .to_list() on numeric-only columns
-    so pyarrow is never required.
-
-    Parameters
-    ----------
-    df : pl.DataFrame
-        Province-level long-format DataFrame from extract_all_data().
-    variable : str
-    category : str
-        Empty string for scalar variables (e.g. housing_thousand).
+    variable/category combination.
 
     Returns
     -------
@@ -89,7 +81,7 @@ def format_to_cims(df: pl.DataFrame, output_file: str | Path,
     Parameters
     ----------
     df : pl.DataFrame
-        Output of extract_all_data() for one province.
+        Output of residential main() for one province/territory.
     output_file : str or Path
     province_code : str
 
@@ -188,7 +180,7 @@ def format_to_cims(df: pl.DataFrame, output_file: str | Path,
             ))
 
     # ------------------------------------------------------------------
-    # 4 & 5. COOLING — LowMed and High Density
+    # 4 & 5. COOLING
     # ------------------------------------------------------------------
     for ac_tech in _get_categories(df, 'cooling_share_data'):
         cooling = _get_series(df, 'cooling_share_data', ac_tech)
@@ -337,41 +329,37 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    province_codes = list(PROVINCES.keys())
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    results: dict = {}
-    failed:  list = []
-
     print("=" * 80)
-    print("RESIDENTIAL DATA EXTRACTION - ALL PROVINCES")
+    print("RESIDENTIAL CALIBRATION DATA EXTRACTION - ALL PROVINCES & TERRITORIES")
     print("=" * 80)
-    print(f"Provinces:        {', '.join(province_codes)}")
     print(f"Projections:      ENABLED")
     print(f"Output format:    CIMS")
     print(f"Output directory: {output_dir}")
     print("=" * 80)
 
-    for prov in province_codes:
+    # Run the full pipeline including TR → YT/NT/NU disaggregation
+    # Returns {province_code: pl.DataFrame} for all 13 provinces/territories
+    results = residential_main(apply_projections=True, export_csv=False)
+
+    failed = []
+    for prov_code, df in results.items():
         try:
-            print(f"\n{prov} — {PROVINCES[prov.upper()]}:")
-            df = extract_all_data(prov, apply_projections=True)
-            results[prov] = df
-            print(f"  ✅ Extraction complete")
-            format_to_cims(df, output_dir / f"residential_{prov.upper()}.csv", prov)
+            format_to_cims(df, output_dir / f"residential_{prov_code.upper()}.csv", prov_code)
         except Exception as exc:
             import traceback
             traceback.print_exc()
-            print(f"  ❌ Failed: {exc}")
-            failed.append((prov, str(exc)))
+            print(f"  ❌ Failed formatting {prov_code}: {exc}")
+            failed.append((prov_code, str(exc)))
 
     print("\n" + "=" * 80)
     print("SUMMARY")
     print("=" * 80)
-    print(f"✅ Successful: {len(results)}/{len(province_codes)} provinces")
+    print(f"✅ Successful: {len(results) - len(failed)}/{len(results)} provinces/territories")
     if failed:
-        print(f"❌ Failed: {len(failed)} provinces")
+        print(f"❌ Failed: {len(failed)}")
         for prov, err in failed:
             print(f"  • {prov}: {err}")
     print("=" * 80)

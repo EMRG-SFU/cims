@@ -184,54 +184,20 @@ def extend_series_trend_decline(series: pd.Series, base_year: int = 2022,
                                   trend_start: int = 2000, trend_end: int = 2022,
                                   trend_period=(2023, 2031),
                                   decrease_periods=None) -> pd.Series:
-    """
-    Extend data by continuing a historical trend for a short period, then
-    applying linear annual declines over subsequent periods.
-
-    This is the Series equivalent of the old ``extend_trend_decline``.
-
-    Steps
-    -----
-    1. Fit a linear trend to the historical data between trend_start and
-       trend_end.
-    2. Continue that trend from trend_period[0] to trend_period[1].
-    3. Apply each decrease_period as a straight-line annual reduction
-       (total pct decrease spread evenly across the sub-period years).
-
-    Parameters
-    ----------
-    series : pd.Series
-        Year-indexed series with historical values.
-    base_year : int
-        Last historical year (default 2022).
-    trend_start : int
-        First year used to fit the historical trend (default 2000).
-    trend_end : int
-        Last year used to fit the historical trend (default 2022).
-    trend_period : tuple of (int, int)
-        (start, end) years for the trend-continuation phase (default
-        (2023, 2031)). End is exclusive.
-    decrease_periods : list of (start_year, end_year, pct_decrease), optional
-        Each tuple defines a decline phase. pct_decrease is a fraction
-        (e.g. 0.05 = 5 % total decline over the sub-period). End is exclusive.
-        Default: [(2031, 2051, 0.05), (2051, 2101, 0.10)]
-
-    Returns
-    -------
-    pd.Series
-        Extended series through the last decrease period.
-
-    Examples
-    --------
-    >>> s = pd.Series({2000: 100.0, 2010: 95.0, 2020: 90.0, 2022: 89.0})
-    >>> extend_series_trend_decline(s)
-    """
     if decrease_periods is None:
         decrease_periods = [(2031, 2051, 0.05), (2051, 2101, 0.10)]
 
-    out = series.copy().astype(float)
+    # Determine the full year range needed and pre-allocate
+    last_year = max(end for _, end, _ in decrease_periods)
+    full_index = range(int(series.index.min()), last_year)
+    out = pd.Series(index=full_index, dtype=float)
+    # Copy historical values in
+    for yr, v in series.items():
+        if yr in out.index:
+            out[int(yr)] = v
+
     if base_year not in out.index or pd.isna(out[base_year]):
-        return out
+        return series.copy().astype(float)
 
     # -- Fit historical trend --------------------------------------------------
     hist_years, hist_vals = [], []
@@ -255,19 +221,121 @@ def extend_series_trend_decline(series: pd.Series, base_year: int = 2022,
 
     # -- Decline phases --------------------------------------------------------
     for d_start, d_end, pct in decrease_periods:
-        # Use the value at the end of the previous phase as the starting point
         prev_year = d_start - 1
-        val_start = float(out[prev_year]) if prev_year in out.index and pd.notna(out.get(prev_year)) else val
+        val_start = float(out[prev_year]) if pd.notna(out[prev_year]) else val
         n_years = d_end - d_start
+        if n_years <= 0:
+            continue
         annual_decrease = (val_start * pct) / n_years
         val = val_start
         for year in range(d_start, d_end):
             val = val - annual_decrease
+            val = max(val, 0.0)
             out[year] = val
 
     return out.sort_index()
 
+def extend_series_trend_dampener(series: pd.Series, base_year: int = 2022,
+                                  trend_start: int = 2000, trend_end: int = 2022,
+                                  trend_period: tuple = (2023, 2031),
+                                  decline_periods: list = None) -> pd.Series:
+    """
+    Extend a series by:
+      1. Continuing the historical linear trend through trend_period
+      2. Applying a growth-rate dampener in each decline period
 
+    The dampener formula mirrors the Excel formula:
+        next = current * (1 + (current/previous - 1) * (1 + rate))
+
+    Where rate is negative (e.g. -0.05) to progressively slow growth toward zero.
+    A rate of -1.0 would freeze growth entirely; a rate of 0.0 leaves it unchanged.
+
+    Parameters
+    ----------
+    series : pd.Series
+        Year-indexed historical series.
+    base_year : int
+        Last historical year (default 2022).
+    trend_start : int
+        First year used to fit the historical trend (default 2000).
+    trend_end : int
+        Last year used to fit the historical trend (default 2022).
+    trend_period : tuple of (int, int)
+        (start_year, end_year) for trend continuation. End is exclusive.
+        e.g. (2023, 2031) projects 2023–2030 using the historical trend.
+    decline_periods : list of (start_year, end_year, rate)
+        Each tuple defines a dampener phase. End is exclusive.
+        rate should be negative to slow growth (e.g. -0.05 = dampen by 5%).
+        Default: [(2031, 2051, -0.05), (2051, 2101, -0.10)]
+
+    Returns
+    -------
+    pd.Series
+        Extended series through the last decline period's end year.
+    """
+    if decline_periods is None:
+        decline_periods = [(2031, 2051, -0.05), (2051, 2101, -0.10)]
+
+    # Pre-allocate full index covering all years needed
+    last_year = max(end for _, end, _ in decline_periods)
+    full_index = range(int(series.index.min()), last_year)
+    out = pd.Series(index=full_index, dtype=float)
+    for yr, v in series.items():
+        if int(yr) in out.index:
+            out[int(yr)] = v
+
+    if base_year not in out.index or pd.isna(out[base_year]):
+        return series.copy().astype(float)
+
+    # -- Fit historical linear trend ------------------------------------------
+    hist_years, hist_vals = [], []
+    for y in range(trend_start, trend_end + 1):
+        if y in out.index and pd.notna(out[y]):
+            hist_years.append(y)
+            hist_vals.append(float(out[y]))
+
+    if len(hist_years) >= 2:
+        slope = stats.linregress(hist_years, hist_vals).slope
+    else:
+        slope = 0.0
+
+    # -- Trend continuation phase ---------------------------------------------
+    t_start, t_end = trend_period
+    val = float(out[base_year])
+    for year in range(t_start, t_end):
+        val = val + slope
+        val = max(val, 0.0)
+        out[year] = val
+
+    # -- Dampener decline phases ----------------------------------------------
+    # Formula: next = current * (1 + (current/previous - 1) * (1 + rate))
+    # This progressively slows the growth rate each year.
+    for d_start, d_end, rate in decline_periods:
+        prev_year = d_start - 1
+        if prev_year not in out.index or pd.isna(out[prev_year]):
+            continue
+        prev = float(out[prev_year])
+
+        # We need two consecutive values to compute the growth rate.
+        # For the first year of the phase, prev_year-1 is the year before that.
+        pre_prev_year = prev_year - 1
+        if pre_prev_year not in out.index or pd.isna(out[pre_prev_year]):
+            pre_prev = prev  # no growth if we can't find the prior year
+        else:
+            pre_prev = float(out[pre_prev_year])
+
+        curr = prev
+        prev_val = pre_prev
+
+        for year in range(d_start, d_end):
+            growth_rate = (curr / prev_val - 1) if prev_val != 0 else 0.0
+            next_val = curr * (1 + growth_rate * (1 + rate))
+            next_val = max(next_val, 0.0)
+            out[year] = next_val
+            prev_val = curr
+            curr = next_val
+
+    return out.sort_index()
 # ==============================================================================
 # POLARS DATAFRAME — backward trend extrapolation
 # ==============================================================================
