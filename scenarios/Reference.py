@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.0"
+__generated_with = "0.23.1"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -38,8 +38,6 @@ def _():
     list_path = 'data/model_inputs/defaults/defaults_Lists.csv'
 
     update_files = {}
-
-    # update_files["data/model_inputs/model/test"] = ["coal mining"]
 
     ### Required sector files (included in data/model_inputs/model/)
     sector_req = [
@@ -364,25 +362,24 @@ def _():
 
 
 @app.cell
-def _(model):
+def _(model, scenario_name):
     #################### Run scenario and output results ###########################
     model.run(equilibrium_threshold=0.05, max_iterations=10, show_warnings=False, print_eq=True)
-    return
+
+    results_path = f'results/{scenario_name}'
+    return (results_path,)
 
 
 @app.cell
-def _(model, scenario_name):
+def _(model, results_path):
     #################### Output Results ###########################
-
-    results_path = f'results/{scenario_name}'
-
     results_df = CIMS.log_model(
        model=model, 
        output_file = f"{results_path}/results_general.csv",
        parameter_file="results/results_general.txt",
        ensure_dir=True   
     )
-    return (results_path,)
+    return
 
 
 @app.cell
@@ -398,11 +395,11 @@ def _(model, results_path):
 
 
 @app.cell
-def _(model, scenario_name):
+def _(model, results_path):
     import pickle
     import gzip
 
-    with gzip.open(f"results/{scenario_name}/model.pkl", "wb") as f:
+    with gzip.open(f"{results_path}/model.pkl", "wb") as f:
         pickle.dump(model, f)
     return
 
@@ -412,7 +409,7 @@ def _():
     # import pickle
     # import gzip
 
-    # with gzip.open(f"results/{scenario_name}/model.pkl", "rb") as f:
+    # with gzip.open(f"{results_path}/model.pkl", "rb") as f:
     #     model = pickle.load(f)
     return
 

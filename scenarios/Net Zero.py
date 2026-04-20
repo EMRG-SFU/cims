@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.0"
+__generated_with = "0.23.1"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -25,7 +25,7 @@ def _():
 
 
 @app.cell(hide_code=True)
-def _(os):
+def _():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
     # Model files should be located at: data/model_inputs/
@@ -84,24 +84,6 @@ def _(os):
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-
-
-
-    # Model files should be located at: data/model_inputs/
-    if sector_req:
-    ### Base model to start initialisation
-        if model_path not in update_files:
-            update_files[model_path] = []
-    ### Default values and parameter list files
-        update_files[model_path].extend(sector_req)
-    model_req = ['DCC', 'DIC', 'FIC', 'market share limits']
-    if model_req:
-        if model_path not in update_files:
-            update_files[model_path] = []
-    ### Required sector files (included in data/model_inputs/model/)
-        update_files[model_path].extend(model_req)
-    ### Required model files (included in data/model_inputs/model/)
-    print('The current folder is', os.getcwd())  # declining capital cost  # declining intangible cost (neighbour effect)  # fixed intangible cost; primarily used for calibration  # use of limits should be minimised
     return base_model, default_path, list_path, model_path, update_files
 
 
@@ -380,25 +362,24 @@ def _():
 
 
 @app.cell
-def _(model):
+def _(model, scenario_name):
     #################### Run scenario and output results ###########################
     model.run(equilibrium_threshold=0.05, max_iterations=10, show_warnings=False, print_eq=True)
-    return
+
+    results_path = f'results/{scenario_name}'
+    return (results_path,)
 
 
 @app.cell
-def _(model, scenario_name):
+def _(model, results_path):
     #################### Output Results ###########################
-
-    results_path = f'results/{scenario_name}'
-
     results_df = CIMS.log_model(
        model=model, 
        output_file = f"{results_path}/results_general.csv",
        parameter_file="results/results_general.txt",
        ensure_dir=True   
     )
-    return (results_path,)
+    return
 
 
 @app.cell
@@ -410,6 +391,26 @@ def _(model, results_path):
        parameter_file = "results/results_tech.txt",
        ensure_dir=True
     )
+    return
+
+
+@app.cell
+def _(model, results_path):
+    import pickle
+    import gzip
+
+    with gzip.open(f"{results_path}/model.pkl", "wb") as f:
+        pickle.dump(model, f)
+    return
+
+
+@app.cell
+def _():
+    # import pickle
+    # import gzip
+
+    # with gzip.open(f"{results_path}/model.pkl", "rb") as f:
+    #     model = pickle.load(f)
     return
 
 
