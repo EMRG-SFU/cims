@@ -25,11 +25,10 @@ if str(_project_root) not in sys.path:
 from utils.controls_conversions import (
     load_macro_indicators,
     convert_currency,
-    load_energy_conversions,
     load_control_config,
     load_energy_mapping,
 )
-from utils.extensions.dataframe_data_extensions import (
+from utils.extensions.data_extensions import (
     backfill_constant,
     extend_constant,
     interpolate_5year_to_annual,
@@ -46,10 +45,119 @@ CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xls
 RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
 RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
+CONVERSIONS_FILE = BASE_PATH / 'mappings_conversions/energy_conversions.csv'
 
 
 # Regions for regional energies
 REGIONS = ['BC', 'AB', 'SK', 'MB', 'ON', 'QC', 'NB', 'NS', 'PE', 'NL', 'YT', 'NT', 'NU']
+
+
+# ============================================================================
+# ENERGY CONVERSIONS
+# ============================================================================
+
+def load_energy_conversions(csv_path: Path = CONVERSIONS_FILE) -> Dict:
+    """
+    Load energy conversion factors from the CER conversions CSV.
+
+    Reads the machine-readable CSV and builds a flat dictionary of conversion
+    factors keyed by the names used throughout this module. All GJ-per-m³
+    values come from the 'approximate energy content' group; volume and energy
+    unit conversions come from the 'volume' and 'energy terms' groups.
+
+    Parameters
+    ----------
+    csv_path : Path, optional
+        Path to the energy_conversions CSV file.
+        Defaults to CONVERSIONS_FILE.
+
+    Returns
+    -------
+    dict
+        Flat dictionary of conversion factors, e.g.:
+        {
+            'mmbtu_to_gj': 1.0551,
+            'bbl_to_m3': 0.159,
+            'diesel_gj_per_m3': 38.68,
+            ...
+        }
+    """
+    df = pd.read_csv(csv_path)
+
+    # Helper: extract numeric value from a cell like '38.68 Gigajoules (GJ)'
+    def _parse_value(text: str) -> float:
+        import re
+        match = re.search(r'[\d,]+\.?\d*(?:\s*x\s*10[-−]?\d+)?', str(text).replace(',', ''))
+        if match:
+            raw = match.group().replace(' ', '')
+            # Handle scientific notation written as '1.0551 x 10-3' style
+            sci = re.match(r'([\d.]+)x10([-−]?\d+)', raw)
+            if sci:
+                return float(sci.group(1)) * (10 ** int(sci.group(2).replace('−', '-')))
+            return float(raw)
+        raise ValueError(f"Could not parse numeric value from: {text!r}")
+
+    # --- filter helpers ---
+    energy_content = df[df['Group'] == 'approximate energy content'].copy()
+    energy_terms   = df[df['Group'] == 'energy terms'].copy()
+    volume         = df[df['Group'] == 'volume'].copy()
+
+    def _gj_per_m3(energy_name: str) -> float:
+        """Return GJ/m³ for a named fuel from the approximate energy content rows."""
+        row = energy_content[
+            energy_content['Energy'].str.strip().str.lower() == energy_name.lower()
+        ]
+        if row.empty:
+            raise KeyError(f"No approximate energy content row found for: {energy_name!r}")
+        return _parse_value(row.iloc[0]['Equivalent to'])
+
+    def _unit_conversion(unit_col_contains: str, equiv_col_contains: str) -> float:
+        """Return conversion factor where Unit contains one string and Equivalent to another."""
+        mask = (
+            df['Unit'].str.contains(unit_col_contains, na=False, case=False) &
+            df['Equivalent to'].str.contains(equiv_col_contains, na=False, case=False)
+        )
+        rows = df[mask]
+        if rows.empty:
+            raise KeyError(
+                f"No conversion row found: Unit~{unit_col_contains!r}, "
+                f"Equivalent to~{equiv_col_contains!r}"
+            )
+        return _parse_value(rows.iloc[0]['Equivalent to'])
+
+    conversions = {
+        # --- Energy unit conversions ---
+        'mmbtu_to_gj':   _unit_conversion('Million British thermal units', 'Gigajoules'),
+        'gj_to_mmbtu':   _unit_conversion('Gigajoules', 'Million British thermal units'),
+
+        # --- Volume conversions ---
+        'bbl_to_m3':     _unit_conversion('Barrels', 'Cubic metres'),
+        'm3_to_bbl':     _unit_conversion('Cubic metres', 'Barrels'),
+
+        # --- GJ per m³ for each fuel (from approximate energy content table) ---
+        'petrochemical_feedstock_gj_per_m3': _gj_per_m3('Petrochemical feedstock'),
+        'naphtha_specialties_gj_per_m3':     _gj_per_m3('Naphtha specialties'),
+        'asphalt_gj_per_m3':                 _gj_per_m3('Asphalt'),
+        'lubricants_gj_per_m3':              _gj_per_m3('Lubes and greases'),
+        'other_non_energy_products_gj_per_m3': _gj_per_m3('Other products'),
+        'diesel_gj_per_m3':                  _gj_per_m3('Diesel'),
+        'gasoline_gj_per_m3':                _gj_per_m3('Motor gasoline'),
+        'ethanol_gj_per_m3':                 _gj_per_m3('Ethanol'),
+        'biodiesel_gj_per_m3':               _gj_per_m3('Biodiesel'),
+        'renewable_diesel_gj_per_m3':        _gj_per_m3('Renewable Diesel'),
+        'jet_fuel_gj_per_m3':                _gj_per_m3('Jet Fuel (Jet A-1)'),
+        'heavy_fuel_oil_gj_per_m3':          _gj_per_m3('Heavy fuel oil'),
+        'light_fuel_oil_gj_per_m3':          _gj_per_m3('Heating Oil'),
+        'kerosene_gj_per_m3':                _gj_per_m3('Kerosene'),
+        'natural_gas_gj_per_m3':             _gj_per_m3('Natural Gas'),
+        'propane_gj_per_m3':                 _gj_per_m3('Propane'),
+        'ethane_gj_per_m3':                  _gj_per_m3('Ethane'),
+        'butane_gj_per_m3':                  _gj_per_m3('Butane'),
+        'petroleum_coke_gj_per_m3':          _gj_per_m3('Petroleum coke'),
+        'renewable_gasoline_gj_per_m3':      _gj_per_m3('Renewable Gasoline'),
+    }
+
+    return conversions
 
 
 # ============================================================================
@@ -518,7 +626,7 @@ def load_all_data() -> Dict:
     """
     print("Loading configuration and conversion factors...")
     config = load_control_config()
-    conversions = load_energy_conversions()
+    conversions = load_energy_conversions(CONVERSIONS_FILE)
     energy_map = load_energy_mapping()
 
     print("Loading macro indicators...")

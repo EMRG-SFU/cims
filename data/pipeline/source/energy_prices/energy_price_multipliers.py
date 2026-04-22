@@ -530,12 +530,22 @@ def calculate_jcims_multipliers(
     """
     print("Processing JCIMS multipliers...")
 
-    jcims_to_cims_fuel: Dict[str, str] = {}
+    # Build one-to-many mapping: one JCIMS fuel can map to multiple CIMS fuels
+    # (e.g. JCIMS 'Natural Gas' -> CIMS 'Natural Gas' AND 'Natural Gas Feedstock')
+    jcims_to_cims_fuels: Dict[str, List[str]] = {}
     for _, row in energy_df.iterrows():
         if pd.notna(row.get('JCIMS')) and pd.notna(row.get('CIMS')):
-            jcims_to_cims_fuel[row['JCIMS']] = row['CIMS']
+            jcims_to_cims_fuels.setdefault(row['JCIMS'], []).append(row['CIMS'])
 
-    print(f"  Fuel mappings: {jcims_to_cims_fuel}")
+    print(f"  Fuel mappings: {jcims_to_cims_fuels}")
+
+    # Translate JCIMS sector names to CIMS sector names so base_multipliers keys
+    # are consistent with the CIMS sector names used in the output loop.
+    jcims_to_cims_sector: Dict[str, str] = {
+        'Natural Gas Extraction':  'Natural Gas',
+        'Other Manufacturing':     'Light Industrial',
+        'Transportation Personal': 'Transportation Passenger',
+    }
 
     use_light_ind = ['Construction', 'Forestry', 'Hydrogen']
     base_multipliers: Dict[Tuple, float] = {}
@@ -544,10 +554,13 @@ def calculate_jcims_multipliers(
     for _, row in jcims_prices_df.iterrows():
         jcims_region = row['Region']
         jcims_sector = row['Sector']
-        jcims_fuel = row['Fuel']
+        jcims_fuel   = row['Fuel']
 
-        cims_fuel = jcims_to_cims_fuel.get(jcims_fuel)
-        if cims_fuel is None:
+        # Translate sector name to CIMS equivalent where they differ
+        cims_sector = jcims_to_cims_sector.get(jcims_sector, jcims_sector)
+
+        cims_fuels = jcims_to_cims_fuels.get(jcims_fuel)
+        if not cims_fuels:
             continue
 
         for year_col in year_cols:
@@ -569,18 +582,20 @@ def calculate_jcims_multipliers(
             )
             jcims_price_converted = jcims_price_2025.values[0]
 
-            prod_cost_row = production_costs[
-                (production_costs['energy'] == cims_fuel) &
-                (production_costs['region'] == 'generic') &
-                (production_costs['year'] == year)
-            ]
+            # Store a multiplier for every CIMS fuel this JCIMS fuel maps to
+            for cims_fuel in cims_fuels:
+                prod_cost_row = production_costs[
+                    (production_costs['energy'] == cims_fuel) &
+                    (production_costs['region'] == 'generic') &
+                    (production_costs['year'] == year)
+                ]
 
-            if len(prod_cost_row) == 0:
-                continue
+                if len(prod_cost_row) == 0:
+                    continue
 
-            prod_cost = prod_cost_row['price'].values[0]
-            multiplier = jcims_price_converted / prod_cost if prod_cost > 0 else 1.0
-            base_multipliers[(jcims_region, jcims_sector, cims_fuel, year)] = multiplier
+                prod_cost = prod_cost_row['price'].values[0]
+                multiplier = jcims_price_converted / prod_cost if prod_cost > 0 else 1.0
+                base_multipliers[(jcims_region, cims_sector, cims_fuel, year)] = multiplier
 
     def get_multiplier_with_fallback(
         jcims_region: str,
@@ -611,7 +626,8 @@ def calculate_jcims_multipliers(
         if key in base_multipliers:
             return base_multipliers[key]
 
-        for other_region in ['AB', 'BC', 'ON', 'SK', 'MB', 'QC', 'NB', 'NS', 'PE', 'NL', 'AT']:
+        # Fallback regions must be JCIMS codes (AT covers NB/NS/PE/NL)
+        for other_region in ['AB', 'BC', 'ON', 'SK', 'MB', 'QC', 'AT']:
             key = (other_region, sector, fuel, year)
             if key in base_multipliers:
                 return base_multipliers[key]
@@ -620,7 +636,7 @@ def calculate_jcims_multipliers(
         if key in base_multipliers:
             return base_multipliers[key]
 
-        for other_region in ['AB', 'BC', 'ON', 'SK', 'MB', 'QC', 'NB', 'NS', 'PE', 'NL', 'AT']:
+        for other_region in ['AB', 'BC', 'ON', 'SK', 'MB', 'QC', 'AT']:
             key = (other_region, 'Light Industrial', fuel, year)
             if key in base_multipliers:
                 return base_multipliers[key]
@@ -630,18 +646,30 @@ def calculate_jcims_multipliers(
 
         return None
 
-    jcims_fuels = list(set(jcims_to_cims_fuel.values()))
+    # Build a direct CIMS->JCIMS region lookup from the region_map passed in.
+    # jcims_to_cims_region has AT->NL (last-write-wins) so we can't reverse it safely.
+    # Instead rebuild from the regions_df stored on the passed dict's inverse entries.
+    # We derive it here by inverting all unique pairs we know about:
+    #   BC->BC, AB->AB, SK->SK, MB->MB, ON->ON, QC->QC, NB->AT, NS->AT, PE->AT, NL->AT
+    cims_to_jcims_region: Dict[str, str] = {}
+    for j_reg, c_reg in jcims_to_cims_region.items():
+        # jcims_to_cims_region may only have AT->NL; we need ALL CIMS->JCIMS pairs.
+        # Rebuild by iterating the original mapping in reverse for all known entries.
+        cims_to_jcims_region[c_reg] = j_reg
+    # The above still only captures one CIMS per JCIMS code for shared codes like AT.
+    # Hard-code the Atlantic provinces that share AT:
+    for atlantic in ['NB', 'NS', 'PE', 'NL']:
+        cims_to_jcims_region[atlantic] = 'AT'
+
+    # All unique CIMS fuel names produced by the JCIMS path
+    jcims_fuels = list({cims_f for fuels in jcims_to_cims_fuels.values() for cims_f in fuels})
     rows = []
 
     for cims_region in regions:
         if cims_region == 'CAN':
             continue
 
-        jcims_region = None
-        for j_reg, c_reg in jcims_to_cims_region.items():
-            if c_reg == cims_region:
-                jcims_region = j_reg
-                break
+        jcims_region = cims_to_jcims_region.get(cims_region)
 
         if cims_region in ['YT', 'NT', 'NU']:
             jcims_region = 'BC'

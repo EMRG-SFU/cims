@@ -1,0 +1,17 @@
+price
+price_subsidy
+multiplier_price
+lcc_financial
+lcc_competition
+capital_cost
+output
+crf
+subsidy
+fom
+service_provide
+service_request
+emissions_rate_cumul_cost
+fixed_cost_rate
+fic
+dic
+competition
