@@ -34,71 +34,192 @@ def load_control_config() -> Dict:
     return mod.CONTROLS
 
 
+def _parse_numeric(value_str: str) -> Optional[float]:
+    """
+    Parse a numeric value from the 'Equivalent to' column.
+
+    Handles plain numbers like "0.159" and scientific notation written
+    as "1.0551 x 10-3" (the format used in the CER conversions CSV).
+
+    Parameters
+    ----------
+    value_str : str
+        Raw string from the CSV, e.g. "0.159" or "1.7111 x 10-3".
+
+    Returns
+    -------
+    float or None
+        Parsed number, or None if the string could not be parsed.
+    """
+    # Strip commas (used in large numbers like "1,000")
+    cleaned = value_str.replace(',', '').strip()
+
+    # Handle "A x 10B" scientific notation (e.g. "1.7111 x 10-3")
+    if ' x 10' in cleaned:
+        parts = cleaned.split(' x 10')
+        try:
+            mantissa = float(parts[0])
+            exponent = int(parts[1])
+            return mantissa * (10 ** exponent)
+        except (ValueError, IndexError):
+            return None
+
+    # Plain number
+    try:
+        return float(cleaned.split()[0])
+    except (ValueError, IndexError):
+        return None
+
+
+def load_all_conversions() -> pd.DataFrame:
+    """
+    Load the full energy conversions table from energy_conversions.csv
+    as a clean, typed DataFrame.
+
+    The CSV has four columns: Group, Energy, Unit, Equivalent to, Source.
+    This function returns all rows with a parsed numeric 'Value' column
+    added, so downstream code can filter by Group/Energy/Unit without
+    needing to re-parse strings.
+
+    Returns
+    -------
+    pd.DataFrame
+        Columns: Group, Energy, Unit, Equivalent_to, Source, Value (float).
+        Rows where the numeric value could not be parsed are dropped.
+
+    Examples
+    --------
+    >>> df = load_all_conversions()
+    >>> # Get all GJ-per-m³ energy content rows
+    >>> mask = (
+    ...     (df['Group'] == 'approximate energy content') &
+    ...     (df['Unit'].str.contains('Cubic metres')) &
+    ...     (df['Equivalent_to'].str.contains('Gigajoules'))
+    ... )
+    >>> df[mask][['Energy', 'Value']]
+    """
+    df = pd.read_csv(CONVERSIONS_FILE)
+
+    # Normalise column names (strip whitespace, replace spaces with _)
+    df.columns = [c.strip().replace(' ', '_') for c in df.columns]
+    # The fifth column is named "Equivalent_to" after normalisation;
+    # rename to something shorter for convenience.
+    df = df.rename(columns={'Equivalent_to': 'Equivalent_to'})
+
+    # Lowercase the Group column so callers can filter case-insensitively
+    df['Group'] = df['Group'].str.strip().str.lower()
+    df['Energy'] = df['Energy'].fillna('').str.strip()
+    df['Unit'] = df['Unit'].fillna('').str.strip()
+    df['Equivalent_to'] = df['Equivalent_to'].fillna('').str.strip()
+    df['Source'] = df['Source'].fillna('').str.strip()
+
+    # Parse the leading number from 'Equivalent_to' into a float column
+    df['Value'] = df['Equivalent_to'].apply(_parse_numeric)
+
+    # Drop rows where we couldn't get a number (e.g. condition/note rows)
+    df = df.dropna(subset=['Value']).reset_index(drop=True)
+
+    return df
+
+
 def load_energy_conversions() -> Dict:
     """
     Load energy conversion factors from energy_conversions.csv.
 
-    Parses the 'Approximate Energy Content' section for GJ-per-m³ values
-    and the general volume/energy rows for unit-to-unit scalars used by
-    the pipeline (bbl_to_m3, mmbtu_to_gj, and per-fuel gj_per_m3 keys).
+    Builds a flat dictionary of conversion factors keyed by the names used
+    throughout the pipeline. All GJ-per-m³ values come from the
+    'approximate energy content' group; volume and energy unit conversions
+    come from the 'volume' and 'energy terms' groups.
 
     Returns
     -------
     dict
-        Flat dict of conversion factor keys to float values.
+        Flat dictionary of conversion factors, e.g.:
+        {
+            'mmbtu_to_gj': 1.0551,
+            'bbl_to_m3': 0.159,
+            'diesel_gj_per_m3': 38.68,
+            ...
+        }
     """
-    df = pd.read_csv(CONVERSIONS_FILE, header=None, dtype=str)
+    df = load_all_conversions()
 
-    # --- Parse 'Approximate Energy Content' section --------------------------
-    # Find the header row for that section
-    content_start = None
-    for i, row in df.iterrows():
-        if str(row.iloc[0]).strip() == 'Approximate Energy Content':
-            content_start = i + 1   # next row is column headers
-            break
+    def _unit_conversion(unit_contains: str, equiv_contains: str) -> float:
+        """Return conversion factor where Unit and Equivalent_to match the given strings."""
+        mask = (
+            df['Unit'].str.contains(unit_contains, case=False, na=False) &
+            df['Equivalent_to'].str.contains(equiv_contains, case=False, na=False)
+        )
+        rows = df[mask]
+        if rows.empty:
+            raise KeyError(
+                f"No conversion row found: Unit~{unit_contains!r}, "
+                f"Equivalent_to~{equiv_contains!r}"
+            )
+        return float(rows.iloc[0]['Value'])
 
-    gj_per_m3: Dict[str, float] = {}
-    if content_start is not None:
-        for i in range(content_start + 1, len(df)):
-            row = df.iloc[i]
-            energy_name = str(row.iloc[0]).strip()
-            unit        = str(row.iloc[1]).strip()
-            equiv       = str(row.iloc[2]).strip()
-            if not energy_name or energy_name in ('nan', ''):
-                break
-            # Only capture rows whose unit is "1.0 Cubic metres (m³)" → GJ
-            if 'Cubic metres' in unit and 'Gigajoules' in equiv:
-                try:
-                    gj_val = float(equiv.split()[0].replace(',', ''))
-                    gj_per_m3[energy_name.lower()] = gj_val
-                except ValueError:
-                    pass
+    def _gj_per_m3(energy_name: str) -> float:
+        """Return GJ/m³ for a named fuel from the approximate energy content rows."""
+        row = df[
+            (df['Group'] == 'approximate energy content') &
+            (df['Energy'].str.lower() == energy_name.lower()) &
+            (df['Unit'].str.contains('Cubic metres', na=False)) &
+            (df['Equivalent_to'].str.contains('Gigajoules', na=False))
+        ]
+        if row.empty:
+            raise KeyError(f"No approximate energy content row found for: {energy_name!r}")
+        return float(row.iloc[0]['Value'])
 
-    # --- Known scalar conversions (from the volume/energy rows) --------------
-    # 1 bbl = 0.159 m³  →  bbl_to_m3 = 0.159
-    # 1 MMBtu = 1.0551 GJ  →  mmbtu_to_gj = 1.0551
-    scalars = {
-        'bbl_to_m3':   0.159,
-        'mmbtu_to_gj': 1.0551,
+    def _gj_per_t(energy_name: str) -> float:
+        """Return GJ/tonne for a named fuel from the approximate energy content rows."""
+        row = df[
+            (df['Group'] == 'approximate energy content') &
+            (df['Energy'].str.lower() == energy_name.lower()) &
+            (df['Unit'].str.contains('Tonnes', na=False)) &
+            (df['Equivalent_to'].str.contains('Gigajoules', na=False))
+        ]
+        if row.empty:
+            raise KeyError(f"No approximate energy content row found for: {energy_name!r}")
+        return float(row.iloc[0]['Value'])
+
+    return {
+        # --- Energy unit conversions ---
+        'mmbtu_to_gj':   _unit_conversion('Million British thermal units', 'Gigajoules'),
+        'gj_to_mmbtu':   _unit_conversion('Gigajoules', 'Million British thermal units'),
+
+        # --- Volume conversions ---
+        'bbl_to_m3':     _unit_conversion('Barrels', 'Cubic metres'),
+        'm3_to_bbl':     _unit_conversion('Cubic metres', 'Barrels'),
+
+        # --- GJ per m³ for each fuel (from approximate energy content table) ---
+        'petrochemical_feedstock_gj_per_m3':   _gj_per_m3('Petrochemical feedstock'),
+        'naphtha_specialties_gj_per_m3':        _gj_per_m3('Naphtha specialties'),
+        'asphalt_gj_per_m3':                    _gj_per_m3('Asphalt'),
+        'lubricants_gj_per_m3':                 _gj_per_m3('Lubes and greases'),
+        'other_non_energy_products_gj_per_m3':  _gj_per_m3('Other products'),
+        'diesel_gj_per_m3':                     _gj_per_m3('Diesel'),
+        'gasoline_gj_per_m3':                   _gj_per_m3('Motor gasoline'),
+        'ethanol_gj_per_m3':                    _gj_per_m3('Ethanol'),
+        'biodiesel_gj_per_m3':                  _gj_per_m3('Biodiesel'),
+        'renewable_diesel_gj_per_m3':           _gj_per_m3('Renewable Diesel'),
+        'jet_fuel_gj_per_m3':                   _gj_per_m3('Jet Fuel (Jet A-1)'),
+        'heavy_fuel_oil_gj_per_m3':             _gj_per_m3('Heavy fuel oil'),
+        'light_fuel_oil_gj_per_m3':             _gj_per_m3('Heating Oil'),
+        'kerosene_gj_per_m3':                   _gj_per_m3('Kerosene'),
+        'natural_gas_gj_per_m3':                _gj_per_m3('Natural Gas'),
+        'propane_gj_per_m3':                    _gj_per_m3('Propane'),
+        'ethane_gj_per_m3':                     _gj_per_m3('Ethane'),
+        'butane_gj_per_m3':                     _gj_per_m3('Butane'),
+        'petroleum_coke_gj_per_m3':             _gj_per_m3('Petroleum coke'),
+        'renewable_gasoline_gj_per_m3':         _gj_per_m3('Renewable Gasoline'),
+
+        # --- GJ per tonne for coal fuels (from approximate energy content table) ---
+        'anthracite_gj_per_t':                  _gj_per_t('Anthracite'),
+        'bituminous_coal_gj_per_t':             _gj_per_t('Bituminous'),
+        'lignite_gj_per_t':                     _gj_per_t('Lignite'),
+        'subbituminous_coal_gj_per_t':          _gj_per_t('Subbituminous'),
     }
 
-    # Map energy names in the CSV to the keys expected by the pipeline
-    name_to_key = {
-        'petrochemical feedstock': 'petrochemical_feedstock_gj_per_m3',
-        'naphtha specialties':     'naphtha_specialties_gj_per_m3',
-        'asphalt':                 'asphalt_gj_per_m3',
-        'lubes and greases':       'lubricants_gj_per_m3',
-        'other products':          'other_non_energy_products_gj_per_m3',
-        'ethanol':                 'ethanol_gj_per_m3',
-        'biodiesel':               'biodiesel_gj_per_m3',
-        'renewable diesel':        'renewable_diesel_gj_per_m3',
-    }
-
-    for csv_name, key in name_to_key.items():
-        if csv_name in gj_per_m3:
-            scalars[key] = gj_per_m3[csv_name]
-
-    return scalars
 
 def load_energy_mapping() -> pd.DataFrame:
     """
