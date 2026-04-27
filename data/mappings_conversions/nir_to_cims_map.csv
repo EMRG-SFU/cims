@@ -1,0 +1,32 @@
+﻿CIMS nodes,Source,Sector,Sub-sector,Sub-sub-sector
+.Agriculture.Process.Enteric Fermentation and Manure Management,Agriculture,Animal Production,,
+.Agriculture.Process.Soils,Agriculture,Crop Production,,
+.Agriculture.Tractors,Agriculture,On Farm Fuel Use,,
+.Chemical Products,Heavy Industry,"Chemicals, Fertilizers and Biofuel Manufacturing",,
+.Coal Mining,Coal Production,,,
+.Commercial,Buildings,Service Industry,,
+.Construction,"Light Manufacturing, Construction and Forest Resources",Construction,,
+.Electricity,Electricity,,,
+.Forestry,"Light Manufacturing, Construction and Forest Resources",Forest Resources,,
+.Industrial Minerals.Products.Cement,Heavy Industry,Cement,,
+.Industrial Minerals.Products.Lime,Heavy Industry,Lime and Gypsum,,
+.Iron and Steel,Heavy Industry,Iron and Steel,,
+.Light Industrial,"Light Manufacturing, Construction and Forest Resources",Light Manufacturing,,
+.Metal Smelting,Heavy Industry,Smelting and Refining (Non-Ferrous Metals),,
+.Mining,Heavy Industry,Mining,,
+.Natural Gas.Production.Distribution,Oil and Gas,Downstream Oil and Gas,Natural Gas Distribution,
+.Natural Gas.Production.Supply,Oil and Gas,Upstream Oil and Gas,Natural Gas Production and Processing,
+.Natural Gas.Production.Transmission,Oil and Gas,Upstream Oil and Gas,"Oil, Natural Gas and CO2  Transmission",
+.Petroleum Crude.Production.Bitumen.In-Situ,Oil and Gas,Upstream Oil and Gas,Oil Sands and Thermal Heavy Oil Production,In-Situ Thermal Extraction
+.Petroleum Crude.Production.Bitumen.Mining,Oil and Gas,Upstream Oil and Gas,Oil Sands and Thermal Heavy Oil Production,Mining and Extraction
+.Petroleum Crude.Production.Bitumen.Upgrading,Oil and Gas,Upstream Oil and Gas,Oil Sands and Thermal Heavy Oil Production,Upgrading
+.Petroleum Crude.Production.Heavy,Oil and Gas,Upstream Oil and Gas,Conventional Oil Production,Conventional Heavy Oil Production
+.Petroleum Crude.Production.Light Medium.Offshore,Oil and Gas,Upstream Oil and Gas,Conventional Oil Production,Frontier Oil Production
+.Petroleum Crude.Production.Light Medium.Onshore,Oil and Gas,Upstream Oil and Gas,Conventional Oil Production,Conventional Light Oil Production
+.Petroleum Refining.Refined Petroleum Products,Oil and Gas,Downstream Oil and Gas,Petroleum Refining,
+.Pulp and Paper,Heavy Industry,Pulp and Paper,,
+.Residential,Buildings,Residential,,
+.Transportation Freight.Freight,Transport,Freight Transport,,
+.Transportation Freight.Off Road,Transport,"Other: Recreational, Commercial and Residential",,
+.Transportation Personal,Transport,Passenger Transport,,
+.Waste,Waste,,,
