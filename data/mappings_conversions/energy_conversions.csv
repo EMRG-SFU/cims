@@ -141,3 +141,7 @@ approximate energy content,Methanol,1.0 Cubic metres (m³),15.60 Gigajoules (G
 approximate energy content,Biodiesel,1.0 Cubic metres (m³),34.00 Gigajoules (GJ),AFDC
 approximate energy content,Renewable Diesel,1.0 Cubic metres (m³),37.00 Gigajoules (GJ),AFDC
 approximate energy content,Renewable Gasoline,1.0 Cubic metres (m³),32.92 Gigajoules (GJ),AFDC - assume 5% lower than gasoline
+approximate energy content,Coke,1.0 Tonnes (t),28.20 Gigajoules (GJ),The IPCC 2006 Guidelines Table 1.2
+approximate energy content,Black liquor,1.0 Kilogram (kg),0.014 Gigajoules (GJ),"Statistics Canada, Energy Statistics Handbook, Appendix A (Cat. no. 57-601-X)"
+approximate energy content,LPG,1.0 Cubic metres (m³),25.31 Gigajoules (GJ),"Statistics Canada, Report on Energy Supply and Demand in Canada (Cat. no. 57-003-X)"
+approximate energy content,Solid Biomass,1.0 Kilogram (kg),0.0180 Gigajoules (GJ),"Statistics Canada, Energy Statistics Handbook, Appendix A (Cat. no. 57-601-X)"
