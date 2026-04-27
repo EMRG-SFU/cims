@@ -58,7 +58,7 @@ ALL_REGIONS    = FULL_REGIONS + SPARSE_REGIONS
 # Each NIR combination can map to multiple CIMS_Path rows (one row per target).
 # When a NIR row has multiple targets its value is split equally across them.
 
-MAPPING_FILE = 'C:/cims/data/mappings_conversions/nir_to_cims_map.csv'
+MAPPING_FILE = 'C:/cims/data/mappings_conversions/nir_walkthrough_map.csv'
 
 def load_nir_to_cims_map(path):
     """
