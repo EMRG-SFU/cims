@@ -98,7 +98,7 @@ def load_all_conversions() -> pd.DataFrame:
     ... )
     >>> df[mask][['Energy', 'Value']]
     """
-    df = pd.read_csv(CONVERSIONS_FILE)
+    df = pd.read_csv(CONVERSIONS_FILE, encoding='utf-8-sig')
 
     # Normalise column names (strip whitespace, replace spaces with _)
     df.columns = [c.strip().replace(' ', '_') for c in df.columns]
@@ -182,43 +182,24 @@ def load_energy_conversions() -> Dict:
             raise KeyError(f"No approximate energy content row found for: {energy_name!r}")
         return float(row.iloc[0]['Value'])
 
-    return {
-        # --- Energy unit conversions ---
-        'mmbtu_to_gj':   _unit_conversion('Million British thermal units', 'Gigajoules'),
-        'gj_to_mmbtu':   _unit_conversion('Gigajoules', 'Million British thermal units'),
-
-        # --- Volume conversions ---
-        'bbl_to_m3':     _unit_conversion('Barrels', 'Cubic metres'),
-        'm3_to_bbl':     _unit_conversion('Cubic metres', 'Barrels'),
-
-        # --- GJ per m³ for each fuel (from approximate energy content table) ---
-        'petrochemical_feedstock_gj_per_m3':   _gj_per_m3('Petrochemical feedstock'),
-        'naphtha_specialties_gj_per_m3':        _gj_per_m3('Naphtha specialties'),
-        'asphalt_gj_per_m3':                    _gj_per_m3('Asphalt'),
-        'lubricants_gj_per_m3':                 _gj_per_m3('Lubes and greases'),
-        'other_non_energy_products_gj_per_m3':  _gj_per_m3('Other products'),
-        'diesel_gj_per_m3':                     _gj_per_m3('Diesel'),
-        'gasoline_gj_per_m3':                   _gj_per_m3('Motor gasoline'),
-        'ethanol_gj_per_m3':                    _gj_per_m3('Ethanol'),
-        'biodiesel_gj_per_m3':                  _gj_per_m3('Biodiesel'),
-        'renewable_diesel_gj_per_m3':           _gj_per_m3('Renewable Diesel'),
-        'jet_fuel_gj_per_m3':                   _gj_per_m3('Jet Fuel (Jet A-1)'),
-        'heavy_fuel_oil_gj_per_m3':             _gj_per_m3('Heavy fuel oil'),
-        'light_fuel_oil_gj_per_m3':             _gj_per_m3('Heating Oil'),
-        'kerosene_gj_per_m3':                   _gj_per_m3('Kerosene'),
-        'natural_gas_gj_per_m3':                _gj_per_m3('Natural Gas'),
-        'propane_gj_per_m3':                    _gj_per_m3('Propane'),
-        'ethane_gj_per_m3':                     _gj_per_m3('Ethane'),
-        'butane_gj_per_m3':                     _gj_per_m3('Butane'),
-        'petroleum_coke_gj_per_m3':             _gj_per_m3('Petroleum coke'),
-        'renewable_gasoline_gj_per_m3':         _gj_per_m3('Renewable Gasoline'),
-
-        # --- GJ per tonne for coal fuels (from approximate energy content table) ---
-        'anthracite_gj_per_t':                  _gj_per_t('Anthracite'),
-        'bituminous_coal_gj_per_t':             _gj_per_t('Bituminous'),
-        'lignite_gj_per_t':                     _gj_per_t('Lignite'),
-        'subbituminous_coal_gj_per_t':          _gj_per_t('Subbituminous'),
+    # --- Scalar unit conversions ---
+    result = {
+        'mmbtu_to_gj': _unit_conversion('Million British thermal units', 'Gigajoules'),
+        'gj_to_mmbtu': _unit_conversion('Gigajoules', 'Million British thermal units'),
+        'bbl_to_m3':   _unit_conversion('Barrels', 'Cubic metres'),
+        'm3_to_bbl':   _unit_conversion('Cubic metres', 'Barrels'),
     }
+
+    # --- All approximate energy content rows keyed by lowercase fuel name ---
+    # Automatically picks up every fuel in the CSV so no manual listing is needed.
+    # emission_factors.py looks up _EC[csv_name.lower()] directly.
+    ec = df[df['Group'] == 'approximate energy content'].copy()
+    for _, row in ec.iterrows():
+        key = row['Energy'].strip().lower()
+        if key and row['Value'] is not None:
+            result[key] = float(row['Value'])
+
+    return result
 
 
 def load_energy_mapping() -> pd.DataFrame:
