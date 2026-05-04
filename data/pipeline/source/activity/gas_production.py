@@ -1,29 +1,5 @@
 """
-Gas Production Activity
-"""
-
-import pandas as pd
-import polars as pl
-from pathlib import Path
-
-import sys
-_current_file = Path(__file__)
-_project_root = _current_file.parent.parent.parent
-if str(_project_root) not in sys.path:
-    sys.path.insert(0, str(_project_root))
-
-from utils.controls_conversions import load_control_config
-from utils.extensions.data_extensions import trend_backwards, backfill_constant, extend_constant, interpolate_gaps
-
-# Configuration
-BASE_PATH = Path('C:/cims/data')
-NATURAL_GAS_PRODUCTION_FILE = BASE_PATH / 'raw_data/cer/natural-gas-production-2023.csv'
-RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
-LNG_EXPORT_FILE             = BASE_PATH / 'raw_data/cer/lng-export-assumptions-2026.csv'
-OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
-SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
-
-"""
+====================================
 Gas Production Activity Calculator
 ====================================
 Reads the CER natural gas production CSV and outputs:
@@ -41,6 +17,7 @@ Reads the CER natural gas production CSV and outputs:
       * Shale
       * Tight
       * Coalbed Methane
+  - LNG Compression % of gross production for BC (2000–2100)
 
 Notes:
   - Source data starts at 2005. Years 2000–2004 are back-extrapolated
@@ -53,6 +30,29 @@ Notes:
   - Regions with no sub-type breakdown (e.g. Ontario, Yukon) default to
     conventional=1, all other splits=0.
 """
+
+import pandas as pd
+import polars as pl
+from pathlib import Path
+
+import sys
+_current_file = Path(__file__)
+_project_root = _current_file.parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+from utils.controls_conversions import load_control_config
+from utils.extensions.data_extensions import trend_backwards, backfill_constant, extend_constant, interpolate_gaps
+
+# Configuration
+BASE_PATH = Path('C:/cims/data')
+NATURAL_GAS_PRODUCTION_FILE = BASE_PATH / 'raw_data/cer/natural-gas-production-2026.csv'
+RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
+LNG_EXPORT_FILE             = BASE_PATH / 'raw_data/cer/lng-export-assumptions-2026.csv'
+OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
+SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
+
+
 # Unit conversion: Million m3/day -> 1000 m3/year
 CONVERSION = 1_000 * 365
 
@@ -334,8 +334,8 @@ _processed_output = (
     _processed_pl
     .rename({"Province": "Region"})
     .with_columns(
-        pl.lit("Processed").alias("Variable"),
-        pl.lit("fraction").alias("Unit"),
+        pl.lit("Processing").alias("Variable"),
+        pl.lit("% of 1000m3").alias("Unit"),
         pl.col("Processed").alias("Value"),
     )
     .select(["Region", "Variable", "Unit", "Year", "Value"])
@@ -531,7 +531,7 @@ _lng_output = (
     .with_columns(
         pl.lit("BC").alias("Region"),
         pl.lit("LNG Compression").alias("Variable"),
-        pl.lit("fraction").alias("Unit"),
+        pl.lit("% of 1000m3").alias("Unit"),
     )
     .select(["Region", "Variable", "Unit", "Year", "Value"])
     .sort("Year")
@@ -563,11 +563,11 @@ output_gas = (
     .with_columns(
         pl.col("Variable").replace({
             "total":               "Marketable Production",
-            "gross_total":         "Total Production",
-            "pct_conventional":    "Conventional",
-            "pct_shale":           "Shale",
-            "pct_tight":           "Tight",
-            "pct_coalbed_methane": "Coalbed Methane",
+            "gross_total":         "Extraction",
+            "pct_conventional":    "Extraction.Conventional",
+            "pct_shale":           "Extraction.Shale",
+            "pct_tight":           "Extraction.Tight",
+            "pct_coalbed_methane": "Extraction.Coalbed Methane",
         }).alias("Variable"),
         pl.col("Variable").replace({
             "total":               "1000m3",
