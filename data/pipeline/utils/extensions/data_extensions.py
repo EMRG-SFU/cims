@@ -336,6 +336,101 @@ def extend_series_trend_dampener(series: pd.Series, base_year: int = 2022,
             curr = next_val
 
     return out.sort_index()
+
+
+# ==============================================================================
+# POLARS DATAFRAME — gap interpolation
+# ==============================================================================
+
+def interpolate_gaps(
+    df: "pl.DataFrame",
+    group_cols: "list[str]",
+    year_col: str,
+    value_col: str,
+) -> "pl.DataFrame":
+    """
+    Linearly interpolate mid-series NaN gaps within each group.
+
+    Fills NaN values that are bounded on both sides by valid observations
+    using linear interpolation. Leading or trailing NaNs (before the first
+    or after the last valid value) are left untouched — use backfill_constant
+    or extend_constant for those.
+
+    Parameters
+    ----------
+    df : pl.DataFrame
+        Input DataFrame with at least group_cols, year_col, and value_col.
+        Must contain one row per group per year (no duplicate year/group pairs).
+    group_cols : list of str
+        Columns that identify each group (e.g. ['Province']).
+    year_col : str
+        Name of the integer year column. Used as the x-axis for interpolation
+        so uneven gaps are handled correctly.
+    value_col : str
+        Name of the numeric column to interpolate.
+
+    Returns
+    -------
+    pl.DataFrame
+        Same shape as input, with mid-series NaNs replaced by linearly
+        interpolated values. Row order is preserved.
+
+    Examples
+    --------
+    >>> interpolate_gaps(df, group_cols=['Province'], year_col='Year',
+    ...                  value_col='Processed')
+    # NWT 2015-2019 (suppressed) filled by linear interp between 2014 and 2020.
+    """
+    import numpy as np
+
+    result_frames = []
+
+    unique_groups = (
+        df.select(group_cols)
+        .unique()
+        .to_struct(name="g")
+        .to_list()
+    )
+
+    for group_dict in unique_groups:
+        group_mask = pl.lit(True)
+        for col, val in group_dict.items():
+            group_mask = group_mask & (pl.col(col) == val)
+
+        grp = df.filter(group_mask).sort(year_col)
+
+        years  = grp.get_column(year_col).to_list()
+        values = grp.get_column(value_col).to_list()
+
+        # Identify indices with valid (non-null, non-NaN) values
+        valid_idx = [
+            i for i, v in enumerate(values)
+            if v is not None and not (isinstance(v, float) and np.isnan(v))
+        ]
+
+        if len(valid_idx) >= 2:
+            first_valid = valid_idx[0]
+            last_valid  = valid_idx[-1]
+
+            for i in range(first_valid, last_valid + 1):
+                if values[i] is None or (isinstance(values[i], float) and np.isnan(values[i])):
+                    # Find the nearest valid neighbours on each side
+                    lo = max(j for j in valid_idx if j < i)
+                    hi = min(j for j in valid_idx if j > i)
+                    x0, y0 = years[lo], values[lo]
+                    x1, y1 = years[hi], values[hi]
+                    values[i] = y0 + (y1 - y0) * (years[i] - x0) / (x1 - x0)
+
+        grp = grp.with_columns(
+            pl.Series(name=value_col, values=values, dtype=pl.Float64)
+        )
+        result_frames.append(grp)
+
+    if not result_frames:
+        return df
+
+    return pl.concat(result_frames).sort(group_cols + [year_col])
+
 # ==============================================================================
 # POLARS DATAFRAME — backward trend extrapolation
 # ==============================================================================
