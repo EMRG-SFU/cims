@@ -1,0 +1,353 @@
+"""
+=============================================================================
+AGRICULTURE, WASTE, CONSTRUCTION, FORESTRY EMISSIONS
+=============================================================================
+Reads the Environment Canada GHG by economic sector CSV and outputs a single
+combined CSV with columns: Region, Variable, Unit, Year, Value.
+
+AGRICULTURE (per individual province/territory, excl. Canada totals):
+  - Agriculture         : Total Agriculture emissions (kt CO2eq -> tCO2e)
+  - Agriculture.Heat    : On Farm Fuel Use / Agriculture Total
+  - Agriculture.Process.Soils
+                        : Crop Production / Agriculture Total
+  - Agriculture.Process.Enteric Fermentation and Manure Management
+                        : Animal Production / Agriculture Total
+
+WASTE (per individual province/territory, excl. Canada totals):
+  - Waste               : Total Waste emissions (kt CO2eq -> tCO2e)
+
+CONSTRUCTION (per individual province/territory, excl. Canada totals):
+  - Construction        : Total Construction emissions (kt CO2eq -> tCO2e)
+
+FORESTRY (per individual province/territory, excl. Canada totals):
+  - Forestry            : Total Forestry emissions (kt CO2eq -> tCO2e)
+
+Unit conversion:  kt CO2eq  ->  tCO2e  =  value * 1,000
+
+Data availability: 1990-2024.  Years 2000+ are used directly.
+Region names are mapped from NIR to CIMS codes via region_map.csv.
+Extension to 2100 via CAGR over the full historical period (DATA_START–last
+year), giving a smoother structural trend. Percentage variables held flat.
+=============================================================================
+"""
+
+import polars as pl
+from pathlib import Path
+
+import sys
+_current_file = Path(__file__)
+_project_root = _current_file.parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+
+# Configuration
+BASE_PATH        = Path('C:/cims/data')
+MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
+REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
+GHG_FILE         = BASE_PATH / 'raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
+OUTPUT_DIR       = BASE_PATH / 'processed_data/activity'
+
+# Regions to exclude (national/territorial aggregates)
+_EXCLUDE_REGIONS = {"Canada", "Northwest Territories and Nunavut"}
+
+KT_TO_T = 1_000   # kt CO2eq -> tCO2e
+
+DATA_START = 2000
+
+
+# -- A1. Load GHG file --------------------------------------------------------
+
+raw_ghg = pl.read_csv(
+    GHG_FILE,
+    columns=["Year", "Region", "Source", "Sector", "Total (kt CO2e)"],
+    null_values=["x"],
+    schema_overrides={"Total (kt CO2e)": pl.Float64},
+)
+
+# Keep only Agriculture and Waste rows, individual regions, years 2000+.
+# Sector is null on total rows (no sub-sector breakdown); fill with "" so
+# filters below can use a plain string equality check.
+ghg = (
+    raw_ghg
+    .filter(
+        pl.col("Source").is_in(["Agriculture", "Waste"]) &
+        (~pl.col("Region").is_in(list(_EXCLUDE_REGIONS))) &
+        (pl.col("Year") >= DATA_START)
+    )
+    .with_columns(
+        pl.col("Sector").fill_null("").alias("Sector"),
+    )
+    .select(["Year", "Region", "Source", "Sector", pl.col("Total (kt CO2e)").alias("CO2eq")])
+)
+
+# Interpolate any null CO2eq values using surrounding years within each
+# Region+Source+Sector group, then forward-fill any trailing nulls,
+# then convert kt -> tCO2e.
+ghg = (
+    ghg
+    .sort(["Region", "Source", "Sector", "Year"])
+    .with_columns(
+        pl.col("CO2eq")
+          .interpolate(method="linear")
+          .over(["Region", "Source", "Sector"])
+          .alias("CO2eq")
+    )
+    .with_columns(
+        pl.col("CO2eq")
+          .forward_fill()
+          .over(["Region", "Source", "Sector"])
+          .alias("CO2eq")
+    )
+    .with_columns(
+        (pl.col("CO2eq") * KT_TO_T).alias("tco2e")
+    )
+    .select(["Year", "Region", "Source", "Sector", "tco2e"])
+)
+
+
+# -- A2. Build Agriculture totals and sector sub-totals -----------------------
+#
+#   Sector == ""  ->  Agriculture total for that region/year
+#   Sector == "On Farm Fuel Use"  ->  Heat sub-total
+#   Sector == "Crop Production"   ->  Process.Soils sub-total
+#   Sector == "Animal Production" ->  Process.Enteric Fermentation & Manure
+
+agri_raw = ghg.filter(pl.col("Source") == "Agriculture")
+
+agri_total = (
+    agri_raw
+    .filter(pl.col("Sector") == "")
+    .select(["Region", "Year", pl.col("tco2e").alias("agri_total")])
+)
+agri_heat = (
+    agri_raw
+    .filter(pl.col("Sector") == "On Farm Fuel Use")
+    .select(["Region", "Year", pl.col("tco2e").alias("agri_heat")])
+)
+agri_soils = (
+    agri_raw
+    .filter(pl.col("Sector") == "Crop Production")
+    .select(["Region", "Year", pl.col("tco2e").alias("agri_soils")])
+)
+agri_animal = (
+    agri_raw
+    .filter(pl.col("Sector") == "Animal Production")
+    .select(["Region", "Year", pl.col("tco2e").alias("agri_animal")])
+)
+
+# Join all Agriculture sub-tables and compute splits (fraction 0-1)
+agri_pivot = (
+    agri_total
+    .join(agri_heat,   on=["Region", "Year"], how="left")
+    .join(agri_soils,  on=["Region", "Year"], how="left")
+    .join(agri_animal, on=["Region", "Year"], how="left")
+    .sort(["Region", "Year"])
+    .with_columns([
+        pl.when(pl.col("agri_total") != 0)
+            .then(pl.col("agri_heat").fill_null(0.0)   / pl.col("agri_total"))
+            .otherwise(0.0).alias("pct_heat"),
+        pl.when(pl.col("agri_total") != 0)
+            .then(pl.col("agri_soils").fill_null(0.0)  / pl.col("agri_total"))
+            .otherwise(0.0).alias("pct_soils"),
+        pl.when(pl.col("agri_total") != 0)
+            .then(pl.col("agri_animal").fill_null(0.0) / pl.col("agri_total"))
+            .otherwise(0.0).alias("pct_animal"),
+    ])
+)
+
+agri_output = (
+    agri_pivot
+    .select(["Region", "Year", "agri_total", "pct_heat", "pct_soils", "pct_animal"])
+    .unpivot(
+        index=["Region", "Year"],
+        on=["agri_total", "pct_heat", "pct_soils", "pct_animal"],
+        variable_name="Variable",
+        value_name="Value",
+    )
+    .with_columns([
+        pl.col("Variable").replace({
+            "agri_total":  "Agriculture",
+            "pct_heat":    "Agriculture.Heat",
+            "pct_soils":   "Agriculture.Process.Soils",
+            "pct_animal":  "Agriculture.Process.Enteric Fermentation and Manure Management",
+        }),
+        pl.col("Variable").replace({
+            "agri_total":  "tCO2e",
+            "pct_heat":    "% of tCO2e",
+            "pct_soils":   "% of tCO2e",
+            "pct_animal":  "% of tCO2e",
+        }).alias("Unit"),
+    ])
+    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .sort(["Region", "Variable", "Year"])
+)
+
+
+# -- A3. Build Waste output ---------------------------------------------------
+
+waste_output = (
+    ghg
+    .filter((pl.col("Source") == "Waste") & (pl.col("Sector") == ""))
+    .select(["Region", "Year", pl.col("tco2e").alias("Value")])
+    .with_columns([
+        pl.lit("Waste").alias("Variable"),
+        pl.lit("tCO2e").alias("Unit"),
+    ])
+    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .sort(["Region", "Variable", "Year"])
+)
+
+
+# -- A4. Build Construction and Forestry outputs ------------------------------
+#
+#   Both sit under Source == "Light Manufacturing, Construction and Forest Resources".
+#   Construction  -> Sector == "Construction"
+#   Forestry      -> Sector == "Forest Resources"
+#
+#   Note: NWT and Nunavut Construction are suppressed (x) for some years.
+#   Interpolation fills gaps; forward-fill handles any trailing nulls.
+
+lmcf_raw = (
+    pl.read_csv(
+        GHG_FILE,
+        columns=["Year", "Region", "Source", "Sector", "Total (kt CO2e)"],
+        null_values=["x"],
+        schema_overrides={"Total (kt CO2e)": pl.Float64},
+    )
+    .rename({"Total (kt CO2e)": "CO2eq"})
+    .filter(
+        (pl.col("Source") == "Light Manufacturing, Construction and Forest Resources") &
+        (pl.col("Sector").is_in(["Construction", "Forest Resources"])) &
+        (~pl.col("Region").is_in(list(_EXCLUDE_REGIONS))) &
+        (pl.col("Year") >= DATA_START)
+    )
+    .sort(["Region", "Sector", "Year"])
+    .with_columns(
+        pl.col("CO2eq")
+          .interpolate(method="linear")
+          .over(["Region", "Sector"])
+          .alias("CO2eq")
+    )
+    .with_columns(
+        pl.col("CO2eq")
+          .forward_fill()
+          .over(["Region", "Sector"])
+          .alias("CO2eq")
+    )
+    .with_columns(
+        (pl.col("CO2eq") * KT_TO_T).alias("tco2e")
+    )
+    .select(["Year", "Region", "Sector", "tco2e"])
+)
+
+def _build_simple_output(df: pl.DataFrame, sector: str, variable: str) -> pl.DataFrame:
+    """Extract a single sector as a Total tCO2e output table."""
+    return (
+        df
+        .filter(pl.col("Sector") == sector)
+        .select(["Region", "Year", pl.col("tco2e").alias("Value")])
+        .with_columns([
+            pl.lit(variable).alias("Variable"),
+            pl.lit("tCO2e").alias("Unit"),
+        ])
+        .select(["Region", "Variable", "Unit", "Year", "Value"])
+        .sort(["Region", "Variable", "Year"])
+    )
+
+construction_output = _build_simple_output(lmcf_raw, "Construction",    "Construction")
+forestry_output     = _build_simple_output(lmcf_raw, "Forest Resources", "Forestry")
+
+
+# -- A5. Combine ---------------------------------------------------------------
+
+combined = pl.concat([
+    agri_output,
+    waste_output,
+    construction_output,
+    forestry_output,
+]).sort(["Region", "Variable", "Year"])
+
+
+# -- A6. Map NIR region names to CIMS codes ------------------------------------
+
+region_map = pl.read_csv(REGION_MAP_FILE, columns=["CIMS", "NIR"])
+
+combined = (
+    combined
+    .join(region_map, left_on="Region", right_on="NIR", how="left")
+    .with_columns(
+        pl.col("CIMS").fill_null(pl.col("Region")).alias("Region")
+    )
+    .drop("CIMS")
+    .sort(["Region", "Variable", "Year"])
+)
+
+
+# -- A7. Extend to 2100 using CAGR over the full historical period -------------
+#
+#   CAGR = (V_end_avg / V_start_avg) ^ (1 / n_years) - 1
+#   Endpoints are 3-year averages to avoid sensitivity to anomalous years.
+#   Percentage variables are held flat. CAGR is set to 0 when either endpoint
+#   is non-positive (e.g. Forestry carbon sinks).
+#   A global taper scales all computed rates to avoid unrealistic long-run growth.
+
+EXTEND_TO   = 2100
+AVG_WINDOW  = 3   # years averaged at each endpoint
+CAGR_TAPER  = 0.2 # scale all computed rates to 20% of raw value (mirrors gas_production.py)
+
+last_year = combined["Year"].max()
+n_years   = last_year - DATA_START
+
+cagr_end = (
+    combined
+    .filter(pl.col("Year") >= last_year - AVG_WINDOW + 1)
+    .group_by(["Region", "Variable", "Unit"])
+    .agg(pl.col("Value").mean().alias("v_end"))
+)
+cagr_start = (
+    combined
+    .filter(pl.col("Year") <= DATA_START + AVG_WINDOW - 1)
+    .group_by(["Region", "Variable"])
+    .agg(pl.col("Value").mean().alias("v_start"))
+)
+
+cagr_df = (
+    cagr_end
+    .join(cagr_start, on=["Region", "Variable"], how="left")
+    .with_columns(
+        pl.when(
+            (pl.col("Unit") == "% of tCO2e") |
+            (pl.col("v_start") <= 0) | (pl.col("v_end") <= 0)
+        )
+        .then(0.0)
+        .otherwise(((pl.col("v_end") / pl.col("v_start")).pow(1.0 / n_years) - 1.0) * CAGR_TAPER)
+        .alias("cagr")
+    )
+)
+
+future_years = pl.DataFrame({"Year": list(range(last_year + 1, EXTEND_TO + 1))})
+
+future_rows = (
+    cagr_df
+    .join(future_years, how="cross")
+    .with_columns(
+        (pl.col("v_end") * (1.0 + pl.col("cagr")).pow(pl.col("Year") - last_year)).alias("Value")
+    )
+    .select(["Region", "Variable", "Unit", "Year", "Value"])
+)
+
+combined = pl.concat([combined, future_rows]).sort(["Region", "Variable", "Year"])
+
+
+# -- A8. Save ------------------------------------------------------------------
+
+print(f"\n✅ Emissions complete")
+print(f"   Total rows:          {len(combined):,}")
+print(f"   Regions processed:   {combined['Region'].n_unique()}")
+print(f"   Variables:           {sorted(combined['Variable'].unique().to_list())}")
+print(f"   Years covered:       {combined['Year'].min()} - {combined['Year'].max()}")
+
+output_path = OUTPUT_DIR / 'emissions_drivers.csv'
+combined.write_csv(output_path)
+print(f"   Saved to:            {output_path}")
