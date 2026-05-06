@@ -13,7 +13,7 @@ book:
       This book was built with <a href="https://quarto.org/">Quarto</a>.
   # cover-image: cover.jpg
   # favicon: cover.jpg
-  site-url: https://r4ds.hadley.nz/
+  site-url: https://emrg-sfu.github.io/cims
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: main
   repo-actions: [edit, issue]
