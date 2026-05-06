@@ -18,7 +18,7 @@ book:
   repo-branch: main
   repo-actions: [edit, issue]
   chapters:
-    - intro.qmd
+    - index.qmd
 
     - part: install.qmd
       chapters:
