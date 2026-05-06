@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: docs
+  output-dir: _book
 
 book:
   title: CIMS
@@ -11,16 +11,16 @@ book:
   repo-actions: [issue]
   # sharing: [twitter, facebook]
   chapters:
-    - index.md
-    - part: install.qmd
+    - index.qmd
+    - part: install
       chapters:
         - getting_started.qmd
-    - part: model.qmd
+    - part: model
       chapters:
-        - intro.qmd
+        - overview.qmd
         - technologies.qmd
         - sectors.qmd
-    - part: results.qmd
+    - part: results
       chapters:
         - policies.qmd
         - outputs.qmd

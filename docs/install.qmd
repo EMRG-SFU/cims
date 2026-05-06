@@ -1,3 +1,0 @@
-# Install {#sec-install-intro .unnumbered}
-
-This is the install section.

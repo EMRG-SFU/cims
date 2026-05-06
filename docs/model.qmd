@@ -1,3 +1,0 @@
-# Model {#sec-model-intro .unnumbered}
-
-This is the model section.
