@@ -16,6 +16,8 @@ simulations. CIMS is maintained and operated by the Energy and Materials
 Research Group at the School of Resource and Environmental Management at
 Simon Fraser University.
 
+[^1] CIMS originally stood for Canadian Integrated Modelling System but, as the model is now being applied to other countries, the acronym is now used as a proper name.
+
 CIMS is based on energy flows through a country's economic system. Like
 its predecessor, the ISTUM family of models, which form the individual
 sub-components of CIMS, it tracks the flow of energy, beginning with

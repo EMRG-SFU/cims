@@ -14,17 +14,16 @@ book:
     - index.md
     - part: install.qmd
       chapters:
-        - GettingStarted.qmd
-        - chapter-1.qmd
+        - getting_started.qmd
     - part: model.qmd
       chapters:
-        - chapter-2.qmd
-        - chapter-3.qmd
-        - chapter-5.qmd
-    - part: outputs.qmd
+        - intro.qmd
+        - technologies.qmd
+        - sectors.qmd
+    - part: results.qmd
       chapters:
-        - chapter-4.qmd
-        - chapter-5.qmd
+        - policies.qmd
+        - outputs.qmd
 
 format:
   html:
