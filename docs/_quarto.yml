@@ -1,0 +1,50 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "CIMS documentation"
+  reader-mode: true
+
+  page-footer:
+    left: |
+      CIMS was written by Brad Griffin, Jillian Andersen, and Matt Sniatynski.
+    right: |
+      This book was built with <a href="https://quarto.org/">Quarto</a>.
+  # cover-image: cover.jpg
+  # favicon: cover.jpg
+  site-url: https://r4ds.hadley.nz/
+  repo-url: https://github.com/EMRG-SFU/cims
+  repo-branch: main
+  repo-actions: [edit, issue]
+  chapters:
+    - intro.qmd
+
+    - part: install.qmd
+      chapters:
+        - GettingStarted.qmd
+        - chapter-1.qmd
+
+    - part: model.qmd
+      chapters:
+        - chapter-2.qmd
+        - chapter-3.qmd
+        - chapter-5.qmd
+
+    - part: outputs.qmd
+      chapters:
+        - chapter-4.qmd
+        - chapter-5.qmd
+
+format:
+  html:
+    theme:
+      - cosmo
+      # - r4ds.scss
+    # code-link: true
+
+    author-meta: "Brad Griffin, Jillian Andersen, and Matt Sniatynski"
+    # include-in-header: "plausible.html"
+    callout-appearance: simple
+
+editor: source

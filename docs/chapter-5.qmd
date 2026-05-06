@@ -1,0 +1,1525 @@
+# Model Sector Descriptions
+
+## Fuel Pricing
+
+TODO: Change from Fuel to Energy (or Supply) throughout all
+documentation, model, and code?
+
+TODO: Move service requests in top level service node
+
+> (just below "sector" node) in most sectors to be at the "sector" node
+> level. I think this is just a legacy of JCIMS and we don't need this
+> (just makes paths longer). Verify though!
+
+### Generic Fuels
+
+TODO: How define a fuel in CIMS
+
+#### Fixed Price
+
+#### Cost Curve -- Annual
+
+#### Cost Curve -- Cumulative
+
+### Endogenous Fuels
+
+TODO: How define a fuel in CIMS
+
+Calibration:
+
+1.  Set Financial lifecycle cost to 1
+
+2.  Set Price Multiplier to expected price (including sector markup)
+
+3.  Calibrate demand sector
+
+4.  Calibrate fuel supply sector to achieve expected production cost at
+    node one below final
+
+5.  Remove Financial lifecycle cost
+
+6.  Reset Price Multiplier to only include sector markup
+
+### Carbon pricing
+
+TODO: Have additive carbon prices to allow for overlapping policies.
+
+For instance, carbon tax + shadow price for cap.
+
+## Upstream fossil fuel extraction
+
+The petroleum crude industry in Canada includes:
+
+- A conventional crude oil production system, which comprises all
+  facilities and associated infrastructure used to extract, treat, and
+  transport light, medium, and heavy crude oils to market.
+
+- An unconventional crude oil system, which comprises all facilities
+  used to extract crude bitumen from oil sands and subsequently upgrade
+  them to synthetic crude oil. It is disaggregated into in-situ bitumen
+  recovery and oil sands mining/upgrading.
+
+### Conventional crude oil
+
+The production, treatment and transmission segment of the conventional
+crude oil system may comprise the following infrastructure:
+
+- Oil wells which produce at least one barrel of crude petroleum oil to
+  each 100,000 cubic feet of natural gas.
+
+- Oil transmission pipelines or tanker vehicles to transport the well
+  effluent to a battery or a cleaning plant.
+
+- Batteries where effluent from wells is separated into its constituent
+  phases for metering and appropriate disposition.
+
+- Oil storage tankers.
+
+- Oil transmission pipelines or tanker vehicles to move crude oil from
+  producers to market.
+
+### Oil sands mining/upgrading
+
+Oil sands mining/upgrading usually comprises the following steps:
+
+- Surface mining: Since the 1920's, open pit mining has been central to
+  oil sands development. Mine equipment from the early years was scaled
+  up significantly when large commercial operations started to come on
+  line. In the past, draglines and bucket-wheel reclaimers were used to
+  mine oil sands. This practice has largely been replaced by
+  shovel-and-truck mining, which gives greater flexibility. Run-of-mine
+  oil sands, dug directly from the open pit faces, is hauled to in-pit
+  crushing stations, and is then slurried and pumped to the bitumen
+  extraction plants.
+
+- Bitumen extraction: The oil in oil sand is called bitumen, a complex
+  hydrocarbon made up of a long chain of molecules. Bitumen is usually
+  separated from oil sands using a warm-water extraction process. The
+  mixing that takes place during slurry transport from the mine to the
+  plant is sufficient to begin the separation process, which recovers
+  over 90% of the bitumen resource. The resulting bitumen froth then
+  forms the feedstock for creating synthetic crude oil.
+
+- Raw bitumen upgrading: In order for bitumen to be processed in
+  refineries, the complex hydrocarbon chain in bitumen must be broken up
+  and reorganized, which means removing some carbon while adding
+  additional hydrogen to make more valuable hydrocarbon products by
+  upgrading. This is done using four main processes: coking removes
+  carbon and breaks large bitumen molecules into smaller parts,
+  distillation sorts mixtures of hydrocarbon molecules into their
+  components, catalytic conversions help transform hydrocarbons into
+  more valuable forms and hydrotreating is used to help remove sulphur
+  and nitrogen and add hydrogen to molecules. Further treatment and
+  blending produces light low-sulphur (sweet) synthetic crude that is
+  shipped by pipeline to refineries.
+
+### In-situ Bitumen
+
+About 80% of the oil sands in Alberta are buried too deep below the
+surface for open pit mining. This oil must be recovered by in situ
+techniques ("in situ" is Latin for "in place"). Using drilling
+technology, steam is injected into the deposit to heat the oil sand
+lowering the viscosity of the bitumen. The hot bitumen migrates towards
+producing wells, bringing it to the surface, while the sand is left in
+place.
+
+The most promising thermal recovery technology for Canadian bitumen
+resources is the steam-assisted gravity drainage (SAGD) process. In this
+process, two horizontal wells aligned in a vertical plane are drilled
+near the bottom of the reservoir. The top horizontal well is used to
+inject steam, while the bottom well is used to collect the produced
+liquids (oil, condensed steam, formation water). The steam injected from
+the top well rises into the formation, forming a large steam chamber
+above the well. The rising steam condenses on the boundary of the
+chamber, heating the oil and allowing it to drain to the production
+well. The process leads to high oil rates and a high recovery of the
+original oil in place at economic oil-to-steam ratios.
+
+The SAGD process is energy intensive. For some reservoirs, the vapour
+extraction (VAPEX)rocess may have more potential. It is an analogue to
+SAGD, involving the injection of vaporized solvents (e.g. ethane,
+propane, butane) or solvent/gas mixtures rather than steam. This process
+results in the formation of a vapor chamber rather than a steam chamber,
+but with a similar reduction in oil viscosity at the chamber boundary
+that allows the oil to drain to the production well. Although VAPEX is
+less energy intensive than SAGD, production rates are also lower.
+
+In addition, hybrid steam/solvent processes are currently under
+development for reservoirs in which steam or solvent processes alone are
+not suitable.
+
+Production from in situ already rivals open pit mining and in the future
+may well replace mining as the main source of bitumen production from
+the oil sands. Challenges facing in situ process are efficient
+recoveries, management of water used to make steam, and co-generation of
+all (otherwise waste) heat sources to minimize energy costs.
+
+Figure: Oil sands
+
+### Natural Gas
+
+### Coal
+
+## Mining
+
+The CIMS mining model represents metal mines as well as potash mining.
+Other non-metal mines are not modelled in CIMS, as they currently
+consume a relatively small percentage of total mining energy. Activities
+related to coal mining and oil and gas extraction are covered elsewhere
+in CIMS.
+
+Metal mines are typically categorized as either open-pit or underground.
+While the general production processes that occur in both categories are
+about the same, specific aspects of the mining technologies can differ
+significantly. For example, underground mining operations must address
+air quality issues in the mine shaft, which may require: cooling,
+heating and ventilation.
+
+The basic processes for metal mining include most of the following
+generic steps (although not always in this order): initial breaking,
+transport (hoisting, trucking, conveying), crushing, grinding,
+concentration (mineral separation) and waste disposal (rock and
+tailings). Energy consumption in the final smelting and refining stage
+is not included in this sub-model but has been included in the CIMS
+metal smelting model.
+
+## Electricity
+
+TODO: Competition type to aggregate demand load curves, sort, and assign
+to base, shoulder, and peak based on rulesTODO: Peak shaving policy via
+load curve multiplier (\<1 for peak, \>1 for off-peak)?
+
+The electricity model in CIMS is structured to account for
+utility-generated electricity. Electricity co-generated by industry is
+accounted for separately in the industrial sub-models. Please note that
+all electricity generated from renewables is accounted by the
+electricity model no matter whether it is generated by a utility or an
+industrial establishment.
+
+Final electricity demanded in the entire Canadian economy (excluding
+co-generated electricity by the industry) is represented by the primary
+node (Electricity). The amounts of electricity allocated to intermediate
+and competition nodes flows directly from this primary node, which is
+the principle driver of the simulation runs. Intermediate nodes in the
+Electricity sub-model reflect the specific characteristics of
+electricity demand. Electricity demand varies significantly reflecting
+the fluctuating demand requirements depending on time-of-day (i.e. daily
+demand typically peaks between 4-6pm) and by time-of-year (i.e. annual
+peak demand during the cold winter months). Utilities track these
+varying demand conditions using load curves in an effort to supply
+electricity on a continual basis.
+
+Electricity generation technologies have traditionally been classified
+based on their relative variable costs and the resulting frequency with
+which they are called upon to meet electricity demand or ''load''; e.g.,
+''baseload,'' ''load-following,'' and ''peaking'' resources. This
+classification is no longer meaningful in power systems with substantial
+penetration of wind and solar energy, since dispatch of each technology
+is also driven by the irregular variability of these renewable
+resources. Moreover, most available low-carbon technologies are capital
+intensive and have very low variable costs. In this context, the
+distinguishing attributes of electricity technologies relate more to
+their resource availability and ability to adapt production output in
+order to meet instantaneous demand.
+
+1.  ''Fuel-saving'' variable renewable energy (VRE) resources. These
+    include wind power, solar photovoltaics (PV), concentrating solar
+    power, and run-of-river hydropower. They harness renewable energy
+    inputs (wind, solar insolation, water) that vary on timescales
+    ranging from seconds to hours to seasons, have zero (or near-zero)
+    variable costs, and have no fuel costs. At lower penetration levels,
+    they may displace the need for firm capacity, but, at higher shares,
+    capacity needs are driven by periods with low VRE availability. At
+    high energy shares, these technologies therefore contribute value
+    primarily by displacing other higher variable cost generating
+    technologies whenever available and reducing the total fuel
+    consumption and variable costs of the system.
+
+2.  ''Fast-burst'' balancing resources. These include short-duration
+    energy storage (e.g., Li-ion batteries), flexible demand (or
+    schedulable loads), and demand response (or price-responsive demand
+    curtailment). They are either energy constrained (storage, demand
+    flexibility) or have very high variable cost (demand curtailment).
+    These technologies are therefore poorly suited to operating
+    continuously over long periods of time and are better used during
+    high-value periods when relatively fast bursts of power or quick
+    demand adjustments are needed to balance supply and demand.
+
+3.  ''Firm'' low-carbon resources. These are technologies that can be
+    counted on to meet demand when needed in all seasons and over long
+    durations (e.g., weeks or longer) and include nuclear power plants
+    capable of flexible operations, 12--15 hydro plants with
+    high-capacity reservoirs, coal and natural gas plants with CCS and
+    capable of flexible operations, geothermal power, and biomass- and
+    biogas-fueled power plants.
+
+Aggregating and rearranging the daily load curves in descending order
+from highest demand (peak) to lowest demand yields a load-duration curve
+(LDC). An LDC relates the capacity required with the capacity utilized,
+in other words the number of operating hours required during the year
+for each proportion of peak capacity demand. The LDC is divided into
+time segments (i.e. hourly or daily) with the extreme left side
+representing the province's peak demand for the year (i.e. usually a
+winter evening) while the extreme right side represents the baseline
+power demand (i.e. the minimum amount of power required). Interpretation
+of the LDC allows for the determination of capacity i.e. represented by
+the height of each slice, and of the utilization rate i.e. the width of
+each slice. The product of these two provides'a measure (estimated) of
+electrical energy (e.g. kilowatt-hours).
+
+As illustrated by the energy flow model of the electricity industry,
+total electricity generation in CIMS is split between the base, shoulder
+and peak nodes using ratios based on historical load curves. These
+ratios can change over time but are always user-specified.
+
+Baseload is a utility's minimum load over a given period. A baseload
+generating facility provides the basic amount of electric power needed
+year-round except for maintenance and scheduled or unscheduled outages;
+normally a large, efficient power plant having a low cost per
+kilowatt-hour generated. The base node includes conventional
+technologies such as gas turbines, combined cycle gas turbines, simple
+cycle coal turbines, pulverized fluidized bed coal, integrated
+gasification combined cycle coal, small and large hydro, nuclear; and
+renewable technologies such as biomass steam plant, fuel cell generator,
+parabolic trough solar generation, geothermal, solar thermal and wind
+generation.
+
+The shoulder and peak nodes only contain conventional technologies.
+Moreover, as a peak node plant needs to be phased in and out of the grid
+relatively quickly, plants with long start time such as nuclear plants
+could not be used as peak node facilities
+
+While the split among base, shoulder and peak nodes are always
+user-specified (decision rule: fixed_matrix_ratio), the split between
+conventional and renewable generation in the base node can be either
+user-specified over time or based on the aggregate relative annual
+levelized costs of the technologies on each sub-node.
+
+The current CIMS model deals with electricity imports and exports
+through the macroeconomic module. The own price elasticity for electric
+power export demand is -1.07. And the energy trade elasticities are
+applied using the following equation:
+
+(Equation 31)
+
+Where:
+
+> FLCCt = Current financial lifecycle cost for a product
+>
+> FLCCt-1 = Previous financial lifecycle cost for a product
+>
+> β = % of market price covered by sub-model
+>
+> σ = Own price demand elasticity for the energy commodity
+>
+> γ = Corrected demand multiplier for the given market
+
+Figure: Energy Flow Model of Electricity Generation
+
+Rates
+
+## Ethanol & Biodiesel
+
+## Hydrogen
+
+## Industrial Sector
+
+TODO: Break out temperature demands for key industries
+
+low temp -\> heat pump fuel switching, med (?), high -\> need
+combustible fuel?
+
+Check Chris Bataille's database for this.
+
+This document describes how the industrial sector is modelled in CIMS.
+We provide a general description of the sector, its energy end-use
+processes, and the salient features of the model. The prototype for this
+CIMS module was the ISTUM-I model developed at Simon Fraser University.
+
+### Background
+
+Unlike the commercial and residential sectors, the industrial sector is
+too diverse to simulate in a single module. CIMS therefore includes the
+following industrial sector sub-models, each reflecting the activity of
+one major industrial branch: chemical manufacturing, industrial
+minerals, iron and steel, mining, metal smelting and refining, petroleum
+refining, pulp and paper, and other manufacturing. Coal mining and oil
+and gas extraction are covered in the CIMS energy supply component. In
+some cases, a branch may include more than one industry (e.g., chemicals
+includes many unrelated chemical-producing industries, non-metallic
+minerals includes cement, and in some regions, lime, glass and brick
+production) while for some branches, the model is industry specific
+(e.g., petroleum refining, pulp and paper).
+
+In 2003, the industrial sector consumed 2,733.5 PJ of secondary energy,
+or 32% of the energy used in Canada. Figure 7 provides the breakdown of
+total industrial energy use to the sub-branches represented in CIMS.
+Pulp and paper consumes more than any other industrial branch, at 30% of
+the total. Other manufacturing and petroleum refining follow, at 20% and
+14% respectively. Metal smelting and refining and iron and steel each
+account for about 10% of industrial energy consumption. The remaining
+10% is attributed to mining, industrial minerals, forestry and
+construction (the last two categories are referred to as "other" in the
+figure).
+
+Figure 7. Energy Use by Industrial Branch in Canada in 2003
+
+Source: Natural Resources Canada. 2005. Energy use data handbook, 1990
+and 1997 to 2003. Ottawa: Office of Energy Efficiency, Natural Resources
+Canada.
+
+Some industries are found in very few regions (e.g., aluminum smelting
+occurs only in BC and Québec) while others occur in most regions (pulp
+and paper occurs in all regions except Saskatchewan). Table 12 shows the
+disaggregation of industry sub-sectors in CIMS by region.
+
+Table 12. Disaggregation of Industry Sub-sectors in CIMS
+
+Each industrial sub-model in CIMS has its own driving variable, usually
+the total amount of final product produced or the amount of raw input
+processed (e.g., tonnes of steel, tonnes of mineral ore throughput, m3
+refined petroleum products). The driving variables are determined
+exogenously, often based on official forecasts used by Natural Resources
+Canada to develop Canada's Emissions Outlook: An Update, although in
+several cases sector specific sources are used.
+
+In CIMS, the product and energy service demands in a sub-sector are
+linked in a flow model that describes the sequence of activities
+required to generate that product. The energy flow model for the iron
+and steel industrial branch is shown in Figure 8 below as an example. A
+CIMS flow model is geared towards representing technology evolution and
+energy consumption rather than economic criteria (as in an econometric
+model where units are typically in monetary terms) or actual mechanical
+processes (as in the blueprints or process flow diagrams used by
+engineers). Because the emphasis is on energy consumption and not
+material flow, the nodes in the flow model represent process stages in
+which energy consumption can be distinctly estimated. The flow model
+describes hierarchical nodes, linked by engineering ratios. Technology
+competitions take place at the lowest level nodes in the hierarchy.
+
+Figure 8. Energy Flow Model of the Steel Products Industry
+
+Nodes shaded in green represent unique industry processes, while nodes
+shaded in other colors represent auxiliary systems. These are generic
+energy services that are supplied to the major process technologies and
+are shared by all CIMS industry sub-models. The auxiliary systems fall
+into four general categories: steam generation (boilers and
+cogenerators), lighting, heating, ventilation and air conditioning
+(HVAC), and electric motor systems including pumps, fans, compressors
+and conveyors. Figure 9 shows the energy flow diagrams for auxiliary
+systems not included in Figure 8. In some cases, the energy service
+meets the direct need for steam, pumping or compression, while in other
+cases, it serves only to provide suitable conditions for production to
+continue, as in the case of lighting and HVAC systems.
+
+Figure 9. Auxiliary Flow Model Diagram
+
+The sections that follow describe how key auxiliary systems and process
+specific components are captured by the CIMS industrial model. The
+section on auxiliary systems covers steam generation and electric
+auxiliary services. Lighting and HVAC are not described in detail
+because the energy demanded by these services is small. The section on
+process specific systems covers each of the CIMS industrial sub-models.
+
+### Auxilliary Systems
+
+#### Steam Generation
+
+A number of industry process technologies generate steam as a
+by-product. CIMS accounts for steam generated by these technologies in
+the overall steam demand in each industry. Any shortage of steam must be
+met by boilers and cogenerators.
+
+Boiler efficiency can vary greatly depending on boiler design, age, and
+fuel used. For modern oil and gas boilers, thermal (first law)
+efficiencies may be 85% or higher. Boiler efficiencies can be increased
+by introducing non-condensing and condensing heat recovery systems and
+by installing regenerative burners with computerized fuel/air mixtures
+to maximize fuel efficiency.
+
+Cogeneration is the sequential production of electricity and useful
+thermal energy, usually as steam or shaft drive power. In cogeneration a
+boiler is used in conjunction with a turbine system to generate
+electricity, with the "waste\" steam going to meet process steam
+requirements. In comparison to conventional electricity generation,
+cogeneration facilities are capable of conversion efficiencies of up to
+85% (including both the steam and electricity produced) as compared to
+utility condensing turbine systems which have an efficiency in the 30%
+to 40% range.
+
+#### Electric Auxiliary Systems
+
+The vast majority of electricity consumed by industry is used by motor
+systems. A motor is the core component of a much broader system of
+electrical and mechanical equipment that provides services, including
+hydraulic power, compressed air, motive power and air flow.
+Opportunities for efficiency improvement exist in both the motor itself,
+and in the latter systems -- pumping, air displacement, compression,
+conveyance as well as other types of machine drive that are unique to a
+given production process (direct drive).
+
+Figure 3.3 above is a generic energy flow model representing motor and
+steam auxiliary systems as they appear in the various CIMS industrial
+sub-models. As the figure indicates, CIMS simulates six auxiliary groups
+related to process drive (in red). The first five demand shaft or
+mechanical drive provided by the sixth group, motors (machine drive).
+Each group simulates technology evolution of a specific system.
+
+Increased disaggregation in some of the groups reflects differing
+end-uses and levels of efficiency. For example, compressor systems vary
+in electrical efficiency by size. Therefore, competition between
+different technologies must be separated by size. The energy flow model
+reflects this by displaying two sizes of compressors, which are
+available for use by the model.
+
+Pumping, air displacement, compressing and conveyance systems have been
+represented as packages within CIMS. The components of each of these
+systems are associated with the key end-use. For example, a pipe,
+throttle and speed control device is attached to a pump, and the entire
+package is called a pump system. In the model, there are at least two
+types of systems:
+
+1.  The least efficient system comprised of the least efficient
+    components
+
+2.  The most efficient system comprised of the most efficient components
+
+The system efficiency is then a function of the efficiency of all the
+components within that system. In some cases intermediate efficiencies
+have also been listed. New technologies may be added to reflect the
+intermediate range.
+
+Electronic variable speed drives (VSDs) provide speed control by varying
+the rotating speed of the induction motor to match variable speed
+requirements of driven equipment. Pumps and fans, for example, are often
+required to deliver varying qualities of fluid flow. When this control
+procedure is used the energy consumption of the fan or pump is
+dramatically reduced during part load operation, as compared to the
+conventional practice of using a valve or damper to reduce flow.
+
+### Petroleum Refining
+
+This industrial sector includes establishments primarily engaged in
+manufacturing petroleum products. Activities such as the manufacture of
+lubricating oil and grease or asphalt and coal/coke products are
+included in CIMS where they are carried out in these plants.
+Establishments that are primarily engaged in these activities are not
+included; however, because of their comparatively small size.
+
+The basic process involves refining crude oil into a number of products
+including: ethane, propane, butane, motor gasoline (typically 40% of
+total product), naphthas, jet fuel, petrochemical feedstocks, distillate
+fuel oil, diesel fuel, residual fuel oils, lubricants, coke and asphalt.
+All crude includes these products in varying concentrations. However, it
+is possible to increase output of more desirable products per unit crude
+input by using cracking and reforming processes.
+
+The type and quality of crude and the processing requirements to
+generate the end products determine the refinery's complexity and have
+significant impact on energy consumption in the plant. In spite of this,
+however, the basic processing procedures are common to all refineries.
+The major process steps include: atmospheric distillation, vacuum
+distillation, cracking, desulphurization, alkylation, isomerization,
+reforming, sulphur recovery and hydrogen production. The last two
+processes should not be considered part of the actual refining process;
+they act as utility functions to clean out sulphurous compounds or
+provide hydrogen for specific in-plant operations.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+### Industrial Minerals
+
+The industrial minerals sub-model of CIMS generally includes all
+industry involved in the production of all non-metallic mineral
+products. It encompasses the cement, lime, glass and brick industries,
+with cement and lime as the major energy consumers. These key products
+both require significant quantities of thermal energy per unit
+production during the calcining process. Other energy-demanding
+processes involved in cement or lime production typically include raw
+materials preparation (this excludes extraction of the raw materials
+from their in situ locations, even though these may be within the plant
+gate), and finishing or finished materials preparation. Calcining
+remains the most energy intensive part of the processes, consuming large
+quantities of combustible fuel (85% or more of the total energy
+consumed). Initial and final preparation of the materials requires
+electricity to drive motors that are attached to various auxiliary and
+grinding devices.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+### Iron and Steel
+
+The CIMS iron and steel model represents this industrial branch as a
+process whole, including the production of coke from coal, the
+incorporation of iron ore (including any agglomeration that occurs on
+site) and ending with the set of end products. End products include the
+three basic forms (slabs, blooms and billets) and, in many cases, their
+sub-forms. The iron and steel industrial branch has a high energy
+intensity per tonne of product.
+
+Presently, two different processes generate Canadian steel. In the first
+process, coke, a coal derivative, reduces iron oxides in ore to pig iron
+in a blast furnace. Basic oxygen furnaces (BOFs) then purify this liquid
+iron along with some scrap by injecting high purity oxygen, which is
+itself an energy-intense product. In the second process, electric arc
+furnaces (EAFs) recycle 100% scrap metal. In both cases, the molten
+steel (with carbon content less than 2%) may be cast, inspected,
+reheated and finished. Each of a wide variety of finished products
+requires varying inputs of heat and mechanical energy to its
+manufacture.
+
+The steel industry is rapidly modernizing. Most of these technologies
+concentrate on energy-saving measures and reuse of what had historically
+been waste heat. Direct reduced iron and direct smelted iron processes,
+presently in pilot scale plants, may eventually make the coke-dominated
+process redundant. More advanced finishing processes such as direct
+rolling and thin slab and thin strip casting will eliminate reheating of
+steel (typically done after initial inspection).
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+### Metal Smelting and Refining
+
+The metal smelting and refining model of CIMS includes establishments
+that are primarily engaged in manufacturing finished metal products
+excluding iron and steel. These processes consume very high amounts of
+energy per unit of product. The CIMS sub-model explicitly includes
+processes related to aluminium, nickel, copper, zinc, lead, magnesium
+and titanium. Though economically important, minor elements such as
+gold, silver, platinum and cadmium are not represented explicitly
+because they are often processed in conjunction with the metals listed
+or are processed in too small a quantity to require direct
+representation.
+
+In metal smelting, metal is typically extracted from the concentrate by
+leaching (hydrometallurgical recovery) or through heat
+(pyrometallurgical recovery). In Ontario, for example, all zinc smelters
+use hydrometallurgical techniques while copper and nickel smelters use
+pyrometallurgy. Smelting processes generate products that contain
+between 95% and 99% pure metal. Refining, if it occurs, depends on the
+type of smelting technique used. Products prepared through
+hydrometallurgy tend to use electrowinning for refining while products
+prepared through pyrometallurgy tend to use electrolysis or fire
+refining. Refined products are at least 99.99% pure metal.
+
+Purification of the aluminum is accomplished utilizing the Hall-Heroult
+process, which requires large quantities of electrical energy. Although
+Canada has no aluminum ore body of sufficient concentration to warrant
+extraction, readily available, inexpensive electrical energy attracts
+companies who wish to refine the metal from alumina (concentrated ore).
+Recycled aluminium requires only 5% of the energy of original
+production. Increasing demand for conservation and recycling may have a
+significant effect on the production of virgin metal.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+### Chemical Products
+
+Unlike some of the other industrial sectors modelled in CIMS, the
+chemical products sector is not dominated by a single energy intensive
+product to which all others can be associated. As a result, several
+products and processes must be modeled to accurately reflect the energy
+flow within the industry. The dominant chemical products, from an energy
+consumption perspective, are: chlorine, caustic soda (sodium hydroxide),
+sodium chlorate, hydrogen peroxide, ammonia, methanol, ethylene,
+propylene and polymers. Sub-nodes in the model represent different
+process stages in which energy consumption can be distinctly
+represented.
+
+Ethylene, methanol, toluene and xylene are the primary petrochemicals
+produced. Crude oil and natural gas feedstocks provide the raw material
+from which these are produced. Ammonia, chlorine (often produced in
+complement with caustic soda) and sulphuric acid are the major inorganic
+chemicals produced. Like petrochemicals, natural gas provides the
+principal raw material used in the manufacture of ammonia. Ammonia, in
+turn, forms the primary feedstock for urea, ammonium phosphate, ammonium
+nitrate, ammonium sulfate and nitrogen solutions commonly sold as
+fertilizers.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+\*This flow model has not yet been implemented in CIMS
+
+### Pulp and Paper
+
+TODO: Check with Michael at Navius about JCIMS data and model for CFS
+project in 2017.
+
+TODO: Need to early retire biomass steam generation stock to be able to
+meet emissions in 2010-2020
+
+The pulp and paper industry includes establishments primarily engaged in
+manufacturing pulp, paper, paperboard and building and insulation board.
+These establishments are included in the CIMS pulp and paper sub-model
+because they are large in size and their products are highly energy
+intensive when compared to other industry products. Paper products,
+which do not form part of the sub-model include: asphalt roofing, paper
+box and bag, and other converted paper product industries. These are
+included in the other manufacturing model of CIMS. The pulp and paper
+industrial branch has a high energy-intensity per tonne of product.
+
+Pulping processes can be broken down into three basic types: chemical,
+mechanical, and recycled. Mechanical pulping, which tends to be very
+electricity intensive, uses wood fibre much more efficiently than does
+chemical pulping. Recycled pulp consumes considerably less energy than
+either of the other two major processes but input supply is limited and
+the collection and transportation of this supply can significantly
+increase the energy intensity of the product. The products generated
+from each of these processes are distinct enough that they generally do
+not compete on the open market.
+
+Each pulp product serves as the stock for many types of paper products.
+Newsprint, the largest category in terms of production (\> 60%), can use
+feedstock from each of the pulping processes. Other paper products
+incorporated into this sub-model includes tissue paper, uncoated and
+coated paper (or wood-free paper), and linerboard, each of which may
+have varying degrees of stock inputs.
+
+The following steps in the production of pulp and paper are common to
+both chemical and mechanical mills where raw logs serve as feedstock:
+wood debarking, wood chipping, pulp making, pulp washing, pulp
+bleaching, pulp drying, paper stock preparation, paper sheet formation,
+paper pressing and paper drying. Mills that use chips or recycled paper
+as feedstock may exclude some of these steps.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+### Other Manufacturing
+
+The CIMS industrial sub-model for other manufacturing industries has
+been created to capture those industries within a region, which, on
+their own, do not consume enough energy to merit the development of a
+separate model. When considered as a group, however, they may consume a
+significant (if not the dominant) portion of the energy within any one
+region. The industries considered part of the other manufacturing sector
+are: food, beverage, tobacco, rubber products, plastic products, leather
+and allied, primary textiles, textile products, clothing, wood,
+furniture and fixture, printing and publishing, fabricated metal
+products, machinery, transportation equipment, electrical and
+electronic, and other manufacturing.
+
+The other manufacturing group of industries typically includes a large
+variety of technologies and processes. Usually, a simplified flow model
+of generic energy services represents adequately the energy consumption
+of these industries as a whole. Steam boilers, process heat, space heat,
+and electricity for lights and electric motors and their attached
+auxiliary devices (pumps, conveyors, fans and the like) constitute the
+bulk of energy-using services.
+
+Unlike other "major" industries the other manufacturing industry as a
+group does not have any single product which dominates the production
+processes and to which the production of all other products may be
+linked. As a proxy for the physical output measures used in the
+sub-models major industries (i.e., tonnes of steel or cubic metres of
+gasoline) the output of the other manufacturing industry is represented
+in monetary terms such as the RDP (real domestic product) of the
+industry.
+
+Figure: Energy Flow Model for the Chemical Products Industry
+
+## Direct Air Capture
+
+- Run year as normal with carbon price
+
+- Re-run year with shadow carbon price, iterate until between:
+
+  - total emissions difference between runs is equal to maximum DAC
+    quantity
+
+    - have maximum annual growth rate for DAC?
+
+    - Expert opinion?
+
+  - minimum shadow price equals DAC cost
+
+- Emissions difference between runs is DAC request by tech
+
+  - Only change shadow price in sectors that are allowed to purchase DAC
+
+- Total emissions difference is DAC sequestered
+
+## Residential
+
+TODO: Track hot water usage through sector using L of hot water
+(currently m3 I think), then change to efficiency at hot water node
+(although, check that we can find heating efficiency for hot water
+production).
+
+TODO: Check best units to convert from clothes washing to drying. Should
+be something like loads/cycles per year (i.e., more efficient washer
+reduces need for drying, but can be combined with more efficient
+drying).
+
+This section describes the structure and data inputs of the residential
+module of CIMS. It provides a general description of the sector its
+energy end-use processes, and the salient features of the model. The
+model was initially developed as ISTUM-R by Alison Bailie (1994).
+
+### Background
+
+The CIMS residential sector sub-model attempts to capture all energy
+demand by residential buildings within Canada. This includes single
+family dwellings, duplexes, row housing, walk-ups and large apartments.
+Large apartment buildings are often considered commercial buildings by
+utilities, but, since their energy consumption patterns better fit
+within the residential sector, they have been included as part of this
+sub-model.
+
+The number of households drives the residential sector models and is
+calculated exogenously, based on future population growth estimates.
+This variable directly determines the demands for all services, except
+for water heating and furnace fan demand. The technologies for services
+that require hot water and furnace fans establish those demands.
+
+### Energy Use in the Residential Sector
+
+In 2002, the residential sector accounted for approximately 17% of all
+energy consumed in Canada. This energy provides services such as space
+heating, water heating, lighting, cooking, refrigeration and clothes
+drying. Space heating accounts for about 60% of residential energy
+consumption, water heating approximately 21% with the remainder going to
+lighting, appliances and other uses. The exact nature (i.e., quantity,
+fuel type etc.) of this consumption depends on many variables such as
+availability, climate, building type and occupancy patterns.
+
+The following describes energy end-use services common to residence
+types incorporated into the model, the variables that affect the amount
+of energy consumed in providing the services, the relationship between
+the end-use and the driving variable at the primary node (number of
+households) and any other interrelationships that permit a more accurate
+simulation of the end-uses.
+
+#### Space Heating
+
+A variety of factors uniquely determine the energy consumption required
+to heat a household. These factors include the physical building
+envelope, the type of heating system, maintenance of both the envelope
+and heating system, climate and exterior landscape features, and
+thermostat settings. Modelling this service requires many assumptions
+and generalizations. Due to the multitude of housing types, the sector
+must be condensed into groups consisting of thousands of households
+which are represented in the model by one typical house archetype. All
+heating systems cannot be included, due to the large number of
+possibilities; thus the models contain only the most common systems and
+those considered likely to gain significant market shares in the future.
+Case studies and surveys provided estimates for geographical and
+behavioural assumptions.
+
+Each space heating technology in the residential CIMS sub-model combines
+a shell archetype and a heating system. Each archetype, which is a set
+of physical measurements for components such as floor space, window
+area, insulation levels, and rate of air exchange, represents a group of
+households. Modellers use archetype descriptions to calculate the
+heatload and cost of the typical building as well as the cost and energy
+savings of retrofitting. For each shell archetype, CIMS includes a
+choice of four or five different heating systems. These systems include
+oil furnaces, natural gas furnaces (typically three efficiency levels),
+high efficiency space heat/hot water systems, wood stoves, electric
+baseboard heating, and electric air source heat pumps.
+
+#### Non-Appliance Hot Water Use
+
+This service meets the hot water required for baths, showers, hand
+washing, and cleaning. The competing technologies, shower heads and
+faucets with varying flow (litres/minute) levels, consume hot water
+rather than energy. The water demand determined by this node contributes
+to the hot water demand that drives the hot water heating service.
+
+#### Lighting and Major Appliances
+
+Each of the following appliances is modelled as a separate service:
+
+- Refrigerators
+
+- Freezers
+
+- Dryers
+
+- Ranges
+
+- Dish Washers
+
+- Clothes Washers
+
+- Air Conditioners
+
+- Lighting
+
+The stock is measured in number of appliance units (i.e., number of
+refrigerators) and the ratio between the service and the driving
+variable (number of households) is the market penetration of the
+appliance. Generally, there is a range of efficiency levels for new
+stock in each major appliance service.
+
+Clothes washers demand both electricity and hot water. Dish washers are
+disaggregated into two categories: machine, which demand electricity and
+hot water, and non-machine, which only consume hot water. Due to varying
+demand for air conditioning not all the residential sub-models
+incorporate them as a separate end-use and they are often combined with
+the minor appliances.
+
+#### Minor Appliances
+
+This service contains many diverse technologies including televisions,
+car block heaters, lawn mowers, and computers. Although, these
+appliances collectively consume a significant portion of household
+energy, individually either their consumption or their market
+penetration is low. As a group, this end-use is growing considerably.
+Efficiency improvements are outweighed by increase in number of goods.
+
+#### Renewable Energy Sources and Other Distributed Energy
+
+A number of renewable technologies (in addition to wood stoves) can be
+applied at the household level to provide both passive and active
+energy. These include photovoltaic panels, geothermal, solar hot water
+heating and passive solar design. Options are also increasingly becoming
+available to generate electricity using combined heat and power
+generations at the household level, for instance through fuel cells and
+through micro-CHP (for instance the stirling engine). Some of these
+options are modelled at the end-use in which they meet thermal demand,
+rather than as a unique 'supply' node in the flow model.
+
+#### Water Heating
+
+The water heating demand depends on the technologies used to supply
+services of non-appliance hot water, dish washing, and clothes washing.
+For most purposes, hot water must be at 60oC and, unheated water
+generally enters the household at 15oC. Both storage tank and
+non-storage tank water heaters are modelled. Fuel cell and stirling
+engines are modelled at this end-use to meet water heat loads (while
+generating electricity for household use).
+
+#### Energy Flow Model, Residential Sector
+
+Although each province in Canada has a number of unique characteristics
+in terms of climate, the availability of fuel and the structure of the
+residential sector, all households require the same basic set of energy
+services. The following section describes the basic structure and the
+end-uses common to all regional residential models. Major differences
+between regional models are described later in this section.
+
+Figure 5 presents CIMS's residential sector flow sub-model. The number
+of residences required in any year drives the model. The flow model
+demonstrates the linkages between the driving variable and the energy
+end-uses in the residential sector. The number of residences is
+determined exogenously, based on future growth estimates of population
+and economic activity. The end-uses are linked to the driving variable
+through engineering ratios based on historic relationships between a
+residence and each end-use.
+
+#### Energy End-Uses (Non-Space Heating)
+
+Due to similarities in service demand and technology choices, the
+lighting and major appliance services modelled in the residential sector
+have been aggregated for all housing types. Air conditioning, a large
+energy consumer in some regions (e.g., Ontario), consists of room or
+window units and central units. Disaggregating apartment and
+non-apartment water heating captures the level of use and technology
+differences between these two categories.
+
+#### Space Heating
+
+In contrast to the other energy services in the residential sector, the
+amount of space heating demanded by a residential unit can vary
+considerably depending on the building type. As a result, the space
+heating service node of the model is divided into three basic housing
+types: apartment, attached (row), and single family detached dwellings.
+The apartment category includes both high and low rise apartments while
+the attached category consists of duplexes, triplexes, and townhouses.
+As described above each of these housing types have been divided up into
+different archetypes to describe the differences in building heatloads
+and the fuels and efficiencies of the heating systems.
+
+#### Apartments
+
+In the apartment node, two basic technology archetypes are available,
+standard and 'improved shell'. The standard archetype generally
+represents the existing or a baseline shell design that demands a
+relatively high heat load while the improved apartment shell design
+represents better insulation, windows, etc., demanding a lower heat
+load. Each of these archetypes is divided into several different heating
+system types based on the type of fuel and efficiency of the heating
+system, e.g., oil heating, several efficiency levels of natural gas heat
+(62%, 78%, 90%) and electric heat. During each model run new apartments
+can be purchased either from the options available from existing stock
+or from a selection of new buildings with an improved shell design and
+better heating systems. There are no retrofit options currently
+available for existing apartment stock.
+
+#### Attached Housing (Row)
+
+The attached housing category is modelled in the same manner as the
+apartments.
+
+#### Single Family Dwellings
+
+The greatest level of technological variety in the residential sector
+exists in the types of systems for heating single family dwellings
+(SFDs). These technologies also show the greatest differences between
+the regions. In the basic CIMS residential sub model, SFDs are divided
+up into two categories, existing and new housing.
+
+Two archetypes are used to model all existing houses. Archetype A houses
+have very little insulation and, therefore, higher heatloads than
+Archetype B houses. Where wood consumption is present, wood stoves meet
+part of heat load demand. CIMS allows houses in either of these
+archetypes to retrofit to improve insulation levels. The six possible
+heating systems for the current housing stock are oil furnace, electric
+baseboard heating, air-source heatpump, standard natural gas furnace
+(78% efficient), high-efficiency natural gas furnace (78% efficient),
+and high efficiency space heat/hot water systems.
+
+In each region, three types of houses compete for new stock: standard,
+improved and R-2000 archetypes. R-2000 houses meet the current heating
+budget specified by R-2000 standards for the region. The improved
+archetype is based on the ratio between standard and improved
+archetypes. Houses can be upgraded to better insulated categories
+through retrofits. Heating systems are the same as those modelled for
+existing homes. In some regions wood stoves may be chosen to heat
+standard and improved archetypes.
+
+Figure 5. Energy Flow Model for the Residential Sector
+
+### Regional Differences in CIMS Residential Sub-models
+
+#### British Columbia
+
+The BC residential sub-model has some differences compared to the other
+provinces in Canada. t is the only model to make use of the
+primary/secondary climate distinction available for single family
+detached homes - coastal SFD (Lower Mainland and Vancouver Island) and
+interior SFD are represented. The same has not been done for apartment
+and attached housing since over 80% of these buildings are in the
+coastal area and this trend is assumed to continue over the modelling
+period.
+
+The coastal SFD (Primary Climate) housing portion of the model is as
+described above. The interior region (Secondary Climate), with only half
+as many houses as the coastal region, uses only a single archetype to
+represent existing stock. The archetype heatload is the average of all
+current housing stock heatloads. These houses, like the others, can be
+retrofitted to improve insulation levels. Since wood provides primary
+heat for approximately 20% of interior houses, CIMS includes wood stove
+heating systems for these archetypes. The other heating systems in the
+interior are identical to the coastal systems described above.
+
+### Climate Zones
+
+## Commercial sector
+
+TODO: Split auxiliary end uses by activity types (e.g., lighting, hot
+water, etc.)?
+
+### Background
+
+### Energy Use in the Commercial Sector
+
+In CIMS, the definition of the commercial sector excludes light
+industrial facilities, which are included in the other manufacturing
+sub-model, and high-rise residential apartments, which are included in
+the residential sub-model.
+
+The commercial building sector accounts for roughly 20% of all energy
+consumed in Canada. For the most part, energy in the commercial sector
+is consumed to provide energy services such as lighting, heating,
+ventilation and air-conditioning (HVAC); cooking, refrigeration, hot
+water, and plug load (i.e. power for computers and other office
+equipment). Lighting and HVAC account for roughly 60% of the energy
+consumed in this sector. However, the distribution of energy use in any
+particular commercial building depends on its architectural
+characteristics, building type and size, efficiency of installed
+equipment and activities of the occupants.
+
+The most common fuels used in the commercial building sector are, in
+order of importance, electricity, natural gas and light fuel oil.
+Electricity is the only energy source used for lighting, refrigeration,
+plug load, cooling, fan and pumping. Electricity and natural gas are
+used for cooking. All three energy sources are used for space and hot
+water heating.
+
+#### Energy Flow Model, Commercial Sector
+
+Figure 6 shows CIMS's commercial sector energy flow model. CIMS
+considers commercial floor space as being the driving variable (primary
+node) of the commercial sector. The flow model demonstrates the linkages
+between the driving variable (commercial floor space) and the energy
+end-uses in the commercial building sector. The amount of commercial
+floor space is determined exogenously, based on future growth estimates
+of population and economic activity. The end-uses are linked to the
+driving variable through engineering ratios based on historic
+relationships between commercial floor space and each end-use. Not all
+energy end-uses found in the commercial sector are included in the
+model. Only space heating, lighting, refrigeration, cooking, hot water
+and plug load are considered significant enough, in terms of their total
+energy consumption, for inclusion.
+
+End-uses are described in more detail in the next sections.
+
+Figure 6. Energy Flow Model for the Commercial Sector
+
+#### Lighting
+
+In the commercial building sector, lighting consumes more electricity
+than any other end-use, accounting for 30 to 40 percent of total
+consumption. Lighting is measured in terms of the number of square
+meters of commercial floor space that it serves. Therefore, the lighting
+service has a one to one ratio with commercial floor space.
+
+Lighting is not modelled separately by building segment. CIMS simulates
+lighting at different energy efficiency levels. The base technology
+represents the average efficiency of stock in 2000. The 'new' technology
+represents the marginal energy efficiency of new stock built in 2000.
+Other options represent actions to adopt more efficient lighting
+equipment (super T8, advanced HID, compact fluorescent lighting) and
+improving lighting design.
+
+The lighting end-use category is modelled as three sub-categories:
+general area lighting, high bay lighting and service lighting. General
+area lighting is the dominant category of lighting and refers to the
+lighting found throughout general office areas and uses predominately
+fluorescent tube lights. Service area lighting refers to lighting
+systems used in corridors, lobbies, vestibules, washrooms, and any
+non-critical areas adjacent to areas illuminated by general area
+lighting. Lastly, service lighting refers to the lighting systems used
+in high bay areas of a building - large atria and lobbies, gymnasiums
+etc. The energy intensity of any sub-category depends on the efficiency
+of the lighting equipment and the use rate.
+
+CIMS does not currently account for the energy consumed for exterior
+lighting such as street lighting, architectural lighting or parking lot
+lighting.
+
+#### Shell/HVAC
+
+The Shell/HVAC category is disaggregated into nine representative
+building segments (sub-categories). These segments, listed below,
+combine two or three different building types to group buildings with
+similar HVAC system types and usage. For example, the schools category
+includes elementary schools, colleges and universities.
+
+- Warehouses and Wholesale Outlets
+
+- Hotels and Motels
+
+- Schools and Universities
+
+- Small Office Buildings
+
+- Large Office Buildings
+
+- Small Retail
+
+- Large Retail
+
+- Hospitals and Nursing Homes
+
+- Miscellaneous Buildings (not including residential or light
+  industrial)
+
+The mix of buildings in the segments is derived from data for the base
+year. The eight segments each have different occupancy and use rates,
+system types, and shell types. The relative shares of the building types
+within each segment can vary over the study period.
+
+Each building segment encompasses a variety of shell and building HVAC
+technology options. Each is represented by a 'shell' node which competes
+alternative shell options. This represents a demand for heat load which
+is met by a corresponding HVAC service node for each building segment
+(see flow model). The link between the shell and HVAC competitions
+attempts to capture the relationship between decisions about building
+shell characteristics and the amount of energy demanded of the heating
+and air conditioning services. HVAC systems are modelled as 'single'
+technologies to represent the interdependence of choices about heating,
+cooling and ventilation systems.
+
+#### Refrigeration, Cooking, Hot Water, Plug Load
+
+The end-uses in the commercial sub-model are linked to the driving
+variable based on historic ratios of use per unit floor space and the
+weighted average of all the various commercial sub-sectors (e.g., a
+hospital will use more hot water than a warehouse per unit area). The
+weighted ratios can change over time, depending on changes in the
+proportion of the different kinds of floor space assumed over that
+period.
+
+#### Plug Load
+
+#### Domestic Hot Water
+
+Domestic hot water (DHW) end-use represents the hot water used for all
+building services except space heating and is measured in cubic meters
+of hot water demand for the whole commercial building sector. It is
+related to the primary node by the ratio of cubic meters demand to
+commercial building floor space. Hot water is used for showering,
+washing, cleaning and food preparation.
+
+#### Refrigeration
+
+The refrigeration end-use includes all commercial refrigeration except
+for cooling required for air conditioning and is measured in gigajoules
+of refrigeration demand per square meter of commercial building floor
+space. This end-use is represented by two types of technologies;
+stand-alone plug-in refrigerators and large built-up refrigeration
+systems. These two types have different efficiency improvement
+opportunities. The refrigeration category in the model combines these
+two technologies and its energy intensity is the weighted average of the
+two system types. The ratio of the two system types is assumed to remain
+constant over time in a typical simulation.
+
+#### Cooking
+
+The cooking end-use is served by either electric or gas ovens, stoves
+and fryers and is measured in gigajoules of cooking demand per square
+meter of commercial floor space. This end-use also consists of different
+system types and the energy intensity of this end-use is the average for
+all types of commercial cooking equipment. As in the other end-use
+services, the shares of the various equipment types are assumed to
+remain constant over the simulation period.
+
+### Commercial Sector: Assumptions and Caveats
+
+Any model is a simplification of reality. The results from CIMS are
+limited by data availability and the complexity of modelling all energy
+relationships in the commercial sector. The major assumptions and
+caveats made in the process of developing this CIMS sub-model are
+described below.
+
+#### Energy Prices
+
+As with the other CIMS sub-models, energy prices used in the commercial
+sector sub-model for both natural gas and electricity are based on the
+average charge per unit of energy consumed. Each unit of energy is
+assumed to cost the same regardless of the consumption rate of the
+customer. In reality both natural gas and electric utilities have rate
+structures that charge different prices depending on a customer's total
+consumption. Therefore energy cost savings predicted by CIMS may be
+different from actual savings.
+
+Many utilities also have demand charges or fixed fees charged per kW of
+demand. Since many energy efficiency measures reduce the demand of a
+facility, they also reduce the demand charges. These cost savings have
+not been included in the savings predicted by CIMS.
+
+#### Discount Rates
+
+The main criterion used by CIMS for choosing technologies is the
+lifecycle cost of competing technologies. To reflect the constraints
+imposed on investments due to rapid payback requirements, risk aversion,
+capital availability and other investment criteria, annualized costs in
+the commercial sector are generally derived using a 40% discount rate.
+Cogeneration technologies, however, are discounted at a rate of 30%
+because investors in cogeneration are generally seen to have a longer
+planning / finance horizon than investors in energy efficiency. In
+addition, the hospital and school sectors' shell/HVAC technologies are
+discounted at a rate of 30%, instead of 40%, consistent with evidence of
+their longer planning / cost horizons and the fact that they are
+owner-operated. These rates reflect ex post measures of discount rates
+and are meant to encompass many more factors than simple rate-of-return
+criterion.
+
+#### Retrofit Technologies
+
+Some technologies are also set up as retrofits in the commercial sector.
+After existing stock is retired, CIMS compares the costs of the parent
+or lead technology and the attachable retrofit technologies. Although it
+remembers how much of the original parent stock there was, at this point
+CIMS assumes that there is no existing stock and sets up a competition
+between the lead technology and the retrofit technology(ies) to
+determine how much of that \"remembered\" original stock will remain as
+is (no retrofit) and how much will be retrofitted. The cost of the
+parent technology is simply the operating and maintenance (O&M) cost
+including fuel costs. The cost of each retrofit technology is O&M, fuel
+plus the annualized retrofit capital cost less any tax or other credit.
+
+#### Interactive Effects Between Various Energy End-uses
+
+The commercial building sector is different from both the industrial and
+the residential sectors in that there are significant interactive
+effects between energy end-uses and energy efficiency measures. As a
+result of these interactive effects, an energy efficiency measure that
+is undertaken for one end-use may have an impact on the energy
+consumption of another end-use. For instance, an energy-efficient
+lighting retrofit in a commercial building will reduce the cooling load
+but will increase the heating load because the waste heat from the
+lighting system is reduced. However, because there are so many factors
+that influence the consumption of energy by the HVAC system, these
+interactive effects are very difficult to quantify. Models exist that
+calculate these interactions for a specific building type but this type
+of analysis is beyond the scope of this current CIMS sub-model. The
+focus in the model is on capturing the main interactive effects between
+shell choice and HVAC demand.
+
+#### Cogeneration
+
+Cogeneration of heat and electricity has been limited exogenously in
+CIMS to between 30 and 50 percent of the demand in schools, large
+office, hospital, miscellaneous and hotel shell/HVAC categories. This is
+because cogeneration is only practical in large facilities that have a
+demand for both electricity and hot water or steam. The range of 30 to
+50 percent is due to the different mix of buildings that make up each
+sub-category.
+
+Cogeneration systems are sized to provide 100% of the facility's heating
+load. In certain instances this results in a surplus of electricity
+beyond that required by the shell/HVAC system. This surplus is assumed
+to be sold back to the electric utility for the same price that the
+facility is charged for electricity.
+
+#### Oil Heating
+
+CIMS assumes that no oil-fired heating is installed after 1990 in the
+commercial building sector of all regions except the Atlantic region,
+where natural gas is less available. This was done to simplify the model
+since oil heating is a small and declining portion of the market. The
+Atlantic region is the only region in Canada where the proportion of
+oil-fired heating is significant in the commercial building sector.
+
+#### Lighting
+
+CIMS does not account for the energy consumed for exterior lighting such
+as street lighting, architectural lighting or parking lot lighting. Data
+for these end-uses are not available.
+
+## Transportation
+
+TODO: In model description
+
+- Overhaul entire LDV sector
+
+  - Setup ICE vs ZEV properly for all provinces -- see BC or ON?
+
+- Same for HDV
+
+  - See Mariah's model
+
+  - Move off-road out of freight to Residential (driver should be
+    households (or population))
+
+- Check fuel blending nodes
+
+- Move load factors to DCC file
+
+- Split air into domestic and international
+
+- Add intercity ferry for BC trans personal
+
+This document describes the structure and data inputs of
+CIMS-Transportation (CIMS-T), the transportation module of CIMS. It
+assumes that the reader is already familiar with the CIMS simulation
+algorithm and parameters. Additional documentation is available from the
+Energy and Materials Research Group that describes the general function
+of CIMS.
+
+### Service Flow Model
+
+Figure 1 presents a simplified version of the service flow model of
+CIMS-T. The three main energy service categories are personal mobility,
+freight transport and off-road vehicles. In urban areas, single occupant
+vehicles (SOV), high occupant vehicles (HOV), public transit, walking
+and cycling provide personal mobility. Personal vehicles, buses, planes
+and trains provide transportation between urban areas. Marine, air, road
+and rail modes provide freight transportation services.
+
+Figure 5 Service Flow Model of CIMS-Transportation
+
+The SOV, HOV and personal vehicle nodes attached to the urban and
+inter-city nodes in the service flow model represent a demand for
+passenger vehicle services. The passenger vehicle service node located
+to the bottom left of the diagram supplies this demand. Personal
+vehicles are designated as either cars or trucks in CIMS. Within these
+categories, vehicles of different efficiency levels and fuel types
+(gasoline, diesel, natural gas, propane, methanol, ethanol, battery
+electric, gasoline-electric hybrid, hydrogen fuel cell) compete to meet
+demand. Efficiency and fuel type are specified only for new passenger
+vehicles. The nodes representing old and recent passenger vehicles are
+used simply to keep track of vintages of vehicles already present in the
+base year (2000). These vehicles are no longer available to supply new
+demand for passenger vehicle services. During the simulation, a
+retirement function removes these vehicles from the existing stock.
+
+### Endogenous Actions
+
+CIMS-T has the capability to simulate the following actions
+endogenously:
+
+- Changes in the efficiency of the gasoline personal vehicle fleet,
+
+- Fuel switching within the personal vehicle market,
+
+- Shifts between the personal vehicle and public transit modes,
+
+- Shifts between SOV use and HOV use,
+
+- Changes in the efficiency of the freight truck fleet, and
+
+- Changes in demand for personal mobility.
+
+With the exception of efficiency choices between road freight vehicles,
+technology shares within the freight sector continue to be simulated
+exogenously. The same is true for the off-road sector. Choices between
+public transit technologies (bus versus subway) are also specified
+outside the model. Actions that involve changes in the operation and
+maintenance characteristics of existing technology stocks are
+incorporated exogenously as the CIMS models simulate technological
+change through stock turnover, not through changes in the use and
+operating characteristics of existing stocks.
+
+#### Input Data 
+
+The CIMS models are data-intensive: in order to carry out a simulation,
+input data are required to describe a series of characteristics for each
+technology. Technology characteristics and data sources for CIMS-T are
+listed in Table 1. The input data used to describe personal vehicles is
+described in more detail below, given the importance of this vehicle
+category to the transportation sector as a whole.
+
+Table 1: Technology Specific Input Data for CIMS-T
+
+Personal vehicles are defined by efficiency and type of fuel /
+technology. Technological characteristics of alternative fuelled
+vehicles were initially based on the output of the Transportation Issue
+Table. Vehicle cost differentials relative to conventional gasoline were
+taken from Levelton Engineering Ltd.'s work for the Issue Table (1999),
+with the exception of gasoline-electric hybrid and hydrogen fuel cell
+vehicles -- for these vehicle types we used data from the NEMS model of
+the U.S. Department of Energy (1998). Energy consumption relative to
+conventional gasoline vehicles was also estimated based on the Levelton
+(1999) report. In 2004, a comprehensive literature review was undertaken
+to update the capital cost and energy consumption values for personal
+vehicles. Sources such as Azar, Lindgren and Andersson (2003); Ogden,
+Williams and Larson (2004); and Weiss et al. (2003 and 2000) were used
+to verify and adjust the existing data points.
+
+The values of the intangible cost parameters within CIMS-T reflect
+differences between various efficiency levels and fuel types of SOVs, as
+well as between SOVs and other modes of transportation. The estimates of
+intangible costs for more fuel efficient vehicles are based on market
+studies of the revealed willingness-to-pay of many consumers for higher
+horsepower vehicles, which are generally less efficient (U.S. Department
+of Energy, 1998; AMG, 1999).
+
+The estimates of intangible costs for alternative fuelled vehicles
+represent consumer preferences for longer range and wider fuel
+availability, as well as a general preference for conventional gasoline
+vehicles. The range and fuel availability parameters were derived by
+combining technology data of the U.S. Department of Energy (1998) with
+the results of a stated preference survey carried out by Bunch et al.
+(1993). The stated preference approach is necessary in dealing with
+alternative fuelled vehicles because these tend to be emerging
+technologies for which revealed preference data do not exist.
+
+The estimates of intangible costs for public transit and HOVs relative
+to gasoline-driven SOVs are based on the financial costs and market
+shares of alternative modes of urban travel in Canada, as well as
+comparisons to various European countries where the financial costs
+associated with personal vehicle travel are much higher.
+
+We are currently reviewing the intangible cost parameters used in CIMS-T
+based on data from a series of stated preference surveys carried out by
+the Energy and Materials Research Group and CIEEDAC.
+
+#### References
+
+AMG (Analysis and Modelling Group), 1999, Canada's emissions outlook: An
+update (AMG, National Climate Change Process, Ottawa).
+
+Azar, C., K. Lindgren and B.A. Andersson, 2003, Global energy scenarios
+meeting stringent CO2 constraints---cost-effective fuel choices in the
+transportation sector, Energy Policy 31, 961--976.
+
+Bunch, D.S., M. Bradley, T.F. Golob, R. Kitamura and G.P. Occhiuzzo,
+1993, Demand for clean-fuel vehicles in California: A discrete-choice
+stated preference pilot project, Transportation Research 27A(3),
+237-253.
+
+Dunphy, R.T. and K. Fisher, 1996, Transportation, congestion, and
+density: New insights, Transportation Research Record 1552, 89-96.
+
+EIA (Energy Information Administration), Sulfur dioxide, nitrogen oxide,
+and carbon dioxide emission factors.
+\<http://www.eia.doe.gov/cneaf/test/elec/epav2_tables/epav2ta3p1.html\>
+
+EIA, 1994, Alternatives to traditional transportation fuels: An overview
+(EIA, Office of Coal, Nuclear, Electric and Alternate Fuels, U.S.
+Department of Energy, Washington, D.C.).
+
+Hall, A.P., 1994, A model for forecasting transportation energy demand
+in Ontario, master's thesis (Management Sciences, University of
+Waterloo, Waterloo).
+
+Horne, M., 2003, Incorporating preferences for personal urban
+transportation technologies into a hybrid energy-economy model, M.R.M.
+research project (School of Resource and Environmental Management, Simon
+Fraser University, Burnaby, BC).
+
+Levelton Engineering Ltd., 1999, Alternative and future fuels and energy
+sources for road vehicles, report prepared for the Vehicle Technology
+and Fuels Sub-Group of the Transportation Issue Table, National Climate
+Change Process (Levelton Engineering Ltd., Richmond, British Columbia).
+
+Natural Resources Canada, 2002, End-use energy data handbook: 1990-2000
+(Office of Energy Efficiency, Ottawa).
+
+Natural Resources Canada, 1997, Canada's energy outlook, 1996-2020
+(Minister of Supply and Services Canada, Ottawa).
+
+Ogden, J.M., R.H. Williams and E.D. Larson, 2004, Societal lifecycle
+costs of cars with alternative fuels/engines, Energy Policy 32, 7-27.
+
+Sierra Research, Inc., 1999, Alternative and future technologies for
+reducing greenhouse gas emissions from road vehicles, report prepared
+for the Vehicle Technology and Fuels Sub-Group of the Transportation
+Table on Climate Change, under sub-contract to SENES Consultants Limited
+(Sierra Research, Inc., Sacramento, California).
+
+Statistics Canada, 2001, Quarterly report on energy supply-demand in
+Canada, 2000-IV, publication number 57-003 (Statistics Canada, Ottawa).
+
+Statistics Canada, 1998, Population, Canada, the provinces and
+territories.
+\<http://www.statcan.ca/english/Pgdb/People/Population/demo02.htm\>
+
+Statistics Canada, 1995a, Passenger bus and urban transit statistics,
+1995, publication number 53-215 (Statistics Canada, Ottawa).
+
+Statistics Canada, 1995b, Quarterly report on energy supply-demand in
+Canada, 1995-IV, publication number 57-003 (Statistics Canada, Ottawa).
+
+Statistics Canada, 1995c, Rail in Canada, 1995, publication number
+52-216E (Statistics Canada, Ottawa).
+
+Statistics Canada, 1995d, Trucking in Canada, 1995, publication number
+53-222 (Statistics Canada, Ottawa).
+
+Transport Canada, 1999a, T-facts: Air / freight traffic / cargo carried.
+\<http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp\>
+
+Transport Canada, 1999b, T-Facts: Air / output / passengers and
+passenger-kilometres.
+\<http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp\>
+
+Transport Canada, 1999c, T-Facts: Marine / output / tonne-kilometres by
+sector. \<http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp\>
+
+U.S. Department of Energy, 1998, Transportation sector model of the
+national energy modeling system (EIA, Washington, D.C.).
+
+Weiss, M., J.B. Heywood, A. Schafer and V.K. Natarajan, 2003,
+Comparative assessment of fuel cell cars (MIT, Cambridge, MA).
+
+Weiss, M.A., J.B. Heywood, E.M. Drake, A. Schafer and F.F. Au Yeung,
+2000, On the road in 2020: A lifecycle analysis of new automobile
+technologies (MIT, Cambridge, MA).
+
+## Waste
+
+## Agriculture
+
+## LULUCF
+
+Need to include emissions for accounting. Want to have total emissions
+from CIMS equal the NIR for easy comparison.
+
+Also include credits in GHG accounting, again for easy comparison. Or
+should this be done outside CIMS?
+

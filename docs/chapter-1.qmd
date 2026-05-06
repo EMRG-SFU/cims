@@ -1,0 +1,66 @@
+# Getting Started
+
+- Setup
+
+  - Download & install VNC Viewer
+
+  - Add user to VNC group
+
+  - Open VNC Viewer
+
+    - ceedc1 / success2288
+
+  - Git Bash
+
+- Design a model
+
+  - Excel
+
+~~TODO: Separate model files into: Base (technical and model operation
+data), Reference policies, Scenario policies~~
+
+TODO: Technologies database?
+
+- Run a simulation
+
+  - Jupyter Notebook
+
+  - Validator
+
+TODO: Only show validator lines that return errors or warnings - easier
+to read and follow-up
+
+TODO: Sort validator lines into errors and warnings
+
+TODO: Validator checks to add:
+
+- if node_tech_compete parent and child competitions have same
+  heterogeneity (they should)
+
+- if values from region and sector columns are included in branch path
+
+- if node (and tech) is included in one of the model update files, but
+  not the base model
+
+- Check if parent is \`node tech compete\`; if so, check if parent
+  service requested market share \>0; if not, then no sum of market
+  share check at child node
+
+- Add sum of market shares at tech compete node \<\> 1
+
+Input file types
+
+- Exogenous Prices
+
+  - use when running individual sectors (such as for calibration)
+
+  - do not include Sector column -- this will allow all supply sectors
+    included in Exogenous Prices to be included in the model run, which
+    is necessary to apply prices to the dynamically-priced supply
+    sectors.
+
+<!-- -->
+
+- View results
+
+  - How add region/sector/fuel?
