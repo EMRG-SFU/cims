@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Technology Competition and Demand Feedbacks – CIMS</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./chapter-5.html" rel="next">
+<link href="./chapter-2.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./model.html">Intro</a></li><li class="breadcrumb-item"><a href="./chapter-3.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">CIMS</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/EMRG-SFU/cims" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./install.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./GettingStarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./model.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-3.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./outputs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Intro</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./chapter-5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sub-model-technology-choice-dynamics-and-equations" id="toc-sub-model-technology-choice-dynamics-and-equations" class="nav-link active" data-scroll-target="#sub-model-technology-choice-dynamics-and-equations"><span class="header-section-number">4.1</span> Sub-model Technology Choice Dynamics and Equations</a>
+  <ul class="collapse">
+  <li><a href="#demand-assessment" id="toc-demand-assessment" class="nav-link" data-scroll-target="#demand-assessment"><span class="header-section-number">4.1.1</span> Demand Assessment</a></li>
+  <li><a href="#capital-stock-retirement" id="toc-capital-stock-retirement" class="nav-link" data-scroll-target="#capital-stock-retirement"><span class="header-section-number">4.1.2</span> Capital Stock Retirement</a></li>
+  <li><a href="#retrofit-and-new-stock-competition" id="toc-retrofit-and-new-stock-competition" class="nav-link" data-scroll-target="#retrofit-and-new-stock-competition"><span class="header-section-number">4.1.3</span> Retrofit and New Stock Competition</a></li>
+  <li><a href="#modifications-to-the-technology-choice-equations" id="toc-modifications-to-the-technology-choice-equations" class="nav-link" data-scroll-target="#modifications-to-the-technology-choice-equations"><span class="header-section-number">4.1.4</span> Modifications to the technology choice equations</a></li>
+  <li><a href="#energy-supply-and-demand" id="toc-energy-supply-and-demand" class="nav-link" data-scroll-target="#energy-supply-and-demand"><span class="header-section-number">4.1.5</span> Energy Supply and Demand</a></li>
+  <li><a href="#goods-and-serviced-demand-feedbacks" id="toc-goods-and-serviced-demand-feedbacks" class="nav-link" data-scroll-target="#goods-and-serviced-demand-feedbacks"><span class="header-section-number">4.1.6</span> Goods and Serviced Demand Feedbacks</a></li>
+  <li><a href="#building-the-tree" id="toc-building-the-tree" class="nav-link" data-scroll-target="#building-the-tree"><span class="header-section-number">4.1.7</span> Building the tree</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./model.html">Intro</a></li><li class="breadcrumb-item"><a href="./chapter-3.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>TODO: If setting market shares after the base year, need to use lifetime = 1, otherwise stock is not calculated correctly.</p>
+<p>CIMS operating equations and their subcomponents are presented below in the order established in Section 2: sub-sector technology choice, energy supply and demand equilibrium, and finally goods and services demand equilibrium.</p>
+<section id="sub-model-technology-choice-dynamics-and-equations" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sub-model-technology-choice-dynamics-and-equations"><span class="header-section-number">4.1</span> Sub-model Technology Choice Dynamics and Equations</h2>
+<p>Sub-model technology choice occurs according to the following order:</p>
+<ul>
+<li><p>Demand Assessment</p></li>
+<li><p>Retirement</p></li>
+<li><p>Assessment of capital stock availability</p></li>
+<li><p>Retrofit &amp; new capital stock competition to meet demand not supplied by existing capital stock</p></li>
+</ul>
+<section id="demand-assessment" class="level3" data-number="4.1.1">
+<h3 data-number="4.1.1" class="anchored" data-anchor-id="demand-assessment"><span class="header-section-number">4.1.1</span> Demand Assessment</h3>
+<p>All of the CIMS energy demand models (industry, transportation, commercial / institutional and residential) start with an exogenously determined demand for physical goods and services in each run period. These demands are mostly taken from Natural Resources Canada forecasts. The energy supply models may either use exogenously determined forecasts or they can be run using energy demand calculated from the demand model plus net exports.</p>
+<section id="request-provide-demand" class="level4" data-number="4.1.1.1">
+<h4 data-number="4.1.1.1" class="anchored" data-anchor-id="request-provide-demand"><span class="header-section-number">4.1.1.1</span> Request-Provide demand</h4>
+</section>
+<section id="distributed-supply" class="level4" data-number="4.1.1.2">
+<h4 data-number="4.1.1.2" class="anchored" data-anchor-id="distributed-supply"><span class="header-section-number">4.1.1.2</span> Distributed supply</h4>
+</section>
+</section>
+<section id="capital-stock-retirement" class="level3" data-number="4.1.2">
+<h3 data-number="4.1.2" class="anchored" data-anchor-id="capital-stock-retirement"><span class="header-section-number">4.1.2</span> Capital Stock Retirement</h3>
+<p>CIMS begins each simulation with an existing base stock of technologies. A linear function is used to retire the existing stock of unknown age already in use. Each year a constant amount of the base stock is retired until there is no more base stock remaining.</p>
+<p><span id="_Toc25226755" class="anchor"></span>TODO: Sunset tech stock that falls below a threshold.</p>
+<p>Need to develop rules around when to apply (for example, only after tech reaches some market share should this function be allowed)</p>
+<p>Equation : Existing stock retirement</p>
+<p><span class="math display">\[{BS}_{t} = {BS}_{0}\left( 1 - \frac{T_{t} - T_{0}}{L} \right)\]</span></p>
+<p>Where:</p>
+<p>BS<sub>t</sub> is the base stock at time t</p>
+<p>BS<sub>0</sub> is the initial base stock</p>
+<p>T<sub>t</sub> is the current simulated year</p>
+<p>T<sub>0</sub> is the initial year</p>
+<p>L is the lifespan of the technology</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="media/image4.png" style="width:4.41412in;height:2.75591in" class="figure-img"></p>
+<figcaption>: Existing stock retirement function</figcaption>
+</figure>
+</div>
+<p>Retirement of new capital stock purchased during CIMS simulations is calculated using a different methodology than existing base stock because the vintage of the base stock is of uncertain and varied vintage, while the vintage of new stock is known.</p>
+<p><span id="_Toc25226756" class="anchor"></span>Equation : New stock retirement</p>
+<p><span class="math display">\[{NS}_{t} = \frac{{NS}_{p}}{1 + e^{\frac{11.513}{L}\left( \left( T_{t} - T_{p} \right) - L \right)}}\]</span></p>
+<p>Where:</p>
+<p>NS<sub>t</sub> is the new stock not yet retired at time t</p>
+<p>NS<sub>p</sub> is the new stock acquired at purchase time p</p>
+<p>T<sub>t</sub> is the current simulated year</p>
+<p>T<sub>p</sub> is the year at purchase time p</p>
+<p>L is the lifespan of the technology</p>
+<p>The intercept value of 11.513 comes from ISTUM for average technology retirement rates</p>
+<p>This function uses an s-shaped, logistic curve to simulate the retirement of devices. Figure 5 shows an example of the retirement function of a technology with a two-year lifespan. Half of the stock is retired before the average lifespan of the technology due to early replacement and failure and half is retired afterward to simulate technologies that last longer than the average.</p>
+<p><img src="media/image5.png" style="width:4.41412in;height:2.75591in"></p>
+<p>TODO: Add note about intercept uses in different sectors (i.e., 11.513 for products, but more like 3 for houses)</p>
+<p>: New stock retirement function</p>
+<p>The total stock of a technology in any given year <em>t</em> is the sum of the unretired base stock and the unretired new stock from each previous year.</p>
+<p><span id="_Toc25226757" class="anchor"></span>Equation : Total stock</p>
+<p><span class="math display">\[{Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}\]</span></p>
+<p>The <em>Stock</em> at time <em>t</em> is the sum of unretired new stock (<em>NS</em>) from all previous years added to the remaining base stock (<em>BS</em>).</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="media/image7.svg" style="width:4.4109in;height:2.7559in" class="figure-img"></p>
+<figcaption>: Total stock over time</figcaption>
+</figure>
+</div>
+</section>
+<section id="retrofit-and-new-stock-competition" class="level3" data-number="4.1.3">
+<h3 data-number="4.1.3" class="anchored" data-anchor-id="retrofit-and-new-stock-competition"><span class="header-section-number">4.1.3</span> Retrofit and New Stock Competition</h3>
+<p>While retrofitting occurs before new stock competition, the retrofitting equations are a subset of the new stock equations and are therefore presented after them. The market shares for individual technologies are determined using the equations below.</p>
+<section id="new-stock-competition" class="level4" data-number="4.1.3.1">
+<h4 data-number="4.1.3.1" class="anchored" data-anchor-id="new-stock-competition"><span class="header-section-number">4.1.3.1</span> New Stock Competition</h4>
+<p><span id="_Toc25226758" class="anchor"></span>TODO: Check if Winner Take All is included in Python code (need this?)</p>
+<p>TODO: Still want market share based competition for VREs?</p>
+<p>serv_req_ms – ms – branch</p>
+<p>serv_req_ms – amount - branch</p>
+<p>Equation : Market share</p>
+<p><span class="math display">\[{MS}_{kt} = \frac{{LCC}_{kt}^{- v}}{\sum_{j = 1}^{J}{LCC}_{jt}^{- v}}\]</span></p>
+<p>Where:</p>
+<p>MS<sub>kt</sub> is the market share of technology k for new equipment stocks at time t</p>
+<p>LCC<sub>kt</sub> is the annual lifecycle cost of technology k at time t</p>
+<p>v is the variance parameter representing cost homogeneity</p>
+<p>j technologies compete to provide the same service as k</p>
+<p>The MSkt function is a logistic curve whose slope is determined by a variance parameter, v. A high value for v, such as 100, means that the technology with the lowest lifecycle-cost captures almost all of the new equipment stocks, as would occur with a linear programming model. An extremely low value for v, such as 1, means that new equipment market shares are distributed almost evenly between all competing technologies, even if their lifecycle-costs differ significantly. Thus, v represents sensitivity of the technology competition to relative lifecycle-costs.</p>
+<p>For nodes that compete technologies that come in two different sizes, market shares are determined separately for each size. After the market shares for each size have been allocated, they are averaged using the Size and Capacity Utilization (SCU) weights:</p>
+<p><span id="_Ref25236039" class="anchor"></span>Equation : Lifecycle cost</p>
+<p><span class="math display">\[{LCC}_{kt} = {CC}_{kt} + {OM}_{k} + {SC}_{kt}\]</span></p>
+<p>Where:</p>
+<p>LCC<sub>kt</sub> is the annual lifecycle cost of technology k at time t</p>
+<p>CC<sub>kt</sub> is the capital cost of technology k at time t</p>
+<p>OM<sub>k</sub> is the operating costs of technology k</p>
+<p>SC<sub>kt</sub> is the service cost of technology k at time t</p>
+<p>Equation : Annual capital cost</p>
+<p><span class="math display">\[{CC}_{t} = \mathbf{\max}\left\{ {DCC}_{t},{CC}_{2000}*{DCC}_{limit} \right\}\ \ \ \]</span></p>
+<p>Where:</p>
+<p>CC<sub>t</sub> is the annual capital cost of a technology at time t</p>
+<p>DCC<sub>t</sub> is the declining capital cost at time t</p>
+<p>CC<sub>2000</sub> is the capital cost of a technology in the year 2000 (before applying the declining capital cost function)</p>
+<p>DCC<sub>limit</sub> is the lowest value to which a technology’s capital cost can be reduced by the DCC function (as a percentage of the capital cost in year 2000)</p>
+<p><span id="_Toc25226760" class="anchor"></span>See the section below for the declining capital cost functions.</p>
+<p>Equation : Capital cost in year 2000</p>
+<p><span class="math display">\[{CC}_{2000} = \left( \frac{{CC}_{overnight} + FIC + D{IC}_{t}}{Output} \right)*CRF\]</span></p>
+<p>Where:</p>
+<p>CC<sub>2000</sub> is the capital cost of a technology in the year 2000 (before applying the declining capital cost function)</p>
+<p>CC<sub>overnight</sub> is the overnight capital cost</p>
+<p>UIC<sub>fixed</sub> is the upfront fixed intangible cost meant to represent non-financial costs for investment</p>
+<p>UIC<sub>declining,t</sub> is the upfront intangible cost that can decline over time</p>
+<p>Output is the material output of a technology</p>
+<p>CRF is the capital recovery factor</p>
+<p>Equation : Capital recovery factor</p>
+<p><span class="math display">\[CRF = \frac{r}{1 - {(1 + r)}^{- N}}\]</span></p>
+<p>Where:</p>
+<p>CRF is the capital recovery factor of a technology</p>
+<p>r is the financial discount rate</p>
+<p>N is the lifespan of a technology</p>
+<p>Equation : Service cost</p>
+<p><span class="math display">\[{SC}_{kt} = \sum_{}^{}P_{jt}*R_{kjt}\]</span></p>
+<p>Where:</p>
+<p>SCkt is the service cost of technology k at time t</p>
+<p>Pjt is the price of service type j at time t (can be either fuel price or the weighted-average lifecycle cost of a service based on market shares of technologies competing to provide that service)</p>
+<p>R<sub>kjt</sub> is the service requested for technology k of service type j at time t</p>
+<p>Note that market shares used to calculate the weighted-average LCC of a service are from the previous iteration of the demand-supply equilibrium process (i.e.&nbsp;the final market shares from the previous year if calculating the first iteration or the previous demand-supply iteration if equilibrium prices have not yet been found).</p>
+</section>
+<section id="retrofit" class="level4" data-number="4.1.3.2">
+<h4 data-number="4.1.3.2" class="anchored" data-anchor-id="retrofit"><span class="header-section-number">4.1.3.2</span> Retrofit</h4>
+<p>TODO: Consider revising retrofit assessment</p>
+<p>Current: OPEX vs competing techs total LCC -&gt; are there cheaper alternatives to replace incumbent?</p>
+<p>gTech: OPEX vs node Service cost -&gt; am I losing money operating this tech given the service revenue?</p>
+<p>The retrofit option allows functioning equipment (or parent technologies) to be converted to a different type of equipment (retrofit technologies) before its retirement date. For example, certain boilers can be retrofitted into cogenerators before they are retired. The retrofit calculations process is roughly the same as that for new stock calculations, with a couple of changes.</p>
+<p>After existing stock is retired, CIMS checks to see if the retrofit switch is on and if any retrofit options are available. If so, CIMS treats the initial purchasing price of the parent technology as a sunk cost and uses the operating and maintenance (O&amp;M), energy, service and emissions costs as the only costs of the parent technology. The costs of the retrofit options are then calculated as the sum of O&amp;M, energy, service and emissions costs plus the annualized retrofit capital cost less any tax or other credit. CIMS then determines, using a similar competition calculation to those already described, how many parent technologies will be retrofitted.</p>
+<p>The competition between the parent technology and its retrofit options is based on a standardized Weibull distribution with a shape parameter = 2, location parameter = 0 and variance = 1. This is slightly different from the new stock competition which uses an inverse power function. The analyst can change the variance in the Economic Data File: Economic Description, and the mean reflects the annualized costs of the parent technology and its retrofit options. CIMS randomly chooses 100 points from this distribution for each parent and retrofit technology. The cost of the technology is multiplied by this Weibull value and the variance (see Table 1.1 from the ISTUM manual for a description of what the variance choice entails). Then a matrix is formed (number of technologies by 100 columns or NTECH;100) of technology costs. CIMS reads the columns to see which of the technologies in any one competition is cheapest and then tallies the winners. The ratio of wins/100 for each parent or retrofit technology determines its share of the stock on hand at the beginning of the simulation year or the “remembered” stock. Components in the output APL file store the information so that, in future simulation years, CIMS knows the degree of retrofit in this original stock. CIMS assumes that the degree of retrofit experienced in the simulated year occurred in each previous, unsimulated year.</p>
+<p>The analyst can place some bounds on this retrofit option. A maximum (R-MAX) or minimum (R-MIN) market share can be established such that only a certain amount of the old stock could (maximum) or must (minimum) be retrofitted in any year. In an unconstrained market, maximum should be set to 1 and minimum to 0. Because Monte Carlo simulations determine the level of retrofit, the typical retrofit procedure leads to less than the maximum and more than the minimum. For example, if we permit the lead technology, say oil boilers, to retrofit to gas boilers with the R-MAX set to 75%, 25% of the parent stock is removed from the retrofit competition and the remainder undergo the retrofit competitions. Because it is unlikely that Monte Carlo simulations will result in all the remaining stock being retrofit, the total retrofit will usually be less than 75%. On the other hand, if R-MIN were set to 40%, then 40% of the parent stock are forced to retrofit and the remainder allowed to undergo the competition. Because it is likely that Monte Carlo will select at least some of the remaining stock to be retrofitted, the total retrofit will always be greater than 40%.</p>
+<p>All the parameters discussed above may be changed in Economic Data: Economic Description File.</p>
+</section>
+</section>
+<section id="modifications-to-the-technology-choice-equations" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="modifications-to-the-technology-choice-equations"><span class="header-section-number">4.1.4</span> Modifications to the technology choice equations</h3>
+<p>Several functions have been added to the competition process to reflect both real world conditions and policy concerns. These currently include functions to:</p>
+<ul>
+<li><p>Reduce capital costs as total production increases to reflect learning by doing and efficiencies of scale;</p></li>
+<li><p>Reduce intangible costs as new market share climbs to reflect reduced perceived risk (i.e.&nbsp;the neighbour effect); and</p></li>
+<li><p>Eliminate obsolete but still functioning technologies.</p></li>
+</ul>
+<section id="declining-capital-cost" class="level4" data-number="4.1.4.1">
+<h4 data-number="4.1.4.1" class="anchored" data-anchor-id="declining-capital-cost"><span class="header-section-number">4.1.4.1</span> Declining Capital Cost</h4>
+<p>The declining capital cost function allows the capital costs of technologies to decline as a result of learning by doing and improving economies of scale. In CIMS, capital costs decline as a result of the cumulative production of a technology across Canada and an exogenous rate of decline which represents production in other countries.</p>
+<p>Equation : Declining capital cost</p>
+<p><span class="math display">\[{{DCC}_{t} = GCC}_{t}*\left\lbrack \left( \sum_{1}^{p}\frac{{CumulNS}_{2000,p} + \sum_{j = 2005}^{j = t - 5}{NS}_{jp}}{{CumulNS}_{2000,p}} \right)^{\log_{2}(PR)} \right\rbrack\]</span></p>
+<p>Where:</p>
+<p>DCC<sub>t</sub> is the declining capital cost of a technology at time t</p>
+<p>GCC<sub>t</sub> is the capital cost of a technology adjusted for cumulative stock in other countries</p>
+<p>NS<sub>jp</sub> is the new stock of a technology added from 2005 to the previous time period in each province, p</p>
+<p>CumulNS<sub>2000,p</sub> is the cumulative new stock of a technology for all years up to and including the year 2000 in each province, p (exogenous)</p>
+<p>PR is the progress ratio</p>
+<p>Increased stock in other countries reduces the capital costs of a technology in CIMS. Therefore, even if there is no change in stock of a technology in Canada, its capital costs may still decline. The rate at which the capital costs decline as a result of global stock change is set exogenously and is equivalent to the autonomous energy efficiency index (AEEI).</p>
+<p>Equation : Global capital cost reduction</p>
+<p><span class="math display">\[{GCC}_{t} = {GCC}_{t - 5}*(1 - AEEI)^{5}\]</span></p>
+<p>Where:</p>
+<p>GCC<sub>t</sub> is the capital costs of a technology after it has been adjusted for cumulative stock in other countries</p>
+<p>AEEI is the exogenous rate of decline of a technology’s capital costs</p>
+<p>An example of the calculations for the declining capital cost function are illustrated below. The capital cost of the technology is $100 in year 2000, its PR is 0.8 (set in column J), and its exogenous rate of decline (set in column U) is 1%:</p>
+<p><strong>Additional Issues and Problems with the DCC function</strong></p>
+<ul>
+<li><p>To use the DCC function it is necessary to activate a global switch in the CIMS Simulation Creation Centre. Look under ‘Select Global Parameters’ – ‘Technology Parameters’. However, please note that this switch only affects the policy simulation runs and not the BAU run. To turn off the DCC function for BAU runs it is necessary to reset the parameters in the Economic File.</p></li>
+<li><p>In order to prevent capital costs from declining indefinitely, an analyst may specify the percentage of the initial capital costs below which capital costs may not decline. The percentage is set in column V of the Economic File, and it must be multiplied by 10,000 (ie 5% * 10,000 = 500).</p></li>
+<li><p>We don’t currently track learning spillover between technologies. Research has shown that investment in one technology (e.g., hybrid cars) can lower costs of another technology (e.g., battery cars).</p></li>
+</ul>
+<p><strong>Summary of DCC parameters in the Economic File</strong></p>
+<p>Parameter description Name Column Column name*</p>
+<p>Progress ratio PR J Asymptote</p>
+<p>Total global production of the technology up to the year 2000 No K Maturity</p>
+<p>The exogenous rate of decline of a technology’s capital costs ERD U Years Remaining</p>
+<p>Percentage of the initial capital costs below which capital costs may not decline (x10,000) V Year Available</p>
+<p>* the column names in the Economic File are no longer relevant and should be ignored</p>
+</section>
+<section id="declining-intangible-cost-function" class="level4" data-number="4.1.4.2">
+<h4 data-number="4.1.4.2" class="anchored" data-anchor-id="declining-intangible-cost-function"><span class="header-section-number">4.1.4.2</span> Declining Intangible Cost Function</h4>
+<p>(In ISTTMPBG.ws forward).</p>
+<p>The declining intangible cost function applies to both capital and operating costs, and allows intangible costs to fall as a results of falling perceived risk as market exposure increases. The following general formula applies.</p>
+<p>(Equation 20)</p>
+<p>where:</p>
+<p>• It is the intangible cost in time t</p>
+<p>• I0 is the initial intangible cost, which is column N of the economic file for capital and column R for the operating costs.</p>
+<p>• A is a constant in column O of the economic file for capital, and column S for operating costs.</p>
+<p>• K is a constant in column P of the economic file for capital, and column T for operating costs.</p>
+<p>• NMS new market share</p>
+<p>• NMS(t – 5) is the percent of the new market share in from the previous run. This value should be between 0 and 1 (i.e., between 0% and 100%), as opposed to between 0 and 100. NMS is the share of the technology from all other technologies that provide the same service.</p>
+</section>
+<section id="technology-die-out-function" class="level4" data-number="4.1.4.3">
+<h4 data-number="4.1.4.3" class="anchored" data-anchor-id="technology-die-out-function"><span class="header-section-number">4.1.4.3</span> Technology Die-Out Function</h4>
+<p>(In ISTTMPBT.ws forward).</p>
+<p>The die-out function is designed to eliminate technologies from the market when their stock falls below a proportion of their market share in the base year.</p>
+<p>The die-out function will be incorporated into the market share for new capital stock equation. The old methodology for calculating market share (equation 4) is given below:</p>
+<p>New methodology:</p>
+<p>(Equation 21)</p>
+<p>where:</p>
+<p>• MSkt = the market share for technology k in time t</p>
+<p>• LCCkt = is the lifecycle cost of technology k in time t</p>
+<p>• v = the variance parameter representing cost homogeneity</p>
+<p>• J = the number of technologies competing to provide the same service as k</p>
+<p>• n = the threshold factor where a technology is eliminated from the market. For n = 0.5, if a technology falls to 50% of its market share in 2000, it will be eliminated from the market for new capital stock. (n applies to all technologies and cannot be set individually for different technologies)</p>
+<p>• f = the base year. The base year can be set to any year. (f applies to all technologies and cannot be set individually for different technologies)</p>
+<p>The new methodology for calculating the market share of a technology will eliminate a technology if its market share falls below its threshold (n x MSkf). Following a technology’s elimination from the market, it should not be allowed to compete in the following year.</p>
+<p>The analyst is able to set the value for n and f.&nbsp;However, the default setting for n should be 50% or 0.5, and the default setting for f should be 2000.</p>
+</section>
+<section id="expectations-functions" class="level4" data-number="4.1.4.4">
+<h4 data-number="4.1.4.4" class="anchored" data-anchor-id="expectations-functions"><span class="header-section-number">4.1.4.4</span> Expectations Functions</h4>
+<p>The expectations functions have been introduced to simulate situations when businesses and consumers have foresight into their future emissions costs. The functions calculate the expected emissions costs of individual technologies in CIMS, in order to account for technologies with different lifespans and discount rates.</p>
+<p>CIMS has three options for generating expectations: 1) myopic, where people do not have foresight into their future emissions costs; 2) perfect foresight based on the average emissions costs of a technology; and 3) perfect foresight based on the discounted value of emissions costs of a technology.</p>
+<p><strong>Myopic</strong></p>
+<p>This option is identical to CIMS’s previous methodology for calculating emissions costs. The emissions charge used to calculate emissions costs over a technology’s lifespan is the emissions charge set in CIMS’s CIMS Simulation Creation Centre / Select Global Conditions / Emissions.</p>
+<p>E(Emissions Charge)kt = Emissions charget</p>
+<p>The expected emissions charge used to calculate the lifecycle costs of technology k, in the year of its purchase (year t), is the emissions charge set in the Simulation Creation centre.</p>
+<p><strong>Average Expectations</strong></p>
+<p>The second option generates expectations of future emissions costs based on the average emissions charge over the lifespan of a technology.</p>
+<p>(Equation 22)</p>
+<p>where:</p>
+<p>EmissionsChargen is the emissions charge occurs in year n, and set in CIMS’s Simulation Creation Centre;</p>
+<p>base is the year technology k is purchased;</p>
+<p>N is the lifespan of technology k.</p>
+<p><strong>Discounted Expectations</strong></p>
+<p>The third option generates expectations of future emissions costs based on the present value of emissions charges. After the present value of emissions charges has been calculated, it is annualized using the capital recovery factor. The present value must be annualized in order to obtain an annual value of emissions charges, which is required in CIMS’s simulation.</p>
+<p>(Equation 23)</p>
+<p>where:</p>
+<p>EmissionsChargen is the emissions charge occurs in year n, and set in CIMS’s Simulation Creation Centre;</p>
+<p>base is the year technology k is purchased;</p>
+<p>N is the lifespan of technology k.</p>
+<p>rk is the revealed discount rate of technology k, and it is set in the Techno Economic file.</p>
+<p><strong>Additions:</strong></p>
+<p>One of the challenges in introducing expectations into CIMS is that emissions charges can only be set up to 2035. To overcome this challenge, emissions charges are assumed to remain the same as in 2035 for years beyond 2035.</p>
+<p>(Equation 24)</p>
+<p><strong>Switch for Allocated Costs</strong></p>
+<p>In Column L of the Economic File, an analyst may specify a value to reduce the capital costs of a technology. If the reduction is a subsidy, it should not represent an actual reduction (or increase) in the capital costs of the technology; and it should not reduce (or increase) the measure of capital costs in the BAUP or CONP files. However, if the value in column L represents a real cost (not a subsidy), it should be included in the measure of capital costs in the BAUP or CONP files. ISTUM enables an analyst to use alternative definitions for the value in column L. If the value is a “real cost”, then set is value to “0” in ISTUM; if the value is a transfer (or subsidy), set the value to “1”.</p>
+</section>
+</section>
+<section id="energy-supply-and-demand" class="level3" data-number="4.1.5">
+<h3 data-number="4.1.5" class="anchored" data-anchor-id="energy-supply-and-demand"><span class="header-section-number">4.1.5</span> Energy Supply and Demand</h3>
+<p>In CIMS’s integrated energy supply and demand system, the demands of transportation, industry, residences, and the commercial &amp; institutional sector directly drive the activities of electricity production, refining, coal mining and natural gas and crude oil extraction. Inter-regional transfers as well as net exports are added, as demand for Canada’s energy supply sector includes US demand. The importance of domestic demand varies by energy commodity. Most electricity is produced for Canadian consumers, more than half of natural gas produced is shipped to the US, and there is a heavy trade in crude oil and refined petroleum products. Half our domestic crude oil production is shipped to the US, while we import from both OPEC and non-OPEC suppliers.</p>
+<p>Each of the energy markets in CIMS has the option of fixed or dynamic pricing, and they are described below:</p>
+<ul>
+<li><p>Seven regional electricity markets are included, each with endogenous internal pricing based on the cost of production. The amount of electricity produced is the sum of endogenous domestic demand and net extra-regional exports, which may be adjusted with using an export own-price elasticity.</p></li>
+<li><p>One national natural gas market is included, with dynamic pricing using a supply curve based on a combination of Canadian and US market feedbacks. The amount of gas produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export price elasticity.</p></li>
+<li><p>One national crude oil market, based on an exogenously specified world price of crude oil. The amount of crude oil produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export elasticity. The world crude oil price is assumed to be unresponsive to Canadian demand.</p></li>
+<li><p>Six refining regions divide their production amongst seven regions and net exports. All six can use endogenous internal pricing based on the cost of production. The amount of refined petroleum products produced is the sum of domestic regional demand and net extra-regional exports.</p></li>
+<li><p>Four coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e.&nbsp;BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve – for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan and the Atlantic provinces all buy their coal at a fixed market price.</p></li>
+</ul>
+<p>CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (Figure 7). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.</p>
+<p>Figure 3. CIMS’Energy Supply and Demand Flow Model</p>
+<p>The demands for electricity by petroleum refining and the primary energy supply models, for refined petroleum products by the primary energy supply models, and for primary energy supply by the other primary energy supply models, would ideally be endogenous to the system. However, making these demands endogenous would have required another set of feedback loops for each of electricity, refined petroleum products, natural gas, and coal and crude oil production. The effect of each of these potential loops was tested manually and they did not have a significant impact on the net effects of either a large GHG tax or change in energy price. We decided not to include these loops in order to simplify the model. A system of interior loops, or one that solves the demand for electricity, natural gas, crude oil products and coal simultaneously may be added to CIMS in the future.</p>
+<p>Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (Table 5).</p>
+<p>Table 5. Price Elasticities for Energy Exports, Wirjanto (1999)</p>
+<p>Energy Commodity Long-Run Own-price Elasticity for Export Demand</p>
+<p>Electric power -0.54</p>
+<p>Natural gas -0.67</p>
+<p>Coal -0.51</p>
+<p>Gasoline and fuel oil -0.92</p>
+<p>Other petroleum products -0.82</p>
+<p>These elasticities follow the Armington specification, whereby the demand for an imported good rises as its price falls relative to the price of its domestic substitute. At all times, consumers buy at least some of the domestic good and some of the imported good, even when the price difference is large (Iorwerth et al.&nbsp;2000, Wirjanto 1999). Please see Bataille (2005) for further elaboration. The Armington specification assumes that goods produced by different countries are not perfect substitutes. The energy trade elasticities are represented in Equation 20, which applies the elasticity of the ratio of import volumes to domestic production in relation to a change in the relative price of imports to domestic prices.</p>
+<p>(Equation 25)</p>
+<p>Where:</p>
+<p>FLCCt = Current financial lifecycle cost for producing the energy commodity</p>
+<p>FLCCt-1 = Previous financial lifecycle cost for producing the energy commodity</p>
+<p>COP = Cost of production covered by the energy producing sub-model, as a % of total cost</p>
+<p>σ = Price demand elasticity for the energy commodity</p>
+<p>IT= Initial Trade volume of the energy commodity</p>
+<p>Adjprod = Additive adjustment to production of the energy commodity</p>
+<p>Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US. All these elasticities operate on the business-as-usual (BAU) export amounts. These elasticities can be single values or they may change over time as specified by the operator of the model.</p>
+</section>
+<section id="goods-and-serviced-demand-feedbacks" class="level3" data-number="4.1.6">
+<h3 data-number="4.1.6" class="anchored" data-anchor-id="goods-and-serviced-demand-feedbacks"><span class="header-section-number">4.1.6</span> Goods and Serviced Demand Feedbacks</h3>
+<p>The economy is commonly divided into: households, who provide labour and financial capital and who consume goods and services; firms, who consume capital and labour and provide goods and services; government, which consumes goods and services, provides public goods and regulates the market; and finally foreign producers and consumers of goods, services and capital (Dornbusch et al.&nbsp;1989). It is common to assume that Canada is a price taker for capital (i.e., the interest rate is set at the world price of capital).</p>
+<blockquote class="blockquote">
+<p>Canada is assumed to be a small open economy . . . The world interest rate is assumed to be the US prime rate, and foreign savings are assumed to be available elastically. This means that the foreign sector automatically clears any surplus or deficit in the domestic savings market each period, so the domestic interest rate is effectively exogenous. (McKitrick 1998) p.552</p>
+</blockquote>
+<p>I maintained the same assumption as McKitrick, that capital is infinitely available at the world market price. This assumption left the circular flow of goods and services between producers (domestic and foreign firms and government, through “public goods” provided via hospitals, schools, and other institutional buildings) and consumers (households, government, and domestic and foreign firms). ISTUM is a model of the physical production side of the economy – the demand side of the economy is mostly missing. To complete the circle between producers and consumers, the system required the addition of demand feedbacks.</p>
+<p>The following suite of options face the consumer or producer when the price of a good or input rises, modelled after the consumer’s utility map in CASGEM (Iorwerth et al.&nbsp;2000):</p>
+<ul>
+<li><p>Substitute an import.</p></li>
+<li><p>Buy something else.</p></li>
+<li><p>Substitute current consumption for savings.</p></li>
+<li><p>Work less and enjoy more leisure, which is the same as reducing output.</p></li>
+</ul>
+<p>These options were used as the primary guide for adding demand feedbacks to the ISTUM sub-models in the construction of CIMS.</p>
+<section id="demand-feedbacks-for-manufactured-products" class="level4" data-number="4.1.6.1">
+<h4 data-number="4.1.6.1" class="anchored" data-anchor-id="demand-feedbacks-for-manufactured-products"><span class="header-section-number">4.1.6.1</span> Demand Feedbacks for Manufactured Products</h4>
+<p>Most Canadian industrial products are highly traded; their sensitivity to foreign competition is of prime importance. To reflect the sensitivity to foreign competition, CIMS employs the same Armington specification for price elasticities as used for energy trade, whereby the demand for a foreign good rises as its price falls relative to the price of a domestically produced substitute. Using the Armington specification, consumers always buy at least some of the domestic good and some of the imported good. The price elasticities are applied with the general formula in Equation 21.</p>
+<p>(Equation 26)</p>
+<p>Where:</p>
+<p>FLCCt = Current financial lifecycle cost for the product</p>
+<p>FLCCt-1 = Previous financial lifecycle cost for the product</p>
+<p>COP = Cost of production covered by the sub-model that produces the product, as a % of total cost</p>
+<p>σ = Price demand elasticity for the product</p>
+<p>Multiplier = Value by which demand for the product is multiplied</p>
+<p>To accommodate the differences between products in the industry sub-models, especially Industrial Minerals, Other Manufacturing, Chemical Products, and Metal Smelting, demand feedbacks are applied to these models at the level where production for individual products is determined. Table 8 provides the elasticities used for sectors and their products. See Appendix E of Christopher Bataille’s Ph.D dissertation for a full breakdown of their sources and how they were mapped to CIMS’ sub-models and their sub-products.</p>
+<p>Table 6 Price elasticities used from Wirjanto (1999)</p>
+</section>
+<section id="demand-feedbacks-for-commercial-and-residential" class="level4" data-number="4.1.6.2">
+<h4 data-number="4.1.6.2" class="anchored" data-anchor-id="demand-feedbacks-for-commercial-and-residential"><span class="header-section-number">4.1.6.2</span> Demand Feedbacks for Commercial and Residential</h4>
+<p>There is no import substitution for non-traded goods and services such as residential and commercial floor space. CIMS uses a log-linear econometric relationship to estimate the relationship between manufacturing activity – used dynamically as valued added but proxied using the value of shipments – and residential / commercial activity – measured by the value of building permits. The resulting relationship is used to allow commercial and residential activity to respond to changes in manufacturing activity.</p>
+<p>(Equation 27)</p>
+<p>Where:</p>
+<p>BPc,r = natural log of activity (value of building permits) in the commercial or residential sectors in a given year</p>
+<p>IVA = natural log of industrial value-added in a given year</p>
+<p>e = error term</p>
+<p>m = coefficient of relationship (elasticity)</p>
+<p>b = intercept</p>
+<p>This equation was estimated, using SHAZAM v.9, by running ordinary least squares regressions between manufacturers’ shipments and residential building permits between 1961 and 1991 and manufacturers’ shipments and commercial, institutional, and governmental building permits between 1961 and 1991. All values were deflated using a standard consumer price index. We tested various permutations of the regressions, including lagging and the use of population and year as an independent variable. Table 9 provides the parameter estimates.</p>
+<p>Table 7. Parameter Estimates Used to Provide Demand Feedbacks for the Residential and Commercial/Institutional Sectors</p>
+<p>The process for calculating manufacturing valued-added, the driver for residential and commercial activity in CIMS, is complex. The sub-model’s outputs are designed to capture changes in energy, new capital and labour expenditures engendered by policy. These costs are a sub-component of the total cost of production, which also includes materials and supplies, as well as capital investment, labour and repairs not related to energy using equipment.</p>
+<p>Value-added is defined as the total value of shipments and other revenue, minus the cost of intermediate inputs (energy, materials, and supplies) (Lipsey et al.&nbsp;1998, p.175). Returns to capital include both amortization and profits. Using values for wages, energy expenditures, costs of material, total value of shipments and capital expenditures from Statistics Canada, we found that while the ISTUM sub-models do not capture expenditures for materials or capital unrelated to energy consumption, they capture most capital expenditures in the sectors for which sub-models exist. Supplemental to this, the demand feedback function of CIMS, when faced with a reduction in demand, removes first new growth, then the necessity for replacing retired technology stock, and finally useful stock that is no longer required. Given that most sectors in CIMS grow in most time periods, a simplifying assumption was made that all the productive investment being removed was new or replacement investment, not useful stock. We then compared CIMS’ new investment in 2000 with figures from Statistics Canada, and derived a set of multipliers to scale up CIMS’ investment figures to reflect the ratio of coverage (the multipliers affect the demand for all stock, not just the portion of the cost of production covered by ISTUM). Finally, we added normal profits as a percentage of revenue, having ascertained that normal profits are included in value-added and that these are not normally included in CIMS. These were calculated as a percentage of total costs from Statistics Canada’s “Financial and taxation statistics for enterprises, 2000, 61-219”.</p>
+</section>
+<section id="demand-feedbacks-for-freight-transportation" class="level4" data-number="4.1.6.3">
+<h4 data-number="4.1.6.3" class="anchored" data-anchor-id="demand-feedbacks-for-freight-transportation"><span class="header-section-number">4.1.6.3</span> Demand Feedbacks for Freight Transportation</h4>
+<p>Freight transportation is important for energy and emissions policy because of the large amount of energy consumed and the amount of GHGs and criteria air contaminants produced. Activity in this sector is directly related to the amount of activity in the rest of the economy. To provide feedback relating freight and economic activity, a similar relationship to that established between manufacturing value-added and residential and commercial activity was incorporated into CIMS. It proved difficult to find an equivalent statistic for freight activity to manufacturing activity as used for the commercial and residential sectors, so instead of an estimated relationship a rule-of-thumb value was temporarily used instead (0.95 – a 1% fall in manufacturing value-added causes a 0.95% fall in freight activity). This relationship allows changes in manufacturing value-added to adjust freight transportation activity. This relationship will be estimated once statistics are available.</p>
+</section>
+<section id="demand-feedbacks-for-personal-transportation" class="level4" data-number="4.1.6.4">
+<h4 data-number="4.1.6.4" class="anchored" data-anchor-id="demand-feedbacks-for-personal-transportation"><span class="header-section-number">4.1.6.4</span> Demand Feedbacks for Personal Transportation</h4>
+<p>Demand feedbacks for personal transportation operate in a similar fashion to the demand feedbacks for manufacturing and industry, except that in the place of an Armington price elasticity an elasticity for personal kilometers traveled (pkt) in response to the cost of travel is used instead (price elasticity =-0.02) (Michaelis and Davidson 1996). Transportation is also a bit different from the other sub-models in that some demand adjustments occur within the sub-models, specifically the choice between urban modes of transport (single occupancy vehicles, high occupancy vehicles, transit and walking and cycling). The upshot is that much of the structural change possible in transportation is directly included in the sub-sector models.</p>
+</section>
+<section id="limits-to-the-demand-adjustments" class="level4" data-number="4.1.6.5">
+<h4 data-number="4.1.6.5" class="anchored" data-anchor-id="limits-to-the-demand-adjustments"><span class="header-section-number">4.1.6.5</span> Limits to the Demand Adjustments</h4>
+<p>Experimentation with early versions of CIMS showed that the demand adjustments had to be regarded critically. Elasticities are by nature log-linear measurements, while demand responses are very often non-linear. It may be hypothesized that there will always be a demand for some commodities, no matter the price. A function for limiting their effects was installed; 50% was chosen as the maximum demand reduction as a rule-of-thumb for the maximum extent to which CIMS’ substitution elasticities were still applicable. This demand limiting adjustment is somewhat simplistic, and in the future some form of function that applies limits to demand adjustments in a progressive way will be installed.</p>
+</section>
+</section>
+<section id="building-the-tree" class="level3" data-number="4.1.7">
+<h3 data-number="4.1.7" class="anchored" data-anchor-id="building-the-tree"><span class="header-section-number">4.1.7</span> Building the tree</h3>
+<p>Need a section in here about best practice for designing nodes.</p>
+<p>For example, should request services directly at node and also have tech competition.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./chapter-2.html" class="pagination-link" aria-label="Introduction to CIMS">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./chapter-5.html" class="pagination-link" aria-label="Model Sector Descriptions">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
