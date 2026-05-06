@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Getting Started with CIMS – CIMS</title>
+<title>2&nbsp; Introduction to CIMS – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,41 +23,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -68,8 +33,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./overview.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./technologies.html" rel="next">
+<link href="./getting_started.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -120,7 +85,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./getting_started.html">install</a></li><li class="breadcrumb-item"><a href="./getting_started.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">model</a></li><li class="breadcrumb-item"><a href="./overview.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -165,7 +130,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting_started.html" class="sidebar-item-text sidebar-link active">
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></span></a>
   </div>
 </li>
@@ -182,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./overview.html" class="sidebar-item-text sidebar-link">
+  <a href="./overview.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
   </div>
 </li>
@@ -233,26 +198,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites"><span class="header-section-number">1.1</span> Prerequisites</a></li>
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1.2</span> Setup</a>
-  <ul class="collapse">
-  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository"><span class="header-section-number">1.2.1</span> 1. Clone the Repository</a></li>
-  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies"><span class="header-section-number">1.2.2</span> 2. Install Dependencies</a></li>
-  <li><a href="#launch-marimo" id="toc-launch-marimo" class="nav-link" data-scroll-target="#launch-marimo"><span class="header-section-number">1.2.3</span> 3. Launch Marimo</a></li>
-  </ul></li>
-  <li><a href="#common-workflows" id="toc-common-workflows" class="nav-link" data-scroll-target="#common-workflows"><span class="header-section-number">1.3</span> Common Workflows</a></li>
-  <li><a href="#subsequent-runs" id="toc-subsequent-runs" class="nav-link" data-scroll-target="#subsequent-runs"><span class="header-section-number">1.4</span> Subsequent Runs</a></li>
-  <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting"><span class="header-section-number">1.5</span> Troubleshooting</a></li>
-  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources"><span class="header-section-number">1.6</span> Additional Resources</a></li>
+  <li><a href="#background-and-model-objectives" id="toc-background-and-model-objectives" class="nav-link active" data-scroll-target="#background-and-model-objectives"><span class="header-section-number">2.1</span> Background and model objectives</a></li>
+  <li><a href="#model-scale-and-scope" id="toc-model-scale-and-scope" class="nav-link" data-scroll-target="#model-scale-and-scope"><span class="header-section-number">2.2</span> Model Scale and Scope</a></li>
+  <li><a href="#model-simulation-six-steps" id="toc-model-simulation-six-steps" class="nav-link" data-scroll-target="#model-simulation-six-steps"><span class="header-section-number">2.3</span> Model Simulation: Six Steps</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./getting_started.html">install</a></li><li class="breadcrumb-item"><a href="./getting_started.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./overview.html">model</a></li><li class="breadcrumb-item"><a href="./overview.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></h1>
 </div>
 
 
@@ -269,106 +226,306 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Welcome to the CIMS repository! This guide will help you set up and run the CIMS Python package for energy-economy modelling.</p>
-<section id="prerequisites" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">1.1</span> Prerequisites</h2>
-<p>Before you begin, ensure you have the following installed:</p>
-<ul>
-<li><strong>uv</strong>: A Python package and environment manager. Install it with one command — no separate Python installation required.
-<ul>
-<li><p>Mac/Linux:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-LsSf</span> https://astral.sh/uv/install.sh <span class="kw">|</span> <span class="fu">sh</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p>Windows (PowerShell):</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>powershell <span class="op">-</span>ExecutionPolicy ByPass <span class="op">-</span>c <span class="st">"irm https://astral.sh/uv/install.ps1 | iex"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-</ul></li>
-<li><strong>Git</strong>: Used to clone the repository. Follow the <a href="https://github.com/git-guides/install-git">installation instructions</a> for your operating system.</li>
-<li><strong>Terminal or Command Prompt</strong>:
-<ul>
-<li>Windows: Git Bash or PowerShell</li>
-<li>macOS/Linux: Terminal</li>
-</ul></li>
-</ul>
+<section id="background-and-model-objectives" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="background-and-model-objectives"><span class="header-section-number">2.1</span> Background and model objectives</h2>
+<p>CIMS<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> is an integrated set of economic, energy, and materials models designed to provide information to policy makers on the likely response of firms and households to policies that influence their technology acquisition and technology use decisions.[^2] Thus, it is sometimes described as a technology simulation model, which seeks to reflect how people actually behave rather than how they ought to behave.[^3] CIMS is able to provide policy makers with information on: (1) the ability of their policies to achieve specific objectives (like greenhouse gas (GHG) emissions reductions), (2) the likely costs of achieving these objectives, and (3) the uncertainties associated with the model’s simulations. CIMS is maintained and operated by the Energy and Materials Research Group at the School of Resource and Environmental Management at Simon Fraser University.</p>
+<p>CIMS is based on energy flows through a country’s economic system. Like its predecessor, the ISTUM family of models, which form the individual sub-components of CIMS, it tracks the flow of energy, beginning with energy services and production processes through to eventual end-use by individual technologies. Unlike the partial equilibrium ISTUM models, which compete technologies against each other to serve pre-specified demands for end-uses, CIMS is nearly a full equilibrium system that allows the practitioner to include price driven energy and goods and services supply and demand equilibrium, energy trade, and some indirect macroeconomic effects, specifically disposable income and savings multiplier effects.</p>
+<p>CIMS’ focus on energy flows through technologies makes it ideal for modelling policies intended to affect energy efficiency, greenhouse gas emissions, and air quality. Fuel consumption and emissions of all pollutants are technology specific; unless a model operates on a detailed technology basis, as CIMS does, fuel consumption and emission estimates can only be approximated by economic activity.</p>
+<p>TODO: Discuss model operational structure (Excel input, Python, Excel results)</p>
+<p>TODO: Model licenses (MIT &amp; CC4.0)</p>
+<p>TODO: Split repository into code and data</p>
 </section>
-<section id="setup" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="setup"><span class="header-section-number">1.2</span> Setup</h2>
-<section id="clone-the-repository" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="clone-the-repository"><span class="header-section-number">1.2.1</span> 1. Clone the Repository</h3>
-<p>Open your terminal and navigate to the directory where you want to work:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Documents/projects/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Clone the repository:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/EMRG-SFU/cims.git</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> cims</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</section>
-<section id="install-dependencies" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="install-dependencies"><span class="header-section-number">1.2.2</span> 2. Install Dependencies</h3>
-<p>From the <code>cims</code> directory, run:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--extra</span> notebooks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>This will automatically select a compatible Python version, create a virtual environment, and install all dependencies. You only need to do this once, or again when dependencies are updated.</p>
-</section>
-<section id="launch-marimo" class="level3" data-number="1.2.3">
-<h3 data-number="1.2.3" class="anchored" data-anchor-id="launch-marimo"><span class="header-section-number">1.2.3</span> 3. Launch Marimo</h3>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo edit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>Marimo will open in your default browser. From there you can open, run, and edit notebooks.</p>
-</section>
-</section>
-<section id="common-workflows" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="common-workflows"><span class="header-section-number">1.3</span> Common Workflows</h2>
+<section id="model-scale-and-scope" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="model-scale-and-scope"><span class="header-section-number">2.2</span> Model Scale and Scope</h2>
+<p>CIMS covers the entire Canadian economy and can connect to an aggregated representation of the US economy. The Canadian version of CIMS currently includes six provinces and an aggregation of the Atlantic Provinces.[^4] <a href="#_Ref61957786">Table 1</a> illustrates the sectors and regions covered in CIMS.</p>
+<p>TODO: Separate out Atlantic provinces (medium priority) and Territories (lower priority)</p>
 <table class="caption-top table">
+<caption>: CIMS Sectors for Canada</caption>
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 25%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>I want to…</th>
-<th>Command</th>
+<th style="text-align: left;"><strong>Sectors</strong></th>
+<th style="text-align: center;"><strong>BC</strong></th>
+<th style="text-align: center;"><strong>AB</strong></th>
+<th style="text-align: center;"><strong>SK</strong></th>
+<th style="text-align: center;"><strong>MB</strong></th>
+<th style="text-align: center;"><strong>ON</strong></th>
+<th style="text-align: center;"><strong>QC</strong></th>
+<th style="text-align: center;"><strong>AT</strong></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Set up or update my environment</td>
-<td><code>uv sync --extra notebooks</code></td>
+<td style="text-align: left;">Residential</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
 </tr>
 <tr class="even">
-<td>Launch Marimo</td>
-<td><code>uv run marimo edit</code></td>
+<td style="text-align: left;">Commercial</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
 </tr>
 <tr class="odd">
-<td>Run a Python script</td>
-<td><code>uv run python my_script.py</code></td>
+<td style="text-align: left;">Transportation Personal</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
 </tr>
 <tr class="even">
-<td>Open a Python shell</td>
-<td><code>uv run python</code></td>
+<td style="text-align: left;">Transportation Freight</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
 </tr>
 <tr class="odd">
-<td>Use a specific Python version</td>
-<td><code>uv sync --python 3.12 --extra notebooks</code></td>
+<td style="text-align: left;">Mining</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coal Mining</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Natural Gas Extraction</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Petroleum Crude</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Petroleum Refining</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Industrial Minerals</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Iron and Steel</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Metal Smelting</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Chemical Products</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pulp and Paper</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other Manufacturing</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Waste</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Agriculture</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
+<td style="text-align: center;">X</td>
 </tr>
 </tbody>
 </table>
-</section>
-<section id="subsequent-runs" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="subsequent-runs"><span class="header-section-number">1.4</span> Subsequent Runs</h2>
-<p>To re-launch Marimo in future sessions, simply run from the <code>cims</code> directory:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo edit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>uv will use your existing environment and skip reinstalling dependencies unless something has changed.</p>
-</section>
-<section id="troubleshooting" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">1.5</span> Troubleshooting</h2>
+<p>TODO: Include major cities as separate nodes under provinces?</p>
 <ul>
-<li><strong>uv not found after install</strong>: Restart your terminal session so the <code>uv</code> command is available on your PATH.</li>
-<li><strong>Dependency conflicts</strong>: Run <code>uv sync --extra notebooks</code> again to bring your environment up to date with the latest <code>pyproject.toml</code>.</li>
+<li>Would include Toronto, Montreal, and Vancouver only. Use metro region or city only? Is the reason for this to represent city policies?</li>
 </ul>
+<p>While the model is simple in operation, it can appear complex because it is technologically explicit and covers the whole economy. CIMS represents a detailed list of technologies (fridges, light bulbs, cars, industrial motors, steel furnaces, buildings, power plants, etc.), and includes their linkages to each other. The model is especially large for the industrial sectors because industry has the largest variety of technologies.</p>
+<p>CIMS highlights the interplay of energy supply and demand because energy-related GHG emissions are currently a key policy concern. Thus, the model focuses on the interaction between sectors that use energy (industrial, residential, commercial / institutional, and transportation sectors) and sectors that produce or transform energy (electricity generation, fossil fuel supply, oil refining, natural gas processing, biofuels, and hydrogen). This interaction is shown in <a href="#_Ref61957705">Figure 1</a>. A policy that seeks to influence energy supply and demand may also influence the cost of producing goods and services, thus affecting their price and final demand. To reflect these interactions, CIMS includes a goods and services final demand feedback loop, composed of Armington elasticities for traded goods and empirically driven relationships between the traded and non-traded sectors.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="media/image2.svg" style="width:4.53165in;height:4.37774in" class="figure-img"></p>
+<figcaption>Figure 1. Overall Diagram of CIMS</figcaption>
+</figure>
+</div>
 </section>
-<section id="additional-resources" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">1.6</span> Additional Resources</h2>
+<section id="model-simulation-six-steps" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="model-simulation-six-steps"><span class="header-section-number">2.3</span> Model Simulation: Six Steps</h2>
+<p>As a simulation model, CIMS simulates the evolution of technologies acquired to meet energy services, and it uses both engineering and economic information. The engineering information details the unit energy consumption of each energy service technology and explains, using flow models of technologically heterogeneous sectors, how final energy service demands, intermediate products, and energy supply are related. The economic information determines which technologies are preferable in terms of cost minimization. While CIMS is not an optimization model, it can be adapted to produce results like those of an optimization model by calling on certain built-in functions. These functions are known as winner-take-all functions, and they give all new market shares in a given competition to the technology or process with the least cost.</p>
+<p>TODO: Review Winner-take-all function and decide if necessary</p>
+<p>CIMS is designed to mimic a sector or industry by representing a number of industrial establishments, residential or commercial buildings, and delivery of goods or personal travel within a defined region. The model focuses its analysis on the aggregate energy end-use requirements of that industry or sector. For example, in industry the major end-uses are process heat, motive force, space heat, and lighting. In the pulp and paper sector, the major end-uses are steam heat or mechanical energy to digest wood fibre into pulp, mechanical energy to convey and form pulp into paper, mechanical energy to press moisture out of formed pulp or paper, steam heat to dry pulp or paper, space heat, and lighting. In residential and commercial buildings, the primary end-uses include space heating and cooling, hot water production, refrigeration, and other assorted appliances.</p>
+<p><strong>A CIMS simulation comprises six basic steps:</strong></p>
+<ol type="1">
+<li><p>The baseline macro-economic drivers, energy supply drivers, and energy service technology characteristics are set for the desired time frame (15 years, 20 years, etc.) in five-year increments.</p>
+<ol type="a">
+<li><p>Technologies are represented in the model in terms of the quantity of energy service they provide. This could be, for example, vehicle kilometers traveled, tonnes of paper, or square metres of floor space heated and cooled. Then, a forecast of growth in energy service demand is used to drive future demand for energy services, usually in five-year increments.</p></li>
+<li><p>Macro-economic drivers include income, economic output, structural evolution of sectors, interest rates, employment rates, regulations, etc. They account for all energy service demands in the energy demand module.</p></li>
+<li><p>Energy supply drivers include international commodity prices, domestic market developments, forecasts of costs and availability of marginal energy supplies, and the resulting forecasts of domestic prices.</p></li>
+<li><p>Energy service technology characteristics include the date a technology or process will be available, technology energy efficiencies and capital / operating costs, firm and household time preferences (discount rates) for discretionary and non-discretionary expenditures (new and retrofit), and other behavioural parameters (perceived risks and consumer surpluses of different technologies, interdependence of certain technology choices that serve different energy services, such as domestic water heating and domestic space heating).</p></li>
+</ol></li>
+<li><p>The energy demand module (industry, commercial, residential, and transportation) is run for the initial driver values (including energy supply prices).</p>
+<ol type="a">
+<li><p>In each future period, a portion of the initial year’s stock of technologies is retired. Retirement depends only on age. The remaining technology stocks in each period are subtracted from the forecast energy service demand and this difference determines the amount of new technology stocks in which to invest.</p></li>
+<li><p>Prospective energy service technologies compete to fill the new service demand. The objective of the model is to simulate this competition so that the outcome approximates what would happen in the real world. Here the model relies heavily on market research of past and prospective firm and household behavior. Technology costs depend on recognized and financial costs, but also on identified differences in non-financial preferences (e.g., differences in the quality of lighting from different light bulbs) and risks (one technology is seen as more likely to fail than another). Even the determination of financial costs is not straightforward as time preferences (discount rates) can differ depending on the decision maker (household vs.&nbsp;firm) and the type of decision (non-discretionary vs.&nbsp;discretionary). Consequently, the competition is simulated probabilistically; new stock purchases are distributed among prospective technologies with financial costs being just one of several factors in determining market share.</p></li>
+<li><p>In each period, a similar competition occurs with remaining technology stocks to simulate retrofitting (if desirable and likely from the firm or household’s perspective). The same financial and non-financial information is required, except that the capital costs of remaining technology stocks are excluded, having been spent earlier when the remaining technology stock was originally acquired.</p></li>
+</ol></li>
+<li><p>The demand models then send their requirements for energy to the energy supply models. The supply models send back corresponding energy prices. If the changes in energy prices are over a set threshold value for equilibrium (usually 5%), the demand models are then rerun with the new energy prices. This process is repeated until all energy price changes fall under the threshold value. Figure 2 describes this process:</p></li>
+</ol>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="media/image3.png" style="width:5.89375in;height:3.63333in" class="figure-img"></p>
+<figcaption>Figure 2. CIMS' Energy Supply and Demand Flow Model</figcaption>
+</figure>
+</div>
+<ol start="4" type="1">
+<li><p>Policy or market driven energy price changes may change the lifecycle cost of some energy services, thereby changing the end-use price for these services. If the change in lifecycle cost from the business-as-usual case is beyond a pre-set threshold price elasticities for these services are applied, thereby changing the demand for these services. This new demand is sent back to the supply and demand models for re-calculation.</p></li>
+<li><p>The model reiterates step 2, 3 and 4 until all variables stabilize. It then proceeds to the next time period. Steps 1 through 5 are repeated for all time periods.</p></li>
+<li><p>Output: Output is provided for total capital stock, new capital stock, fuel use, service use, emissions, levelized costs by technology, and energy service prices.</p>
+<ol type="a">
+<li><p><strong>Sub-model Outputs</strong></p>
+<ol type="i">
+<li><p>Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).</p></li>
+<li><p>Fuel use and emissions by sector by year by technology.</p></li>
+<li><p>Service and auxiliary use by sector by year by technology.</p></li>
+<li><p>Total stock use by sector by year by technology.</p></li>
+<li><p>New stock use by sector by year by technology.</p></li>
+<li><p>Retrofits by sector by year by technology.</p></li>
+<li><p>Technology cost changes due to declining capital cost function</p></li>
+</ol></li>
+<li><p><strong>Supply and Demand Feedback Outputs</strong></p>
+<ol type="i">
+<li><p>Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g.&nbsp;7.5 or 10%)</p></li>
+<li><p>BAU and Policy final demand for each sector's product or service by year.</p></li>
+<li><p>BAU and Policy disaggregated energy demand for all sectors by year.</p></li>
+<li><p>Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.</p></li>
+<li><p>Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.</p></li>
+<li><p>Changes in net exports of key energy commodities from BAU to Policy</p></li>
+<li><p>Changes in energy prices by year</p></li>
+<li><p>Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing</p></li>
+<li><p>Changes consumers’ surplus for personal transportation and residences</p></li>
+<li><p>Changes in value-added for industry and manufacturing</p></li>
+</ol></li>
+</ol></li>
+</ol>
+<p>TODO: Model currently equilibrates only through prices. Could we also find quantity equilibrium for cap system?</p>
 <ul>
-<li><strong>Submit Issues</strong>: If you encounter any problems, please submit an issue on our <a href="https://github.com/EMRG-SFU/cims/issues">GitHub Issues page</a>.</li>
-<li><strong>Data Pipeline</strong>: See <a href="../data/README.md"><code>data/README.md</code></a> for information on the data pipeline and directory structure.</li>
+<li><p>Would need special market (?) for emissions cap that doesn’t need specific service requests</p>
+<ul>
+<li><p>Include emissions from all capped sectors in market</p></li>
+<li><p>Iterate carbon price until emissions match cap</p></li>
+<li><p>Use shadow price like for DAC? Iterate between max quantity cap and min tax price at each node</p></li>
+<li><p>🡪 can we generalise this for DAC, trading cap, any quantity max</p></li>
+</ul></li>
+<li><p>Is this worth the effort or just iterate carbon price manually?</p></li>
 </ul>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>CIMS originally stood for Canadian Integrated Modelling System but, as the model is now being applied to other countries, the acronym is now used as a proper name.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -774,13 +931,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Intro">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Intro</span>
+      <a href="./getting_started.html" class="pagination-link" aria-label="Getting Started with CIMS">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./overview.html" class="pagination-link" aria-label="Introduction to CIMS">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./technologies.html" class="pagination-link" aria-label="Technology Competition and Demand Feedbacks">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
