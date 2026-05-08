@@ -64,9 +64,6 @@ T~0~ is the initial year
 
 L is the lifespan of the technology
 
-![: Existing stock retirement
-function](media/image4.png){width="4.414118547681539in"
-height="2.7559055118110236in"}
 
 Retirement of new capital stock purchased during CIMS simulations is
 calculated using a different methodology than existing base stock
@@ -99,8 +96,6 @@ retired before the average lifespan of the technology due to early
 replacement and failure and half is retired afterward to simulate
 technologies that last longer than the average.
 
-![](media/image5.png){width="4.414119641294838in"
-height="2.7559055118110236in"}
 
 TODO: Add note about intercept uses in different sectors (i.e., 11.513
 for products, but more like 3 for houses)
@@ -118,8 +113,6 @@ $${Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}$$
 The *Stock* at time *t* is the sum of unretired new stock (*NS*) from
 all previous years added to the remaining base stock (*BS*).
 
-![: Total stock over time](media/image7.svg){width="4.410904418197726in"
-height="2.7559044181977255in"}
 
 ### Retrofit and New Stock Competition
 

@@ -2,8 +2,7 @@
 
 TODO: Results viewer
 
-- Need to revise how \`short path\` is created once markets and/or other
-  countries are added
+- Need to revise how \`short path\` is created once markets and/or other countries are added
 
 - Populate Tech Details only from pivot data. Need to add:
 
@@ -19,8 +18,7 @@ TODO: Results viewer
 
 - Organise tree to follow model description order
 
-- Auto generate tree? Need hierarchy diagrams even if not auto
-  generated.
+- Auto generate tree? Need hierarchy diagrams even if not auto generated.
 
 - Electricity sector -\> grid intensity
 
@@ -28,32 +26,23 @@ Three main classes of output are created by the model:
 
 1)  Sub-sector specific reports (DRAFTED)
 
-    a)  fuel and emissions for a given sector (FUELA) for BAU and
-        Policy, (B or C-Region-FUELA, e.g. BONFUELA.
+    a)  fuel and emissions for a given sector (FUELA) for BAU and Policy, (B or C-Region-FUELA, e.g. BONFUELA.
 
-    b)  technology levelized costs for a given sector (LEVEL) -- same
-        pattern as FUELA.
+    b)  technology levelized costs for a given sector (LEVEL) -- same pattern as FUELA.
 
-    c)  new and total technology market share reports for a given sector
-        (NEWMA and TOTAL) -- same pattern as FUELA.
+    c)  new and total technology market share reports for a given sector (NEWMA and TOTAL) -- same pattern as FUELA.
 
-    d)  technology node competition reports for a given sector
-        (REGION-NC-YEAR, e.g. "ABNC2005"
+    d)  technology node competition reports for a given sector (REGION-NC-YEAR, e.g. "ABNC2005"
 
 2)  Semi-aggregate reports (TO BE DONE)
 
-    a)  changes in physical output, sorted by sector and by region
-        (CCOMP)
+    a)  changes in physical output, sorted by sector and by region (CCOMP)
 
-    b)  changes in sector capital, fuel, emissions and labour costs,
-        sorted by sector and by region (CIMCOSTA & CIMCOSTB)
+    b)  changes in sector capital, fuel, emissions and labour costs, sorted by sector and by region (CIMCOSTA & CIMCOSTB)
 
-    c)  changes in sector energy use (by market class Elec., NG, coal
-        and RPP) and GHG emissions, sorted by sector and by region
-        (DCOMP)
+    c)  changes in sector energy use (by market class Elec., NG, coal and RPP) and GHG emissions, sorted by sector and by region (DCOMP)
 
-    d)  changes in sector cost per unit (inclusive of emissions
-        charges), sorted by sector and by region (LCOMP)
+    d)  changes in sector cost per unit (inclusive of emissions charges), sorted by sector and by region (LCOMP)
 
 3)  Aggregate report (TO BE DONE)
 
@@ -61,134 +50,62 @@ Three main classes of output are created by the model:
 
 ## Sub-sector Reports
 
-Four report types are available. In each type of report, the analyst
-opens a spreadsheet where data can be manipulated using spreadsheet
-functions. The report can then be reformatted, printed, or saved under
-another name.
+Four report types are available. In each type of report, the analyst opens a spreadsheet where data can be manipulated using spreadsheet functions. The report can then be reformatted, printed, or saved under another name.
 
 ### Fuel and Emissions Report
 
-Data concerning fuel consumption and emission generation are saved for
-each year of the simulation. The spreadsheet entitled B(BAU) or
-C(Policy) Region (e.g. BC) FUEL, e.g. CBCFUELA, receives these data. The
-model's report generator produces a table containing: (1) a list of all
-fuels and emissions, (3) consumption/production of those fuels and
-emissions for each year, and (4) a summation of fuels consumed and
-emissions output. Note that, if fuel/emission units are not uniform,
-this summation will be erroneous. Figure 3.1 displays the layout of a
-typical aggregate fuel report.
+Data concerning fuel consumption and emission generation are saved for each year of the simulation. The spreadsheet entitled B(BAU) or C(Policy) Region (e.g. BC) FUEL, e.g. CBCFUELA, receives these data. The model's report generator produces a table containing: (1) a list of all fuels and emissions, (3) consumption/production of those fuels and emissions for each year, and (4) a summation of fuels consumed and emissions output. Note that, if fuel/emission units are not uniform, this summation will be erroneous. Figure 3.1 displays the layout of a typical aggregate fuel report.
 
 Figure 3.1 ISTUM's Fuel Report
 
-Typically, technologies are grouped into Aggregate, Major processes,
-Service categories and Product type categories.
+Typically, technologies are grouped into Aggregate, Major processes, Service categories and Product type categories.
 
-Aggregate reports include the cumulative energy consumption of all the
-technologies in the industrial branch under analysis and are generated
-for every industry. Note that this is the sum of consumed and produced
-energy. To determine the amount of cogenerated or self-generated energy,
-the analyst should refer to the NC files which show al energy inputs and
-outputs by technology competition. No technology can contribute to the
-cumulative consumption/production of more than one group in each
-category.
+Aggregate reports include the cumulative energy consumption of all the technologies in the industrial branch under analysis and are generated for every industry. Note that this is the sum of consumed and produced energy. To determine the amount of cogenerated or self-generated energy, the analyst should refer to the NC files which show al energy inputs and outputs by technology competition. No technology can contribute to the cumulative consumption/production of more than one group in each category.
 
 Figure 3.1 ISTUM's Fuel Report
 
 ### Total Stock Report
 
-The table generated in the TOTAL spreadsheets contains data on the sum
-of operating old and new stock inventories for that year. The stock is
-listed in output units for that technology. As with the other report
-types, the table's header contains specific information on the scenario
-and economic criteria applied to produce that output. To the right of
-the total stock table, one finds a table of the share of total stock for
-competing technologies (in percent) that each technology has obtained.
-Figure 3.23 displays the layout of a typical Total Stock Report.
+The table generated in the TOTAL spreadsheets contains data on the sum of operating old and new stock inventories for that year. The stock is listed in output units for that technology. As with the other report types, the table's header contains specific information on the scenario and economic criteria applied to produce that output. To the right of the total stock table, one finds a table of the share of total stock for competing technologies (in percent) that each technology has obtained. Figure 3.23 displays the layout of a typical Total Stock Report.
 
-The lower portion of this table provides information concerning changes
-in stock consequent to retrofitting. Each set of lead and retrofit
-technologies show the lead technology first followed by the
-technology(ies) that can be retrofit to it. The data indicate the number
-of units not retrofit (the value associated with parent technologies)
-and those that were retrofit (the values associated with the retrofit
-technologies).
+The lower portion of this table provides information concerning changes in stock consequent to retrofitting. Each set of lead and retrofit technologies show the lead technology first followed by the technology(ies) that can be retrofit to it. The data indicate the number of units not retrofit (the value associated with parent technologies) and those that were retrofit (the values associated with the retrofit technologies).
 
 Figure 3.2 ISTUM's Total Stock Report
 
 ### New Stock Report
 
-As in the Total Stock Report, the two tables generated by the New Stock
-Report function of CIMS, show new stock additions in each year of the
-simulation and the market share of that stock purchased in that
-simulation year. This NEWMAR spreadsheet header, like the others,
-displays specific information concerning scenario and economic criteria.
-Figure 3.3 displays the layout of a typical New Stock Report.
+As in the Total Stock Report, the two tables generated by the New Stock Report function of CIMS, show new stock additions in each year of the simulation and the market share of that stock purchased in that simulation year. This NEWMAR spreadsheet header, like the others, displays specific information concerning scenario and economic criteria. Figure 3.3 displays the layout of a typical New Stock Report.
 
 Figure 3.3 ISTUM's New Stock Report
 
 ### Levelized Costs Report
 
-The LEVEL report lists each technology and contains tables displaying
-two categories of information:
+The LEVEL report lists each technology and contains tables displaying two categories of information:
 
-1\) The first set of columns include data used to generate the levelized
-costs. The first numeric column displays capital costs (CC) of each
-technology, followed by its annualized CC (CC x CC recovery factor,
-found in the sixth column). The third column shows the sum of annualized
-CC and costs of operations and maintenance (excluding fuel and emissions
-costs) for each technology. This, divided by the material output found
-in column 4 generates the lifecycle cost per unit output in column 5.
-Column six indicates whether any non-cost parameter was applied to the
-capital costs (CC x non-cost parameter).
+1\) The first set of columns include data used to generate the levelized costs. The first numeric column displays capital costs (CC) of each technology, followed by its annualized CC (CC x CC recovery factor, found in the sixth column). The third column shows the sum of annualized CC and costs of operations and maintenance (excluding fuel and emissions costs) for each technology. This, divided by the material output found in column 4 generates the lifecycle cost per unit output in column 5. Column six indicates whether any non-cost parameter was applied to the capital costs (CC x non-cost parameter).
 
-2\) The second set of columns, each headed by a simulation year,
-presents the levelized cost of that technology in that year. The
-levelized cost is the sum of the per-unit cost (column four) and the
-annual fuel (and emission) costs. (Figure 3.4)
+2\) The second set of columns, each headed by a simulation year, presents the levelized cost of that technology in that year. The levelized cost is the sum of the per-unit cost (column four) and the annual fuel (and emission) costs. (Figure 3.4)
 
-The lower portion of this table provides information concerning
-retrofits applied in that simulation. Each set of lead and retrofit
-technologies, displayed in separate groups, show the lead technology
-first followed by the technology(ies) that can be retrofit to it. Note
-that the capital cost of the lead technology is always 0 since it is
-considered a sunk cost. The capital costs associated with the retrofit
-technologies represents the cost of retrofit purchase and installation.
+The lower portion of this table provides information concerning retrofits applied in that simulation. Each set of lead and retrofit technologies, displayed in separate groups, show the lead technology first followed by the technology(ies) that can be retrofit to it. Note that the capital cost of the lead technology is always 0 since it is considered a sunk cost. The capital costs associated with the retrofit technologies represents the cost of retrofit purchase and installation.
 
 Figure 3.4 ISTUM's Levelized Cost Report
 
 ### Node Competition Report
 
-There is a separate node competition report for every sector in every
-region in every year. They are title (region)NC(year)J, e.g. for all
-sectors in Alberta the 2005 report is called "ABNC2005J.xls". The region
-codes are: BC, AB, SK, MB, ON, PQ, ATL (for Atlantic).
+There is a separate node competition report for every sector in every region in every year. They are title (region)NC(year)J, e.g. for all sectors in Alberta the 2005 report is called "ABNC2005J.xls". The region codes are: BC, AB, SK, MB, ON, PQ, ATL (for Atlantic).
 
-The node competition report presents the results of a run as a
-comparison between BAU and POLICY in terms of fuel use, services and
-emissions. The key difference between this report and the last four is
-that it organized by technology competition. As there a several fuels,
-services and emissions in CIMS, these reports tend to be very large.
-Figure 6 on the next page provides a sample node competition report for
-the baseload electricity production competition in Alberta in 2005. The
-shown figure gives the difference in stock, fuel use and emissions,
-while further to the right on the spreadsheet will be the BAU and policy
-absolute values. Stock is valued in the output unit of the sector in
-question, energy in GJ, and emissions in tonnes.
+The node competition report presents the results of a run as a comparison between BAU and POLICY in terms of fuel use, services and emissions. The key difference between this report and the last four is that it organized by technology competition. As there a several fuels, services and emissions in CIMS, these reports tend to be very large. Figure 6 on the next page provides a sample node competition report for the baseload electricity production competition in Alberta in 2005. The shown figure gives the difference in stock, fuel use and emissions, while further to the right on the spreadsheet will be the BAU and policy absolute values. Stock is valued in the output unit of the sector in question, energy in GJ, and emissions in tonnes.
 
-Figure 6: Sample node competition report -- base load electricity
-production Alberta 2005
+Figure 6: Sample node competition report -- base load electricity production Alberta 2005
 
 ## End user reports
 
-TODO: Reports of energy use, financials, intensities, travel, etc. at
-end user level
+TODO: Reports of energy use, financials, intensities, travel, etc. at end user level
 
 ## For example, household energy spending, average travel and costsMACC Curve
 
 TODO: EDF report, MACC 2.0
 
-![](media/image8.png){width="5.067169728783902in"
-height="5.566306867891513in"}
 
 ## Kaya Decomposition
 
@@ -211,21 +128,3 @@ Factors:
 ## Attributing emissions reductions to policies
 
 TODO: Shapley values using SHAP, LIME, or QII
-
-[^1]: CIMS originally stood for Canadian Integrated Modelling System
-    but, as the model is now being applied to other countries, the
-    acronym is now used as a proper name.
-
-[^2]: Technology is widely defined to include not just equipment but
-    also buildings and major infrastructure such as transit networks.
-
-[^3]: The TIMES model in contrast is a technology optimization model. It
-    focuses on technologies, like CIMS, but it characterizes behaviour
-    of firms and households as if they were purely focused on minimizing
-    financial costs and had complete market information across time and
-    space.
-
-[^4]: The northern territories are not currently included. In future
-    modelling work, both the territories and the Atlantic provinces
-    could be modelled individually, although data reliability is a large
-    concern.

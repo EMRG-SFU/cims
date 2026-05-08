@@ -8,11 +8,13 @@ Before you begin, ensure you have the following installed:
 
 - **uv**: A Python package and environment manager. Install it with one command — no separate Python installation required.
   - Mac/Linux:
-    ```bash
+
+    ``` bash
     curl -LsSf https://astral.sh/uv/install.sh | sh
     ```
   - Windows (PowerShell):
-    ```powershell
+
+    ``` powershell
     powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
     ```
 - **Git**: Used to clone the repository. Follow the [installation instructions](https://github.com/git-guides/install-git) for your operating system.
@@ -26,13 +28,13 @@ Before you begin, ensure you have the following installed:
 
 Open your terminal and navigate to the directory where you want to work:
 
-```bash
+``` bash
 cd ~/Documents/projects/
 ```
 
 Clone the repository:
 
-```bash
+``` bash
 git clone https://github.com/EMRG-SFU/cims.git
 cd cims
 ```
@@ -41,7 +43,7 @@ cd cims
 
 From the `cims` directory, run:
 
-```bash
+``` bash
 uv sync --extra notebooks
 ```
 
@@ -49,7 +51,7 @@ This will automatically select a compatible Python version, create a virtual env
 
 ### 3. Launch Marimo
 
-```bash
+``` bash
 uv run marimo edit
 ```
 
@@ -57,19 +59,19 @@ Marimo will open in your default browser. From there you can open, run, and edit
 
 ## Common Workflows
 
-| I want to... | Command |
-|---|---|
-| Set up or update my environment | `uv sync --extra notebooks` |
-| Launch Marimo | `uv run marimo edit` |
-| Run a Python script | `uv run python my_script.py` |
-| Open a Python shell | `uv run python` |
-| Use a specific Python version | `uv sync --python 3.12 --extra notebooks` |
+| I want to...                    | Command                                   |
+|------------------------------------|------------------------------------|
+| Set up or update my environment | `uv sync --extra notebooks`               |
+| Launch Marimo                   | `uv run marimo edit`                      |
+| Run a Python script             | `uv run python my_script.py`              |
+| Open a Python shell             | `uv run python`                           |
+| Use a specific Python version   | `uv sync --python 3.12 --extra notebooks` |
 
 ## Subsequent Runs
 
 To re-launch Marimo in future sessions, simply run from the `cims` directory:
 
-```bash
+``` bash
 uv run marimo edit
 ```
 

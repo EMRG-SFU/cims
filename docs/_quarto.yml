@@ -28,3 +28,7 @@ book:
 format:
   html:
     theme: cosmo
+  docx:
+    eval: true
+  pdf:
+    eval: true
