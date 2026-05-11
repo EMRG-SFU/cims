@@ -23,26 +23,7 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
-}
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
-}
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
-}
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -93,6 +74,7 @@ div.csl-indent {
 }</script>
 
 
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -182,6 +164,12 @@ div.csl-indent {
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -196,13 +184,13 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./policies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
   </div>
 </li>
       </ul>
@@ -245,7 +233,6 @@ div.csl-indent {
 </header>
 
 
-<p><span class="citation" data-cites="czerwinski2023">(<a href="#ref-czerwinski2023" role="doc-biblioref">Czerwinski 2023</a>)</span></p>
 <section id="background-and-model-objectives" class="level2" data-number="2.1">
 <h2 data-number="2.1" class="anchored" data-anchor-id="background-and-model-objectives"><span class="header-section-number">2.1</span> Background and model objectives</h2>
 <p>CIMS<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> is an integrated set of economic, energy, and materials models designed to provide information to policy makers on the likely response of firms and households to policies that influence their technology acquisition and technology use decisions.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Thus, it is sometimes described as a technology simulation model, which seeks to reflect how people actually behave rather than how they ought to behave.<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a> CIMS is able to provide policy makers with information on: (1) the ability of their policies to achieve specific objectives (like greenhouse gas (GHG) emissions reductions), (2) the likely costs of achieving these objectives, and (3) the uncertainties associated with the model’s simulations. CIMS is maintained and operated by the Energy and Materials Research Group at the School of Resource and Environmental Management at Simon Fraser University.</p>
@@ -462,12 +449,6 @@ div.csl-indent {
 </ul>
 <p>While the model is simple in operation, it can appear complex because it is technologically explicit and covers the whole economy. CIMS represents a detailed list of technologies (fridges, light bulbs, cars, industrial motors, steel furnaces, buildings, power plants, etc.), and includes their linkages to each other. The model is especially large for the industrial sectors because industry has the largest variety of technologies.</p>
 <p>CIMS highlights the interplay of energy supply and demand because energy-related GHG emissions are currently a key policy concern. Thus, the model focuses on the interaction between sectors that use energy (industrial, residential, commercial / institutional, and transportation sectors) and sectors that produce or transform energy (electricity generation, fossil fuel supply, oil refining, natural gas processing, biofuels, and hydrogen). This interaction is shown in <a href="#_Ref61957705">Figure 1</a>. A policy that seeks to influence energy supply and demand may also influence the cost of producing goods and services, thus affecting their price and final demand. To reflect these interactions, CIMS includes a goods and services final demand feedback loop, composed of Armington elasticities for traded goods and empirically driven relationships between the traded and non-traded sectors.</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="media/image2.svg" style="width:4.53165in;height:4.37774in" class="figure-img"></p>
-<figcaption>Figure 1. Overall Diagram of CIMS</figcaption>
-</figure>
-</div>
 </section>
 <section id="model-simulation-six-steps" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="model-simulation-six-steps"><span class="header-section-number">2.3</span> Model Simulation: Six Steps</h2>
@@ -490,14 +471,6 @@ div.csl-indent {
 <li><p>In each period, a similar competition occurs with remaining technology stocks to simulate retrofitting (if desirable and likely from the firm or household’s perspective). The same financial and non-financial information is required, except that the capital costs of remaining technology stocks are excluded, having been spent earlier when the remaining technology stock was originally acquired.</p></li>
 </ol></li>
 <li><p>The demand models then send their requirements for energy to the energy supply models. The supply models send back corresponding energy prices. If the changes in energy prices are over a set threshold value for equilibrium (usually 5%), the demand models are then rerun with the new energy prices. This process is repeated until all energy price changes fall under the threshold value. Figure 2 describes this process:</p></li>
-</ol>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="media/image3.png" style="width:5.89375in;height:3.63333in" class="figure-img"></p>
-<figcaption>Figure 2. CIMS’ Energy Supply and Demand Flow Model</figcaption>
-</figure>
-</div>
-<ol start="4" type="1">
 <li><p>Policy or market driven energy price changes may change the lifecycle cost of some energy services, thereby changing the end-use price for these services. If the change in lifecycle cost from the business-as-usual case is beyond a pre-set threshold price elasticities for these services are applied, thereby changing the demand for these services. This new demand is sent back to the supply and demand models for re-calculation.</p></li>
 <li><p>The model reiterates step 2, 3 and 4 until all variables stabilize. It then proceeds to the next time period. Steps 1 through 5 are repeated for all time periods.</p></li>
 <li><p>Output: Output is provided for total capital stock, new capital stock, fuel use, service use, emissions, levelized costs by technology, and energy service prices.</p>
@@ -538,14 +511,8 @@ div.csl-indent {
 </ul></li>
 <li><p>Is this worth the effort or just iterate carbon price manually?</p></li>
 </ul>
-<hr>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list">
-<div id="ref-czerwinski2023" class="csl-entry" role="listitem">
-Czerwinski, Frank. 2023. <span>“Magnesium Research in Canada: Highlights of the Last Two Decades.”</span> <em>Journal of Magnesium and Alloys</em> 11 (10): 3484–510. <a href="https://doi.org/10.1016/j.jma.2023.07.014">https://doi.org/10.1016/j.jma.2023.07.014</a>.
-</div>
-</div>
 </section>
 <section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
 <hr>
@@ -557,6 +524,25 @@ Czerwinski, Frank. 2023. <span>“Magnesium Research in Canada: Highlights of th
 </section>
 
 </main> <!-- /main -->
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('a.footnote-ref').forEach(el => {
+
+    const prev = el.previousSibling;
+
+    if (prev && prev.nodeType === Node.ELEMENT_NODE && prev.classList?.contains('footnote-ref')) {
+
+      el.classList.add('fn-adjacent');
+
+    }
+
+  });
+
+});
+
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

@@ -103,6 +103,7 @@ window.Quarto = {
 };
 </script>
 
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -192,6 +193,12 @@ window.Quarto = {
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -206,13 +213,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./policies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
   </div>
 </li>
       </ul>
@@ -296,12 +303,6 @@ window.Quarto = {
 <p>T<sub>t</sub> is the current simulated year</p>
 <p>T<sub>0</sub> is the initial year</p>
 <p>L is the lifespan of the technology</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="media/image4.png" style="width:4.41412in;height:2.75591in" class="figure-img"></p>
-<figcaption>: Existing stock retirement function</figcaption>
-</figure>
-</div>
 <p>Retirement of new capital stock purchased during CIMS simulations is calculated using a different methodology than existing base stock because the vintage of the base stock is of uncertain and varied vintage, while the vintage of new stock is known.</p>
 <p><span id="_Toc25226756" class="anchor"></span>Equation : New stock retirement</p>
 <p><span class="math display">\[{NS}_{t} = \frac{{NS}_{p}}{1 + e^{\frac{11.513}{L}\left( \left( T_{t} - T_{p} \right) - L \right)}}\]</span></p>
@@ -313,19 +314,12 @@ window.Quarto = {
 <p>L is the lifespan of the technology</p>
 <p>The intercept value of 11.513 comes from ISTUM for average technology retirement rates</p>
 <p>This function uses an s-shaped, logistic curve to simulate the retirement of devices. Figure 5 shows an example of the retirement function of a technology with a two-year lifespan. Half of the stock is retired before the average lifespan of the technology due to early replacement and failure and half is retired afterward to simulate technologies that last longer than the average.</p>
-<p><img src="media/image5.png" style="width:4.41412in;height:2.75591in"></p>
 <p>TODO: Add note about intercept uses in different sectors (i.e., 11.513 for products, but more like 3 for houses)</p>
 <p>: New stock retirement function</p>
 <p>The total stock of a technology in any given year <em>t</em> is the sum of the unretired base stock and the unretired new stock from each previous year.</p>
 <p><span id="_Toc25226757" class="anchor"></span>Equation : Total stock</p>
 <p><span class="math display">\[{Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}\]</span></p>
 <p>The <em>Stock</em> at time <em>t</em> is the sum of unretired new stock (<em>NS</em>) from all previous years added to the remaining base stock (<em>BS</em>).</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="media/image7.svg" style="width:4.4109in;height:2.7559in" class="figure-img"></p>
-<figcaption>: Total stock over time</figcaption>
-</figure>
-</div>
 </section>
 <section id="retrofit-and-new-stock-competition" class="level3" data-number="3.1.3">
 <h3 data-number="3.1.3" class="anchored" data-anchor-id="retrofit-and-new-stock-competition"><span class="header-section-number">3.1.3</span> Retrofit and New Stock Competition</h3>
@@ -594,6 +588,25 @@ window.Quarto = {
 </section>
 
 </main> <!-- /main -->
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('a.footnote-ref').forEach(el => {
+
+    const prev = el.previousSibling;
+
+    if (prev && prev.nodeType === Node.ELEMENT_NODE && prev.classList?.contains('footnote-ref')) {
+
+      el.classList.add('fn-adjacent');
+
+    }
+
+  });
+
+});
+
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";

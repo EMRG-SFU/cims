@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Policy Costing &amp; Outputs – CIMS</title>
+<title>6&nbsp; Policy Costing &amp; Outputs – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -34,7 +34,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./outputs.html" rel="next">
-<link href="./sectors.html" rel="prev">
+<link href="./low_temp_heat.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -74,6 +74,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body class="nav-sidebar floating quarto-light">
@@ -85,7 +86,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -163,6 +164,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -177,13 +184,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./policies.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
   </div>
 </li>
       </ul>
@@ -198,18 +205,18 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#policy-costing-methods-associated-with-istum-and-early-cims" id="toc-policy-costing-methods-associated-with-istum-and-early-cims" class="nav-link active" data-scroll-target="#policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">5.0.1</span> Policy costing methods associated with ISTUM and early CIMS</a></li>
-  <li><a href="#policy-costs-associated-with-changes-in-demand" id="toc-policy-costs-associated-with-changes-in-demand" class="nav-link" data-scroll-target="#policy-costs-associated-with-changes-in-demand"><span class="header-section-number">5.0.2</span> Policy Costs Associated With Changes in Demand</a></li>
-  <li><a href="#outputs-from-cims" id="toc-outputs-from-cims" class="nav-link" data-scroll-target="#outputs-from-cims"><span class="header-section-number">5.0.3</span> Outputs from CIMS</a></li>
+  <li><a href="#policy-costing-methods-associated-with-istum-and-early-cims" id="toc-policy-costing-methods-associated-with-istum-and-early-cims" class="nav-link active" data-scroll-target="#policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">6.0.1</span> Policy costing methods associated with ISTUM and early CIMS</a></li>
+  <li><a href="#policy-costs-associated-with-changes-in-demand" id="toc-policy-costs-associated-with-changes-in-demand" class="nav-link" data-scroll-target="#policy-costs-associated-with-changes-in-demand"><span class="header-section-number">6.0.2</span> Policy Costs Associated With Changes in Demand</a></li>
+  <li><a href="#outputs-from-cims" id="toc-outputs-from-cims" class="nav-link" data-scroll-target="#outputs-from-cims"><span class="header-section-number">6.0.3</span> Outputs from CIMS</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></h1>
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></h1>
 </div>
 
 
@@ -226,8 +233,8 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="policy-costing-methods-associated-with-istum-and-early-cims" class="level3" data-number="5.0.1">
-<h3 data-number="5.0.1" class="anchored" data-anchor-id="policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">5.0.1</span> Policy costing methods associated with ISTUM and early CIMS</h3>
+<section id="policy-costing-methods-associated-with-istum-and-early-cims" class="level3" data-number="6.0.1">
+<h3 data-number="6.0.1" class="anchored" data-anchor-id="policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">6.0.1</span> Policy costing methods associated with ISTUM and early CIMS</h3>
 <p>Issues associated with deriving costs from its outputs guided much of CIMS’ development. The cost methodologies in the following sections are described in brief and outline some of the issues in estimating costs.</p>
 <p>The ISTUM model was initially designed for energy policy analysis, mainly for assessing how fuel consumption and emissions would change with a given energy policy. The emphasis was on marginal costs, not total or absolute expenditures. The first consistent costing concept was the techno-economic cost, or TEC.</p>
 <p>TODO: Should we have standard reporting for costs below?</p>
@@ -245,8 +252,8 @@ ul.task-list li input[type="checkbox"] {
 <p><strong>The Relationship Between TEC, ERC, Option Value and Welfare Costs</strong></p>
 <p>The cost difference between ERC and TEC estimated during early analyses was described as risk, or “failure risk”, which is related to the concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck 1994 ). Option value is the expected gain from delaying or avoiding an investment while waiting for new information that might lead to a better decision. Thus, ERC are anticipated ex-post costs, and it is calculated as the sum of expected financial costs (TEC), lost option value, consumers’ surplus losses internal to residential and transportation (internal shifts away from business-as-usual (BAU) preferences within the sub-models) and finally, when demand feedbacks are included, consumers’ surplus losses related to demand adjustments for domestic consumers of domestic goods. It may therefore be considered a measure of personal welfare costs, not including negative environmental externalities (e.g.&nbsp;poorer quality air) or positive public goods (e.g. education, defence or public parks).</p>
 </section>
-<section id="policy-costs-associated-with-changes-in-demand" class="level3" data-number="5.0.2">
-<h3 data-number="5.0.2" class="anchored" data-anchor-id="policy-costs-associated-with-changes-in-demand"><span class="header-section-number">5.0.2</span> Policy Costs Associated With Changes in Demand</h3>
+<section id="policy-costs-associated-with-changes-in-demand" class="level3" data-number="6.0.2">
+<h3 data-number="6.0.2" class="anchored" data-anchor-id="policy-costs-associated-with-changes-in-demand"><span class="header-section-number">6.0.2</span> Policy Costs Associated With Changes in Demand</h3>
 <p>The inclusion of final demand feedbacks required the addition of five new policy-costing concepts. In all these concepts, financial output is defined as a sector’s sales revenue, which includes both value-added and purchased inputs. Value-added is net profits plus the cost of all expenditures on land (unprocessed “gifts of nature”), labour and capital (Lipsey et al.&nbsp;1988).</p>
 <ul>
 <li><p>The cost of production effect on sector financial output, which is the increased financial expenditures required to adapt to the policy, or TEC.</p></li>
@@ -255,8 +262,8 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Consumers’ surplus losses associated with demand changes in transportation and residences.</p></li>
 <li><p>Changes in value-added associated with cost of production and demand changes in manufacturing.</p></li>
 </ul>
-<section id="the-cost-of-production-and-demand-effects-on-sector-financial-output" class="level4" data-number="5.0.2.1">
-<h4 data-number="5.0.2.1" class="anchored" data-anchor-id="the-cost-of-production-and-demand-effects-on-sector-financial-output"><span class="header-section-number">5.0.2.1</span> The Cost of Production and Demand Effects on Sector Financial Output</h4>
+<section id="the-cost-of-production-and-demand-effects-on-sector-financial-output" class="level4" data-number="6.0.2.1">
+<h4 data-number="6.0.2.1" class="anchored" data-anchor-id="the-cost-of-production-and-demand-effects-on-sector-financial-output"><span class="header-section-number">6.0.2.1</span> The Cost of Production and Demand Effects on Sector Financial Output</h4>
 <p>The cost of production effect captures the internal capital investment and fuel choice adjustments of the model, or the TEC costs endogenous to the model. It is the anticipated financial cost of technical adjustment to the policy. The demand effect captures the effects of the demand feedbacks system, or reduction in output, as measured by expenditure compared to the business-as-usual case (BAU). The third is the sum of the first two. These three concepts capture a portion of the anticipated financial cost of a policy. They do not include the cost of buying emission permits from foreign sources or the cost of imports that replace domestically produced goods for domestic consumption. The fourth item, consumers’ surplus losses, represents lost consumer welfare associated with reduced residential expenditure and mobility, while the fifth represents the lost value-added to manufacturing firms due to policy.</p>
 <p>Most GHG policies will increase the cost of production for a given service, increase its price, and thus reduce its demand. This increase in the cost of production will also include the value of carbon charges that are imposed on GHG emissions. These charges are transfers and as such must be subtracted from regional and national costs. Additionally, if demand is inelastic (unresponsive to price) for a given service, the dollar value of the sector, as valued by cost of production, may increase faster than demand reductions, leading to an overall increase in sector value to the economy. If demand is elastic, the opposite may occur.</p>
 <p>The standard outputs from the sub-models include BAU and policy values for new physical capital investment associated with consuming energy, labour associated with the latter capital, and energy costs, as well as changes in physical output. It also produces BAU and policy costs per unit output, including GHG charges. These GHG charges are isolated by calculating policy emissions multiplied by the GHG price. When the micro and macro economic dynamics are turned on, part of the difference between the BAU and policy cases may be physical output changes while the rest will be cost of production differences due to internal stock adjustments. CIMS only captures a portion of the price that the consumer sees; both the BAU and Policy cost per unit are adjusted accordingly. The cost of production and demand effects on sector financial output (SFO) (Equations 23 &amp; 24), and the absolute change in financial expenditure are calculated as follows (Equation 25).</p>
@@ -274,8 +281,8 @@ ul.task-list li input[type="checkbox"] {
 </blockquote>
 <p>The absolute change in sector financial output could be positive or negative depending on the elasticity of demand – if the cost of production rises faster than demand falls, then the absolute change in financial output could be positive. This result is common with less aggressive policies. The demand effect on sector financial output will always be negative for normal goods, whose demand fall as their price rises. The cost of production effect on sector financial output is usually positive, except for the case where there are decreasing returns to scale.</p>
 </section>
-<section id="consumers-surplus-adjustments-in-residential-and-transportation" class="level4" data-number="5.0.2.2">
-<h4 data-number="5.0.2.2" class="anchored" data-anchor-id="consumers-surplus-adjustments-in-residential-and-transportation"><span class="header-section-number">5.0.2.2</span> Consumers’ Surplus Adjustments in Residential and Transportation</h4>
+<section id="consumers-surplus-adjustments-in-residential-and-transportation" class="level4" data-number="6.0.2.2">
+<h4 data-number="6.0.2.2" class="anchored" data-anchor-id="consumers-surplus-adjustments-in-residential-and-transportation"><span class="header-section-number">6.0.2.2</span> Consumers’ Surplus Adjustments in Residential and Transportation</h4>
 <p>Reductions in residential activity and mobility reflect consumers’ surplus losses. Consumers’ surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (Figure 8).</p>
 <p>Figure 4. Consumers’ Surplus Diagram</p>
 <p>The consumers’ surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers’ surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.</p>
@@ -283,8 +290,8 @@ ul.task-list li input[type="checkbox"] {
 <p>The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.</p>
 </section>
 </section>
-<section id="outputs-from-cims" class="level3" data-number="5.0.3">
-<h3 data-number="5.0.3" class="anchored" data-anchor-id="outputs-from-cims"><span class="header-section-number">5.0.3</span> Outputs from CIMS</h3>
+<section id="outputs-from-cims" class="level3" data-number="6.0.3">
+<h3 data-number="6.0.3" class="anchored" data-anchor-id="outputs-from-cims"><span class="header-section-number">6.0.3</span> Outputs from CIMS</h3>
 <p>Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS’ micro and macro economic systems of dynamics (also referred to as feedback systems).</p>
 <p>Table 10. Sub-model Outputs Existing Prior to This Research</p>
 <p>Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).</p>
@@ -310,6 +317,25 @@ ul.task-list li input[type="checkbox"] {
 </section>
 
 </main> <!-- /main -->
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('a.footnote-ref').forEach(el => {
+
+    const prev = el.previousSibling;
+
+    if (prev && prev.nodeType === Node.ELEMENT_NODE && prev.classList?.contains('footnote-ref')) {
+
+      el.classList.add('fn-adjacent');
+
+    }
+
+  });
+
+});
+
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -712,13 +738,13 @@ ul.task-list li input[type="checkbox"] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./sectors.html" class="pagination-link" aria-label="Model Sector Descriptions">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span>
+      <a href="./low_temp_heat.html" class="pagination-link" aria-label="Decarbonizing Low-Temperature Industrial Heat">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./outputs.html" class="pagination-link" aria-label="Outputs">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Outputs</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Outputs</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
