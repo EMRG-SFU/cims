@@ -42,7 +42,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.controls_conversions import load_control_config
-from utils.extensions.data_extensions import trend_backwards, backfill_constant, extend_constant, interpolate_gaps
+from utils.extensions.data_extensions import trend_backwards, backfill_constant, extend_constant, interpolate_gaps, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
@@ -51,6 +51,13 @@ RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
 LNG_EXPORT_FILE             = BASE_PATH / 'raw_data/cer/lng-export-assumptions-2026.csv'
 OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
 SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
+ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
+CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Natural Gas', ASSUMPTIONS_FILE)
+
+# Per-region overrides — one explicit annual rate per period.
+# Bypasses the dampener for that region. Use when historical CAGR is unrealistic.
+CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
+}
 
 
 # Unit conversion: Million m3/day -> 1000 m3/year
@@ -392,25 +399,25 @@ pivot = (
 #   where Processed is the 2050 value held flat (already done in _processed_pl).
 #   Splits (pct_*): held constant at 2050 values per region.
 
-# Anchor values for CAGR: marketable production at 2036 and 2050 per region.
-# Mirrors the spreadsheet formula which uses the CER EF2023 2036-2050 rate
-# held flat to 2100.
+# Anchor values for CAGR: marketable production at CAGR_START and CAGR_END per region.
+# The raw CAGR is computed from the historical window defined in the assumptions CSV
+# (Natural Gas: 2040–2050). Dampening is handled by extend_cagr_periods via CAGR_PERIODS.
 _anchor = (
     pivot
-    .filter(pl.col("Year").is_in([2036, 2050]))
+    .filter(pl.col("Year").is_in([CAGR_START, CAGR_END]))
     .select(["Region", "Year", "total"])
     .pivot(values="total", index="Region", on="Year", aggregate_function="first")
-    .rename({"2036": "total_2036", "2050": "total_2050"})
+    .rename({str(CAGR_START): "total_cagr_start", str(CAGR_END): "total_cagr_end"})
 )
 
-# CAGR = ((total_2050 / total_2036) ^ (1/14) - 1) * 0.2
-# The raw 2036-2050 CER rate is tapered to 20% to avoid unrealistic long-run growth.
-# If total_2036 is 0 or null, CAGR is set to 0 (production stays flat at 0)
+# CAGR = (total_cagr_end / total_cagr_start) ^ (1 / (CAGR_END - CAGR_START)) - 1
+# If total_cagr_start is 0 or null, CAGR is set to 0 (production stays flat at 0).
+# Dampening (20% for 2051-2100) is applied inside extend_cagr_periods via CAGR_PERIODS.
 _anchor = _anchor.with_columns(
-    pl.when((pl.col("total_2036").is_null()) | (pl.col("total_2036") == 0))
+    pl.when((pl.col("total_cagr_start").is_null()) | (pl.col("total_cagr_start") == 0))
         .then(0.0)
         .otherwise(
-            ((pl.col("total_2050") / pl.col("total_2036")).pow(1.0 / 14.0) - 1.0) * 0.2
+            (pl.col("total_cagr_end") / pl.col("total_cagr_start")).pow(1.0 / (CAGR_END - CAGR_START)) - 1.0
         )
         .alias("cagr")
 )
@@ -437,18 +444,21 @@ _anchor_map    = {r["Region"]: r for r in _anchor.to_dicts()}
 _vals_2050_map = {r["Region"]: r for r in _vals_2050.to_dicts()}
 
 _extension_rows = []
-for _region in _anchor_map:
-    _cagr        = _anchor_map[_region]["cagr"]
-    _base        = _vals_2050_map[_region]["total_2050_val"]  # compounds from 2050
+for _region, _anc in _anchor_map.items():
+    _base        = _vals_2050_map[_region]["total_2050_val"]  # compounds from CAGR_END (2050)
     _processed50 = _vals_2050_map[_region]["processed_2050"]
     _pct_conv    = _vals_2050_map[_region]["pct_conventional"]
     _pct_shale   = _vals_2050_map[_region]["pct_shale"]
     _pct_tight   = _vals_2050_map[_region]["pct_tight"]
     _pct_cbm     = _vals_2050_map[_region]["pct_coalbed_methane"]
 
-    for _yr in range(2051, 2101):
-        _n     = _yr - 2050
-        _total = max(_base * (1 + _cagr) ** _n, 0.0)
+    ext = extend_cagr_periods(
+        base_val = _base,
+        raw_cagr = _anc["cagr"],
+        periods  = CAGR_PERIODS,
+        override = CAGR_OVERRIDES.get(_region),
+    )
+    for _yr, _total in ext.items():
         _gross = (_total / _processed50) if (_processed50 and _processed50 > 0) else 0.0
         _extension_rows.append({
             "Region":              _region,
