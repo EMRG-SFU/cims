@@ -339,6 +339,166 @@ def extend_series_trend_dampener(series: pd.Series, base_year: int = 2022,
 
 
 # ==============================================================================
+# PANDAS SERIES — CAGR projection with per-period dampeners
+# ==============================================================================
+
+def load_cagr_assumptions(
+    sector: str,
+    assumptions_file,
+) -> tuple[int, int, list[tuple[int, int, float]]]:
+    """
+    Parse CAGR periods and dampeners for one sector from the assumptions CSV.
+
+    Expected CSV columns:
+        Sector, CAGR Period,
+        1st period, 1st period dampener,
+        2nd period, 2nd period dampener,
+        3d period,  3rd period dampener
+
+    Empty period columns are treated as the end of the period list.
+
+    Parameters
+    ----------
+    sector : str
+        Value to match in the 'Sector' column.
+    assumptions_file : str or Path
+        Path to the CSV file.
+
+    Returns
+    -------
+    (cagr_start, cagr_end, periods)
+        cagr_start, cagr_end : int — historical window for CAGR calculation.
+        periods : list of (start_year, end_year, dampener) — projection periods.
+    """
+    def _parse_period(s) -> tuple[int, int] | None:
+        try:
+            a, b = str(s).strip().split('-')
+            return int(a), int(b)
+        except (ValueError, AttributeError):
+            return None
+
+    def _parse_pct(s) -> float | None:
+        if s is None:
+            return None
+        try:
+            if pd.isna(s):
+                return None
+        except (TypeError, ValueError):
+            pass
+        text = str(s).strip()
+        if not text:
+            return None
+        return float(text.replace('%', '')) / 100.0
+
+    df = pd.read_csv(assumptions_file)
+    row = df[df['Sector'] == sector].iloc[0]
+
+    parsed = _parse_period(row['CAGR Period'])
+    if parsed is None:
+        raise ValueError(f"Could not parse 'CAGR Period' for sector '{sector}'")
+    cagr_start, cagr_end = parsed
+
+    period_col_pairs = [
+        ('1st period', '1st period dampener'),
+        ('2nd period', '2nd period dampener'),
+        ('3d period',  '3rd period dampener'),
+    ]
+    periods: list[tuple[int, int, float]] = []
+    for p_col, d_col in period_col_pairs:
+        p_val = row.get(p_col)
+        d_val = row.get(d_col)
+        p = _parse_period(p_val)
+        d = _parse_pct(d_val)
+        if p is None or d is None:
+            break
+        periods.append((*p, d))
+
+    if not periods:
+        raise ValueError(f"No valid projection periods found for sector '{sector}'")
+
+    return cagr_start, cagr_end, periods
+
+
+def compute_cagr(series: pd.Series, start_year: int, end_year: int) -> float:
+    """
+    Compute the compound annual growth rate between two years.
+
+    Returns 0.0 if either year is missing, null, or the start value is
+    zero or negative.
+
+    Parameters
+    ----------
+    series : pd.Series
+        Year-indexed numeric series.
+    start_year : int
+        First year of the CAGR window.
+    end_year : int
+        Last year of the CAGR window.
+
+    Returns
+    -------
+    float
+        CAGR as a decimal (e.g. 0.03 = 3 % per year).
+    """
+    if start_year not in series.index or end_year not in series.index:
+        return 0.0
+    val_start = series.loc[start_year]
+    val_end   = series.loc[end_year]
+    if pd.isna(val_start) or pd.isna(val_end) or val_start <= 0:
+        return 0.0
+    return float((val_end / val_start) ** (1.0 / (end_year - start_year)) - 1.0)
+
+
+def extend_cagr_periods(
+    base_val: float,
+    raw_cagr: float,
+    periods: list[tuple[int, int, float]],
+    override: tuple[float, ...] | None = None,
+) -> pd.Series:
+    """
+    Extend a value forward through multiple periods using a dampened CAGR.
+
+    Parameters
+    ----------
+    base_val : float
+        Starting value at the last historical year.
+    raw_cagr : float
+        Undampened CAGR from the historical anchor window (e.g. from
+        compute_cagr).
+    periods : list of (start_year, end_year, dampener)
+        Each tuple defines one projection period. End year is inclusive.
+        The dampener fraction (0–1) is multiplied by raw_cagr to get the
+        effective annual rate for that period.
+    override : tuple of float, optional
+        Explicit per-period annual rates, one entry per period. When
+        provided, bypasses raw_cagr × dampener entirely.
+
+    Returns
+    -------
+    pd.Series
+        Year-indexed series from periods[0][0] through periods[-1][1],
+        floored at 0.
+
+    Examples
+    --------
+    >>> s = pd.Series({2014: 1000.0, 2024: 1200.0})
+    >>> cagr = compute_cagr(s, 2014, 2024)
+    >>> periods = [(2025, 2035, 0.6), (2036, 2050, 0.4), (2051, 2100, 0.2)]
+    >>> extend_cagr_periods(1200.0, cagr, periods)
+    """
+    val = base_val
+    years: list[int]   = []
+    values: list[float] = []
+    for i, (p_start, p_end, dampener) in enumerate(periods):
+        period_cagr = override[i] if override is not None else raw_cagr * dampener
+        for yr in range(p_start, p_end + 1):
+            val = max(val * (1 + period_cagr), 0.0)
+            years.append(yr)
+            values.append(val)
+    return pd.Series(values, index=years, dtype=float)
+
+
+# ==============================================================================
 # POLARS DATAFRAME — gap interpolation
 # ==============================================================================
 
