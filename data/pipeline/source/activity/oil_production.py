@@ -30,7 +30,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.controls_conversions import load_control_config
-from utils.extensions.data_extensions import trend_backwards
+from utils.extensions.data_extensions import trend_backwards, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
@@ -40,6 +40,13 @@ OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
 SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
 
 OIL_CONVERSION = 1_000 * 365   # Thousand m3/day -> m3/year
+
+ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
+CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Oil', ASSUMPTIONS_FILE)
+
+# Per-region overrides — one explicit annual rate per period.
+CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
+}
 
 # -- O1. Load and filter ------------------------------------------------------
 
@@ -63,7 +70,7 @@ oil_df = (
     .filter(
         (pl.col("Scenario") == SCENARIO) &
         (pl.col("Unit")     == "Thousand Cubic Metres per day") &
-        (~pl.col("Region").is_in(["Canada"]))
+        (~pl.col("Region").is_in(["Canada", "CAN"]))
     )
     .select(["Region", "Variable", "Year", "Value"])
     .with_columns(
@@ -91,7 +98,7 @@ oil_total_raw = (
         (pl.col("Scenario") == SCENARIO) &
         (pl.col("Unit")     == "Thousand Cubic Metres per day") &
         (pl.col("Variable").is_in(["Total", "Field Condensate", "C5+"])) &
-        (~pl.col("Region").is_in(["Canada"]))
+        (~pl.col("Region").is_in(["Canada", "CAN"]))
     )
     .select(["Region", "Variable", "Year", "Value"])
     .with_columns((pl.col("Value") * OIL_CONVERSION).alias("Value_m3"))
@@ -315,18 +322,18 @@ oil_pivot = oil_pivot.with_columns(
 
 _oil_anchor = (
     oil_pivot
-    .filter(pl.col("Year").is_in([2040, 2050]))
+    .filter(pl.col("Year").is_in([CAGR_START, CAGR_END]))
     .select(["Region", "Year", "total"])
     .pivot(values="total", index="Region", on="Year", aggregate_function="first")
-    .rename({"2040": "total_2040", "2050": "total_2050"})
+    .rename({str(CAGR_START): "total_2040", str(CAGR_END): "total_2050"})
 )
 
-# CAGR = ((total_2050 / total_2040) ^ (1/10) - 1)
+# CAGR = ((total_2050 / total_2040) ^ (1/(CAGR_END - CAGR_START)) - 1)
 _oil_anchor = _oil_anchor.with_columns(
     pl.when((pl.col("total_2040").is_null()) | (pl.col("total_2040") == 0))
         .then(0.0)
         .otherwise(
-            ((pl.col("total_2050") / pl.col("total_2040")).pow(1.0 / 10.0) - 1.0)
+            ((pl.col("total_2050") / pl.col("total_2040")).pow(1.0 / (CAGR_END - CAGR_START)) - 1.0)
         )
         .alias("cagr")
 )
@@ -349,13 +356,15 @@ _oil_vals_2050_map = {r["Region"]: r for r in _oil_vals_2050.to_dicts()}
 
 _oil_extension_rows = []
 for _region in _oil_anchor_map:
-    _cagr = _oil_anchor_map[_region]["cagr"]
-    _base = _oil_vals_2050_map[_region]["total_2050_val"]
-    _v    = _oil_vals_2050_map[_region]
-
-    for _yr in range(2051, 2101):
-        _n     = _yr - 2050
-        _total = max(_base * (1 + _cagr) ** _n, 0.0)
+    _anc = _oil_anchor_map[_region]
+    _v   = _oil_vals_2050_map[_region]
+    ext = extend_cagr_periods(
+        base_val = _anc["total_2050"],
+        raw_cagr = _anc["cagr"],
+        periods  = CAGR_PERIODS,
+        override = CAGR_OVERRIDES.get(_region),
+    )
+    for _yr, _total in ext.items():
         _oil_extension_rows.append({
             "Region":           _region,
             "Year":             _yr,
@@ -434,6 +443,7 @@ oil_output = (
             "pct_offshore":     "% of Light Medium",
         }).alias("Unit"),
     )
+    .filter(~pl.col("Region").is_in(["Canada", "CAN"]))
     .select(["Region", "Variable", "Unit", "Year", "Value"])
     .sort(["Region", "Variable", "Year"])
 )
