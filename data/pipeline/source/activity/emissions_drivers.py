@@ -40,6 +40,8 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
+from utils.extensions.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+
 
 # Configuration
 BASE_PATH        = Path('C:/cims/data')
@@ -54,6 +56,14 @@ _EXCLUDE_REGIONS = {"Canada", "Northwest Territories and Nunavut"}
 KT_TO_T = 1_000   # kt CO2eq -> tCO2e
 
 DATA_START = 2000
+
+ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
+CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Emissions Drivers', ASSUMPTIONS_FILE)
+
+# Per-region overrides — one explicit annual rate per period.
+CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
+    ("Alberta", "Waste"): (0.02, 0.01, 0.005),
+}
 
 
 # -- A1. Load GHG file --------------------------------------------------------
@@ -284,60 +294,54 @@ combined = (
 )
 
 
-# -- A7. Extend to 2100 using CAGR over the full historical period -------------
+# -- A7. Extend to 2100 using CAGR with per-period dampeners ------------------
 #
-#   CAGR = (V_end_avg / V_start_avg) ^ (1 / n_years) - 1
-#   Endpoints are 3-year averages to avoid sensitivity to anomalous years.
-#   Percentage variables are held flat. CAGR is set to 0 when either endpoint
-#   is non-positive (e.g. Forestry carbon sinks).
-#   A global taper scales all computed rates to avoid unrealistic long-run growth.
-
-EXTEND_TO   = 2100
-AVG_WINDOW  = 3   # years averaged at each endpoint
-CAGR_TAPER  = 0.2 # scale all computed rates to 20% of raw value (mirrors gas_production.py)
+#   Raw CAGR is computed from direct point values at CAGR_START and CAGR_END
+#   (loaded from the assumptions CSV).  Percentage variables are held flat at
+#   the last historical value.  Three projection periods with dampeners are
+#   applied via extend_cagr_periods().
 
 last_year = combined["Year"].max()
-n_years   = last_year - DATA_START
 
-cagr_end = (
-    combined
-    .filter(pl.col("Year") >= last_year - AVG_WINDOW + 1)
-    .group_by(["Region", "Variable", "Unit"])
-    .agg(pl.col("Value").mean().alias("v_end"))
-)
-cagr_start = (
-    combined
-    .filter(pl.col("Year") <= DATA_START + AVG_WINDOW - 1)
-    .group_by(["Region", "Variable"])
-    .agg(pl.col("Value").mean().alias("v_start"))
-)
+future_rows_list = []
 
-cagr_df = (
-    cagr_end
-    .join(cagr_start, on=["Region", "Variable"], how="left")
-    .with_columns(
-        pl.when(
-            (pl.col("Unit") == "% of tCO2e") |
-            (pl.col("v_start") <= 0) | (pl.col("v_end") <= 0)
+for (region, variable, unit), grp_pl in combined.group_by(["Region", "Variable", "Unit"]):
+    series = (
+        grp_pl
+        .sort("Year")
+        .select(["Year", "Value"])
+        .to_pandas()
+        .set_index("Year")["Value"]
+        .astype(float)
+    )
+
+    if unit == "% of tCO2e":
+        # Hold percentage variables flat at the last historical value.
+        base_val = series.loc[last_year] if last_year in series.index else series.iloc[-1]
+        for yr in range(last_year + 1, CAGR_PERIODS[-1][1] + 1):
+            future_rows_list.append({
+                "Region": region, "Variable": variable, "Unit": unit,
+                "Year": yr, "Value": base_val,
+            })
+    else:
+        raw_cagr = compute_cagr(series, CAGR_START, CAGR_END)
+        base_val = series.loc[CAGR_END] if CAGR_END in series.index else series.iloc[-1]
+
+        ext = extend_cagr_periods(
+            base_val=base_val,
+            raw_cagr=raw_cagr,
+            periods=CAGR_PERIODS,
+            override=CAGR_OVERRIDES.get(region),
         )
-        .then(0.0)
-        .otherwise(((pl.col("v_end") / pl.col("v_start")).pow(1.0 / n_years) - 1.0) * CAGR_TAPER)
-        .alias("cagr")
-    )
-)
+        for yr, val in ext.items():
+            future_rows_list.append({
+                "Region": region, "Variable": variable, "Unit": unit,
+                "Year": yr, "Value": val,
+            })
 
-future_years = pl.DataFrame({"Year": list(range(last_year + 1, EXTEND_TO + 1))})
-
-future_rows = (
-    cagr_df
-    .join(future_years, how="cross")
-    .with_columns(
-        (pl.col("v_end") * (1.0 + pl.col("cagr")).pow(pl.col("Year") - last_year)).alias("Value")
-    )
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
-)
-
-combined = pl.concat([combined, future_rows]).sort(["Region", "Variable", "Year"])
+if future_rows_list:
+    future_rows = pl.DataFrame(future_rows_list).cast({"Year": pl.Int64, "Value": pl.Float64})
+    combined = pl.concat([combined, future_rows]).sort(["Region", "Variable", "Year"])
 
 
 # -- A8. Save ------------------------------------------------------------------
