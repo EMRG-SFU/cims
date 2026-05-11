@@ -1,15 +1,15 @@
-﻿CIMS,JCIMS,CER
-CAN,CAN,Canada
-BC,BC,British Columbia
-AB,AB,Alberta
-SK,SK,Saskatchewan
-MB,MB,Manitoba
-ON,ON,Ontario
-QC,QC,Quebec
-NB,AT,New Brunswick
-NS,AT,Nova Scotia
-PE,AT,Prince Edward Island
-NL,AT,Newfoundland and Labrador
-YT,,Yukon
-NT,,Northwest Territories
-NU,,Nunavut
+﻿CIMS,JCIMS,CER,NIR,Stats Can
+CAN,CAN,Canada,Canada,Canada
+BC,BC,British Columbia,British Columbia,British Columbia
+AB,AB,Alberta,Alberta,Alberta
+SK,SK,Saskatchewan,Saskatchewan,Saskatchewan
+MB,MB,Manitoba,Manitoba,Manitoba
+ON,ON,Ontario,Ontario,Ontario
+QC,QC,Quebec,Quebec,Quebec
+NB,AT,New Brunswick,New Brunswick,New Brunswick
+NS,AT,Nova Scotia,Nova Scotia,Nova Scotia
+PE,AT,Prince Edward Island,Prince Edward Island,Prince Edward Island
+NL,AT,Newfoundland and Labrador,Newfoundland and Labrador,Newfoundland and Labrador
+YT,,Yukon,Yukon,Yukon
+NT,,Northwest Territories,Northwest Territories,Northwest Territories
+NU,,Nunavut,Nunavut,Nunavut
