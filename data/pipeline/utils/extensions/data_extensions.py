@@ -36,7 +36,7 @@ def backfill_constant(series: pd.Series, start_year: int = 2000) -> pd.Series:
         Series covering start_year … series.index.max(), with all years
         before the first valid observation filled with that observation.
     """
-    full_range = pd.Series(index=range(start_year, series.index.max() + 1), dtype=float)
+    full_range = pd.Series(index=range(start_year, int(series.index.max()) + 1), dtype=float)
     full_range.update(series)
 
     first_idx = series.first_valid_index()

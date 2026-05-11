@@ -39,9 +39,9 @@ from utils.extensions.data_extensions import (
 # Configuration
 BASE_PATH = Path('C:/cims/data')
 MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
-BENCHMARK_FILE = BASE_PATH / 'raw_data/energy_prices/cer/benchmark-prices-2023.csv'
-END_USE_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-prices-2026.csv'
-END_USE_DEMAND_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-demand-2023.csv'
+BENCHMARK_FILE = BASE_PATH / 'raw_data/cer/benchmark-prices-2026.csv'
+END_USE_PRICES_FILE = BASE_PATH / 'raw_data/cer/end-use-prices-2026.csv'
+END_USE_DEMAND_FILE = BASE_PATH / 'raw_data/cer/end-use-demand-2026.csv'
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
 RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
@@ -97,6 +97,10 @@ def process_cer_benchmark_energy(
         (pl.col('Scenario') == scenario) &
         (pl.col('Variable') == variable_name)
     )
+    if data.is_empty():
+        raise ValueError(
+            f"No benchmark data found for scenario={scenario!r}, variable={variable_name!r}"
+        )
     # Extract year and value as plain lists — avoids pyarrow dependency of to_pandas()
     years  = data.get_column('Year').cast(pl.Int64).to_list()
     values = data.get_column('Value').cast(pl.Float64).to_list()
@@ -418,7 +422,7 @@ def process_afdc_energy(
     )
 
     gal_to_m3 = 0.00378541
-    gj_per_m3 = conversions[f'{energy_type}_gj_per_m3']
+    gj_per_m3 = conversions[energy_type.replace('_', ' ')]
     gj_per_gal = gal_to_m3 * gj_per_m3
     prices_gj = prices_2025_cad_gal / gj_per_gal
 
@@ -595,7 +599,7 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("\nProcessing Natural Gas...")
     ng_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'Nova Inventory Transfer (NIT) - 2022 US$/MMBtu',
+        'Nova Inventory Transfer (NIT) - US$/MMBtu',
         'MMBtu', conversions['mmbtu_to_gj'],
         from_year, from_currency,
     )
@@ -607,9 +611,9 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("Processing Petrochemical Feedstock...")
     petro_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'West Texas Intermediate (WTI) - 2022 US$/bbl',
+        'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
-        1/(conversions['bbl_to_m3'] * conversions['petrochemical_feedstock_gj_per_m3']),
+        1/(conversions['bbl_to_m3'] * conversions['petrochemical feedstock']),
         from_year, from_currency,
     )
     results.append(('Petrochemical Feedstock', 'generic', petro_prices))
@@ -617,9 +621,9 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("Processing Naphtha Specialties...")
     naphtha_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'West Texas Intermediate (WTI) - 2022 US$/bbl',
+        'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
-        1/(conversions['bbl_to_m3'] * conversions['naphtha_specialties_gj_per_m3']),
+        1/(conversions['bbl_to_m3'] * conversions['naphtha specialties']),
         from_year, from_currency,
     )
     results.append(('Naphtha Specialties', 'generic', naphtha_prices))
@@ -627,9 +631,9 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("Processing Asphalt...")
     asphalt_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'West Texas Intermediate (WTI) - 2022 US$/bbl',
+        'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
-        1/(conversions['bbl_to_m3'] * conversions['asphalt_gj_per_m3']),
+        1/(conversions['bbl_to_m3'] * conversions['asphalt']),
         from_year, from_currency,
     )
     results.append(('Asphalt', 'generic', asphalt_prices))
@@ -637,9 +641,9 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("Processing Lubricants...")
     lube_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'West Texas Intermediate (WTI) - 2022 US$/bbl',
+        'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
-        1/(conversions['bbl_to_m3'] * conversions['lubricants_gj_per_m3']),
+        1/(conversions['bbl_to_m3'] * conversions['lubes and greases']),
         from_year, from_currency,
     )
     results.append(('Lubricants', 'generic', lube_prices))
@@ -647,9 +651,9 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     print("Processing Other Non-Energy Products...")
     other_prices = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
-        'West Texas Intermediate (WTI) - 2022 US$/bbl',
+        'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
-        1/(conversions['bbl_to_m3'] * conversions['other_non_energy_products_gj_per_m3']),
+        1/(conversions['bbl_to_m3'] * conversions['other products']),
         from_year, from_currency,
     )
     results.append(('Other Non-Energy Products', 'generic', other_prices))

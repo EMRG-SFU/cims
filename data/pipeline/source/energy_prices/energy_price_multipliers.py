@@ -44,7 +44,7 @@ ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
 MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
-END_USE_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/cer/end-use-prices-2026.csv'
+END_USE_PRICES_FILE = BASE_PATH / 'raw_data/cer/end-use-prices-2026.csv'
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
 
