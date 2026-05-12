@@ -35,6 +35,7 @@ Thank you to the numerous EMRG graduate students who have attended meetings, sub
 * Aaron Hoyle
 * Roz Shepherd
 * Katrina Gorrie
+
 In particular, [Thomas Budd](https://github.com/tcbudd) and Emma Starke contributed many hours of effort helping to realise this project.
 
 Finally, the original development of the CIMS model methodology and APL/Java implementation occurred over many years and had many contributors. Principle contributors included Dr. Mark Jaccard, Dr. John Nyboer, Dr. Chris Bataille, Jotham Peters, Nic Rivers, JianJun Tu, Rose Murphy, Bryn Sadownik, Alison Laurin, and William Tubbs. Many other members of Simon Fraser University's [EMRG Group](https://www.sfu.ca/emrg.html) provided invaluable time and effort.
