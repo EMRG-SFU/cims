@@ -36,7 +36,7 @@ LIBRARY NOTES:
 
 import polars as pl
 import pandas as pd
-import numpy as npmg
+import numpy as np
 from pathlib import Path
 
 import sys
