@@ -3,7 +3,7 @@ CIMS is a Python package providing the implementation of the [CIMS](https://emrg
 energy-emissions-economy model. 
 
 ## :gear: Installation
-CIMS is not currently available on PyPi or other package indexes. Follow the [getting started guide](https://emrg-sfu.github.io/cims/setup.html) to get CIMS running on your machine.
+CIMS is not currently available on PyPi or other package indexes. Follow the [setup instructions](https://emrg-sfu.github.io/cims/setup.html) to get CIMS running on your machine.
 
 ## :technologist: Usage
 See the [getting started guide](https://emrg-sfu.github.io/cims/getting_started.html) for instructions on running CIMS scenarios.
