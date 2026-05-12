@@ -29,7 +29,8 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from mappings_conversions.control import CONTROLS
-from pipeline.utils.extractors.nrcan_ceud import get_row_series
+from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, pct_series
+from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
 from pipeline.utils.extractors.stats_can_pop import build_population_shares
 from pipeline.utils.extensions.data_extensions import (
     extend_series_constant,
@@ -90,36 +91,6 @@ VARIABLE_CONFIGS = [
 # HELPERS
 # ==============================================================================
 
-def _row_to_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
-    """
-    Thin wrapper around get_row_series that returns a year-indexed pd.Series.
-    Values of None are preserved as NaN so pandas can work with them.
-    """
-    raw = get_row_series(table, label, match_n)
-    return pd.Series({int(k): (float(v) if v is not None else np.nan)
-                      for k, v in raw.items()})
-
-
-def _pct_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
-    """Return a fraction (0–1) Series from a percentage row in a CEUD table."""
-    return _row_to_series(table, label, match_n) / 100.0
-
-
-def _pl_to_series(df: pl.DataFrame) -> pd.Series:
-    """
-    Extract year→value from a long-format Polars DataFrame without pyarrow.
-
-    Selects only the integer 'year' and float 'value' columns (no strings),
-    so Polars can convert them to numpy arrays directly.
-    """
-    years  = df.get_column('year').cast(pl.Int64).to_list()
-    values = df.get_column('value').cast(pl.Float64).to_list()
-    return pd.Series(values, index=years, dtype=float)
-
-
-def _pl_get_scalar(df: pl.DataFrame, col: str) -> object:
-    """Return the first value of a column from a one-row Polars DataFrame."""
-    return df.get_column(col).to_list()[0]
 
 
 def _long(province: str, variable: str, category: str, parameter: str,
@@ -332,11 +303,11 @@ def extract_housing_stock(province: str, tables: dict) -> list[pl.DataFrame]:
     t15 = tables["Table 15"]
     building_types = ["Single Detached", "Single Attached", "Apartments", "Mobile Homes"]
 
-    total_raw = _row_to_series(t15, "Total Housing Stock (thousands)") * 1000
+    total_raw = row_to_series(t15, "Total Housing Stock (thousands)") * 1000
     frames = [_long(province, 'housing_thousand', '', 'service_request', 'household', total_raw)]
 
     for bt in building_types:
-        s = _row_to_series(t15, bt, match_n=0)
+        s = row_to_series(t15, bt, match_n=0)
         frames.append(_long(province, 'housing_by_type', bt, 'service_request', 'household', s))
 
     return frames
@@ -359,7 +330,7 @@ def extract_building_shares(province: str, tables: dict) -> list[pl.DataFrame]:
 
     frames = []
     for bt in building_types:
-        s = _pct_series(t15, bt, match_n=1)
+        s = pct_series(t15, bt, match_n=1)
         frames.append(_long(province, 'building_shares', bt, 'market_share_total', '%', s))
 
     return frames
@@ -382,8 +353,8 @@ def extract_floorspace_per_building(province: str, tables: dict) -> list[pl.Data
 
     frames = []
     for bt in building_types:
-        fs_m2   = _row_to_series(t18, bt, match_n=0) * 1e6   # million m² → m²
-        stock   = _row_to_series(t15, bt, match_n=0) * 1000  # thousands → units
+        fs_m2   = row_to_series(t18, bt, match_n=0) * 1e6   # million m² → m²
+        stock   = row_to_series(t15, bt, match_n=0) * 1000  # thousands → units
         ratio   = fs_m2 / stock.replace(0, np.nan)
         frames.append(_long(province, 'floorspace_per_building', bt,
                             'service_request', 'm2/building', ratio))
@@ -417,7 +388,7 @@ def extract_appliances(province: str, tables: dict) -> list[pl.DataFrame]:
     frames = []
     for excel_name, cims_name in appliance_mapping.items():
         try:
-            s = _row_to_series(t31, excel_name, match_n=1)
+            s = row_to_series(t31, excel_name, match_n=1)
             frames.append(_long(province, 'appliances_per_household', cims_name,
                                 'service_request', 'unit/building', s))
         except KeyError:
@@ -460,15 +431,15 @@ def extract_vintages(province: str, tables: dict,
 
     # Pull all raw vintage fractions into a dict of {label: {bt: series}}
     raw = {
-        "Single Detached": {lbl: _pct_series(t19, lbl, match_n=1) for lbl in vintage_labels},
-        "Single Attached":  {lbl: _pct_series(t19, lbl, match_n=3) for lbl in vintage_labels},
-        "Apartments":       {lbl: _pct_series(t20, lbl, match_n=1) for lbl in vintage_labels},
-        "Mobile Homes":     {lbl: _pct_series(t20, lbl, match_n=3) for lbl in vintage_labels},
+        "Single Detached": {lbl: pct_series(t19, lbl, match_n=1) for lbl in vintage_labels},
+        "Single Attached":  {lbl: pct_series(t19, lbl, match_n=3) for lbl in vintage_labels},
+        "Apartments":       {lbl: pct_series(t20, lbl, match_n=1) for lbl in vintage_labels},
+        "Mobile Homes":     {lbl: pct_series(t20, lbl, match_n=3) for lbl in vintage_labels},
     }
 
     # Build weight series for the three low/med types from building_shares_df
     def _weight(bt: str) -> pd.Series:
-        return _pl_to_series(building_shares_df.filter(pl.col('category') == bt))
+        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
 
     w_det  = _weight("Single Detached")
     w_att  = _weight("Single Attached")
@@ -525,7 +496,7 @@ def _extract_heating_bucket(table: pl.DataFrame, tech_rows: list[str]) -> pd.Ser
     parts = []
     for row_label in tech_rows:
         try:
-            parts.append(_pct_series(table, row_label, match_n=1))
+            parts.append(pct_series(table, row_label, match_n=1))
         except KeyError:
             pass
     if not parts:
@@ -586,7 +557,7 @@ def extract_heating_technologies(province: str, tables: dict,
     is_bc = province.upper() == 'BC'
 
     def _weight(bt: str) -> pd.Series:
-        return _pl_to_series(building_shares_df.filter(pl.col('category') == bt))
+        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
 
     w_det = _weight("Single Detached")
     w_att = _weight("Single Attached")
@@ -686,7 +657,7 @@ def extract_cooling_technologies(province: str, tables: dict) -> list[pl.DataFra
 
     frames = []
     for cooling_type in ["Room", "Central"]:
-        s = _pct_series(t4, cooling_type, match_n=1)
+        s = pct_series(t4, cooling_type, match_n=1)
 
         # Territories: patch known missing years
         if province.upper() == 'TR':
@@ -732,21 +703,21 @@ def extract_water_heating(province: str, tables: dict,
     t10, t11 = tables["Table 10"], tables["Table 11"]
 
     def _weight(bt: str) -> pd.Series:
-        return _pl_to_series(building_shares_df.filter(pl.col('category') == bt))
+        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
 
     def _heat_tech(variable: str, category: str) -> pd.Series:
         """Retrieve a heating tech series from the heating DataFrame."""
         subset = heating_df.filter(
             (pl.col('variable') == variable) & (pl.col('category') == category)
         )
-        return _pl_to_series(subset) if len(subset) > 0 else pd.Series(dtype=float)
+        return pl_to_series(subset) if len(subset) > 0 else pd.Series(dtype=float)
 
     # Water heating shares by building type — from Table 11 Shares (%) section
     # match_n=1 picks the second occurrence of each label (the % rows, not PJ rows)
-    wh_det  = _pct_series(t11, "Single Detached", match_n=1)
-    wh_att  = _pct_series(t11, "Single Attached",  match_n=1)
-    wh_apt  = _pct_series(t11, "Apartments",       match_n=1)
-    wh_mob  = _pct_series(t11, "Mobile Homes",     match_n=1)
+    wh_det  = pct_series(t11, "Single Detached", match_n=1)
+    wh_att  = pct_series(t11, "Single Attached",  match_n=1)
+    wh_apt  = pct_series(t11, "Apartments",       match_n=1)
+    wh_mob  = pct_series(t11, "Mobile Homes",     match_n=1)
 
     # wh_lowmed = sum of detached + attached + mobile shares
     wh_lowmed = wh_det.add(wh_att, fill_value=0).add(wh_mob, fill_value=0)
@@ -755,11 +726,11 @@ def extract_water_heating(province: str, tables: dict,
     wh_high = wh_apt
 
     # Water heating fuel shares (aggregate from t10)
-    ng_wh   = _pct_series(t10, "Natural Gas", match_n=1).add(
-                _pct_series(t10, "Other2", match_n=1), fill_value=0)
-    oil_wh  = _pct_series(t10, "Heating Oil", match_n=1)
-    elec_wh = (_pct_series(t10, "Electricity", match_n=1)
-               .add(_pct_series(t10, "Wood", match_n=1), fill_value=0))
+    ng_wh   = pct_series(t10, "Natural Gas", match_n=1).add(
+                pct_series(t10, "Other2", match_n=1), fill_value=0)
+    oil_wh  = pct_series(t10, "Heating Oil", match_n=1)
+    elec_wh = (pct_series(t10, "Electricity", match_n=1)
+               .add(pct_series(t10, "Wood", match_n=1), fill_value=0))
     
     # NG efficiency split from cold heating data
     def _ng_total(var: str) -> pd.Series:
@@ -867,14 +838,14 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         if len(meta) == 0 or new.empty:
             return pl.DataFrame()
         return _long(province, variable, category,
-                     _pl_get_scalar(meta, 'parameter'),
-                     _pl_get_scalar(meta, 'unit'),
+                     pl_get_scalar(meta, 'parameter'),
+                     pl_get_scalar(meta, 'unit'),
                      new,
-                     _pl_get_scalar(meta, 'source') if 'source' in meta.columns else 'CEUD')
+                     pl_get_scalar(meta, 'source') if 'source' in meta.columns else 'CEUD')
  
     def _series(variable: str, category: str) -> pd.Series:
         """Extract a year-indexed pd.Series for one variable/category combination."""
-        return _pl_to_series(
+        return pl_to_series(
             df.filter((pl.col('variable') == variable) & (pl.col('category') == category))
         ).sort_index()
  
@@ -929,8 +900,8 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         ).head(1)
         if len(meta) > 0:
             frames.append(_long(province, 'building_shares', 'Apartments',
-                                _pl_get_scalar(meta, 'parameter'),
-                                _pl_get_scalar(meta, 'unit'),
+                                pl_get_scalar(meta, 'parameter'),
+                                pl_get_scalar(meta, 'unit'),
                                 apts_series))
         print("    ✓ Building shares extended")
  
