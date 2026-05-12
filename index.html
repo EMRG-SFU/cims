@@ -34,7 +34,7 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./getting_started.html" rel="next">
+<link href="./setup.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -131,8 +131,14 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
   </div>
 </li>
       </ul>
@@ -149,25 +155,25 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./technologies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sectors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
   </div>
 </li>
       </ul>
@@ -184,13 +190,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./policies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
   </div>
 </li>
       </ul>
@@ -262,6 +268,95 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+
+</script>
+<script>
+
+(function () {
+
+  function addBacklinks() {
+
+    const entries = document.querySelectorAll('#refs .csl-entry[id^="ref-"]');
+
+    entries.forEach(function (entry) {
+
+      if (entry.querySelector('.csl-backlinks')) return;     // idempotent
+
+
+
+      const key = entry.id;                                  // "ref-iea-fop"
+
+      const hash = '#' + key;
+
+      // Match both "#ref-iea-fop" and "chapter.html#ref-iea-fop"
+
+      const cites = [...document.querySelectorAll('a[href$="' + hash + '"]')];
+
+      if (!cites.length) return;
+
+
+
+      const back = document.createElement('span');
+
+      back.className = 'csl-backlinks';
+
+      back.append(' ');
+
+
+
+      cites.forEach(function (cite, i) {
+
+        const anchorId = 'cite-' + key.slice(4) + '-' + (i + 1);
+
+        if (!cite.id) cite.id = anchorId;
+
+        const a = document.createElement('a');
+
+        a.href = '#' + cite.id;
+
+        a.textContent = '\u21A9\uFE0E';
+
+        back.appendChild(a);
+
+        if (i < cites.length - 1) back.append(' ');
+
+      });
+
+
+
+      entry.appendChild(back);
+
+    });
+
+  }
+
+
+
+  function start() {
+
+    // Run once after Quarto finishes its own link rewriting
+
+    setTimeout(addBacklinks, 0);
+
+    // And again on full load to be safe
+
+    window.addEventListener('load', addBacklinks);
+
+  }
+
+
+
+  if (document.readyState === 'loading') {
+
+    document.addEventListener('DOMContentLoaded', start);
+
+  } else {
+
+    start();
+
+  }
+
+})();
 
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
@@ -351,6 +446,11 @@ document.addEventListener('DOMContentLoaded', () => {
           if (link.dataset.originalHref !== undefined) {
             link.href = link.dataset.originalHref;
           }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
         }
       }
     function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
@@ -668,8 +768,8 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./getting_started.html" class="pagination-link" aria-label="Getting Started with CIMS">
-        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Getting Started with CIMS</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./setup.html" class="pagination-link" aria-label="Setup the model">
+        <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
