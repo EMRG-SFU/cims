@@ -1,4 +1,4 @@
-"""
+﻿"""
 Canadian GHG Emissions — Regional Estimation Script (CIMS Branch Output)
 =========================================================================
 
@@ -34,6 +34,8 @@ _current_file = Path(__file__)
 _project_root = _current_file.parent.parent.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
+
+from pipeline.utils.controls_conversions import parse_cell
 
 
 # ── Configuration ─────────────────────────────────────────────────────────────
@@ -171,19 +173,6 @@ COL_TO_GROUP = {
 }
 
 
-# ── Helper ────────────────────────────────────────────────────────────────────
-
-def to_num(v):
-    """Convert a CSV cell to float. Dashes and blanks → 0."""
-    s = str(v).strip().replace('\u2013', '-').replace('\u2014', '-').replace(' ', '')
-    if s in ['-', 'nan', '', 'None']:
-        return 0.0
-    try:
-        return float(s)
-    except ValueError:
-        return 0.0
-
-
 # ── Load CSVs ─────────────────────────────────────────────────────────────────
 
 print("Loading CSVs...")
@@ -204,7 +193,7 @@ def extract(region):
         for offset in range(N_DATA_ROWS):
             row_idx = yr + 7 + offset
             block[offset] = {
-                c: to_num(df.iloc[row_idx, c]) if row_idx < len(df) else 0.0
+                c: parse_cell(df.iloc[row_idx, c]) if row_idx < len(df) else 0.0
                 for c in ALL_COLS
             }
         out[year] = block
