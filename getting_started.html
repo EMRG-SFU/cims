@@ -301,6 +301,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         a.textContent = '\u21A9\uFE0E';
 
+        // Scroll manually so the citation isn't focused; focusing it would
+
+        // trigger Quarto's Tippy.js citation popover and keep it stuck open.
+
+        a.addEventListener('click', function (e) {
+
+          e.preventDefault();
+
+          cite.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+          history.replaceState(null, '', '#' + cite.id);
+
+          // Drop focus from the back-link itself so nothing else is focused.
+
+          if (document.activeElement && document.activeElement.blur) {
+
+            document.activeElement.blur();
+
+          }
+
+        });
+
         back.appendChild(a);
 
         if (i < cites.length - 1) back.append(' ');

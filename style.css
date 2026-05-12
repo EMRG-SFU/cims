@@ -8,3 +8,9 @@ a.footnote-ref.fn-adjacent > sup::before {
 #refs .csl-entry a {
   overflow-wrap: anywhere;
 }
+
+/* Slightly smaller font for the bibliography list. */
+#refs,
+#refs .csl-entry {
+  font-size: 0.9em;
+}
