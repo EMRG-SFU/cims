@@ -30,7 +30,8 @@ if str(_project_root) not in sys.path:
     print("project root:", _project_root)
 
 from mappings_conversions.control import CONTROLS
-from pipeline.utils.extractors.nrcan_ceud import get_row_series
+from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, pct_series
+from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
 from pipeline.utils.extractors.stats_can_pop import build_population_shares
 from pipeline.utils.extensions.data_extensions import (
     extend_series_linear,
@@ -85,32 +86,6 @@ FILE_NAME_MAP = {'BC': 'bct', 'AT': 'atl'}
 # ==============================================================================
 # HELPERS
 # ==============================================================================
-
-def _row_to_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
-    raw = get_row_series(table, label, match_n)
-    return pd.Series({int(k): (float(v) if v is not None else np.nan)
-                      for k, v in raw.items()})
-
-
-def _pct_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
-    return _row_to_series(table, label, match_n) / 100.0
-
-
-def _pl_to_series(df: pl.DataFrame) -> pd.Series:
-    """
-    Extract year→value from a long-format Polars DataFrame without pyarrow.
-
-    Selects only the integer 'year' and float 'value' columns (no strings),
-    so Polars can convert them to numpy arrays directly.
-    """
-    years  = df.get_column('year').cast(pl.Int64).to_list()
-    values = df.get_column('value').cast(pl.Float64).to_list()
-    return pd.Series(values, index=years, dtype=float)
-
-
-def _pl_get_scalar(df: pl.DataFrame, col: str) -> object:
-    """Return the first value of a column from a one-row Polars DataFrame."""
-    return df.get_column(col).to_list()[0]
 
 
 def _long(region: str, variable: str, category: str, parameter: str,
@@ -344,13 +319,13 @@ def extract_floorspace(region: str, tables: dict) -> list[pl.DataFrame]:
     list of pl.DataFrame in long format.
     """
     t1 = tables[f"Table {TOTAL_FLOORSPACE_TABLE}"]
-    total_raw = _row_to_series(t1, "Total Floor Space (million m2)") * 1e6
+    total_raw = row_to_series(t1, "Total Floor Space (million m2)") * 1e6
     frames = [_long(region, 'total_floorspace', '', 'service_request', 'm2', total_raw)]
 
     cims_activities = list(ACTIVITY_MAPPING.values())
     for tbl_num, cims_name in zip(FLOORSPACE_TABLES, cims_activities):
         tbl = tables[f"Table {tbl_num}"]
-        raw = _row_to_series(tbl, "Floor Space (million m2)") * 1e6
+        raw = row_to_series(tbl, "Floor Space (million m2)") * 1e6
         frames.append(_long(region, 'floorspace_by_activity', cims_name,
                             'service_request', 'm2', raw))
 
@@ -376,13 +351,13 @@ def extract_building_shell_shares(region: str,
     -------
     list of pl.DataFrame
     """
-    total_s = _pl_to_series(
+    total_s = pl_to_series(
         floorspace_df.filter(pl.col('variable') == 'total_floorspace')
     )
 
     frames = []
     for cims_name in ACTIVITY_MAPPING.values():
-        act_s = _pl_to_series(
+        act_s = pl_to_series(
             floorspace_df.filter(
                 (pl.col('variable') == 'floorspace_by_activity') &
                 (pl.col('category') == cims_name)
@@ -423,7 +398,7 @@ def extract_hvac_technologies(region: str, tables: dict,
 
     def _safe_pct(label, n=0):
         try:
-            return _pct_series(tbl, label, match_n=n)
+            return pct_series(tbl, label, match_n=n)
         except KeyError:
             return pd.Series(dtype=float)
 
@@ -519,7 +494,7 @@ def extract_hot_water(region: str, tables: dict) -> list[pl.DataFrame]:
 
     def _hw(label, n=1):
         try:
-            return _pct_series(tbl, label, match_n=n)
+            return pct_series(tbl, label, match_n=n)
         except KeyError:
             return pd.Series(dtype=float)
 
@@ -584,7 +559,7 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
         subset = df.filter(
             (pl.col('variable') == variable) & (pl.col('category') == category)
         )
-        return _pl_to_series(subset).sort_index()
+        return pl_to_series(subset).sort_index()
 
     def _apply(variable: str, category: str, fn, **kwargs) -> pl.DataFrame:
         s = _series(variable, category)
@@ -600,9 +575,9 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
         ).head(1)
         if len(meta) == 0:
             return pl.DataFrame()
-        parameter = _pl_get_scalar(meta, 'parameter')
-        unit      = _pl_get_scalar(meta, 'unit')
-        source    = _pl_get_scalar(meta, 'source') if 'source' in meta.columns else 'CEUD'
+        parameter = pl_get_scalar(meta, 'parameter')
+        unit      = pl_get_scalar(meta, 'unit')
+        source    = pl_get_scalar(meta, 'source') if 'source' in meta.columns else 'CEUD'
         return _long(region, variable, category, parameter, unit, new, source)
 
     # 1. Total floorspace — linear growth
@@ -666,8 +641,8 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
             ).head(1)
             if len(meta) > 0:
                 frames.append(_long(region, 'building_shell_shares', 'Other Services',
-                                    _pl_get_scalar(meta, 'parameter'),
-                                    _pl_get_scalar(meta, 'unit'),
+                                    pl_get_scalar(meta, 'parameter'),
+                                    pl_get_scalar(meta, 'unit'),
                                     other_series))
 
         print("    ✓ Building shell shares extended")
