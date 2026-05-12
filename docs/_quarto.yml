@@ -5,11 +5,9 @@ project:
 book:
   title: CIMS
   author: Brad Griffin, Jillian Anderson, and Matt Sniatynski
-  # logo: altair-hist.png
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: quarto_docs
   repo-actions: [issue]
-  # sharing: [twitter, facebook]
   chapters:
     - index.qmd
     - part: install
@@ -37,5 +35,5 @@ format:
       - refs-backlinks.html
   # docx:
   #   eval: true
-  # pdf:
-  #   eval: true
+  pdf:
+    eval: true

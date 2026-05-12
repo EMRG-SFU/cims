@@ -29,14 +29,15 @@ In addition, contributions to the codebase have been made by members of Simon Fr
 
 The Python implementation of the CIMS model has been significantly supported by development from staff at the Canadian Energy Regulator's [Energy Future](https://www.cer-rec.gc.ca/en/data-analysis/canada-energy-future/) team and the University of Victoria's [SESIT Group](https://sesit.cive.uvic.ca/#team).
 
-Finally, thank you to the numerous EMRG graduate students who have attended meetings, submitted feature requests, and flagged bugs: 
-* [Thomas Budd](https://github.com/tcbudd)
-* Emma Starke
+Thank you to the numerous EMRG graduate students who have attended meetings, submitted feature requests, and flagged bugs: 
 * Kaitlin Thompson
 * Saaib Choudhry
 * Aaron Hoyle
 * Roz Shepherd
 * Katrina Gorrie
+In particular, [Thomas Budd](https://github.com/tcbudd) and Emma Starke contributed many hours of effort helping to realise this project.
+
+Finally, the original development of the CIMS model methodology and APL/Java implementation occurred over many years and had many contributors. Principle contributors included Dr. Mark Jaccard, Dr. John Nyboer, Dr. Chris Bataille, Jotham Peters, Nic Rivers, JianJun Tu, Rose Murphy, Bryn Sadownik, Alison Laurin, and William Tubbs. Many other members of Simon Fraser University's [EMRG Group](https://www.sfu.ca/emrg.html) provided invaluable time and effort.
 
 ## :balance_scale: License
 The CIMS Python library is licensed under the [MIT License](https://github.com/EMRG-SFU/cims/blob/main/LICENSE). For more information about this license, checkout [this overview](https://choosealicense.com/licenses/mit/).
@@ -44,6 +45,4 @@ The CIMS Python library is licensed under the [MIT License](https://github.com/E
 ## :book: Citation
 If you use this project, please cite:
 
-Griffin, B., Anderson, J., Sniatynski, M., Budd, T., & Starke, E. (2025). 
-*CIMS energy-emissions-economy model* (Version 1.0) [Software]. 
-https://github.com/EMRG-SFU/cims
+Griffin, B., Anderson, J., & Sniatynski, M. (2025). *CIMS energy-emissions-economy model* (Version 1.0) [Software]. https://github.com/EMRG-SFU/cims

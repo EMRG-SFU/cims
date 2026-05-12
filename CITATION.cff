@@ -21,14 +21,6 @@ authors:
     family-names: Sniatynski
     email: matt@exmath.org
     affiliation: The Laboratory for Experimental Mathematics Inc.
-  - given-names: Thomas
-    family-names: Budd
-    email: tbudd@sfu.ca
-    affiliation: Simon Fraser University
-  - given-names: Emma
-    family-names: Starke
-    email: emma_starke@sfu.ca
-    affiliation: Simon Fraser University
 repository: 'https://github.com/EMRG-SFU/cims'
 abstract: >-
   CIMS is an integrated energy-emissions-economy model designed to
