@@ -1,5 +1,7 @@
 """Utilities for building output dataframes"""
 import numpy as np
+import pandas as pd
+import polars as pl
 
 YEARS = list(range(2000, 2101))
 META_COLS = ["Branch", "Type", "Region", "Sector", "Service", "Technology", "Parameter",
@@ -32,3 +34,15 @@ def make_row(meta: dict, series: dict = None, scale: float = 1.0, extend_func=No
                 v = float(vv) * scale
         row[str(y)] = v
     return row
+
+
+def pl_to_series(df: pl.DataFrame) -> pd.Series:
+    """Extract year→value from a long-format Polars DataFrame as a pd.Series."""
+    years  = df.get_column('year').cast(pl.Int64).to_list()
+    values = df.get_column('value').cast(pl.Float64).to_list()
+    return pd.Series(values, index=years, dtype=float)
+
+
+def pl_get_scalar(df: pl.DataFrame, col: str) -> object:
+    """Return the first value of a column from a one-row Polars DataFrame."""
+    return df.get_column(col).to_list()[0]
