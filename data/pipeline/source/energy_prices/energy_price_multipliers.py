@@ -27,6 +27,7 @@ for _p in (_project_root, _energy_prices_dir):
 from utils.controls_conversions import (
     load_macro_indicators,
     convert_currency,
+    load_control_config,
 )
 from utils.extensions.data_extensions import (
     backfill_constant,
@@ -49,14 +50,6 @@ CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xls
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
 
 
-
-def _load_control_config() -> Dict:
-    """Load CONTROLS dict directly from control.py's app.setup block."""
-    import importlib.util
-    spec = importlib.util.spec_from_file_location('control', CONTROL_FILE)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod.CONTROLS
 
 
 def load_control_data() -> Dict:
@@ -120,7 +113,7 @@ def load_price_data(control_data: Dict) -> Dict:
     elec_mult_df = pd.read_excel(CIMS_PRICES_FILE, sheet_name='CIMS Electricity')
     jcims_prices_df = pd.read_excel(CIMS_PRICES_FILE, sheet_name='JCIMS Prices')
 
-    config = _load_control_config()
+    config = load_control_config()
     scenario = config.get('cer_ef_reference_scenario', 'Current Measures')
     macro_df = load_macro_indicators(MACRO_FILE, scenario)
 
