@@ -234,95 +234,95 @@ _RESD_GEO_MAP = {
     "Yukon":                    "YT",
 }
 
-_resd_raw = pd.read_csv(RESD_FILE, low_memory=False)
+_resd_raw = pl.read_csv(RESD_FILE, infer_schema_length=0)
 
-_resd_ng = _resd_raw[
-    (_resd_raw["Fuel type"] == "Natural gas") &
-    (_resd_raw["Supply and demand characteristics"].isin(["Production", "Producer consumption"])) &
-    (_resd_raw["GEO"].isin(_RESD_GEO_MAP.keys())) &
-    (_resd_raw["REF_DATE"] >= 2000) &
-    (_resd_raw["REF_DATE"] <= 2024)
-].copy()
-
-_resd_ng["Province"] = _resd_ng["GEO"].map(_RESD_GEO_MAP)
-
-_resd_pivot = _resd_ng.pivot_table(
-    index=["REF_DATE", "Province"],
-    columns="Supply and demand characteristics",
-    values="VALUE",
+_resd_pivot = (
+    _resd_raw
+    .filter(
+        (pl.col("Fuel type") == "Natural gas") &
+        pl.col("Supply and demand characteristics").is_in(
+            ["Production", "Producer consumption"]
+        ) &
+        pl.col("GEO").is_in(list(_RESD_GEO_MAP.keys())) &
+        (pl.col("REF_DATE").cast(pl.Int32) >= 2000) &
+        (pl.col("REF_DATE").cast(pl.Int32) <= 2024)
+    )
+    .with_columns([
+        pl.col("GEO").replace(_RESD_GEO_MAP).alias("Province"),
+        pl.col("REF_DATE").cast(pl.Int32).alias("Year"),
+        pl.col("VALUE").cast(pl.Float64, strict=False),
+    ])
+    .pivot(
+        index=["Year", "Province"],
+        on="Supply and demand characteristics",
+        values="VALUE",
+        aggregate_function="first",
+    )
 )
-_resd_pivot.columns.name = None
-_resd_pivot = _resd_pivot.reset_index().rename(columns={"REF_DATE": "Year"})
 
 # Compute processed ratio only where both Production and Producer consumption
-# are known. If producer consumption is NaN (not reported, not zero), we treat
+# are known. If producer consumption is null (not reported, not zero), we treat
 # the ratio as unknown so backfill_constant can fill it from the nearest real
 # observation rather than defaulting to 1.0.
-_has_prod = _resd_pivot["Production"].fillna(0) > 0
-_has_cons = _resd_pivot["Producer consumption"].notna()
-
-_resd_pivot["Processed"] = float("nan")   # np.nan-compatible; avoids pd.NA type issues
-_resd_pivot.loc[_has_prod & _has_cons, "Processed"] = (
-    (
-        _resd_pivot.loc[_has_prod & _has_cons, "Production"]
-        - _resd_pivot.loc[_has_prod & _has_cons, "Producer consumption"]
+_resd_pivot = _resd_pivot.with_columns(
+    pl.when(
+        (pl.col("Production").fill_null(0.0) > 0) &
+        pl.col("Producer consumption").is_not_null()
     )
-    / _resd_pivot.loc[_has_prod & _has_cons, "Production"]
+    .then(
+        (pl.col("Production") - pl.col("Producer consumption"))
+        / pl.col("Production")
+    )
+    .alias("Processed")
 )
 
 # Build a complete grid: all 8 provinces × years 2000–2100
-_all_years  = list(range(2000, 2101))
-_all_provs  = list(_RESD_GEO_MAP.values())
-_grid_idx   = pd.MultiIndex.from_product([_all_provs, _all_years], names=["Province", "Year"])
-_processed  = (
-    _resd_pivot[["Province", "Year", "Processed"]]
-    .set_index(["Province", "Year"])
-    .reindex(_grid_idx)
-    .reset_index()
+_all_years = list(range(2000, 2101))
+_all_provs = list(_RESD_GEO_MAP.values())
+_processed = (
+    pl.DataFrame({"Province": [p for p in _all_provs for _ in _all_years],
+                  "Year":     [y for _ in _all_provs for y in _all_years]})
+    .join(_resd_pivot.select(["Province", "Year", "Processed"]),
+          on=["Province", "Year"], how="left")
 )
 
 # NB matches NS: replace NB Processed with NS Processed
-_ns_processed = (
-    _processed[_processed["Province"] == "NS"]
-    .set_index("Year")["Processed"]
-    .rename("NS_Processed")
+_ns_vals = (
+    _processed
+    .filter(pl.col("Province") == "NS")
+    .select(["Year", pl.col("Processed").alias("NS_Processed")])
 )
-_processed = _processed.merge(
-    _ns_processed,
-    left_on="Year",
-    right_index=True,
-    how="left",
+_processed = (
+    _processed
+    .join(_ns_vals, on="Year", how="left")
+    .with_columns(
+        pl.when(pl.col("Province") == "NB")
+        .then(pl.col("NS_Processed"))
+        .otherwise(pl.col("Processed"))
+        .alias("Processed")
+    )
+    .drop("NS_Processed")
+    .sort(["Province", "Year"])
 )
-_nb_mask = _processed["Province"] == "NB"
-_processed.loc[_nb_mask, "Processed"] = _processed.loc[_nb_mask, "NS_Processed"]
-_processed = _processed.drop(columns=["NS_Processed"])
 
 # Extend each province's series using backfill_constant (fills gaps before the
 # first valid value with that first value) then extend_constant (holds the last
-# value flat to 2100).  This avoids defaulting to 1.0 for provinces with no
-# early-year producer consumption data.
-_processed = _processed.sort_values(["Province", "Year"])
-
-def _extend_processed(grp):
-    # grp has only Year + Processed (Province excluded via include_groups=False)
-    s = grp.set_index("Year")["Processed"]
+# value flat to 2100).
+def _extend_processed(grp: pl.DataFrame) -> pl.DataFrame:
+    province = grp["Province"][0]
+    s = pd.Series(grp["Processed"].to_list(), index=grp["Year"].to_list(), dtype=float)
     s = backfill_constant(s, start_year=2000)
     s = extend_constant(s, end_year=2100)
-    out = grp.set_index("Year").copy()
-    out["Processed"] = s
-    return out.reset_index()
+    return pl.DataFrame({
+        "Province": [province] * len(s),
+        "Year":     [int(y) for y in s.index],
+        "Processed": list(s.values),
+    })
 
-_processed = (
-    _processed.groupby("Province", group_keys=True)
-    .apply(_extend_processed, include_groups=False)
-    .reset_index(level=0)   # brings Province back as a column from the group index
-    .reset_index(drop=True)
-)
-
-# Convert to polars and interpolate mid-series gaps
-# (e.g. NWT 2015-2019 where data was suppressed by StatsCan)
-_processed_pl = pl.from_pandas(
-    _processed[["Province", "Year", "Processed"]].astype({"Year": int})
+_processed_pl = (
+    _processed
+    .group_by("Province", maintain_order=True)
+    .map_groups(_extend_processed)
 )
 _processed_pl = interpolate_gaps(
     _processed_pl,
