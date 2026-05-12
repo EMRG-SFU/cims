@@ -71,6 +71,20 @@ def _parse_numeric(value_str: str) -> Optional[float]:
         return None
 
 
+def parse_cell(value) -> float:
+    """Parse a CSV cell to float, mapping dashes and blanks to 0.0.
+
+    Handles em-dashes (–, —), plain dashes, spaces, and common null strings.
+    """
+    s = str(value).strip().replace('–', '-').replace('—', '-').replace(' ', '')
+    if s in ('-', 'nan', '', 'None'):
+        return 0.0
+    try:
+        return float(s)
+    except ValueError:
+        return 0.0
+
+
 def load_all_conversions() -> pd.DataFrame:
     """
     Load the full energy conversions table from energy_conversions.csv
