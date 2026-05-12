@@ -14,12 +14,14 @@ book:
     - index.qmd
     - part: install
       chapters:
+        - setup.qmd
         - getting_started.qmd
     - part: model
       chapters:
         - overview.qmd
         - technologies.qmd
         - sectors.qmd
+        - low_temp_heat.qmd
     - part: results
       chapters:
         - policies.qmd
@@ -28,7 +30,12 @@ book:
 format:
   html:
     theme: cosmo
-  docx:
-    eval: true
-  pdf:
-    eval: true
+    css: style.css
+    link-external-newwindow: true
+    include-after-body: 
+      - comma-fn.html
+      - refs-backlinks.html
+  # docx:
+  #   eval: true
+  # pdf:
+  #   eval: true

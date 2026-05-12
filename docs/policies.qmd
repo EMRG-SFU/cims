@@ -12,7 +12,7 @@ with a given energy policy. The emphasis was on marginal costs, not
 total or absolute expenditures. The first consistent costing concept was
 the techno-economic cost, or TEC.
 
-TODO: Should we have standard reporting for costs below?
+<mark>TODO: Should we have standard reporting for costs below?</mark>
 
 **Techno-economic Cost (TEC)**
 

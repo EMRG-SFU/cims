@@ -1,6 +1,6 @@
 # Outputs
 
-TODO: Results viewer
+<mark>TODO: Results viewer</mark>
 
 - Need to revise how \`short path\` is created once markets and/or other countries are added
 
@@ -100,16 +100,16 @@ Figure 6: Sample node competition report -- base load electricity production Alb
 
 ## End user reports
 
-TODO: Reports of energy use, financials, intensities, travel, etc. at end user level
+<mark>TODO: Reports of energy use, financials, intensities, travel, etc. at end user level</mark>
 
 ## For example, household energy spending, average travel and costsMACC Curve
 
-TODO: EDF report, MACC 2.0
+<mark>TODO: EDF report, MACC 2.0</mark>
 
 
 ## Kaya Decomposition
 
-TODO: Decomposition of results (to also use in policy attribution)
+<mark>TODO: Decomposition of results (to also use in policy attribution)</mark>
 
 Include automatic waterfall chart?
 
@@ -127,4 +127,4 @@ Factors:
 
 ## Attributing emissions reductions to policies
 
-TODO: Shapley values using SHAP, LIME, or QII
+<mark>TODO: Shapley values using SHAP, LIME, or QII</mark>

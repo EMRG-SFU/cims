@@ -14,17 +14,17 @@ CIMS is based on energy flows through a country's economic system. Like its pred
 
 CIMS' focus on energy flows through technologies makes it ideal for modelling policies intended to affect energy efficiency, greenhouse gas emissions, and air quality. Fuel consumption and emissions of all pollutants are technology specific; unless a model operates on a detailed technology basis, as CIMS does, fuel consumption and emission estimates can only be approximated by economic activity.
 
-TODO: Discuss model operational structure (Excel input, Python, Excel results)
+<mark>TODO: Discuss model operational structure (Excel input, Python, Excel results)</mark>
 
-TODO: Model licenses (MIT & CC4.0)
+<mark>TODO: Model licenses (MIT & CC4.0)</mark>
 
-TODO: Split repository into code and data
+<mark>TODO: Split repository into code and data</mark>
 
 ## Model Scale and Scope
 
 CIMS covers the entire Canadian economy and can connect to an aggregated representation of the US economy. The Canadian version of CIMS currently includes six provinces and an aggregation of the Atlantic Provinces.\[\^4\] [Table 1](#_Ref61957786) illustrates the sectors and regions covered in CIMS.
 
-TODO: Separate out Atlantic provinces (medium priority) and Territories (lower priority)
+<mark>TODO: Separate out Atlantic provinces (medium priority) and Territories (lower priority)</mark>
 
 | **Sectors**             | **BC** | **AB** | **SK** | **MB** | **ON** | **QC** | **AT** |
 |:--------|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|:-------:|
@@ -48,7 +48,7 @@ TODO: Separate out Atlantic provinces (medium priority) and Territories (lower p
 
 : : CIMS Sectors for Canada
 
-TODO: Include major cities as separate nodes under provinces?
+<mark>TODO: Include major cities as separate nodes under provinces?</mark>
 
 - Would include Toronto, Montreal, and Vancouver only. Use metro region or city only? Is the reason for this to represent city policies?
 
@@ -60,7 +60,7 @@ CIMS highlights the interplay of energy supply and demand because energy-related
 
 As a simulation model, CIMS simulates the evolution of technologies acquired to meet energy services, and it uses both engineering and economic information. The engineering information details the unit energy consumption of each energy service technology and explains, using flow models of technologically heterogeneous sectors, how final energy service demands, intermediate products, and energy supply are related. The economic information determines which technologies are preferable in terms of cost minimization. While CIMS is not an optimization model, it can be adapted to produce results like those of an optimization model by calling on certain built-in functions. These functions are known as winner-take-all functions, and they give all new market shares in a given competition to the technology or process with the least cost.
 
-TODO: Review Winner-take-all function and decide if necessary
+<mark>TODO: Review Winner-take-all function and decide if necessary</mark>
 
 CIMS is designed to mimic a sector or industry by representing a number of industrial establishments, residential or commercial buildings, and delivery of goods or personal travel within a defined region. The model focuses its analysis on the aggregate energy end-use requirements of that industry or sector. For example, in industry the major end-uses are process heat, motive force, space heat, and lighting. In the pulp and paper sector, the major end-uses are steam heat or mechanical energy to digest wood fibre into pulp, mechanical energy to convey and form pulp into paper, mechanical energy to press moisture out of formed pulp or paper, steam heat to dry pulp or paper, space heat, and lighting. In residential and commercial buildings, the primary end-uses include space heating and cooling, hot water production, refrigeration, and other assorted appliances.
 
@@ -130,7 +130,7 @@ CIMS is designed to mimic a sector or industry by representing a number of indus
 
         x.  Changes in value-added for industry and manufacturing
 
-TODO: Model currently equilibrates only through prices. Could we also find quantity equilibrium for cap system?
+<mark>TODO: Model currently equilibrates only through prices. Could we also find quantity equilibrium for cap system?</mark>
 
 - Would need special market (?) for emissions cap that doesn't need specific service requests
 

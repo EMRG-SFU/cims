@@ -1,0 +1,45 @@
+<script>
+(function () {
+  function addBacklinks() {
+    const entries = document.querySelectorAll('#refs .csl-entry[id^="ref-"]');
+    entries.forEach(function (entry) {
+      if (entry.querySelector('.csl-backlinks')) return;     // idempotent
+
+      const key = entry.id;                                  // "ref-iea-fop"
+      const hash = '#' + key;
+      // Match both "#ref-iea-fop" and "chapter.html#ref-iea-fop"
+      const cites = [...document.querySelectorAll('a[href$="' + hash + '"]')];
+      if (!cites.length) return;
+
+      const back = document.createElement('span');
+      back.className = 'csl-backlinks';
+      back.append(' ');
+
+      cites.forEach(function (cite, i) {
+        const anchorId = 'cite-' + key.slice(4) + '-' + (i + 1);
+        if (!cite.id) cite.id = anchorId;
+        const a = document.createElement('a');
+        a.href = '#' + cite.id;
+        a.textContent = '\u21A9\uFE0E';
+        back.appendChild(a);
+        if (i < cites.length - 1) back.append(' ');
+      });
+
+      entry.appendChild(back);
+    });
+  }
+
+  function start() {
+    // Run once after Quarto finishes its own link rewriting
+    setTimeout(addBacklinks, 0);
+    // And again on full load to be safe
+    window.addEventListener('load', addBacklinks);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
+</script>

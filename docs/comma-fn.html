@@ -1,0 +1,10 @@
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('a.footnote-ref').forEach(el => {
+    const prev = el.previousSibling;
+    if (prev && prev.nodeType === Node.ELEMENT_NODE && prev.classList?.contains('footnote-ref')) {
+      el.classList.add('fn-adjacent');
+    }
+  });
+});
+</script>

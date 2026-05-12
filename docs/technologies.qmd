@@ -1,7 +1,7 @@
 # Technology Competition and Demand Feedbacks
 
-TODO: If setting market shares after the base year, need to use lifetime
-= 1, otherwise stock is not calculated correctly.
+<mark>TODO: If setting market shares after the base year, need to use lifetime
+= 1, otherwise stock is not calculated correctly.</mark>
 
 CIMS operating equations and their subcomponents are presented below in
 the order established in Section 2: sub-sector technology choice, energy
@@ -42,8 +42,7 @@ A linear function is used to retire the existing stock of unknown age
 already in use. Each year a constant amount of the base stock is retired
 until there is no more base stock remaining.
 
-[]{#_Toc25226755 .anchor}TODO: Sunset tech stock that falls below a
-threshold.
+<mark>TODO: Sunset tech stock that falls below a threshold.</mark>
 
 Need to develop rules around when to apply (for example, only after tech
 reaches some market share should this function be allowed)
@@ -97,8 +96,8 @@ replacement and failure and half is retired afterward to simulate
 technologies that last longer than the average.
 
 
-TODO: Add note about intercept uses in different sectors (i.e., 11.513
-for products, but more like 3 for houses)
+<mark>TODO: Add note about intercept uses in different sectors (i.e., 11.513
+for products, but more like 3 for houses)</mark>
 
 : New stock retirement function
 
@@ -123,10 +122,9 @@ determined using the equations below.
 
 #### New Stock Competition
 
-[]{#_Toc25226758 .anchor}TODO: Check if Winner Take All is included in
-Python code (need this?)
+<mark>TODO: Check if Winner Take All is included in Python code (need this?)</mark>
 
-TODO: Still want market share based competition for VREs?
+<mark>TODO: Still want market share based competition for VREs?</mark>
 
 serv_req_ms -- ms -- branch
 
@@ -251,7 +249,7 @@ if equilibrium prices have not yet been found).
 
 #### Retrofit
 
-TODO: Consider revising retrofit assessment
+<mark>TODO: Consider revising retrofit assessment</mark>
 
 Current: OPEX vs competing techs total LCC -\> are there cheaper
 alternatives to replace incumbent?

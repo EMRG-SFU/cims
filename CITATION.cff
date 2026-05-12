@@ -2,7 +2,7 @@
 # Visit https://bit.ly/cffinit to generate yours today!
 
 cff-version: 1.2.0
-title: CIMS energy-economy model
+title: CIMS energy-emissions-economy model
 message: >-
   If you use this software, please cite it using the
   metadata from this file.
@@ -29,10 +29,9 @@ authors:
     family-names: Starke
     email: emma_starke@sfu.ca
     affiliation: Simon Fraser University
-repository-code: 'https://github.com/EMRG-SFU/cims'
-repository: 'https://github.com/EMRG-SFU/cims-models'
+repository: 'https://github.com/EMRG-SFU/cims'
 abstract: >-
-  CIMS is an integrated energy-economy model designed to
+  CIMS is an integrated energy-emissions-economy model designed to
   provide information to policy makers on the likely
   response of firms and households to policies that
   influence their technology acquisition and use decisions.
@@ -59,7 +58,7 @@ keywords:
   - emissions
   - policy
   - simulation
-  - jupyter-notebook
+  - marimo
   - networkx
   - polars
   - ipwidgets

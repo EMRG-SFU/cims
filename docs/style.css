@@ -1,0 +1,10 @@
+a.footnote-ref.fn-adjacent > sup::before {
+  content: ",";
+}
+
+/* Allow long URLs in bibliography entries to wrap mid-string so they
+   don't overflow into the section that follows. */
+#refs .csl-entry,
+#refs .csl-entry a {
+  overflow-wrap: anywhere;
+}

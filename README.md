@@ -1,12 +1,12 @@
 # CIMS
-CIMS is a Python package providing the Python implementation of the [CIMS](https://pics.uvic.ca/sites/default/files/uploads/CIMS%20Community%20Excel%20model%20user%20documentation_0.pdf)
-economic climate model. 
+CIMS is a Python package providing the implementation of the [CIMS](https://emrg-sfu.github.io/cims/)
+energy-emissions-economy model. 
 
 ## :gear: Installation
-CIMS is not currently available on PyPi or other package indexes. Follow the [getting started guide](docs/GettingStarted.md) to get CIMS running on your machine.
+CIMS is not currently available on PyPi or other package indexes. Follow the [getting started guide](https://emrg-sfu.github.io/cims/setup.html) to get CIMS running on your machine.
 
 ## :technologist: Usage
-See the [getting started guide](docs/GettingStarted.md) for instructions on running CIMS scenarios.
+See the [getting started guide](https://emrg-sfu.github.io/cims/getting_started.html) for instructions on running CIMS scenarios.
 
 ## :memo: Contributing
 Contributions to CIMS are welcome, in many different forms: 
@@ -14,12 +14,10 @@ Contributions to CIMS are welcome, in many different forms:
 * **Code** &mdash; If you are comfortable writing code feel free to make a Pull Request (PR) with your changes. If you've tackled a large feature request or bug, please also create a new issue, or mention an existing issue within your PR.
 * **Documentation** &mdash; If you notice typos, out-of-date information, or opportunities for improvements in the documentation (and are comfortable writing [Markdown](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)), please consider making a PR with changes.
 
-Any kind of contribution, whether its fixing a small typo, refactoring existing code, or the implementation of a brand new module helps improve this project. 
+Any kind of contribution, whether it involves fixing a small typo, refactoring existing code, or implementing a brand new module, helps improve this project.
 
-## :book: Citation
-
-## :pray: Acknowledgements 
-[Bradford Griffin](https://github.com/brad-griffin) and [Jillian Anderson](https://github.com/jillianderson8) are the project's lead researcher and lead technical developer, respectively.
+## :pray: Acknowledgements
+[Brad Griffin](https://github.com/brad-griffin) and [Jillian Anderson](https://github.com/jillianderson8) are the Python project's lead researcher and lead technical developer, respectively. [Matt Sniatynski](https://github.com/matt-exmath) has provided invaluable expertise as the lead data scientist.
 
 In addition, contributions to the codebase have been made by members of Simon Fraser University's [Big Data Hub](https://www.sfu.ca/big-data.html) and [Research Computing Group](https://www.rcg.sfu.ca/): 
 * [Steven Bergner](https://github.com/git-steb)
@@ -29,14 +27,23 @@ In addition, contributions to the codebase have been made by members of Simon Fr
 * Daisy Yu
 * Kacy Wu
 
+The Python implementation of the CIMS model has been significantly supported by development from staff at the Canadian Energy Regulator's [Energy Future](https://www.cer-rec.gc.ca/en/data-analysis/canada-energy-future/) team and the University of Victoria's [SESIT Group](https://sesit.cive.uvic.ca/#team).
 
-Finally, thank you to the numerous EMRG graduate students who have attended meetings, submitted features requests, and flagged bugs: 
+Finally, thank you to the numerous EMRG graduate students who have attended meetings, submitted feature requests, and flagged bugs: 
 * [Thomas Budd](https://github.com/tcbudd)
-* Aaron Pardy
 * Emma Starke
 * Kaitlin Thompson
-* Heather Chambers
-* Ryan Safton
+* Saaib Choudhry
+* Aaron Hoyle
+* Roz Shepherd
+* Katrina Gorrie
 
-## :balance_scale: License 
+## :balance_scale: License
 The CIMS Python library is licensed under the [MIT License](https://github.com/EMRG-SFU/cims/blob/main/LICENSE). For more information about this license, checkout [this overview](https://choosealicense.com/licenses/mit/).
+
+## :book: Citation
+If you use this project, please cite:
+
+Griffin, B., Anderson, J., Sniatynski, M., Budd, T., & Starke, E. (2025). 
+*CIMS energy-emissions-economy model* (Version 1.0) [Software]. 
+https://github.com/EMRG-SFU/cims
