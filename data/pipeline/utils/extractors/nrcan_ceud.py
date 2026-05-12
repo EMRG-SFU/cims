@@ -9,6 +9,7 @@ This format is used by multiple sectors:
 Only create extractors for formats used by MULTIPLE sectors!
 """
 import polars as pl
+import pandas as pd
 import numpy as np
 
 
@@ -78,3 +79,15 @@ def get_row_series(df: pl.DataFrame, label: str, match_n: int = 0,
     arr = df.to_numpy()
     years = extract_year_cols(df, header_row, start_col)
     return {y: arr[idxs[match_n], c] for y, c in years}
+
+
+def row_to_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
+    """Thin wrapper around get_row_series returning a year-indexed pd.Series."""
+    raw = get_row_series(table, label, match_n)
+    return pd.Series({int(k): (float(v) if v is not None else np.nan)
+                      for k, v in raw.items()})
+
+
+def pct_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
+    """Return a fraction (0–1) Series from a percentage row in a CEUD table."""
+    return row_to_series(table, label, match_n) / 100.0
