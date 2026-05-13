@@ -309,7 +309,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           e.preventDefault();
 
-          cite.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          cite.scrollIntoView({ behavior: 'auto', block: 'center' }); // could use 'smooth' scroll
 
           history.replaceState(null, '', '#' + cite.id);
 
