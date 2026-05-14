@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Recurse \"c:\\\\cims\\\\data\\\\pipeline\\\\utils\\\\extractors\" -Filter \"*.py\")",
+      "Bash(Select-Object FullName)"
+    ]
+  }
+}

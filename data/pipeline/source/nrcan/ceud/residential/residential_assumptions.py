@@ -20,7 +20,7 @@ with app.setup:
         load_projection_params,
         PROVINCES,
     )
-    from utils.extensions.data_extensions import (
+    from utils.data_extensions import (
         extend_series_constant,
         extend_series_linear,
         extend_series_trend_decline,

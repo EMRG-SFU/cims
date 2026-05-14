@@ -1,9 +1,16 @@
 import argparse
 import csv
-import importlib.util
+import sys
 from pathlib import Path
 
 import pandas as pd
+
+_project_root = Path(__file__).parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+from utils.data_extensions import extend_series_linear, extend_series_trend_decline, extend_constant
+from utils.data_fill import interpolate_5year_to_annual, backfill_constant
 
 # Usage:
 # 1. Open a command prompt in the folder containing this script.
@@ -31,16 +38,6 @@ import pandas as pd
 #    writes annual rows for each item between 2000 and 2100.
 # 6. Output CSV files are saved under the output folder in a matching subfolder.
 
-DATA_EXTENSIONS_PATH = Path(r"C:\cims\data\pipeline\utils\extensions\data_extensions.py")
-if not DATA_EXTENSIONS_PATH.exists():
-    raise FileNotFoundError(f"Data extensions module not found at {DATA_EXTENSIONS_PATH}")
-
-spec = importlib.util.spec_from_file_location("data_extensions", DATA_EXTENSIONS_PATH)
-data_extensions = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(data_extensions)
-
-extend_series_linear = data_extensions.extend_series_linear
-extend_series_trend_decline = data_extensions.extend_series_trend_decline
 
 
 def parse_year_columns(header, year_min=2000, year_max=2050):
@@ -192,10 +189,10 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                             continue
 
                         series = pd.Series({year: value for year, value in known_points}, dtype=float)
-                        annual_series = data_extensions.interpolate_5year_to_annual(series)
+                        annual_series = interpolate_5year_to_annual(series)
 
                         if target_start < annual_series.index.min():
-                            annual_series = data_extensions.backfill_constant(annual_series, start_year=target_start)
+                            annual_series = backfill_constant(annual_series, start_year=target_start)
 
                         if target_end > annual_series.index.max():
                             if 2045 in annual_series.index and 2050 in annual_series.index:
@@ -209,7 +206,7 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                                         periods=[(2051, target_end + 1, growth_rate)],
                                     )
                                 else:
-                                    annual_series = data_extensions.extend_constant(annual_series, end_year=target_end)
+                                    annual_series = extend_constant(annual_series, end_year=target_end)
                             else:
                                 annual_series = data_extensions.extend_constant(annual_series, end_year=target_end)
 

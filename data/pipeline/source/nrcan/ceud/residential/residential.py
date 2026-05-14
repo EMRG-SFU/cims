@@ -32,7 +32,7 @@ from mappings_conversions.control import CONTROLS
 from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, pct_series
 from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
 from pipeline.utils.extractors.stats_can_pop import build_population_shares
-from pipeline.utils.extensions.data_extensions import (
+from pipeline.utils.data_extensions import (
     extend_series_constant,
     extend_series_linear,
     extend_series_trend_dampener,

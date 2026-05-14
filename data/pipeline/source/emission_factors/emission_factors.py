@@ -91,7 +91,7 @@ _utils_path   = _project_root / "data" / "pipeline" / "utils"
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.extensions.data_extensions import extend_series_constant
+from utils.data_extensions import extend_series_constant
 from utils.controls_conversions import load_energy_conversions
 
 

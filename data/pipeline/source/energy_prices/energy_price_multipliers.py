@@ -29,11 +29,8 @@ from utils.controls_conversions import (
     convert_currency,
     load_control_config,
 )
-from utils.extensions.data_extensions import (
-    backfill_constant,
-    extend_constant,
-    interpolate_5year_to_annual,
-)
+from utils.data_fill import backfill_constant, interpolate_5year_to_annual
+from utils.data_extensions import extend_constant
 from energy_prices import main as get_production_costs
 
 
@@ -48,6 +45,7 @@ MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
 END_USE_PRICES_FILE = BASE_PATH / 'raw_data/cer/end-use-prices-2026.csv'
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
+
 
 
 
@@ -235,7 +233,7 @@ def calculate_hydrogen_multipliers(
                     'energy': 'Hydrogen',
                     'year': year,
                     'multiplier': multiplier,
-                    'source': 'JCIMS',
+                    'source': 'Assumption',
                 })
 
     return pd.DataFrame(rows)
@@ -300,6 +298,9 @@ def calculate_end_use_energy_multipliers(
         .to_struct(name='r')
         .to_list()
     )
+
+    _cer_data_years = {r['Year'] for r in end_use_rows if r['Area'] != 'Canada'}
+    _max_cer_year   = max(_cer_data_years) if _cer_data_years else 0
 
     sector_groups: Dict[str, str] = {}
     for _, row in sectors_df.iterrows():
@@ -377,7 +378,7 @@ def calculate_end_use_energy_multipliers(
                     mult = hfo_ind_mult * 1.1 if cer_group in ['Residential', 'Commercial'] else hfo_ind_mult
                     rows.append({'region': cims_region, 'sector': sector,
                                  'energy': 'Heavy Fuel Oil', 'year': year, 'multiplier': mult,
-                                 'source': 'CER'})
+                                 'source': 'CER' if year <= _max_cer_year else 'Assumption'})
 
             # Light Fuel Oil: Commercial/Residential base, 10% lower for Industrial/Transport
             lfo_base_mult = (
@@ -390,7 +391,7 @@ def calculate_end_use_energy_multipliers(
                     mult = lfo_base_mult if cer_group in ['Residential', 'Commercial'] else lfo_base_mult * 0.9
                     rows.append({'region': cims_region, 'sector': sector,
                                  'energy': 'Light Fuel Oil', 'year': year, 'multiplier': mult,
-                                 'source': 'CER'})
+                                 'source': 'CER' if year <= _max_cer_year else 'Assumption'})
 
             # Diesel: Transportation base, 1.1× for Residential/Commercial
             diesel_trans_key = (cims_region, 'Transportation', 'Diesel', year)
@@ -401,7 +402,7 @@ def calculate_end_use_energy_multipliers(
                     mult = diesel_trans_mult * 1.1 if cer_group in ['Residential', 'Commercial'] else diesel_trans_mult
                     rows.append({'region': cims_region, 'sector': sector,
                                  'energy': 'Diesel', 'year': year, 'multiplier': mult,
-                                 'source': 'CER'})
+                                 'source': 'CER' if year <= _max_cer_year else 'Assumption'})
 
             # Gasoline: Transportation base, 1.1× for Residential/Commercial
             gas_trans_key = (cims_region, 'Transportation', 'Gasoline', year)
@@ -412,7 +413,7 @@ def calculate_end_use_energy_multipliers(
                     mult = gas_trans_mult * 1.1 if cer_group in ['Residential', 'Commercial'] else gas_trans_mult
                     rows.append({'region': cims_region, 'sector': sector,
                                  'energy': 'Gasoline', 'year': year, 'multiplier': mult,
-                                 'source': 'CER'})
+                                 'source': 'CER' if year <= _max_cer_year else 'Assumption'})
 
             # Natural Gas: Transportation uses Commercial multipliers
             for cer_sector in ['Residential', 'Commercial', 'Industrial', 'Transportation']:
@@ -424,7 +425,7 @@ def calculate_end_use_energy_multipliers(
                         if sector_groups.get(sector) == cer_sector:
                             rows.append({'region': cims_region, 'sector': sector,
                                          'energy': 'Natural Gas', 'year': year, 'multiplier': ng_mult,
-                                         'source': 'CER'})
+                                         'source': 'CER' if year <= _max_cer_year else 'Assumption'})
 
     return pd.DataFrame(rows)
 
@@ -433,6 +434,7 @@ def calculate_simple_fuel_multipliers(
     regions: List[str],
     sectors: List[str],
     sectors_df: pd.DataFrame,
+    max_cer_year: int,
 ) -> pd.DataFrame:
     """
     Calculate multipliers for fuels with fixed values.
@@ -486,7 +488,7 @@ def calculate_simple_fuel_multipliers(
                         'energy': energy,
                         'year': year,
                         'multiplier': multiplier,
-                        'source': 'CER',
+                        'source': 'CER' if year <= max_cer_year else 'Assumption',
                     })
 
     return pd.DataFrame(rows)
@@ -551,6 +553,7 @@ def calculate_jcims_multipliers(
     use_light_ind = ['Construction', 'Forestry', 'Hydrogen']
     base_multipliers: Dict[Tuple, float] = {}
     year_cols = [col for col in jcims_prices_df.columns if isinstance(col, (int, str)) and str(col).isdigit()]
+    _max_jcims_year = max((int(y) for y in year_cols), default=0)
 
     for _, row in jcims_prices_df.iterrows():
         jcims_region = row['Region']
@@ -713,7 +716,7 @@ def calculate_jcims_multipliers(
                     'energy': energy,
                     'year': int(year),
                     'multiplier': mult,
-                    'source': 'JCIMS',
+                    'source': 'JCIMS' if int(year) <= _max_jcims_year else 'Assumption',
                 })
 
     return pd.DataFrame(interpolated_rows)
@@ -766,7 +769,10 @@ def apply_derivative_multipliers(
     for new_fuel, base_fuel in direct_mappings.items():
         base_data = base_multipliers[base_multipliers['energy'] == base_fuel].copy()
         base_data['energy'] = new_fuel
-        base_data['source'] = 'AFDC' if new_fuel in _AFDC_FUELS else 'Derived'
+        source_label = 'AFDC' if new_fuel in _AFDC_FUELS else 'Assumption'
+        base_data['source'] = base_data['source'].apply(
+            lambda s: 'Assumption' if s == 'Assumption' else source_label
+        )
         rows.append(base_data)
 
     # TODO: Add logic for sector-specific derivatives (Light/Heavy Fuel Oil, etc.)
@@ -822,6 +828,8 @@ def main() -> pd.DataFrame:
             control_data['cims_regions'],
             control_data['cims_sectors'],
             control_data['sectors_df'],
+            int(price_data['end_use_prices']
+                .filter(pl.col('Scenario') == price_data['scenario'])['Year'].max()),
         )),
         ("JCIMS multipliers", lambda: calculate_jcims_multipliers(
             price_data['jcims_prices_df'],

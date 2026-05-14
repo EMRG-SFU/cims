@@ -40,7 +40,7 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.extensions.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
 
 
 # Configuration

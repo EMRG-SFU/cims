@@ -45,7 +45,8 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.extensions.data_extensions import interpolate_gaps, extend_cagr_periods
+from utils.data_fill import interpolate_gaps
+from utils.data_extensions import extend_cagr_periods
 
 # =============================================================================
 # Configuration

@@ -181,7 +181,7 @@ _project_root = Path(__file__).parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.extensions.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions, extend_constant
+from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions, extend_constant
 
 # ── File paths ───────────────────────────────────────────────────────────────────
 BASE             = Path('C:/cims/data')

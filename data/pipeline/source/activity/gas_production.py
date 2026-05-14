@@ -42,7 +42,8 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.controls_conversions import load_control_config
-from utils.extensions.data_extensions import trend_backwards, backfill_constant, extend_constant, interpolate_gaps, extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
+from utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
