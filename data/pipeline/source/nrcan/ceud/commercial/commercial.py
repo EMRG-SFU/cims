@@ -13,6 +13,22 @@ Key behavioural notes
 - Hot water technologies are NOT split by building shell type.
 - All intermediate data is held as Polars DataFrames in long format:
       (region, variable, category, parameter, unit, year, value)
+
+Suppression handling
+--------------------
+RESD shares (Stats Can 2510002901-commercial):
+    Loaded via load_resd(), which reads all columns as strings and casts
+    VALUE to Float64 with strict=False — suppressed 'x' cells become null.
+    NaN demand values propagate through pandas groupby/merge so suppressed
+    territory-fuel combinations produce NaN shares rather than incorrect
+    values. These NaN shares are handled by the population-proxy fallback
+    in the disaggregation step.
+
+CEUD technology splits (NRCan Excel):
+    Steam energy shares are occasionally suppressed for small territories.
+    When a steam share exists for some years but is null for others, the
+    null years are recovered as 1 − sum(all other known fuel shares),
+    ensuring fuel-type shares sum to 1 for every year.
 """
 
 from pathlib import Path
@@ -32,11 +48,12 @@ if str(_project_root) not in sys.path:
 from mappings_conversions.control import CONTROLS
 from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, pct_series
 from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
-from pipeline.utils.extractors.stats_can_pop import build_population_shares
+from pipeline.utils.extractors.stats_can import build_population_shares
 from pipeline.utils.data_extensions import (
     extend_series_linear,
     extend_series_trend_dampener,
 )
+from pipeline.utils.extractors.stats_can import load_resd
 
 # ==============================================================================
 # CONFIGURATION
@@ -899,10 +916,11 @@ def _build_comm_resd_shares(resd_csv: Path) -> pd.DataFrame:
         share = this geo's fraction of the group (AT or BC-territories) total
         for this fuel/year.
     """
-    df = pd.read_csv(resd_csv,
-                     usecols=['REF_DATE', 'GEO', 'Fuel type',
-                              'Supply and demand characteristics', 'VALUE'])
-    df.columns = ['year', 'geo', 'fuel', 'sector', 'demand_TJ']
+    df = (
+        load_resd(resd_csv)
+        .rename({"characteristic": "sector", "value": "demand_TJ"})
+        .to_pandas()
+    )
 
     # Aggregate both sectors
     agg = (

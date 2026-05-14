@@ -13,6 +13,18 @@ Key behavioural notes
 - All intermediate data is held as Polars DataFrames in long format:
       (province, variable, category, parameter, unit, year, value)
   This matches the shape produced by the pipeline's other modules.
+
+Suppression handling
+--------------------
+RESD shares (Stats Can 2510002901-residential):
+    Loaded via load_resd(), which reads all columns as strings and casts
+    VALUE to Float64 with strict=False — suppressed 'x' cells become null
+    (NaN in pandas). NaN demand values propagate through groupby sums and
+    share divisions, producing NaN shares for suppressed territory-fuel
+    pairs. Because territories drive disaggregation of Canada-level CEUD
+    totals rather than contributing to them, a suppressed territory share
+    gracefully falls back to the population proxy (_wood_proxy) in the
+    disaggregation step.
 """
 
 from pathlib import Path
@@ -31,12 +43,13 @@ if str(_project_root) not in sys.path:
 from mappings_conversions.control import CONTROLS
 from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, pct_series
 from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
-from pipeline.utils.extractors.stats_can_pop import build_population_shares
+from pipeline.utils.extractors.stats_can import build_population_shares
 from pipeline.utils.data_extensions import (
     extend_series_constant,
     extend_series_linear,
     extend_series_trend_dampener,
 )
+from pipeline.utils.extractors.stats_can import load_resd
 
 # ==============================================================================
 # CONFIGURATION
@@ -1135,7 +1148,11 @@ def _build_resd_shares(resd_csv: Path) -> pd.DataFrame:
     -------
     pd.DataFrame with columns: year, territory, fuel, share
     """
-    resd = pd.read_csv(resd_csv, usecols=['REF_DATE', 'GEO', 'Fuel type', 'VALUE'])
+    resd = (
+        load_resd(resd_csv)
+        .select(["year", "geo", "fuel", "value"])
+        .to_pandas()
+    )
     resd.columns = ['year', 'territory', 'fuel', 'demand_TJ']
 
     national = (

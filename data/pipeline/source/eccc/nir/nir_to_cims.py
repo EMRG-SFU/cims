@@ -3,6 +3,14 @@ nir_to_cims.py
 ──────────────
 
   Stage 1 – Solve suppressed ('x') GHG values in the NIR.
+            ECCC suppresses cells where disclosure would identify individual
+            respondents, primarily NWT, Nunavut, and Nova Scotia for certain
+            sectors and years. The solver uses Canada-level totals and known
+            regional values to algebraically derive each suppressed cell,
+            working through a defined sequence to avoid circular dependencies.
+            An anchor year (2004) and a co-suppression year (2005, where NS,
+            NWT, and Nu are all suppressed simultaneously) require special
+            solve orders; 2006+ use a simplified path.
             Only the NIR CSV and mapping CSV are needed as inputs.
 
   Stage 2 – Map solved NIR rows to CIMS branch nodes using NIR_to_CIMS_map.csv.

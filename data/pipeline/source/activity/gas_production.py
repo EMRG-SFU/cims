@@ -29,6 +29,16 @@ Notes:
   - Only the scenario defined in the control config is used.
   - Regions with no sub-type breakdown (e.g. Ontario, Yukon) default to
     conventional=1, all other splits=0.
+
+SUPPRESSION HANDLING:
+    RESD (StatsCan 25100029) is loaded via load_resd(), which reads all
+    columns as strings and casts VALUE to Float64 with strict=False —
+    suppression codes ('x', etc.) become null. The processed ratio
+    (Production − Producer consumption) / Production is computed only where
+    both columns are non-null, leaving genuine gaps as null. Those gaps are
+    then filled by backfill_constant() (propagates nearest observed ratio
+    backward) and interpolate_gaps() (bridges mid-series nulls). NB missing
+    values are set equal to NS based on similar geographic production mix.
 """
 
 import pandas as pd
@@ -44,6 +54,7 @@ if str(_project_root) not in sys.path:
 from utils.controls_conversions import load_control_config
 from utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
 from utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.extractors.stats_can import load_resd
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
@@ -235,28 +246,25 @@ _RESD_GEO_MAP = {
     "Yukon":                    "YT",
 }
 
-_resd_raw = pl.read_csv(RESD_FILE, infer_schema_length=0)
+_resd_raw = load_resd(RESD_FILE)
 
 _resd_pivot = (
     _resd_raw
     .filter(
-        (pl.col("Fuel type") == "Natural gas") &
-        pl.col("Supply and demand characteristics").is_in(
-            ["Production", "Producer consumption"]
-        ) &
-        pl.col("GEO").is_in(list(_RESD_GEO_MAP.keys())) &
-        (pl.col("REF_DATE").cast(pl.Int32) >= 2000) &
-        (pl.col("REF_DATE").cast(pl.Int32) <= 2024)
+        (pl.col("fuel") == "Natural gas") &
+        pl.col("characteristic").is_in(["Production", "Producer consumption"]) &
+        pl.col("geo").is_in(list(_RESD_GEO_MAP.keys())) &
+        (pl.col("year") >= 2000) &
+        (pl.col("year") <= 2024)
     )
-    .with_columns([
-        pl.col("GEO").replace(_RESD_GEO_MAP).alias("Province"),
-        pl.col("REF_DATE").cast(pl.Int32).alias("Year"),
-        pl.col("VALUE").cast(pl.Float64, strict=False),
-    ])
+    .with_columns(
+        pl.col("geo").replace(_RESD_GEO_MAP).alias("Province"),
+        pl.col("year").alias("Year"),
+    )
     .pivot(
         index=["Year", "Province"],
-        on="Supply and demand characteristics",
-        values="VALUE",
+        on="characteristic",
+        values="value",
         aggregate_function="first",
     )
 )

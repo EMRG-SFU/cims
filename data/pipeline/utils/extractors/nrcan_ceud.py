@@ -7,6 +7,15 @@ This format is used by multiple sectors:
 - Industrial (various files)
 
 Only create extractors for formats used by MULTIPLE sectors!
+
+SUPPRESSION HANDLING:
+    The CEUD Excel format marks suppressed or confidential cells with 'X'.
+    When Polars reads the raw table these appear as the string "X" or,
+    after numeric coercion during parsing, as -1.0 for percentage rows.
+    pct_series() explicitly replaces all negative values with NaN so
+    suppressed shares do not propagate as negative fractions in downstream
+    calculations. Non-percentage rows with 'X' become null via strict=False
+    casting in the caller.
 """
 import polars as pl
 import pandas as pd

@@ -28,6 +28,16 @@ Data availability: 1990-2024.  Years 2000+ are used directly.
 Region names are mapped from NIR to CIMS codes via region_map.csv.
 Extension to 2100 via CAGR over the full historical period (DATA_START–last
 year), giving a smoother structural trend. Percentage variables held flat.
+
+SUPPRESSION HANDLING:
+    The ECCC GHG CSV uses 'x' for suppressed or confidential cell values,
+    primarily for NWT and Nunavut Construction totals in certain years.
+    These are declared as null at load time via pl.read_csv(null_values=["x"]).
+    Mid-series null gaps are then filled by Polars linear interpolation;
+    trailing nulls are forward-filled from the last valid value. Percentage
+    variables (Agriculture.Heat, etc.) are held flat at their last valid
+    observation rather than interpolated, as interpolating emission-intensity
+    ratios would misrepresent the underlying activity split.
 =============================================================================
 """
 

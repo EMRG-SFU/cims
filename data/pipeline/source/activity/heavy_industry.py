@@ -32,6 +32,18 @@ LIBRARY NOTES:
     Polars is used for all DataFrame work (fast, memory-efficient).
     pandas is kept only for pd.read_excel() (Polars xlsx support requires extra deps)
     and for the final UTF-8-BOM CSV write (Polars write_csv does not support BOM).
+
+SUPPRESSION HANDLING:
+    Statistics Canada suppresses GO, IPPI, and RMPI cells where disclosure
+    would identify individual respondents, marking them with codes 'x', '..', or 'F'.
+
+    read_statscan_csv(log_suppressed=True) loads all three files with all columns
+    as strings and prints a count and list of suppression codes found at load time.
+    Suppressed rows are then identified (VALUE fails cast to Float64) and removed
+    entirely — they are not filled with 0 or interpolated, because suppressed GO
+    values would distort the provincial share weights used to disaggregate national
+    physical output. The _go_suppressed table records which sector/province/year
+    combinations were excluded so the gap is transparent in console output.
 """
 
 import polars as pl
@@ -47,6 +59,7 @@ if str(_project_root) not in sys.path:
 
 from utils.data_fill import interpolate_gaps
 from utils.data_extensions import extend_cagr_periods
+from utils.extractors.stats_can import read_statscan_csv
 
 # =============================================================================
 # Configuration
@@ -390,9 +403,9 @@ print("=" * 60)
 # Polars reads CSVs much faster than pandas.
 # All columns are loaded as strings first so we can handle StatsCan suppression
 # codes ('x', '..', 'F') before converting VALUE to float.
-go_raw   = pl.read_csv(GO_FILE,   infer_schema_length=0)
-ippi_raw = pl.read_csv(IPPI_FILE, infer_schema_length=0)
-rmpi_raw = pl.read_csv(RMPI_FILE, infer_schema_length=0)
+go_raw   = read_statscan_csv(GO_FILE,   log_suppressed=True)
+ippi_raw = read_statscan_csv(IPPI_FILE, log_suppressed=True)
+rmpi_raw = read_statscan_csv(RMPI_FILE, log_suppressed=True)
 
 # pandas is still needed here: Polars can read xlsx but requires the
 # 'xlsx2csv' or 'calamine' extra. Using pandas is safer across environments.

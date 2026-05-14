@@ -1,5 +1,18 @@
 """
 CIMS Light Industrial Manufacturing GDP activity data processing
+
+SUPPRESSION HANDLING:
+    Statistics Canada suppresses GDP cells where disclosure would identify
+    individual establishments, leaving the VALUE column as an empty string.
+    read_statscan_csv() reads all columns as strings (preserving the empty
+    string), then the VALUE cast to Float64 with strict=False converts it to
+    null, which fill_null(0.0) replaces with zero.
+
+    Treating suppressed GDP as zero is appropriate here because suppression
+    typically occurs for small single-establishment industries where the true
+    value is near zero, and because GDP is used only for provincial share
+    calculations — a near-zero suppressed cell has minimal effect on the
+    national total or the resulting shares.
 """
 
 import polars as pl
@@ -13,6 +26,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.extractors.stats_can import read_statscan_csv
 
 # Configuration
 BASE_PATH           = Path('C:/cims/data')
@@ -120,7 +134,7 @@ LIGHT_INDUSTRY_NODES = [
 
 # -- L1. Load and filter ------------------------------------------------------
 
-raw_li = pl.read_csv(LIGHT_INDUSTRY_FILE)
+raw_li = read_statscan_csv(LIGHT_INDUSTRY_FILE)
 
 # Collect all NAICS labels we need across all nodes
 all_naics_needed = [label for _, labels in LIGHT_INDUSTRY_NODES for label in labels]
@@ -130,8 +144,8 @@ li_df = (
     .filter(
         (pl.col('Prices')   == 'Chained (2017) dollars') &
         (pl.col(NAICS_COL).is_in(all_naics_needed)) &
-        (pl.col('REF_DATE') >= 2000) &
-        (pl.col('REF_DATE') <= 2024)
+        (pl.col('REF_DATE').cast(pl.Int32) >= 2000) &
+        (pl.col('REF_DATE').cast(pl.Int32) <= 2024)
     )
     .select(['REF_DATE', 'GEO', NAICS_COL, 'VALUE'])
     .rename({

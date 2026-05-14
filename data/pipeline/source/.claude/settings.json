@@ -2,7 +2,14 @@
   "permissions": {
     "allow": [
       "Bash(Get-ChildItem -Recurse \"c:\\\\cims\\\\data\\\\pipeline\\\\utils\\\\extractors\" -Filter \"*.py\")",
-      "Bash(Select-Object FullName)"
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"c:\\\\cims\\\\data\\\\pipeline\" -Filter \"*.py\" -Recurse -File)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Get-ChildItem -Recurse \"C:\\\\cims\\\\data\\\\raw_data\\\\stats_can\" -Force)",
+      "Bash(Select-Object FullName, Name, PSIsContainer)",
+      "Bash(Format-List)",
+      "Bash(xargs grep -l \"stats_can\")",
+      "Bash(Remove-Item \"c:\\\\cims\\\\data\\\\pipeline\\\\utils\\\\extractors\\\\stats_can_pop.py\")"
     ]
   }
 }

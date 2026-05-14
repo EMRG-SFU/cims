@@ -18,11 +18,19 @@ Sources:
        Provinces reported directly: AB, BC (partial), NL, ON, QC (partial), SK
        New Brunswick: never reported directly — always derived
 
-Suppression handling (new file):
-  Stats Can suppresses province-level cells (STATUS = 'x', VALUE = '') but
-  always reports the Canada total.  Rather than filling suppressed cells
-  with 0 (which creates a spurious NB spike), we distribute the unallocated
-  residual across suppressed provinces each month using reference shares.
+Suppression handling:
+  Statistics Canada suppresses province-level cells (STATUS = 'x', VALUE = '')
+  where disclosure would identify individual refinery operators.
+
+  Old file (25100014): Data is reported at the Canada level with disposition
+    rows per region — no province-level cell suppression occurs. Any null
+    values from read_statscan_csv() are filled with 0.0 before aggregation.
+
+  New file (25100063): Province-level cells are suppressed but the Canada
+    total is always reported. Rather than filling suppressed cells with 0
+    (which creates a spurious NB residual spike), we distribute the
+    unallocated residual across suppressed provinces each month using
+    reference shares derived from the months they are reported.
 
   Algorithm (applied month by month):
     1. Reference shares: for each province, compute its average share of
@@ -62,6 +70,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.extractors.stats_can import read_statscan_csv
 
 # Configuration
 BASE_PATH       = Path('C:/cims/data')
@@ -109,7 +118,7 @@ _ALL_REGIONS = _NEW_PROVINCES + ['New Brunswick']
 
 # -- R1. Old file: annual totals 2000–2015 ------------------------------------
 
-old_raw = pl.read_csv(OLD_REFINERY_FILE)
+old_raw = read_statscan_csv(OLD_REFINERY_FILE)
 
 old_monthly = (
     old_raw
@@ -162,7 +171,7 @@ old_combined = (
 #
 #   Suppressed cells are imputed so that Canada totals are exactly preserved.
 
-new_raw = pl.read_csv(NEW_REFINERY_FILE)
+new_raw = read_statscan_csv(NEW_REFINERY_FILE)
 
 new_filt = (
     new_raw

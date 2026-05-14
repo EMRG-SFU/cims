@@ -22,6 +22,17 @@ Usage:
 
 Outputs:
     nir_crosswalk_cims.csv
+
+Suppression handling
+--------------------
+The NIR contains 'x' cells where ECCC suppresses emissions data for
+confidentiality, primarily in BC, AB, ON, and QC for certain sectors.
+find_x_locations() identifies these cells by region, year, and column
+offset. impute_x_values() then recovers them using proportional allocation
+from Canada-level totals and the known non-suppressed regional values —
+the same residual approach used in nir_to_cims.py. Cells are only imputed
+where a Canada-level total and at least one non-suppressed regional value
+are available; otherwise they remain as zero.
 """
 
 import pandas as pd
