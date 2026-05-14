@@ -215,7 +215,7 @@ def extend_series_trend_decline(series: pd.Series, base_year: int = 2022,
 
     # -- Trend continuation phase ----------------------------------------------
     t_start, t_end = trend_period
-    for year in range(t_start, t_end):
+    for year in range(base_year + 1, t_end):
         val = val + slope
         out[year] = val
 
@@ -302,7 +302,10 @@ def extend_series_trend_dampener(series: pd.Series, base_year: int = 2022,
     # -- Trend continuation phase ---------------------------------------------
     t_start, t_end = trend_period
     val = float(out[base_year])
-    for year in range(t_start, t_end):
+    # Start from base_year+1 so any gap between actual data end and the
+    # configured trend_period start is filled (e.g. LAST_HIST_YEAR updated to
+    # 2023 but activity tables still end at 2022 → gap year 2023 gets filled).
+    for year in range(base_year + 1, t_end):
         val = val + slope
         val = max(val, 0.0)
         out[year] = val

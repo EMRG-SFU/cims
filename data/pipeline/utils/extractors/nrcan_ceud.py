@@ -89,5 +89,8 @@ def row_to_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Serie
 
 
 def pct_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
-    """Return a fraction (0–1) Series from a percentage row in a CEUD table."""
-    return row_to_series(table, label, match_n) / 100.0
+    """Return a fraction (0–1) Series from a percentage row in a CEUD table.
+    Negative values are suppressed data sentinels (X in CEUD → -1.0) and are
+    replaced with NaN so they don't appear as negative shares."""
+    s = row_to_series(table, label, match_n) / 100.0
+    return s.where(s >= 0)

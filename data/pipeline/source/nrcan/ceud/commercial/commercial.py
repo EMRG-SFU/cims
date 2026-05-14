@@ -422,6 +422,13 @@ def extract_hvac_technologies(region: str, tables: dict,
     steam = _safe_pct("Steam",                       n=1)
     other = _safe_pct("Other2",                      n=1)
 
+    # If steam exists but has suppressed (NaN) years, recover those years as
+    # the remainder so shares sum to 1.
+    if not steam.dropna().empty:
+        known = elec.add(ng_t, fill_value=0).add(lfo, fill_value=0) \
+                    .add(hfo, fill_value=0).add(other, fill_value=0)
+        steam = steam.fillna((1.0 - known).clip(lower=0))
+
     # Steam → NG Cogeneration; Other → Propane
     ng_lo, ng_md, ng_hi = _split_ng(ng_t)
 
@@ -504,6 +511,11 @@ def extract_hot_water(region: str, tables: dict) -> list[pl.DataFrame]:
     hfo   = _hw("Heavy Fuel Oil")
     steam = _hw("Steam")
     other = _hw("Other2")
+
+    if not steam.dropna().empty:
+        known = elec.add(ng, fill_value=0).add(lfo, fill_value=0) \
+                    .add(hfo, fill_value=0).add(other, fill_value=0)
+        steam = steam.fillna((1.0 - known).clip(lower=0))
 
     # Steam → NG medium efficiency proxy
     ng_med = ng.add(steam, fill_value=0)
