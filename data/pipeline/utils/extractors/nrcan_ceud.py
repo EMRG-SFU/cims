@@ -12,10 +12,10 @@ SUPPRESSION HANDLING:
     The CEUD Excel format marks suppressed or confidential cells with 'X'.
     When Polars reads the raw table these appear as the string "X" or,
     after numeric coercion during parsing, as -1.0 for percentage rows.
-    pct_series() explicitly replaces all negative values with NaN so
-    suppressed shares do not propagate as negative fractions in downstream
-    calculations. Non-percentage rows with 'X' become null via strict=False
-    casting in the caller.
+    _to_float() converts any non-numeric cell (None, 'X', 'x', or any other
+    string) to NaN, so suppressed values are safely handled in both
+    row_to_series() and pct_series(). pct_series() additionally replaces
+    any remaining negatives with NaN to catch the -1.0 sentinel case.
 """
 import polars as pl
 import pandas as pd
@@ -90,11 +90,20 @@ def get_row_series(df: pl.DataFrame, label: str, match_n: int = 0,
     return {y: arr[idxs[match_n], c] for y, c in years}
 
 
+def _to_float(v) -> float:
+    """Convert a raw CEUD cell to float. Returns NaN for None, 'X', or non-numeric."""
+    if v is None:
+        return np.nan
+    try:
+        return float(v)
+    except (ValueError, TypeError):
+        return np.nan
+
+
 def row_to_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:
     """Thin wrapper around get_row_series returning a year-indexed pd.Series."""
     raw = get_row_series(table, label, match_n)
-    return pd.Series({int(k): (float(v) if v is not None else np.nan)
-                      for k, v in raw.items()})
+    return pd.Series({int(k): _to_float(v) for k, v in raw.items()})
 
 
 def pct_series(table: pl.DataFrame, label: str, match_n: int = 0) -> pd.Series:

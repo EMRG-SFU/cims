@@ -312,8 +312,6 @@ def load_tables(region_code: str) -> dict:
                 cast_exprs.append(
                     pl.col(c)
                     .str.strip_chars()
-                    .replace(["–", "-", "—", ""], None)
-                    .replace(["X", "x"], "-1.0")
                     .cast(pl.Float64, strict=False)
                 )
         if cast_exprs:
