@@ -31,14 +31,16 @@ from utils.controls_conversions import (
 )
 from utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from utils.data_extensions import extend_constant
+from utils.extractors.cer import find_cer_file
 
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
-MACRO_FILE = BASE_PATH / 'raw_data/cer/macro-indicators-2026.csv'
-BENCHMARK_FILE = BASE_PATH / 'raw_data/cer/benchmark-prices-2026.csv'
-END_USE_PRICES_FILE = BASE_PATH / 'raw_data/cer/end-use-prices-2026.csv'
-END_USE_DEMAND_FILE = BASE_PATH / 'raw_data/cer/end-use-demand-2026.csv'
+CER_DIR   = BASE_PATH / 'raw_data/cer'
+MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
+BENCHMARK_FILE      = find_cer_file(CER_DIR, 'benchmark-prices')
+END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
+END_USE_DEMAND_FILE = find_cer_file(CER_DIR, 'end-use-demand')
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
 RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'

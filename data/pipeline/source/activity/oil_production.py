@@ -32,10 +32,12 @@ if str(_project_root) not in sys.path:
 from utils.controls_conversions import load_control_config
 from utils.data_fill import trend_backwards
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.extractors.cer import find_cer_file
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
-CRUDE_OIL_PRODUCTION_FILE   = BASE_PATH / 'raw_data/cer/crude-oil-production-2026.csv'
+CER_DIR   = BASE_PATH / 'raw_data/cer'
+CRUDE_OIL_PRODUCTION_FILE   = find_cer_file(CER_DIR, 'crude-oil-production')
 REGION_MAP_FILE             = BASE_PATH / 'mappings_conversions/region_map.csv'
 OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
 SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]

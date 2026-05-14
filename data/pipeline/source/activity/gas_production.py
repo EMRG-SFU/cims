@@ -55,12 +55,14 @@ from utils.controls_conversions import load_control_config
 from utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
 from utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.stats_can import load_resd
+from utils.extractors.cer import find_cer_file
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
-NATURAL_GAS_PRODUCTION_FILE = BASE_PATH / 'raw_data/cer/natural-gas-production-2026.csv'
+CER_DIR   = BASE_PATH / 'raw_data/cer'
+NATURAL_GAS_PRODUCTION_FILE = find_cer_file(CER_DIR, 'natural-gas-production')
 RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
-LNG_EXPORT_FILE             = BASE_PATH / 'raw_data/cer/lng-export-assumptions-2026.csv'
+LNG_EXPORT_FILE             = find_cer_file(CER_DIR, 'lng-export-assumptions')
 OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
 SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
 ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
