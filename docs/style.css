@@ -2,9 +2,137 @@ a.footnote-ref.fn-adjacent > sup::before {
   content: ",";
 }
 
+/* Slightly smaller font for the footnote list at the bottom of the page
+   and the hover tooltip. */
+section.footnotes,
+.tippy-box .tippy-content {
+  font-size: 0.9em;
+}
+
+/* Quarto's light/dark theme toggle renders <i class="bi"></i> with a
+   toggle-switch SVG painted via background-image. Instead of trying to
+   override that rule, hide the whole <i> and draw a sun/moon glyph
+   from the Bootstrap Icons font as a ::before on the toggle link
+   itself. Convention: show the icon of the mode you'd switch TO, so
+   light pages show a moon and dark pages show a sun. */
+.quarto-color-scheme-toggle > .bi {
+  display: none;
+}
+.quarto-color-scheme-toggle::before {
+  font-family: "bootstrap-icons";
+  font-style: normal;
+  font-weight: 100;
+  display: inline-block;
+  font-size: 0.8rem;
+  line-height: 1;
+  /* Matches the standard `.bi::before` baseline offset so the sun/moon
+     sits at the same vertical position as the neighbouring GitHub icon. */
+  vertical-align: -0.125em;
+  content: "\f497"; /* bi-moon */
+}
+.quarto-color-scheme-toggle.alternate::before {
+  content: "\f5a2"; /* bi-sun */
+}
+
+/* The sidebar title row holds the "CIMS" link and the tools (GitHub +
+   theme toggle). Make that row a flex container and push the tools
+   block to the right edge of the left sidebar. */
+.sidebar-title {
+  display: flex;
+  align-items: center;
+}
+.sidebar-title .sidebar-tools-main {
+  margin-left: auto;
+}
+
+/* Quarto's tippy footnote tooltip is appended inside the footnote
+   marker's parent element, so when a footnote sits inside a <th> (e.g.
+   on an aggregate region column header) the tooltip inherits the bold
+   font-weight and center text-align from the table header. Force normal
+   weight and left alignment so the footnote text stays readable. */
+.tippy-box,
+.tippy-box .tippy-content {
+  font-weight: normal;
+  text-align: left;
+}
+
+/* Dynamic sector-by-region table in overview.qmd: cells that should
+   indicate a present sector get an empty `[]{.cell-on}` span, and we
+   shade the surrounding cell here. Uses :has() which is supported by
+   all modern browsers. */
+td:has(> .cell-on),
+td:has(> p > .cell-on) {
+  background-color: rgba(var(--bs-primary-rgb, 39, 128, 227), 0.3);
+}
+
+/* Vertical column separators for the dynamic sector-by-region table. */
+#tbl-sectors-regions-dynamic table th,
+#tbl-sectors-regions-dynamic table td {
+  border-left: 1px solid var(--bs-border-color, #dee2e6);
+}
+#tbl-sectors-regions-dynamic table th:first-child,
+#tbl-sectors-regions-dynamic table td:first-child {
+  border-left: none;
+}
+
 /* Allow long URLs in bibliography entries to wrap mid-string so they
    don't overflow into the section that follows. */
 #refs .csl-entry,
 #refs .csl-entry a {
   overflow-wrap: anywhere;
+}
+
+/* Slightly smaller font for the bibliography list. */
+#refs,
+#refs .csl-entry {
+  font-size: 0.9em;
+}
+
+/* SVG figures are usually authored with dark lines on a transparent
+   background. In light mode the page is already light so this looks
+   fine; in dark mode the figure content blends into the page. Give SVG
+   <img> figures their own white backplate so they stay readable in
+   either theme, with a touch of padding, rounded corners, and a soft
+   shadow so they read as an intentional card rather than a stark
+   white slab. */
+img.figure-img[src$=".svg"],
+img.img-fluid[src$=".svg"] {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
+/* Equation variable definitions. Pair a fenced div `.eq-vars` with a
+   Pandoc definition list immediately after a display equation to label
+   and describe the variables it uses. The grid lays out terms (math
+   variables) in a tidy left column and descriptions in the right. */
+.eq-vars {
+  margin: 0.25rem 0 2rem 1.5rem;
+  font-size: 0.85em;
+}
+.eq-vars dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  column-gap: 1rem;
+  row-gap: 0.2rem;
+  margin: 0;
+}
+.eq-vars dt {
+  font-weight: normal;
+  white-space: nowrap;
+}
+.eq-vars dd {
+  margin: 0;
+}
+
+/* Generous breathing room above and below display equations. When an
+   equation is followed by its `.eq-vars` block, tighten the gap so the
+   variables tuck against the equation; the existing 2rem bottom margin
+   on `.eq-vars` still provides the trailing space. */
+p:has(.math.display) {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+p:has(.math.display):has(+ .eq-vars) {
+  margin-bottom: 0.5rem;
 }

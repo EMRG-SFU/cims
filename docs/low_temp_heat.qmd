@@ -1,8 +1,3 @@
----
-bibliography: low_temp_heat.bib
-link-citations: true
----
-
 # Decarbonizing Low-Temperature Industrial Heat
 
 ## Scope and Definition
@@ -91,4 +86,17 @@ The technology competitions in the food and beverage, pulp and paper, chemicals,
 
 Existing boiler stock, distinguished by sub-model and temperature class, is estimated based on CEUD and NIR base-year data. All existing boiler stock is assumed to stay online for modeled lifetimes past the base year, after which replacement is required. Policy or other drivers may drive earlier retirement and replacement of some of these existing units. Capital costs, retrofit feasibility (as defined in [the technology chapter](technologies.qmd)), and electricity-price sensitivity vary substantially across these technologies. The lifecycle-cost formulation already in CIMS is applicable without modification once the techno-economic parameters are populated. The present chapter is intended to provide the technical basis for those parameter selections.
 
----
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

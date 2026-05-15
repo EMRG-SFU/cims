@@ -2,6 +2,9 @@ project:
   type: book
   output-dir: _book
 
+bibliography: low_temp_heat.bib
+link-citations: true
+
 book:
   title: CIMS
   author: Brad Griffin, Jillian Anderson, and Matt Sniatynski
@@ -27,13 +30,20 @@ book:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: cosmo
+      dark: darkly
     css: style.css
     link-external-newwindow: true
-    include-after-body: 
+    include-after-body:
       - comma-fn.html
       - refs-backlinks.html
   # docx:
   #   eval: true
-  pdf:
-    eval: true
+  # pdf:
+  #   eval: true
+  #   cite-method: biblatex
+  #   biblio-style: authoryear
+  #   biblatexoptions:
+  #     - refsection=chapter
+  #     - backend=biber

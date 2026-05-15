@@ -1,4 +1,4 @@
-﻿CIMS,CER (Grouped)
+﻿cims,cer
 Coal Mining,Industrial
 Natural Gas,Industrial
 Petroleum Crude,Industrial
@@ -14,11 +14,11 @@ Pulp and Paper,Industrial
 Metal Smelting,Industrial
 Iron and Steel,Industrial
 Light Industrial,Industrial
+Construction,Industrial
 Residential,Residential
 Commercial,Commercial
 Transportation Passenger,Transportation
 Transportation Freight,Transportation
 Waste,Industrial
 Agriculture,Industrial
-Construction,Industrial
 Forestry,Industrial

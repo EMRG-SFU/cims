@@ -1,3 +1,5 @@
 # Getting started
 
 how to run a scenario
+
+<mark>TODO: Discuss model operational structure (Excel input, Python, Excel results)</mark>

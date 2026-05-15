@@ -85,4 +85,3 @@ uv will use your existing environment and skip reinstalling dependencies unless 
 ## Additional Resources
 
 - **Submit Issues**: If you encounter any problems, please submit an issue on our [GitHub Issues page](https://github.com/EMRG-SFU/cims/issues).
-- **Data Pipeline**: See [`data/README.md`](https://github.com/EMRG-SFU/cims/blob/staging/README.md) for information on the data pipeline and directory structure.
