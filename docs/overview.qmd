@@ -73,7 +73,7 @@ for agg_file in sorted(mc_dir.glob("region_aggregation_*.csv")):
         continue
     agg_code = str(agg_df["code"].iloc[0]).strip().upper()
     agg_name = str(agg_df["name"].iloc[0]).strip()
-    children = [str(x).strip().upper() for x in agg_df["child"]]
+    children = [str(x).strip().upper() for x in agg_df["region_primary"]]
     # Derive the parent prefix from any child branch we recognise.
     sample_child_branch = next(
         (primary_branch_by_code[c] for c in children if c in primary_branch_by_code),
