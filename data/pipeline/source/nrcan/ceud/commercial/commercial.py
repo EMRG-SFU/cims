@@ -54,6 +54,7 @@ from pipeline.utils.data_extensions import (
     extend_series_trend_dampener,
 )
 from pipeline.utils.extractors.stats_can import load_resd
+from pipeline.utils.controls_conversions import DATA_START, PROJECTION_END
 
 # ==============================================================================
 # CONFIGURATION
@@ -63,11 +64,11 @@ BASE_PATH        = Path('C:/cims/data/raw_data/nrcan/ceud/commercial')
 ASSUMPTIONS_CSV  = Path('C:/cims/data/raw_data/assumptions/commercial_assumptions.csv')
 NG_EFFICIENCY_CSV = Path('C:/cims/data/raw_data/assumptions/ng_eff_assumptions_commercial.csv')
 OUTPUT_DIR       = Path('C:/cims/data/processed_data/nrcan/ceud')
-RESD_CSV       = Path('C:/cims/data/raw_data/stats_can/resd/2510002901_commercial.csv')
+RESD_CSV       = Path('C:/cims/data/raw_data/stats_can/resd/25100029.csv')
 POP_CSV        = Path('C:/cims/data/raw_data/stats_can/population/1710000901.csv')
 EFFICIENCY_XLS = Path('C:/cims/data/raw_data/nrcan/ceud/residential/res_ca_e_32.xls')
-YEARS            = list(range(2000, 2101))
-LAST_HIST_YEAR   = CONTROLS["last_historical_year"]["CEUD"]
+YEARS            = list(range(DATA_START, PROJECTION_END + 1))
+LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
 REGIONS = {
     'AB': 'Alberta',
@@ -654,7 +655,7 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
             max_hist = int(df.filter(pl.col('variable') == 'building_shell_shares')
                            ['year'].max())
             other_vals: dict[int, float] = {}
-            for yr in range(max_hist + 1, 2101):
+            for yr in range(max_hist + 1, PROJECTION_END + 1):
                 total_other = 0.0
                 for s in projected_declining.values():
                     v = s.get(yr) if yr in s.index else np.nan
@@ -916,6 +917,10 @@ def _build_comm_resd_shares(resd_csv: Path) -> pd.DataFrame:
     """
     df = (
         load_resd(resd_csv)
+        .filter(pl.col("characteristic").is_in([
+            "Public administration",
+            "Commercial and other institutional",
+        ]))
         .rename({"characteristic": "sector", "value": "demand_TJ"})
         .to_pandas()
     )

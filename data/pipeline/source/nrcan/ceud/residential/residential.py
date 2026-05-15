@@ -58,10 +58,10 @@ from pipeline.utils.extractors.stats_can import load_resd
 BASE_PATH      = Path('C:/cims/data/raw_data/nrcan/ceud/residential')
 ASSUMPTIONS_CSV = Path('C:/cims/data/raw_data/assumptions/residential_assumptions.csv')
 OUTPUT_DIR     = Path('C:/cims/data/processed_data/nrcan/ceud')
-RESD_CSV = Path('C:/cims/data/raw_data/stats_can/resd/2510002901_residential.csv')
+RESD_CSV = Path('C:/cims/data/raw_data/stats_can/resd/25100029.csv')
 POP_CSV  = Path('C:/cims/data/raw_data/stats_can/population/1710000901.csv')
 EFFICIENCY_XLS = Path('C:/cims/data/raw_data/nrcan/ceud/residential/res_ca_e_32.xls')
-LAST_HIST_YEAR = CONTROLS["last_historical_year"]["CEUD"]
+LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 
 PROVINCES = {
     'AB': 'Alberta',
@@ -1150,6 +1150,7 @@ def _build_resd_shares(resd_csv: Path) -> pd.DataFrame:
     """
     resd = (
         load_resd(resd_csv)
+        .filter(pl.col("characteristic") == "Residential")
         .select(["year", "geo", "fuel", "value"])
         .to_pandas()
     )

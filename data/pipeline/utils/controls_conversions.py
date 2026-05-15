@@ -34,6 +34,16 @@ def load_control_config() -> Dict:
     return mod.CONTROLS
 
 
+# Pipeline-wide constants — importable directly so scripts don't need to
+# dig into the nested dict each time.
+_controls      = load_control_config()
+_pipeline      = _controls["pipeline"]
+DATA_START     = _pipeline["data_start"]
+PROJECTION_END = _pipeline["projection_end"]
+LAST_DATA_YEAR = _controls["last_data_year"]
+ARCHIVED_DATA  = _controls["archived_data"]
+
+
 def _parse_numeric(value_str: str) -> Optional[float]:
     """
     Parse a numeric value from the 'Equivalent to' column.

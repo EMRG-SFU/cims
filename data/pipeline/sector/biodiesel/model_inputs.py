@@ -40,6 +40,7 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
@@ -82,10 +83,10 @@ def _read_flattened_fixed(template_region: str, output_region: str) -> pl.DataFr
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
-            year_min=2000,
-            year_max=2050,
-            target_start=2000,
-            target_end=2100,
+            year_min=DATA_START,
+            year_max=LAST_DATA_YEAR["cer"],
+            target_start=DATA_START,
+            target_end=PROJECTION_END,
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)

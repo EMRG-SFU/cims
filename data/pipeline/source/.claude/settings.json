@@ -12,7 +12,14 @@
       "Bash(Remove-Item \"c:\\\\cims\\\\data\\\\pipeline\\\\utils\\\\extractors\\\\stats_can_pop.py\")",
       "Bash(Get-ChildItem \"C:\\\\cims\\\\data\\\\raw_data\\\\cer\" -Recurse)",
       "Bash(Select-Object FullName, Name)",
-      "PowerShell(Get-ChildItem \"C:\\\\cims\\\\data\\\\raw_data\\\\cer\" -Recurse | ForEach-Object { $_.FullName })"
+      "PowerShell(Get-ChildItem \"C:\\\\cims\\\\data\\\\raw_data\\\\cer\" -Recurse | ForEach-Object { $_.FullName })",
+      "PowerShell(Get-ChildItem \"C:\\\\cims\\\\data\\\\raw_data\" -Recurse | Where-Object { $_.Name -match \"ab_gov|bc_gov|ab_ministry|bc_ministry\" } | ForEach-Object { $_.FullName })",
+      "Bash(python -c ' *)",
+      "WebFetch(domain:docs.marimo.io)",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "C:\\cims\\data\\mappings_conversions"
     ]
   }
 }

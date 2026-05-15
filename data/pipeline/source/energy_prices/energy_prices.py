@@ -32,6 +32,7 @@ from utils.controls_conversions import (
 from utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from utils.data_extensions import extend_constant
 from utils.extractors.cer import find_cer_file
+from utils.controls_conversions import DATA_START, PROJECTION_END
 
 
 # Configuration
@@ -45,6 +46,7 @@ CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xls
 RETAIL_FUEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10326_retail_fuel_prices_1-23-26.xlsx'
 RENEWABLE_DIESEL_FILE = BASE_PATH / 'raw_data/energy_prices/alternative_fuels_data_center/10969_renewable_diesel_prices_2-3-26.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
+
 
 
 # Regions for regional energies
@@ -116,8 +118,8 @@ def process_cer_benchmark_energy(
     )
     prices_cad_gj = prices_cad_gj * gj_conversion
     max_data_year = int(prices_cad_gj.index.max())
-    prices_full = backfill_constant(prices_cad_gj, 2000)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = backfill_constant(prices_cad_gj, DATA_START)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
 
     return prices_full, max_data_year
 
@@ -157,8 +159,8 @@ def process_end_use_weighted_avg(
         prices_df, demand_df, scenario, sector, energy_price, energy_demand
     )
     max_data_year = int(prices.index.max()) if len(prices) > 0 else 0
-    prices_full = backfill_constant(prices, 2000)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = backfill_constant(prices, DATA_START)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
 
     return prices_full, max_data_year
 
@@ -216,8 +218,8 @@ def process_jcims_energy(
     )
     prices_annual = interpolate_5year_to_annual(prices_2025)
     max_data_year = int(prices_2025.index.max()) if len(prices_2025) > 0 else 0
-    prices_full = backfill_constant(prices_annual, 2000)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = backfill_constant(prices_annual, DATA_START)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
 
     return prices_full, max_data_year
 
@@ -239,7 +241,7 @@ def process_saf_prices(jet_energy_prices: pd.Series) -> pd.Series:
     pd.Series
         SAF price series in 2025 C$/GJ indexed by year (2000–2100).
     """
-    years = range(2000, 2101)
+    years = range(DATA_START, PROJECTION_END + 1)
     saf_prices = pd.Series(index=years, dtype=float)
 
     saf_prices.loc[2000:2030] = 160.0
@@ -291,8 +293,8 @@ def process_electricity_regional(
 
     prices = pd.Series(prices_dict)
     max_data_year = int(prices.index.max()) if len(prices) > 0 else 0
-    prices_full = backfill_constant(prices, 2000)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = backfill_constant(prices, DATA_START)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
 
     return prices_full, max_data_year
 
@@ -346,8 +348,8 @@ def process_hydrogen_regional(
     )
     prices_annual = interpolate_5year_to_annual(prices_2025)
     max_data_year = int(prices_2025.index.max()) if len(prices_2025) > 0 else 0
-    prices_full = backfill_constant(prices_annual, 2000)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = backfill_constant(prices_annual, DATA_START)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
     return prices_full, max_data_year
 
 
@@ -433,7 +435,7 @@ def process_afdc_energy(
     max_data_year = int(prices_gj.index.max()) if len(prices_gj) > 0 else 0
     start_year = 2000 if backfill_to_2000 else int(prices_gj.index.min())
     prices_full = backfill_constant(prices_gj, start_year)
-    prices_full = extend_constant(prices_full, 2100)
+    prices_full = extend_constant(prices_full, PROJECTION_END)
 
     return prices_full, max_data_year
 

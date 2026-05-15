@@ -51,6 +51,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
+from utils.controls_conversions import load_control_config
 
 
 # Configuration
@@ -65,7 +66,7 @@ _EXCLUDE_REGIONS = {"Canada", "Northwest Territories and Nunavut"}
 
 KT_TO_T = 1_000   # kt CO2eq -> tCO2e
 
-DATA_START = 2000
+DATA_START = load_control_config()["pipeline"]["data_start"]
 
 ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Emissions Drivers', ASSUMPTIONS_FILE)

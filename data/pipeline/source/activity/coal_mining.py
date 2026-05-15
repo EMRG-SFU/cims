@@ -182,6 +182,7 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions, extend_constant
+from utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END
 
 # ── File paths ───────────────────────────────────────────────────────────────────
 BASE             = Path('C:/cims/data')
@@ -193,8 +194,11 @@ PATH_BC          = BASE / 'raw_data/bc_gov/bcannualcoalproduction.csv'
 PATH_AER         = BASE / 'raw_data/ab_gov/st98-2025-coal-production-demand-data.xlsx'
 OUTPUT           = BASE / 'processed_data/activity/coal_mining.csv'
 
-DATA_START = 2000
-YEARS      = list(range(DATA_START, 2025))
+_config        = load_control_config()
+LAST_DATA_YEAR = _config["last_data_year"]
+_archived      = _config["archived_data"]
+EXTEND_TO      = PROJECTION_END
+YEARS          = list(range(DATA_START, LAST_DATA_YEAR["stat_can_coal"] + 1))
 REGIONS    = ['British Columbia', 'Alberta', 'Saskatchewan', 'New Brunswick', 'Nova Scotia']
 
 ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
@@ -522,7 +526,7 @@ for y in YEARS:
 
 # ── BC 2021–2024: residual from StatCan Canada total ─────────────────────────────
 
-for y in [2021, 2022, 2023, 2024]:
+for y in range(_archived["bc_coal"] + 1, LAST_DATA_YEAR["stat_can_coal"] + 1):
     bc_total = residual_to_nonnegative(
         canada_kt[y],
         total[y, 'Alberta'],
@@ -598,7 +602,7 @@ combined = pl.concat([coal_total, coal_met_pct]).sort(["Region", "Variable", "Ye
 
 regional_sums = (
     combined
-    .filter((pl.col("Variable") == "Coal Mining") & (pl.col("Year") <= 2024))
+    .filter((pl.col("Variable") == "Coal Mining") & (pl.col("Year") <= LAST_DATA_YEAR["stat_can_coal"]))
     .group_by("Year")
     .agg(pl.col("Value").sum().alias("our_sum"))
     .sort("Year")
@@ -622,7 +626,7 @@ for row in regional_sums.to_dicts():
 #   growth effectively stops. Metallurgical Finishing share (% of kt): held flat
 #   via extend_constant.
 
-EXTEND_TO = 2100
+# EXTEND_TO is defined in the config block above
 
 last_year = combined["Year"].max()
 

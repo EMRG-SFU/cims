@@ -51,7 +51,7 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.controls_conversions import load_control_config
+from utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END
 from utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
 from utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.stats_can import load_resd
@@ -64,7 +64,9 @@ NATURAL_GAS_PRODUCTION_FILE = find_cer_file(CER_DIR, 'natural-gas-production')
 RESD_FILE                   = BASE_PATH / 'raw_data/stats_can/resd/25100029.csv'
 LNG_EXPORT_FILE             = find_cer_file(CER_DIR, 'lng-export-assumptions')
 OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
-SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
+_config                     = load_control_config()
+SCENARIO                    = _config["cer_ef_reference_scenario"]
+LAST_DATA_YEAR              = _config["last_data_year"]
 ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Natural Gas', ASSUMPTIONS_FILE)
 
@@ -124,7 +126,7 @@ total_df = trend_backwards(
 splits_2005 = other_df.filter(pl.col("Year") == 2005)
 early_splits = pl.concat([
     splits_2005.with_columns(pl.lit(y).alias("Year"))
-    for y in range(2000, 2005)
+    for y in range(DATA_START, 2005)
 ])
 
 total_df     = total_df.with_columns(pl.col("Year").cast(pl.Int64))
@@ -135,8 +137,8 @@ other_df = pl.concat([early_splits, other_df]).sort(["Region", "Variable", "Year
 df = pl.concat([total_df, other_df]).sort(["Region", "Variable", "Year"])
 
 df = df.filter(
-    (pl.col("Year") >= 2000) &
-    (pl.col("Year") <= 2050)
+    (pl.col("Year") >= DATA_START) &
+    (pl.col("Year") <= LAST_DATA_YEAR["cer"])
 )
 
 
@@ -257,7 +259,7 @@ _resd_pivot = (
         pl.col("characteristic").is_in(["Production", "Producer consumption"]) &
         pl.col("geo").is_in(list(_RESD_GEO_MAP.keys())) &
         (pl.col("year") >= 2000) &
-        (pl.col("year") <= 2024)
+        (pl.col("year") <= LAST_DATA_YEAR["stat_can_resd"])
     )
     .with_columns(
         pl.col("geo").replace(_RESD_GEO_MAP).alias("Province"),
@@ -288,7 +290,7 @@ _resd_pivot = _resd_pivot.with_columns(
 )
 
 # Build a complete grid: all 8 provinces × years 2000–2100
-_all_years = list(range(2000, 2101))
+_all_years = list(range(DATA_START, PROJECTION_END + 1))
 _all_provs = list(_RESD_GEO_MAP.values())
 _processed = (
     pl.DataFrame({"Province": [p for p in _all_provs for _ in _all_years],
@@ -322,8 +324,8 @@ _processed = (
 def _extend_processed(grp: pl.DataFrame) -> pl.DataFrame:
     province = grp["Province"][0]
     s = pd.Series(grp["Processed"].to_list(), index=grp["Year"].to_list(), dtype=float)
-    s = backfill_constant(s, start_year=2000)
-    s = extend_constant(s, end_year=2100)
+    s = backfill_constant(s, start_year=DATA_START)
+    s = extend_constant(s, end_year=PROJECTION_END)
     return pl.DataFrame({
         "Province": [province] * len(s),
         "Year":     [int(y) for y in s.index],
@@ -523,11 +525,11 @@ _lng_vol_2050 = (
     .item()
 )
 _lng_extension = pl.DataFrame({
-    "Year":    list(range(2051, 2101)),
+    "Year":    list(range(LAST_DATA_YEAR["cer"] + 1, PROJECTION_END + 1)),
     "lng_vol": [_lng_vol_2050] * 50,
 })
 _lng_all = pl.concat([_lng_raw, _lng_extension]).filter(
-    (pl.col("Year") >= 2000) & (pl.col("Year") <= 2100)
+    (pl.col("Year") >= DATA_START) & (pl.col("Year") <= PROJECTION_END)
 )
 
 # Join BC gross production and compute LNG fraction.

@@ -29,6 +29,7 @@ from pathlib import Path
 import polars as pl
 sys.path.append(r"C:\cims\data\pipeline\utils")
 from add_cims_totals import add_totals
+from controls_conversions import load_control_config
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONFIG — Input and output files
@@ -43,17 +44,19 @@ OUT_NIR  = r"C:\cims\data\processed_data\eccc\NIR_Suppressed_Solved.csv"
 # Main output - NIR emissions mapped to cims nodes
 OUT_CIMS = r"C:\cims\data\processed_data\eccc\NIR_to_CIMS.csv"
 
+_config = load_control_config()
+_archived = _config["archived_data"]
+
 # Anchor year: last year where NWT and Nu Construction (idx=47) are unsuppressed.
 # Used to compute the NWT/Nu split ratio. Move earlier if this year becomes suppressed.
-ANCHOR_YEAR = 2004
+ANCHOR_YEAR = _archived["nir_anchor_year"]
 
 # The one year where NS, NWT, and Nu are all suppressed simultaneously.
 # Requires a special solve order to avoid circular dependencies.
-CO_SUPPRESSION_YEAR = 2005
+CO_SUPPRESSION_YEAR = _archived["nir_co_suppression_year"]
 
 # Years where only NWT and Nu are suppressed (simpler two-region solve).
-# Update the upper bound when a new NIR year is added.
-SIMPLE_SUPPRESSION_YEARS = range(2006, 2025)
+SIMPLE_SUPPRESSION_YEARS = range(2006, _config["last_data_year"]["nir"] + 1)
 
 # Suppressed (region, index) pairs the solver handles, and the year they begin.
 # These are the specific rows the solver knows how to estimate — there may be

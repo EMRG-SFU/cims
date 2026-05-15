@@ -60,6 +60,7 @@ if str(_project_root) not in sys.path:
 from utils.data_fill import interpolate_gaps
 from utils.data_extensions import extend_cagr_periods
 from utils.extractors.stats_can import read_statscan_csv
+from utils.controls_conversions import load_control_config, DATA_START
 
 # =============================================================================
 # Configuration
@@ -679,7 +680,9 @@ shares = extended
 
 print("  GO shares now cover: 2000-2024 (2023-2024 held at 2022 values)")
 
-ANNUAL_YEARS = list(range(2000, 2025))
+_hvy_config    = load_control_config()
+LAST_DATA_YEAR = _hvy_config["last_data_year"]
+ANNUAL_YEARS   = list(range(DATA_START, LAST_DATA_YEAR["ceedc"] + 1))
 
 # =============================================================================
 # STEP 6 — BUILD WEIGHTED COMBINED GO SHARES

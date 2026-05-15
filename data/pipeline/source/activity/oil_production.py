@@ -33,6 +33,7 @@ from utils.controls_conversions import load_control_config
 from utils.data_fill import trend_backwards
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.cer import find_cer_file
+from utils.controls_conversions import DATA_START, PROJECTION_END
 
 # Configuration
 BASE_PATH = Path('C:/cims/data')
@@ -40,7 +41,9 @@ CER_DIR   = BASE_PATH / 'raw_data/cer'
 CRUDE_OIL_PRODUCTION_FILE   = find_cer_file(CER_DIR, 'crude-oil-production')
 REGION_MAP_FILE             = BASE_PATH / 'mappings_conversions/region_map.csv'
 OUTPUT_DIR                  = BASE_PATH / 'processed_data/activity'
-SCENARIO                    = load_control_config()["cer_ef_reference_scenario"]
+_config                     = load_control_config()
+SCENARIO                    = _config["cer_ef_reference_scenario"]
+LAST_DATA_YEAR              = _config["last_data_year"]
 
 OIL_CONVERSION = 1_000 * 365   # Thousand m3/day -> m3/year
 
@@ -146,7 +149,7 @@ oil_total_df = trend_backwards(
 oil_total_lookup = (
     oil_total_df
     .with_columns(pl.col("Year").cast(pl.Int64))
-    .filter((pl.col("Year") >= 2000) & (pl.col("Year") <= 2050))
+    .filter((pl.col("Year") >= DATA_START) & (pl.col("Year") <= LAST_DATA_YEAR["cer"]))
     .select(["Region", "Year", pl.col("Value_m3").alias("total")])
 )
 
@@ -155,13 +158,13 @@ oil_other_df = oil_df.with_columns(pl.col("Year").cast(pl.Int64))
 oil_splits_2005 = oil_other_df.filter(pl.col("Year") == 2005)
 oil_early_splits = pl.concat([
     oil_splits_2005.with_columns(pl.lit(y).cast(pl.Int64).alias("Year"))
-    for y in range(2000, 2005)
+    for y in range(DATA_START, 2005)
 ])
 
 oil_other_df = pl.concat([oil_early_splits, oil_other_df]).sort(["Region", "Variable", "Year"])
 oil_other_df = oil_other_df.filter(
-    (pl.col("Year") >= 2000) &
-    (pl.col("Year") <= 2050)
+    (pl.col("Year") >= DATA_START) &
+    (pl.col("Year") <= LAST_DATA_YEAR["cer"])
 )
 
 # -- O3. Pivot sub-types, then join trended total -----------------------------

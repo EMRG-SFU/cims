@@ -27,6 +27,7 @@ if str(_project_root) not in sys.path:
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.stats_can import read_statscan_csv
+from utils.controls_conversions import load_control_config
 
 # Configuration
 BASE_PATH           = Path('C:/cims/data')
@@ -35,7 +36,8 @@ REGION_MAP_FILE     = MAPPINGS_PATH / 'region_map.csv'
 LIGHT_INDUSTRY_FILE = BASE_PATH / 'raw_data/stats_can/activity/36100711.csv'
 OUTPUT_DIR          = BASE_PATH / 'processed_data/activity'
 
-DATA_START = 2000
+DATA_START     = 2000
+LAST_DATA_YEAR = load_control_config()["last_data_year"]
 
 ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Light Industrial', ASSUMPTIONS_FILE)
@@ -145,7 +147,7 @@ li_df = (
         (pl.col('Prices')   == 'Chained (2017) dollars') &
         (pl.col(NAICS_COL).is_in(all_naics_needed)) &
         (pl.col('REF_DATE').cast(pl.Int32) >= 2000) &
-        (pl.col('REF_DATE').cast(pl.Int32) <= 2024)
+        (pl.col('REF_DATE').cast(pl.Int32) <= LAST_DATA_YEAR["stat_can_gdp"])
     )
     .select(['REF_DATE', 'GEO', NAICS_COL, 'VALUE'])
     .rename({

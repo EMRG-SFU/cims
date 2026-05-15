@@ -32,6 +32,7 @@ from utils.controls_conversions import (
 from utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from utils.data_extensions import extend_constant
 from utils.extractors.cer import find_cer_file
+from utils.controls_conversions import DATA_START, PROJECTION_END
 from energy_prices import main as get_production_costs
 
 
@@ -47,6 +48,7 @@ MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
 OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
+
 
 
 
@@ -175,7 +177,7 @@ def calculate_electricity_multipliers(
             cer_group = sector_to_group.get(sector, 'Industrial')
             multiplier = multipliers_by_group.get(cer_group, multipliers_by_group['Industrial'])
 
-            for year in range(2000, 2101):
+            for year in range(DATA_START, PROJECTION_END + 1):
                 rows.append({
                     'region': region,
                     'sector': sector,
@@ -228,7 +230,7 @@ def calculate_hydrogen_multipliers(
             cer_group = sector_groups.get(sector, 'Industrial')
             multiplier = 1.1 if cer_group in ['Residential', 'Commercial'] else 1.0
 
-            for year in range(2000, 2101):
+            for year in range(DATA_START, PROJECTION_END + 1):
                 rows.append({
                     'region': region,
                     'sector': sector,
@@ -357,8 +359,8 @@ def calculate_end_use_energy_multipliers(
     extended_base_multipliers: Dict[Tuple, float] = {}
     for (region, sector, energy), year_mults in grouped.items():
         mult_series = pd.Series(year_mults)
-        extended_series = backfill_constant(mult_series, 2000)
-        extended_series = extend_constant(extended_series, 2100)
+        extended_series = backfill_constant(mult_series, DATA_START)
+        extended_series = extend_constant(extended_series, PROJECTION_END)
         for year, mult in extended_series.items():
             if pd.notna(mult):
                 extended_base_multipliers[(region, sector, energy, int(year))] = mult
@@ -370,7 +372,7 @@ def calculate_end_use_energy_multipliers(
         if cims_region == 'CAN':
             continue
 
-        for year in range(2000, 2101):
+        for year in range(DATA_START, PROJECTION_END + 1):
             # Heavy Fuel Oil: Industrial base, 1.1× for Residential/Commercial
             hfo_ind_key = (cims_region, 'Industrial', 'Heavy Fuel Oil', year)
             if hfo_ind_key in base_multipliers:
@@ -483,7 +485,7 @@ def calculate_simple_fuel_multipliers(
                 cer_group = sector_groups.get(sector, 'Industrial')
                 multiplier = 1.25 if cer_group == 'Industrial' else 1.5
 
-                for year in range(2000, 2101):
+                for year in range(DATA_START, PROJECTION_END + 1):
                     rows.append({
                         'region': region,
                         'sector': sector,
@@ -687,7 +689,7 @@ def calculate_jcims_multipliers(
             source_sector = 'Light Industrial' if cims_sector in use_light_ind else cims_sector
 
             for fuel in jcims_fuels:
-                for year in range(2000, 2101):
+                for year in range(DATA_START, PROJECTION_END + 1):
                     mult = get_multiplier_with_fallback(jcims_region, source_sector, fuel, year)
                     if mult is not None:
                         rows.append({
@@ -707,8 +709,8 @@ def calculate_jcims_multipliers(
     for (region, sector, energy), group in df.groupby(['region', 'sector', 'energy']):
         multipliers_series = group.set_index('year')['multiplier'].sort_index()
         annual_mult = interpolate_5year_to_annual(multipliers_series)
-        extended_mult = backfill_constant(annual_mult, 2000)
-        extended_mult = extend_constant(extended_mult, 2100)
+        extended_mult = backfill_constant(annual_mult, DATA_START)
+        extended_mult = extend_constant(extended_mult, PROJECTION_END)
 
         for year, mult in extended_mult.items():
             if pd.notna(mult):
