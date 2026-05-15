@@ -1,5 +1,34 @@
 <script>
 (function () {
+  // Quarto book mode picks one chapter as the "primary" references
+  // location, hides every other chapter's #refs div via inline
+  // display:none, and rewrites every cross-chapter citation link to
+  // point at that primary chapter. With per-chapter bibliographies
+  // (declared in each chapter's YAML) each chapter has its own ref
+  // entries, so the centralization is wrong: the hidden div is the
+  // one with the entries you actually need, and rewritten hrefs point
+  // at refs that don't exist on the destination page. Undo both
+  // pieces of the post-processing before adding the backlink arrows.
+  function unhideLocalRefs() {
+    document.querySelectorAll('#refs').forEach(function (refs) {
+      if (refs.style && refs.style.display === 'none') {
+        refs.style.removeProperty('display');
+      }
+    });
+  }
+
+  function rewriteCrossChapterCites() {
+    document.querySelectorAll('a[href*=".html#ref-"]').forEach(function (a) {
+      const href = a.getAttribute('href') || '';
+      const idx = href.lastIndexOf('#ref-');
+      if (idx === -1) return;
+      const hash = href.slice(idx);                          // "#ref-iea-fop"
+      if (document.getElementById(hash.slice(1))) {
+        a.setAttribute('href', hash);
+      }
+    });
+  }
+
   function addBacklinks() {
     const entries = document.querySelectorAll('#refs .csl-entry[id^="ref-"]');
     entries.forEach(function (entry) {
@@ -40,11 +69,17 @@
     });
   }
 
+  function applyAll() {
+    unhideLocalRefs();
+    rewriteCrossChapterCites();
+    addBacklinks();
+  }
+
   function start() {
     // Run once after Quarto finishes its own link rewriting
-    setTimeout(addBacklinks, 0);
+    setTimeout(applyAll, 0);
     // And again on full load to be safe
-    window.addEventListener('load', addBacklinks);
+    window.addEventListener('load', applyAll);
   }
 
   if (document.readyState === 'loading') {

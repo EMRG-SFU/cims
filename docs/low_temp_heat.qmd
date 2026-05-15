@@ -1,3 +1,7 @@
+---
+bibliography: low_temp_heat.bib
+---
+
 # Decarbonizing Low-Temperature Industrial Heat
 
 ## Scope and Definition

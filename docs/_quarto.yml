@@ -2,7 +2,10 @@ project:
   type: book
   output-dir: _book
 
-bibliography: low_temp_heat.bib
+# Per-chapter bibliographies are declared in each chapter's YAML
+# frontmatter (e.g. `bibliography: technologies.bib`). This isolates
+# each chapter's citation context so references appear at the end of
+# the chapter that cites them rather than being pooled across the book.
 link-citations: true
 
 book:

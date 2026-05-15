@@ -1,3 +1,7 @@
+---
+bibliography: technologies.bib
+---
+
 # Technology Competition and Demand Feedbacks
 
 CIMS operating equations and their subcomponents are presented below: sub-sector technology choice, energy supply and demand equilibrium, and finally goods and services demand equilibrium.
@@ -23,7 +27,9 @@ All of the CIMS energy demand models (industry, transportation, commercial / ins
 
 CIMS begins each simulation with an existing base stock of technologies. @eq-stock_retirement_existing describes how the existing stock of unknown age already in use is retired. Each year a constant amount of the base stock is retired until there is no more base stock remaining (@fig-stock_retirement_existing).
 
-$${BS}_{t} = {BS}_{0}\left( 1 - \frac{T_{t} - T_{0}}{L} \right)$$ {#eq-stock_retirement_existing}
+$$
+{BS}_{t} = {BS}_{0}\left( 1 - \frac{T_{t} - T_{0}}{L} \right)
+$$ {#eq-stock_retirement_existing}
 
 ::: {.eq-vars}
 $BS_t$
@@ -47,7 +53,9 @@ $L$
 
 Retirement of capital stock purchased during a CIMS simulation is calculated using a different methodology since the vintage of new stock is known and an explicit lifetime (and retirement schedule) can be applied to the stock purchase.
 
-$${NS}_{t} = \frac{{NS}_{p}}{1 + e^{\frac{11.513}{L}\left( \left( T_{t} - T_{p} \right) - L \right)}}$$ {#eq-stock_retirement_new}
+$$
+{NS}_{t} = \frac{{NS}_{p}}{1 + e^{\frac{11.513}{L}\left( \left( T_{t} - T_{p} \right) - L \right)}}
+$$ {#eq-stock_retirement_new}
 
 ::: {.eq-vars}
 $NS_t$
@@ -75,7 +83,9 @@ This function uses an s-shaped, logistic curve to simulate the retirement of tec
 
 The total stock of a technology in any given year *t* is the sum of the unretired base stock and the unretired new stock remaining from each previous year (@eq-stock_total).
 
-$${Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}$$ {#eq-stock_total}
+$$
+{Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}
+$$ {#eq-stock_total}
 
 ![Total Stock](images/stock_total.svg){#fig-stock_total .lightbox width=80%}
 
@@ -85,10 +95,13 @@ While retrofitting occurs before new stock competition, the retrofitting equatio
 
 #### New Stock Competition
 
-@eq-market_share_new provides a logistic curve function whose slope is determined by a variance parameter, *v*. A high value for *v*, such as 30, means that the
-technology with the lowest lifecycle cost captures almost all of the new equipment stocks, as would occur with a linear programming model. An extremely low value for v, such as 1, means that new equipment market shares are distributed almost evenly between all competing technologies, even if their lifecycle costs differ significantly. Thus, *v* represents sensitivity of the technology competition to relative lifecycle costs.
+@eq-market_share_new is a normalized inverse-power function: the market share of each technology is proportional to its lifecycle cost raised to $-v$, divided by the sum of that quantity over all competitors. It is the multinomial choice analogue of softmax, but with a power-law transform of cost instead of an exponential[^tech-choice-family] — which means lifecycle-cost *ratios*, rather than differences, drive the share split. The variance parameter $v$ controls how sharply the competition responds to those ratios: a high value, such as $v = 30$, makes the lowest-cost technology capture almost all new equipment stocks (approaching the winner-take-all rule of a linear program), while a low value, such as $v = 1$, spreads new equipment shares almost evenly across competing technologies even when their lifecycle costs differ significantly. Equivalently, in log-cost space the equation has the form of a multinomial logit on $\ln LCC$.
 
-$${MS}_{k} = \frac{{LCC}_{k}^{- v}}{\sum_{j = 1}^{J}{LCC}_{j}^{- v}}$$ {#eq-market_share_new}
+$$
+{MS}_{k} = \frac{{LCC}_{k}^{- v}}{\sum_{j = 1}^{J}{LCC}_{j}^{- v}}
+$$ {#eq-market_share_new}
+
+[^tech-choice-family]: The CIMS choice rule belongs to the family of log-linear utility, multiplicative-error discrete choice models sometimes called the **Weibit** model. Standard multinomial logit [@mcfadden] assumes a Gumbel-distributed additive error term in utility and yields choice probabilities of the form $e^{V_k} / \sum_j e^{V_j}$; the Weibit instead assumes a Weibull-distributed multiplicative error and yields the power-form expression used here [@castillo-weibit]. The distinction occasionally matters when calibrating $v$ against empirical data, because the implied stochastic interpretation of the lifecycle cost differs. For background on how the logit-style framework is used in CIMS more broadly, see @rivers-jaccard.
 
 ::: {.eq-vars}
 $MS_k$
@@ -102,82 +115,97 @@ $v$
 :::
 
 
-$${LCC}_{kt} = {CC}_{kt} + {OM}_{k} + {SC}_{kt}$$ {#eq-lifecycle_cost}
+$$
+{LCC}_{kt} = {CC}_{kt} + {OM}_{k} + {SC}_{kt}
+$$ {#eq-lifecycle_cost}
 
-Where:
+::: {.eq-vars}
+$LCC_{kt}$
+:   annual lifecycle cost of technology *k* at time *t*
 
-LCC~kt~ is the annual lifecycle cost of technology k at time t
+$CC_{kt}$
+:   capital cost of technology *k* at time *t*
 
-CC~kt~ is the capital cost of technology k at time t
+$OM_k$
+:   operating costs of technology *k*
 
-OM~k~ is the operating costs of technology k
+$SC_{kt}$
+:   service cost of technology *k* at time *t*
+:::
 
-SC~kt~ is the service cost of technology k at time t
+$$
+{CC}_{t} = \max\left\{ {DCC}_{t},\, {CC}_{2000} \cdot {DCC}_{limit} \right\}
+$$ {#eq-capital_cost_annual}
 
-Equation : Annual capital cost
+::: {.eq-vars}
+$CC_t$
+:   annual capital cost of a technology at time *t*
 
-$${CC}_{t} = \mathbf{\max}\left\{ {DCC}_{t},{CC}_{2000}*{DCC}_{limit} \right\}\ \ \ $$
+$DCC_t$
+:   declining capital cost at time *t*
 
-Where:
+$CC_{2000}$
+:   capital cost of a technology in the year 2000 (before applying the declining capital cost function)
 
-CC~t~ is the annual capital cost of a technology at time t
+$DCC_{limit}$
+:   lowest value to which a technology's capital cost can be reduced by the DCC function (as a percentage of the capital cost in year 2000)
+:::
 
-DCC~t~ is the declining capital cost at time t
+See the section below for the declining capital cost functions.
 
-CC~2000~ is the capital cost of a technology in the year 2000 (before
-applying the declining capital cost function)
+$$
+{CC}_{2000} = \left( \frac{{CC}_{overnight} + FIC + {DIC}_{t}}{Output} \right) \cdot CRF
+$$ {#eq-capital_cost_2000}
 
-DCC~limit~ is the lowest value to which a technology's capital cost can
-be reduced by the DCC function (as a percentage of the capital cost in
-year 2000)
+::: {.eq-vars}
+$CC_{2000}$
+:   capital cost of a technology in the year 2000 (before applying the declining capital cost function)
 
-[]{#_Toc25226760 .anchor}See the section below for the declining capital
-cost functions.
+$CC_{overnight}$
+:   overnight capital cost
 
-Equation : Capital cost in year 2000
+$FIC$
+:   upfront fixed intangible cost, representing non-financial costs of investment
 
-$${CC}_{2000} = \left( \frac{{CC}_{overnight} + FIC + D{IC}_{t}}{Output} \right)*CRF$$
+$DIC_t$
+:   upfront intangible cost that can decline over time
 
-Where:
+$Output$
+:   material output of a technology
 
-CC~2000~ is the capital cost of a technology in the year 2000 (before
-applying the declining capital cost function)
+$CRF$
+:   capital recovery factor
+:::
 
-CC~overnight~ is the overnight capital cost
+$$
+CRF = \frac{r}{1 - {(1 + r)}^{- N}}
+$$ {#eq-capital_recovery_factor}
 
-UIC~fixed~ is the upfront fixed intangible cost meant to represent
-non-financial costs for investment
+::: {.eq-vars}
+$CRF$
+:   capital recovery factor of a technology
 
-UIC~declining,t~ is the upfront intangible cost that can decline over
-time
+$r$
+:   financial discount rate
 
-Output is the material output of a technology
+$N$
+:   lifespan of the technology
+:::
 
-CRF is the capital recovery factor
+$$
+{SC}_{kt} = \sum_{j} P_{jt} \cdot R_{kjt}
+$$ {#eq-service_cost}
 
-Equation : Capital recovery factor
+::: {.eq-vars}
+$SC_{kt}$
+:   service cost of technology *k* at time *t*
 
-$$CRF = \frac{r}{1 - {(1 + r)}^{- N}}$$
+$P_{jt}$
+:   price of service type *j* at time *t* (can be either a fuel price or the weighted-average lifecycle cost of a service, based on the market shares of technologies competing to provide that service)
 
-Where:
-
-CRF is the capital recovery factor of a technology
-
-r is the financial discount rate
-
-N is the lifespan of a technology
-
-Equation : Service cost
-
-$${SC}_{kt} = \sum_{}^{}P_{jt}*R_{kjt}$$
-
-Where:
-
-SCkt is the service cost of technology k at time t
-
-Pjt is the price of service type j at time t (can be either fuel price or the weighted-average lifecycle cost of a service based on market shares of technologies competing to provide that service)
-
-R~kjt~ is the service requested for technology k of service type j at time t
+$R_{kjt}$
+:   amount of service type *j* requested by technology *k* at time *t*
+:::
 
 Note that market shares used to calculate the weighted-average LCC of a service are from the previous iteration of the demand-supply equilibrium process (i.e. the final market shares from the previous year if calculating the first iteration or the previous demand-supply iteration if equilibrium prices have not yet been found).
 
@@ -211,33 +239,40 @@ Several functions have been added to the competition process to reflect both rea
 
 The declining capital cost function allows the capital costs of technologies to decline as a result of learning by doing and improving economies of scale. In CIMS, capital costs decline as a result of the cumulative production of a technology across Canada and an exogenous rate of decline which represents production in other countries.
 
-Equation : Declining capital cost
+$$
+{DCC}_{t} = {GCC}_{t} \cdot \left[ \left( \sum_{1}^{p} \frac{{CumulNS}_{2000,p} + \sum_{j = 2005}^{t - 5}{NS}_{jp}}{{CumulNS}_{2000,p}} \right)^{\log_{2}(PR)} \right]
+$$ {#eq-declining_capital_cost}
 
-$${{DCC}_{t} = GCC}_{t}*\left\lbrack \left( \sum_{1}^{p}\frac{{CumulNS}_{2000,p} + \sum_{j = 2005}^{j = t - 5}{NS}_{jp}}{{CumulNS}_{2000,p}} \right)^{\log_{2}(PR)} \right\rbrack$$
+::: {.eq-vars}
+$DCC_t$
+:   declining capital cost of a technology at time *t*
 
-Where:
+$GCC_t$
+:   capital cost of a technology adjusted for cumulative stock in other countries
 
-DCC~t~ is the declining capital cost of a technology at time t
+$NS_{jp}$
+:   new stock of a technology added from 2005 to the previous time period in each province *p*
 
-GCC~t~ is the capital cost of a technology adjusted for cumulative stock in other countries
+$CumulNS_{2000,p}$
+:   cumulative new stock of a technology for all years up to and including the year 2000 in each province *p* (exogenous)
 
-NS~jp~ is the new stock of a technology added from 2005 to the previous time period in each province, p
-
-CumulNS~2000,p~ is the cumulative new stock of a technology for all years up to and including the year 2000 in each province, p (exogenous)
-
-PR is the progress ratio
+$PR$
+:   progress ratio
+:::
 
 Increased stock in other countries reduces the capital costs of a technology in CIMS. Therefore, even if there is no change in stock of a technology in Canada, its capital costs may still decline. The rate at which the capital costs decline as a result of global stock change is set exogenously and is equivalent to the autonomous energy efficiency index (AEEI).
 
-Equation : Global capital cost reduction
+$$
+{GCC}_{t} = {GCC}_{t - 5} \cdot (1 - AEEI)^{5}
+$$ {#eq-global_capital_cost}
 
-$${GCC}_{t} = {GCC}_{t - 5}*(1 - AEEI)^{5}$$
+::: {.eq-vars}
+$GCC_t$
+:   capital cost of a technology after it has been adjusted for cumulative stock in other countries
 
-Where:
-
-GCC~t~ is the capital costs of a technology after it has been adjusted for cumulative stock in other countries
-
-AEEI is the exogenous rate of decline of a technology's capital costs
+$AEEI$
+:   exogenous rate of decline of a technology's capital costs
+:::
 
 An example of the calculations for the declining capital cost function are illustrated below. The capital cost of the technology is \$100 in year 2000, its PR is 0.8 (set in column J), and its exogenous rate of decline (set in column U) is 1%:
 
@@ -267,21 +302,29 @@ Percentage of the initial capital costs below which capital costs may not declin
 
 The declining intangible cost function applies to both capital and operating costs, and allows intangible costs to fall as a results of falling perceived risk as market exposure increases. The following general formula applies.
 
-(Equation 20)
+$$
+\text{(Equation 20 — placeholder for the declining intangible cost function)}
+$$ {#eq-declining_intangible_cost}
 
-where:
+::: {.eq-vars}
+$I_t$
+:   intangible cost in time *t*
 
-• It is the intangible cost in time t
+$I_0$
+:   initial intangible cost (column N of the economic file for capital, column R for operating costs)
 
-• I0 is the initial intangible cost, which is column N of the economic file for capital and column R for the operating costs.
+$A$
+:   constant in column O of the economic file for capital, column S for operating costs
 
-• A is a constant in column O of the economic file for capital, and column S for operating costs.
+$K$
+:   constant in column P of the economic file for capital, column T for operating costs
 
-• K is a constant in column P of the economic file for capital, and column T for operating costs.
+$NMS$
+:   new market share
 
-• NMS new market share
-
-• NMS(t -- 5) is the percent of the new market share in from the previous run. This value should be between 0 and 1 (i.e., between 0% and 100%), as opposed to between 0 and 100. NMS is the share of the technology from all other technologies that provide the same service.
+$NMS_{t-5}$
+:   new market share from the previous run, expressed between 0 and 1 (i.e. between 0% and 100%, not 0 and 100). $NMS$ is the technology's share among all other technologies that provide the same service.
+:::
 
 #### Technology Die-Out Function
 
@@ -291,21 +334,29 @@ The die-out function will be incorporated into the market share for new capital 
 
 New methodology:
 
-(Equation 21)
+$$
+\text{(Equation 21 — placeholder for the die-out market share function)}
+$$ {#eq-market_share_dieout}
 
-where:
+::: {.eq-vars}
+$MS_{kt}$
+:   market share of technology *k* at time *t*
 
-• MSkt = the market share for technology k in time t
+$LCC_{kt}$
+:   lifecycle cost of technology *k* at time *t*
 
-• LCCkt = is the lifecycle cost of technology k in time t
+$v$
+:   variance parameter representing cost homogeneity
 
-• v = the variance parameter representing cost homogeneity
+$J$
+:   number of technologies competing to provide the same service as *k*
 
-• J = the number of technologies competing to provide the same service as k
+$n$
+:   threshold factor at which a technology is eliminated from the market. For $n = 0.5$, if a technology's market share falls to 50% of its market share in 2000 it is eliminated from the market for new capital stock. ($n$ applies to all technologies and cannot be set individually.)
 
-• n = the threshold factor where a technology is eliminated from the market. For n = 0.5, if a technology falls to 50% of its market share in 2000, it will be eliminated from the market for new capital stock. (n applies to all technologies and cannot be set individually for different technologies)
-
-• f = the base year. The base year can be set to any year. (f applies to all technologies and cannot be set individually for different technologies)
+$f$
+:   base year. The base year can be set to any year. ($f$ applies to all technologies and cannot be set individually.)
+:::
 
 The new methodology for calculating the market share of a technology will eliminate a technology if its market share falls below its threshold (n x MSkf). Following a technology's elimination from the market, it should not be allowed to compete in the following year.
 
@@ -321,45 +372,60 @@ CIMS has three options for generating expectations: 1) myopic, where people do n
 
 This option is identical to CIMS's previous methodology for calculating emissions costs. The emissions charge used to calculate emissions costs over a technology's lifespan is the emissions charge set in CIMS's CIMS Simulation Creation Centre / Select Global Conditions / Emissions.
 
-E(Emissions Charge)kt = Emissions charget
+$$
+E(\text{EmissionsCharge})_{kt} = \text{EmissionsCharge}_t
+$$ {#eq-emissions_myopic}
 
-The expected emissions charge used to calculate the lifecycle costs of technology k, in the year of its purchase (year t), is the emissions charge set in the Simulation Creation centre.
+The expected emissions charge used to calculate the lifecycle cost of technology *k* in the year of its purchase (year *t*) is the emissions charge set in the Simulation Creation Centre.
 
 **Average Expectations**
 
 The second option generates expectations of future emissions costs based on the average emissions charge over the lifespan of a technology.
 
-(Equation 22)
+$$
+\text{(Equation 22 — placeholder for the average-expectations function)}
+$$ {#eq-emissions_average}
 
-where:
+::: {.eq-vars}
+$\text{EmissionsCharge}_n$
+:   emissions charge in year *n*, set in CIMS's Simulation Creation Centre
 
-EmissionsChargen is the emissions charge occurs in year n, and set in CIMS's Simulation Creation Centre;
+$base$
+:   year in which technology *k* is purchased
 
-base is the year technology k is purchased;
-
-N is the lifespan of technology k.
+$N$
+:   lifespan of technology *k*
+:::
 
 **Discounted Expectations**
 
 The third option generates expectations of future emissions costs based on the present value of emissions charges. After the present value of emissions charges has been calculated, it is annualized using the capital recovery factor. The present value must be annualized in order to obtain an annual value of emissions charges, which is required in CIMS's simulation.
 
-(Equation 23)
+$$
+\text{(Equation 23 — placeholder for the discounted-expectations function)}
+$$ {#eq-emissions_discounted}
 
-where:
+::: {.eq-vars}
+$\text{EmissionsCharge}_n$
+:   emissions charge in year *n*, set in CIMS's Simulation Creation Centre
 
-EmissionsChargen is the emissions charge occurs in year n, and set in CIMS's Simulation Creation Centre;
+$base$
+:   year in which technology *k* is purchased
 
-base is the year technology k is purchased;
+$N$
+:   lifespan of technology *k*
 
-N is the lifespan of technology k.
-
-rk is the revealed discount rate of technology k, and it is set in the Techno Economic file.
+$r_k$
+:   revealed discount rate of technology *k*, set in the Techno Economic file
+:::
 
 **Additions:**
 
 One of the challenges in introducing expectations into CIMS is that emissions charges can only be set up to 2035. To overcome this challenge, emissions charges are assumed to remain the same as in 2035 for years beyond 2035.
 
-(Equation 24)
+$$
+\text{(Equation 24 — placeholder for emissions charge beyond 2035)}
+$$ {#eq-emissions_post_2035}
 
 **Switch for Allocated Costs**
 
@@ -405,21 +471,29 @@ Other petroleum products -0.82
 
 These elasticities follow the Armington specification, whereby the demand for an imported good rises as its price falls relative to the price of its domestic substitute. At all times, consumers buy at least some of the domestic good and some of the imported good, even when the price difference is large (Iorwerth et al. 2000, Wirjanto 1999). Please see Bataille (2005) for further elaboration. The Armington specification assumes that goods produced by different countries are not perfect substitutes. The energy trade elasticities are represented in Equation 20, which applies the elasticity of the ratio of import volumes to domestic production in relation to a change in the relative price of imports to domestic prices.
 
-(Equation 25)
+$$
+\text{(Equation 25 — placeholder for the energy trade Armington elasticity)}
+$$ {#eq-armington_energy}
 
-Where:
+::: {.eq-vars}
+$FLCC_t$
+:   current financial lifecycle cost for producing the energy commodity
 
-FLCCt = Current financial lifecycle cost for producing the energy commodity
+$FLCC_{t-1}$
+:   previous financial lifecycle cost for producing the energy commodity
 
-FLCCt-1 = Previous financial lifecycle cost for producing the energy commodity
+$COP$
+:   cost of production covered by the energy-producing sub-model, as a percentage of total cost
 
-COP = Cost of production covered by the energy producing sub-model, as a % of total cost
+$\sigma$
+:   price demand elasticity for the energy commodity
 
-σ = Price demand elasticity for the energy commodity
+$IT$
+:   initial trade volume of the energy commodity
 
-IT= Initial Trade volume of the energy commodity
-
-Adjprod = Additive adjustment to production of the energy commodity
+$Adj_{prod}$
+:   additive adjustment to production of the energy commodity
+:::
 
 Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US. All these elasticities operate on the business-as-usual (BAU) export amounts. These elasticities can be single values or they may change over time as specified by the operator of the model.
 
@@ -447,19 +521,26 @@ These options were used as the primary guide for adding demand feedbacks to the 
 
 Most Canadian industrial products are highly traded; their sensitivity to foreign competition is of prime importance. To reflect the sensitivity to foreign competition, CIMS employs the same Armington specification for price elasticities as used for energy trade, whereby the demand for a foreign good rises as its price falls relative to the price of a domestically produced substitute. Using the Armington specification, consumers always buy at least some of the domestic good and some of the imported good. The price elasticities are applied with the general formula in Equation 21.
 
-(Equation 26)
+$$
+\text{(Equation 26 — placeholder for the manufactured-products Armington elasticity)}
+$$ {#eq-armington_manufactured}
 
-Where:
+::: {.eq-vars}
+$FLCC_t$
+:   current financial lifecycle cost for the product
 
-FLCCt = Current financial lifecycle cost for the product
+$FLCC_{t-1}$
+:   previous financial lifecycle cost for the product
 
-FLCCt-1 = Previous financial lifecycle cost for the product
+$COP$
+:   cost of production covered by the sub-model that produces the product, as a percentage of total cost
 
-COP = Cost of production covered by the sub-model that produces the product, as a % of total cost
+$\sigma$
+:   price demand elasticity for the product
 
-σ = Price demand elasticity for the product
-
-Multiplier = Value by which demand for the product is multiplied
+$Multiplier$
+:   value by which demand for the product is multiplied
+:::
 
 To accommodate the differences between products in the industry sub-models, especially Industrial Minerals, Other Manufacturing, Chemical Products, and Metal Smelting, demand feedbacks are applied to these models at the level where production for individual products is determined. Table 8 provides the elasticities used for sectors and their products. See Appendix E of Christopher Bataille's Ph.D dissertation for a full breakdown of their sources and how they were mapped to CIMS' sub-models and their sub-products.
 
@@ -469,19 +550,26 @@ Table 6 Price elasticities used from Wirjanto (1999)
 
 There is no import substitution for non-traded goods and services such as residential and commercial floor space. CIMS uses a log-linear econometric relationship to estimate the relationship between manufacturing activity -- used dynamically as valued added but proxied using the value of shipments -- and residential / commercial activity -- measured by the value of building permits. The resulting relationship is used to allow commercial and residential activity to respond to changes in manufacturing activity.
 
-(Equation 27)
+$$
+\text{(Equation 27 — placeholder for the commercial/residential demand feedback)}
+$$ {#eq-demand_commres}
 
-Where:
+::: {.eq-vars}
+$BP_{c,r}$
+:   natural log of activity (value of building permits) in the commercial or residential sectors in a given year
 
-BPc,r = natural log of activity (value of building permits) in the commercial or residential sectors in a given year
+$IVA$
+:   natural log of industrial value-added in a given year
 
-IVA = natural log of industrial value-added in a given year
+$e$
+:   error term
 
-e = error term
+$m$
+:   coefficient of the relationship (elasticity)
 
-m = coefficient of relationship (elasticity)
-
-b = intercept
+$b$
+:   intercept
+:::
 
 This equation was estimated, using SHAZAM v.9, by running ordinary least squares regressions between manufacturers' shipments and residential building permits between 1961 and 1991 and manufacturers' shipments and commercial, institutional, and governmental building permits between 1961 and 1991. All values were deflated using a standard consumer price index. We tested various permutations of the regressions, including lagging and the use of population and year as an independent variable. Table 9 provides the parameter estimates.
 
@@ -508,3 +596,18 @@ Experimentation with early versions of CIMS showed that the demand adjustments h
 Need a section in here about best practice for designing nodes.
 
 For example, should request services directly at node and also have tech competition.
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::
