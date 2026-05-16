@@ -15,7 +15,7 @@ The allocation of base-year low-temperature heat demand across sub-models on a p
 Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemical Products, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in @tbl-low_temp_heat-1; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.
 
 | Subsector | Representative end-uses | Range (°C) |
-|:----|:----|:----:|
+|:----|:---------|:-:|
 | Food and beverage processing | Pasteurization, sterilization, spray and tray drying, clean-in-place wash water | 60–200 |
 | Pulp and paper | Black-liquor evaporation, paper drying on steam-heated cylinders, digester heating | 100–180 |
 | Chemicals and pharmaceuticals | Distillation reboilers for low-boiling solvents, batch reactor heating, crystallization | 80–180 |

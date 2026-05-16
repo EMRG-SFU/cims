@@ -60,6 +60,15 @@
           if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
           }
+          // After scrolling, the citation can slide under the cursor,
+          // and tippy opens its hover popover ~100 ms later. Dismiss
+          // any popovers that appear so the user lands on a clean
+          // page. Run twice to cover both the immediate and the
+          // delayed-hover case.
+          if (window.tippy && typeof window.tippy.hideAll === 'function') {
+            window.tippy.hideAll();
+            setTimeout(window.tippy.hideAll, 200);
+          }
         });
         back.appendChild(a);
         if (i < cites.length - 1) back.append(' ');

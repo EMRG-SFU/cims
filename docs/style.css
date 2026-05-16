@@ -75,6 +75,12 @@ td:has(> p > .cell-on) {
   border-left: none;
 }
 
+/* Narrow table */
+.narrow-table table {
+  width: 70%;
+  margin: 0 auto;
+}
+
 /* Allow long URLs in bibliography entries to wrap mid-string so they
    don't overflow into the section that follows. */
 #refs .csl-entry,

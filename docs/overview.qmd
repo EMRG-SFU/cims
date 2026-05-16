@@ -234,3 +234,18 @@ CIMS is designed to mimic a sector or industry by representing a number of indus
 ::: {.callout-note}
 If setting market shares after the base year, need to use lifetime = 1, otherwise stock is not calculated correctly.
 
+## Building the tree
+
+Need a section in here about best practice for designing nodes.
+
+## Calibration
+
+Should this be a separate chapter?
+
+- Optimization by year to counterfactual data
+- Change FIC values to match objective criteria (counterfactual)
+- Can use market share for tech competitions at a node, or energy or emissions at same or adjacent node
+- Also have option for manual adjustment of FIC values for more disconnected objective and adjustment locations in the cims tree
+- Optimize FIC year by year over historical counterfactual period
+- Use median or filtered mean (remove top/bottom 10%? before mean) to estimate FIC for forecast period
+- Trend all FIC values to zero over very long-term (next 50-70 years?)
