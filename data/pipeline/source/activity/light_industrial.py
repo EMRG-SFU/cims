@@ -242,7 +242,7 @@ combined = pl.concat([li_total, li_splits]).sort(["Region", "Variable", "Year"])
 #     (2025-2035, 60%), (2036-2050, 40%), (2051-2100, 5%).
 #   Percentage splits: held flat at last historical value (cagr = 0).
 
-last_year = combined["Year"].max()
+last_year = int(combined["Year"].max())
 
 # Convert the Polars combined frame to a pandas pivot for easy per-series access
 combined_pd = combined.to_pandas()
@@ -288,7 +288,10 @@ future_rows = pl.DataFrame(future_rows_list).with_columns([
     pl.col("Value").cast(pl.Float64),
 ])
 
-combined = pl.concat([combined, future_rows]).sort(["Region", "Variable", "Year"])
+combined = pl.concat([
+    combined.with_columns(pl.col("Year").cast(pl.Int64)),
+    future_rows,
+]).sort(["Region", "Variable", "Year"])
 
 
 # -- L6. Save -----------------------------------------------------------------

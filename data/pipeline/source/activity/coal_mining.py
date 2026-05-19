@@ -297,7 +297,7 @@ _can46 = (
         (pl.col('Coal types and uses') == 'Total all coal types and uses') &
         (pl.col('Coal volume') == 'Production') &
         (pl.col('GEO') == 'Canada') &
-        pl.col('year').is_between(2008, 2024)
+        pl.col('year').is_between(2008, LAST_DATA_YEAR["stat_can_coal"])
     )
     .group_by('year')
     .agg(pl.col('VALUE').sum().alias('kt'))
