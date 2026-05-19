@@ -1,6 +1,6 @@
-# CIMS Data Pipeline
+# CIMS Data Processing
 
-This directory contains the full ETL pipeline that transforms government statistical releases into model-ready input files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only pipeline scripts, mappings, and this documentation are tracked.
+This directory transforms energy data into model-ready input files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only pipeline scripts, mappings, and this documentation are tracked.
 
 ---
 
@@ -23,12 +23,12 @@ This directory contains the full ETL pipeline that transforms government statist
 
 ## Overview
 
-The pipeline converts raw releases from Statistics Canada, NRCan, ECCC, and CER into CIMS-formatted CSVs covering Canada's 13 provinces and territories over 2000–2100. It operates in two stages:
+Raw data from various sources is converted into CIMS-formatted CSVs covering Canada's 13 provinces and territories. It operates in two stages:
 
 - **Stage 1 — Source processing** (`pipeline/source/`): Each script ingests one government data source and writes a normalized intermediate CSV to `processed_data/`.
 - **Stage 2 — Sector assembly** (`pipeline/sector/`): Each sector script combines fixed structural parameters (`raw_data/fixed_data/`) with one or more processed intermediates and writes final CIMS model input files to `model_inputs/model/{sector}/`.
 
-A parallel **calibration** branch writes validation outputs to `calibration/{sector}/`.
+A parallel **calibration** branch writes validation outputs to `calibration/{sector}/`. This branch is used to calibrate the model to demand, emissions, and market shares throughout the historical period. 
 
 All configuration (currency years, data years, scenarios) lives in a single file: `mappings_conversions/control.py`.
 
@@ -38,30 +38,33 @@ All configuration (currency years, data years, scenarios) lives in a single file
 
 ```
 C:\cims\data\
-├── mappings_conversions/       # Master configuration and crosswalk tables (committed)
+├── mappings_conversions/       # Master configuration
 │   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
-│   ├── energy_map.csv          # Standardised energy carrier names
-│   ├── region_map.csv          # NIR region names → CIMS province/territory codes
-│   ├── sector_map.csv          # Sector classifications
+│   ├── energy_map.csv          # Map for energy types across sources
+│   ├── region_map.csv          # Map for regions across sources
+│   ├── sector_map.csv          # Map for sectors across sources 
 │   ├── energy_conversions.csv  # Unit conversions (GJ ↔ TJ, L ↔ tonnes, …)
 │   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
 │   └── README.md
 │
 ├── pipeline/                   # All pipeline scripts (committed)
 │   ├── source/                 # Stage 1 — raw → processed_data
-│   │   ├── activity/           # Emissions-driver time series (ECCC GHG, Stats Can GDP)
-│   │   ├── eccc/nir/           # National Inventory Report → CIMS mapping
+│   │   ├── activity/           # Activity levels for all sectors (res/com/trans from ceud source)
+│   │   ├── eccc/nir/           # National Inventory Report processing
 │   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
-│   │   ├── energy_prices/      # CER + AFDC energy price multipliers
+│   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
 │   │   └── nrcan/ceud/         # Comprehensive Energy Use Database extraction
 │   │       ├── residential/
 │   │       └── commercial/
+│   │       └── transport_passenger/
+│   │       └── transport_freight/
 │   ├── sector/                 # Stage 2 — processed_data + fixed_data → model_inputs
 │   │   ├── agriculture/
 │   │   ├── biodiesel/
 │   │   ├── chemical_products/
 │   │   ├── commercial/
 │   │   └── residential/
+│   │   └── .../
 │   └── utils/                  # Shared utility functions (committed)
 │       ├── extractors/         # Source-specific readers (Stats Can, CEUD, CER)
 │       ├── output_builder.py   # CIMS output row formatter
@@ -89,7 +92,7 @@ C:\cims\data\
 │   ├── ab_gov/                 # Alberta government data
 │   └── bc_gov/                 # BC government data
 │
-├── processed_data/             # Stage 1 outputs — gitignored, auto-generated
+├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
 │   ├── activity/
 │   ├── eccc/
 │   ├── energy_prices/
@@ -115,7 +118,7 @@ C:\cims\data\
 ### Prerequisites
 
 1. Install Python dependencies (see [Dependencies](#dependencies)).
-2. Obtain raw data from SharePoint or FRDR and place it under `raw_data/` following the structure above.
+2. Obtain raw data from SharePoint and place it under `raw_data/` following the structure above.
 
 ### Running the pipeline
 
