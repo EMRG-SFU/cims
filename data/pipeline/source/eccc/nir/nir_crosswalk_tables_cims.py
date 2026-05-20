@@ -46,13 +46,13 @@ _project_root = _current_file.parent.parent.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from pipeline.utils.controls_conversions import parse_cell
+from pipeline.utils.controls_conversions import parse_cell, BASE_PATH
 
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-DATA_DIR = 'C:/cims/data/raw_data/eccc/nir/'
-OUTPUT   = 'C:/cims/data/processed_data/eccc/nir/nir_crossswalk_cims.csv'
+DATA_DIR = BASE_PATH / 'raw_data/eccc/nir'
+OUTPUT   = BASE_PATH / 'processed_data/eccc/nir/nir_crossswalk_cims.csv'
 
 YEARS     = [2000, 2005, 2010, 2015, 2020]
 YEAR_ROWS = [0, 59, 118, 177, 236]
@@ -70,7 +70,7 @@ ALL_REGIONS    = FULL_REGIONS + SPARSE_REGIONS
 # Each NIR combination can map to multiple CIMS nodes rows (one row per target).
 # When a NIR row has multiple targets its value is split equally across them.
 
-MAPPING_FILE = 'C:/cims/data/mappings_conversions/nir_crosswalk_map.csv'
+MAPPING_FILE = BASE_PATH / 'mappings_conversions/nir_crosswalk_map.csv'
 
 def load_nir_to_cims_map(path):
     """
@@ -336,13 +336,13 @@ def solve_constrained(year, data, estimates):
 
 def main():
     print(f"Loading NIR→CIMS mapping from {MAPPING_FILE} ...")
-    nir_to_cims_map = load_nir_to_cims_map(MAPPING_FILE)
+    nir_to_cims_map = load_nir_to_cims_map(str(MAPPING_FILE))
     print(f"  Loaded {len(nir_to_cims_map)} mapping entries.")
 
     print("Loading CSVs...")
     raw = {}
     for region in ['CAN'] + ALL_REGIONS:
-        fname = f'{DATA_DIR}{region.lower()}_crosswalk_nir.csv'
+        fname = DATA_DIR / f'{region.lower()}_crosswalk_nir.csv'
         raw[region] = pd.read_csv(fname, header=None)
         print(f"  {region}: {raw[region].shape}")
 
@@ -453,6 +453,7 @@ def main():
     from pipeline.utils.add_cims_totals import add_totals
     df_out = add_totals(df_out)
 
+    OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     df_out.to_csv(OUTPUT, index=False)
     print(f"\n✅  Saved: {OUTPUT}")
 

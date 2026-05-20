@@ -2,6 +2,7 @@
 import numpy as np
 import pandas as pd
 import polars as pl
+from pathlib import Path
 
 YEARS = list(range(2000, 2101))
 META_COLS = ["Branch", "Type", "Region", "Sector", "Service", "Technology", "Parameter",
@@ -46,3 +47,37 @@ def pl_to_series(df: pl.DataFrame) -> pd.Series:
 def pl_get_scalar(df: pl.DataFrame, col: str) -> object:
     """Return the first value of a column from a one-row Polars DataFrame."""
     return df.get_column(col).to_list()[0]
+
+
+def log_output(
+    df: pl.DataFrame,
+    path,
+    *,
+    region_col: str = "Region",
+    variable_col: str = "Variable",
+    year_col: str = "Year",
+) -> None:
+    """Print a consistent save summary to the terminal.
+
+    Prints the output path, row count, and — where the named columns exist —
+    unique region count, variable list, and year range.
+
+    Args:
+        df:           The DataFrame that was written.
+        path:         The file path it was written to.
+        region_col:   Column name for regions (default "Region").
+        variable_col: Column name for variables (default "Variable").
+        year_col:     Column name for years (default "Year").
+    """
+    cols = df.columns
+    print(f"\n✅  Saved → {Path(path)}")
+    print(f"    Rows:      {len(df):,}")
+    if region_col in cols:
+        print(f"    Regions:   {df[region_col].n_unique()} unique")
+    if variable_col in cols:
+        variables = sorted(df[variable_col].unique().to_list())
+        preview = ", ".join(str(v) for v in variables[:5])
+        suffix = f" … (+{len(variables) - 5} more)" if len(variables) > 5 else ""
+        print(f"    Variables: {preview}{suffix}")
+    if year_col in cols:
+        print(f"    Years:     {df[year_col].min()} – {df[year_col].max()}")

@@ -71,10 +71,9 @@ if str(_project_root) not in sys.path:
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.stats_can import read_statscan_csv
-from utils.controls_conversions import load_control_config
+from utils.controls_conversions import load_control_config, BASE_PATH
 
 # Configuration
-BASE_PATH       = Path('C:/cims/data')
 MAPPINGS_PATH   = BASE_PATH / 'mappings_conversions'
 REGION_MAP_FILE = MAPPINGS_PATH / 'region_map.csv'
 OUTPUT_DIR      = BASE_PATH / 'processed_data/activity'
@@ -82,7 +81,7 @@ OUTPUT_DIR      = BASE_PATH / 'processed_data/activity'
 DATA_START     = 2000
 LAST_DATA_YEAR = load_control_config()["last_data_year"]
 
-ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
+ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Petroleum Refining', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.
@@ -335,5 +334,6 @@ print(f'   Regions:             {sorted(refinery_output["Region"].unique().to_li
 print(f'   Years covered:       {refinery_output["Year"].min()} – {refinery_output["Year"].max()}')
 
 refinery_path = OUTPUT_DIR / 'petroleum_refining.csv'
+refinery_path.parent.mkdir(parents=True, exist_ok=True)
 refinery_output.write_csv(refinery_path)
 print(f'   Saved to:            {refinery_path}')

@@ -32,12 +32,11 @@ from utils.controls_conversions import (
 from utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from utils.data_extensions import extend_constant
 from utils.extractors.cer import find_cer_file
-from utils.controls_conversions import DATA_START, PROJECTION_END
+from utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH
 from energy_prices import main as get_production_costs
 
 
 # Configuration
-BASE_PATH = Path('C:/cims/data')
 MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
 CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
@@ -47,7 +46,7 @@ CER_DIR             = BASE_PATH / 'raw_data/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
 CIMS_PRICES_FILE = BASE_PATH / 'raw_data/energy_prices/CIMS Prices and Calcs.xlsx'
-OUTPUT_DIR = Path('C:/cims/data/processed_data/energy_prices')
+OUTPUT_DIR = BASE_PATH / 'processed_data/energy_prices'
 
 
 

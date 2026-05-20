@@ -51,11 +51,10 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_cagr_periods, compute_cagr, load_cagr_assumptions
-from utils.controls_conversions import load_control_config
+from utils.controls_conversions import load_control_config, BASE_PATH
 
 
 # Configuration
-BASE_PATH        = Path('C:/cims/data')
 MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 GHG_FILE         = BASE_PATH / 'raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
@@ -68,7 +67,7 @@ KT_TO_T = 1_000   # kt CO2eq -> tCO2e
 
 DATA_START = load_control_config()["pipeline"]["data_start"]
 
-ASSUMPTIONS_FILE = Path('C:/cims/data/raw_data/assumptions/activity_cagr_projections.csv')
+ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Emissions Drivers', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.
@@ -364,5 +363,6 @@ print(f"   Variables:           {sorted(combined['Variable'].unique().to_list())
 print(f"   Years covered:       {combined['Year'].min()} - {combined['Year'].max()}")
 
 output_path = OUTPUT_DIR / 'emissions_drivers.csv'
+output_path.parent.mkdir(parents=True, exist_ok=True)
 combined.write_csv(output_path)
 print(f"   Saved to:            {output_path}")

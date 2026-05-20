@@ -92,13 +92,12 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 from utils.data_extensions import extend_series_constant
-from utils.controls_conversions import load_energy_conversions
+from utils.controls_conversions import load_energy_conversions, BASE_PATH
 
 
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
-BASE_PATH        = Path(r"C:\cims\data")
 MAPPINGS_PATH    = BASE_PATH / "mappings_conversions"
 RAW_PATH         = BASE_PATH / "raw_data"
 

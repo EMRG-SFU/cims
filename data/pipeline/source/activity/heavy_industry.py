@@ -60,12 +60,11 @@ if str(_project_root) not in sys.path:
 from utils.data_fill import interpolate_gaps
 from utils.data_extensions import extend_cagr_periods
 from utils.extractors.stats_can import read_statscan_csv
-from utils.controls_conversions import load_control_config, DATA_START
+from utils.controls_conversions import load_control_config, DATA_START, BASE_PATH
 
 # =============================================================================
 # Configuration
 # =============================================================================
-BASE_PATH = Path('C:/cims/data')
 GO_FILE         = BASE_PATH / 'raw_data/stats_can/activity/36100488.csv'
 IPPI_FILE       = BASE_PATH / 'raw_data/stats_can/activity/18100267.csv'
 RMPI_FILE       = BASE_PATH / 'raw_data/stats_can/activity/18100268.csv'
@@ -1605,8 +1604,10 @@ output_df = (
     .sort(["Region", "Variable", "Year"])
 )
 
+_heavy_industry_path = BASE_PATH / 'processed_data/activity/heavy_industry.csv'
+_heavy_industry_path.parent.mkdir(parents=True, exist_ok=True)
 output_df.to_pandas().to_csv(
-    r"C:\cims\data\processed_data\activity\heavy_industry.csv",
+    _heavy_industry_path,
     index=False,
     encoding="utf-8-sig",
     na_rep="",

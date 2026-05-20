@@ -50,17 +50,18 @@ from pipeline.utils.data_extensions import (
     extend_series_trend_dampener,
 )
 from pipeline.utils.extractors.stats_can import load_resd
+from pipeline.utils.controls_conversions import BASE_PATH as _CIMS_BASE
 
 # ==============================================================================
 # CONFIGURATION
 # ==============================================================================
 
-BASE_PATH      = Path('C:/cims/data/raw_data/nrcan/ceud/residential')
-ASSUMPTIONS_CSV = Path('C:/cims/data/raw_data/assumptions/residential_assumptions.csv')
-OUTPUT_DIR     = Path('C:/cims/data/processed_data/nrcan/ceud')
-RESD_CSV = Path('C:/cims/data/raw_data/stats_can/resd/25100029.csv')
-POP_CSV  = Path('C:/cims/data/raw_data/stats_can/population/1710000901.csv')
-EFFICIENCY_XLS = Path('C:/cims/data/raw_data/nrcan/ceud/residential/res_ca_e_32.xls')
+BASE_PATH      = _CIMS_BASE / 'raw_data/nrcan/ceud/residential'
+ASSUMPTIONS_CSV = _CIMS_BASE / 'raw_data/assumptions/residential_assumptions.csv'
+OUTPUT_DIR     = _CIMS_BASE / 'processed_data/nrcan/ceud'
+RESD_CSV = _CIMS_BASE / 'raw_data/stats_can/resd/25100029.csv'
+POP_CSV  = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
+EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 
 PROVINCES = {
@@ -1516,6 +1517,7 @@ def main(
         combined = pl.concat(all_frames, how='diagonal_relaxed')
         combined = combined.sort(['province', 'variable', 'category', 'year'])
         output_file = output_dir / "residential.csv"
+        output_file.parent.mkdir(parents=True, exist_ok=True)
         combined.write_csv(str(output_file))
         print(f"\n  ✅ Saved {len(combined):,} rows to {output_file}")
 

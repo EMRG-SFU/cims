@@ -9,8 +9,17 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, Optional
 
-# Configuration
-BASE_PATH = Path('C:/cims/data')
+# Paths — derived from this file's location so nothing is hardcoded.
+# controls_conversions.py lives at pipeline/utils/, so:
+#   parent       → pipeline/utils/
+#   parent.parent → pipeline/
+#   parent.parent.parent → data/  (the project root)
+def find_project_root() -> Path:
+    """Return the data root directory (the parent of pipeline/)."""
+    return Path(__file__).resolve().parent.parent.parent
+
+BASE_PATH        = find_project_root()
+PIPELINE_ROOT    = BASE_PATH / 'pipeline'
 MAPPINGS_PATH    = BASE_PATH / 'mappings_conversions'
 CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
