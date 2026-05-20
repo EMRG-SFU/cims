@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.37">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Theory – CIMS</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./technologies.html" rel="next">
+<link href="./architecture.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./theory.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">CIMS</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/EMRG-SFU/cims" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">About</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./history.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">History and Development</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./architecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Methodology</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./theory.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./technologies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_supply_demand.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./demand_feedbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Goods and Services Demand Feedbacks</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sectors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Descriptions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+ <span class="menu-text">Cross-Sector Topics</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Energy Efficiency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./low_temp_industrial_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./machine_drive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ccus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Carbon Capture, Utilization, and Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Energy Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./district_energy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">District Energy</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Data and Calibration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_inputs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Data Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Validation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Running the Model</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./building_tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Outputs and Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./outputs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./post_processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Post-Processing and Reporting</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_acronyms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Acronyms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_file_formats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">File Format Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Equation Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Version History</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#cims-in-the-energy-economy-modelling-landscape" id="toc-cims-in-the-energy-economy-modelling-landscape" class="nav-link active" data-scroll-target="#cims-in-the-energy-economy-modelling-landscape"><span class="header-section-number">3.1</span> CIMS in the energy-economy modelling landscape</a>
+  <ul class="collapse">
+  <li><a href="#top-down-general-equilibrium-models" id="toc-top-down-general-equilibrium-models" class="nav-link" data-scroll-target="#top-down-general-equilibrium-models"><span class="header-section-number">3.1.1</span> Top-down general-equilibrium models</a></li>
+  <li><a href="#bottom-up-optimization-models" id="toc-bottom-up-optimization-models" class="nav-link" data-scroll-target="#bottom-up-optimization-models"><span class="header-section-number">3.1.2</span> Bottom-up optimization models</a></li>
+  <li><a href="#bottom-up-simulation-models" id="toc-bottom-up-simulation-models" class="nav-link" data-scroll-target="#bottom-up-simulation-models"><span class="header-section-number">3.1.3</span> Bottom-up simulation models</a></li>
+  <li><a href="#cims-as-a-hybrid" id="toc-cims-as-a-hybrid" class="nav-link" data-scroll-target="#cims-as-a-hybrid"><span class="header-section-number">3.1.4</span> CIMS as a hybrid</a></li>
+  </ul></li>
+  <li><a href="#the-discrete-choice-family-of-technology-competition-models" id="toc-the-discrete-choice-family-of-technology-competition-models" class="nav-link" data-scroll-target="#the-discrete-choice-family-of-technology-competition-models"><span class="header-section-number">3.2</span> The discrete-choice family of technology competition models</a>
+  <ul class="collapse">
+  <li><a href="#random-utility-theory-and-the-multinomial-logit" id="toc-random-utility-theory-and-the-multinomial-logit" class="nav-link" data-scroll-target="#random-utility-theory-and-the-multinomial-logit"><span class="header-section-number">3.2.1</span> Random utility theory and the multinomial logit</a></li>
+  <li><a href="#the-weibit-and-the-cims-power-form" id="toc-the-weibit-and-the-cims-power-form" class="nav-link" data-scroll-target="#the-weibit-and-the-cims-power-form"><span class="header-section-number">3.2.2</span> The Weibit and the CIMS power form</a></li>
+  <li><a href="#the-heterogeneity-parameter-v" id="toc-the-heterogeneity-parameter-v" class="nav-link" data-scroll-target="#the-heterogeneity-parameter-v"><span class="header-section-number">3.2.3</span> The heterogeneity parameter <span class="math inline">\(v\)</span></a></li>
+  <li><a href="#empirical-interpretation-and-calibration" id="toc-empirical-interpretation-and-calibration" class="nav-link" data-scroll-target="#empirical-interpretation-and-calibration"><span class="header-section-number">3.2.4</span> Empirical interpretation and calibration</a></li>
+  <li><a href="#limitations-worth-flagging" id="toc-limitations-worth-flagging" class="nav-link" data-scroll-target="#limitations-worth-flagging"><span class="header-section-number">3.2.5</span> Limitations worth flagging</a></li>
+  </ul></li>
+  <li><a href="#iterative-price-quantity-equilibration" id="toc-iterative-price-quantity-equilibration" class="nav-link" data-scroll-target="#iterative-price-quantity-equilibration"><span class="header-section-number">3.3</span> Iterative price-quantity equilibration</a>
+  <ul class="collapse">
+  <li><a href="#the-fixed-point-structure-of-the-problem" id="toc-the-fixed-point-structure-of-the-problem" class="nav-link" data-scroll-target="#the-fixed-point-structure-of-the-problem"><span class="header-section-number">3.3.1</span> The fixed-point structure of the problem</a></li>
+  <li><a href="#goods-and-services-demand-feedbacks" id="toc-goods-and-services-demand-feedbacks" class="nav-link" data-scroll-target="#goods-and-services-demand-feedbacks"><span class="header-section-number">3.3.2</span> Goods and services demand feedbacks</a></li>
+  <li><a href="#why-use-partial-equilibrium-rather-than-general" id="toc-why-use-partial-equilibrium-rather-than-general" class="nav-link" data-scroll-target="#why-use-partial-equilibrium-rather-than-general"><span class="header-section-number">3.3.3</span> Why use partial-equilibrium rather than general</a></li>
+  <li><a href="#convergence-and-tolerance" id="toc-convergence-and-tolerance" class="nav-link" data-scroll-target="#convergence-and-tolerance"><span class="header-section-number">3.3.4</span> Convergence and tolerance</a></li>
+  </ul></li>
+  <li><a href="#discount-rates" id="toc-discount-rates" class="nav-link" data-scroll-target="#discount-rates"><span class="header-section-number">3.4</span> Discount rates</a>
+  <ul class="collapse">
+  <li><a href="#financial-rate" id="toc-financial-rate" class="nav-link" data-scroll-target="#financial-rate"><span class="header-section-number">3.4.1</span> Financial rate</a></li>
+  <li><a href="#behavioural-rate" id="toc-behavioural-rate" class="nav-link" data-scroll-target="#behavioural-rate"><span class="header-section-number">3.4.2</span> Behavioural rate</a></li>
+  <li><a href="#how-the-two-rates-are-used-in-practice" id="toc-how-the-two-rates-are-used-in-practice" class="nav-link" data-scroll-target="#how-the-two-rates-are-used-in-practice"><span class="header-section-number">3.4.3</span> How the two rates are used in practice</a></li>
+  <li><a href="#behavioural-rate-versus-intangible-cost" id="toc-behavioural-rate-versus-intangible-cost" class="nav-link" data-scroll-target="#behavioural-rate-versus-intangible-cost"><span class="header-section-number">3.4.4</span> Behavioural rate versus intangible cost</a></li>
+  </ul></li>
+  <li><a href="#intangible-costs-as-a-calibration-device" id="toc-intangible-costs-as-a-calibration-device" class="nav-link" data-scroll-target="#intangible-costs-as-a-calibration-device"><span class="header-section-number">3.5</span> Intangible costs as a calibration device</a>
+  <ul class="collapse">
+  <li><a href="#what-intangible-costs-are-doing" id="toc-what-intangible-costs-are-doing" class="nav-link" data-scroll-target="#what-intangible-costs-are-doing"><span class="header-section-number">3.5.1</span> What intangible costs are doing</a></li>
+  <li><a href="#why-this-is-a-calibration-device" id="toc-why-this-is-a-calibration-device" class="nav-link" data-scroll-target="#why-this-is-a-calibration-device"><span class="header-section-number">3.5.2</span> Why this is a calibration device</a></li>
+  <li><a href="#fixed-vs.-declining-intangible-costs" id="toc-fixed-vs.-declining-intangible-costs" class="nav-link" data-scroll-target="#fixed-vs.-declining-intangible-costs"><span class="header-section-number">3.5.3</span> Fixed vs.&nbsp;declining intangible costs</a></li>
+  <li><a href="#limitations-of-intangible-costs" id="toc-limitations-of-intangible-costs" class="nav-link" data-scroll-target="#limitations-of-intangible-costs"><span class="header-section-number">3.5.4</span> Limitations of intangible costs</a></li>
+  </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./theory.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><mark>TODO: New chapter introducing the conceptual framework before the equations come at the reader. Key ideas to cover, each in a short section: <del>(1) energy flow through the economy as the organizing principle, with service nodes as the unit of analysis;</del> (2) the discrete-choice / Weibit family of competition models, expanding on the footnote currently in the New Stock Competition section of <code>technologies.qmd</code>; (3) iterative price-quantity equilibration; (4) the difference between behavioural and financial discount rates; (5) the role of intangible costs as a calibration device for non-financial preferences. Each section should reference the chapter where the relevant equations are formalized.</mark></p>
+<section id="cims-in-the-energy-economy-modelling-landscape" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="cims-in-the-energy-economy-modelling-landscape"><span class="header-section-number">3.1</span> CIMS in the energy-economy modelling landscape</h2>
+<p>CIMS sits in a family of integrated energy-economy models that policy analysts use to study questions like the cost of greenhouse gas abatement, the energy-sector consequences of carbon pricing, or the long-run response of capital stocks to regulation. These models broadly fall into three traditions, and CIMS is built as a deliberate hybrid of them. Locating CIMS within this landscape — and being explicit about what it borrows from each tradition and what it deliberately rejects — is the easiest entry point into the conceptual machinery that the rest of this chapter develops in detail.</p>
+<section id="top-down-general-equilibrium-models" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="top-down-general-equilibrium-models"><span class="header-section-number">3.1.1</span> Top-down general-equilibrium models</h3>
+<p>The top-down tradition is dominated by <em>computable general equilibrium</em> (CGE) models, which represent the entire economy as a system of interconnected production and consumption functions calibrated to a social accounting matrix. Producers and consumers respond to price changes through elasticities of substitution; markets for goods, labour, and capital clear endogenously; and the model returns a new equilibrium price-quantity vector consistent with the imposed policy shock. CGE models are well suited to questions about how a carbon price reshapes terms of trade, sectoral value-added, household income distribution, or the inter-sectoral reallocation of capital — questions whose answers depend on circulating effects across the whole economy.</p>
+<p>What CGE models do not do well is <em>technology</em>. An entire production sector is typically represented as a Cobb-Douglas or nested CES production function over a handful of aggregate inputs, and “switching to a cleaner technology” appears, if at all, as movement along an aggregate substitution curve rather than as the retirement of one furnace and the purchase of another. This makes a pure CGE model awkward for analysing policies whose mechanism runs through specific pieces of equipment — vehicle fuel-economy standards, equipment efficiency regulations, capital subsidies for heat pumps, retrofits to industrial boilers. The aggregate elasticities can be made to <em>mimic</em> the average response, but the model cannot tell the analyst <em>which</em> technologies turned over to produce it.</p>
+</section>
+<section id="bottom-up-optimization-models" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="bottom-up-optimization-models"><span class="header-section-number">3.1.2</span> Bottom-up optimization models</h3>
+<p>The bottom-up optimization tradition — the MARKAL / TIMES family, MESSAGE, OSeMOSYS, and similar — takes the opposite stance. Each represents the energy system as an explicit graph of technologies with engineering-realistic capital costs, conversion efficiencies, and stock dynamics, then solves a (typically linear) programme that chooses the least-cost mix of technologies to satisfy exogenous service demands subject to constraints. This delivers full technological resolution and a clean, defensible objective function: the answer is the cost-minimising solution under the modeller’s assumptions.</p>
+<p>The price of that clarity is a strong normative assumption about decision-making. Investment is made by an omniscient, infinitely patient social planner using a single social discount rate; near-identical alternatives are split arbitrarily by the solver rather than smeared across decision-makers; and there is no formal place for non-financial preferences, perceived risk, or the heterogeneity of actual firms and households. Real adoption patterns are observably smoother and more dispersed than the corner solutions that linear-programme formulations tend to produce, and the reasons — uncertainty, information frictions, financing constraints, brand loyalty, perceived reliability — are precisely the factors a least-cost solver does not represent.</p>
+</section>
+<section id="bottom-up-simulation-models" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="bottom-up-simulation-models"><span class="header-section-number">3.1.3</span> Bottom-up simulation models</h3>
+<p>The third tradition, <em>bottom-up simulation</em>, is exemplified by the US Energy Information Administration’s National Energy Modeling System (NEMS) and by CIMS’s own ancestor, the ISTUM family. These models keep the explicit technology representation of the optimization tradition but drop the social-planner assumption. Technology choice is modelled instead as it is observed to occur: probabilistically, on the basis of decision-maker-specific perceived costs, with the share of new investment going to each option depending on how that option compares to its rivals on both financial and non-financial grounds. There is no claim that the resulting mix is socially optimal — only that it is a plausible representation of what real decision-makers would actually do.</p>
+<p>This is the tradition CIMS most directly belongs to.</p>
+</section>
+<section id="cims-as-a-hybrid" class="level3" data-number="3.1.4">
+<h3 data-number="3.1.4" class="anchored" data-anchor-id="cims-as-a-hybrid"><span class="header-section-number">3.1.4</span> CIMS as a hybrid</h3>
+<p>What distinguishes CIMS from a pure bottom-up simulation is that it grafts a partial-equilibrium feedback structure onto the simulation core, producing what its designers called a <strong>hybrid energy-economy model</strong> <span class="citation" data-cites="bataille-2005 rivers-jaccard-2005">(<a href="history.html#ref-bataille-2005" role="doc-biblioref">Bataille 2005</a>; <a href="history.html#ref-rivers-jaccard-2005" role="doc-biblioref">Rivers and Jaccard 2005</a>)</span>. The bottom-up half is a network of sector-specific simulation sub-models in which candidate technologies compete to provide energy services — process heat, motive force, space conditioning, freight movement, and so on — using a discrete-choice market-share equation whose variance parameter <span class="math inline">\(v\)</span> is calibrated against empirically observed adoption patterns rather than assumed (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). The top-down half is the iterative price-quantity equilibration that connects the sub-models: aggregate energy demand from the demand-side sub-models drives the energy-supply sub-models, the supply sub-models return prices that feed back into the next iteration’s lifecycle-cost calculations, and Armington-style elasticities allow demand for traded goods to respond to the relative cost of domestic versus imported production. The system is iterated until energy prices and goods demands stabilise within a tolerance.</p>
+<p>This positioning gives CIMS a different mix of strengths and weaknesses from its neighbours. Compared with a CGE model, CIMS sees individual furnaces, vehicles, and building shells, and so can speak directly to technology-specific policies; but it is silent on labour markets, the full inter-industry circulation of value-added, and most of what a CGE practitioner would call “general equilibrium.” Compared with a MARKAL-style optimization model, CIMS produces smoother, more behaviourally realistic adoption patterns and can be calibrated against revealed-preference data, but it makes no claim that the resulting technology mix is socially optimal — only that it is what real decision-makers, with their actual heterogeneity and risk perceptions, would plausibly choose.</p>
+<p>The two framings are not mutually exclusive in practice. Where the analyst wants an optimization-style answer — the lowest-cost technology mix that satisfies a constraint — CIMS can be coaxed in that direction by setting <span class="math inline">\(v\)</span> very high in the relevant competitions, which collapses the probabilistic share equation toward a winner-take-all rule. This is discussed in its own right below and formalised in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. The point for now is that the probabilistic-versus-deterministic framings of technology choice sit on a continuum in CIMS rather than being separate model paradigms, and which end of the continuum is appropriate is a calibration question, not a structural one.</p>
+<p>The remainder of this chapter develops the conceptual basis that makes this hybrid structure work: the choice of energy <em>services</em> as the unit of analysis, the discrete-choice / Weibit family of competition equations, the iterative price-quantity loop, the distinction between behavioural and financial discount rates, and the role of intangible costs in calibrating non-financial preferences.</p>
+</section>
+</section>
+<section id="the-discrete-choice-family-of-technology-competition-models" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="the-discrete-choice-family-of-technology-competition-models"><span class="header-section-number">3.2</span> The discrete-choice family of technology competition models</h2>
+<p>The new-stock competition equation in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a> is, mathematically, a normalised inverse-power function on lifecycle cost: the market share of each technology is proportional to its lifecycle cost raised to <span class="math inline">\(-v\)</span>, divided by the same quantity summed over all competitors. That short description hides a deliberate methodological choice. CIMS is not the only model that converts an array of candidate technology costs into a share split, and the form it uses sits inside a well-developed family of <em>discrete-choice</em> models drawn from microeconometrics. This section unpacks where that family comes from, where the CIMS competition equation sits inside it, and why that placement matters when calibrating or interpreting model output.</p>
+<section id="random-utility-theory-and-the-multinomial-logit" class="level3" data-number="3.2.1">
+<h3 data-number="3.2.1" class="anchored" data-anchor-id="random-utility-theory-and-the-multinomial-logit"><span class="header-section-number">3.2.1</span> Random utility theory and the multinomial logit</h3>
+<p>The discrete-choice literature begins with the observation that an analyst trying to predict which option a decision-maker will pick from a small menu of alternatives never has all the information available to that decision-maker. There are preferences, situations, and constraints that are invisible to the model but visible to the chooser. The standard response, formalised by <span class="citation" data-cites="mcfadden">McFadden (<a href="history.html#ref-mcfadden" role="doc-biblioref">1974</a>)</span>, is to model the latent utility of each option as a sum of a deterministic component the analyst can compute — a function of observable attributes like price, efficiency, and capacity — and a stochastic component representing everything the analyst cannot see. The chooser is assumed to pick the option with the highest realised utility; the analyst can then predict only the <em>probability</em> that each option is chosen, given the distribution of the unobserved component.</p>
+<p>The functional form of the choice probability depends entirely on what distribution one assumes for that unobserved error. If the errors are independent and identically distributed Gumbel (extreme-value type I), a tidy closed-form expression drops out: the probability that option <span class="math inline">\(k\)</span> is chosen equals <span class="math inline">\(e^{V_k} / \sum_j e^{V_j}\)</span>, where <span class="math inline">\(V_k\)</span> is the deterministic utility of option <span class="math inline">\(k\)</span>. This is the <em>multinomial logit</em> model, and it is the mainstay of applied discrete choice in transportation, marketing, and energy. Its appeal is partly empirical — it fits well in many settings — and partly computational, since the likelihood functions for logit models are globally concave and easy to estimate.</p>
+</section>
+<section id="the-weibit-and-the-cims-power-form" class="level3" data-number="3.2.2">
+<h3 data-number="3.2.2" class="anchored" data-anchor-id="the-weibit-and-the-cims-power-form"><span class="header-section-number">3.2.2</span> The Weibit and the CIMS power form</h3>
+<p>The multinomial logit’s tractability comes from one specific distributional assumption. Change the assumption and a different choice probability falls out. If the unobserved component enters utility <em>multiplicatively</em> rather than additively, and is distributed Weibull rather than Gumbel, the closed-form result is a power expression rather than an exponential one: the probability that option <span class="math inline">\(k\)</span> is chosen equals <span class="math inline">\(V_k^{-v} / \sum_j V_j^{-v}\)</span>, where <span class="math inline">\(V_k\)</span> is now a <em>cost</em> rather than a utility and <span class="math inline">\(v &gt; 0\)</span> plays the same scale role the scale parameter plays in logit. This is the <strong>Weibit</strong> model, derived in closed form by <span class="citation" data-cites="castillo-weibit">Castillo et al. (<a href="history.html#ref-castillo-weibit" role="doc-biblioref">2008</a>)</span>, and it is this form that CIMS uses for technology competition.</p>
+<p>The two forms are related: taking logs of the cost terms in the Weibit equation produces an expression that is algebraically identical to a multinomial logit on <span class="math inline">\(\ln V_k\)</span> with coefficient <span class="math inline">\(-v\)</span>. So an equivalent way to describe the CIMS competition is “a multinomial logit on log-lifecycle-cost.” The choice between describing it as Weibit-on-cost or logit-on-log-cost is largely a matter of which side of the algebra the analyst finds more natural. The empirical content — that share splits depend on cost <em>ratios</em> rather than cost differences, and that the dependence is parameterised by a single scale parameter <span class="math inline">\(v\)</span> — is the same either way.</p>
+<p>CIMS adopted the power form partly for historical reasons — the equation was inherited and refined from the ISTUM family of models that predated CIMS — and partly for its behavioural properties. Working in cost-ratio space makes the share split scale-free: doubling all lifecycle costs in a competition (because, say, currency units changed) leaves the split unchanged, which is the behaviour one wants from a competition equation. The same is not true of a logit applied directly to costs in dollar units. The power form does come with one awkwardness: <span class="math inline">\(V_k^{-v}\)</span>​ is only well-defined for strictly positive <span class="math inline">\(V_k\)</span> (or strictly negative), so when a competition includes technologies whose lifecycle cost is negative — for example because intangible-cost adjustments offset the financial cost — a separate treatment has to be applied. <mark>TODO: cross-reference the section where the negative-lifecycle-cost handling is described.</mark></p>
+</section>
+<section id="the-heterogeneity-parameter-v" class="level3" data-number="3.2.3">
+<h3 data-number="3.2.3" class="anchored" data-anchor-id="the-heterogeneity-parameter-v"><span class="header-section-number">3.2.3</span> The heterogeneity parameter <span class="math inline">\(v\)</span></h3>
+<p>The parameter <span class="math inline">\(v\)</span> deserves attention in its own right, because it is the single most consequential scalar in the technology competition. Algebraically, <span class="math inline">\(v\)</span> is the scale of the underlying error distribution: small <span class="math inline">\(v\)</span> corresponds to large unobserved variance — the analyst’s deterministic cost calculation captures relatively little of what the chooser is actually responding to — and large <span class="math inline">\(v\)</span> corresponds to small unobserved variance, with the deterministic cost calculation explaining almost everything.</p>
+<p>The two limits are instructive. As <span class="math inline">\(v \to 1\)</span>, the share split flattens toward an even split across all available technologies regardless of cost, and the model effectively concludes that lifecycle-cost ratios contain no information about decision-maker behaviour. As <span class="math inline">\(v \to \infty\)</span>, the share split sharpens onto the single lowest-cost option, and the competition becomes a winner-take-all rule equivalent in outcome to a linear-programme corner solution. Real-world adoption patterns sit between these extremes, and the practical calibration question is <em>how far</em> between — which is exactly what <span class="math inline">\(v\)</span> is asked to encode.</p>
+<p>A second, often-missed point about <span class="math inline">\(v\)</span> is that it varies across competitions. The “right” <span class="math inline">\(v\)</span> for a decision over residential furnaces is not the same as the right <span class="math inline">\(v\)</span> for a decision over industrial process-heat technologies, because the underlying decision-makers are different (households versus capital-budgeting committees), the stakes are different, and the set of unobserved factors driving the decision is different. CIMS exposes <span class="math inline">\(v\)</span> as a per-competition parameter so that the model can carry different behavioural assumptions for different decisions, rather than imposing a single global “rationality dial.”</p>
+</section>
+<section id="empirical-interpretation-and-calibration" class="level3" data-number="3.2.4">
+<h3 data-number="3.2.4" class="anchored" data-anchor-id="empirical-interpretation-and-calibration"><span class="header-section-number">3.2.4</span> Empirical interpretation and calibration</h3>
+<p>Because <span class="math inline">\(v\)</span> has a microeconomic interpretation as a scale parameter on revealed preferences, it can in principle be estimated from data. The CIMS programme has pursued this most aggressively for personal-vehicle and home-heating decisions, where stated- and revealed-preference surveys are tractable and where the choice sets are small enough to estimate cleanly <span class="citation" data-cites="rivers-jaccard-2005 bataille-et-al-2006 mau-et-al-2008">(<a href="history.html#ref-rivers-jaccard-2005" role="doc-biblioref">Rivers and Jaccard 2005</a>; <a href="history.html#ref-bataille-et-al-2006" role="doc-biblioref">Bataille et al. 2006</a>; <a href="history.html#ref-mau-et-al-2008" role="doc-biblioref">Mau et al. 2008</a>)</span>. For competitions where direct estimation is not feasible — for example, deep inside an industrial process where the “decision-maker” is a capital-allocation committee whose criteria are not surveyable — <span class="math inline">\(v\)</span> is calibrated indirectly against observed historical market shares as part of the broader workflow described in <a href="calibration.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
+</section>
+<section id="limitations-worth-flagging" class="level3" data-number="3.2.5">
+<h3 data-number="3.2.5" class="anchored" data-anchor-id="limitations-worth-flagging"><span class="header-section-number">3.2.5</span> Limitations worth flagging</h3>
+<p>The Weibit equation, like the multinomial logit it is closely related to, inherits the <em>independence of irrelevant alternatives</em> (IIA) property: the ratio of choice probabilities between any two options depends only on those two options’ costs and is unaffected by what other options are in the choice set. This is convenient algebraically but unrealistic when the choice set contains close substitutes — adding a second “green” option to a menu should mostly steal share from the existing green option, not from the unrelated brown options, yet IIA implies proportional substitution from all incumbents. Nested-logit and mixed-logit variants address this in the broader literature; CIMS does not currently use them, and the practical mitigation is to be careful when structuring the technology hierarchy so that close substitutes are not all thrown into the same competition node.</p>
+</section>
+</section>
+<section id="iterative-price-quantity-equilibration" class="level2" data-number="3.3">
+<h2 data-number="3.3" class="anchored" data-anchor-id="iterative-price-quantity-equilibration"><span class="header-section-number">3.3</span> Iterative price-quantity equilibration</h2>
+<p>A model that represents technology choice probabilistically inside individual sub-models still needs a way to make those sub-models behave consistently with one another. The lifecycle cost of an electric arc furnace depends on the price of electricity; the price of electricity depends on how much of it the steel sector and others actually buy; how much they buy depends in turn on which furnace technologies won their respective competitions — which depends on the price of electricity. This is a fixed-point problem, and CIMS solves it by iteration rather than by simultaneous solution. The mechanism deserves its own conceptual treatment because it is what gives CIMS its “partial-equilibrium” character without committing it to the full general-equilibrium machinery of a CGE model.</p>
+<section id="the-fixed-point-structure-of-the-problem" class="level3" data-number="3.3.1">
+<h3 data-number="3.3.1" class="anchored" data-anchor-id="the-fixed-point-structure-of-the-problem"><span class="header-section-number">3.3.1</span> The fixed-point structure of the problem</h3>
+<p>At any given simulation year, the system contains two coupled blocks. The <em>demand-side</em> sub-models (residential, commercial, transportation, industrial) each take energy prices as exogenous inputs, run their technology competitions, and produce a vector of energy demands (so much electricity, so much natural gas, so much refined petroleum, etc.) as output. The <em>supply-side</em> sub-models (electricity generation, refining, natural-gas processing, biofuels, hydrogen) each take energy demands as exogenous inputs, run their own technology competitions to decide how the demand is met, and produce a vector of energy prices as output. Each block, in isolation, is a partial-equilibrium calculation: it treats the other block’s outputs as given. Coupling the two creates a circular dependency that the partial-equilibrium calculations do not themselves resolve.</p>
+<p>CIMS resolves the circularity by <em>iteration to a fixed point</em>. The model uses an initial estimate of the energy-price vector, runs the demand-side at those prices, feeds the resulting demands into the supply-side, observes the new prices the supply block produces, and compares them to the previous input estimate. If the two vectors agree within a tolerance — historically 5% on every energy carrier — the system is declared equilibrated for that year and the simulation advances to the next time step. If they disagree, the new prices replace the old input and the demand-supply pass is repeated. In the latest version of CIMS, this price comparison is not only completed for energy carriers, but for every service lifecycle cost in the model. This better ensures all levels of the model are in equilibrium.</p>
+<p>The iteration process is illustrated schematically by the demand-supply feedback figure in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, and the same logic governs the goods-demand feedback described in the next paragraph.</p>
+<p>The current implementation adds a structural wrinkle to this picture. CIMS now represents the model as a directed graph (using Python’s <a href="https://networkx.org/en/">NetworkX</a> package), and each demand-supply pass is realised as a pair of graph traversals — top-down and bottom-up — that require the underlying graph to be acyclic (that is, no loops are present in the graph). Deliberate cycles do, however, exist in the model design: for example, a biodiesel-fuelled tractor consumes biodiesel as an input, and the biodiesel sub-model in turn calls back on tractor service as part of its own production. To run the traversal at all, CIMS applies a small set of loop-resolution heuristics that pick one node in each cycle to evaluate first, using estimated values from its parents on that first pass. Because that estimate is only an approximation of the true equilibrium value, the outer iteration is required to converge several times in succession rather than just once, giving the values inside the broken loop a chance to stabilise alongside the price vector.</p>
+</section>
+<section id="goods-and-services-demand-feedbacks" class="level3" data-number="3.3.2">
+<h3 data-number="3.3.2" class="anchored" data-anchor-id="goods-and-services-demand-feedbacks"><span class="header-section-number">3.3.2</span> Goods and services demand feedbacks</h3>
+<p>A second product feedback loop sits alongside the energy iteration. When a policy shifts production costs in one of the trade-exposed sectors — pulp and paper, primary metals, chemicals — the price of the domestically produced good moves relative to its imported substitute. Armington-style elasticities then shift the demand for the domestic good, which in turn changes the activity level driving the demand-side technology competitions in the affected sector, which can change energy demand and so on. CIMS treats this loop in the same iterative spirit: the goods-price-vs-quantity relationship is evaluated, the activity vector is updated, and the energy-price iteration restarts under the new activity levels. Convergence in practice depends on having well-behaved elasticities and a finite-amplitude policy shock; the elasticities themselves are documented in the goods-and-services demand feedbacks chapter.</p>
+</section>
+<section id="why-use-partial-equilibrium-rather-than-general" class="level3" data-number="3.3.3">
+<h3 data-number="3.3.3" class="anchored" data-anchor-id="why-use-partial-equilibrium-rather-than-general"><span class="header-section-number">3.3.3</span> Why use partial-equilibrium rather than general</h3>
+<p>A full CGE model would close <em>every</em> circular dependency in the economy simultaneously — energy prices and demands, but also labour markets, capital allocation, terms of trade, exchange rates, household consumption baskets — typically by feeding a single nonlinear system of equations to a solver and asking for the price-quantity vector that zeros out all the market-clearing residuals at once. CIMS does not do that. It closes the energy market and the trade-in-goods market against the technology sub-models, and treats everything else (labour, capital cost, exchange rates, aggregate macroeconomic activity) as exogenous drivers set at the start of the run. Equilibrium is reached over the markets the model considers endogenous, but not over the whole economy.</p>
+<p>The trade-off is the same one that runs through the rest of the chapter. Closing fewer markets keeps the technology sub-models tractable and lets them carry the engineering and behavioural detail that distinguishes CIMS from a CGE model, at the cost of being silent on the macroeconomic feedbacks a CGE model would capture. Closing more markets would push the model toward CGE territory and probably toward greater aggregations of technology, which would decrease the model’s utility for evaluating regulatory policies. Further, it is sometimes advantegeous to disconnect a sector or region from the wider economy and explore policy effects in isolation. This flexibility of scenario design and modelling approach is one of the core strengths of CIMS.</p>
+</section>
+<section id="convergence-and-tolerance" class="level3" data-number="3.3.4">
+<h3 data-number="3.3.4" class="anchored" data-anchor-id="convergence-and-tolerance"><span class="header-section-number">3.3.4</span> Convergence and tolerance</h3>
+<p>A couple of practical points are worth noting about the iteration itself. First, convergence is not guaranteed in general — a competition equation with high <span class="math inline">\(v\)</span> and tightly coupled supply and demand can in principle exhibit limit cycles, where the share of, say, electric vehicles oscillates between iterations because each side over-corrects to the other. In practice CIMS rarely encounters this regime, partly because the smoothing imposed by the Weibit equation (intermediate <span class="math inline">\(v\)</span>) damps oscillations and partly because the historical 5% tolerance is loose enough to accept small residual oscillations rather than chase them indefinitely. Second, the iteration is performed independently in each time step; convergence achieved in one period is not assumed to carry over to the next, since the technology stock has rolled over and the cost surface has shifted.</p>
+</section>
+</section>
+<section id="discount-rates" class="level2" data-number="3.4">
+<h2 data-number="3.4" class="anchored" data-anchor-id="discount-rates"><span class="header-section-number">3.4</span> Discount rates</h2>
+<p>Discount rates appear in two distinct roles in CIMS, and conflating them is one of the easier mistakes to make when reading the equations in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. The roles correspond to different <em>questions</em> about future cash flows. Being explicit about which question is being asked is what motivates CIMS to carry both a <em>financial</em> discount rate and a <em>behavioural</em> (sometimes called <em>revealed</em> or <em>empirical</em>) discount rate, and to use them in different places.</p>
+<section id="financial-rate" class="level3" data-number="3.4.1">
+<h3 data-number="3.4.1" class="anchored" data-anchor-id="financial-rate"><span class="header-section-number">3.4.1</span> Financial rate</h3>
+<p>The financial discount rate is the rate at which a competently advised firm or household, applying standard cost-benefit logic, would discount the future cash flows associated with a piece of equipment. In a textbook treatment it is the weighted-average cost of capital for a firm, or the appropriate risk-adjusted social discount rate for a public project; in practice it is the rate that converts an undiscounted stream of future operating and energy costs into a present value comparable to today’s capital outlay. CIMS uses this rate, denoted <span class="math inline">\(r\)</span>, inside the capital recovery factor:</p>
+<p><span class="math display">\[
+CRF = \frac{r}{1 - (1 + r)^{-N}}
+\]</span></p>
+<p>which annualises a one-time capital cost over the equipment’s lifespan <span class="math inline">\(N\)</span> (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). Conceptually, the CRF is asking “what flat annual payment, discounted at <span class="math inline">\(r\)</span> over <span class="math inline">\(N\)</span> years, has the same present value as the lump-sum capital cost?” The right answer to that question turns on what the analyst thinks the <em>time-value of money</em> is, and so the value of <span class="math inline">\(r\)</span> here should reflect a defensible cost-of-capital estimate. Typical values are single-digit annual percentages — a few percent above the prevailing real interest rate, with adjustments for the riskiness of the investment.</p>
+</section>
+<section id="behavioural-rate" class="level3" data-number="3.4.2">
+<h3 data-number="3.4.2" class="anchored" data-anchor-id="behavioural-rate"><span class="header-section-number">3.4.2</span> Behavioural rate</h3>
+<p>The behavioural discount rate, by contrast, is not a question about the time value of money at all. It is a question about <em>how decision-makers actually behave</em>. Empirical studies of consumer choice over energy-using equipment — refrigerators, light bulbs, water heaters, vehicles — find again and again that the implied trade-off between higher up-front capital cost and lower future operating cost is far steeper than any defensible financial discount rate would predict. Consumers, in the language of the literature, act as though they are discounting future energy savings at rates of 20%, 30%, sometimes higher. Firms making smaller, more reversible equipment decisions exhibit something similar, if usually less extreme.</p>
+<p>This wedge between “what the financial calculation says they should do” and “what they actually do” is real, and it is not just irrationality. It encodes risk aversion in the face of uncertain future fuel prices, liquidity constraints, information costs, the implicit option value of not committing capital to a long-lived piece of equipment, transaction costs of switching, and decision-maker-specific tastes that the analyst cannot observe. A behavioural discount rate is the device CIMS uses to summarise this entire wedge in a single calibratable parameter. When it appears in the lifecycle-cost calculation — in particular in the foresight functions that build expected future emissions charges into today’s investment decisions (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>) — it is the rate at which a <em>plausibly modelled</em> decision-maker, not a textbook one, is treating future costs.</p>
+</section>
+<section id="how-the-two-rates-are-used-in-practice" class="level3" data-number="3.4.3">
+<h3 data-number="3.4.3" class="anchored" data-anchor-id="how-the-two-rates-are-used-in-practice"><span class="header-section-number">3.4.3</span> How the two rates are used in practice</h3>
+<p>In ordinary use, CIMS applies the <em>behavioural</em> rate throughout the lifecycle-cost calculation — the foresight functions, the discounted-expectations evaluation of emissions charges, and the other places where future costs are weighed against present ones. This is the default for the reason given above: if CIMS evaluated those quantities at a textbook financial discount rate, it would predict consumers eagerly switching to high-capital-cost / low-operating-cost technology — heat pumps, LED lighting, electric vehicles — in volumes that decades of empirical observation tell us they do not, in fact, choose. The behavioural rate corrects the model toward observed behaviour without requiring the analyst to encode every individual reason for that behaviour separately.</p>
+<p>The financial rate is still available to use in the model, but as a sensitivity and a normative reference point rather than as the default driver of technology choice. An analyst can substitute it in to test alternative views on the cost of capital, to explore how technology choice would look if decision-makers were behaving textbook-rationally, or to produce an after-the-fact cost-benefit appraisal at a defensible social discount rate.</p>
+<p>One caveat that comes with this distinction is that model output should be read with the behavioural rates in mind. A run that holds the behavioural rate fixed across a counterfactual is implicitly assuming that the policy in question does not change the underlying barriers to adoption — and many of the policies CIMS is asked about (information campaigns, financing programmes, dealer-incentive schemes) are precisely policies that target those barriers. In such cases, the behavioural rate itself could be considered an object of policy, not a fixed parameter.</p>
+</section>
+<section id="behavioural-rate-versus-intangible-cost" class="level3" data-number="3.4.4">
+<h3 data-number="3.4.4" class="anchored" data-anchor-id="behavioural-rate-versus-intangible-cost"><span class="header-section-number">3.4.4</span> Behavioural rate versus intangible cost</h3>
+<p>The behavioural discount rate is not the only device in CIMS that absorbs non-financial preferences — intangible costs (described in the next section) do similar work. In an ideal world the two would carry conceptually distinct loads: the behavioural rate would capture the <em>time-preference</em> component of the wedge — impatience, liquidity constraints, the implicit option value of deferring an investment — while the intangible cost would capture the <em>state-preference</em> component — risk aversion to a new technology, perceived quality, social signalling, switching costs unrelated to time. In this idealisation the two are independent and separately identifiable from the data.</p>
+<p>In practice they are not. Most observable patterns of technology adoption can be rationalised by any of several combinations of high discount rate and high intangible cost, and the experiments that would in principle separate the two — varying payback horizon while holding perceived risk constant, say — are difficult to run cleanly for real durable-goods decisions. CIMS handles this empirical muddiness pragmatically: it adopts behavioural discount rates from the published literature, where they have been estimated for specific decision contexts and survive across studies, and uses intangible costs as the <em>adjustable</em> calibration handle that closes the remaining gap to observed market shares (see <a href="calibration.html" class="quarto-xref"><span>Chapter 15</span></a>). Drawing the line in this place is a choice, not a statement about which device is more “real” — it reflects the practical fact that the literature is a better source for one and historical market-share data the better source for the other.</p>
+</section>
+</section>
+<section id="intangible-costs-as-a-calibration-device" class="level2" data-number="3.5">
+<h2 data-number="3.5" class="anchored" data-anchor-id="intangible-costs-as-a-calibration-device"><span class="header-section-number">3.5</span> Intangible costs as a calibration device</h2>
+<p>The lifecycle cost of a technology in CIMS is, in its short form, the sum of an annualised capital cost, an operating-and-maintenance cost, and a service cost — each of which has an obvious engineering interpretation. The full expression in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a> adds two further terms inside the capital cost: a <em>fixed intangible cost</em> (<span class="math inline">\(FIC\)</span>) and a <em>declining intangible cost</em> (<span class="math inline">\(DIC_t\)</span>). These are not engineering quantities, and they are not measured from invoices or fuel bills. They are calibration handles, and their role inside the model is best understood in those terms.</p>
+<section id="what-intangible-costs-are-doing" class="level3" data-number="3.5.1">
+<h3 data-number="3.5.1" class="anchored" data-anchor-id="what-intangible-costs-are-doing"><span class="header-section-number">3.5.1</span> What intangible costs are doing</h3>
+<p>An intangible cost is the model’s way of expressing, in dollars, everything that drives a decision-maker’s preference for or against a technology <em>other than</em> the financial costs the engineering data already covers. The list of factors any one of these terms can be standing in for is long: the perceived reliability of a new technology relative to an incumbent, the quality or aesthetic of the service it provides (the warmth of incandescent light, the cargo flexibility of a pickup), the inconvenience of switching, the worry about resale value, the social signal of choosing one option over another, the perceived risk of fuel or technology lock-in. Each of these is real and each affects market share, but none of them shows up in a capital-cost or operating-cost spreadsheet. The intangible-cost terms give the model a place to put them.</p>
+<p>Mechanically, intangible costs enter the lifecycle-cost calculation through the same channel as the engineering-derived capital cost (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). They are denominated in the same units, they affect the Weibit competition through the same lifecycle-cost ratio, and a high intangible cost on a technology has the same modelled effect as a high financial cost: it lowers that technology’s market share in the competition. The difference is only in interpretation — financial costs are measured externally, intangible costs are inferred internally.</p>
+</section>
+<section id="why-this-is-a-calibration-device" class="level3" data-number="3.5.2">
+<h3 data-number="3.5.2" class="anchored" data-anchor-id="why-this-is-a-calibration-device"><span class="header-section-number">3.5.2</span> Why this is a calibration device</h3>
+<p>The defining feature of a <em>calibration device</em> is that the analyst sets its value not from independent measurement but from the requirement that the model reproduce something observable. For intangible costs, the observable target is the empirical history of market shares: in any given historical year, the actual stock-share split among competing technologies is known, and the value of the intangible-cost parameters can be adjusted until the model’s competition produces the same split.</p>
+<p>In effect, the intangible costs absorb whatever wedge remains between the engineering cost ratios — capital plus operating plus service — and the cost ratios that, run through the Weibit equation, would actually produce the observed shares. The smaller this wedge is, the closer the engineering data alone comes to explaining adoption behaviour. The larger it is, the more of the adoption story is being carried by the things engineering data cannot see. Either outcome is informative, and one of the secondary purposes of the calibration exercise is to expose where the engineering story is and is not sufficient.</p>
+<p>CIMS treats intangible costs as a <em>per-competition</em> parameter for the same reason it treats <span class="math inline">\(v\)</span> that way: the non-financial preferences attached to a residential furnace decision are not the same as those attached to an industrial process-heat decision. The calibration workflow that fits these parameters jointly with <span class="math inline">\(v\)</span> against historical data is described in <a href="calibration.html" class="quarto-xref"><span>Chapter 15</span></a>.</p>
+</section>
+<section id="fixed-vs.-declining-intangible-costs" class="level3" data-number="3.5.3">
+<h3 data-number="3.5.3" class="anchored" data-anchor-id="fixed-vs.-declining-intangible-costs"><span class="header-section-number">3.5.3</span> Fixed vs.&nbsp;declining intangible costs</h3>
+<p>CIMS distinguishes two intangible-cost terms because the underlying behaviour has two distinct timescales.</p>
+<p>The <em>fixed intangible cost</em> (<span class="math inline">\(FIC\)</span>) represents the time-invariant component of non-financial preference — the wedge that does not go away with experience or market exposure, because it reflects a genuine and durable feature of the technology. A user who finds gas-stove cooking irreducibly preferable to induction for reasons that have nothing to do with the price of either is not going to change their mind because more of their neighbours bought induction stoves. <span class="math inline">\(FIC\)</span> is the calibration handle for that kind of preference.</p>
+<p>The <em>declining intangible cost</em> (<span class="math inline">\(DIC_t\)</span>), by contrast, represents the time-varying component — the wedge that <em>does</em> shrink as the technology becomes more familiar, more widely available, and less perceived-risky. New technologies tend to attract a risk premium that fades as adoption climbs, both because direct experience accumulates and because adopters can observe their neighbours’ experience. CIMS captures this via the declining intangible-cost function (in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>), which lets <span class="math inline">\(DIC_t\)</span> shrink as a function of new market share. This formalises the <em>neighbour effect</em> documented in the empirical literature on consumer adoption of new vehicle technologies <span class="citation" data-cites="mau-et-al-2008">(<a href="history.html#ref-mau-et-al-2008" role="doc-biblioref">Mau et al. 2008</a>)</span> and is a key channel through which policies that boost early adoption — pilot programmes, fleet procurement, financing assistance — produce dynamic feedback in the model.</p>
+</section>
+<section id="limitations-of-intangible-costs" class="level3" data-number="3.5.4">
+<h3 data-number="3.5.4" class="anchored" data-anchor-id="limitations-of-intangible-costs"><span class="header-section-number">3.5.4</span> Limitations of intangible costs</h3>
+<p>Calibrated parameters can be made to fit almost any historical observations, and intangible costs are a flexible enough device to absorb a great deal of model error if used without discipline. Practically, the calibrated values should be <em>interpretable</em>: an intangible cost large enough to dominate the lifecycle cost should correspond to a story the analyst can tell about why the technology actually has that much non-financial baggage. A calibrated value that has no narrative is more likely to be picking up a misspecification elsewhere in the model — a wrong elasticity, a missing technology, an unrepresented constraint — than a genuine non-financial preference. Further, the values should be <em>stable across reasonable variations in the calibration target</em>: an intangible cost that swings wildly between two equally defensible historical fits is also more likely to be model error in disguise than a real preference.</p>
+<p>Intangible costs are CIMS’s primary device for expressing the gap between what engineering data says decision-makers should do and what observed adoption tells us they actually did. The calibration chapter (<a href="calibration.html" class="quarto-xref"><span>Chapter 15</span></a>) discusses the practical workflow and the diagnostic checks that try to keep intangible costs realistic.</p>
+<div style="page-break-after: always;"></div>
+</section>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-bataille-2005" class="csl-entry" role="listitem">
+Bataille, Christopher G. F. 2005. <span>“Design and Application of a Technologically Explicit Hybrid Energy-Economy Policy Model with Micro and Macro Economic Dynamics.”</span> PhD thesis, Simon Fraser University, School of Resource; Environmental Management. <a href="https://summit.sfu.ca/item/4519">https://summit.sfu.ca/item/4519</a>.
+</div>
+<div id="ref-bataille-et-al-2006" class="csl-entry" role="listitem">
+Bataille, Christopher, Mark Jaccard, John Nyboer, and Nicholas Rivers. 2006. <span>“Towards General Equilibrium in a Technology-Rich Model with Empirically Estimated Behavioral Parameters.”</span> <em>The Energy Journal</em> SI2006 (Hybrid Modeling): 93–112. <a href="https://doi.org/10.5547/ISSN0195-6574-EJ-VolSI2006-NoSI2-5">https://doi.org/10.5547/ISSN0195-6574-EJ-VolSI2006-NoSI2-5</a>.
+</div>
+<div id="ref-castillo-weibit" class="csl-entry" role="listitem">
+Castillo, Enrique, José María Menéndez, Pilar Jiménez, and Ana Rivas. 2008. <span>“Closed Form Expressions for Choice Probabilities in the <span>Weibull</span> Case.”</span> <em>Transportation Research Part B: Methodological</em> 42 (4): 373–80. <a href="https://doi.org/10.1016/j.trb.2007.08.002">https://doi.org/10.1016/j.trb.2007.08.002</a>.
+</div>
+<div id="ref-mau-et-al-2008" class="csl-entry" role="listitem">
+Mau, Paulus, Jimena Eyzaguirre, Mark Jaccard, Colleen Collins-Dodd, and Kenneth Tiedemann. 2008. <span>“The <span>‘Neighbor Effect’</span>: <span>Simulating</span> Dynamics in Consumer Preferences for New Vehicle Technologies.”</span> <em>Ecological Economics</em> 68 (1–2): 504–16. <a href="https://doi.org/10.1016/j.ecolecon.2008.05.007">https://doi.org/10.1016/j.ecolecon.2008.05.007</a>.
+</div>
+<div id="ref-mcfadden" class="csl-entry" role="listitem">
+McFadden, Daniel. 1974. <span>“Conditional Logit Analysis of Qualitative Choice Behavior.”</span> In <em>Frontiers in Econometrics</em>, edited by Paul Zarembka. Academic Press.
+</div>
+<div id="ref-rivers-jaccard-2005" class="csl-entry" role="listitem">
+Rivers, Nicholas, and Mark Jaccard. 2005. <span>“Combining Top-down and Bottom-up Approaches to Energy-Economy Modeling Using Discrete Choice Methods.”</span> <em>The Energy Journal</em> 26 (1): 83–106. <a href="https://doi.org/10.5547/ISSN0195-6574-EJ-Vol26-No1-4">https://doi.org/10.5547/ISSN0195-6574-EJ-Vol26-No1-4</a>.
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script>
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.querySelectorAll('a.footnote-ref').forEach(el => {
+
+    const prev = el.previousSibling;
+
+    if (prev && prev.nodeType === Node.ELEMENT_NODE && prev.classList?.contains('footnote-ref')) {
+
+      el.classList.add('fn-adjacent');
+
+    }
+
+  });
+
+});
+
+</script>
+<style>
+
+/* When a back-link is clicked we scroll the target into view, which
+
+   can land it under the cursor and trigger Quarto's tippy hover
+
+   popover. With `interactive: true` the popover sticks open because
+
+   the cursor is on the trigger. Visual suppression below is paired
+
+   with logical suppression in JS (disable every tippy instance while
+
+   the class is on). We deliberately do NOT use `pointer-events: none`
+
+   on triggers: doing so freezes tippy in a stuck-hover state, since
+
+   the mouseleave it expects never fires.   */
+
+body.suppress-tippy-popovers .tippy-box,
+
+body.suppress-tippy-popovers [data-tippy-root] {
+
+  display: none !important;
+
+}
+
+</style>
+
+<script>
+
+(function () {
+
+  // Quarto book mode picks one chapter as the "primary" references
+
+  // location, hides every other chapter's #refs div via inline
+
+  // display:none, and rewrites every cross-chapter citation link to
+
+  // point at that primary chapter. With per-chapter bibliographies
+
+  // (declared in each chapter's YAML) each chapter has its own ref
+
+  // entries, so the centralization is wrong: the hidden div is the
+
+  // one with the entries you actually need, and rewritten hrefs point
+
+  // at refs that don't exist on the destination page. Undo both
+
+  // pieces of the post-processing before adding the backlink arrows.
+
+  function unhideLocalRefs() {
+
+    document.querySelectorAll('#refs').forEach(function (refs) {
+
+      if (refs.style && refs.style.display === 'none') {
+
+        refs.style.removeProperty('display');
+
+      }
+
+    });
+
+  }
+
+
+
+  function rewriteCrossChapterCites() {
+
+    document.querySelectorAll('a[href*=".html#ref-"]').forEach(function (a) {
+
+      const href = a.getAttribute('href') || '';
+
+      const idx = href.lastIndexOf('#ref-');
+
+      if (idx === -1) return;
+
+      const hash = href.slice(idx);                          // "#ref-iea-fop"
+
+      if (document.getElementById(hash.slice(1))) {
+
+        a.setAttribute('href', hash);
+
+      }
+
+    });
+
+  }
+
+
+
+  function addBacklinks() {
+
+    const entries = document.querySelectorAll('#refs .csl-entry[id^="ref-"]');
+
+    entries.forEach(function (entry) {
+
+      if (entry.querySelector('.csl-backlinks')) return;     // idempotent
+
+
+
+      const key = entry.id;                                  // "ref-iea-fop"
+
+      const hash = '#' + key;
+
+      // Match both "#ref-iea-fop" and "chapter.html#ref-iea-fop"
+
+      const cites = [...document.querySelectorAll('a[href$="' + hash + '"]')];
+
+      if (!cites.length) return;
+
+
+
+      const back = document.createElement('span');
+
+      back.className = 'csl-backlinks';
+
+      back.append(' ');
+
+
+
+      cites.forEach(function (cite, i) {
+
+        const anchorId = 'cite-' + key.slice(4) + '-' + (i + 1);
+
+        if (!cite.id) cite.id = anchorId;
+
+        const a = document.createElement('a');
+
+        a.href = '#' + cite.id;
+
+        a.textContent = '\u21A9\uFE0E';
+
+        // Click is handled by the document-level capture delegate
+
+        // (see bindCaptureClickHandler), which intercepts every
+
+        // in-page scroll back-link uniformly.
+
+        back.appendChild(a);
+
+        if (i < cites.length - 1) back.append(' ');
+
+      });
+
+
+
+      entry.appendChild(back);
+
+    });
+
+  }
+
+
+
+  // A MutationObserver-based popover killer. While suppression is
+
+  // active, any [data-tippy-root] or .tippy-box element inserted into
+
+  // the DOM is immediately removed. This is independent of tippy's
+
+  // own API (no reliance on _tippy / disable / hideAll), so it works
+
+  // even if tippy stores its instances somewhere other than where
+
+  // we'd expect.
+
+  let popoverObserver = null;
+
+  function ensureObserver() {
+
+    if (popoverObserver) return;
+
+    popoverObserver = new MutationObserver(function (mutations) {
+
+      if (!document.body.classList.contains('suppress-tippy-popovers')) return;
+
+      mutations.forEach(function (m) {
+
+        m.addedNodes.forEach(function (n) {
+
+          if (n.nodeType !== 1) return;
+
+          if (n.hasAttribute && (n.hasAttribute('data-tippy-root') ||
+
+              (n.classList && n.classList.contains('tippy-box')))) {
+
+            n.remove();
+
+          }
+
+        });
+
+      });
+
+    });
+
+    popoverObserver.observe(document.body, { childList: true, subtree: true });
+
+  }
+
+
+
+  function suppressPopovers() {
+
+    ensureObserver();
+
+    document.body.classList.add('suppress-tippy-popovers');
+
+    document.querySelectorAll('[data-tippy-root]').forEach(function (root) {
+
+      root.remove();
+
+    });
+
+    if (window.tippy && typeof window.tippy.hideAll === 'function') {
+
+      try { window.tippy.hideAll(); } catch (_) {}
+
+    }
+
+    // Best-effort: walk every plausibly-tippy-bound element and call
+
+    // hide()/disable() if tippy exposes its instance the standard way.
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (!t) return;
+
+      try { t.hide(); } catch (_) {}
+
+      if (typeof t.disable === 'function') t.disable();
+
+    });
+
+  }
+
+
+
+  function releasePopovers() {
+
+    document.body.classList.remove('suppress-tippy-popovers');
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (t && typeof t.enable === 'function') t.enable();
+
+    });
+
+  }
+
+
+
+  // Compute the window scrollY that puts `el` at viewport center.
+
+  // Doing this with explicit math (rather than scrollIntoView) avoids
+
+  // any interference from scrollable ancestors or browser quirks.
+
+  function centerWindowOn(el) {
+
+    try {
+
+      const rect = el.getBoundingClientRect();
+
+      const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+      const target = Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+      window.scrollTo({ top: target, behavior: 'auto' });
+
+    } catch (_) {
+
+      try { el.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (_) {}
+
+    }
+
+  }
+
+
+
+  // Compute the absolute window-Y that puts `el` at viewport center.
+
+  function targetScrollY(el) {
+
+    const rect = el.getBoundingClientRect();
+
+    const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+    return Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+  }
+
+
+
+  // Scroll-lock state. While `lockTarget` is non-null and we're before
+
+  // `lockUntil`, every scroll event yanks the page back to centered
+
+  // on lockTarget. `selfScroll` breaks the recursion (our own scrollTo
+
+  // would otherwise re-trigger the listener).
+
+  let lockTarget = null;
+
+  let lockUntil = 0;
+
+  let selfScroll = false;
+
+  function onScrollLock() {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    if (selfScroll) return;
+
+    const want = targetScrollY(lockTarget);
+
+    const got = window.pageYOffset || window.scrollY || 0;
+
+    if (Math.abs(got - want) > 2) {
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, want); } catch (_) {}
+
+      // Reset flag after the resulting scroll event has fired.
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+    }
+
+  }
+
+  window.addEventListener('scroll', onScrollLock, { passive: true, capture: true });
+
+
+
+  // Quarto's quarto-nav.js registers a `hashchange` listener that
+
+  // calls `window.scrollTo(0, pageYOffset - headerOffset())` -- it
+
+  // re-scrolls to the new hash, accounting for the fixed header.
+
+  // That's what was overriding our scroll. By registering our own
+
+  // hashchange listener (which runs after Quarto's because Quarto's
+
+  // is registered first), we re-center on the locked target after
+
+  // quarto-nav has done its scroll.
+
+  window.addEventListener('hashchange', function () {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    selfScroll = true;
+
+    try { window.scrollTo(0, targetScrollY(lockTarget)); } catch (_) {}
+
+    setTimeout(function () { selfScroll = false; }, 0);
+
+  }, false);
+
+
+
+  // Single capture-phase delegate for every in-page scroll back-link.
+
+  // Whatever is scrolling the marker to viewport top (browser
+
+  // hash-jump, focus auto-scroll, etc.), the scroll-event lock
+
+  // immediately reverts any drift back to our centered position. URL
+
+  // hash is intentionally NOT updated -- setting it has been observed
+
+  // to trigger a competing scroll on some browsers.
+
+  function bindCaptureClickHandler() {
+
+    if (document.documentElement.dataset.scrollBacklinkHandler) return;
+
+    document.documentElement.dataset.scrollBacklinkHandler = '1';
+
+    document.addEventListener('click', function (e) {
+
+      let link = null;
+
+      try {
+
+        const t = e.target && (e.target.nodeType === 3 ? e.target.parentElement : e.target);
+
+        link = t && t.closest && t.closest('a.footnote-back, .csl-backlinks > a');
+
+      } catch (_) {}
+
+      if (!link) return;
+
+      // Quarto-nav.js rewrites internal hrefs from "#anchor" to the
+
+      // absolute URL ("http://.../page.html#anchor"). Extract the hash
+
+      // from anywhere in the href so we work with either form.
+
+      const href = link.getAttribute('href') || '';
+
+      const hashIdx = href.lastIndexOf('#');
+
+      const hash = hashIdx === -1 ? '' : href.substring(hashIdx);
+
+      const target = hash ? document.querySelector(hash) : null;
+
+      if (!target) return;
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+
+
+      try { suppressPopovers(); } catch (_) {}
+
+      try {
+
+        if (document.activeElement && document.activeElement.blur) {
+
+          document.activeElement.blur();
+
+        }
+
+      } catch (_) {}
+
+
+
+      // Engage the scroll-event lock for 600 ms. Any scroll attempt
+
+      // during that window is reverted to centered-on-target by the
+
+      // onScrollLock listener.
+
+      lockTarget = target;
+
+      lockUntil = Date.now() + 600;
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, targetScrollY(target)); } catch (_) {}
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+
+
+      setTimeout(function () {
+
+        lockTarget = null;
+
+        releasePopovers();
+
+      }, 800);
+
+    }, true);  // capture phase
+
+  }
+
+
+
+  function applyAll() {
+
+    unhideLocalRefs();
+
+    rewriteCrossChapterCites();
+
+    addBacklinks();
+
+    bindCaptureClickHandler();
+
+  }
+
+
+
+  function start() {
+
+    // Run once after Quarto finishes its own link rewriting
+
+    setTimeout(applyAll, 0);
+
+    // And again on full load to be safe
+
+    window.addEventListener('load', applyAll);
+
+  }
+
+
+
+  if (document.readyState === 'loading') {
+
+    document.addEventListener('DOMContentLoaded', start);
+
+  } else {
+
+    start();
+
+  }
+
+})();
+
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./architecture.html" class="pagination-link" aria-label="Model Architecture">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./technologies.html" class="pagination-link" aria-label="Technology Competition">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

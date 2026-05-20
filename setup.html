@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Setup the model – CIMS</title>
+<title>17&nbsp; Setup the model – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -69,17 +69,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
 <link href="./getting_started.html" rel="next">
-<link href="./index.html" rel="prev">
+<link href="./validation.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -112,7 +116,169 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -121,7 +287,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">install</a></li><li class="breadcrumb-item"><a href="./setup.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./setup.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -139,6 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <a href="./">CIMS</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/EMRG-SFU/cims" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -152,13 +319,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Intro</span></a>
+ <span class="menu-text">Welcome</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">install</span></a>
+ <span class="menu-text">About</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -166,14 +333,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  <a href="./history.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">History and Development</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  <a href="./architecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></span></a>
   </div>
 </li>
       </ul>
@@ -181,7 +348,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">model</span></a>
+ <span class="menu-text">Methodology</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -189,26 +356,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
+  <a href="./theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./technologies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_supply_demand.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./demand_feedbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Goods and Services Demand Feedbacks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sectors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Descriptions</span></span></a>
   </div>
 </li>
       </ul>
@@ -216,7 +389,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">results</span></a>
+ <span class="menu-text">Cross-Sector Topics</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -224,14 +397,160 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./policies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  <a href="./energy_efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Energy Efficiency</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./low_temp_industrial_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./machine_drive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ccus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Carbon Capture, Utilization, and Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Energy Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./district_energy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">District Energy</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Data and Calibration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_inputs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Data Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Validation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Running the Model</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./building_tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Outputs and Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./post_processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Post-Processing and Reporting</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_acronyms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Acronyms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_file_formats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">File Format Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Equation Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Version History</span></span></a>
   </div>
 </li>
       </ul>
@@ -246,26 +565,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites"><span class="header-section-number">1.1</span> Prerequisites</a></li>
-  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">1.2</span> Setup</a>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link active" data-scroll-target="#prerequisites"><span class="header-section-number">17.1</span> Prerequisites</a></li>
+  <li><a href="#setup" id="toc-setup" class="nav-link" data-scroll-target="#setup"><span class="header-section-number">17.2</span> Setup</a>
   <ul class="collapse">
-  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository"><span class="header-section-number">1.2.1</span> 1. Clone the Repository</a></li>
-  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies"><span class="header-section-number">1.2.2</span> 2. Install Dependencies</a></li>
-  <li><a href="#launch-marimo" id="toc-launch-marimo" class="nav-link" data-scroll-target="#launch-marimo"><span class="header-section-number">1.2.3</span> 3. Launch Marimo</a></li>
+  <li><a href="#clone-the-repository" id="toc-clone-the-repository" class="nav-link" data-scroll-target="#clone-the-repository"><span class="header-section-number">17.2.1</span> 1. Clone the Repository</a></li>
+  <li><a href="#install-dependencies" id="toc-install-dependencies" class="nav-link" data-scroll-target="#install-dependencies"><span class="header-section-number">17.2.2</span> 2. Install Dependencies</a></li>
+  <li><a href="#launch-marimo" id="toc-launch-marimo" class="nav-link" data-scroll-target="#launch-marimo"><span class="header-section-number">17.2.3</span> 3. Launch Marimo</a></li>
   </ul></li>
-  <li><a href="#common-workflows" id="toc-common-workflows" class="nav-link" data-scroll-target="#common-workflows"><span class="header-section-number">1.3</span> Common Workflows</a></li>
-  <li><a href="#subsequent-runs" id="toc-subsequent-runs" class="nav-link" data-scroll-target="#subsequent-runs"><span class="header-section-number">1.4</span> Subsequent Runs</a></li>
-  <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting"><span class="header-section-number">1.5</span> Troubleshooting</a></li>
-  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources"><span class="header-section-number">1.6</span> Additional Resources</a></li>
+  <li><a href="#common-workflows" id="toc-common-workflows" class="nav-link" data-scroll-target="#common-workflows"><span class="header-section-number">17.3</span> Common Workflows</a></li>
+  <li><a href="#subsequent-runs" id="toc-subsequent-runs" class="nav-link" data-scroll-target="#subsequent-runs"><span class="header-section-number">17.4</span> Subsequent Runs</a></li>
+  <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting"><span class="header-section-number">17.5</span> Troubleshooting</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources"><span class="header-section-number">17.6</span> Additional Resources</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">install</a></li><li class="breadcrumb-item"><a href="./setup.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></a></li></ol></nav>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./setup.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></h1>
+<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></h1>
 </div>
 
 
@@ -283,8 +603,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <p>Welcome to the CIMS repository! This guide will help you set up and run the CIMS Python package for energy-economy modelling.</p>
-<section id="prerequisites" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">1.1</span> Prerequisites</h2>
+<section id="prerequisites" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">17.1</span> Prerequisites</h2>
 <p>Before you begin, ensure you have the following installed:</p>
 <ul>
 <li><strong>uv</strong>: A Python package and environment manager. Install it with one command — no separate Python installation required.
@@ -302,30 +622,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ul>
 </section>
-<section id="setup" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="setup"><span class="header-section-number">1.2</span> Setup</h2>
-<section id="clone-the-repository" class="level3" data-number="1.2.1">
-<h3 data-number="1.2.1" class="anchored" data-anchor-id="clone-the-repository"><span class="header-section-number">1.2.1</span> 1. Clone the Repository</h3>
+<section id="setup" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="setup"><span class="header-section-number">17.2</span> Setup</h2>
+<section id="clone-the-repository" class="level3" data-number="17.2.1">
+<h3 data-number="17.2.1" class="anchored" data-anchor-id="clone-the-repository"><span class="header-section-number">17.2.1</span> 1. Clone the Repository</h3>
 <p>Open your terminal and navigate to the directory where you want to work:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> ~/Documents/projects/</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Clone the repository:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/EMRG-SFU/cims.git</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> cims</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
-<section id="install-dependencies" class="level3" data-number="1.2.2">
-<h3 data-number="1.2.2" class="anchored" data-anchor-id="install-dependencies"><span class="header-section-number">1.2.2</span> 2. Install Dependencies</h3>
+<section id="install-dependencies" class="level3" data-number="17.2.2">
+<h3 data-number="17.2.2" class="anchored" data-anchor-id="install-dependencies"><span class="header-section-number">17.2.2</span> 2. Install Dependencies</h3>
 <p>From the <code>cims</code> directory, run:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync <span class="at">--extra</span> notebooks</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This will automatically select a compatible Python version, create a virtual environment, and install all dependencies. You only need to do this once, or again when dependencies are updated.</p>
 </section>
-<section id="launch-marimo" class="level3" data-number="1.2.3">
-<h3 data-number="1.2.3" class="anchored" data-anchor-id="launch-marimo"><span class="header-section-number">1.2.3</span> 3. Launch Marimo</h3>
+<section id="launch-marimo" class="level3" data-number="17.2.3">
+<h3 data-number="17.2.3" class="anchored" data-anchor-id="launch-marimo"><span class="header-section-number">17.2.3</span> 3. Launch Marimo</h3>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo edit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Marimo will open in your default browser. From there you can open, run, and edit notebooks.</p>
 </section>
 </section>
-<section id="common-workflows" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="common-workflows"><span class="header-section-number">1.3</span> Common Workflows</h2>
+<section id="common-workflows" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="common-workflows"><span class="header-section-number">17.3</span> Common Workflows</h2>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -361,24 +681,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
-<section id="subsequent-runs" class="level2" data-number="1.4">
-<h2 data-number="1.4" class="anchored" data-anchor-id="subsequent-runs"><span class="header-section-number">1.4</span> Subsequent Runs</h2>
+<section id="subsequent-runs" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="subsequent-runs"><span class="header-section-number">17.4</span> Subsequent Runs</h2>
 <p>To re-launch Marimo in future sessions, simply run from the <code>cims</code> directory:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run marimo edit</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>uv will use your existing environment and skip reinstalling dependencies unless something has changed.</p>
 </section>
-<section id="troubleshooting" class="level2" data-number="1.5">
-<h2 data-number="1.5" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">1.5</span> Troubleshooting</h2>
+<section id="troubleshooting" class="level2" data-number="17.5">
+<h2 data-number="17.5" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">17.5</span> Troubleshooting</h2>
 <ul>
 <li><strong>uv not found after install</strong>: Restart your terminal session so the <code>uv</code> command is available on your PATH.</li>
 <li><strong>Dependency conflicts</strong>: Run <code>uv sync --extra notebooks</code> again to bring your environment up to date with the latest <code>pyproject.toml</code>.</li>
 </ul>
 </section>
-<section id="additional-resources" class="level2" data-number="1.6">
-<h2 data-number="1.6" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">1.6</span> Additional Resources</h2>
+<section id="additional-resources" class="level2" data-number="17.6">
+<h2 data-number="17.6" class="anchored" data-anchor-id="additional-resources"><span class="header-section-number">17.6</span> Additional Resources</h2>
 <ul>
 <li><strong>Submit Issues</strong>: If you encounter any problems, please submit an issue on our <a href="https://github.com/EMRG-SFU/cims/issues">GitHub Issues page</a>.</li>
-<li><strong>Data Pipeline</strong>: See <a href="https://github.com/EMRG-SFU/cims/blob/staging/README.md"><code>data/README.md</code></a> for information on the data pipeline and directory structure.</li>
 </ul>
 
 
@@ -404,9 +723,95 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+<style>
+
+/* When a back-link is clicked we scroll the target into view, which
+
+   can land it under the cursor and trigger Quarto's tippy hover
+
+   popover. With `interactive: true` the popover sticks open because
+
+   the cursor is on the trigger. Visual suppression below is paired
+
+   with logical suppression in JS (disable every tippy instance while
+
+   the class is on). We deliberately do NOT use `pointer-events: none`
+
+   on triggers: doing so freezes tippy in a stuck-hover state, since
+
+   the mouseleave it expects never fires.   */
+
+body.suppress-tippy-popovers .tippy-box,
+
+body.suppress-tippy-popovers [data-tippy-root] {
+
+  display: none !important;
+
+}
+
+</style>
+
 <script>
 
 (function () {
+
+  // Quarto book mode picks one chapter as the "primary" references
+
+  // location, hides every other chapter's #refs div via inline
+
+  // display:none, and rewrites every cross-chapter citation link to
+
+  // point at that primary chapter. With per-chapter bibliographies
+
+  // (declared in each chapter's YAML) each chapter has its own ref
+
+  // entries, so the centralization is wrong: the hidden div is the
+
+  // one with the entries you actually need, and rewritten hrefs point
+
+  // at refs that don't exist on the destination page. Undo both
+
+  // pieces of the post-processing before adding the backlink arrows.
+
+  function unhideLocalRefs() {
+
+    document.querySelectorAll('#refs').forEach(function (refs) {
+
+      if (refs.style && refs.style.display === 'none') {
+
+        refs.style.removeProperty('display');
+
+      }
+
+    });
+
+  }
+
+
+
+  function rewriteCrossChapterCites() {
+
+    document.querySelectorAll('a[href*=".html#ref-"]').forEach(function (a) {
+
+      const href = a.getAttribute('href') || '';
+
+      const idx = href.lastIndexOf('#ref-');
+
+      if (idx === -1) return;
+
+      const hash = href.slice(idx);                          // "#ref-iea-fop"
+
+      if (document.getElementById(hash.slice(1))) {
+
+        a.setAttribute('href', hash);
+
+      }
+
+    });
+
+  }
+
+
 
   function addBacklinks() {
 
@@ -450,27 +855,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         a.textContent = '\u21A9\uFE0E';
 
-        // Scroll manually so the citation isn't focused; focusing it would
+        // Click is handled by the document-level capture delegate
 
-        // trigger Quarto's Tippy.js citation popover and keep it stuck open.
+        // (see bindCaptureClickHandler), which intercepts every
 
-        a.addEventListener('click', function (e) {
-
-          e.preventDefault();
-
-          cite.scrollIntoView({ behavior: 'auto', block: 'center' }); // could use 'smooth' scroll
-
-          history.replaceState(null, '', '#' + cite.id);
-
-          // Drop focus from the back-link itself so nothing else is focused.
-
-          if (document.activeElement && document.activeElement.blur) {
-
-            document.activeElement.blur();
-
-          }
-
-        });
+        // in-page scroll back-link uniformly.
 
         back.appendChild(a);
 
@@ -488,15 +877,343 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+  // A MutationObserver-based popover killer. While suppression is
+
+  // active, any [data-tippy-root] or .tippy-box element inserted into
+
+  // the DOM is immediately removed. This is independent of tippy's
+
+  // own API (no reliance on _tippy / disable / hideAll), so it works
+
+  // even if tippy stores its instances somewhere other than where
+
+  // we'd expect.
+
+  let popoverObserver = null;
+
+  function ensureObserver() {
+
+    if (popoverObserver) return;
+
+    popoverObserver = new MutationObserver(function (mutations) {
+
+      if (!document.body.classList.contains('suppress-tippy-popovers')) return;
+
+      mutations.forEach(function (m) {
+
+        m.addedNodes.forEach(function (n) {
+
+          if (n.nodeType !== 1) return;
+
+          if (n.hasAttribute && (n.hasAttribute('data-tippy-root') ||
+
+              (n.classList && n.classList.contains('tippy-box')))) {
+
+            n.remove();
+
+          }
+
+        });
+
+      });
+
+    });
+
+    popoverObserver.observe(document.body, { childList: true, subtree: true });
+
+  }
+
+
+
+  function suppressPopovers() {
+
+    ensureObserver();
+
+    document.body.classList.add('suppress-tippy-popovers');
+
+    document.querySelectorAll('[data-tippy-root]').forEach(function (root) {
+
+      root.remove();
+
+    });
+
+    if (window.tippy && typeof window.tippy.hideAll === 'function') {
+
+      try { window.tippy.hideAll(); } catch (_) {}
+
+    }
+
+    // Best-effort: walk every plausibly-tippy-bound element and call
+
+    // hide()/disable() if tippy exposes its instance the standard way.
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (!t) return;
+
+      try { t.hide(); } catch (_) {}
+
+      if (typeof t.disable === 'function') t.disable();
+
+    });
+
+  }
+
+
+
+  function releasePopovers() {
+
+    document.body.classList.remove('suppress-tippy-popovers');
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (t && typeof t.enable === 'function') t.enable();
+
+    });
+
+  }
+
+
+
+  // Compute the window scrollY that puts `el` at viewport center.
+
+  // Doing this with explicit math (rather than scrollIntoView) avoids
+
+  // any interference from scrollable ancestors or browser quirks.
+
+  function centerWindowOn(el) {
+
+    try {
+
+      const rect = el.getBoundingClientRect();
+
+      const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+      const target = Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+      window.scrollTo({ top: target, behavior: 'auto' });
+
+    } catch (_) {
+
+      try { el.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (_) {}
+
+    }
+
+  }
+
+
+
+  // Compute the absolute window-Y that puts `el` at viewport center.
+
+  function targetScrollY(el) {
+
+    const rect = el.getBoundingClientRect();
+
+    const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+    return Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+  }
+
+
+
+  // Scroll-lock state. While `lockTarget` is non-null and we're before
+
+  // `lockUntil`, every scroll event yanks the page back to centered
+
+  // on lockTarget. `selfScroll` breaks the recursion (our own scrollTo
+
+  // would otherwise re-trigger the listener).
+
+  let lockTarget = null;
+
+  let lockUntil = 0;
+
+  let selfScroll = false;
+
+  function onScrollLock() {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    if (selfScroll) return;
+
+    const want = targetScrollY(lockTarget);
+
+    const got = window.pageYOffset || window.scrollY || 0;
+
+    if (Math.abs(got - want) > 2) {
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, want); } catch (_) {}
+
+      // Reset flag after the resulting scroll event has fired.
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+    }
+
+  }
+
+  window.addEventListener('scroll', onScrollLock, { passive: true, capture: true });
+
+
+
+  // Quarto's quarto-nav.js registers a `hashchange` listener that
+
+  // calls `window.scrollTo(0, pageYOffset - headerOffset())` -- it
+
+  // re-scrolls to the new hash, accounting for the fixed header.
+
+  // That's what was overriding our scroll. By registering our own
+
+  // hashchange listener (which runs after Quarto's because Quarto's
+
+  // is registered first), we re-center on the locked target after
+
+  // quarto-nav has done its scroll.
+
+  window.addEventListener('hashchange', function () {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    selfScroll = true;
+
+    try { window.scrollTo(0, targetScrollY(lockTarget)); } catch (_) {}
+
+    setTimeout(function () { selfScroll = false; }, 0);
+
+  }, false);
+
+
+
+  // Single capture-phase delegate for every in-page scroll back-link.
+
+  // Whatever is scrolling the marker to viewport top (browser
+
+  // hash-jump, focus auto-scroll, etc.), the scroll-event lock
+
+  // immediately reverts any drift back to our centered position. URL
+
+  // hash is intentionally NOT updated -- setting it has been observed
+
+  // to trigger a competing scroll on some browsers.
+
+  function bindCaptureClickHandler() {
+
+    if (document.documentElement.dataset.scrollBacklinkHandler) return;
+
+    document.documentElement.dataset.scrollBacklinkHandler = '1';
+
+    document.addEventListener('click', function (e) {
+
+      let link = null;
+
+      try {
+
+        const t = e.target && (e.target.nodeType === 3 ? e.target.parentElement : e.target);
+
+        link = t && t.closest && t.closest('a.footnote-back, .csl-backlinks > a');
+
+      } catch (_) {}
+
+      if (!link) return;
+
+      // Quarto-nav.js rewrites internal hrefs from "#anchor" to the
+
+      // absolute URL ("http://.../page.html#anchor"). Extract the hash
+
+      // from anywhere in the href so we work with either form.
+
+      const href = link.getAttribute('href') || '';
+
+      const hashIdx = href.lastIndexOf('#');
+
+      const hash = hashIdx === -1 ? '' : href.substring(hashIdx);
+
+      const target = hash ? document.querySelector(hash) : null;
+
+      if (!target) return;
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+
+
+      try { suppressPopovers(); } catch (_) {}
+
+      try {
+
+        if (document.activeElement && document.activeElement.blur) {
+
+          document.activeElement.blur();
+
+        }
+
+      } catch (_) {}
+
+
+
+      // Engage the scroll-event lock for 600 ms. Any scroll attempt
+
+      // during that window is reverted to centered-on-target by the
+
+      // onScrollLock listener.
+
+      lockTarget = target;
+
+      lockUntil = Date.now() + 600;
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, targetScrollY(target)); } catch (_) {}
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+
+
+      setTimeout(function () {
+
+        lockTarget = null;
+
+        releasePopovers();
+
+      }, 800);
+
+    }, true);  // capture phase
+
+  }
+
+
+
+  function applyAll() {
+
+    unhideLocalRefs();
+
+    rewriteCrossChapterCites();
+
+    addBacklinks();
+
+    bindCaptureClickHandler();
+
+  }
+
+
+
   function start() {
 
     // Run once after Quarto finishes its own link rewriting
 
-    setTimeout(addBacklinks, 0);
+    setTimeout(applyAll, 0);
 
     // And again on full load to be safe
 
-    window.addEventListener('load', addBacklinks);
+    window.addEventListener('load', applyAll);
 
   }
 
@@ -517,6 +1234,19 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -922,13 +1652,13 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./index.html" class="pagination-link" aria-label="Intro">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Intro</span>
+      <a href="./validation.html" class="pagination-link" aria-label="Validation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Validation</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
       <a href="./getting_started.html" class="pagination-link" aria-label="Getting started">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting started</span></span> <i class="bi bi-arrow-right-short"></i>
+        <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

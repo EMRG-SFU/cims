@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>19&nbsp; Policy Costing &amp; Outputs – CIMS</title>
+<title>9&nbsp; Low-Temperature Industrial Heat – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -33,8 +52,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./building_tree.html" rel="next">
-<link href="./getting_started.html" rel="prev">
+<link href="./machine_drive.html" rel="next">
+<link href="./energy_efficiency.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -49,9 +68,6 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -80,6 +96,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -255,7 +300,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./energy_efficiency.html">Cross-Sector Topics</a></li><li class="breadcrumb-item"><a href="./low_temp_industrial_heat.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -371,7 +416,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./low_temp_industrial_heat.html" class="sidebar-item-text sidebar-link">
+  <a href="./low_temp_industrial_heat.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></span></a>
   </div>
 </li>
@@ -453,7 +498,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./policies.html" class="sidebar-item-text sidebar-link active">
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
@@ -533,9 +578,24 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#policy-costing-methods-associated-with-istum-and-early-cims" id="toc-policy-costing-methods-associated-with-istum-and-early-cims" class="nav-link active" data-scroll-target="#policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</a></li>
-  <li><a href="#policy-costs-associated-with-changes-in-demand" id="toc-policy-costs-associated-with-changes-in-demand" class="nav-link" data-scroll-target="#policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</a></li>
-  <li><a href="#outputs-from-cims" id="toc-outputs-from-cims" class="nav-link" data-scroll-target="#outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</a></li>
+  <li><a href="#scope-and-definition" id="toc-scope-and-definition" class="nav-link active" data-scroll-target="#scope-and-definition"><span class="header-section-number">9.1</span> Scope and Definition</a></li>
+  <li><a href="#industrial-subsectors-and-end-uses" id="toc-industrial-subsectors-and-end-uses" class="nav-link" data-scroll-target="#industrial-subsectors-and-end-uses"><span class="header-section-number">9.2</span> Industrial Subsectors and End-Uses</a></li>
+  <li><a href="#technology-set-for-low--and-zero-emission-supply" id="toc-technology-set-for-low--and-zero-emission-supply" class="nav-link" data-scroll-target="#technology-set-for-low--and-zero-emission-supply"><span class="header-section-number">9.3</span> Technology Set for Low- and Zero-Emission Supply</a>
+  <ul class="collapse">
+  <li><a href="#industrial-heat-pumps" id="toc-industrial-heat-pumps" class="nav-link" data-scroll-target="#industrial-heat-pumps"><span class="header-section-number">9.3.1</span> Industrial Heat Pumps</a></li>
+  <li><a href="#direct-electrification" id="toc-direct-electrification" class="nav-link" data-scroll-target="#direct-electrification"><span class="header-section-number">9.3.2</span> Direct Electrification</a></li>
+  <li><a href="#solar-thermal" id="toc-solar-thermal" class="nav-link" data-scroll-target="#solar-thermal"><span class="header-section-number">9.3.3</span> Solar Thermal</a></li>
+  <li><a href="#bioenergy" id="toc-bioenergy" class="nav-link" data-scroll-target="#bioenergy"><span class="header-section-number">9.3.4</span> Bioenergy</a></li>
+  <li><a href="#geothermal-and-recovered-waste-heat" id="toc-geothermal-and-recovered-waste-heat" class="nav-link" data-scroll-target="#geothermal-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geothermal and Recovered Waste Heat</a></li>
+  </ul></li>
+  <li><a href="#cross-cutting-treatment" id="toc-cross-cutting-treatment" class="nav-link" data-scroll-target="#cross-cutting-treatment"><span class="header-section-number">9.4</span> Cross-Cutting Treatment</a>
+  <ul class="collapse">
+  <li><a href="#thermal-energy-storage" id="toc-thermal-energy-storage" class="nav-link" data-scroll-target="#thermal-energy-storage"><span class="header-section-number">9.4.1</span> Thermal Energy Storage</a></li>
+  <li><a href="#hydrogen" id="toc-hydrogen" class="nav-link" data-scroll-target="#hydrogen"><span class="header-section-number">9.4.2</span> Hydrogen</a></li>
+  <li><a href="#endogenous-and-exogenous-parameters" id="toc-endogenous-and-exogenous-parameters" class="nav-link" data-scroll-target="#endogenous-and-exogenous-parameters"><span class="header-section-number">9.4.3</span> Endogenous and Exogenous Parameters</a></li>
+  </ul></li>
+  <li><a href="#implications-for-the-cims-industrial-sub-models" id="toc-implications-for-the-cims-industrial-sub-models" class="nav-link" data-scroll-target="#implications-for-the-cims-industrial-sub-models"><span class="header-section-number">9.5</span> Implications for the CIMS Industrial Sub-Models</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -543,9 +603,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./energy_efficiency.html">Cross-Sector Topics</a></li><li class="breadcrumb-item"><a href="./low_temp_industrial_heat.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></h1>
+<h1 class="title"><span id="sec-low-temp-heat" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></span></h1>
 </div>
 
 
@@ -562,135 +622,249 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="policy-costing-methods-associated-with-istum-and-early-cims" class="level3" data-number="19.0.1">
-<h3 data-number="19.0.1" class="anchored" data-anchor-id="policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</h3>
-<p>Issues associated with deriving costs from its outputs guided much of CIMS’ development. The cost methodologies in the following sections are described in brief and outline some of the issues in estimating costs.</p>
-<p>The ISTUM model was initially designed for energy policy analysis, mainly for assessing how fuel consumption and emissions would change with a given energy policy. The emphasis was on marginal costs, not total or absolute expenditures. The first consistent costing concept was the techno-economic cost, or TEC.</p>
-<p><strong>Techno-economic Cost (TEC)</strong></p>
-<p>TEC is the difference in estimated (ex-ante) financial expenditure on capital, labour, and energy between the Business-as-Usual and Policy cases. It does not usually (unless otherwise specified) contain carbon taxes as these are considered a transfer internal to society. It is possible to get negative TEC costs, or benefits, especially in transportation where increased use of transit and walking and cycling reduces financial costs, implying that some actions induced by policy may be profitable. There are significant complications as well – do those who switch to transit and walking and cycling continue to own and pay for cars? This reflects the challenging question about how vehicle acquisition will be affected by policies to reduce vehicle use. TEC for all consuming sectors are reported with and without electricity price increases, which are sub-regional transfers that balance out to zero at the regional level once the financial effects on electricity producers’ revenues are included.</p>
-<p>The ISTUM sub-models were integrated under the energy demand and price feedback system in the mid-1999 to 2000 period, thus creating the first version of CIMS. During this period, the model was used for a series of large GHG abatement analyses for Canada. The thrust of these analyses was to integrate and assess a series of emissions reduction actions proposed by panels of interested parties, the Issue Tables of Canada’s Climate Change National Assessment Process. The most effective actions were determined by minimizing their welfare costs, as opposed to their pure financial costs. This led to the development of the Perceived Private Cost methodology (Bataille et al.&nbsp;2002, Laurin et al.&nbsp;2003, MKJA/EMRG 2000).</p>
-<p><strong>Perceived Private Costs (PPC)</strong></p>
-<p>PPC are calculated as the GHG tax multiplied by the marginal amount of GHG reductions that occurred at each GHG tax level. The area under the resulting GHG abatement cost curve represents the perceived cost of the actions by the GHG charge. The PPC methodology estimates welfare losses that represent in part the unwillingness of all consumers to switch to technologies that reduce emissions. This fostered development of the Expected Resource Cost methodology, which attempts to more realistically depict the costs and risks associated with a given GHG reduction policy.</p>
-<p><strong>Expected Resource Costs (ERC)</strong></p>
-<p>ERC is PPC that has been adjusted for risk, option value, and general inefficiency. It is equal to TEC+(PPC-TEC)*0.75. The difference between TEC and PPC that is allowed as ERC is a “rule-of-thumb” estimate for what percentage of the difference can be considered real equipment failure risk, as opposed to inefficient resistance to price signals. It represents that perceived cost, which could turn into real financial cost. Negative ERC is possible, especially at lower GHG charges, but not likely (Bataille et al.&nbsp;2002, Laurin et al, 2003, MKJA/EMRG, 2000).</p>
-<p>Table 10 summarizes the three early costing methods used for CIMS.</p>
-<p>Table 8. Types of Costs Used in Early Incarnation of CIMS</p>
-<p><strong>Distribution of Costs Under Electricity and Refining Demand Changes</strong></p>
-<p>Electricity demand changes in all sectors in response to increased electricity prices, leading to an issue of how to distribute GHG reductions as well as TEC and PPC charges. GHG reductions from reduced electricity consumption were accorded to the direct consumer (based on the policy GHG intensity of electricity), who faced increased electricity prices, while electricity producers were accorded the remaining GHG intensity reductions, the TEC costs generated by their intensity reductions plus their changes in revenue. These net transfers, while positive at the sub-regional level, disappear at the regional level.</p>
-<p><strong>The Relationship Between TEC, ERC, Option Value and Welfare Costs</strong></p>
-<p>The cost difference between ERC and TEC estimated during early analyses was described as risk, or “failure risk”, which is related to the concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck 1994 ). Option value is the expected gain from delaying or avoiding an investment while waiting for new information that might lead to a better decision. Thus, ERC are anticipated ex-post costs, and it is calculated as the sum of expected financial costs (TEC), lost option value, consumers’ surplus losses internal to residential and transportation (internal shifts away from business-as-usual (BAU) preferences within the sub-models) and finally, when demand feedbacks are included, consumers’ surplus losses related to demand adjustments for domestic consumers of domestic goods. It may therefore be considered a measure of personal welfare costs, not including negative environmental externalities (e.g.&nbsp;poorer quality air) or positive public goods (e.g.&nbsp;education, defence or public parks).</p>
+<section id="scope-and-definition" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="scope-and-definition"><span class="header-section-number">9.1</span> Scope and Definition</h2>
+<p>Low-temperature industrial process heat in CIMS is modeled as the steam, hot-water, and direct-heating service supplied to the industrial sub-models at end-use temperatures below approximately 200 °C. Process heat is partitioned into three temperature bands — low (below 200 °C), medium (200–400 °C), and high (above 400 °C). The bands are defined by end-use temperature rather than by energy or equipment type, because the technology set admitted to the relevant service nodes differs substantially across them. The 200 °C boundary follows the convention adopted by the U.S. Department of Energy and applied in the recent peer-reviewed techno-economic literature <span class="citation" data-cites="schoeneberger">(<a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>. Industrial heat globally accounts for approximately two-thirds of final industrial energy use and roughly one-fifth of energy-related CO<sub>2</sub> emissions; analyses across IEA member countries place 30–45 % of industrial heat demand within the low-temperature band <span class="citation" data-cites="iea-fop iea-renewables madeddu">(<a href="history.html#ref-iea-fop" role="doc-biblioref">International Energy Agency 2022</a>, <a href="history.html#ref-iea-renewables" role="doc-biblioref">2024</a>; <a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
+<p>The allocation of base-year low-temperature heat demand across sub-models on a provincial basis is the result of a calibration exercise bringing together information from Statistics Canada and Natural Resources Canada’s Comprehensive Energy Use Database (CEUD), Environment and Climate Change Canada’s National Inventory Report (NIR), and U.S. Energy Information Administration Manufacturing Energy Consumption Survey (MECS) data used for analogous subsector benchmarks. The CEUD does not publish process heat disaggregated by temperature band; end-use accounting nevertheless indicates that conventional steam systems, boilers, and process heating account for the majority of fossil-fuel consumption in Canadian manufacturing <span class="citation" data-cites="nrcan-ceud">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>.</p>
 </section>
-<section id="policy-costs-associated-with-changes-in-demand" class="level3" data-number="19.0.2">
-<h3 data-number="19.0.2" class="anchored" data-anchor-id="policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</h3>
-<p>The inclusion of final demand feedbacks required the addition of five new policy-costing concepts. In all these concepts, financial output is defined as a sector’s sales revenue, which includes both value-added and purchased inputs. Value-added is net profits plus the cost of all expenditures on land (unprocessed “gifts of nature”), labour and capital (Lipsey et al.&nbsp;1988).</p>
-<ul>
-<li>The cost of production effect on sector financial output, which is the increased financial expenditures required to adapt to the policy, or TEC.</li>
-<li>The demand effect on sector financial output, which is the reduction in production expenditures associated with lower output.</li>
-<li>The absolute change in sector financial output, which is the sum of the cost of production and demand effects.</li>
-<li>Consumers’ surplus losses associated with demand changes in transportation and residences.</li>
-<li>Changes in value-added associated with cost of production and demand changes in manufacturing.</li>
-</ul>
-<section id="the-cost-of-production-and-demand-effects-on-sector-financial-output" class="level4" data-number="19.0.2.1">
-<h4 data-number="19.0.2.1" class="anchored" data-anchor-id="the-cost-of-production-and-demand-effects-on-sector-financial-output"><span class="header-section-number">19.0.2.1</span> The Cost of Production and Demand Effects on Sector Financial Output</h4>
-<p>The cost of production effect captures the internal capital investment and fuel choice adjustments of the model, or the TEC costs endogenous to the model. It is the anticipated financial cost of technical adjustment to the policy. The demand effect captures the effects of the demand feedbacks system, or reduction in output, as measured by expenditure compared to the business-as-usual case (BAU). The third is the sum of the first two. These three concepts capture a portion of the anticipated financial cost of a policy. They do not include the cost of buying emission permits from foreign sources or the cost of imports that replace domestically produced goods for domestic consumption. The fourth item, consumers’ surplus losses, represents lost consumer welfare associated with reduced residential expenditure and mobility, while the fifth represents the lost value-added to manufacturing firms due to policy.</p>
-<p>Most GHG policies will increase the cost of production for a given service, increase its price, and thus reduce its demand. This increase in the cost of production will also include the value of carbon charges that are imposed on GHG emissions. These charges are transfers and as such must be subtracted from regional and national costs. Additionally, if demand is inelastic (unresponsive to price) for a given service, the dollar value of the sector, as valued by cost of production, may increase faster than demand reductions, leading to an overall increase in sector value to the economy. If demand is elastic, the opposite may occur.</p>
-<p>The standard outputs from the sub-models include BAU and policy values for new physical capital investment associated with consuming energy, labour associated with the latter capital, and energy costs, as well as changes in physical output. It also produces BAU and policy costs per unit output, including GHG charges. These GHG charges are isolated by calculating policy emissions multiplied by the GHG price. When the micro and macro economic dynamics are turned on, part of the difference between the BAU and policy cases may be physical output changes while the rest will be cost of production differences due to internal stock adjustments. CIMS only captures a portion of the price that the consumer sees; both the BAU and Policy cost per unit are adjusted accordingly. The cost of production and demand effects on sector financial output (SFO) (Equations 23 &amp; 24), and the absolute change in financial expenditure are calculated as follows (Equation 25).</p>
-<p>(Equation 28)</p>
-<p>(Equation 29)</p>
-<p>(Equation 30)</p>
-<p>Where:</p>
-<p>QGHG = GHG emissions (Tonnes CO2e)</p>
-<p>PGHG = GHG price ($/Tonne CO2e)</p>
-<p>Qpolicy = Policy physical output of good or service X</p>
-<p>QBAU = BAU physical output of good or service X</p>
-<p>Ppolicy = Policy cost per unit of good or service X</p>
-<p>PBAU = BAU cost per unit of good or service X</p>
-<p>The absolute change in sector financial output could be positive or negative depending on the elasticity of demand – if the cost of production rises faster than demand falls, then the absolute change in financial output could be positive. This result is common with less aggressive policies. The demand effect on sector financial output will always be negative for normal goods, whose demand fall as their price rises. The cost of production effect on sector financial output is usually positive, except for the case where there are decreasing returns to scale.</p>
-</section>
-<section id="consumers-surplus-adjustments-in-residential-and-transportation" class="level4" data-number="19.0.2.2">
-<h4 data-number="19.0.2.2" class="anchored" data-anchor-id="consumers-surplus-adjustments-in-residential-and-transportation"><span class="header-section-number">19.0.2.2</span> Consumers’ Surplus Adjustments in Residential and Transportation</h4>
-<p>Reductions in residential activity and mobility reflect consumers’ surplus losses. Consumers’ surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (<a href="#fig-consumer_surplus" class="quarto-xref">Figure&nbsp;<span>19.1</span></a>).</p>
-<div id="fig-consumer_surplus" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/consumer_surplus.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;19.1: Consumer Surplus"><img src="images/consumer_surplus.png" class="img-fluid figure-img" style="width:70.0%"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;19.1: Consumer Surplus
-</figcaption>
-</figure>
-</div>
-<p>The consumers’ surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers’ surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.</p>
-<div id="tbl-output_adjustments" class="quarto-float quarto-figure quarto-figure-center anchored">
+<section id="industrial-subsectors-and-end-uses" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="industrial-subsectors-and-end-uses"><span class="header-section-number">9.2</span> Industrial Subsectors and End-Uses</h2>
+<p>Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemical Products, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in <a href="#tbl-low_temp_heat-1" class="quarto-xref">Table&nbsp;<span>9.1</span></a>; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.</p>
+<div id="tbl-low_temp_heat-1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;19.1: Financial, welfare cost and value-added adjustments induced by changes in output
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-low_temp_heat-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.1: Representative low-temperature end-uses and temperature ranges by industrial subsector
 </figcaption>
-<div aria-describedby="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-low_temp_heat-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 27%">
+<col style="width: 55%">
+<col style="width: 16%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Output adjustment to financial costs</th>
-<th style="text-align: left;">Output adjustment to welfare costs / value-added</th>
+<th style="text-align: left;">Subsector</th>
+<th style="text-align: left;">Representative end-uses</th>
+<th style="text-align: center;">Range (°C)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Personal Transportation</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using transportation <em>pkt</em> elasticity</td>
+<td style="text-align: left;">Food and beverage processing</td>
+<td style="text-align: left;">Pasteurization, sterilization, spray and tray drying, clean-in-place wash water</td>
+<td style="text-align: center;">60–200</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Industry (&amp; Freight Transportation)</strong></td>
-<td style="text-align: left;">Demand effect on sector financial output, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>value-added</strong> between BAU and Policy</td>
+<td style="text-align: left;">Pulp and paper</td>
+<td style="text-align: left;">Black-liquor evaporation, paper drying on steam-heated cylinders, digester heating</td>
+<td style="text-align: center;">100–180</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Residential</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using combination of savings/consumption and leisure/work elasticities</td>
+<td style="text-align: left;">Chemicals and pharmaceuticals</td>
+<td style="text-align: left;">Distillation reboilers for low-boiling solvents, batch reactor heating, crystallization</td>
+<td style="text-align: center;">80–180</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Commercial</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">None</td>
+<td style="text-align: left;">Textiles, leather, and laundry services</td>
+<td style="text-align: left;">Dyeing baths, drying, finishing</td>
+<td style="text-align: center;">60–160</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wood products and prefabricated building products</td>
+<td style="text-align: left;">Lumber kiln drying, panel pressing</td>
+<td style="text-align: center;">60–200</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Light manufacturing and assembly</td>
+<td style="text-align: left;">Paint cure, parts washing, fabrication-hall conditioning</td>
+<td style="text-align: center;">50–180</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mining and oil and gas</td>
+<td style="text-align: left;">Produced-water heating, glycol regeneration, remote-site building heat, mid-stream gas processing</td>
+<td style="text-align: center;">60–200</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.</p>
+<p>Aggregate energy demand in the food and beverage subsector in Canada is on the order of 100 PJ/yr, predominantly supplied as low-pressure natural-gas steam <span class="citation" data-cites="nrcan-ceud">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. The pulp and paper subsector is among the largest industrial consumers of natural gas in Canada and the largest non-electric thermal load on a per-establishment basis <span class="citation" data-cites="nrcan-pp">(<a href="history.html#ref-nrcan-pp" role="doc-biblioref">Natural Resources Canada 2005</a>)</span>. ECCC’s NIR attributes the majority of stationary combustion emissions in Canadian manufacturing to natural gas, with secondary contributions from heavy fuel oil (concentrated in Atlantic Canada) and refinery still gas; aggregate sectoral activity used to disaggregate these emissions in CIMS is taken from the CEUD and the NIR <span class="citation" data-cites="eccc-nir">(<a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. The U.S. EIA’s MECS provides a parallel accounting for U.S. industry: conventional boilers and process heaters account for over 70 % of manufacturing energy use <span class="citation" data-cites="eia-mecs">(<a href="history.html#ref-eia-mecs" role="doc-biblioref">U.S. Energy Information Administration 2021</a>)</span>.</p>
+</section>
+<section id="technology-set-for-low--and-zero-emission-supply" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="technology-set-for-low--and-zero-emission-supply"><span class="header-section-number">9.3</span> Technology Set for Low- and Zero-Emission Supply</h2>
+<p>This section enumerates the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in <a href="#tbl-low_temp_heat-2" class="quarto-xref">Table&nbsp;<span>9.2</span></a>. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 <span class="citation" data-cites="eia-mecs iea-hp">(<a href="history.html#ref-eia-mecs" role="doc-biblioref">U.S. Energy Information Administration 2021</a>; <a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>)</span>.</p>
+<div id="tbl-low_temp_heat-2" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-low_temp_heat-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;9.2: Assumed efficiencies and coefficients of performance for low-temperature heat supply technologies
+</figcaption>
+<div aria-describedby="tbl-low_temp_heat-2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: center;">Efficiency / COP</th>
+<th style="text-align: center;">Maximum sink temperature</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gas boiler (reference)</td>
+<td style="text-align: center;">80–85 %</td>
+<td style="text-align: center;">250 °C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Liquid fuel boiler</td>
+<td style="text-align: center;">80–85 %</td>
+<td style="text-align: center;">250 °C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Coal boiler</td>
+<td style="text-align: center;">85–90 %</td>
+<td style="text-align: center;">250 °C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biomass boiler</td>
+<td style="text-align: center;">75 %</td>
+<td style="text-align: center;">250 °C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric resistance / electrode boiler</td>
+<td style="text-align: center;">99 %</td>
+<td style="text-align: center;">250 °C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heat pump, sink ≤ 100 °C</td>
+<td style="text-align: center;">COP 4.0–6.0</td>
+<td style="text-align: center;">100 °C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Heat pump, sink 100–150 °C</td>
+<td style="text-align: center;">COP 2.5–4.0</td>
+<td style="text-align: center;">150 °C</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heat pump, sink 150–200 °C</td>
+<td style="text-align: center;">COP 2.0–3.0</td>
+<td style="text-align: center;">200 °C (demonstration)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mechanical vapour recompression</td>
+<td style="text-align: center;">COP 5–10</td>
+<td style="text-align: center;">Evaporator duty only</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Solar thermal, flat-plate / evacuated-tube</td>
+<td style="text-align: center;">n/a</td>
+<td style="text-align: center;">100 °C</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solar thermal, linear concentrating</td>
+<td style="text-align: center;">n/a</td>
+<td style="text-align: center;">200 °C</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>Combustion boilers and electric resistance boilers are assumed to have a model life of 25 years; industrial heat pumps and mechanical vapour recompression units are assumed to have a model life of 15 years; solar thermal collectors are assumed to have a model life of 20 years. Both existing and new boilers are limited to annual capacity factor thresholds that vary by industrial sub-model and are calibrated to historic data. All values are stated in 2020 CAD terms; capital cost and fixed operating-and-maintenance parameters are populated separately in the techno-economic data files referenced by the relevant industrial sub-model.</p>
+<section id="industrial-heat-pumps" class="level3" data-number="9.3.1">
+<h3 data-number="9.3.1" class="anchored" data-anchor-id="industrial-heat-pumps"><span class="header-section-number">9.3.1</span> Industrial Heat Pumps</h3>
+<p>Closed-cycle vapour-compression heat pumps upgrade ambient or recovered low-grade heat to a useful sink temperature. Commercially available products reach sink temperatures of approximately 165 °C; units operating at 200 °C with novel working fluids are at the demonstration stage <span class="citation" data-cites="arpagaus zuhlsdorf">(<a href="history.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>; <a href="history.html#ref-zuhlsdorf" role="doc-biblioref">Zühlsdorf et al. 2019</a>)</span>. On the Canadian electricity system, with weighted-average grid emissions intensity well below that of natural gas combustion, replacement of gas-fired boilers with heat pumps is estimated to reduce direct CO<sub>2</sub> emissions by 70–95 % <span class="citation" data-cites="iea-hp">(<a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>)</span>. Mechanical vapour recompression, an open-cycle heat pump configuration applied to evaporators in dairy, sugar, and pulp operations, is the most mature variant and is represented as a distinct technology in the food and beverage and pulp and paper sub-models.</p>
+</section>
+<section id="direct-electrification" class="level3" data-number="9.3.2">
+<h3 data-number="9.3.2" class="anchored" data-anchor-id="direct-electrification"><span class="header-section-number">9.3.2</span> Direct Electrification</h3>
+<p>Electric resistance and electrode boilers deliver low-pressure steam at near-unity end-use efficiency at lower capital cost than heat pumps, and are represented as the simplest like-for-like replacement for packaged gas-fired boilers. Application is favoured in provinces with low-emissions grids — Quebec, British Columbia, Manitoba, and Newfoundland and Labrador, where average grid emissions intensity is below 30 g CO<sub>2</sub>/kWh — and in retrofit configurations where capital constraints favour low first-cost equipment <span class="citation" data-cites="eccc-nir">(<a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. Direct-contact electric processes (induction, infrared, microwave, and dielectric heating) are commercially deployed for specific drying, curing, and surface-heating duties and are admitted as candidate technologies at the corresponding service nodes <span class="citation" data-cites="madeddu">(<a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
+</section>
+<section id="solar-thermal" class="level3" data-number="9.3.3">
+<h3 data-number="9.3.3" class="anchored" data-anchor-id="solar-thermal"><span class="header-section-number">9.3.3</span> Solar Thermal</h3>
+<p>Flat-plate and evacuated-tube collectors economically supply heat up to approximately 100 °C; linear concentrating systems (parabolic-trough and linear-Fresnel) extend the addressable range to 200 °C and beyond. Schoeneberger et al.&nbsp;estimate that approximately half of global industrial heat demand falls within the temperature window addressable by current commercial solar thermal technologies <span class="citation" data-cites="schoeneberger">(<a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>. Within Canada, the resource is concentrated in the southern Prairies and the southern interior of British Columbia; representation in CIMS is restricted to the relevant provincial sub-models, with capacity factors calibrated to regional direct normal irradiance <span class="citation" data-cites="iea-renewables">(<a href="history.html#ref-iea-renewables" role="doc-biblioref">International Energy Agency 2024</a>)</span>.</p>
+</section>
+<section id="bioenergy" class="level3" data-number="9.3.4">
+<h3 data-number="9.3.4" class="anchored" data-anchor-id="bioenergy"><span class="header-section-number">9.3.4</span> Bioenergy</h3>
+<p>Biomass-fired boilers, anaerobic-digestion biogas, and renewable natural gas from landfill and agricultural sources are admitted as drop-in low-carbon supply technologies in facilities configured around combustion equipment. Biomass is the dominant on-site thermal energy source in the Canadian pulp and paper subsector and is also relevant in food processing operations co-located with feedstock supply <span class="citation" data-cites="nrcan-bioheat">(<a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>)</span>. Outside the pulp and paper subsector, deployed bioheat in Canada is concentrated at the 50 kW–5 MW thermal capacity range tracked by CanmetENERGY’s Canadian Bioheat Database; the 2023 survey update reports that more than 90 % of catalogued commercial, institutional, and small-industrial systems use either clean wood chips or energy chips (approximately 45 %, dominant in small-industrial and agricultural installations) or wood pellets (approximately 46 %, dominant in commercial and multi-unit residential applications), with hog fuel and agricultural residues uncommon at this scale and concentrated in pulp and paper and adjacent forest-products operations <span class="citation" data-cites="nrcan-bioheat-survey">(<a href="history.html#ref-nrcan-bioheat-survey" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2023</a>)</span>. Regional fuel-type preferences are pronounced: wood chips dominate in Quebec and British Columbia, while pellets account for nearly all installations in New Brunswick, Ontario, and the Northwest Territories. These distributional facts inform the technology entries admitted to the bioenergy supply node feeding the Light Industrial sub-model, and the regional weighting applied to wood-chip versus pellet capital and operating cost assumptions. Sustainable supply is the binding constraint at the system level and is represented in CIMS through energy supply curves rather than at the device level.</p>
+</section>
+<section id="geothermal-and-recovered-waste-heat" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="geothermal-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geothermal and Recovered Waste Heat</h3>
+<p>Deep geothermal reaches useful process temperatures in parts of western Canada; shallow geothermal coupled with a heat pump is deployable across all provinces for facility heat. Independent of geothermal extraction, every industrial site is itself a source of low-grade waste heat — compressors, condensers, flue gases, and effluents — that is conventionally rejected to the environment. National-laboratory analyses estimate that 20–50 % of industrial process heat could in principle be supplied via recovered waste heat <span class="citation" data-cites="ornl-waste">(<a href="history.html#ref-ornl-waste" role="doc-biblioref">Thekdi and Nimbalkar 2014</a>)</span>. Process integration (pinch analysis) and heat-pump-assisted recovery are represented in CIMS as a service-side reduction in the demand directed to other supply technologies, parameterized by sub-model based on recoverable-heat fractions reported in MECS and CanmetENERGY studies, rather than as a competing supply technology at the service node.</p>
 </section>
 </section>
-<section id="outputs-from-cims" class="level3" data-number="19.0.3">
-<h3 data-number="19.0.3" class="anchored" data-anchor-id="outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</h3>
-<p>Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS’ micro and macro economic systems of dynamics (also referred to as feedback systems).</p>
-<p>Table 10. Sub-model Outputs Existing Prior to This Research</p>
-<p>Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).</p>
-<p>Fuel use and emissions by sector by year by technology.</p>
-<p>Service and auxiliary use by sector by year by technology.</p>
-<p>Total stock use by sector by year by technology.</p>
-<p>New stock use by sector by year by technology.</p>
-<p>Retrofits by sector by year by technology.</p>
-<p>Technology cost changes due to declining capital cost function</p>
-<p>Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research</p>
-<p>Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g.&nbsp;7.5 or 10%)</p>
-<p>BAU and Policy final demand for each sector’s product or service by year.</p>
-<p>BAU and Policy disaggregated energy demand for all sectors by year.</p>
-<p>Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.</p>
-<p>Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.</p>
-<p>Changes in net exports of key energy commodities from BAU to Policy</p>
-<p>Changes in energy prices by year</p>
-<p>Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing</p>
-<p>Changes consumers’ surplus for personal transportation and residences</p>
-<p>Changes in value-added for industry and manufacturing</p>
+<section id="cross-cutting-treatment" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="cross-cutting-treatment"><span class="header-section-number">9.4</span> Cross-Cutting Treatment</h2>
+<section id="thermal-energy-storage" class="level3" data-number="9.4.1">
+<h3 data-number="9.4.1" class="anchored" data-anchor-id="thermal-energy-storage"><span class="header-section-number">9.4.1</span> Thermal Energy Storage</h3>
+<p>Pressurized hot water, molten salt, and solid-media storage shift electrified heat loads to off-peak hours and extend solar thermal coverage to continuous-process duty cycles. Storage is treated in CIMS as a distinct technology that competes at the same service node as the heat-supply technologies it enables, with round-trip efficiency, capacity, and discharge-duration parameters drawn from IEA reference values <span class="citation" data-cites="iea-fop">(<a href="history.html#ref-iea-fop" role="doc-biblioref">International Energy Agency 2022</a>)</span>.</p>
+</section>
+<section id="hydrogen" class="level3" data-number="9.4.2">
+<h3 data-number="9.4.2" class="anchored" data-anchor-id="hydrogen"><span class="header-section-number">9.4.2</span> Hydrogen</h3>
+<p>Direct combustion of hydrogen below 200 °C is not competitive with electrification under most modeled conditions: round-trip energy efficiency from electricity to hydrogen to heat is substantially lower than direct or heat-pump electrification, and the system value of hydrogen is concentrated in genuinely high-temperature or feedstock applications. Hydrogen is therefore not included in the default low-temperature technology set; it remains available in the broader CIMS technology library for the medium- and high-temperature sub-models <span class="citation" data-cites="thiel rissman">(<a href="history.html#ref-thiel" role="doc-biblioref">Thiel and Stark 2021</a>; <a href="history.html#ref-rissman" role="doc-biblioref">Rissman et al. 2020</a>)</span>.</p>
+</section>
+<section id="endogenous-and-exogenous-parameters" class="level3" data-number="9.4.3">
+<h3 data-number="9.4.3" class="anchored" data-anchor-id="endogenous-and-exogenous-parameters"><span class="header-section-number">9.4.3</span> Endogenous and Exogenous Parameters</h3>
+<p>Provincial grid emissions intensity, electricity price, and natural gas price are determined endogenously by the CIMS energy supply sub-models. Sectoral output projections, technology capital and fixed operating-and-maintenance costs, model lifetimes, and biomass supply curves are exogenously specified. The model includes the option to accelerate the rate of efficiency improvement at additional cost in response to rising energy prices, consistent with the treatment of efficiency in other CIMS industrial sub-models.</p>
+</section>
+</section>
+<section id="implications-for-the-cims-industrial-sub-models" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="implications-for-the-cims-industrial-sub-models"><span class="header-section-number">9.5</span> Implications for the CIMS Industrial Sub-Models</h2>
+<p>The technology competitions in the food and beverage, pulp and paper, chemicals, mining, and light manufacturing sub-models admit, at the relevant service nodes, conventional gas, oil, and (where regionally relevant) heavy fuel oil boilers, used for calibration to CEUD and NIR baseline data; electric resistance and electrode boilers, parameterized by provincial industrial electricity rates; industrial heat pumps disaggregated by sink-temperature class (≤ 100 °C, 100–150 °C, 150–200 °C) with explicit COP and source-temperature assumptions drawn from IEA HPT Annex 58; mechanical vapour recompression where evaporation duties exist; biomass and biogas boilers, with energy availability governed by the bioenergy supply sub-model; and solar thermal in southern Prairie and southern British Columbia provincial sub-models, parameterized to regional irradiance <span class="citation" data-cites="nrcan-ceud eccc-nir iea-hp nrcan-bioheat schoeneberger">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>; <a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>; <a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>; <a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>.</p>
+<p>Existing boiler stock, distinguished by sub-model and temperature class, is estimated based on CEUD and NIR base-year data. All existing boiler stock is assumed to stay online for modeled lifetimes past the base year, after which replacement is required. Policy or other drivers may drive earlier retirement and replacement of some of these existing units. Capital costs, retrofit feasibility (as defined in <a href="./technologies.html">the technology chapter</a>), and electricity-price sensitivity vary substantially across these technologies. The lifecycle-cost formulation already in CIMS is applicable without modification once the techno-economic parameters are populated. The present chapter is intended to provide the technical basis for those parameter selections.</p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-arpagaus" class="csl-entry" role="listitem">
+Arpagaus, Cordin, Frederic Bless, Michael Uhlmann, Jurg Schiffmann, and Stefan S. Bertsch. 2018. <span>“High Temperature Heat Pumps: <span>Market</span> Overview, State of the Art, Research Status, Refrigerants, and Application Potentials.”</span> <em>Energy</em> 152: 985–1010. <a href="https://doi.org/10.1016/j.energy.2018.03.166">https://doi.org/10.1016/j.energy.2018.03.166</a>.
+</div>
+<div id="ref-eccc-nir" class="csl-entry" role="listitem">
+Environment and Climate Change Canada. 2024. <em>National Inventory Report 1990–2022: Greenhouse Gas Sources and Sinks in Canada</em>. ECCC. <a href="https://www.canada.ca/en/environment-climate-change/services/climate-change/greenhouse-gas-emissions/inventory.html">https://www.canada.ca/en/environment-climate-change/services/climate-change/greenhouse-gas-emissions/inventory.html</a>.
+</div>
+<div id="ref-iea-hp" class="csl-entry" role="listitem">
+IEA Heat Pumping Technologies Programme. 2023. <em>Annex 58: High-Temperature Heat Pumps – Task Report</em>. IEA HPT TCP. <a href="https://heatpumpingtechnologies.org/annex58/">https://heatpumpingtechnologies.org/annex58/</a>.
+</div>
+<div id="ref-iea-fop" class="csl-entry" role="listitem">
+International Energy Agency. 2022. <em>The Future of Heat Pumps</em>. World Energy Outlook Special Report. IEA. <a href="https://www.iea.org/reports/the-future-of-heat-pumps">https://www.iea.org/reports/the-future-of-heat-pumps</a>.
+</div>
+<div id="ref-iea-renewables" class="csl-entry" role="listitem">
+International Energy Agency. 2024. <em>Renewables 2023: Analysis and Forecast to 2028</em>. IEA. <a href="https://www.iea.org/reports/renewables-2023">https://www.iea.org/reports/renewables-2023</a>.
+</div>
+<div id="ref-madeddu" class="csl-entry" role="listitem">
+Madeddu, Silvia, Falko Ueckerdt, Michaja Pehl, et al. 2020. <span>“The <span>CO<span class="math inline">\(_2\)</span></span> Reduction Potential for the <span>European</span> Industry via Direct Electrification of Heat Supply (Power-to-Heat).”</span> <em>Environmental Research Letters</em> 15 (12): 124004. <a href="https://doi.org/10.1088/1748-9326/abbd02">https://doi.org/10.1088/1748-9326/abbd02</a>.
+</div>
+<div id="ref-nrcan-pp" class="csl-entry" role="listitem">
+Natural Resources Canada. 2005. <em>Benchmarking Energy Use in Canadian Pulp and Paper Mills</em>. Office of Energy Efficiency, in collaboration with the Pulp; Paper Research Institute of Canada (Paprican). <a href="https://natural-resources.canada.ca/sites/www.nrcan.gc.ca/files/oee/pdf/industrial/technical-info/benchmarking/pulp-paper/pdf/benchmark-pulp-paper-e.pdf">https://natural-resources.canada.ca/sites/www.nrcan.gc.ca/files/oee/pdf/industrial/technical-info/benchmarking/pulp-paper/pdf/benchmark-pulp-paper-e.pdf</a>.
+</div>
+<div id="ref-nrcan-ceud" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Comprehensive Energy Use Database</em>. Office of Energy Efficiency. <a href="https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm">https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm</a>.
+</div>
+<div id="ref-nrcan-bioheat-survey" class="csl-entry" role="listitem">
+Natural Resources Canada, CanmetENERGY. 2023. <em>2023 Canadian Bioheat Database: Community, Commercial and Institutional Bioheat Installations in Canada</em>. <a href="https://natural-resources.canada.ca/sites/nrcan/files/energy/pdf/2023%20Canadian%20bioheat%20survey%20update%20by%20CanmetENERGY_NRCan.pdf">https://natural-resources.canada.ca/sites/nrcan/files/energy/pdf/2023%20Canadian%20bioheat%20survey%20update%20by%20CanmetENERGY_NRCan.pdf</a>.
+</div>
+<div id="ref-nrcan-bioheat" class="csl-entry" role="listitem">
+Natural Resources Canada, CanmetENERGY. 2026. <em>Bioenergy Systems</em>. <a href="https://natural-resources.canada.ca/energy-sources/renewable-energy/bioenergy-systems">https://natural-resources.canada.ca/energy-sources/renewable-energy/bioenergy-systems</a>.
+</div>
+<div id="ref-rissman" class="csl-entry" role="listitem">
+Rissman, Jeffrey, Chris Bataille, Eric Masanet, et al. 2020. <span>“Technologies and Policies to Decarbonize Global Industry: <span>Review</span> and Assessment of Mitigation Drivers Through 2070.”</span> <em>Applied Energy</em> 266: 114848. <a href="https://doi.org/10.1016/j.apenergy.2020.114848">https://doi.org/10.1016/j.apenergy.2020.114848</a>.
+</div>
+<div id="ref-schoeneberger" class="csl-entry" role="listitem">
+Schoeneberger, Carrie A., Colin A. McMillan, Parthiv Kurup, Sertac Akar, Robert Margolis, and Eric Masanet. 2020. <span>“Solar for Industrial Process Heat: A Review of Technologies, Analysis Approaches, and Potential Applications in the <span>United States</span>.”</span> <em>Energy</em> 206: 118083. <a href="https://doi.org/10.1016/j.energy.2020.118083">https://doi.org/10.1016/j.energy.2020.118083</a>.
+</div>
+<div id="ref-ornl-waste" class="csl-entry" role="listitem">
+Thekdi, Arvind, and Sachin U. Nimbalkar. 2014. <em>Industrial Waste Heat Recovery: Potential Applications, Available Technologies and Crosscutting r&amp;d Opportunities</em>. ORNL/TM-2014/622. Oak Ridge National Laboratory. <a href="https://info.ornl.gov/sites/publications/files/Pub52987.pdf">https://info.ornl.gov/sites/publications/files/Pub52987.pdf</a>.
+</div>
+<div id="ref-thiel" class="csl-entry" role="listitem">
+Thiel, Gregory P., and Addison K. Stark. 2021. <span>“To Decarbonize Industry, We Must Decarbonize Heat.”</span> <em>Joule</em> 5 (3): 531–50. <a href="https://doi.org/10.1016/j.joule.2020.12.007">https://doi.org/10.1016/j.joule.2020.12.007</a>.
+</div>
+<div id="ref-eia-mecs" class="csl-entry" role="listitem">
+U.S. Energy Information Administration. 2021. <em>Manufacturing Energy Consumption Survey (MECS) 2018</em>. U.S. Department of Energy. <a href="https://www.eia.gov/consumption/manufacturing/">https://www.eia.gov/consumption/manufacturing/</a>.
+</div>
+<div id="ref-zuhlsdorf" class="csl-entry" role="listitem">
+Zühlsdorf, Benjamin, Fabian Bühler, Michael Bantle, and Brian Elmegaard. 2019. <span>“Analysis of Technologies and Potentials for Heat Pump-Based Process Heat Supply Above 150&nbsp;<span>°</span>c.”</span> <em>Energy Conversion and Management: X</em> 2: 100011. <a href="https://doi.org/10.1016/j.ecmx.2019.100011">https://doi.org/10.1016/j.ecmx.2019.100011</a>.
+</div>
+</div>
 
 
 </section>
@@ -1644,51 +1818,19 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./getting_started.html" class="pagination-link" aria-label="Getting started">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span>
+      <a href="./energy_efficiency.html" class="pagination-link" aria-label="Energy Efficiency">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Energy Efficiency</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./building_tree.html" class="pagination-link" aria-label="Building the Model Tree">
-        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./machine_drive.html" class="pagination-link" aria-label="Industrial Machine Drive Systems">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 
 
-</body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

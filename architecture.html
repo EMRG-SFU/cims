@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>19&nbsp; Policy Costing &amp; Outputs – CIMS</title>
+<title>2&nbsp; Model Architecture – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./building_tree.html" rel="next">
-<link href="./getting_started.html" rel="prev">
+<link href="./theory.html" rel="next">
+<link href="./history.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -255,7 +255,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./history.html">About</a></li><li class="breadcrumb-item"><a href="./architecture.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -307,7 +307,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./architecture.html" class="sidebar-item-text sidebar-link">
+  <a href="./architecture.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></span></a>
   </div>
 </li>
@@ -453,7 +453,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./policies.html" class="sidebar-item-text sidebar-link active">
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
@@ -533,9 +533,8 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#policy-costing-methods-associated-with-istum-and-early-cims" id="toc-policy-costing-methods-associated-with-istum-and-early-cims" class="nav-link active" data-scroll-target="#policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</a></li>
-  <li><a href="#policy-costs-associated-with-changes-in-demand" id="toc-policy-costs-associated-with-changes-in-demand" class="nav-link" data-scroll-target="#policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</a></li>
-  <li><a href="#outputs-from-cims" id="toc-outputs-from-cims" class="nav-link" data-scroll-target="#outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</a></li>
+  <li><a href="#scale-and-scope" id="toc-scale-and-scope" class="nav-link active" data-scroll-target="#scale-and-scope"><span class="header-section-number">2.1</span> Scale and Scope</a></li>
+  <li><a href="#simulation-six-steps" id="toc-simulation-six-steps" class="nav-link" data-scroll-target="#simulation-six-steps"><span class="header-section-number">2.2</span> Simulation: Six Steps</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -543,9 +542,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./history.html">About</a></li><li class="breadcrumb-item"><a href="./architecture.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></h1>
+<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></h1>
 </div>
 
 
@@ -562,137 +561,337 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="policy-costing-methods-associated-with-istum-and-early-cims" class="level3" data-number="19.0.1">
-<h3 data-number="19.0.1" class="anchored" data-anchor-id="policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</h3>
-<p>Issues associated with deriving costs from its outputs guided much of CIMS’ development. The cost methodologies in the following sections are described in brief and outline some of the issues in estimating costs.</p>
-<p>The ISTUM model was initially designed for energy policy analysis, mainly for assessing how fuel consumption and emissions would change with a given energy policy. The emphasis was on marginal costs, not total or absolute expenditures. The first consistent costing concept was the techno-economic cost, or TEC.</p>
-<p><strong>Techno-economic Cost (TEC)</strong></p>
-<p>TEC is the difference in estimated (ex-ante) financial expenditure on capital, labour, and energy between the Business-as-Usual and Policy cases. It does not usually (unless otherwise specified) contain carbon taxes as these are considered a transfer internal to society. It is possible to get negative TEC costs, or benefits, especially in transportation where increased use of transit and walking and cycling reduces financial costs, implying that some actions induced by policy may be profitable. There are significant complications as well – do those who switch to transit and walking and cycling continue to own and pay for cars? This reflects the challenging question about how vehicle acquisition will be affected by policies to reduce vehicle use. TEC for all consuming sectors are reported with and without electricity price increases, which are sub-regional transfers that balance out to zero at the regional level once the financial effects on electricity producers’ revenues are included.</p>
-<p>The ISTUM sub-models were integrated under the energy demand and price feedback system in the mid-1999 to 2000 period, thus creating the first version of CIMS. During this period, the model was used for a series of large GHG abatement analyses for Canada. The thrust of these analyses was to integrate and assess a series of emissions reduction actions proposed by panels of interested parties, the Issue Tables of Canada’s Climate Change National Assessment Process. The most effective actions were determined by minimizing their welfare costs, as opposed to their pure financial costs. This led to the development of the Perceived Private Cost methodology (Bataille et al.&nbsp;2002, Laurin et al.&nbsp;2003, MKJA/EMRG 2000).</p>
-<p><strong>Perceived Private Costs (PPC)</strong></p>
-<p>PPC are calculated as the GHG tax multiplied by the marginal amount of GHG reductions that occurred at each GHG tax level. The area under the resulting GHG abatement cost curve represents the perceived cost of the actions by the GHG charge. The PPC methodology estimates welfare losses that represent in part the unwillingness of all consumers to switch to technologies that reduce emissions. This fostered development of the Expected Resource Cost methodology, which attempts to more realistically depict the costs and risks associated with a given GHG reduction policy.</p>
-<p><strong>Expected Resource Costs (ERC)</strong></p>
-<p>ERC is PPC that has been adjusted for risk, option value, and general inefficiency. It is equal to TEC+(PPC-TEC)*0.75. The difference between TEC and PPC that is allowed as ERC is a “rule-of-thumb” estimate for what percentage of the difference can be considered real equipment failure risk, as opposed to inefficient resistance to price signals. It represents that perceived cost, which could turn into real financial cost. Negative ERC is possible, especially at lower GHG charges, but not likely (Bataille et al.&nbsp;2002, Laurin et al, 2003, MKJA/EMRG, 2000).</p>
-<p>Table 10 summarizes the three early costing methods used for CIMS.</p>
-<p>Table 8. Types of Costs Used in Early Incarnation of CIMS</p>
-<p><strong>Distribution of Costs Under Electricity and Refining Demand Changes</strong></p>
-<p>Electricity demand changes in all sectors in response to increased electricity prices, leading to an issue of how to distribute GHG reductions as well as TEC and PPC charges. GHG reductions from reduced electricity consumption were accorded to the direct consumer (based on the policy GHG intensity of electricity), who faced increased electricity prices, while electricity producers were accorded the remaining GHG intensity reductions, the TEC costs generated by their intensity reductions plus their changes in revenue. These net transfers, while positive at the sub-regional level, disappear at the regional level.</p>
-<p><strong>The Relationship Between TEC, ERC, Option Value and Welfare Costs</strong></p>
-<p>The cost difference between ERC and TEC estimated during early analyses was described as risk, or “failure risk”, which is related to the concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck 1994 ). Option value is the expected gain from delaying or avoiding an investment while waiting for new information that might lead to a better decision. Thus, ERC are anticipated ex-post costs, and it is calculated as the sum of expected financial costs (TEC), lost option value, consumers’ surplus losses internal to residential and transportation (internal shifts away from business-as-usual (BAU) preferences within the sub-models) and finally, when demand feedbacks are included, consumers’ surplus losses related to demand adjustments for domestic consumers of domestic goods. It may therefore be considered a measure of personal welfare costs, not including negative environmental externalities (e.g.&nbsp;poorer quality air) or positive public goods (e.g.&nbsp;education, defence or public parks).</p>
-</section>
-<section id="policy-costs-associated-with-changes-in-demand" class="level3" data-number="19.0.2">
-<h3 data-number="19.0.2" class="anchored" data-anchor-id="policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</h3>
-<p>The inclusion of final demand feedbacks required the addition of five new policy-costing concepts. In all these concepts, financial output is defined as a sector’s sales revenue, which includes both value-added and purchased inputs. Value-added is net profits plus the cost of all expenditures on land (unprocessed “gifts of nature”), labour and capital (Lipsey et al.&nbsp;1988).</p>
-<ul>
-<li>The cost of production effect on sector financial output, which is the increased financial expenditures required to adapt to the policy, or TEC.</li>
-<li>The demand effect on sector financial output, which is the reduction in production expenditures associated with lower output.</li>
-<li>The absolute change in sector financial output, which is the sum of the cost of production and demand effects.</li>
-<li>Consumers’ surplus losses associated with demand changes in transportation and residences.</li>
-<li>Changes in value-added associated with cost of production and demand changes in manufacturing.</li>
-</ul>
-<section id="the-cost-of-production-and-demand-effects-on-sector-financial-output" class="level4" data-number="19.0.2.1">
-<h4 data-number="19.0.2.1" class="anchored" data-anchor-id="the-cost-of-production-and-demand-effects-on-sector-financial-output"><span class="header-section-number">19.0.2.1</span> The Cost of Production and Demand Effects on Sector Financial Output</h4>
-<p>The cost of production effect captures the internal capital investment and fuel choice adjustments of the model, or the TEC costs endogenous to the model. It is the anticipated financial cost of technical adjustment to the policy. The demand effect captures the effects of the demand feedbacks system, or reduction in output, as measured by expenditure compared to the business-as-usual case (BAU). The third is the sum of the first two. These three concepts capture a portion of the anticipated financial cost of a policy. They do not include the cost of buying emission permits from foreign sources or the cost of imports that replace domestically produced goods for domestic consumption. The fourth item, consumers’ surplus losses, represents lost consumer welfare associated with reduced residential expenditure and mobility, while the fifth represents the lost value-added to manufacturing firms due to policy.</p>
-<p>Most GHG policies will increase the cost of production for a given service, increase its price, and thus reduce its demand. This increase in the cost of production will also include the value of carbon charges that are imposed on GHG emissions. These charges are transfers and as such must be subtracted from regional and national costs. Additionally, if demand is inelastic (unresponsive to price) for a given service, the dollar value of the sector, as valued by cost of production, may increase faster than demand reductions, leading to an overall increase in sector value to the economy. If demand is elastic, the opposite may occur.</p>
-<p>The standard outputs from the sub-models include BAU and policy values for new physical capital investment associated with consuming energy, labour associated with the latter capital, and energy costs, as well as changes in physical output. It also produces BAU and policy costs per unit output, including GHG charges. These GHG charges are isolated by calculating policy emissions multiplied by the GHG price. When the micro and macro economic dynamics are turned on, part of the difference between the BAU and policy cases may be physical output changes while the rest will be cost of production differences due to internal stock adjustments. CIMS only captures a portion of the price that the consumer sees; both the BAU and Policy cost per unit are adjusted accordingly. The cost of production and demand effects on sector financial output (SFO) (Equations 23 &amp; 24), and the absolute change in financial expenditure are calculated as follows (Equation 25).</p>
-<p>(Equation 28)</p>
-<p>(Equation 29)</p>
-<p>(Equation 30)</p>
-<p>Where:</p>
-<p>QGHG = GHG emissions (Tonnes CO2e)</p>
-<p>PGHG = GHG price ($/Tonne CO2e)</p>
-<p>Qpolicy = Policy physical output of good or service X</p>
-<p>QBAU = BAU physical output of good or service X</p>
-<p>Ppolicy = Policy cost per unit of good or service X</p>
-<p>PBAU = BAU cost per unit of good or service X</p>
-<p>The absolute change in sector financial output could be positive or negative depending on the elasticity of demand – if the cost of production rises faster than demand falls, then the absolute change in financial output could be positive. This result is common with less aggressive policies. The demand effect on sector financial output will always be negative for normal goods, whose demand fall as their price rises. The cost of production effect on sector financial output is usually positive, except for the case where there are decreasing returns to scale.</p>
-</section>
-<section id="consumers-surplus-adjustments-in-residential-and-transportation" class="level4" data-number="19.0.2.2">
-<h4 data-number="19.0.2.2" class="anchored" data-anchor-id="consumers-surplus-adjustments-in-residential-and-transportation"><span class="header-section-number">19.0.2.2</span> Consumers’ Surplus Adjustments in Residential and Transportation</h4>
-<p>Reductions in residential activity and mobility reflect consumers’ surplus losses. Consumers’ surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (<a href="#fig-consumer_surplus" class="quarto-xref">Figure&nbsp;<span>19.1</span></a>).</p>
-<div id="fig-consumer_surplus" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/consumer_surplus.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;19.1: Consumer Surplus"><img src="images/consumer_surplus.png" class="img-fluid figure-img" style="width:70.0%"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;19.1: Consumer Surplus
-</figcaption>
-</figure>
-</div>
-<p>The consumers’ surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers’ surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.</p>
-<div id="tbl-output_adjustments" class="quarto-float quarto-figure quarto-figure-center anchored">
+<section id="scale-and-scope" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="scale-and-scope"><span class="header-section-number">2.1</span> Scale and Scope</h2>
+<p>CIMS covers the entire Canadian economy and can connect to aggregated representations of other regions (e.g., United States, Europe, or Rest of World). <a href="#tbl-sectors-regions-dynamic" class="quarto-xref">Table&nbsp;<span>2.1</span></a> illustrates the sectors and regions currently covered in CIMS.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<div class="cell" data-execution_count="1">
+<div id="tbl-sectors-regions-dynamic" class="cell quarto-float quarto-figure quarto-figure-center anchored" data-execution_count="1">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;19.1: Financial, welfare cost and value-added adjustments induced by changes in output
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-sectors-regions-dynamic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2.1: Sectors represented by Canadian region
 </figcaption>
-<div aria-describedby="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<table class="caption-top table">
+<div aria-describedby="tbl-sectors-regions-dynamic-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output cell-output-display cell-output-markdown" data-execution_count="1">
+<table class="cell caption-top table table-sm table-striped small">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 23%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
+<col style="width: 10%">
 </colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Output adjustment to financial costs</th>
-<th style="text-align: left;">Output adjustment to welfare costs / value-added</th>
+<th style="text-align: left;"><strong>Sectors</strong></th>
+<th style="text-align: center;"><strong>BC</strong></th>
+<th style="text-align: center;"><strong>AB</strong></th>
+<th style="text-align: center;"><strong>SK</strong></th>
+<th style="text-align: center;"><strong>MB</strong></th>
+<th style="text-align: center;"><strong>ON</strong></th>
+<th style="text-align: center;"><strong>QC</strong></th>
+<th style="text-align: center;"><strong>AT</strong><a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Personal Transportation</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using transportation <em>pkt</em> elasticity</td>
+<td style="text-align: left;">Coal Mining</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Industry (&amp; Freight Transportation)</strong></td>
-<td style="text-align: left;">Demand effect on sector financial output, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>value-added</strong> between BAU and Policy</td>
+<td style="text-align: left;">Natural Gas</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Residential</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using combination of savings/consumption and leisure/work elasticities</td>
+<td style="text-align: left;">Petroleum Crude</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Commercial</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">None</td>
+<td style="text-align: left;">Petroleum Refining</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electricity</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethanol</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biodiesel</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mining</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Industrial Minerals</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Chemical Products</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pulp and Paper</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Metal Smelting</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Iron and Steel</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Light Industrial</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Construction</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Residential</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Commercial</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Transportation Passenger</td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+<td style="text-align: center;"></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Transportation Freight</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Waste</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Agriculture</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Forestry</td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
+<td style="text-align: center;"><span class="cell-on"></span></td>
 </tr>
 </tbody>
 </table>
 </div>
+</div>
 </figure>
 </div>
-<p>The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.</p>
+</div>
+<p><mark>TODO: Could include major metro regions like Toronto, Montreal, and Vancouver to represent city building and transportation policies.</mark></p>
+<p>While the model is simple in operation, it can appear complex because it is technologically explicit and covers the whole economy. CIMS represents a detailed list of technologies (fridges, light bulbs, cars, industrial motors, steel furnaces, buildings, power plants, etc.), and includes their linkages to each other. The model is especially large for the industrial sectors because industry has the largest variety of technologies.</p>
+<p>CIMS highlights the interplay of energy supply and demand because energy-related GHG emissions are currently a key policy concern. Thus, the model focuses on the interaction between sectors that use energy (industrial, residential, commercial / institutional, and transportation sectors) and sectors that produce or transform energy (electricity generation, fossil fuel supply, oil refining, natural gas processing, biofuels, and hydrogen). This interaction is shown in <a href="#fig-general_model_structure" class="quarto-xref">Figure&nbsp;<span>2.1</span></a>. A policy that seeks to influence energy supply and demand may also influence the cost of producing goods and services, thus affecting their price and final demand. To reflect these interactions, CIMS includes a goods and services final demand feedback loop, composed of Armington elasticities for traded goods and empirically driven relationships between the traded and non-traded sectors.</p>
+<div id="fig-general_model_structure" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-general_model_structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/general_model_structure.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;2.1: General model structure"><img src="images/general_model_structure.svg" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-general_model_structure-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: General model structure
+</figcaption>
+</figure>
+</div>
 </section>
-</section>
-<section id="outputs-from-cims" class="level3" data-number="19.0.3">
-<h3 data-number="19.0.3" class="anchored" data-anchor-id="outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</h3>
-<p>Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS’ micro and macro economic systems of dynamics (also referred to as feedback systems).</p>
-<p>Table 10. Sub-model Outputs Existing Prior to This Research</p>
-<p>Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).</p>
-<p>Fuel use and emissions by sector by year by technology.</p>
-<p>Service and auxiliary use by sector by year by technology.</p>
-<p>Total stock use by sector by year by technology.</p>
-<p>New stock use by sector by year by technology.</p>
-<p>Retrofits by sector by year by technology.</p>
-<p>Technology cost changes due to declining capital cost function</p>
-<p>Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research</p>
-<p>Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g.&nbsp;7.5 or 10%)</p>
-<p>BAU and Policy final demand for each sector’s product or service by year.</p>
-<p>BAU and Policy disaggregated energy demand for all sectors by year.</p>
-<p>Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.</p>
-<p>Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.</p>
-<p>Changes in net exports of key energy commodities from BAU to Policy</p>
-<p>Changes in energy prices by year</p>
-<p>Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing</p>
-<p>Changes consumers’ surplus for personal transportation and residences</p>
-<p>Changes in value-added for industry and manufacturing</p>
+<section id="simulation-six-steps" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="simulation-six-steps"><span class="header-section-number">2.2</span> Simulation: Six Steps</h2>
+<p>As a simulation model, CIMS simulates the evolution of technologies acquired to meet energy services, and it uses both engineering and economic information. The engineering information details the unit energy consumption of each energy service technology and explains, using flow models of technologically heterogeneous sectors, how final energy service demands, intermediate products, and energy supply are related. The economic information determines which technologies are preferable in terms of cost minimization. While CIMS is not an optimization model, it can be adapted to produce results like those of an optimization model by calling on certain built-in functions. These functions are known as winner-take-all functions, and they give all new market shares in a given competition to the technology or process with the least cost.</p>
+<p>CIMS is designed to mimic a sector or industry by representing a number of industrial establishments, residential or commercial buildings, and delivery of goods or personal travel within a defined region. The model focuses its analysis on the aggregate energy end-use requirements of that industry or sector. For example, in industry the major end-uses are process heat, motive force, space heat, and lighting. In the pulp and paper sector, the major end-uses are steam heat or mechanical energy to digest wood fibre into pulp, mechanical energy to convey and form pulp into paper, mechanical energy to press moisture out of formed pulp or paper, steam heat to dry pulp or paper, space heat, and lighting. In residential and commercial buildings, the primary end-uses include space heating and cooling, hot water production, refrigeration, and other assorted appliances.</p>
+<p><strong>A CIMS simulation comprises six basic steps:</strong></p>
+<ol type="1">
+<li><p>The baseline macroeconomic drivers, energy supply drivers, and energy service technology characteristics are set for the desired time frame (15 years, 20 years, etc.) in five-year increments.</p>
+<ol type="a">
+<li><p>Technologies are represented in the model in terms of the quantity of energy service they provide. This could be, for example, vehicle kilometers traveled, tonnes of paper, or square metres of floor space heated and cooled. Then, a forecast of growth in energy service demand is used to drive future demand for energy services, usually in five-year increments.</p></li>
+<li><p>Macro-economic drivers include income, economic output, structural evolution of sectors, interest rates, employment rates, regulations, etc. They account for all energy service demands in the energy demand module.</p></li>
+<li><p>Energy supply drivers include international commodity prices, domestic market developments, forecasts of costs and availability of marginal energy supplies, and the resulting forecasts of domestic prices.</p></li>
+<li><p>Energy service technology characteristics include the date a technology or process will be available, technology energy efficiencies and capital / operating costs, firm and household time preferences (discount rates) for discretionary and non-discretionary expenditures (new and retrofit), and other behavioural parameters (perceived risks and consumer surpluses of different technologies, interdependence of certain technology choices that serve different energy services, such as domestic water heating and domestic space heating).</p></li>
+</ol></li>
+<li><p>The energy demand module (industry, commercial, residential, and transportation) is run for the initial driver values (including energy supply prices).</p>
+<ol type="a">
+<li><p>In each future period, a portion of the initial year’s stock of technologies is retired. Retirement depends only on age. The remaining technology stocks in each period are subtracted from the forecast energy service demand and this difference determines the amount of new technology stocks in which to invest.</p></li>
+<li><p>Prospective energy service technologies compete to fill the new service demand. The objective of the model is to simulate this competition so that the outcome approximates what would happen in the real world. Here the model relies heavily on market research of past and prospective firm and household behavior. Technology costs depend on recognized and financial costs, but also on identified differences in non-financial preferences (e.g., differences in the quality of lighting from different light bulbs) and risks (one technology is seen as more likely to fail than another). Even the determination of financial costs is not straightforward as time preferences (discount rates) can differ depending on the decision maker (household vs.&nbsp;firm) and the type of decision (non-discretionary vs.&nbsp;discretionary). Consequently, the competition is simulated probabilistically; new stock purchases are distributed among prospective technologies with financial costs being just one of several factors in determining market share.</p></li>
+<li><p>In each period, a similar competition occurs with remaining technology stocks to simulate retrofitting (if desirable and likely from the firm or household’s perspective). The same financial and non-financial information is required, except that the capital costs of remaining technology stocks are excluded, having been spent earlier when the remaining technology stock was originally acquired.</p></li>
+</ol></li>
+<li><p>The demand models then send their requirements for energy to the energy supply models. The supply models send back corresponding energy prices. If the changes in energy prices are over a set threshold value for equilibrium (usually 5%), the demand models are then rerun with the new energy prices. This process is repeated until all energy price changes fall under the threshold value. <a href="#fig-demand_supply_feedbacks" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> describes this process:</p></li>
+</ol>
+<div id="fig-demand_supply_feedbacks" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-demand_supply_feedbacks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/demand_supply_feedbacks.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;2.2: Energy Supply and Demand"><img src="images/demand_supply_feedbacks.svg" class="img-fluid figure-img"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-demand_supply_feedbacks-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: Energy Supply and Demand
+</figcaption>
+</figure>
+</div>
+<ol start="4" type="1">
+<li><p>Policy or market driven energy price changes may change the lifecycle cost of some energy services, thereby changing the end-use price for these services. If the change in lifecycle cost from the business-as-usual case is beyond a pre-set threshold price elasticities for these services are applied, thereby changing the demand for these services. This new demand is sent back to the supply and demand models for re-calculation.</p></li>
+<li><p>The model reiterates step 2, 3 and 4 until all variables stabilize. It then proceeds to the next time period. Steps 1 through 5 are repeated for all time periods.</p></li>
+<li><p>Output is provided for new and total capital stock, energy use and trade flows, GHG emissions, levelized lifecycle costs by service and technology, and energy prices.</p></li>
+</ol>
 
 
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>Canadian territories are not currently represented in CIMS.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Atlantic includes New Brunswick, Nova Scotia, Prince Edward Island, and Newfoundland and Labrador.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
 </section>
 
 </main> <!-- /main -->
@@ -1644,13 +1843,13 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./getting_started.html" class="pagination-link" aria-label="Getting started">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span>
+      <a href="./history.html" class="pagination-link" aria-label="History and Development">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">History and Development</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./building_tree.html" class="pagination-link" aria-label="Building the Model Tree">
-        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./theory.html" class="pagination-link" aria-label="Theory">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

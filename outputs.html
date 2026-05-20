@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>8&nbsp; Outputs – CIMS</title>
+<title>21&nbsp; Outputs – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,17 +33,22 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./policies.html" rel="prev">
+<link href="./post_processing.html" rel="next">
+<link href="./building_tree.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-d0ae9245876894da5ac7e18953ecc5cc.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7f8f88aac4f3542376d5c11b86a4c14d.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -76,7 +81,169 @@ ul.task-list li input[type="checkbox"] {
 <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="nav-sidebar floating quarto-light">
+<body class="nav-sidebar floating quarto-light"><script id="quarto-html-before-body" type="application/javascript">
+    const toggleBodyColorMode = (bsSheetEl) => {
+      const mode = bsSheetEl.getAttribute("data-mode");
+      const bodyEl = window.document.querySelector("body");
+      if (mode === "dark") {
+        bodyEl.classList.add("quarto-dark");
+        bodyEl.classList.remove("quarto-light");
+      } else {
+        bodyEl.classList.add("quarto-light");
+        bodyEl.classList.remove("quarto-dark");
+      }
+    }
+    const toggleBodyColorPrimary = () => {
+      const bsSheetEl = window.document.querySelector("link#quarto-bootstrap:not([rel=disabled-stylesheet])");
+      if (bsSheetEl) {
+        toggleBodyColorMode(bsSheetEl);
+      }
+    }
+    const setColorSchemeToggle = (alternate) => {
+      const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+      for (let i=0; i < toggles.length; i++) {
+        const toggle = toggles[i];
+        if (toggle) {
+          if (alternate) {
+            toggle.classList.add("alternate");
+          } else {
+            toggle.classList.remove("alternate");
+          }
+        }
+      }
+    };
+    const toggleColorMode = (alternate) => {
+      // Switch the stylesheets
+      const primaryStylesheets = window.document.querySelectorAll('link.quarto-color-scheme:not(.quarto-color-alternate)');
+      const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+      manageTransitions('#quarto-margin-sidebar .nav-link', false);
+      if (alternate) {
+        // note: dark is layered on light, we don't disable primary!
+        enableStylesheet(alternateStylesheets);
+        for (const sheetNode of alternateStylesheets) {
+          if (sheetNode.id === "quarto-bootstrap") {
+            toggleBodyColorMode(sheetNode);
+          }
+        }
+      } else {
+        disableStylesheet(alternateStylesheets);
+        enableStylesheet(primaryStylesheets)
+        toggleBodyColorPrimary();
+      }
+      manageTransitions('#quarto-margin-sidebar .nav-link', true);
+      // Switch the toggles
+      setColorSchemeToggle(alternate)
+      // Hack to workaround the fact that safari doesn't
+      // properly recolor the scrollbar when toggling (#1455)
+      if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+        manageTransitions("body", false);
+        window.scrollTo(0, 1);
+        setTimeout(() => {
+          window.scrollTo(0, 0);
+          manageTransitions("body", true);
+        }, 40);
+      }
+    }
+    const disableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        stylesheet.rel = 'disabled-stylesheet';
+      }
+    }
+    const enableStylesheet = (stylesheets) => {
+      for (let i=0; i < stylesheets.length; i++) {
+        const stylesheet = stylesheets[i];
+        if(stylesheet.rel !== 'stylesheet') { // for Chrome, which will still FOUC without this check
+          stylesheet.rel = 'stylesheet';
+        }
+      }
+    }
+    const manageTransitions = (selector, allowTransitions) => {
+      const els = window.document.querySelectorAll(selector);
+      for (let i=0; i < els.length; i++) {
+        const el = els[i];
+        if (allowTransitions) {
+          el.classList.remove('notransition');
+        } else {
+          el.classList.add('notransition');
+        }
+      }
+    }
+    const isFileUrl = () => {
+      return window.location.protocol === 'file:';
+    }
+    const hasAlternateSentinel = () => {
+      let styleSentinel = getColorSchemeSentinel();
+      if (styleSentinel !== null) {
+        return styleSentinel === "alternate";
+      } else {
+        return false;
+      }
+    }
+    const setStyleSentinel = (alternate) => {
+      const value = alternate ? "alternate" : "default";
+      if (!isFileUrl()) {
+        window.localStorage.setItem("quarto-color-scheme", value);
+      } else {
+        localAlternateSentinel = value;
+      }
+    }
+    const getColorSchemeSentinel = () => {
+      if (!isFileUrl()) {
+        const storageValue = window.localStorage.getItem("quarto-color-scheme");
+        return storageValue != null ? storageValue : localAlternateSentinel;
+      } else {
+        return localAlternateSentinel;
+      }
+    }
+    const toggleGiscusIfUsed = (isAlternate, darkModeDefault) => {
+      const baseTheme = document.querySelector('#giscus-base-theme')?.value ?? 'light';
+      const alternateTheme = document.querySelector('#giscus-alt-theme')?.value ?? 'dark';
+      let newTheme = '';
+      if(authorPrefersDark) {
+        newTheme = isAlternate ? baseTheme : alternateTheme;
+      } else {
+        newTheme = isAlternate ? alternateTheme : baseTheme;
+      }
+      const changeGiscusTheme = () => {
+        // From: https://github.com/giscus/giscus/issues/336
+        const sendMessage = (message) => {
+          const iframe = document.querySelector('iframe.giscus-frame');
+          if (!iframe) return;
+          iframe.contentWindow.postMessage({ giscus: message }, 'https://giscus.app');
+        }
+        sendMessage({
+          setConfig: {
+            theme: newTheme
+          }
+        });
+      }
+      const isGiscussLoaded = window.document.querySelector('iframe.giscus-frame') !== null;
+      if (isGiscussLoaded) {
+        changeGiscusTheme();
+      }
+    };
+    const authorPrefersDark = false;
+    const darkModeDefault = authorPrefersDark;
+      document.querySelector('link#quarto-text-highlighting-styles.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+      document.querySelector('link#quarto-bootstrap.quarto-color-scheme-extra').rel = 'disabled-stylesheet';
+    let localAlternateSentinel = darkModeDefault ? 'alternate' : 'default';
+    // Dark / light mode switch
+    window.quartoToggleColorScheme = () => {
+      // Read the current dark / light value
+      let toAlternate = !hasAlternateSentinel();
+      toggleColorMode(toAlternate);
+      setStyleSentinel(toAlternate);
+      toggleGiscusIfUsed(toAlternate, darkModeDefault);
+      window.dispatchEvent(new Event('resize'));
+    };
+    // Switch to dark mode if need be
+    if (hasAlternateSentinel()) {
+      toggleColorMode(true);
+    } else {
+      toggleColorMode(false);
+    }
+  </script>
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -85,7 +252,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./outputs.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./outputs.html">Outputs and Analysis</a></li><li class="breadcrumb-item"><a href="./outputs.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -103,6 +270,7 @@ ul.task-list li input[type="checkbox"] {
       <a href="./">CIMS</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/EMRG-SFU/cims" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
 </div>
     </div>
       </div>
@@ -116,13 +284,13 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Intro</span></a>
+ <span class="menu-text">Welcome</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
- <span class="menu-text">install</span></a>
+ <span class="menu-text">About</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -130,14 +298,14 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./setup.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  <a href="./history.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">History and Development</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  <a href="./architecture.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Model Architecture</span></span></a>
   </div>
 </li>
       </ul>
@@ -145,7 +313,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
- <span class="menu-text">model</span></a>
+ <span class="menu-text">Methodology</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -153,26 +321,32 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./overview.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Introduction to CIMS</span></span></a>
+  <a href="./theory.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./technologies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition and Demand Feedbacks</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_supply_demand.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./demand_feedbacks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Goods and Services Demand Feedbacks</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sectors.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Model Sector Descriptions</span></span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./low_temp_heat.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Decarbonizing Low-Temperature Industrial Heat</span></span></a>
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Descriptions</span></span></a>
   </div>
 </li>
       </ul>
@@ -180,7 +354,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
- <span class="menu-text">results</span></a>
+ <span class="menu-text">Cross-Sector Topics</span></a>
           <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -188,14 +362,160 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./policies.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  <a href="./energy_efficiency.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Energy Efficiency</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./low_temp_industrial_heat.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Low-Temperature Industrial Heat</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./machine_drive.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ccus.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Carbon Capture, Utilization, and Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./energy_storage.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Energy Storage</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./district_energy.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">District Energy</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+ <span class="menu-text">Data and Calibration</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_inputs.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Data Inputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./calibration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Calibration</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./validation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Validation</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Running the Model</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./setup.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Setup the model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./building_tree.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Outputs and Analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./outputs.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./post_processing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Post-Processing and Reporting</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_acronyms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">Acronyms</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_file_formats.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">B</span>&nbsp; <span class="chapter-title">File Format Reference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_equations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">C</span>&nbsp; <span class="chapter-title">Equation Summary</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./appendix_changelog.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">D</span>&nbsp; <span class="chapter-title">Version History</span></span></a>
   </div>
 </li>
       </ul>
@@ -210,27 +530,27 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#sub-sector-reports" id="toc-sub-sector-reports" class="nav-link active" data-scroll-target="#sub-sector-reports"><span class="header-section-number">8.1</span> Sub-sector Reports</a>
+  <li><a href="#sub-sector-reports" id="toc-sub-sector-reports" class="nav-link active" data-scroll-target="#sub-sector-reports"><span class="header-section-number">21.1</span> Sub-sector Reports</a>
   <ul class="collapse">
-  <li><a href="#fuel-and-emissions-report" id="toc-fuel-and-emissions-report" class="nav-link" data-scroll-target="#fuel-and-emissions-report"><span class="header-section-number">8.1.1</span> Fuel and Emissions Report</a></li>
-  <li><a href="#total-stock-report" id="toc-total-stock-report" class="nav-link" data-scroll-target="#total-stock-report"><span class="header-section-number">8.1.2</span> Total Stock Report</a></li>
-  <li><a href="#new-stock-report" id="toc-new-stock-report" class="nav-link" data-scroll-target="#new-stock-report"><span class="header-section-number">8.1.3</span> New Stock Report</a></li>
-  <li><a href="#levelized-costs-report" id="toc-levelized-costs-report" class="nav-link" data-scroll-target="#levelized-costs-report"><span class="header-section-number">8.1.4</span> Levelized Costs Report</a></li>
-  <li><a href="#node-competition-report" id="toc-node-competition-report" class="nav-link" data-scroll-target="#node-competition-report"><span class="header-section-number">8.1.5</span> Node Competition Report</a></li>
+  <li><a href="#fuel-and-emissions-report" id="toc-fuel-and-emissions-report" class="nav-link" data-scroll-target="#fuel-and-emissions-report"><span class="header-section-number">21.1.1</span> Fuel and Emissions Report</a></li>
+  <li><a href="#total-stock-report" id="toc-total-stock-report" class="nav-link" data-scroll-target="#total-stock-report"><span class="header-section-number">21.1.2</span> Total Stock Report</a></li>
+  <li><a href="#new-stock-report" id="toc-new-stock-report" class="nav-link" data-scroll-target="#new-stock-report"><span class="header-section-number">21.1.3</span> New Stock Report</a></li>
+  <li><a href="#levelized-costs-report" id="toc-levelized-costs-report" class="nav-link" data-scroll-target="#levelized-costs-report"><span class="header-section-number">21.1.4</span> Levelized Costs Report</a></li>
+  <li><a href="#node-competition-report" id="toc-node-competition-report" class="nav-link" data-scroll-target="#node-competition-report"><span class="header-section-number">21.1.5</span> Node Competition Report</a></li>
   </ul></li>
-  <li><a href="#end-user-reports" id="toc-end-user-reports" class="nav-link" data-scroll-target="#end-user-reports"><span class="header-section-number">8.2</span> End user reports</a></li>
-  <li><a href="#for-example-household-energy-spending-average-travel-and-costsmacc-curve" id="toc-for-example-household-energy-spending-average-travel-and-costsmacc-curve" class="nav-link" data-scroll-target="#for-example-household-energy-spending-average-travel-and-costsmacc-curve"><span class="header-section-number">8.3</span> For example, household energy spending, average travel and costsMACC Curve</a></li>
-  <li><a href="#kaya-decomposition" id="toc-kaya-decomposition" class="nav-link" data-scroll-target="#kaya-decomposition"><span class="header-section-number">8.4</span> Kaya Decomposition</a></li>
-  <li><a href="#attributing-emissions-reductions-to-policies" id="toc-attributing-emissions-reductions-to-policies" class="nav-link" data-scroll-target="#attributing-emissions-reductions-to-policies"><span class="header-section-number">8.5</span> Attributing emissions reductions to policies</a></li>
+  <li><a href="#end-user-reports" id="toc-end-user-reports" class="nav-link" data-scroll-target="#end-user-reports"><span class="header-section-number">21.2</span> End user reports</a></li>
+  <li><a href="#lmdi-decomposition" id="toc-lmdi-decomposition" class="nav-link" data-scroll-target="#lmdi-decomposition"><span class="header-section-number">21.3</span> LMDI Decomposition</a></li>
+  <li><a href="#attributing-emissions-reductions-to-policies" id="toc-attributing-emissions-reductions-to-policies" class="nav-link" data-scroll-target="#attributing-emissions-reductions-to-policies"><span class="header-section-number">21.4</span> Attributing emissions reductions to policies</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./policies.html">results</a></li><li class="breadcrumb-item"><a href="./outputs.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></a></li></ol></nav>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./outputs.html">Outputs and Analysis</a></li><li class="breadcrumb-item"><a href="./outputs.html"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Outputs</span></h1>
+<h1 class="title"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Outputs</span></h1>
 </div>
 
 
@@ -247,90 +567,74 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Results viewer</mark></p>
-<ul>
-<li><p>Need to revise how `short path` is created once markets and/or other countries are added</p></li>
-<li><p>Populate Tech Details only from pivot data. Need to add:</p>
-<ul>
-<li><p>fom</p></li>
-<li><p>fic</p></li>
-<li><p>dic (need to calc in model)</p></li>
-<li><p>ucc (need to calc in model)</p></li>
-<li><p>recycled revenue (at techs?)</p></li>
-</ul></li>
-<li><p>Organise tree to follow model description order</p></li>
-<li><p>Auto generate tree? Need hierarchy diagrams even if not auto generated.</p></li>
-<li><p>Electricity sector -&gt; grid intensity</p></li>
-</ul>
 <p>Three main classes of output are created by the model:</p>
 <ol type="1">
-<li><p>Sub-sector specific reports (DRAFTED)</p>
+<li><p>Sub-sector specific reports</p>
 <ol type="a">
 <li><p>fuel and emissions for a given sector (FUELA) for BAU and Policy, (B or C-Region-FUELA, e.g.&nbsp;BONFUELA.</p></li>
 <li><p>technology levelized costs for a given sector (LEVEL) – same pattern as FUELA.</p></li>
 <li><p>new and total technology market share reports for a given sector (NEWMA and TOTAL) – same pattern as FUELA.</p></li>
 <li><p>technology node competition reports for a given sector (REGION-NC-YEAR, e.g.&nbsp;“ABNC2005”</p></li>
 </ol></li>
-<li><p>Semi-aggregate reports (TO BE DONE)</p>
+<li><p>Semi-aggregate reports</p>
 <ol type="a">
 <li><p>changes in physical output, sorted by sector and by region (CCOMP)</p></li>
 <li><p>changes in sector capital, fuel, emissions and labour costs, sorted by sector and by region (CIMCOSTA &amp; CIMCOSTB)</p></li>
 <li><p>changes in sector energy use (by market class Elec., NG, coal and RPP) and GHG emissions, sorted by sector and by region (DCOMP)</p></li>
 <li><p>changes in sector cost per unit (inclusive of emissions charges), sorted by sector and by region (LCOMP)</p></li>
 </ol></li>
-<li><p>Aggregate report (TO BE DONE)</p>
+<li><p>Aggregate report</p>
 <ol type="a">
 <li>CIMS Outputs (As of March 2007)</li>
 </ol></li>
 </ol>
-<section id="sub-sector-reports" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="sub-sector-reports"><span class="header-section-number">8.1</span> Sub-sector Reports</h2>
+<section id="sub-sector-reports" class="level2" data-number="21.1">
+<h2 data-number="21.1" class="anchored" data-anchor-id="sub-sector-reports"><span class="header-section-number">21.1</span> Sub-sector Reports</h2>
 <p>Four report types are available. In each type of report, the analyst opens a spreadsheet where data can be manipulated using spreadsheet functions. The report can then be reformatted, printed, or saved under another name.</p>
-<section id="fuel-and-emissions-report" class="level3" data-number="8.1.1">
-<h3 data-number="8.1.1" class="anchored" data-anchor-id="fuel-and-emissions-report"><span class="header-section-number">8.1.1</span> Fuel and Emissions Report</h3>
+<section id="fuel-and-emissions-report" class="level3" data-number="21.1.1">
+<h3 data-number="21.1.1" class="anchored" data-anchor-id="fuel-and-emissions-report"><span class="header-section-number">21.1.1</span> Fuel and Emissions Report</h3>
 <p>Data concerning fuel consumption and emission generation are saved for each year of the simulation. The spreadsheet entitled B(BAU) or C(Policy) Region (e.g.&nbsp;BC) FUEL, e.g.&nbsp;CBCFUELA, receives these data. The model’s report generator produces a table containing: (1) a list of all fuels and emissions, (3) consumption/production of those fuels and emissions for each year, and (4) a summation of fuels consumed and emissions output. Note that, if fuel/emission units are not uniform, this summation will be erroneous. Figure 3.1 displays the layout of a typical aggregate fuel report.</p>
 <p>Figure 3.1 ISTUM’s Fuel Report</p>
 <p>Typically, technologies are grouped into Aggregate, Major processes, Service categories and Product type categories.</p>
 <p>Aggregate reports include the cumulative energy consumption of all the technologies in the industrial branch under analysis and are generated for every industry. Note that this is the sum of consumed and produced energy. To determine the amount of cogenerated or self-generated energy, the analyst should refer to the NC files which show al energy inputs and outputs by technology competition. No technology can contribute to the cumulative consumption/production of more than one group in each category.</p>
 <p>Figure 3.1 ISTUM’s Fuel Report</p>
 </section>
-<section id="total-stock-report" class="level3" data-number="8.1.2">
-<h3 data-number="8.1.2" class="anchored" data-anchor-id="total-stock-report"><span class="header-section-number">8.1.2</span> Total Stock Report</h3>
+<section id="total-stock-report" class="level3" data-number="21.1.2">
+<h3 data-number="21.1.2" class="anchored" data-anchor-id="total-stock-report"><span class="header-section-number">21.1.2</span> Total Stock Report</h3>
 <p>The table generated in the TOTAL spreadsheets contains data on the sum of operating old and new stock inventories for that year. The stock is listed in output units for that technology. As with the other report types, the table’s header contains specific information on the scenario and economic criteria applied to produce that output. To the right of the total stock table, one finds a table of the share of total stock for competing technologies (in percent) that each technology has obtained. Figure 3.23 displays the layout of a typical Total Stock Report.</p>
 <p>The lower portion of this table provides information concerning changes in stock consequent to retrofitting. Each set of lead and retrofit technologies show the lead technology first followed by the technology(ies) that can be retrofit to it. The data indicate the number of units not retrofit (the value associated with parent technologies) and those that were retrofit (the values associated with the retrofit technologies).</p>
 <p>Figure 3.2 ISTUM’s Total Stock Report</p>
 </section>
-<section id="new-stock-report" class="level3" data-number="8.1.3">
-<h3 data-number="8.1.3" class="anchored" data-anchor-id="new-stock-report"><span class="header-section-number">8.1.3</span> New Stock Report</h3>
+<section id="new-stock-report" class="level3" data-number="21.1.3">
+<h3 data-number="21.1.3" class="anchored" data-anchor-id="new-stock-report"><span class="header-section-number">21.1.3</span> New Stock Report</h3>
 <p>As in the Total Stock Report, the two tables generated by the New Stock Report function of CIMS, show new stock additions in each year of the simulation and the market share of that stock purchased in that simulation year. This NEWMAR spreadsheet header, like the others, displays specific information concerning scenario and economic criteria. Figure 3.3 displays the layout of a typical New Stock Report.</p>
 <p>Figure 3.3 ISTUM’s New Stock Report</p>
 </section>
-<section id="levelized-costs-report" class="level3" data-number="8.1.4">
-<h3 data-number="8.1.4" class="anchored" data-anchor-id="levelized-costs-report"><span class="header-section-number">8.1.4</span> Levelized Costs Report</h3>
+<section id="levelized-costs-report" class="level3" data-number="21.1.4">
+<h3 data-number="21.1.4" class="anchored" data-anchor-id="levelized-costs-report"><span class="header-section-number">21.1.4</span> Levelized Costs Report</h3>
 <p>The LEVEL report lists each technology and contains tables displaying two categories of information:</p>
 <p>1) The first set of columns include data used to generate the levelized costs. The first numeric column displays capital costs (CC) of each technology, followed by its annualized CC (CC x CC recovery factor, found in the sixth column). The third column shows the sum of annualized CC and costs of operations and maintenance (excluding fuel and emissions costs) for each technology. This, divided by the material output found in column 4 generates the lifecycle cost per unit output in column 5. Column six indicates whether any non-cost parameter was applied to the capital costs (CC x non-cost parameter).</p>
 <p>2) The second set of columns, each headed by a simulation year, presents the levelized cost of that technology in that year. The levelized cost is the sum of the per-unit cost (column four) and the annual fuel (and emission) costs. (Figure 3.4)</p>
 <p>The lower portion of this table provides information concerning retrofits applied in that simulation. Each set of lead and retrofit technologies, displayed in separate groups, show the lead technology first followed by the technology(ies) that can be retrofit to it. Note that the capital cost of the lead technology is always 0 since it is considered a sunk cost. The capital costs associated with the retrofit technologies represents the cost of retrofit purchase and installation.</p>
 <p>Figure 3.4 ISTUM’s Levelized Cost Report</p>
 </section>
-<section id="node-competition-report" class="level3" data-number="8.1.5">
-<h3 data-number="8.1.5" class="anchored" data-anchor-id="node-competition-report"><span class="header-section-number">8.1.5</span> Node Competition Report</h3>
+<section id="node-competition-report" class="level3" data-number="21.1.5">
+<h3 data-number="21.1.5" class="anchored" data-anchor-id="node-competition-report"><span class="header-section-number">21.1.5</span> Node Competition Report</h3>
 <p>There is a separate node competition report for every sector in every region in every year. They are title (region)NC(year)J, e.g.&nbsp;for all sectors in Alberta the 2005 report is called “ABNC2005J.xls”. The region codes are: BC, AB, SK, MB, ON, PQ, ATL (for Atlantic).</p>
 <p>The node competition report presents the results of a run as a comparison between BAU and POLICY in terms of fuel use, services and emissions. The key difference between this report and the last four is that it organized by technology competition. As there a several fuels, services and emissions in CIMS, these reports tend to be very large. Figure 6 on the next page provides a sample node competition report for the baseload electricity production competition in Alberta in 2005. The shown figure gives the difference in stock, fuel use and emissions, while further to the right on the spreadsheet will be the BAU and policy absolute values. Stock is valued in the output unit of the sector in question, energy in GJ, and emissions in tonnes.</p>
 <p>Figure 6: Sample node competition report – base load electricity production Alberta 2005</p>
 </section>
 </section>
-<section id="end-user-reports" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="end-user-reports"><span class="header-section-number">8.2</span> End user reports</h2>
-<p><mark>TODO: Reports of energy use, financials, intensities, travel, etc. at end user level</mark></p>
+<section id="end-user-reports" class="level2" data-number="21.2">
+<h2 data-number="21.2" class="anchored" data-anchor-id="end-user-reports"><span class="header-section-number">21.2</span> End user reports</h2>
+<p>Reports of energy use, financials, intensities, travel, etc. at end user level</p>
+<p>For example, household energy spending, average travel and costs</p>
+<p>MACC Curve like in EDF report, MACC 2.0</p>
 </section>
-<section id="for-example-household-energy-spending-average-travel-and-costsmacc-curve" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="for-example-household-energy-spending-average-travel-and-costsmacc-curve"><span class="header-section-number">8.3</span> For example, household energy spending, average travel and costsMACC Curve</h2>
-<p><mark>TODO: EDF report, MACC 2.0</mark></p>
-</section>
-<section id="kaya-decomposition" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="kaya-decomposition"><span class="header-section-number">8.4</span> Kaya Decomposition</h2>
-<p><mark>TODO: Decomposition of results (to also use in policy attribution)</mark></p>
+<section id="lmdi-decomposition" class="level2" data-number="21.3">
+<h2 data-number="21.3" class="anchored" data-anchor-id="lmdi-decomposition"><span class="header-section-number">21.3</span> LMDI Decomposition</h2>
+<p>Can this be done appropriately at the sector level or only at region/national?</p>
+<p>Decomposition of results (to also use in policy attribution)</p>
 <p>Include automatic waterfall chart?</p>
 <p>Factors:</p>
 <ul>
@@ -341,9 +645,9 @@ ul.task-list li input[type="checkbox"] {
 <li><p>GHGnet / GHGtot (CCS?)</p></li>
 </ul>
 </section>
-<section id="attributing-emissions-reductions-to-policies" class="level2" data-number="8.5">
-<h2 data-number="8.5" class="anchored" data-anchor-id="attributing-emissions-reductions-to-policies"><span class="header-section-number">8.5</span> Attributing emissions reductions to policies</h2>
-<p><mark>TODO: Shapley values using SHAP, LIME, or QII</mark></p>
+<section id="attributing-emissions-reductions-to-policies" class="level2" data-number="21.4">
+<h2 data-number="21.4" class="anchored" data-anchor-id="attributing-emissions-reductions-to-policies"><span class="header-section-number">21.4</span> Attributing emissions reductions to policies</h2>
+<p>Shapley values using SHAP?</p>
 
 
 </section>
@@ -368,9 +672,95 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 </script>
+<style>
+
+/* When a back-link is clicked we scroll the target into view, which
+
+   can land it under the cursor and trigger Quarto's tippy hover
+
+   popover. With `interactive: true` the popover sticks open because
+
+   the cursor is on the trigger. Visual suppression below is paired
+
+   with logical suppression in JS (disable every tippy instance while
+
+   the class is on). We deliberately do NOT use `pointer-events: none`
+
+   on triggers: doing so freezes tippy in a stuck-hover state, since
+
+   the mouseleave it expects never fires.   */
+
+body.suppress-tippy-popovers .tippy-box,
+
+body.suppress-tippy-popovers [data-tippy-root] {
+
+  display: none !important;
+
+}
+
+</style>
+
 <script>
 
 (function () {
+
+  // Quarto book mode picks one chapter as the "primary" references
+
+  // location, hides every other chapter's #refs div via inline
+
+  // display:none, and rewrites every cross-chapter citation link to
+
+  // point at that primary chapter. With per-chapter bibliographies
+
+  // (declared in each chapter's YAML) each chapter has its own ref
+
+  // entries, so the centralization is wrong: the hidden div is the
+
+  // one with the entries you actually need, and rewritten hrefs point
+
+  // at refs that don't exist on the destination page. Undo both
+
+  // pieces of the post-processing before adding the backlink arrows.
+
+  function unhideLocalRefs() {
+
+    document.querySelectorAll('#refs').forEach(function (refs) {
+
+      if (refs.style && refs.style.display === 'none') {
+
+        refs.style.removeProperty('display');
+
+      }
+
+    });
+
+  }
+
+
+
+  function rewriteCrossChapterCites() {
+
+    document.querySelectorAll('a[href*=".html#ref-"]').forEach(function (a) {
+
+      const href = a.getAttribute('href') || '';
+
+      const idx = href.lastIndexOf('#ref-');
+
+      if (idx === -1) return;
+
+      const hash = href.slice(idx);                          // "#ref-iea-fop"
+
+      if (document.getElementById(hash.slice(1))) {
+
+        a.setAttribute('href', hash);
+
+      }
+
+    });
+
+  }
+
+
 
   function addBacklinks() {
 
@@ -414,27 +804,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         a.textContent = '\u21A9\uFE0E';
 
-        // Scroll manually so the citation isn't focused; focusing it would
+        // Click is handled by the document-level capture delegate
 
-        // trigger Quarto's Tippy.js citation popover and keep it stuck open.
+        // (see bindCaptureClickHandler), which intercepts every
 
-        a.addEventListener('click', function (e) {
-
-          e.preventDefault();
-
-          cite.scrollIntoView({ behavior: 'auto', block: 'center' }); // could use 'smooth' scroll
-
-          history.replaceState(null, '', '#' + cite.id);
-
-          // Drop focus from the back-link itself so nothing else is focused.
-
-          if (document.activeElement && document.activeElement.blur) {
-
-            document.activeElement.blur();
-
-          }
-
-        });
+        // in-page scroll back-link uniformly.
 
         back.appendChild(a);
 
@@ -452,15 +826,343 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+  // A MutationObserver-based popover killer. While suppression is
+
+  // active, any [data-tippy-root] or .tippy-box element inserted into
+
+  // the DOM is immediately removed. This is independent of tippy's
+
+  // own API (no reliance on _tippy / disable / hideAll), so it works
+
+  // even if tippy stores its instances somewhere other than where
+
+  // we'd expect.
+
+  let popoverObserver = null;
+
+  function ensureObserver() {
+
+    if (popoverObserver) return;
+
+    popoverObserver = new MutationObserver(function (mutations) {
+
+      if (!document.body.classList.contains('suppress-tippy-popovers')) return;
+
+      mutations.forEach(function (m) {
+
+        m.addedNodes.forEach(function (n) {
+
+          if (n.nodeType !== 1) return;
+
+          if (n.hasAttribute && (n.hasAttribute('data-tippy-root') ||
+
+              (n.classList && n.classList.contains('tippy-box')))) {
+
+            n.remove();
+
+          }
+
+        });
+
+      });
+
+    });
+
+    popoverObserver.observe(document.body, { childList: true, subtree: true });
+
+  }
+
+
+
+  function suppressPopovers() {
+
+    ensureObserver();
+
+    document.body.classList.add('suppress-tippy-popovers');
+
+    document.querySelectorAll('[data-tippy-root]').forEach(function (root) {
+
+      root.remove();
+
+    });
+
+    if (window.tippy && typeof window.tippy.hideAll === 'function') {
+
+      try { window.tippy.hideAll(); } catch (_) {}
+
+    }
+
+    // Best-effort: walk every plausibly-tippy-bound element and call
+
+    // hide()/disable() if tippy exposes its instance the standard way.
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (!t) return;
+
+      try { t.hide(); } catch (_) {}
+
+      if (typeof t.disable === 'function') t.disable();
+
+    });
+
+  }
+
+
+
+  function releasePopovers() {
+
+    document.body.classList.remove('suppress-tippy-popovers');
+
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+
+      const t = el._tippy;
+
+      if (t && typeof t.enable === 'function') t.enable();
+
+    });
+
+  }
+
+
+
+  // Compute the window scrollY that puts `el` at viewport center.
+
+  // Doing this with explicit math (rather than scrollIntoView) avoids
+
+  // any interference from scrollable ancestors or browser quirks.
+
+  function centerWindowOn(el) {
+
+    try {
+
+      const rect = el.getBoundingClientRect();
+
+      const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+      const target = Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+      window.scrollTo({ top: target, behavior: 'auto' });
+
+    } catch (_) {
+
+      try { el.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (_) {}
+
+    }
+
+  }
+
+
+
+  // Compute the absolute window-Y that puts `el` at viewport center.
+
+  function targetScrollY(el) {
+
+    const rect = el.getBoundingClientRect();
+
+    const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+
+    return Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+
+  }
+
+
+
+  // Scroll-lock state. While `lockTarget` is non-null and we're before
+
+  // `lockUntil`, every scroll event yanks the page back to centered
+
+  // on lockTarget. `selfScroll` breaks the recursion (our own scrollTo
+
+  // would otherwise re-trigger the listener).
+
+  let lockTarget = null;
+
+  let lockUntil = 0;
+
+  let selfScroll = false;
+
+  function onScrollLock() {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    if (selfScroll) return;
+
+    const want = targetScrollY(lockTarget);
+
+    const got = window.pageYOffset || window.scrollY || 0;
+
+    if (Math.abs(got - want) > 2) {
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, want); } catch (_) {}
+
+      // Reset flag after the resulting scroll event has fired.
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+    }
+
+  }
+
+  window.addEventListener('scroll', onScrollLock, { passive: true, capture: true });
+
+
+
+  // Quarto's quarto-nav.js registers a `hashchange` listener that
+
+  // calls `window.scrollTo(0, pageYOffset - headerOffset())` -- it
+
+  // re-scrolls to the new hash, accounting for the fixed header.
+
+  // That's what was overriding our scroll. By registering our own
+
+  // hashchange listener (which runs after Quarto's because Quarto's
+
+  // is registered first), we re-center on the locked target after
+
+  // quarto-nav has done its scroll.
+
+  window.addEventListener('hashchange', function () {
+
+    if (!lockTarget || Date.now() >= lockUntil) return;
+
+    selfScroll = true;
+
+    try { window.scrollTo(0, targetScrollY(lockTarget)); } catch (_) {}
+
+    setTimeout(function () { selfScroll = false; }, 0);
+
+  }, false);
+
+
+
+  // Single capture-phase delegate for every in-page scroll back-link.
+
+  // Whatever is scrolling the marker to viewport top (browser
+
+  // hash-jump, focus auto-scroll, etc.), the scroll-event lock
+
+  // immediately reverts any drift back to our centered position. URL
+
+  // hash is intentionally NOT updated -- setting it has been observed
+
+  // to trigger a competing scroll on some browsers.
+
+  function bindCaptureClickHandler() {
+
+    if (document.documentElement.dataset.scrollBacklinkHandler) return;
+
+    document.documentElement.dataset.scrollBacklinkHandler = '1';
+
+    document.addEventListener('click', function (e) {
+
+      let link = null;
+
+      try {
+
+        const t = e.target && (e.target.nodeType === 3 ? e.target.parentElement : e.target);
+
+        link = t && t.closest && t.closest('a.footnote-back, .csl-backlinks > a');
+
+      } catch (_) {}
+
+      if (!link) return;
+
+      // Quarto-nav.js rewrites internal hrefs from "#anchor" to the
+
+      // absolute URL ("http://.../page.html#anchor"). Extract the hash
+
+      // from anywhere in the href so we work with either form.
+
+      const href = link.getAttribute('href') || '';
+
+      const hashIdx = href.lastIndexOf('#');
+
+      const hash = hashIdx === -1 ? '' : href.substring(hashIdx);
+
+      const target = hash ? document.querySelector(hash) : null;
+
+      if (!target) return;
+
+      e.preventDefault();
+
+      e.stopPropagation();
+
+
+
+      try { suppressPopovers(); } catch (_) {}
+
+      try {
+
+        if (document.activeElement && document.activeElement.blur) {
+
+          document.activeElement.blur();
+
+        }
+
+      } catch (_) {}
+
+
+
+      // Engage the scroll-event lock for 600 ms. Any scroll attempt
+
+      // during that window is reverted to centered-on-target by the
+
+      // onScrollLock listener.
+
+      lockTarget = target;
+
+      lockUntil = Date.now() + 600;
+
+      selfScroll = true;
+
+      try { window.scrollTo(0, targetScrollY(target)); } catch (_) {}
+
+      setTimeout(function () { selfScroll = false; }, 0);
+
+
+
+      setTimeout(function () {
+
+        lockTarget = null;
+
+        releasePopovers();
+
+      }, 800);
+
+    }, true);  // capture phase
+
+  }
+
+
+
+  function applyAll() {
+
+    unhideLocalRefs();
+
+    rewriteCrossChapterCites();
+
+    addBacklinks();
+
+    bindCaptureClickHandler();
+
+  }
+
+
+
   function start() {
 
     // Run once after Quarto finishes its own link rewriting
 
-    setTimeout(addBacklinks, 0);
+    setTimeout(applyAll, 0);
 
     // And again on full load to be safe
 
-    window.addEventListener('load', addBacklinks);
+    window.addEventListener('load', applyAll);
 
   }
 
@@ -481,6 +1183,19 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
+    // Ensure there is a toggle, if there isn't float one in the top right
+    if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+      const a = window.document.createElement('a');
+      a.classList.add('top-right');
+      a.classList.add('quarto-color-scheme-toggle');
+      a.href = "";
+      a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+      const i = window.document.createElement("i");
+      i.classList.add('bi');
+      a.appendChild(i);
+      window.document.body.appendChild(a);
+    }
+    setColorSchemeToggle(hasAlternateSentinel())
     const icon = "";
     const anchorJS = new window.AnchorJS();
     anchorJS.options = {
@@ -886,11 +1601,14 @@ document.addEventListener('DOMContentLoaded', () => {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./policies.html" class="pagination-link" aria-label="Policy Costing &amp; Outputs">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span>
+      <a href="./building_tree.html" class="pagination-link" aria-label="Building the Model Tree">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./post_processing.html" class="pagination-link" aria-label="Post-Processing and Reporting">
+        <span class="nav-page-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Post-Processing and Reporting</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>19&nbsp; Policy Costing &amp; Outputs – CIMS</title>
+<title>5&nbsp; Energy Supply and Demand – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -33,8 +33,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./building_tree.html" rel="next">
-<link href="./getting_started.html" rel="prev">
+<link href="./demand_feedbacks.html" rel="next">
+<link href="./technologies.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -80,6 +80,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -255,7 +284,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./energy_supply_demand.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -336,7 +365,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./energy_supply_demand.html" class="sidebar-item-text sidebar-link">
+  <a href="./energy_supply_demand.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span></a>
   </div>
 </li>
@@ -453,7 +482,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./policies.html" class="sidebar-item-text sidebar-link active">
+  <a href="./policies.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></span></a>
   </div>
 </li>
@@ -533,9 +562,12 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#policy-costing-methods-associated-with-istum-and-early-cims" id="toc-policy-costing-methods-associated-with-istum-and-early-cims" class="nav-link active" data-scroll-target="#policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</a></li>
-  <li><a href="#policy-costs-associated-with-changes-in-demand" id="toc-policy-costs-associated-with-changes-in-demand" class="nav-link" data-scroll-target="#policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</a></li>
-  <li><a href="#outputs-from-cims" id="toc-outputs-from-cims" class="nav-link" data-scroll-target="#outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</a></li>
+  <li><a href="#energy-pricing" id="toc-energy-pricing" class="nav-link active" data-scroll-target="#energy-pricing"><span class="header-section-number">5.1</span> Energy Pricing</a>
+  <ul class="collapse">
+  <li><a href="#primary-energy" id="toc-primary-energy" class="nav-link" data-scroll-target="#primary-energy"><span class="header-section-number">5.1.1</span> Primary Energy</a></li>
+  <li><a href="#secondary-energy" id="toc-secondary-energy" class="nav-link" data-scroll-target="#secondary-energy"><span class="header-section-number">5.1.2</span> Secondary Energy</a></li>
+  <li><a href="#carbon-pricing" id="toc-carbon-pricing" class="nav-link" data-scroll-target="#carbon-pricing"><span class="header-section-number">5.1.3</span> Carbon pricing</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -543,9 +575,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./setup.html">Running the Model</a></li><li class="breadcrumb-item"><a href="./policies.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./energy_supply_demand.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Policy Costing &amp; Outputs</span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></h1>
 </div>
 
 
@@ -562,137 +594,126 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="policy-costing-methods-associated-with-istum-and-early-cims" class="level3" data-number="19.0.1">
-<h3 data-number="19.0.1" class="anchored" data-anchor-id="policy-costing-methods-associated-with-istum-and-early-cims"><span class="header-section-number">19.0.1</span> Policy costing methods associated with ISTUM and early CIMS</h3>
-<p>Issues associated with deriving costs from its outputs guided much of CIMS’ development. The cost methodologies in the following sections are described in brief and outline some of the issues in estimating costs.</p>
-<p>The ISTUM model was initially designed for energy policy analysis, mainly for assessing how fuel consumption and emissions would change with a given energy policy. The emphasis was on marginal costs, not total or absolute expenditures. The first consistent costing concept was the techno-economic cost, or TEC.</p>
-<p><strong>Techno-economic Cost (TEC)</strong></p>
-<p>TEC is the difference in estimated (ex-ante) financial expenditure on capital, labour, and energy between the Business-as-Usual and Policy cases. It does not usually (unless otherwise specified) contain carbon taxes as these are considered a transfer internal to society. It is possible to get negative TEC costs, or benefits, especially in transportation where increased use of transit and walking and cycling reduces financial costs, implying that some actions induced by policy may be profitable. There are significant complications as well – do those who switch to transit and walking and cycling continue to own and pay for cars? This reflects the challenging question about how vehicle acquisition will be affected by policies to reduce vehicle use. TEC for all consuming sectors are reported with and without electricity price increases, which are sub-regional transfers that balance out to zero at the regional level once the financial effects on electricity producers’ revenues are included.</p>
-<p>The ISTUM sub-models were integrated under the energy demand and price feedback system in the mid-1999 to 2000 period, thus creating the first version of CIMS. During this period, the model was used for a series of large GHG abatement analyses for Canada. The thrust of these analyses was to integrate and assess a series of emissions reduction actions proposed by panels of interested parties, the Issue Tables of Canada’s Climate Change National Assessment Process. The most effective actions were determined by minimizing their welfare costs, as opposed to their pure financial costs. This led to the development of the Perceived Private Cost methodology (Bataille et al.&nbsp;2002, Laurin et al.&nbsp;2003, MKJA/EMRG 2000).</p>
-<p><strong>Perceived Private Costs (PPC)</strong></p>
-<p>PPC are calculated as the GHG tax multiplied by the marginal amount of GHG reductions that occurred at each GHG tax level. The area under the resulting GHG abatement cost curve represents the perceived cost of the actions by the GHG charge. The PPC methodology estimates welfare losses that represent in part the unwillingness of all consumers to switch to technologies that reduce emissions. This fostered development of the Expected Resource Cost methodology, which attempts to more realistically depict the costs and risks associated with a given GHG reduction policy.</p>
-<p><strong>Expected Resource Costs (ERC)</strong></p>
-<p>ERC is PPC that has been adjusted for risk, option value, and general inefficiency. It is equal to TEC+(PPC-TEC)*0.75. The difference between TEC and PPC that is allowed as ERC is a “rule-of-thumb” estimate for what percentage of the difference can be considered real equipment failure risk, as opposed to inefficient resistance to price signals. It represents that perceived cost, which could turn into real financial cost. Negative ERC is possible, especially at lower GHG charges, but not likely (Bataille et al.&nbsp;2002, Laurin et al, 2003, MKJA/EMRG, 2000).</p>
-<p>Table 10 summarizes the three early costing methods used for CIMS.</p>
-<p>Table 8. Types of Costs Used in Early Incarnation of CIMS</p>
-<p><strong>Distribution of Costs Under Electricity and Refining Demand Changes</strong></p>
-<p>Electricity demand changes in all sectors in response to increased electricity prices, leading to an issue of how to distribute GHG reductions as well as TEC and PPC charges. GHG reductions from reduced electricity consumption were accorded to the direct consumer (based on the policy GHG intensity of electricity), who faced increased electricity prices, while electricity producers were accorded the remaining GHG intensity reductions, the TEC costs generated by their intensity reductions plus their changes in revenue. These net transfers, while positive at the sub-regional level, disappear at the regional level.</p>
-<p><strong>The Relationship Between TEC, ERC, Option Value and Welfare Costs</strong></p>
-<p>The cost difference between ERC and TEC estimated during early analyses was described as risk, or “failure risk”, which is related to the concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck 1994 ). Option value is the expected gain from delaying or avoiding an investment while waiting for new information that might lead to a better decision. Thus, ERC are anticipated ex-post costs, and it is calculated as the sum of expected financial costs (TEC), lost option value, consumers’ surplus losses internal to residential and transportation (internal shifts away from business-as-usual (BAU) preferences within the sub-models) and finally, when demand feedbacks are included, consumers’ surplus losses related to demand adjustments for domestic consumers of domestic goods. It may therefore be considered a measure of personal welfare costs, not including negative environmental externalities (e.g.&nbsp;poorer quality air) or positive public goods (e.g.&nbsp;education, defence or public parks).</p>
+<section id="energy-pricing" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="energy-pricing"><span class="header-section-number">5.1</span> Energy Pricing</h2>
+<section id="primary-energy" class="level3" data-number="5.1.1">
+<h3 data-number="5.1.1" class="anchored" data-anchor-id="primary-energy"><span class="header-section-number">5.1.1</span> Primary Energy</h3>
+<section id="fixed-price" class="level4" data-number="5.1.1.1">
+<h4 data-number="5.1.1.1" class="anchored" data-anchor-id="fixed-price"><span class="header-section-number">5.1.1.1</span> Fixed Price</h4>
 </section>
-<section id="policy-costs-associated-with-changes-in-demand" class="level3" data-number="19.0.2">
-<h3 data-number="19.0.2" class="anchored" data-anchor-id="policy-costs-associated-with-changes-in-demand"><span class="header-section-number">19.0.2</span> Policy Costs Associated With Changes in Demand</h3>
-<p>The inclusion of final demand feedbacks required the addition of five new policy-costing concepts. In all these concepts, financial output is defined as a sector’s sales revenue, which includes both value-added and purchased inputs. Value-added is net profits plus the cost of all expenditures on land (unprocessed “gifts of nature”), labour and capital (Lipsey et al.&nbsp;1988).</p>
+<section id="cost-curve-annual" class="level4" data-number="5.1.1.2">
+<h4 data-number="5.1.1.2" class="anchored" data-anchor-id="cost-curve-annual"><span class="header-section-number">5.1.1.2</span> Cost Curve – Annual</h4>
+</section>
+<section id="cost-curve-cumulative" class="level4" data-number="5.1.1.3">
+<h4 data-number="5.1.1.3" class="anchored" data-anchor-id="cost-curve-cumulative"><span class="header-section-number">5.1.1.3</span> Cost Curve – Cumulative</h4>
+</section>
+</section>
+<section id="secondary-energy" class="level3" data-number="5.1.2">
+<h3 data-number="5.1.2" class="anchored" data-anchor-id="secondary-energy"><span class="header-section-number">5.1.2</span> Secondary Energy</h3>
+</section>
+<section id="carbon-pricing" class="level3" data-number="5.1.3">
+<h3 data-number="5.1.3" class="anchored" data-anchor-id="carbon-pricing"><span class="header-section-number">5.1.3</span> Carbon pricing</h3>
+<p><mark>TODO: Add section on biomass supply modelling</mark></p>
+<p>In CIMS’s integrated energy supply and demand system, the demands of final demand sectors directly drive the activities of electricity production, refining, coal mining and natural gas and crude oil extraction. Inter-regional transfers as well as net exports are added, as demand for Canada’s energy supply sector includes US demand. The importance of domestic demand varies by energy commodity. Most electricity is produced for Canadian consumers, more than half of natural gas produced is shipped to the US, and there is a heavy trade in crude oil and refined petroleum products. Half our domestic crude oil production is shipped to the US, while we import from both OPEC and non-OPEC suppliers.</p>
+<p><mark><strong>Need to revise this description to reflect the current setup, but should preserve a more complete version as a comment for later upgrades. Adjust the descriptions below to detail the fully endogenous options and note that many can be switched to exogenous function.</strong></mark></p>
+<p>Each of the energy markets in CIMS has the option of fixed or dynamic pricing, and they are described below:</p>
 <ul>
-<li>The cost of production effect on sector financial output, which is the increased financial expenditures required to adapt to the policy, or TEC.</li>
-<li>The demand effect on sector financial output, which is the reduction in production expenditures associated with lower output.</li>
-<li>The absolute change in sector financial output, which is the sum of the cost of production and demand effects.</li>
-<li>Consumers’ surplus losses associated with demand changes in transportation and residences.</li>
-<li>Changes in value-added associated with cost of production and demand changes in manufacturing.</li>
+<li><p>Regional electricity markets are included with endogenous internal pricing based on the cost of production. The amount of electricity produced is the sum of endogenous domestic demand and net extra-regional exports, which may be adjusted using an export own-price elasticity.</p></li>
+<li><p>One national natural gas market is included, with dynamic pricing using a supply curve based on a combination of Canadian and US market feedbacks. The amount of gas produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export price elasticity.</p></li>
+<li><p>One national crude oil market, based on an exogenously specified world price of crude oil. The amount of crude oil produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export elasticity. The world crude oil price is assumed to be unresponsive to Canadian demand.</p></li>
+<li><p>Petroleum refining regions divide their production amongst demand regions and net exports. All can use endogenous internal pricing based on the cost of production. The amount of refined petroleum products produced is the sum of domestic regional demand and net extra-regional exports.</p></li>
+<li><p>Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e.&nbsp;BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve – for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan and the Atlantic provinces all buy their coal at a fixed market price.</p></li>
+<li><p><strong>-&gt; Revise coal description to separate thermal coal (exogenous) and metallurgical (endogenous).</strong></p></li>
 </ul>
-<section id="the-cost-of-production-and-demand-effects-on-sector-financial-output" class="level4" data-number="19.0.2.1">
-<h4 data-number="19.0.2.1" class="anchored" data-anchor-id="the-cost-of-production-and-demand-effects-on-sector-financial-output"><span class="header-section-number">19.0.2.1</span> The Cost of Production and Demand Effects on Sector Financial Output</h4>
-<p>The cost of production effect captures the internal capital investment and fuel choice adjustments of the model, or the TEC costs endogenous to the model. It is the anticipated financial cost of technical adjustment to the policy. The demand effect captures the effects of the demand feedbacks system, or reduction in output, as measured by expenditure compared to the business-as-usual case (BAU). The third is the sum of the first two. These three concepts capture a portion of the anticipated financial cost of a policy. They do not include the cost of buying emission permits from foreign sources or the cost of imports that replace domestically produced goods for domestic consumption. The fourth item, consumers’ surplus losses, represents lost consumer welfare associated with reduced residential expenditure and mobility, while the fifth represents the lost value-added to manufacturing firms due to policy.</p>
-<p>Most GHG policies will increase the cost of production for a given service, increase its price, and thus reduce its demand. This increase in the cost of production will also include the value of carbon charges that are imposed on GHG emissions. These charges are transfers and as such must be subtracted from regional and national costs. Additionally, if demand is inelastic (unresponsive to price) for a given service, the dollar value of the sector, as valued by cost of production, may increase faster than demand reductions, leading to an overall increase in sector value to the economy. If demand is elastic, the opposite may occur.</p>
-<p>The standard outputs from the sub-models include BAU and policy values for new physical capital investment associated with consuming energy, labour associated with the latter capital, and energy costs, as well as changes in physical output. It also produces BAU and policy costs per unit output, including GHG charges. These GHG charges are isolated by calculating policy emissions multiplied by the GHG price. When the micro and macro economic dynamics are turned on, part of the difference between the BAU and policy cases may be physical output changes while the rest will be cost of production differences due to internal stock adjustments. CIMS only captures a portion of the price that the consumer sees; both the BAU and Policy cost per unit are adjusted accordingly. The cost of production and demand effects on sector financial output (SFO) (Equations 23 &amp; 24), and the absolute change in financial expenditure are calculated as follows (Equation 25).</p>
-<p>(Equation 28)</p>
-<p>(Equation 29)</p>
-<p>(Equation 30)</p>
-<p>Where:</p>
-<p>QGHG = GHG emissions (Tonnes CO2e)</p>
-<p>PGHG = GHG price ($/Tonne CO2e)</p>
-<p>Qpolicy = Policy physical output of good or service X</p>
-<p>QBAU = BAU physical output of good or service X</p>
-<p>Ppolicy = Policy cost per unit of good or service X</p>
-<p>PBAU = BAU cost per unit of good or service X</p>
-<p>The absolute change in sector financial output could be positive or negative depending on the elasticity of demand – if the cost of production rises faster than demand falls, then the absolute change in financial output could be positive. This result is common with less aggressive policies. The demand effect on sector financial output will always be negative for normal goods, whose demand fall as their price rises. The cost of production effect on sector financial output is usually positive, except for the case where there are decreasing returns to scale.</p>
-</section>
-<section id="consumers-surplus-adjustments-in-residential-and-transportation" class="level4" data-number="19.0.2.2">
-<h4 data-number="19.0.2.2" class="anchored" data-anchor-id="consumers-surplus-adjustments-in-residential-and-transportation"><span class="header-section-number">19.0.2.2</span> Consumers’ Surplus Adjustments in Residential and Transportation</h4>
-<p>Reductions in residential activity and mobility reflect consumers’ surplus losses. Consumers’ surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (<a href="#fig-consumer_surplus" class="quarto-xref">Figure&nbsp;<span>19.1</span></a>).</p>
-<div id="fig-consumer_surplus" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<p>CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (<a href="#fig-final_intermediate_primary_flow" class="quarto-xref">Figure&nbsp;<span>5.1</span></a>). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.</p>
+<div id="fig-final_intermediate_primary_flow" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/consumer_surplus.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;19.1: Consumer Surplus"><img src="images/consumer_surplus.png" class="img-fluid figure-img" style="width:70.0%"></a>
+<div aria-describedby="fig-final_intermediate_primary_flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/final_intermediate_primary_flow.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;5.1: final_intermediate_primary_flow"><img src="images/final_intermediate_primary_flow.png" class="img-fluid figure-img"></a>
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-consumer_surplus-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;19.1: Consumer Surplus
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-final_intermediate_primary_flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5.1: final_intermediate_primary_flow
 </figcaption>
 </figure>
 </div>
-<p>The consumers’ surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers’ surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.</p>
-<div id="tbl-output_adjustments" class="quarto-float quarto-figure quarto-figure-center anchored">
+<p>The electricity demands of petroleum refining, the refined petroleum product demands of the primary energy supply models, and the interdependencies among the primary energy supply models create feedback loops within the system. Because CIMS operates as a simulation model rather than a computable general equilibrium model, these feedback loops cannot be resolved within a single iteration of the demand–supply algorithm. To address this limitation, CIMS is run iteratively until lifecycle costs throughout the model converge below a specified threshold criterion (typically less than a 5% difference between iterations). Additional iterations may also be performed to ensure that the effects of the feedback loops have stabilized.</p>
+<p>Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (<a href="#tbl-export_price_elas" class="quarto-xref">Table&nbsp;<span>5.1</span></a>).</p>
+<p><mark><strong>change this table to GTAP? talk to Thomas</strong></mark></p>
+<div id="tbl-export_price_elas" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
-<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;19.1: Financial, welfare cost and value-added adjustments induced by changes in output
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-export_price_elas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;5.1: Price Elasticities for Energy Exports, Wirjanto (1999)
 </figcaption>
-<div aria-describedby="tbl-output_adjustments-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div aria-describedby="tbl-export_price_elas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;"></th>
-<th style="text-align: left;">Output adjustment to financial costs</th>
-<th style="text-align: left;">Output adjustment to welfare costs / value-added</th>
+<th style="text-align: left;">Energy Commodity</th>
+<th style="text-align: center;">Long-Run Own-price Elasticity for Export Demand</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Personal Transportation</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using transportation <em>pkt</em> elasticity</td>
+<td style="text-align: left;">Electricity</td>
+<td style="text-align: center;">-0.54</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Industry (&amp; Freight Transportation)</strong></td>
-<td style="text-align: left;">Demand effect on sector financial output, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>value-added</strong> between BAU and Policy</td>
+<td style="text-align: left;">Natural gas</td>
+<td style="text-align: center;">-0.67</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Residential</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">Difference in <strong>consumers’ surplus</strong> under BAU and policy calculated using combination of savings/consumption and leisure/work elasticities</td>
+<td style="text-align: left;">Coal</td>
+<td style="text-align: center;">-0.51</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Commercial</strong></td>
-<td style="text-align: left;">Demand effect on sector financial value, as measured by expenditure</td>
-<td style="text-align: left;">None</td>
+<td style="text-align: left;">Gasoline and fuel oil</td>
+<td style="text-align: center;">-0.92</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Other petroleum products</td>
+<td style="text-align: center;">-0.82</td>
 </tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.</p>
-</section>
-</section>
-<section id="outputs-from-cims" class="level3" data-number="19.0.3">
-<h3 data-number="19.0.3" class="anchored" data-anchor-id="outputs-from-cims"><span class="header-section-number">19.0.3</span> Outputs from CIMS</h3>
-<p>Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS’ micro and macro economic systems of dynamics (also referred to as feedback systems).</p>
-<p>Table 10. Sub-model Outputs Existing Prior to This Research</p>
-<p>Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).</p>
-<p>Fuel use and emissions by sector by year by technology.</p>
-<p>Service and auxiliary use by sector by year by technology.</p>
-<p>Total stock use by sector by year by technology.</p>
-<p>New stock use by sector by year by technology.</p>
-<p>Retrofits by sector by year by technology.</p>
-<p>Technology cost changes due to declining capital cost function</p>
-<p>Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research</p>
-<p>Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g.&nbsp;7.5 or 10%)</p>
-<p>BAU and Policy final demand for each sector’s product or service by year.</p>
-<p>BAU and Policy disaggregated energy demand for all sectors by year.</p>
-<p>Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.</p>
-<p>Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.</p>
-<p>Changes in net exports of key energy commodities from BAU to Policy</p>
-<p>Changes in energy prices by year</p>
-<p>Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing</p>
-<p>Changes consumers’ surplus for personal transportation and residences</p>
-<p>Changes in value-added for industry and manufacturing</p>
+<p>These elasticities follow the Armington specification, whereby the demand for an imported good rises as its price falls relative to the price of its domestic substitute. At all times, consumers buy at least some of the domestic good and some of the imported good, even when the price difference is large (Iorwerth et al.&nbsp;2000, Wirjanto 1999). See Bataille (2005) for further elaboration. The Armington specification assumes that goods produced by different countries are not perfect substitutes. The energy trade elasticities are represented in <a href="#eq-armington_energy" class="quarto-xref">Equation&nbsp;<span>5.1</span></a>, which applies the elasticity of the ratio of import volumes to domestic production in relation to a change in the relative price of imports to domestic prices.</p>
+<p><span id="eq-armington_energy"><span class="math display">\[
+\text{(Equation 25 — placeholder for the energy trade Armington elasticity)}
+\tag{5.1}\]</span></span></p>
+<div class="eq-vars">
+<dl>
+<dt><span class="math inline">\(FLCC_t\)</span></dt>
+<dd>
+current financial lifecycle cost for producing the energy commodity
+</dd>
+<dt><span class="math inline">\(FLCC_{t-1}\)</span></dt>
+<dd>
+previous financial lifecycle cost for producing the energy commodity
+</dd>
+<dt><span class="math inline">\(COP\)</span></dt>
+<dd>
+cost of production covered by the energy-producing sub-model, as a percentage of total cost
+</dd>
+<dt><span class="math inline">\(\sigma\)</span></dt>
+<dd>
+price demand elasticity for the energy commodity
+</dd>
+<dt><span class="math inline">\(IT\)</span></dt>
+<dd>
+initial trade volume of the energy commodity
+</dd>
+<dt><span class="math inline">\(Adj_{prod}\)</span></dt>
+<dd>
+additive adjustment to production of the energy commodity
+</dd>
+</dl>
+</div>
+<p>Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US.</p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1644,13 +1665,13 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./getting_started.html" class="pagination-link" aria-label="Getting started">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Getting started</span></span>
+      <a href="./technologies.html" class="pagination-link" aria-label="Technology Competition">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./building_tree.html" class="pagination-link" aria-label="Building the Model Tree">
-        <span class="nav-page-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Building the Model Tree</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./demand_feedbacks.html" class="pagination-link" aria-label="Goods and Services Demand Feedbacks">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Goods and Services Demand Feedbacks</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
