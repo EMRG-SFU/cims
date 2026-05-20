@@ -51,7 +51,7 @@ _project_root = _current_file.parent.parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END, BASE_PATH
+from utils.controls_conversions import load_control_config, DATA_START, PROJECTION_END, BASE_PATH, load_energy_conversions
 from utils.data_fill import trend_backwards, backfill_constant, interpolate_gaps
 from utils.data_extensions import extend_constant, extend_cagr_periods, compute_cagr, load_cagr_assumptions
 from utils.extractors.stats_can import load_resd
@@ -373,23 +373,69 @@ _processed_pl = _processed_pl.with_columns(
     pl.col("Processed").clip(0.0, 1.0)
 )
 
-# Build processed output table (2000–2100)
-_processed_output = (
-    _processed_pl
-    .rename({"Province": "Region"})
-    .with_columns(
-        pl.lit("Processing").alias("Variable"),
-        pl.lit("% of 1000m3").alias("Unit"),
-        pl.col("Processed").alias("Value"),
-    )
-    .with_columns(
-        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
-          .then(pl.lit("CER/Stats Can"))
-          .otherwise(pl.lit("Assumptions"))
-          .alias("Source")
-    )
-    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+# -- 5a-ii. Producer consumption in 1000 m³ -----------------------------------
+#
+#   Gross = Marketable + Producer consumption (direct addition).
+#   RESD reports in TJ; convert to 1000 m³ via natural gas energy content (GJ/m³).
+
+_ng_gj_per_m3 = load_energy_conversions().get("natural gas", 0.0378)  # GJ/m³
+_TJ_TO_1000M3 = 1_000 / _ng_gj_per_m3 / 1_000  # TJ → GJ → m³ → 1000 m³  =  1 / _ng_gj_per_m3
+
+_prod_cons = (
+    pl.DataFrame({"Province": [p for p in _all_provs for _ in _all_years],
+                  "Year":     [y for _ in _all_provs for y in _all_years]})
+    .join(_resd_pivot.select(["Province", "Year", "Producer consumption"]),
+          on=["Province", "Year"], how="left")
 )
+
+# NB matches NS — same proxy as Processed
+_ns_pc = (
+    _prod_cons.filter(pl.col("Province") == "NS")
+    .select(["Year", pl.col("Producer consumption").alias("NS_PC")])
+)
+_prod_cons = (
+    _prod_cons
+    .join(_ns_pc, on="Year", how="left")
+    .with_columns(
+        pl.when(pl.col("Province") == "NB")
+        .then(pl.col("NS_PC"))
+        .otherwise(pl.col("Producer consumption"))
+        .alias("Producer consumption")
+    )
+    .drop("NS_PC")
+    .sort(["Province", "Year"])
+)
+
+def _extend_prod_cons(grp: pl.DataFrame) -> pl.DataFrame:
+    province = grp["Province"][0]
+    s = pd.Series(grp["Producer consumption"].to_list(), index=grp["Year"].to_list(), dtype=float)
+    s = backfill_constant(s, start_year=DATA_START)
+    s = extend_constant(s, end_year=PROJECTION_END)
+    return pl.DataFrame({
+        "Province":             [province] * len(s),
+        "Year":                 [int(y) for y in s.index],
+        "Producer consumption": list(s.values),
+    })
+
+_prod_cons_pl = (
+    _prod_cons
+    .group_by("Province", maintain_order=True)
+    .map_groups(_extend_prod_cons)
+)
+_prod_cons_pl = interpolate_gaps(
+    _prod_cons_pl,
+    group_cols=["Province"],
+    year_col="Year",
+    value_col="Producer consumption",
+)
+
+# Convert TJ → 1000 m³
+_prod_cons_pl = _prod_cons_pl.with_columns(
+    (pl.col("Producer consumption") * _TJ_TO_1000M3).alias("prod_cons_1000m3")
+)
+
+# _processed_output is built after pivot is fully assembled (step 5f),
+# using gross_total / total as the processing ratio.
 
 
 # -- 5b. Map CER region names to province abbreviations -----------------------
@@ -417,19 +463,23 @@ pivot = pivot.with_columns(
 )
 
 
-# -- 5c. Join Processed and compute Gross (Total) Production ------------------
+# -- 5c. Join Processed + Producer consumption and compute Gross Production ----
 #
-#   Marketable Production = CER "Total" (already in pivot as "total")
-#   Total (Gross) Production = Marketable Production / Processed
-#   Processed is already extended to 2100; pivot will be extended in 5e below.
+#   Gross = Marketable (CER) + Producer consumption (RESD, TJ → 1000 m³)
+#   Processed is still joined for the Processing output variable.
 
-_processed_pl_regions = _processed_pl.rename({"Province": "Region"})
+_processed_pl_regions  = _processed_pl.rename({"Province": "Region"})
+_prod_cons_pl_regions  = _prod_cons_pl.rename({"Province": "Region"})
 
 pivot = (
     pivot
     .join(_processed_pl_regions, on=["Region", "Year"], how="left")
+    .join(
+        _prod_cons_pl_regions.select(["Region", "Year", "prod_cons_1000m3"]),
+        on=["Region", "Year"], how="left",
+    )
     .with_columns(
-        (pl.col("total") / pl.col("Processed")).alias("gross_total")
+        (pl.col("total") + pl.col("prod_cons_1000m3").fill_null(0.0)).alias("gross_total")
     )
 )
 
@@ -465,7 +515,7 @@ _anchor = _anchor.with_columns(
         .alias("cagr")
 )
 
-# 2050 values per region for splits and Processed (held flat beyond 2050)
+# 2050 values per region for splits, Processed, and producer consumption
 _vals_2050 = (
     pivot
     .filter(pl.col("Year") == 2050)
@@ -473,22 +523,27 @@ _vals_2050 = (
         "Region",
         "total",
         "Processed",
+        "prod_cons_1000m3",
         "pct_conventional",
         "pct_shale",
         "pct_tight",
         "pct_coalbed_methane",
     ])
-    .rename({"total": "total_2050_val", "Processed": "processed_2050"})
+    .rename({
+        "total":           "total_2050_val",
+        "Processed":       "processed_2050",
+        "prod_cons_1000m3": "prod_cons_2050",
+    })
 )
 
 # Build extension rows for 2051–2100
-# Convert to dicts for fast per-region lookup without pandas roundtrip
 _anchor_map    = {r["Region"]: r for r in _anchor.to_dicts()}
 _vals_2050_map = {r["Region"]: r for r in _vals_2050.to_dicts()}
 
 _extension_rows = []
 for _region, _anc in _anchor_map.items():
-    _base        = _vals_2050_map[_region]["total_2050_val"]  # compounds from CAGR_END (2050)
+    _base        = _vals_2050_map[_region]["total_2050_val"]
+    _prod_cons50 = _vals_2050_map[_region].get("prod_cons_2050") or 0.0
     _processed50 = _vals_2050_map[_region]["processed_2050"]
     _pct_conv    = _vals_2050_map[_region]["pct_conventional"]
     _pct_shale   = _vals_2050_map[_region]["pct_shale"]
@@ -502,7 +557,7 @@ for _region, _anc in _anchor_map.items():
         override = CAGR_OVERRIDES.get(_region),
     )
     for _yr, _total in ext.items():
-        _gross = (_total / _processed50) if (_processed50 and _processed50 > 0) else 0.0
+        _gross = _total + _prod_cons50
         _extension_rows.append({
             "Region":              _region,
             "Year":                _yr,
@@ -517,8 +572,8 @@ for _region, _anc in _anchor_map.items():
 
 _extension_pl = pl.DataFrame(_extension_rows).with_columns(pl.col("Year").cast(pl.Int64))
 
-# Drop helper columns added during the 2050 join before concatenating
-pivot = pivot.drop([c for c in ["Processed"] if c in pivot.columns])
+# Drop helper columns added during the joins before concatenating
+pivot = pivot.drop([c for c in ["Processed", "prod_cons_1000m3"] if c in pivot.columns])
 _extension_pl = _extension_pl.drop("Processed")
 
 pivot = pl.concat([pivot, _extension_pl], how="diagonal").sort(["Region", "Year"])
@@ -540,9 +595,9 @@ _minor_last = {
     ).to_dicts()
 }
 
-_minor_processed = {
-    (r["Province"], r["Year"]): r["Processed"]
-    for r in _processed_pl.filter(
+_minor_prod_cons = {
+    (r["Province"], r["Year"]): r["prod_cons_1000m3"]
+    for r in _prod_cons_pl.filter(
         pl.col("Province").is_in(MINOR_REGIONS) &
         (pl.col("Year") > LAST_MINOR_DATA_YEAR)
     ).to_dicts()
@@ -566,8 +621,8 @@ for _region, _last in _minor_last.items():
             frac   = 1.0 - ((_yr - LAST_MINOR_DATA_YEAR) / _n_phase)
             _total = max(_total_last * frac, 0.0)
 
-        _proc  = _minor_processed.get((_region, _yr))
-        _gross = (_total / _proc) if (_proc and _proc > 0) else 0.0
+        _prod_cons = _minor_prod_cons.get((_region, _yr), 0.0) or 0.0
+        _gross = _total + _prod_cons
 
         _phaseout_rows.append({
             "Region":              _region,
@@ -583,6 +638,29 @@ for _region, _last in _minor_last.items():
 if _phaseout_rows:
     _phaseout_pl = pl.DataFrame(_phaseout_rows).with_columns(pl.col("Year").cast(pl.Int64))
     pivot = pl.concat([pivot, _phaseout_pl], how="diagonal").sort(["Region", "Year"])
+
+
+# -- 5g. Build Processing ratio output ----------------------------------------
+#
+#   Processing = Natural Gas gross total / CER Marketable Production
+#   Computed from the fully assembled pivot so it covers all regions and years.
+#   Rows where total is 0 (phased-out regions post-2030) are excluded.
+
+_processed_output = (
+    pivot
+    .filter((pl.col("gross_total") > 0) & (pl.col("total") > 0))
+    .with_columns(
+        (pl.col("total") / pl.col("gross_total")).alias("Value"),
+        pl.lit("Processing").alias("Variable"),
+        pl.lit("1000m3/1000m3").alias("Unit"),
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+          .then(pl.lit("CER/Stats Can"))
+          .otherwise(pl.lit("Assumptions"))
+          .alias("Source"),
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+    .sort(["Region", "Year"])
+)
 
 
 # -- 5d. LNG exports for BC ---------------------------------------------------
