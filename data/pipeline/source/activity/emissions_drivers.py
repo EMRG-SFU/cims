@@ -71,8 +71,12 @@ ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.c
 CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Emissions Drivers', ASSUMPTIONS_FILE)
 
 # Per-region overrides — one explicit annual rate per period.
-CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
-    ("Alberta", "Waste"): (0.02, 0.01, 0.005),
+CAGR_OVERRIDES: dict[tuple[str, str], tuple[float, ...]] = {
+    ("AB", "Waste"):         (0.01, 0.005, 0.002),
+    ("QC", "Waste"):         (0.01, 0.005,  0.002),
+    ("ON", "Forestry"):      (0.01, 0.005, 0.002),
+    ("BC", "Forestry"):      (0.01, 0.005, 0.002),
+    ("ON", "Construction"):  (0.01, 0.005, 0.002),
 }
 
 
@@ -199,7 +203,8 @@ agri_output = (
             "pct_animal":  "% of tCO2e",
         }).alias("Unit"),
     ])
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .with_columns(pl.lit("NIR").alias("Source"))
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
     .sort(["Region", "Variable", "Year"])
 )
 
@@ -213,8 +218,9 @@ waste_output = (
     .with_columns([
         pl.lit("Waste").alias("Variable"),
         pl.lit("tCO2e").alias("Unit"),
+        pl.lit("NIR").alias("Source"),
     ])
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
     .sort(["Region", "Variable", "Year"])
 )
 
@@ -270,8 +276,9 @@ def _build_simple_output(df: pl.DataFrame, sector: str, variable: str) -> pl.Dat
         .with_columns([
             pl.lit(variable).alias("Variable"),
             pl.lit("tCO2e").alias("Unit"),
+            pl.lit("NIR").alias("Source"),
         ])
-        .select(["Region", "Variable", "Unit", "Year", "Value"])
+        .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
         .sort(["Region", "Variable", "Year"])
     )
 
@@ -331,6 +338,7 @@ for (region, variable, unit), grp_pl in combined.group_by(["Region", "Variable",
         for yr in range(last_year + 1, CAGR_PERIODS[-1][1] + 1):
             future_rows_list.append({
                 "Region": region, "Variable": variable, "Unit": unit,
+                "Source": "Assumptions",
                 "Year": yr, "Value": base_val,
             })
     else:
@@ -341,11 +349,14 @@ for (region, variable, unit), grp_pl in combined.group_by(["Region", "Variable",
             base_val=base_val,
             raw_cagr=raw_cagr,
             periods=CAGR_PERIODS,
-            override=CAGR_OVERRIDES.get(region),
+            override=CAGR_OVERRIDES.get((region, variable)),
         )
         for yr, val in ext.items():
+            if yr <= last_year:
+                continue
             future_rows_list.append({
                 "Region": region, "Variable": variable, "Unit": unit,
+                "Source": "Assumptions",
                 "Year": yr, "Value": val,
             })
 
