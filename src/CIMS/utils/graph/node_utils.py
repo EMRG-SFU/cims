@@ -4,7 +4,7 @@ import copy
 
 from CIMS import cost_curves
 from ..model_description import column_list as COL
-from ..parameter.parse import infer_type, is_year
+from ..parameter.parse import infer_type
 from ..parameter import list as PARAM
 
 
@@ -133,16 +133,12 @@ def _update_year_dict(existing_year_dict, update_data):
 
 
 def _add_all_year_data(graph, current_node_df, current_node):
-    # 6 For the remaining data, group by year
-    years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
-    non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
-    non_year_data = [current_node_df[c] for c in non_years]
+    years = current_node_df["Year"].dropna().unique()
     for year in years:
-        current_year_data = non_year_data + [current_node_df[year]]
+        year_df = current_node_df[current_node_df["Year"] == year].drop(columns=["Year"])
         existing_year_dict = _get_current_year_dict(graph, current_node, year)
-        updated_year_dict = _update_year_dict(existing_year_dict, current_year_data)
+        updated_year_dict = _update_year_dict(existing_year_dict, [year_df[c] for c in year_df.columns])
         graph.nodes[current_node][year] = updated_year_dict
-        # _build_one_year_data(graph, current_year_data, year, current_node)
 
     return graph, current_node_df
 
@@ -175,8 +171,8 @@ def _init_node(graph, current_node_df, current_node):
 
     # 2.1 Add index for use in the results viewer file
     if PARAM.tree_index not in graph.nodes[current_node]:
-        graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
-        graph.nodes[current_node][PARAM.tree_index] = current_node_df.index[0].item() + graph.cur_tree_index[0]
+        graph.max_tree_index[0] = max(graph.max_tree_index[0], int(current_node_df.index[0]))
+        graph.nodes[current_node][PARAM.tree_index] = int(current_node_df.index[0]) + graph.cur_tree_index[0]
 
     return graph, current_node_df
 
@@ -287,31 +283,26 @@ def _add_node_data(graph, current_node, node_dfs):
 
 
 def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech):
-    years = [c for c in current_tech_df.columns if is_year(c)]             # Get Year Columns
-    non_years = [c for c in current_tech_df.columns if not is_year(c)]     # Get Non-Year Columns
-
-    non_year_data = [current_tech_df[c] for c in non_years]
+    years = current_tech_df["Year"].dropna().unique()
     for year in years:
-        year_data_to_update = non_year_data + [current_tech_df[year]]
+        year_df = current_tech_df[current_tech_df["Year"] == year].drop(columns=["Year"])
         existing_year_dict = _get_current_year_dict(graph, node, year, tech=current_tech)
-        updated_year_dict = _update_year_dict(existing_year_dict, year_data_to_update)
+        updated_year_dict = _update_year_dict(existing_year_dict, [year_df[c] for c in year_df.columns])
 
-        # Add technologies key (to the node's data) if needed
-        if PARAM.technologies not in graph.nodes[node][year].keys():
+        # Add technologies key to the node's year dict if needed
+        if PARAM.technologies not in graph.nodes[node][year]:
             graph.nodes[node][year][PARAM.technologies] = {}
 
-        # Add the technology specific data for that year
         graph.nodes[node][year][PARAM.technologies][current_tech] = updated_year_dict
 
-        # Add index for use in the results viewer file
         if PARAM.tree_index not in graph.nodes[node][year][PARAM.technologies][current_tech]:
-            graph.nodes[node][year][PARAM.technologies][current_tech][PARAM.tree_index] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
+            graph.nodes[node][year][PARAM.technologies][current_tech][PARAM.tree_index] = int(current_tech_df.index[0]) + graph.cur_tree_index[0]
 
     return graph, current_tech_df
 
 
 def _init_tech(graph, current_tech_df):
-    graph.max_tree_index[0] = max(graph.max_tree_index[0], current_tech_df.index[0].item())
+    graph.max_tree_index[0] = max(graph.max_tree_index[0], int(current_tech_df.index[0]))
     current_tech_df = current_tech_df[current_tech_df[COL.parameter] != COL.technology.lower()]
     return graph, current_tech_df
 
