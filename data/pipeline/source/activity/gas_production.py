@@ -74,6 +74,15 @@ CAGR_START, CAGR_END, CAGR_PERIODS = load_cagr_assumptions('Natural Gas', ASSUMP
 CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
 }
 
+# Minor region configuration.
+# AB, BC, SK use the latest CER file with full CAGR extension.
+# All other regions use EF2023 historical data through 2023, then phase to 0 by 2030.
+MAJOR_REGIONS_CER       = ["Alberta", "British Columbia", "Saskatchewan"]
+NATURAL_GAS_EF2023_FILE = CER_DIR / 'natural-gas-production-2023.csv'
+LAST_MINOR_DATA_YEAR    = 2023
+PHASE_OUT_YEAR          = 2030
+MINOR_REGIONS           = ["NB", "NS", "NT", "ON", "YT"]  # CIMS codes
+
 
 # Unit conversion: Million m3/day -> 1000 m3/year
 CONVERSION = 1_000 * 365
@@ -83,22 +92,38 @@ CONVERSION = 1_000 * 365
 
 raw = pl.read_csv(NATURAL_GAS_PRODUCTION_FILE)
 
-df = (
+# Major regions (AB, BC, SK): full 2026 CER file, 2000–2050, CAGR to 2100
+df_major = (
     raw
     .filter(
         (pl.col("Scenario") == SCENARIO) &
-        (pl.col("Unit")     == "Million Cubic Metres per day")
+        (pl.col("Unit")     == "Million Cubic Metres per day") &
+        pl.col("Region").is_in(MAJOR_REGIONS_CER)
     )
     .select(["Region", "Variable", "Year", "Value"])
-    .with_columns(
-        (pl.col("Value") * CONVERSION).alias("Value_1000m3")
-    )
+    .with_columns((pl.col("Value") * CONVERSION).alias("Value_1000m3"))
     .drop("Value")
 )
 
-df = df.filter(
-    ~pl.col("Region").is_in(["Canada", "Western Canadian Sedimentary Basin"])
+# Minor regions (all others): EF2023 file, historical only through 2023.
+# Production is phased to 0 by 2030 in step 5f below.
+raw_ef2023 = pl.read_csv(NATURAL_GAS_EF2023_FILE)
+
+df_minor = (
+    raw_ef2023
+    .filter(
+        (pl.col("Scenario") == SCENARIO) &
+        (pl.col("Unit")     == "Million Cubic Metres per day") &
+        (~pl.col("Region").is_in(["Canada", "Western Canadian Sedimentary Basin"])) &
+        (~pl.col("Region").is_in(MAJOR_REGIONS_CER))
+    )
+    .select(["Region", "Variable", "Year", "Value"])
+    .with_columns((pl.col("Value") * CONVERSION).alias("Value_1000m3"))
+    .drop("Value")
+    .filter(pl.col("Year") <= LAST_MINOR_DATA_YEAR)
 )
+
+df = pl.concat([df_major, df_minor])
 
 
 # -- 2. Back-extrapolate 2000-2004 --------------------------------------------
@@ -357,7 +382,13 @@ _processed_output = (
         pl.lit("% of 1000m3").alias("Unit"),
         pl.col("Processed").alias("Value"),
     )
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+          .then(pl.lit("CER/Stats Can"))
+          .otherwise(pl.lit("Assumptions"))
+          .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
 )
 
 
@@ -493,6 +524,67 @@ _extension_pl = _extension_pl.drop("Processed")
 pivot = pl.concat([pivot, _extension_pl], how="diagonal").sort(["Region", "Year"])
 
 
+# -- 5f. Phase minor regions (non-AB/BC/SK) to 0 by 2030 ---------------------
+#
+#   Minor regions use EF2023 data through 2023.  From 2024 onward, total
+#   marketable production is linearly interpolated to 0 at PHASE_OUT_YEAR (2030)
+#   and held at 0 through 2100.  gross_total follows via the Processed ratio.
+#   Splits (pct_*) are held constant at 2023 values during the phase-out and
+#   set to 0 once production reaches 0.
+
+_minor_last = {
+    r["Region"]: r
+    for r in pivot.filter(
+        pl.col("Region").is_in(MINOR_REGIONS) &
+        (pl.col("Year") == LAST_MINOR_DATA_YEAR)
+    ).to_dicts()
+}
+
+_minor_processed = {
+    (r["Province"], r["Year"]): r["Processed"]
+    for r in _processed_pl.filter(
+        pl.col("Province").is_in(MINOR_REGIONS) &
+        (pl.col("Year") > LAST_MINOR_DATA_YEAR)
+    ).to_dicts()
+}
+
+_phaseout_rows = []
+_n_phase = PHASE_OUT_YEAR - LAST_MINOR_DATA_YEAR  # steps from last data year to 0
+
+for _region, _last in _minor_last.items():
+    _total_last  = _last.get("total", 0.0) or 0.0
+    _pct_conv    = _last.get("pct_conventional", 1.0) or 1.0
+    _pct_shale   = _last.get("pct_shale", 0.0) or 0.0
+    _pct_tight   = _last.get("pct_tight", 0.0) or 0.0
+    _pct_cbm     = _last.get("pct_coalbed_methane", 0.0) or 0.0
+
+    _pct_c, _pct_s, _pct_t, _pct_m = _pct_conv, _pct_shale, _pct_tight, _pct_cbm
+    for _yr in range(LAST_MINOR_DATA_YEAR + 1, PROJECTION_END + 1):
+        if _yr >= PHASE_OUT_YEAR:
+            _total = 0.0
+        else:
+            frac   = 1.0 - ((_yr - LAST_MINOR_DATA_YEAR) / _n_phase)
+            _total = max(_total_last * frac, 0.0)
+
+        _proc  = _minor_processed.get((_region, _yr))
+        _gross = (_total / _proc) if (_proc and _proc > 0) else 0.0
+
+        _phaseout_rows.append({
+            "Region":              _region,
+            "Year":                _yr,
+            "total":               _total,
+            "gross_total":         _gross,
+            "pct_conventional":    _pct_c,
+            "pct_shale":           _pct_s,
+            "pct_tight":           _pct_t,
+            "pct_coalbed_methane": _pct_m,
+        })
+
+if _phaseout_rows:
+    _phaseout_pl = pl.DataFrame(_phaseout_rows).with_columns(pl.col("Year").cast(pl.Int64))
+    pivot = pl.concat([pivot, _phaseout_pl], how="diagonal").sort(["Region", "Year"])
+
+
 # -- 5d. LNG exports for BC ---------------------------------------------------
 #
 #   Source: CER LNG export assumptions (Bcf/day per scenario).
@@ -555,7 +647,13 @@ _lng_output = (
         pl.lit("LNG Compression").alias("Variable"),
         pl.lit("% of 1000m3").alias("Unit"),
     )
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+          .then(pl.lit("CER/Stats Can"))
+          .otherwise(pl.lit("Assumptions"))
+          .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
     .sort("Year")
 )
 
@@ -585,7 +683,7 @@ output_gas = (
     .with_columns(
         pl.col("Variable").replace({
             "total":               "Marketable Production",
-            "gross_total":         "Extraction",
+            "gross_total":         "Natural Gas",
             "pct_conventional":    "Extraction.Conventional",
             "pct_shale":           "Extraction.Shale",
             "pct_tight":           "Extraction.Tight",
@@ -600,12 +698,35 @@ output_gas = (
             "pct_coalbed_methane": "% of 1000m3",
         }).alias("Unit"),
     )
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+          .then(pl.lit("CER/Stats Can"))
+          .otherwise(pl.lit("Assumptions"))
+          .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
     .sort(["Region", "Variable", "Year"])
 )
 
+# Natural Gas.Extraction share — always 1.0 (all natural gas comes from extraction)
+_extraction_share = (
+    pivot
+    .select(["Region", "Year"])
+    .unique()
+    .with_columns([
+        pl.lit("Natural Gas.Extraction").alias("Variable"),
+        pl.lit("% of 1000m3").alias("Unit"),
+        pl.lit(1.0).alias("Value"),
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+          .then(pl.lit("CER/Stats Can"))
+          .otherwise(pl.lit("Assumptions"))
+          .alias("Source"),
+    ])
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+)
+
 # Combine gas production output with the Processed ratio and LNG export series
-output = pl.concat([output_gas, _processed_output, _lng_output]).sort(["Region", "Variable", "Year"])
+output = pl.concat([output_gas, _extraction_share, _processed_output, _lng_output]).sort(["Region", "Variable", "Year"])
 
 
 # -- 7. Save ------------------------------------------------------------------
