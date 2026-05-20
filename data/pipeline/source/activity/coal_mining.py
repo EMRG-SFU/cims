@@ -523,7 +523,7 @@ for y in YEARS:
     met[y, 'Nova Scotia'] = 0.0   # no metallurgical coal
 
 
-# ── BC 2021–2024: residual from StatCan Canada total ─────────────────────────────
+# ── BC residual from StatCan Canada total ────────────────────────────────────────
 
 for y in range(_archived["bc_coal"] + 1, LAST_DATA_YEAR["stat_can_coal"] + 1):
     bc_total = residual_to_nonnegative(
@@ -580,8 +580,9 @@ coal_total = (
     .with_columns([
         pl.lit("Coal Mining").alias("Variable"),
         pl.lit("kt").alias("Unit"),
+        pl.lit("Stats Can/Prov Gvts").alias("Source"),
     ])
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
 )
 
 coal_met_pct = (
@@ -590,8 +591,9 @@ coal_met_pct = (
     .with_columns([
         pl.lit("Coal Mining.Coal.Metallurgical Finishing").alias("Variable"),
         pl.lit("% of kt").alias("Unit"),
+        pl.lit("Stats Can/Prov Gvts").alias("Source"),
     ])
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
 )
 
 combined = pl.concat([coal_total, coal_met_pct]).sort(["Region", "Variable", "Year"])
@@ -640,6 +642,7 @@ for keys, grp in combined.group_by(["Region", "Variable", "Unit"], maintain_orde
         for year, value in extended.loc[last_year + 1:].items():
             future_rows.append({
                 "Region": region, "Variable": variable, "Unit": unit,
+                "Source": "Assumptions",
                 "Year": int(year), "Value": float(value),
             })
     else:
@@ -651,8 +654,11 @@ for keys, grp in combined.group_by(["Region", "Variable", "Unit"], maintain_orde
             CAGR_OVERRIDES.get(region),
         )
         for year, value in projected.items():
+            if int(year) <= int(last_year):
+                continue
             future_rows.append({
                 "Region": region, "Variable": variable, "Unit": unit,
+                "Source": "Assumptions",
                 "Year": int(year), "Value": float(value),
             })
 
