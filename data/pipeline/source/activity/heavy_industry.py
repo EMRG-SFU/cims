@@ -1,32 +1,36 @@
 """
-ceedc_provincial_output.py
-===========================
-Single script that runs the full pipeline from raw StatsCan and CEEDC inputs
-to annual provincial physical output estimates by CIMS sector.
+heavy_industry.py
+=================
+Full pipeline from raw StatsCan and CEEDC inputs to provincial physical output
+estimates by CIMS sector, extended to 2100 via CAGR projections.
 
 PIPELINE OVERVIEW:
   Step 1  Load nominal Gross Output (GO) and price indexes (IPPI, RMPI)
-  Step 2  Deflate nominal GO to real GO (2020 dollars)
+  Step 2  Deflate nominal GO to real GO (2020 base year)
   Step 3  Compute each province's share of national real GO by sector and year
   Step 4  Load CEEDC annual physical output
-  Step 5  Extend GO shares to 2023-2024 (hold 2022 constant; GO ends at 2022)
+  Step 5  Extend GO shares to cover years beyond the GO data end (hold last year constant)
   Step 6  Build weighted combined GO shares for multi-sector CIMS products
   Step 7  Build national physical output table (summing components where needed)
   Step 8  Disaggregate national totals to provinces using GO shares
-  Step 9  Sanity checks and save outputs
+  Step 9  Project to 2100 using CAGR dampeners; add Source column; save
 
 HOW TO RUN:
-    python ceedc_provincial_output.py
+    python heavy_industry.py
 
-INPUTS (place in same folder, or update the FILE PATHS section below):
-    36100488.csv  <- StatsCan GO (nominal, incl. mining)
-    18100267.csv  <- StatsCan IPPI (incl. primary metals)
-    18100268.csv      <- StatsCan RMPI (raw materials)
-    Production.xlsx                         <- CEEDC annual physical output
+INPUTS:
+    raw_data/stats_can/activity/36100488.csv         <- StatsCan GO (nominal, incl. mining)
+    raw_data/stats_can/activity/18100267.csv         <- StatsCan IPPI (incl. primary metals)
+    raw_data/stats_can/activity/18100268.csv         <- StatsCan RMPI (raw materials)
+    raw_data/ceedc/Production.xlsx                   <- CEEDC annual physical output
+    raw_data/assumptions/activity_cagr_projections.csv  <- CAGR projection assumptions
 
 OUTPUTS:
-    provincial_physical_annual.csv  <- Annual provincial physical output by CIMS sector (2000-2024)
-                                       Values in tonnes. UTF-8-BOM encoded (opens correctly in Excel).
+    processed_data/activity/heavy_industry.csv
+        Columns: Region | Variable | Unit | Source | Year | Value
+        Variables: parent sectors in tonnes; child sub-products as fraction of parent (% of tonnes)
+        Source: "CEEDC/Stats Can" up to last_data_year["ceedc"], "Assumptions" thereafter
+        UTF-8-BOM encoded (opens correctly in Excel)
 
 LIBRARY NOTES:
     Polars is used for all DataFrame work (fast, memory-efficient).
@@ -36,14 +40,10 @@ LIBRARY NOTES:
 SUPPRESSION HANDLING:
     Statistics Canada suppresses GO, IPPI, and RMPI cells where disclosure
     would identify individual respondents, marking them with codes 'x', '..', or 'F'.
-
-    read_statscan_csv(log_suppressed=True) loads all three files with all columns
-    as strings and prints a count and list of suppression codes found at load time.
-    Suppressed rows are then identified (VALUE fails cast to Float64) and removed
-    entirely — they are not filled with 0 or interpolated, because suppressed GO
-    values would distort the provincial share weights used to disaggregate national
-    physical output. The _go_suppressed table records which sector/province/year
-    combinations were excluded so the gap is transparent in console output.
+    Suppressed rows are identified (VALUE fails cast to Float64) and removed entirely —
+    not filled with 0 or interpolated — because suppressed GO values would distort the
+    provincial share weights. The _go_suppressed table tracks which sector/province/year
+    combinations were excluded so mid-series gaps can be interpolated downstream.
 """
 
 import polars as pl
@@ -65,11 +65,12 @@ from utils.controls_conversions import load_control_config, DATA_START, BASE_PAT
 # =============================================================================
 # Configuration
 # =============================================================================
-GO_FILE         = BASE_PATH / 'raw_data/stats_can/activity/36100488.csv'
-IPPI_FILE       = BASE_PATH / 'raw_data/stats_can/activity/18100267.csv'
-RMPI_FILE       = BASE_PATH / 'raw_data/stats_can/activity/18100268.csv'
-PRODUCTION_FILE        = BASE_PATH / 'raw_data/ceedc/Production.xlsx'
-CAGR_ASSUMPTIONS_FILE  = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
+GO_FILE               = BASE_PATH / 'raw_data/stats_can/activity/36100488.csv'
+IPPI_FILE             = BASE_PATH / 'raw_data/stats_can/activity/18100267.csv'
+RMPI_FILE             = BASE_PATH / 'raw_data/stats_can/activity/18100268.csv'
+PRODUCTION_FILE       = BASE_PATH / 'raw_data/ceedc/Production.xlsx'
+CAGR_ASSUMPTIONS_FILE = BASE_PATH / 'raw_data/assumptions/activity_cagr_projections.csv'
+REGION_MAP_FILE       = BASE_PATH / 'mappings_conversions/region_map.csv'
 
 BASE_YEAR = 2020   # real GO base year (index = 100); matches IPPI/RMPI base period.
 
@@ -396,10 +397,6 @@ INORGANIC_NATIONAL_FRACTIONS: dict[str, float] = {
 # =============================================================================
 # STEP 1 — LOAD RAW DATA
 # =============================================================================
-print("=" * 60)
-print("STEP 1  Loading raw data")
-print("=" * 60)
-
 # Polars reads CSVs much faster than pandas.
 # All columns are loaded as strings first so we can handle StatsCan suppression
 # codes ('x', '..', 'F') before converting VALUE to float.
@@ -433,15 +430,6 @@ _go_suppressed = pl.DataFrame({
 })
 if n_suppressed > 0:
     suppressed_df = go_raw.filter(suppressed_mask)
-    unique_codes  = suppressed_df["VALUE"].unique().to_list()
-    print(f"  NOTE: {n_suppressed} suppressed/unavailable GO values found "
-          f"(StatsCan codes: {unique_codes})")
-    print(f"        These rows will be excluded from share calculations.")
-    print(f"        Affected sectors/provinces:")
-    for (sector, geo), grp in (
-        suppressed_df.group_by(["Industry", "GEO"])
-    ):
-        print(f"          {geo:30s}  {sector}  ({len(grp)} years)")
 
     _go_suppressed = (
         suppressed_df
@@ -468,8 +456,6 @@ go_raw = (
 for name, df_ref in [("IPPI", ippi_raw), ("RMPI", rmpi_raw)]:
     num = pl.Series("VALUE_num", df_ref["VALUE"]).cast(pl.Float64, strict=False)
     n   = (num.is_null() & df_ref["VALUE"].is_not_null()).sum()
-    if n > 0:
-        print(f"  NOTE: {n} suppressed values in {name} — excluded from price index averages")
     # Re-assign in-place (Polars DataFrames are immutable; we rebind the name)
     if name == "IPPI":
         ippi_raw = df_ref.with_columns(num.alias("VALUE")).filter(pl.col("VALUE").is_not_null())
@@ -502,17 +488,6 @@ prod_raw = prod_raw.with_columns([
     pl.col("value").cast(pl.Float64, strict=False),
 ])
 
-print(f"  GO rows:         {len(go_raw):,}")
-print(f"  IPPI rows:       {len(ippi_raw):,}")
-print(f"  RMPI rows:       {len(rmpi_raw):,}")
-print(f"  Production rows: {len(prod_raw):,}")
-
-# =============================================================================
-# STEP 2 — DEFLATE NOMINAL GO TO REAL GO
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 2  Deflating nominal GO to real GO")
-print("=" * 60)
 
 def make_annual_index(df: pl.DataFrame, label_col: str, label_val: str,
                       fill_start_year: int | None = None) -> pl.DataFrame:
@@ -548,8 +523,6 @@ def make_annual_index(df: pl.DataFrame, label_col: str, label_val: str,
                 "PRICE_INDEX": [first_val] * (first_year - fill_start_year),
             }).with_columns(pl.col("YEAR").cast(pl.Int32))
             annual = pl.concat([gap, annual]).sort("YEAR")
-            print(f"  NOTE: Back-extended '{label_val}' from {first_year} to "
-                  f"{fill_start_year} (constant index — document this assumption)")
 
     base_rows = annual.filter(pl.col("YEAR") == BASE_YEAR)
     if base_rows.is_empty():
@@ -587,10 +560,6 @@ for go_code, mapping in DEFLATOR_MAP.items():
     )
     merged = subset.join(idx_df, on="YEAR", how="left")
 
-    missing = merged["PRICE_INDEX_REBASED"].is_null().sum()
-    if missing > 0:
-        print(f"  WARNING: {missing} rows missing price index for {go_code} ({lbl})")
-
     merged = merged.with_columns([
         (pl.col("VALUE") / (pl.col("PRICE_INDEX_REBASED") / 100)).alias("REAL_GO"),
         pl.lit(NAICS_LABEL_MAP.get(go_code, go_code)).alias("NAICS_SECTOR"),
@@ -616,14 +585,6 @@ real_go_clean = (
     .sort(["YEAR", "NAICS_SECTOR", "GEO"])
 )
 
-print(f"  Real GO rows: {len(real_go_clean):,}")
-
-# =============================================================================
-# STEP 3 — COMPUTE PROVINCIAL GO SHARES (2000-2022)
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 3  Computing provincial GO shares")
-print("=" * 60)
 
 national_go = (
     real_go_clean
@@ -656,18 +617,6 @@ share_check = (
     .agg(pl.col("PROVINCIAL_SHARE").sum().alias("SUM_OF_SHARES"))
 )
 bad_shares = share_check.filter((pl.col("SUM_OF_SHARES") - 1.0).abs() > 0.01)
-if not bad_shares.is_empty():
-    print(f"  WARNING: {len(bad_shares)} sector-years where shares don't sum to 1.0")
-    print(bad_shares)
-else:
-    print("  Share check PASSED: all sector-years sum to ~1.0")
-
-# =============================================================================
-# STEP 5 — EXTEND GO SHARES TO 2023-2024 (hold 2022 constant)
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 5  Extending GO shares to 2023-2024")
-print("=" * 60)
 
 shares_2022 = shares.filter(pl.col("YEAR") == 2022)
 extended    = pl.concat([
@@ -677,18 +626,10 @@ extended    = pl.concat([
 ])
 shares = extended
 
-print("  GO shares now cover: 2000-2024 (2023-2024 held at 2022 values)")
-
 _hvy_config    = load_control_config()
 LAST_DATA_YEAR = _hvy_config["last_data_year"]
 ANNUAL_YEARS   = list(range(DATA_START, LAST_DATA_YEAR["ceedc"] + 1))
 
-# =============================================================================
-# STEP 6 — BUILD WEIGHTED COMBINED GO SHARES
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 6  Building weighted combined GO shares")
-print("=" * 60)
 
 def build_combined_share(go_sectors: list[str]) -> pl.DataFrame:
     """
@@ -720,14 +661,6 @@ for sector in SECTORS:
         go_sectors = tuple(sorted(set(c["go_sector"] for c in sector["components"])))
         if go_sectors not in combined_share_cache:
             combined_share_cache[go_sectors] = build_combined_share(list(go_sectors))
-            print(f"  Built combined share for GO sectors: {' + '.join(go_sectors)}")
-
-# =============================================================================
-# STEP 7 — BUILD NATIONAL PHYSICAL OUTPUT TABLE
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 7  Building national physical output table")
-print("=" * 60)
 
 def get_series(naics_code: str, measure: str) -> dict[int, float]:
     """Return year->value dict for one NAICS code + measure from Production.xlsx."""
@@ -829,16 +762,6 @@ for sector in SECTORS:
 # Rebuild national_df to include direct_sum rows
 national_df = pl.DataFrame(national_rows).sort(["CIMS_SECTOR", "YEAR"])
 
-print(f"  {national_df['CIMS_SECTOR'].n_unique()} CIMS sectors x "
-      f"{national_df['YEAR'].n_unique()} years = {len(national_df):,} rows")
-
-# =============================================================================
-# STEP 8 — DISAGGREGATE NATIONAL TO PROVINCES
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 8  Disaggregating to provinces")
-print("=" * 60)
-
 # Provinces to exclude from disaggregation for specific CIMS sectors.
 # Use full StatsCan GEO names. Excluded provinces are dropped before rescaling,
 # so their share is redistributed to the remaining provinces.
@@ -902,20 +825,15 @@ def get_prov_shares(go_sector_used: str, year: int,
             y1, v1 = after[0]     # closest year after
             weight = (year - y0) / (y1 - y0)
             estimated = v0 + weight * (v1 - v0)
-            note_type = "interpolated"
         elif before:
             # No data after — hold the last known value
             estimated = before[-1][1]
-            note_type = "extrapolated (forward)"
         elif after:
             # No data before — hold the first known value
             estimated = after[0][1]
-            note_type = "extrapolated (backward)"
         else:
             continue  # no data at all for this province/sector — skip
 
-        print(f"  NOTE: {geo} / {go_sector_used} / {year}: "
-              f"share {note_type} as {estimated:.4f}")
         raw[geo] = estimated
 
     # Drop provinces that have GO presence but no physical production
@@ -1052,14 +970,6 @@ provincial_slim = interpolate_gaps(
     value_col="PHYSICAL_OUTPUT",
 )
 
-print(f"  {len(provincial_df):,} rows")
-
-# =============================================================================
-# STEP 9 — SANITY CHECKS AND SAVE
-# =============================================================================
-print("\n" + "=" * 60)
-print("STEP 9  Sanity checks and saving outputs")
-print("=" * 60)
 
 prov_sum = (
     provincial_df
@@ -1088,11 +998,6 @@ check = (
     )
 )
 bad = check.filter(pl.col("DIFF_PCT") > 0.1)
-if not bad.is_empty():
-    print(f"  WARNING: {len(bad)} sector-years where provincial sum differs >0.1% from Canada")
-    print(bad.head(10))
-else:
-    print("  Province sum check PASSED")
 
 # ── Build output: Region | Variable | Unit | Year | Value ─────────────────
 _child_to_parent = {
@@ -1126,17 +1031,20 @@ EXTEND_TO = max(end for _, end, _ in CAGR_PERIODS)
 # Bypasses the dampener for that region×variable. Useful where historical CAGR
 # is unrealistically high (e.g. a commodity boom or tiny base province).
 CAGR_OVERRIDES: dict[tuple[str, str], tuple[float, float, float]] = {
-    ("Saskatchewan", "Mining"): (0.003, 0.002, 0.001),
-    ("Nunavut",      "Mining"): (0.003, 0.002, 0.001),
-    ("Newfoundland and Labrador", "Chemical Product"): (0.02, 0.005, 0.001),
-    ("Nova Scotia", "Chemical Product"): (0.02, 0.005, 0.001),
-    ("Prince Edward Island", "Chemical Product"): (0.02, 0.005, 0.001),
-    ("Saskatachewan", "Chemical Product"): (0.02, 0.005, 0.001),
-    ("Alberta", "Mining"): (0.04, 0.02, 0.005),
+    ("SK", "Mining"):           (0.003, 0.002, 0.001),
+    ("NU", "Mining"):           (0.003, 0.002, 0.001),
+    ("NL", "Chemical Product"): (0.02, 0.005, 0.001),
+    ("NS", "Chemical Product"): (0.02, 0.005, 0.001),
+    ("PE", "Chemical Product"): (0.02, 0.005, 0.001),
+    ("SK", "Chemical Product"): (0.02, 0.005, 0.001),
+    ("AB", "Mining"):           (0.04, 0.02, 0.005),
+    ("QC", "Mining"):           (0.02, 0.005, 0.001),
 }
 
 
 # ── Historical parent tonnes (2000-2024), provinces only ──────────────────
+_region_map = pl.read_csv(REGION_MAP_FILE, columns=["CIMS", "NIR"])
+
 _parent_hist = (
     provincial_slim
     .filter(
@@ -1154,6 +1062,9 @@ _parent_hist = (
         pl.col("Year").cast(pl.Int64),
     ])
     .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .join(_region_map, left_on="Region", right_on="NIR", how="left")
+    .with_columns(pl.col("CIMS").fill_null(pl.col("Region")).alias("Region"))
+    .drop("CIMS")
 )
 
 # ── CAGR per region×variable anchored on 2014→2024 ────────────────────────
@@ -1191,18 +1102,6 @@ _cagr_anchor = (
 )
 
 _anchor_map = {(r["Region"], r["Variable"]): r for r in _cagr_anchor.to_dicts()}
-
-print("\n── CAGR by region × variable (raw, before dampener) ─────────────────")
-print(f"  {'Region':<30} {'Variable':<25} {'Base (t)':>14} {'CAGR':>8}")
-print(f"  {'-'*30} {'-'*25} {'-'*14} {'-'*8}")
-for row in (
-    _cagr_anchor
-    .sort(["Variable", pl.col("cagr").abs()], descending=[False, True])
-    .to_dicts()
-):
-    override_marker = " *" if (row["Region"], row["Variable"]) in CAGR_OVERRIDES else ""
-    print(f"  {row['Region']:<30} {row['Variable']:<25} {row['base_val']:>14,.0f} {row['cagr']:>7.1%}{override_marker}")
-print("  (* = overridden)")
 
 _parent_ext_rows = []
 for (region, variable), anc in _anchor_map.items():
@@ -1381,7 +1280,7 @@ _child_weighted = (
         (pl.col("nat_kt").fill_null(0.0) * pl.col("PROVINCIAL_SHARE").fill_null(0.0)).alias("weighted")
     )
     .with_columns(
-        pl.col("CIMS_SECTOR").replace(_child_to_parent, default=None).alias("parent_sector")
+        pl.col("CIMS_SECTOR").replace_strict(_child_to_parent, default=None).alias("parent_sector")
     )
     .with_columns(
         (pl.col("parent_sector") + "." + pl.col("CIMS_SECTOR")).alias("Variable")
@@ -1517,20 +1416,28 @@ _child_hist = pl.concat([
 
 _inorganic_combined_var = "Chemical Product.Chlor Alkali, Hydrogen Peroxide, Sodium Chlorate"
 
-# Province-constant split factors (only provinces listed in capacity dicts)
+# Build province-constant split factors for every region that carries the combined variable.
+# Regions in INORGANIC_CAPACITY_SHARES get a capacity-weighted split; all others fall back
+# to the national fractions (which already sum to 1).
+_all_inorg_regions = (
+    _child_hist
+    .filter(pl.col("Variable") == _inorganic_combined_var)
+    ["Region"].unique().to_list()
+)
+
 _inorg_split_rows = []
-for _geo in {p for caps in INORGANIC_CAPACITY_SHARES.values() for p in caps}:
+for _geo in _all_inorg_regions:
     _denom = sum(
         INORGANIC_NATIONAL_FRACTIONS[c] * INORGANIC_CAPACITY_SHARES[c].get(_geo, 0.0)
         for c in INORGANIC_CAPACITY_SHARES
     )
     for _chem in INORGANIC_CAPACITY_SHARES:
-        _num = INORGANIC_NATIONAL_FRACTIONS[_chem] * INORGANIC_CAPACITY_SHARES[_chem].get(_geo, 0.0)
-        _inorg_split_rows.append({
-            "Region":       _geo,
-            "sub_chem":     _chem,
-            "split_factor": _num / _denom if _denom > 0.0 else 0.0,
-        })
+        if _denom > 0.0:
+            _num = INORGANIC_NATIONAL_FRACTIONS[_chem] * INORGANIC_CAPACITY_SHARES[_chem].get(_geo, 0.0)
+            _split = _num / _denom
+        else:
+            _split = INORGANIC_NATIONAL_FRACTIONS[_chem]
+        _inorg_split_rows.append({"Region": _geo, "sub_chem": _chem, "split_factor": _split})
 
 _inorg_split_df = pl.DataFrame(_inorg_split_rows)
 
@@ -1539,7 +1446,7 @@ _inorganic_override = (
     _child_hist
     .filter(pl.col("Variable") == _inorganic_combined_var)
     .select(["Region", "Unit", "Year", pl.col("Value").alias("combined_ratio")])
-    .join(_inorg_split_df, on="Region", how="inner")   # inner: only capacity provinces
+    .join(_inorg_split_df, on="Region", how="inner")
     .with_columns(
         (pl.col("combined_ratio") * pl.col("split_factor")).alias("Value"),
         (pl.lit("Chemical Product.") + pl.col("sub_chem")).alias("Variable"),
@@ -1552,6 +1459,14 @@ _child_hist = pl.concat([
     _child_hist.filter(~pl.col("Variable").is_in([_inorganic_combined_var] + _inorganic_new)),
     _inorganic_override,
 ])
+
+# ── Map child regions to CIMS names ──────────────────────────────────────
+_child_hist = (
+    _child_hist
+    .join(_region_map, left_on="Region", right_on="NIR", how="left")
+    .with_columns(pl.col("CIMS").fill_null(pl.col("Region")).alias("Region"))
+    .drop("CIMS")
+)
 
 # ── Extend ratios flat at 2024 value out to 2100 ──────────────────────────
 _ratios_2024 = (
@@ -1572,6 +1487,27 @@ for r in _ratios_2024.to_dicts():
 
 _child_ext = pl.DataFrame(_child_ext_rows).with_columns(pl.col("Year").cast(pl.Int64))
 _child_out = pl.concat([_child_hist, _child_ext]).sort(["Region", "Variable", "Year"])
+
+# Subproduct ratios should never be zero or null — a zero ratio in a period of
+# zero production is still a valid placeholder for when production resumes.
+# Forward-fill extends the last non-zero ratio over trailing zeros/gaps;
+# backward-fill then covers any leading zeros before production first started.
+_child_out = (
+    _child_out
+    .with_columns(
+        pl.when(pl.col("Value").is_null() | (pl.col("Value") == 0.0))
+        .then(pl.lit(None).cast(pl.Float64))
+        .otherwise(pl.col("Value"))
+        .alias("_nonzero")
+    )
+    .with_columns(
+        pl.col("_nonzero").forward_fill().over(["Region", "Variable"]).alias("_ffilled")
+    )
+    .with_columns(
+        pl.col("_ffilled").backward_fill().over(["Region", "Variable"]).alias("Value")
+    )
+    .drop(["_nonzero", "_ffilled"])
+)
 
 # Keep only region×sector combos that have at least one non-zero year.
 # If production is ever non-zero, keep all years (including zero gaps).
@@ -1604,6 +1540,22 @@ output_df = (
     .sort(["Region", "Variable", "Year"])
 )
 
+output_df = (
+    output_df
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["ceedc"])
+        .then(pl.lit("CEEDC/Stats Can"))
+        .otherwise(pl.lit("Assumptions"))
+        .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+)
+
+print(f"\n✅ Heavy industry complete")
+print(f"   Total rows:          {len(output_df):,}")
+print(f"   Regions processed:   {output_df['Region'].n_unique()}")
+print(f"   Variables:           {sorted(output_df['Variable'].unique().to_list())}")
+print(f"   Years covered:       {output_df['Year'].min()} – {output_df['Year'].max()}")
 _heavy_industry_path = BASE_PATH / 'processed_data/activity/heavy_industry.csv'
 _heavy_industry_path.parent.mkdir(parents=True, exist_ok=True)
 output_df.to_pandas().to_csv(
@@ -1612,21 +1564,4 @@ output_df.to_pandas().to_csv(
     encoding="utf-8-sig",
     na_rep="",
 )
-
-print(f"\n{'=' * 60}")
-print("ALL DONE")
-print(f"{'=' * 60}")
-print(f"  heavy_industry.csv -> {len(output_df):,} rows  "
-      f"({output_df['Variable'].n_unique()} variables x {output_df['Year'].n_unique()} years "
-      f"x {output_df['Region'].n_unique()} regions)")
-print(f"  Columns: Region | Variable | Unit | Year | Value")
-print(f"  Historical:  2000-{CAGR_END} | Extended: {CAGR_END + 1}-{EXTEND_TO}")
-print(f"  Tonnes:      CAGR anchored {CAGR_START}-{CAGR_END}, "
-      f"periods: {', '.join(f'{s}-{e} @ {int(d*100)}%' for s, e, d in CAGR_PERIODS)}")
-print(f"  Ratios:      held flat at {CAGR_END} values")
-print(f"  Encoding:    UTF-8-BOM")
-print(f"\nBase year for deflation: {BASE_YEAR}")
-print("\nNotes:")
-print("  - GO shares 2023-2024: held constant at 2022 values (GO data ends 2022)")
-print("  - RMPI Metal ores and Potash back-extended 2000-2009 (constant index)")
-print("  - NAICS 327 excluded (parent aggregate; sub-codes in Industrial Minerals)")
+print(f"   Saved to:            {_heavy_industry_path}")
