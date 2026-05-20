@@ -2,69 +2,23 @@
 
 ### Policy costing methods associated with ISTUM and early CIMS
 
-Issues associated with deriving costs from its outputs guided much of
-CIMS' development. The cost methodologies in the following sections are
-described in brief and outline some of the issues in estimating costs.
+Issues associated with deriving costs from its outputs guided much of CIMS' development. The cost methodologies in the following sections are described in brief and outline some of the issues in estimating costs.
 
-The ISTUM model was initially designed for energy policy analysis,
-mainly for assessing how fuel consumption and emissions would change
-with a given energy policy. The emphasis was on marginal costs, not
-total or absolute expenditures. The first consistent costing concept was
-the techno-economic cost, or TEC.
-
-<mark>TODO: Should we have standard reporting for costs below?</mark>
+The ISTUM model was initially designed for energy policy analysis, mainly for assessing how fuel consumption and emissions would change with a given energy policy. The emphasis was on marginal costs, not total or absolute expenditures. The first consistent costing concept was the techno-economic cost, or TEC.
 
 **Techno-economic Cost (TEC)**
 
-TEC is the difference in estimated (ex-ante) financial expenditure on
-capital, labour, and energy between the Business-as-Usual and Policy
-cases. It does not usually (unless otherwise specified) contain carbon
-taxes as these are considered a transfer internal to society. It is
-possible to get negative TEC costs, or benefits, especially in
-transportation where increased use of transit and walking and cycling
-reduces financial costs, implying that some actions induced by policy
-may be profitable. There are significant complications as well -- do
-those who switch to transit and walking and cycling continue to own and
-pay for cars? This reflects the challenging question about how vehicle
-acquisition will be affected by policies to reduce vehicle use. TEC for
-all consuming sectors are reported with and without electricity price
-increases, which are sub-regional transfers that balance out to zero at
-the regional level once the financial effects on electricity producers'
-revenues are included.
+TEC is the difference in estimated (ex-ante) financial expenditure on capital, labour, and energy between the Business-as-Usual and Policy cases. It does not usually (unless otherwise specified) contain carbon taxes as these are considered a transfer internal to society. It is possible to get negative TEC costs, or benefits, especially in transportation where increased use of transit and walking and cycling reduces financial costs, implying that some actions induced by policy may be profitable. There are significant complications as well -- do those who switch to transit and walking and cycling continue to own and pay for cars? This reflects the challenging question about how vehicle acquisition will be affected by policies to reduce vehicle use. TEC for all consuming sectors are reported with and without electricity price increases, which are sub-regional transfers that balance out to zero at the regional level once the financial effects on electricity producers' revenues are included.
 
-The ISTUM sub-models were integrated under the energy demand and price
-feedback system in the mid-1999 to 2000 period, thus creating the first
-version of CIMS. During this period, the model was used for a series of
-large GHG abatement analyses for Canada. The thrust of these analyses
-was to integrate and assess a series of emissions reduction actions
-proposed by panels of interested parties, the Issue Tables of Canada's
-Climate Change National Assessment Process. The most effective actions
-were determined by minimizing their welfare costs, as opposed to their
-pure financial costs. This led to the development of the Perceived
-Private Cost methodology (Bataille et al. 2002, Laurin et al. 2003,
-MKJA/EMRG 2000).
+The ISTUM sub-models were integrated under the energy demand and price feedback system in the mid-1999 to 2000 period, thus creating the first version of CIMS. During this period, the model was used for a series of large GHG abatement analyses for Canada. The thrust of these analyses was to integrate and assess a series of emissions reduction actions proposed by panels of interested parties, the Issue Tables of Canada's Climate Change National Assessment Process. The most effective actions were determined by minimizing their welfare costs, as opposed to their pure financial costs. This led to the development of the Perceived Private Cost methodology (Bataille et al. 2002, Laurin et al. 2003, MKJA/EMRG 2000).
 
 **Perceived Private Costs (PPC)**
 
-PPC are calculated as the GHG tax multiplied by the marginal amount of
-GHG reductions that occurred at each GHG tax level. The area under the
-resulting GHG abatement cost curve represents the perceived cost of the
-actions by the GHG charge. The PPC methodology estimates welfare losses
-that represent in part the unwillingness of all consumers to switch to
-technologies that reduce emissions. This fostered development of the
-Expected Resource Cost methodology, which attempts to more realistically
-depict the costs and risks associated with a given GHG reduction policy.
+PPC are calculated as the GHG tax multiplied by the marginal amount of GHG reductions that occurred at each GHG tax level. The area under the resulting GHG abatement cost curve represents the perceived cost of the actions by the GHG charge. The PPC methodology estimates welfare losses that represent in part the unwillingness of all consumers to switch to technologies that reduce emissions. This fostered development of the Expected Resource Cost methodology, which attempts to more realistically depict the costs and risks associated with a given GHG reduction policy.
 
 **Expected Resource Costs (ERC)**
 
-ERC is PPC that has been adjusted for risk, option value, and general
-inefficiency. It is equal to TEC+(PPC-TEC)\*0.75. The difference between
-TEC and PPC that is allowed as ERC is a "rule-of-thumb" estimate for
-what percentage of the difference can be considered real equipment
-failure risk, as opposed to inefficient resistance to price signals. It
-represents that perceived cost, which could turn into real financial
-cost. Negative ERC is possible, especially at lower GHG charges, but not
-likely (Bataille et al. 2002, Laurin et al, 2003, MKJA/EMRG, 2000).
+ERC is PPC that has been adjusted for risk, option value, and general inefficiency. It is equal to TEC+(PPC-TEC)\*0.75. The difference between TEC and PPC that is allowed as ERC is a "rule-of-thumb" estimate for what percentage of the difference can be considered real equipment failure risk, as opposed to inefficient resistance to price signals. It represents that perceived cost, which could turn into real financial cost. Negative ERC is possible, especially at lower GHG charges, but not likely (Bataille et al. 2002, Laurin et al, 2003, MKJA/EMRG, 2000).
 
 Table 10 summarizes the three early costing methods used for CIMS.
 
@@ -72,102 +26,29 @@ Table 8. Types of Costs Used in Early Incarnation of CIMS
 
 **Distribution of Costs Under Electricity and Refining Demand Changes**
 
-Electricity demand changes in all sectors in response to increased
-electricity prices, leading to an issue of how to distribute GHG
-reductions as well as TEC and PPC charges. GHG reductions from reduced
-electricity consumption were accorded to the direct consumer (based on
-the policy GHG intensity of electricity), who faced increased
-electricity prices, while electricity producers were accorded the
-remaining GHG intensity reductions, the TEC costs generated by their
-intensity reductions plus their changes in revenue. These net transfers,
-while positive at the sub-regional level, disappear at the regional
-level.
+Electricity demand changes in all sectors in response to increased electricity prices, leading to an issue of how to distribute GHG reductions as well as TEC and PPC charges. GHG reductions from reduced electricity consumption were accorded to the direct consumer (based on the policy GHG intensity of electricity), who faced increased electricity prices, while electricity producers were accorded the remaining GHG intensity reductions, the TEC costs generated by their intensity reductions plus their changes in revenue. These net transfers, while positive at the sub-regional level, disappear at the regional level.
 
 **The Relationship Between TEC, ERC, Option Value and Welfare Costs**
 
-The cost difference between ERC and TEC estimated during early analyses
-was described as risk, or "failure risk", which is related to the
-concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck
-1994 ). Option value is the expected gain from delaying or avoiding an
-investment while waiting for new information that might lead to a better
-decision. Thus, ERC are anticipated ex-post costs, and it is calculated
-as the sum of expected financial costs (TEC), lost option value,
-consumers' surplus losses internal to residential and transportation
-(internal shifts away from business-as-usual (BAU) preferences within
-the sub-models) and finally, when demand feedbacks are included,
-consumers' surplus losses related to demand adjustments for domestic
-consumers of domestic goods. It may therefore be considered a measure of
-personal welfare costs, not including negative environmental
-externalities (e.g. poorer quality air) or positive public goods (e.g.
-education, defence or public parks).
+The cost difference between ERC and TEC estimated during early analyses was described as risk, or "failure risk", which is related to the concept of option-value (Pindyck 1991, Dixit 1992, Dixit and Pindyck 1994 ). Option value is the expected gain from delaying or avoiding an investment while waiting for new information that might lead to a better decision. Thus, ERC are anticipated ex-post costs, and it is calculated as the sum of expected financial costs (TEC), lost option value, consumers' surplus losses internal to residential and transportation (internal shifts away from business-as-usual (BAU) preferences within the sub-models) and finally, when demand feedbacks are included, consumers' surplus losses related to demand adjustments for domestic consumers of domestic goods. It may therefore be considered a measure of personal welfare costs, not including negative environmental externalities (e.g. poorer quality air) or positive public goods (e.g. education, defence or public parks).
 
 ### Policy Costs Associated With Changes in Demand
 
-The inclusion of final demand feedbacks required the addition of five
-new policy-costing concepts. In all these concepts, financial output is
-defined as a sector's sales revenue, which includes both value-added and
-purchased inputs. Value-added is net profits plus the cost of all
-expenditures on land (unprocessed "gifts of nature"), labour and capital
-(Lipsey et al. 1988).
+The inclusion of final demand feedbacks required the addition of five new policy-costing concepts. In all these concepts, financial output is defined as a sector's sales revenue, which includes both value-added and purchased inputs. Value-added is net profits plus the cost of all expenditures on land (unprocessed "gifts of nature"), labour and capital (Lipsey et al. 1988).
 
-- The cost of production effect on sector financial output, which is the
-  increased financial expenditures required to adapt to the policy, or
-  TEC.
-
-- The demand effect on sector financial output, which is the reduction
-  in production expenditures associated with lower output.
-
-- The absolute change in sector financial output, which is the sum of
-  the cost of production and demand effects.
-
-- Consumers' surplus losses associated with demand changes in
-  transportation and residences.
-
-- Changes in value-added associated with cost of production and demand
-  changes in manufacturing.
+- The cost of production effect on sector financial output, which is the increased financial expenditures required to adapt to the policy, or TEC.
+- The demand effect on sector financial output, which is the reduction in production expenditures associated with lower output.
+- The absolute change in sector financial output, which is the sum of the cost of production and demand effects.
+- Consumers' surplus losses associated with demand changes in transportation and residences.
+- Changes in value-added associated with cost of production and demand changes in manufacturing.
 
 #### The Cost of Production and Demand Effects on Sector Financial Output
 
-The cost of production effect captures the internal capital investment
-and fuel choice adjustments of the model, or the TEC costs endogenous to
-the model. It is the anticipated financial cost of technical adjustment
-to the policy. The demand effect captures the effects of the demand
-feedbacks system, or reduction in output, as measured by expenditure
-compared to the business-as-usual case (BAU). The third is the sum of
-the first two. These three concepts capture a portion of the anticipated
-financial cost of a policy. They do not include the cost of buying
-emission permits from foreign sources or the cost of imports that
-replace domestically produced goods for domestic consumption. The fourth
-item, consumers' surplus losses, represents lost consumer welfare
-associated with reduced residential expenditure and mobility, while the
-fifth represents the lost value-added to manufacturing firms due to
-policy.
+The cost of production effect captures the internal capital investment and fuel choice adjustments of the model, or the TEC costs endogenous to the model. It is the anticipated financial cost of technical adjustment to the policy. The demand effect captures the effects of the demand feedbacks system, or reduction in output, as measured by expenditure compared to the business-as-usual case (BAU). The third is the sum of the first two. These three concepts capture a portion of the anticipated financial cost of a policy. They do not include the cost of buying emission permits from foreign sources or the cost of imports that replace domestically produced goods for domestic consumption. The fourth item, consumers' surplus losses, represents lost consumer welfare associated with reduced residential expenditure and mobility, while the fifth represents the lost value-added to manufacturing firms due to policy.
 
-Most GHG policies will increase the cost of production for a given
-service, increase its price, and thus reduce its demand. This increase
-in the cost of production will also include the value of carbon charges
-that are imposed on GHG emissions. These charges are transfers and as
-such must be subtracted from regional and national costs. Additionally,
-if demand is inelastic (unresponsive to price) for a given service, the
-dollar value of the sector, as valued by cost of production, may
-increase faster than demand reductions, leading to an overall increase
-in sector value to the economy. If demand is elastic, the opposite may
-occur.
+Most GHG policies will increase the cost of production for a given service, increase its price, and thus reduce its demand. This increase in the cost of production will also include the value of carbon charges that are imposed on GHG emissions. These charges are transfers and as such must be subtracted from regional and national costs. Additionally, if demand is inelastic (unresponsive to price) for a given service, the dollar value of the sector, as valued by cost of production, may increase faster than demand reductions, leading to an overall increase in sector value to the economy. If demand is elastic, the opposite may occur.
 
-The standard outputs from the sub-models include BAU and policy values
-for new physical capital investment associated with consuming energy,
-labour associated with the latter capital, and energy costs, as well as
-changes in physical output. It also produces BAU and policy costs per
-unit output, including GHG charges. These GHG charges are isolated by
-calculating policy emissions multiplied by the GHG price. When the micro
-and macro economic dynamics are turned on, part of the difference
-between the BAU and policy cases may be physical output changes while
-the rest will be cost of production differences due to internal stock
-adjustments. CIMS only captures a portion of the price that the consumer
-sees; both the BAU and Policy cost per unit are adjusted accordingly.
-The cost of production and demand effects on sector financial output
-(SFO) (Equations 23 & 24), and the absolute change in financial
-expenditure are calculated as follows (Equation 25).
+The standard outputs from the sub-models include BAU and policy values for new physical capital investment associated with consuming energy, labour associated with the latter capital, and energy costs, as well as changes in physical output. It also produces BAU and policy costs per unit output, including GHG charges. These GHG charges are isolated by calculating policy emissions multiplied by the GHG price. When the micro and macro economic dynamics are turned on, part of the difference between the BAU and policy cases may be physical output changes while the rest will be cost of production differences due to internal stock adjustments. CIMS only captures a portion of the price that the consumer sees; both the BAU and Policy cost per unit are adjusted accordingly. The cost of production and demand effects on sector financial output (SFO) (Equations 23 & 24), and the absolute change in financial expenditure are calculated as follows (Equation 25).
 
 (Equation 28)
 
@@ -177,65 +58,46 @@ expenditure are calculated as follows (Equation 25).
 
 Where:
 
-> QGHG = GHG emissions (Tonnes CO2e)
->
-> PGHG = GHG price (\$/Tonne CO2e)
->
-> Qpolicy = Policy physical output of good or service X
->
-> QBAU = BAU physical output of good or service X
->
-> Ppolicy = Policy cost per unit of good or service X
->
-> PBAU = BAU cost per unit of good or service X
+QGHG = GHG emissions (Tonnes CO2e)
 
-The absolute change in sector financial output could be positive or
-negative depending on the elasticity of demand -- if the cost of
-production rises faster than demand falls, then the absolute change in
-financial output could be positive. This result is common with less
-aggressive policies. The demand effect on sector financial output will
-always be negative for normal goods, whose demand fall as their price
-rises. The cost of production effect on sector financial output is
-usually positive, except for the case where there are decreasing returns
-to scale.
+PGHG = GHG price (\$/Tonne CO2e)
+
+Qpolicy = Policy physical output of good or service X
+
+QBAU = BAU physical output of good or service X
+
+Ppolicy = Policy cost per unit of good or service X
+
+PBAU = BAU cost per unit of good or service X
+
+The absolute change in sector financial output could be positive or negative depending on the elasticity of demand -- if the cost of production rises faster than demand falls, then the absolute change in financial output could be positive. This result is common with less aggressive policies. The demand effect on sector financial output will always be negative for normal goods, whose demand fall as their price rises. The cost of production effect on sector financial output is usually positive, except for the case where there are decreasing returns to scale.
 
 #### Consumers' Surplus Adjustments in Residential and Transportation
 
-Reductions in residential activity and mobility reflect consumers'
-surplus losses. Consumers' surplus is the area between the demand curve,
-which symbolizes the marginal willingness to pay for a service or good,
-and the market-clearing price of the good or service (Figure 8).
+Reductions in residential activity and mobility reflect consumers' surplus losses. Consumers' surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (@fig-consumer_surplus).
 
-Figure 4. Consumers' Surplus Diagram
+![Consumer Surplus](images/consumer_surplus.png){#fig-consumer_surplus .lightbox width=70%}
 
-The consumers' surplus loss between BAU and Policy is then calculated as
-BAU minus the policy. When calculating the direct welfare costs of a
-policy, consumers' surplus loss is added to the ERC value already
-calculated. Table 11 summarizes the financial and welfare costs
-adjustments made to the various sectors when their output changes.
+The consumers' surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers' surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.
 
-Table 9. Financial, Welfare Cost and Value-added Adjustments Induced by
-Changes in Output
+| | Output adjustment to financial costs | Output adjustment to welfare costs / value-added |
+|:---|:---|:---|
+| **Personal Transportation** | Demand effect on sector financial value, as measured by expenditure | Difference in **consumers' surplus** under BAU and policy calculated using transportation *pkt* elasticity |
+| **Industry (& Freight Transportation)** | Demand effect on sector financial output, as measured by expenditure | Difference in **value-added** between BAU and Policy |
+| **Residential** | Demand effect on sector financial value, as measured by expenditure | Difference in **consumers' surplus** under BAU and policy calculated using combination of savings/consumption and leisure/work elasticities |
+| **Commercial** | Demand effect on sector financial value, as measured by expenditure | None |
 
-The lack of an output adjustment for welfare costs or value-added for
-the commercial sector is partly due to the nature of the Commercial and
-Institutional sub-model. It is composed mainly of building shells, HVAC,
-miscellaneous electricity and air-conditioning systems for government
-and office buildings, retail space, hospitals, schools, etc. CIMS does
-not model what these spaces are used for, and thus cannot account for
-how financial output or value-added may have changed.
+: Financial, welfare cost and value-added adjustments induced by changes in output {#tbl-output_adjustments}
+
+The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.
 
 ### Outputs from CIMS
 
-Table 12 provides the outputs specific to the sub-models (i.e., for when
-they are run by themselves without feedbacks), while Table 13 provides
-the extra outputs necessary for working with the CIMS' micro and macro
-economic systems of dynamics (also referred to as feedback systems).
+Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS' micro and macro economic systems of dynamics (also referred to as feedback systems).
 
 Table 10. Sub-model Outputs Existing Prior to This Research
 
-Sub-models Annualized lifecycle costs by sector by year by technology
-based on behavioural discount rates (20-80%) (See Table 5).
+Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).
 
 Fuel use and emissions by sector by year by technology.
 
@@ -249,32 +111,23 @@ Retrofits by sector by year by technology.
 
 Technology cost changes due to declining capital cost function
 
-Table 11. Supply and Demand Feedback Outputs Added as a Result of This
-Research
+Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research
 
-Supply and Demand feedbacks Annualized lifecycle cost per unit produced
-for all sectors by year based on financial cost of capital for both the
-BAU and Policy case; the model operator sets the cost of capital (e.g.
-7.5 or 10%)
+Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g. 7.5 or 10%)
 
-BAU and Policy final demand for each sector's product or service by
-year.
+BAU and Policy final demand for each sector's product or service by year.
 
 BAU and Policy disaggregated energy demand for all sectors by year.
 
-Changes in disaggregated capital, operations and maintenance, and energy
-costs by sector by year.
+Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.
 
-Changes in GHGs and selected criteria air contaminants (CACs), energy
-and service use by technology, sorted by technology competition, for BAU
-and Policy by sector by year.
+Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.
 
 Changes in net exports of key energy commodities from BAU to Policy
 
 Changes in energy prices by year
 
-Changes in the financial cost of production split into the cost of
-production and demand effects for industry and manufacturing
+Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing
 
 Changes consumers' surplus for personal transportation and residences
 

@@ -1,0 +1,121 @@
+# Goods and Services Demand Feedbacks
+
+The economy is commonly divided into: households, who provide labour and financial capital and who consume goods and services; firms, who consume capital and labour and provide goods and services; government, which consumes goods and services, provides public goods and regulates the market; and finally foreign producers and consumers of goods, services and capital (Dornbusch et al. 1989). It is common to assume that Canada is a price taker for capital (i.e., the interest rate is set at the world price of capital).
+
+> Canada is assumed to be a small open economy... the world interest rate is assumed to be the US prime rate, and foreign savings are assumed to be available elastically. This means that the foreign sector automatically clears any surplus or deficit in the domestic savings market each period, so the domestic interest rate is effectively exogenous. (McKitrick 1998) p.552
+
+The following suite of options face the consumer or producer when the price of a good or input rises, modelled after the consumer's utility map in CASGEM (Iorwerth et al. 2000):
+
+- Substitute an import
+- Buy something else
+- Substitute current consumption for savings
+- Work less and enjoy more leisure, which is the same as reducing output
+
+These options were used as the primary guide for adding demand feedbacks in CIMS.
+
+## Manufactured products
+
+Most Canadian industrial products are highly traded; their sensitivity to foreign competition is of prime importance. To reflect the sensitivity to foreign competition, CIMS employs the same Armington specification for price elasticities as used for energy trade, whereby the demand for a foreign good rises as its price falls relative to the price of a domestically produced substitute. Using the Armington specification, consumers always buy at least some of the domestic good and some of the imported good. The price elasticities are applied with the general formula in @eq-armington_manufactured.
+
+$$
+\text{(Equation 26 — placeholder for the manufactured-products Armington elasticity)}
+$$ {#eq-armington_manufactured}
+
+::: {.eq-vars}
+$FLCC_t$
+:   current financial lifecycle cost for the product
+
+$FLCC_{t-1}$
+:   previous financial lifecycle cost for the product
+
+$COP$
+:   cost of production covered by the sub-model that produces the product, as a percentage of total cost
+
+$\sigma$
+:   price demand elasticity for the product
+
+$Multiplier$
+:   value by which demand for the product is multiplied
+:::
+
+To accommodate the differences between products in industrial sectors, especially Industrial Minerals, Chemical Products, Metal Smelting, and Light Industrial, demand feedbacks are applied at the level where production of individual products is determined. @tbl-product_price_elas provides the elasticities used for sectors and their products. See Appendix E of Chris Bataille's PhD dissertation for a full breakdown of their sources and how they were mapped to CIMS' sub-models and their sub-products.
+
+::: {.narrow-table}
+| Sector / Product | Elasticity |
+| :--- | -: |
+| **Metal Smelting** | |
+| Lead, Zinc, Aluminium, Nickel | -0.59 |
+| Copper | -0.57 |
+| **Chemical products** | |
+| Chlor-alkali, Sodium Chlorate, Hydrogen Peroxide, Ammonia Methanol | -0.44 |
+| Polymers | -0.83 |
+| **Industrial Minerals** | |
+| Cement | -1.75 |
+| Lime, Glass, Bricks | -0.53 |
+| **Pulp and Paper** | |
+| Pulp export | -1.72 |
+| Coated | -0.79 |
+| Uncoated, linerboard, tissue & newsprint | -1.54 |
+| **Iron and Steel** | |
+| Slabs, blooms, billets & molten steel | -0.60 |
+| **Mining** | |
+| Open pit, underground | -1.38 |
+| Potash | -0.58 |
+| **Light manufacturing** | |
+| Food, tobacco, beverage | -0.32 |
+| Leather, textile, clothing; Wood products | -0.86 |
+| Rubber and plastics product | -1.30 |
+| Electrical and electronic equipment | -0.81 |
+| Transportation equipment | -1.06 |
+| Furniture, printing, machinery | -0.74 |
+
+: Price elasticities used from Wirjanto (1999) {#tbl-product_price_elas}
+
+:::
+
+## Commercial and residential
+
+<mark>**Check this section because I don't think we do this! Review with Thomas how much of Chris Bataille's work is actually included. Also need Thomas to document his macroeconomic work.**</mark>
+
+There is no import substitution for non-traded goods and services such as residential and commercial floorspace. CIMS uses a log-linear econometric relationship to estimate the relationship between manufacturing activity -- used dynamically as valued added but proxied using the value of shipments -- and residential / commercial activity -- measured by the value of building permits. The resulting relationship is used to allow commercial and residential activity to respond to changes in manufacturing activity.
+
+$$
+\text{(Equation 27 — placeholder for the commercial/residential demand feedback)}
+$$ {#eq-demand_commres}
+
+::: {.eq-vars}
+$BP_{c,r}$
+:   natural log of activity (value of building permits) in the commercial or residential sectors in a given year
+
+$IVA$
+:   natural log of industrial value-added in a given year
+
+$e$
+:   error term
+
+$m$
+:   coefficient of the relationship (elasticity)
+
+$b$
+:   intercept
+:::
+
+This equation was estimated, using SHAZAM v.9, by running ordinary least squares regressions between manufacturers' shipments and residential building permits between 1961 and 1991 and manufacturers' shipments and commercial, institutional, and governmental building permits between 1961 and 1991. All values were deflated using a standard consumer price index. We tested various permutations of the regressions, including lagging and the use of population and year as an independent variable. Table 9 provides the parameter estimates.
+
+Table 7. Parameter Estimates Used to Provide Demand Feedbacks for the Residential and Commercial/Institutional Sectors
+
+The process for calculating manufacturing valued-added, the driver for residential and commercial activity in CIMS, is complex. The sub-model's outputs are designed to capture changes in energy, new capital and labour expenditures engendered by policy. These costs are a sub-component of the total cost of production, which also includes materials and supplies, as well as capital investment, labour and repairs not related to energy using equipment.
+
+Value-added is defined as the total value of shipments and other revenue, minus the cost of intermediate inputs (energy, materials, and supplies) (Lipsey et al. 1998, p.175). Returns to capital include both amortization and profits. Using values for wages, energy expenditures, costs of material, total value of shipments and capital expenditures from Statistics Canada, we found that while the ISTUM sub-models do not capture expenditures for materials or capital unrelated to energy consumption, they capture most capital expenditures in the sectors for which sub-models exist. Supplemental to this, the demand feedback function of CIMS, when faced with a reduction in demand, removes first new growth, then the necessity for replacing retired technology stock, and finally useful stock that is no longer required. Given that most sectors in CIMS grow in most time periods, a simplifying assumption was made that all the productive investment being removed was new or replacement investment, not useful stock. We then compared CIMS' new investment in 2000 with figures from Statistics Canada, and derived a set of multipliers to scale up CIMS' investment figures to reflect the ratio of coverage (the multipliers affect the demand for all stock, not just the portion of the cost of production covered by ISTUM). Finally, we added normal profits as a percentage of revenue, having ascertained that normal profits are included in value-added and that these are not normally included in CIMS. These were calculated as a percentage of total costs from Statistics Canada's "Financial and taxation statistics for enterprises, 2000, 61-219".
+
+## Freight transportation
+
+Freight transportation is important for energy and emissions policy because of the large amount of energy consumed and the amount of GHGs and criteria air contaminants produced. Activity in this sector is directly related to the amount of activity in the rest of the economy. To provide feedback relating freight and economic activity, a similar relationship to that established between manufacturing value-added and residential and commercial activity was incorporated into CIMS. It proved difficult to find an equivalent statistic for freight activity to manufacturing activity as used for the commercial and residential sectors, so instead of an estimated relationship a rule-of-thumb value was temporarily used instead (0.95 -- a 1% fall in manufacturing value-added causes a 0.95% fall in freight activity). This relationship allows changes in manufacturing value-added to adjust freight transportation activity. This relationship will be estimated once statistics are available.
+
+## Personal transportation
+
+Demand feedbacks for personal transportation operate in a similar fashion to the demand feedbacks for manufacturing and industry, except that in the place of an Armington price elasticity an elasticity for personal kilometers traveled (pkt) in response to the cost of travel is used instead (price elasticity =-0.02) (Michaelis and Davidson 1996). Transportation is also a bit different from the other sub-models in that some demand adjustments occur within the sub-models, specifically the choice between urban modes of transport (single occupancy vehicles, high occupancy vehicles, transit and walking and cycling). The upshot is that much of the structural change possible in transportation is directly included in the sub-sector models.
+
+## Limits to demand adjustments
+
+Experimentation with early versions of CIMS showed that the demand adjustments had to be regarded critically. Elasticities are by nature log-linear measurements, while demand responses are very often non-linear. It may be hypothesized that there will always be a demand for some commodities, no matter the price. A function for limiting their effects was installed; 50% was chosen as the maximum demand reduction as a rule-of-thumb for the maximum extent to which CIMS' substitution elasticities were still applicable. This demand limiting adjustment is somewhat simplistic, and in the future some form of function that applies limits to demand adjustments in a progressive way will be installed.

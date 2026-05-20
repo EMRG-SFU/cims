@@ -10,26 +10,51 @@ link-citations: true
 
 book:
   title: CIMS
-  author: Brad Griffin, Jillian Anderson, and Matt Sniatynski
+  # author: Brad Griffin, Jillian Anderson, and Matt Sniatynski
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: quarto_docs
   repo-actions: [issue]
   chapters:
-    - index.qmd
-    - part: install
+    - index.qmd                 # Introduction
+    - part: "About"
       chapters:
-        - setup.qmd
-        - getting_started.qmd
-    - part: model
+        - history.qmd           # History and development
+        - architecture.qmd      # Model architecture
+    - part: "Methodology"
       chapters:
-        - overview.qmd
-        - technologies.qmd
-        - sectors.qmd
-        - low_temp_heat.qmd
-    - part: results
+        - theory.qmd            # Theory
+        - technologies.qmd      # Technology competition
+        - energy_supply_demand.qmd  # Energy supply and demand
+        - demand_feedbacks.qmd  # Goods and services demand feedbacks
+        - sectors.qmd           # Sector descriptions
+    - part: "Cross-Sector Topics"
       chapters:
-        - policies.qmd
-        - outputs.qmd
+        - energy_efficiency.qmd  # Energy efficiency
+        - low_temp_industrial_heat.qmd     # Low-temperature industrial heat, including steam generation
+        - machine_drive.qmd      # Machine drive systems in industry
+        - ccus.qmd               # Carbon capture, utilization, and storage
+        - energy_storage.qmd     # Energy storage: thermal, short duration, long duration
+        - district_energy.qmd    # District energy supply
+    - part: "Data and Calibration"
+      chapters:
+        - data_inputs.qmd       # Data inputs
+        - calibration.qmd       # Calibration
+        - validation.qmd        # Validation
+    - part: "Running the Model"
+      chapters:
+        - setup.qmd             # Installation
+        - getting_started.qmd   # Getting started
+        - policies.qmd          # Scenarios and policies
+        - building_tree.qmd     # Building the model tree
+    - part: "Outputs and Analysis"
+      chapters:
+        - outputs.qmd           # Output files
+        - post_processing.qmd   # Post-processing and reporting
+  appendices:
+    - appendix_acronyms.qmd
+    - appendix_file_formats.qmd
+    - appendix_equations.qmd
+    - appendix_changelog.qmd
 
 format:
   html:

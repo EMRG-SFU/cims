@@ -1,30 +1,8 @@
 # Outputs
 
-<mark>TODO: Results viewer</mark>
-
-- Need to revise how \`short path\` is created once markets and/or other countries are added
-
-- Populate Tech Details only from pivot data. Need to add:
-
-  - fom
-
-  - fic
-
-  - dic (need to calc in model)
-
-  - ucc (need to calc in model)
-
-  - recycled revenue (at techs?)
-
-- Organise tree to follow model description order
-
-- Auto generate tree? Need hierarchy diagrams even if not auto generated.
-
-- Electricity sector -\> grid intensity
-
 Three main classes of output are created by the model:
 
-1)  Sub-sector specific reports (DRAFTED)
+1)  Sub-sector specific reports
 
     a)  fuel and emissions for a given sector (FUELA) for BAU and Policy, (B or C-Region-FUELA, e.g. BONFUELA.
 
@@ -34,7 +12,7 @@ Three main classes of output are created by the model:
 
     d)  technology node competition reports for a given sector (REGION-NC-YEAR, e.g. "ABNC2005"
 
-2)  Semi-aggregate reports (TO BE DONE)
+2)  Semi-aggregate reports
 
     a)  changes in physical output, sorted by sector and by region (CCOMP)
 
@@ -44,7 +22,7 @@ Three main classes of output are created by the model:
 
     d)  changes in sector cost per unit (inclusive of emissions charges), sorted by sector and by region (LCOMP)
 
-3)  Aggregate report (TO BE DONE)
+3)  Aggregate report
 
     a)  CIMS Outputs (As of March 2007)
 
@@ -100,16 +78,18 @@ Figure 6: Sample node competition report -- base load electricity production Alb
 
 ## End user reports
 
-<mark>TODO: Reports of energy use, financials, intensities, travel, etc. at end user level</mark>
+Reports of energy use, financials, intensities, travel, etc. at end user level
 
-## For example, household energy spending, average travel and costsMACC Curve
+For example, household energy spending, average travel and costs
 
-<mark>TODO: EDF report, MACC 2.0</mark>
+MACC Curve like in EDF report, MACC 2.0
 
 
-## Kaya Decomposition
+## LMDI Decomposition
 
-<mark>TODO: Decomposition of results (to also use in policy attribution)</mark>
+Can this be done appropriately at the sector level or only at region/national?
+
+Decomposition of results (to also use in policy attribution)
 
 Include automatic waterfall chart?
 
@@ -127,4 +107,4 @@ Factors:
 
 ## Attributing emissions reductions to policies
 
-<mark>TODO: Shapley values using SHAP, LIME, or QII</mark>
+Shapley values using SHAP?

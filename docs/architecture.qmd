@@ -1,20 +1,10 @@
-# Introduction to CIMS
+# Model Architecture
 
-## Background and model objectives
+## Scale and Scope
 
-CIMS[^overview-1] is an integrated set of economic, energy, and materials models designed to provide information to decision makers on the likely response of firms and households to policies that influence their technology acquisition and use decisions. Technology is widely defined to include not just equipment but also buildings and major infrastructure such as transit networks. Thus, it is sometimes described as a technology simulation model, which seeks to reflect how people actually behave rather than how they ought to behave. CIMS is able to provide policy makers with information on: (1) the ability of their policies to achieve specific objectives (like greenhouse gas (GHG) emissions reductions), (2) the likely costs of achieving these objectives, and (3) the uncertainties associated with the model's simulations. CIMS is maintained and operated by the Energy and Materials Research Group at the School of Resource and Environmental Management at Simon Fraser University.
+CIMS covers the entire Canadian economy and can connect to aggregated representations of other regions (e.g., United States, Europe, or Rest of World). @tbl-sectors-regions-dynamic illustrates the sectors and regions currently covered in CIMS.[^arch-territories]
 
-[^overview-1]: CIMS originally stood for Canadian Integrated Modelling System. The acronym is now used as a proper name, since over its history the model has been applied to several other countries and regions.
-
-CIMS is based on energy flows through a country's economic system. Like its predecessor, the ISTUM family of models, which form the individual sub-components of CIMS, it tracks the flow of energy, beginning with energy services and production processes through to eventual end-use by individual technologies. Unlike the partial equilibrium ISTUM models, which compete technologies against each other to serve pre-specified demands for end-uses, CIMS is nearly a full equilibrium system that allows the practitioner to include price driven energy and goods and services supply and demand equilibrium, energy trade, and some indirect macroeconomic effects, specifically disposable income and savings multiplier effects.
-
-The model's focus on energy flows through technologies makes it ideal for modelling policies intended to affect energy efficiency, greenhouse gas emissions, and air quality. Fuel consumption and emissions of all pollutants are technology specific; unless a model operates on a detailed technology basis, as CIMS does, fuel consumption and emission estimates can only be approximated by economic activity.
-
-## Model Scale and Scope
-
-CIMS covers the entire Canadian economy and can connect to aggregated representations of other regions (e.g., United States, Europe, or Rest of World). @tbl-sectors-regions-dynamic illustrates the sectors and regions currently covered in CIMS.[^overview-2]
-
-[^overview-2]: Canadian territories are not currently represented in CIMS.
+[^arch-territories]: Canadian territories are not currently represented in CIMS.
 
 ```{python}
 #| label: tbl-sectors-regions-dynamic
@@ -191,7 +181,7 @@ CIMS highlights the interplay of energy supply and demand because energy-related
 
 ![General model structure](images/general_model_structure.svg){#fig-general_model_structure .lightbox}
 
-## Model Simulation: Six Steps
+## Simulation: Six Steps
 
 As a simulation model, CIMS simulates the evolution of technologies acquired to meet energy services, and it uses both engineering and economic information. The engineering information details the unit energy consumption of each energy service technology and explains, using flow models of technologically heterogeneous sectors, how final energy service demands, intermediate products, and energy supply are related. The economic information determines which technologies are preferable in terms of cost minimization. While CIMS is not an optimization model, it can be adapted to produce results like those of an optimization model by calling on certain built-in functions. These functions are known as winner-take-all functions, and they give all new market shares in a given competition to the technology or process with the least cost.
 
@@ -226,26 +216,3 @@ CIMS is designed to mimic a sector or industry by representing a number of indus
 5.  The model reiterates step 2, 3 and 4 until all variables stabilize. It then proceeds to the next time period. Steps 1 through 5 are repeated for all time periods.
 
 6.  Output is provided for new and total capital stock, energy use and trade flows, GHG emissions, levelized lifecycle costs by service and technology, and energy prices.
-
-## How to run a simulation
-
-1. Stuff goes here
-
-::: {.callout-note}
-If setting market shares after the base year, need to use lifetime = 1, otherwise stock is not calculated correctly.
-
-## Building the tree
-
-Need a section in here about best practice for designing nodes.
-
-## Calibration
-
-Should this be a separate chapter?
-
-- Optimization by year to counterfactual data
-- Change FIC values to match objective criteria (counterfactual)
-- Can use market share for tech competitions at a node, or energy or emissions at same or adjacent node
-- Also have option for manual adjustment of FIC values for more disconnected objective and adjustment locations in the cims tree
-- Optimize FIC year by year over historical counterfactual period
-- Use median or filtered mean (remove top/bottom 10%? before mean) to estimate FIC for forecast period
-- Trend all FIC values to zero over very long-term (next 50-70 years?)

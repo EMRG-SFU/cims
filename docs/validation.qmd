@@ -1,0 +1,3 @@
+# Validation
+
+<mark>TODO: Document how the calibrated model is checked against independent data. Common validation comparisons for CIMS: historical fit against the NRCan Comprehensive Energy Use Database (CEUD), comparison of emissions against the ECCC National Inventory Report (NIR), comparison of new-stock investment against Statistics Canada figures, sensitivity tests for key behavioural parameters (variance $v$, discount rates). Include a discussion of known limitations and where validation is weak (e.g. provinces with sparse historical data).</mark>

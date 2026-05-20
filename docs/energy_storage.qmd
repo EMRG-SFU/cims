@@ -1,0 +1,3 @@
+# Energy Storage
+
+<mark>TODO: Describe how the model represents energy storage technologies and their role in balancing supply and demand across the energy system. The section should document the types of storage included (e.g., batteries, pumped hydro, thermal storage, hydrogen storage), storage duration assumptions, charging and discharging efficiencies, capacity constraints, and operational behavior. It should also explain how storage interacts with variable renewable generation, grid reliability requirements, peak demand management, and transmission infrastructure, along with assumptions for costs, learning rates, and deployment limits.</mark>

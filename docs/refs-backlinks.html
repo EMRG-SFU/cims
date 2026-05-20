@@ -1,3 +1,17 @@
+<style>
+/* When a back-link is clicked we scroll the target into view, which
+   can land it under the cursor and trigger Quarto's tippy hover
+   popover. With `interactive: true` the popover sticks open because
+   the cursor is on the trigger. Visual suppression below is paired
+   with logical suppression in JS (disable every tippy instance while
+   the class is on). We deliberately do NOT use `pointer-events: none`
+   on triggers: doing so freezes tippy in a stuck-hover state, since
+   the mouseleave it expects never fires.   */
+body.suppress-tippy-popovers .tippy-box,
+body.suppress-tippy-popovers [data-tippy-root] {
+  display: none !important;
+}
+</style>
 <script>
 (function () {
   // Quarto book mode picks one chapter as the "primary" references
@@ -50,26 +64,9 @@
         const a = document.createElement('a');
         a.href = '#' + cite.id;
         a.textContent = '\u21A9\uFE0E';
-        // Scroll manually so the citation isn't focused; focusing it would
-        // trigger Quarto's Tippy.js citation popover and keep it stuck open.
-        a.addEventListener('click', function (e) {
-          e.preventDefault();
-          cite.scrollIntoView({ behavior: 'auto', block: 'center' }); // could use 'smooth' scroll
-          history.replaceState(null, '', '#' + cite.id);
-          // Drop focus from the back-link itself so nothing else is focused.
-          if (document.activeElement && document.activeElement.blur) {
-            document.activeElement.blur();
-          }
-          // After scrolling, the citation can slide under the cursor,
-          // and tippy opens its hover popover ~100 ms later. Dismiss
-          // any popovers that appear so the user lands on a clean
-          // page. Run twice to cover both the immediate and the
-          // delayed-hover case.
-          if (window.tippy && typeof window.tippy.hideAll === 'function') {
-            window.tippy.hideAll();
-            setTimeout(window.tippy.hideAll, 200);
-          }
-        });
+        // Click is handled by the document-level capture delegate
+        // (see bindCaptureClickHandler), which intercepts every
+        // in-page scroll back-link uniformly.
         back.appendChild(a);
         if (i < cites.length - 1) back.append(' ');
       });
@@ -78,10 +75,168 @@
     });
   }
 
+  // A MutationObserver-based popover killer. While suppression is
+  // active, any [data-tippy-root] or .tippy-box element inserted into
+  // the DOM is immediately removed. This is independent of tippy's
+  // own API (no reliance on _tippy / disable / hideAll), so it works
+  // even if tippy stores its instances somewhere other than where
+  // we'd expect.
+  let popoverObserver = null;
+  function ensureObserver() {
+    if (popoverObserver) return;
+    popoverObserver = new MutationObserver(function (mutations) {
+      if (!document.body.classList.contains('suppress-tippy-popovers')) return;
+      mutations.forEach(function (m) {
+        m.addedNodes.forEach(function (n) {
+          if (n.nodeType !== 1) return;
+          if (n.hasAttribute && (n.hasAttribute('data-tippy-root') ||
+              (n.classList && n.classList.contains('tippy-box')))) {
+            n.remove();
+          }
+        });
+      });
+    });
+    popoverObserver.observe(document.body, { childList: true, subtree: true });
+  }
+
+  function suppressPopovers() {
+    ensureObserver();
+    document.body.classList.add('suppress-tippy-popovers');
+    document.querySelectorAll('[data-tippy-root]').forEach(function (root) {
+      root.remove();
+    });
+    if (window.tippy && typeof window.tippy.hideAll === 'function') {
+      try { window.tippy.hideAll(); } catch (_) {}
+    }
+    // Best-effort: walk every plausibly-tippy-bound element and call
+    // hide()/disable() if tippy exposes its instance the standard way.
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+      const t = el._tippy;
+      if (!t) return;
+      try { t.hide(); } catch (_) {}
+      if (typeof t.disable === 'function') t.disable();
+    });
+  }
+
+  function releasePopovers() {
+    document.body.classList.remove('suppress-tippy-popovers');
+    document.querySelectorAll('[role="doc-noteref"], .quarto-xref, [role="doc-biblioref"]').forEach(function (el) {
+      const t = el._tippy;
+      if (t && typeof t.enable === 'function') t.enable();
+    });
+  }
+
+  // Compute the window scrollY that puts `el` at viewport center.
+  // Doing this with explicit math (rather than scrollIntoView) avoids
+  // any interference from scrollable ancestors or browser quirks.
+  function centerWindowOn(el) {
+    try {
+      const rect = el.getBoundingClientRect();
+      const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+      const target = Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+      window.scrollTo({ top: target, behavior: 'auto' });
+    } catch (_) {
+      try { el.scrollIntoView({ behavior: 'auto', block: 'center' }); } catch (_) {}
+    }
+  }
+
+  // Compute the absolute window-Y that puts `el` at viewport center.
+  function targetScrollY(el) {
+    const rect = el.getBoundingClientRect();
+    const absoluteTop = rect.top + (window.pageYOffset || window.scrollY || 0);
+    return Math.max(0, absoluteTop - (window.innerHeight / 2) + (rect.height / 2));
+  }
+
+  // Scroll-lock state. While `lockTarget` is non-null and we're before
+  // `lockUntil`, every scroll event yanks the page back to centered
+  // on lockTarget. `selfScroll` breaks the recursion (our own scrollTo
+  // would otherwise re-trigger the listener).
+  let lockTarget = null;
+  let lockUntil = 0;
+  let selfScroll = false;
+  function onScrollLock() {
+    if (!lockTarget || Date.now() >= lockUntil) return;
+    if (selfScroll) return;
+    const want = targetScrollY(lockTarget);
+    const got = window.pageYOffset || window.scrollY || 0;
+    if (Math.abs(got - want) > 2) {
+      selfScroll = true;
+      try { window.scrollTo(0, want); } catch (_) {}
+      // Reset flag after the resulting scroll event has fired.
+      setTimeout(function () { selfScroll = false; }, 0);
+    }
+  }
+  window.addEventListener('scroll', onScrollLock, { passive: true, capture: true });
+
+  // Quarto's quarto-nav.js registers a `hashchange` listener that
+  // calls `window.scrollTo(0, pageYOffset - headerOffset())` -- it
+  // re-scrolls to the new hash, accounting for the fixed header.
+  // That's what was overriding our scroll. By registering our own
+  // hashchange listener (which runs after Quarto's because Quarto's
+  // is registered first), we re-center on the locked target after
+  // quarto-nav has done its scroll.
+  window.addEventListener('hashchange', function () {
+    if (!lockTarget || Date.now() >= lockUntil) return;
+    selfScroll = true;
+    try { window.scrollTo(0, targetScrollY(lockTarget)); } catch (_) {}
+    setTimeout(function () { selfScroll = false; }, 0);
+  }, false);
+
+  // Single capture-phase delegate for every in-page scroll back-link.
+  // Whatever is scrolling the marker to viewport top (browser
+  // hash-jump, focus auto-scroll, etc.), the scroll-event lock
+  // immediately reverts any drift back to our centered position. URL
+  // hash is intentionally NOT updated -- setting it has been observed
+  // to trigger a competing scroll on some browsers.
+  function bindCaptureClickHandler() {
+    if (document.documentElement.dataset.scrollBacklinkHandler) return;
+    document.documentElement.dataset.scrollBacklinkHandler = '1';
+    document.addEventListener('click', function (e) {
+      let link = null;
+      try {
+        const t = e.target && (e.target.nodeType === 3 ? e.target.parentElement : e.target);
+        link = t && t.closest && t.closest('a.footnote-back, .csl-backlinks > a');
+      } catch (_) {}
+      if (!link) return;
+      // Quarto-nav.js rewrites internal hrefs from "#anchor" to the
+      // absolute URL ("http://.../page.html#anchor"). Extract the hash
+      // from anywhere in the href so we work with either form.
+      const href = link.getAttribute('href') || '';
+      const hashIdx = href.lastIndexOf('#');
+      const hash = hashIdx === -1 ? '' : href.substring(hashIdx);
+      const target = hash ? document.querySelector(hash) : null;
+      if (!target) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      try { suppressPopovers(); } catch (_) {}
+      try {
+        if (document.activeElement && document.activeElement.blur) {
+          document.activeElement.blur();
+        }
+      } catch (_) {}
+
+      // Engage the scroll-event lock for 600 ms. Any scroll attempt
+      // during that window is reverted to centered-on-target by the
+      // onScrollLock listener.
+      lockTarget = target;
+      lockUntil = Date.now() + 600;
+      selfScroll = true;
+      try { window.scrollTo(0, targetScrollY(target)); } catch (_) {}
+      setTimeout(function () { selfScroll = false; }, 0);
+
+      setTimeout(function () {
+        lockTarget = null;
+        releasePopovers();
+      }, 800);
+    }, true);  // capture phase
+  }
+
   function applyAll() {
     unhideLocalRefs();
     rewriteCrossChapterCites();
     addBacklinks();
+    bindCaptureClickHandler();
   }
 
   function start() {

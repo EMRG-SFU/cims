@@ -1,0 +1,20 @@
+# Calibration {#sec-calibration}
+
+<mark>TODO: Expand the outline below into a full chapter. Each bullet is a section heading or paragraph topic in its own right — the calibration period and counterfactual data sources, the FIC-optimization workflow, the manual-adjustment fallback, how the forecast-period FIC is derived from the historical estimates, and the long-term FIC trend-to-zero convention all deserve explicit treatment.</mark>
+
+- Optimization by year to counterfactual data
+- Change FIC values to match objective criteria (counterfactual)
+- Can use market share for tech competitions at a node, or energy or emissions at same or adjacent node
+- Also have option for manual adjustment of FIC values for more disconnected objective and adjustment locations in the cims tree
+- Optimize FIC year by year over historical counterfactual period
+- Use median or filtered mean (remove top/bottom 10% before mean) to estimate FIC for forecast period
+- Trend all FIC values to zero over very long-term (next 50-70 years?)
+
+Calibration of endogenous supply sectors:
+
+1.  Set Financial lifecycle cost to 1
+2.  Set Price Multiplier to expected price (including sector markup)
+3.  Calibrate demand sector
+4.  Calibrate energy supply sector to achieve expected production cost at node one level below top level
+5.  Remove Financial lifecycle cost
+6.  Reset Price Multiplier to only include sector markup

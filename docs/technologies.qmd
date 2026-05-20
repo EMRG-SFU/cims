@@ -2,11 +2,7 @@
 bibliography: technologies.bib
 ---
 
-# Technology Competition and Demand Feedbacks
-
-CIMS operating equations and their subcomponents are presented below: sub-sector technology choice, energy supply and demand equilibrium, and finally goods and services demand equilibrium.
-
-## Sub-model Technology Choice Dynamics and Equations
+# Technology Competition {#sec-technology-competition}
 
 Sub-model technology choice occurs according to the following order:
 
@@ -15,15 +11,15 @@ Sub-model technology choice occurs according to the following order:
 - Assessment of capital stock availability
 - Retrofit & new capital stock competition to meet demand not supplied by existing capital stock
 
-### Demand Assessment
+## Demand Assessment
 
 All of the CIMS energy demand models (industry, transportation, commercial / institutional and residential) start with an exogenously determined demand for physical goods and services in each run period. These demands are mostly taken from Natural Resources Canada forecasts. The energy supply models may either use exogenously determined forecasts or they can be run using energy demand calculated from the demand model plus net exports.
 
-#### Request-Provide demand
+### Request-Provide demand
 
-#### Distributed supply
+### Distributed supply
 
-### Capital Stock Retirement
+## Capital Stock Retirement
 
 CIMS begins each simulation with an existing base stock of technologies. @eq-stock_retirement_existing describes how the existing stock of unknown age already in use is retired. Each year a constant amount of the base stock is retired until there is no more base stock remaining (@fig-stock_retirement_existing).
 
@@ -89,11 +85,11 @@ $$ {#eq-stock_total}
 
 ![Total Stock](images/stock_total.svg){#fig-stock_total .lightbox width=80%}
 
-### Retrofit and New Stock Competition
+## Retrofit and New Stock Competition
 
 While retrofitting occurs before new stock competition, the retrofitting equations are a subset of the new stock equations and are therefore presented after them. The market shares for individual technologies are determined using the equations below.
 
-#### New Stock Competition
+### New Stock Competition
 
 @eq-market_share_new is a normalized inverse-power function: the market share of each technology is proportional to its lifecycle cost raised to $-v$, divided by the sum of that quantity over all competitors. It is the multinomial choice analogue of softmax, but with a power-law transform of cost instead of an exponential[^tech-choice-family] — which means lifecycle-cost *ratios*, rather than differences, drive the share split. The variance parameter $v$ controls how sharply the competition responds to those ratios: a high value, such as $v = 30$, makes the lowest-cost technology capture almost all new equipment stocks (approaching the winner-take-all rule of a linear program), while a low value, such as $v = 1$, spreads new equipment shares almost evenly across competing technologies even when their lifecycle costs differ significantly. Equivalently, in log-cost space the equation has the form of a multinomial logit on $\ln LCC$.
 
@@ -201,7 +197,7 @@ $SC_{kt}$
 :   service cost of technology *k* at time *t*
 
 $P_{jt}$
-:   price of service type *j* at time *t* (can be either a fuel price or the weighted-average lifecycle cost of a service, based on the market shares of technologies competing to provide that service)
+:   price of service type *j* at time *t* (can be either an energy price or the weighted-average lifecycle cost of a service, based on the market shares of technologies competing to provide that service)
 
 $R_{kjt}$
 :   amount of service type *j* requested by technology *k* at time *t*
@@ -211,13 +207,13 @@ Note that market shares used to calculate the weighted-average LCC of a service 
 
 <mark>**Subsidies**</mark>
 
-#### Retrofit
+### Retrofit
 
 The retrofit option allows functioning equipment to be converted to a different type of equipment before its retirement date. For example, a boiler could be retrofitted into a cogenerator before it's lifetime-based retirement. After existing stock is retired, CIMS treats the initial purchasing price of the incumbent technology as a sunk cost and uses the operating and maintenance (O&M), energy, service and emissions costs as the only costs of the incumbent technology. The costs of the retrofit options are then calculated as the sum of O&M, energy, service and emissions costs plus the annualized retrofit capital cost less any tax or other credit. CIMS then determines, using a similar competition calculation to those already described, how many incumbent technologies will be retrofitted.
 
 The analyst can place some bounds on this retrofit option. A maximum (R-MAX) or minimum (R-MIN) market share can be established such that only a certain amount of the old stock could (maximum) or must (minimum) be retrofitted in any year. In an unconstrained market, maximum should be set to 1 and minimum to 0.
 
-### Modifications to the technology choice equations
+## Modifications to the technology choice equations
 
 Several functions have been added to the competition process to reflect both real world conditions and policy concerns. These currently include functions to:
 
@@ -227,7 +223,7 @@ Several functions have been added to the competition process to reflect both rea
 
 - Eliminate obsolete but still functioning technologies.
 
-#### Declining Capital Cost
+### Declining Capital Cost
 
 The declining capital cost function allows the capital costs of technologies to decline as a result of learning by doing and improving economies of scale. In CIMS, capital costs decline as a result of the cumulative production of a technology across Canada and an exogenous rate of decline which represents production in other countries.
 
@@ -270,11 +266,11 @@ $AEEI$
 :   exogenous rate of decline of a technology's capital costs
 :::
 
-In order to prevent capital costs from declining indefinitely, an analyst may specify the percentage of the initial capital costs below which capital costs may not decline. 
+In order to prevent capital costs from declining indefinitely, an analyst may specify the percentage of the initial capital costs below which capital costs may not decline.
 
 Research has shown that investment in one technology (e.g., hybrid cars) can lower costs of another technology (e.g., battery cars). This can be achieved by setting technologies to the same DCC category so that the sum of all installed stock for technologies within that category is used when determining capital costs.
 
-#### Declining Intangible Cost Function
+### Declining Intangible Cost Function
 
 The declining intangible cost function allows non-financial costs to fall as a result of reduced perceived risk as market exposure increases. The following general formula applies.
 
@@ -302,7 +298,7 @@ $NMS_{t-5}$
 :   new market share from the previous run, expressed between 0 and 1 (i.e. between 0% and 100%, not 0 and 100). $NMS$ is the technology's share among all other technologies that provide the same service.
 :::
 
-#### Forward looking behaviour
+### Forward looking behaviour
 
 The foresight functions simulate business and consumer behaviour for considering future costs. The functions calculate the expected emissions cost of technologies, considering different lifespans and discount rates.
 
@@ -356,206 +352,6 @@ $N$
 $r_k$
 :   revealed discount rate of technology *k*, set in the Techno Economic file
 :::
-
-### Energy Supply and Demand
-
-In CIMS's integrated energy supply and demand system, the demands of final demand sectors directly drive the activities of electricity production, refining, coal mining and natural gas and crude oil extraction. Inter-regional transfers as well as net exports are added, as demand for Canada's energy supply sector includes US demand. The importance of domestic demand varies by energy commodity. Most electricity is produced for Canadian consumers, more than half of natural gas produced is shipped to the US, and there is a heavy trade in crude oil and refined petroleum products. Half our domestic crude oil production is shipped to the US, while we import from both OPEC and non-OPEC suppliers.
-
-<mark>**Need to revise this description to reflect the current setup, but should preserve a more complete version as a comment for later upgrades. 
-Adjust the descriptions below to detail the fully endogenous options and note that many can be switched to exogenous function.**</mark>
-
-Each of the energy markets in CIMS has the option of fixed or dynamic pricing, and they are described below:
-
-- Regional electricity markets are included with endogenous internal pricing based on the cost of production. The amount of electricity produced is the sum of endogenous domestic demand and net extra-regional exports, which may be adjusted using an export own-price elasticity.
-
-- One national natural gas market is included, with dynamic pricing using a supply curve based on a combination of Canadian and US market feedbacks. The amount of gas produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export price elasticity.
-
-- One national crude oil market, based on an exogenously specified world price of crude oil. The amount of crude oil produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export elasticity. The world crude oil price is assumed to be unresponsive to Canadian demand.
-
-- Petroleum refining regions divide their production amongst demand regions and net exports. All can use endogenous internal pricing based on the cost of production. The amount of refined petroleum products produced is the sum of domestic regional demand and net extra-regional exports.
-
-- Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e. BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve -- for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan and the Atlantic provinces all buy their coal at a fixed market price.
-
-- **-\> Revise coal description to separate thermal coal (exogenous) and metallurgical (endogenous).**
-
-CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (@fig-final_intermediate_primary_flow). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.
-
-![final_intermediate_primary_flow](images/final_intermediate_primary_flow.png){#fig-final_intermediate_primary_flow .lightbox}
-
-The electricity demands of petroleum refining, the refined petroleum product demands of the primary energy supply models, and the interdependencies among the primary energy supply models create feedback loops within the system. Because CIMS operates as a simulation model rather than a computable general equilibrium model, these feedback loops cannot be resolved within a single iteration of the demand–supply algorithm. To address this limitation, CIMS is run iteratively until lifecycle costs throughout the model converge below a specified threshold criterion (typically less than a 5% difference between iterations). Additional iterations may also be performed to ensure that the effects of the feedback loops have stabilized.
-
-Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (@tbl-export_price_elas).
-
-<mark>**change this table to GTAP? talk to Thomas**</mark>
-
-| Energy Commodity | Long-Run Own-price Elasticity for Export Demand |
-|:----|:----:|
-| Electricity | -0.54 |
-| Natural gas | -0.67 |
-| Coal | -0.51 |
-| Gasoline and fuel oil | -0.92 |
-| Other petroleum products | -0.82 |
-
-: Price Elasticities for Energy Exports, Wirjanto (1999) {#tbl-export_price_elas}
-
-These elasticities follow the Armington specification, whereby the demand for an imported good rises as its price falls relative to the price of its domestic substitute. At all times, consumers buy at least some of the domestic good and some of the imported good, even when the price difference is large (Iorwerth et al. 2000, Wirjanto 1999). See Bataille (2005) for further elaboration. The Armington specification assumes that goods produced by different countries are not perfect substitutes. The energy trade elasticities are represented in Equation 20, which applies the elasticity of the ratio of import volumes to domestic production in relation to a change in the relative price of imports to domestic prices.
-
-$$
-\text{(Equation 25 — placeholder for the energy trade Armington elasticity)}
-$$ {#eq-armington_energy}
-
-::: {.eq-vars}
-$FLCC_t$
-:   current financial lifecycle cost for producing the energy commodity
-
-$FLCC_{t-1}$
-:   previous financial lifecycle cost for producing the energy commodity
-
-$COP$
-:   cost of production covered by the energy-producing sub-model, as a percentage of total cost
-
-$\sigma$
-:   price demand elasticity for the energy commodity
-
-$IT$
-:   initial trade volume of the energy commodity
-
-$Adj_{prod}$
-:   additive adjustment to production of the energy commodity
-:::
-
-Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US.
-
-### Goods and Serviced Demand Feedbacks
-
-The economy is commonly divided into: households, who provide labour and financial capital and who consume goods and services; firms, who consume capital and labour and provide goods and services; government, which consumes goods and services, provides public goods and regulates the market; and finally foreign producers and consumers of goods, services and capital (Dornbusch et al. 1989). It is common to assume that Canada is a price taker for capital (i.e., the interest rate is set at the world price of capital).
-
-> Canada is assumed to be a small open economy... the world interest rate is assumed to be the US prime rate, and foreign savings are assumed to be available elastically. This means that the foreign sector automatically clears any surplus or deficit in the domestic savings market each period, so the domestic interest rate is effectively exogenous. (McKitrick 1998) p.552
-
-The following suite of options face the consumer or producer when the price of a good or input rises, modelled after the consumer's utility map in CASGEM (Iorwerth et al. 2000):
-
-- Substitute an import
-- Buy something else
-- Substitute current consumption for savings
-- Work less and enjoy more leisure, which is the same as reducing output
-
-These options were used as the primary guide for adding demand feedbacks in CIMS.
-
-#### Demand Feedbacks for Manufactured Products
-
-Most Canadian industrial products are highly traded; their sensitivity to foreign competition is of prime importance. To reflect the sensitivity to foreign competition, CIMS employs the same Armington specification for price elasticities as used for energy trade, whereby the demand for a foreign good rises as its price falls relative to the price of a domestically produced substitute. Using the Armington specification, consumers always buy at least some of the domestic good and some of the imported good. The price elasticities are applied with the general formula in Equation 21.
-
-$$
-\text{(Equation 26 — placeholder for the manufactured-products Armington elasticity)}
-$$ {#eq-armington_manufactured}
-
-::: {.eq-vars}
-$FLCC_t$
-:   current financial lifecycle cost for the product
-
-$FLCC_{t-1}$
-:   previous financial lifecycle cost for the product
-
-$COP$
-:   cost of production covered by the sub-model that produces the product, as a percentage of total cost
-
-$\sigma$
-:   price demand elasticity for the product
-
-$Multiplier$
-:   value by which demand for the product is multiplied
-:::
-
-To accommodate the differences between products in industrial sectors, especially Industrial Minerals, Chemical Products, Metal Smelting, and Light Industrial, demand feedbacks are applied at the level where production of individual products is determined. @tbl-product_price_elas provides the elasticities used for sectors and their products. See Appendix E of Chris Bataille's PhD dissertation for a full breakdown of their sources and how they were mapped to CIMS' sub-models and their sub-products.
-
-::: {.narrow-table}
-| Sector / Product | Value Used |
-| :--- | -: |
-| **Metal Smelting** |
-| Lead | -0.59 |
-| Zinc | -0.59 |
-| Copper | -0.57 |
-| Aluminium | -0.59 |
-| Nickel | -0.59 |
-| **Chemical products** |
-| Chlor-alkali | -0.44 |
-| Sodium Chlorate | -0.44 |
-| Hydrogen Peroxide | -0.44 |
-| Ammonia Methanol | -0.44 |
-| Polymers | -0.83 |
-| **Industrial Minerals** |
-| Cement | -1.75 |
-| Lime | -0.53 |
-| Glass | -0.53 |
-| Bricks | -0.53 |
-| **Pulp and Paper** |
-| Pulp export | -1.72 |
-| Coated | -0.79 |
-| Uncoated, linerboard, tissue & newsprint | -1.54 |
-| **Iron and Steel** |
-| Slabs, blooms, billets & molten steel | -0.60 |
-| **Mining** |
-| Open pit, underground | -1.38 |
-| Potash | -0.58 |
-| **Light manufacturing** |
-| Food, tobacco, beverage | -0.32 |
-| Rubber and plastics product | -1.30 |
-| Leather, textile, clothing | -0.86 |
-| Wood products | -0.86 |
-| Furniture, printing, machinery | -0.74 |
-| Transportation equipment | -1.06 |
-| Electrical and electronic equipment | -0.81 |
-
-: Price elasticities used from Wirjanto (1999) {#tbl-product_price_elas}
-
-:::
-
-#### Demand Feedbacks for Commercial and Residential
-
-<mark>**Check this section because I don't think we do this! Review with Thomas how much of Chris Bataille's work is actually included. Also need Thomas to document his macroeconomic work.**</mark>
-
-There is no import substitution for non-traded goods and services such as residential and commercial floorspace. CIMS uses a log-linear econometric relationship to estimate the relationship between manufacturing activity -- used dynamically as valued added but proxied using the value of shipments -- and residential / commercial activity -- measured by the value of building permits. The resulting relationship is used to allow commercial and residential activity to respond to changes in manufacturing activity.
-
-$$
-\text{(Equation 27 — placeholder for the commercial/residential demand feedback)}
-$$ {#eq-demand_commres}
-
-::: {.eq-vars}
-$BP_{c,r}$
-:   natural log of activity (value of building permits) in the commercial or residential sectors in a given year
-
-$IVA$
-:   natural log of industrial value-added in a given year
-
-$e$
-:   error term
-
-$m$
-:   coefficient of the relationship (elasticity)
-
-$b$
-:   intercept
-:::
-
-This equation was estimated, using SHAZAM v.9, by running ordinary least squares regressions between manufacturers' shipments and residential building permits between 1961 and 1991 and manufacturers' shipments and commercial, institutional, and governmental building permits between 1961 and 1991. All values were deflated using a standard consumer price index. We tested various permutations of the regressions, including lagging and the use of population and year as an independent variable. Table 9 provides the parameter estimates.
-
-Table 7. Parameter Estimates Used to Provide Demand Feedbacks for the Residential and Commercial/Institutional Sectors
-
-The process for calculating manufacturing valued-added, the driver for residential and commercial activity in CIMS, is complex. The sub-model's outputs are designed to capture changes in energy, new capital and labour expenditures engendered by policy. These costs are a sub-component of the total cost of production, which also includes materials and supplies, as well as capital investment, labour and repairs not related to energy using equipment.
-
-Value-added is defined as the total value of shipments and other revenue, minus the cost of intermediate inputs (energy, materials, and supplies) (Lipsey et al. 1998, p.175). Returns to capital include both amortization and profits. Using values for wages, energy expenditures, costs of material, total value of shipments and capital expenditures from Statistics Canada, we found that while the ISTUM sub-models do not capture expenditures for materials or capital unrelated to energy consumption, they capture most capital expenditures in the sectors for which sub-models exist. Supplemental to this, the demand feedback function of CIMS, when faced with a reduction in demand, removes first new growth, then the necessity for replacing retired technology stock, and finally useful stock that is no longer required. Given that most sectors in CIMS grow in most time periods, a simplifying assumption was made that all the productive investment being removed was new or replacement investment, not useful stock. We then compared CIMS' new investment in 2000 with figures from Statistics Canada, and derived a set of multipliers to scale up CIMS' investment figures to reflect the ratio of coverage (the multipliers affect the demand for all stock, not just the portion of the cost of production covered by ISTUM). Finally, we added normal profits as a percentage of revenue, having ascertained that normal profits are included in value-added and that these are not normally included in CIMS. These were calculated as a percentage of total costs from Statistics Canada's "Financial and taxation statistics for enterprises, 2000, 61-219".
-
-#### Demand Feedbacks for Freight Transportation
-
-Freight transportation is important for energy and emissions policy because of the large amount of energy consumed and the amount of GHGs and criteria air contaminants produced. Activity in this sector is directly related to the amount of activity in the rest of the economy. To provide feedback relating freight and economic activity, a similar relationship to that established between manufacturing value-added and residential and commercial activity was incorporated into CIMS. It proved difficult to find an equivalent statistic for freight activity to manufacturing activity as used for the commercial and residential sectors, so instead of an estimated relationship a rule-of-thumb value was temporarily used instead (0.95 -- a 1% fall in manufacturing value-added causes a 0.95% fall in freight activity). This relationship allows changes in manufacturing value-added to adjust freight transportation activity. This relationship will be estimated once statistics are available.
-
-#### Demand Feedbacks for Personal Transportation
-
-Demand feedbacks for personal transportation operate in a similar fashion to the demand feedbacks for manufacturing and industry, except that in the place of an Armington price elasticity an elasticity for personal kilometers traveled (pkt) in response to the cost of travel is used instead (price elasticity =-0.02) (Michaelis and Davidson 1996). Transportation is also a bit different from the other sub-models in that some demand adjustments occur within the sub-models, specifically the choice between urban modes of transport (single occupancy vehicles, high occupancy vehicles, transit and walking and cycling). The upshot is that much of the structural change possible in transportation is directly included in the sub-sector models.
-
-#### Limits to the Demand Adjustments
-
-Experimentation with early versions of CIMS showed that the demand adjustments had to be regarded critically. Elasticities are by nature log-linear measurements, while demand responses are very often non-linear. It may be hypothesized that there will always be a demand for some commodities, no matter the price. A function for limiting their effects was installed; 50% was chosen as the maximum demand reduction as a rule-of-thumb for the maximum extent to which CIMS' substitution elasticities were still applicable. This demand limiting adjustment is somewhat simplistic, and in the future some form of function that applies limits to demand adjustments in a progressive way will be installed.
 
 {{< pagebreak >}}
 

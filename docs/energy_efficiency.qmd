@@ -1,0 +1,3 @@
+# Energy Efficiency
+
+<mark>TODO: Describe how energy efficiency improvements are represented across end-use sectors, including assumptions for technology adoption, energy intensity reductions, autonomous efficiency improvement rates, and policy-driven measures. The section should explain whether efficiency is modeled through technology choice, exogenous intensity trends, or explicit retrofit and equipment turnover dynamics. It should also cover cost assumptions, rebound effects if applicable, and interactions with electrification, fuel switching, and demand growth projections.</mark>

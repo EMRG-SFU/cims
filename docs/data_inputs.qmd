@@ -1,0 +1,5 @@
+# Data Inputs
+
+<mark>TODO: A reader-oriented description of the `data/` directory. Cover: (1) `data/model_inputs/` — what each region/sector CSV represents, the meaning of the Branch / Type / Parameter / Service / Technology columns, how rows are interpreted as nodes in the CIMS tree, what `service_provide` / `service_request` / `competition` / etc. parameter values mean. (2) `data/mapping_conversions/` — region_primary, sector_map, energy_map, the region aggregation files, and how they're used during processing and rendering (the dynamic sector-by-region table in the architecture chapter is one example). (3) `data/raw_data/` and `data/processed_data/` — source datasets and how they flow into model inputs. (4) `data/calibration/` — what lives there. Cross-reference the file-format appendix for column-by-column specifications.
+
+May want to include information here about including geographic levels other than provinces and territories, like energy markets, other countries (for trade dynamics), and cities (for building and transportation policies).</mark>

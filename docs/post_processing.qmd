@@ -1,0 +1,3 @@
+# Post-Processing and Reporting
+
+<mark>TODO: Describe the post-processing workflow that turns raw CIMS outputs into the figures and tables typically presented in a study. Likely includes: pivoting and aggregating output CSVs, computing derived metrics (emissions intensities, levelized costs, sector totals), comparing scenarios against a baseline, building standard chart sets (energy demand by sector, technology stock evolution, emissions trajectories). If any scripts in the repo support this, link to them and show example usage.</mark>

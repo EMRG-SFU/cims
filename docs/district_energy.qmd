@@ -1,0 +1,5 @@
+# District Energy
+
+<mark>TODO: Describe how district energy systems are represented in the model, including district heating and cooling networks, connected end uses, and energy supply sources such as waste heat, biomass, geothermal, electricity, or combined heat and power systems. The section should explain geographic or sectoral applicability, infrastructure expansion assumptions, system efficiencies, and fuel-switching dynamics. It should also document how district energy interacts with building heating demand, electrification pathways, urban density assumptions, and decarbonization strategies across buildings and industry.
+
+This section may only indicate why district energy is **not** endogenously represented in CIMS due to the political nature of its implementation, rather than purely economic or policy criteria.</mark>

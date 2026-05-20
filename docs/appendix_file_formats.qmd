@@ -1,0 +1,3 @@
+# File Format Reference
+
+<mark>TODO: Column-by-column specification of every file format the model reads or writes. At minimum: model_inputs CSV (the 24-column Branch/Type/Region/Sector/Service/Technology/Parameter/Context/Sub_Context/Target/Source/Unit/years/Comments structure), region_primary and region_aggregation_* mapping CSVs, sector_map CSV, energy_map and energy_conversions CSVs, nir_to_cims_map CSV. Note the "navigate by typing" banner on the first line of every model_inputs CSV (which is why all read code uses `skiprows=1`). Document the expected datatypes and any required vs. optional columns.</mark>

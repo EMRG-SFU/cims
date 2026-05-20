@@ -1,0 +1,7 @@
+# Building the Model Tree
+
+<mark>TODO: Write up best-practices for designing nodes in the CIMS tree. Cover: when to request services directly at a node vs. through technology competition, how to lay out service nodes for a new sector, naming and Branch-path conventions, where intangible costs are typically anchored, and how to expose policy levers cleanly. Worked examples (one residential heating, one industrial process-heat) would communicate the patterns better than abstract prose.</mark>
+
+::: {.callout-note}
+If setting market shares after the base year, need to use lifetime = 1, otherwise stock is not calculated correctly.
+:::

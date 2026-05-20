@@ -1,0 +1,3 @@
+# Equation Summary
+
+<mark>TODO: A quick-reference table listing every numbered equation in the methodology chapters with its label, name, and one-line description. Sortable by label (`eq-stock_retirement_existing`, `eq-market_share_new`, etc.). Lets readers locate an equation by name without scanning the methodology chapters. Could also be auto-generated from the qmd source by parsing `$$…$$ {#eq-…}` blocks.</mark>
