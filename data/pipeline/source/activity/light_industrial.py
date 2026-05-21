@@ -158,9 +158,10 @@ li_df = (
     # Stats Can stores VALUE as strings (empty string = suppressed/confidential).
     # Cast to Float64 (strict=False turns empty strings into null), then fill
     # any suppressed cells with 0 so downstream sums are not disrupted.
-    .with_columns(
-        pl.col('gdp_millions').cast(pl.Float64, strict=False).fill_null(0.0)
-    )
+    .with_columns([
+        pl.col('Year').cast(pl.Int32),
+        pl.col('gdp_millions').cast(pl.Float64, strict=False).fill_null(0.0),
+    ])
 )
 
 
@@ -233,6 +234,44 @@ li_splits = (
 
 combined = pl.concat([li_total, li_splits]).sort(["Region", "Variable", "Year"])
 
+# Split ratios in years where total GDP is zero come from suppressed/missing
+# data, not genuine production absences — fill those from the nearest valid
+# year. Only nullify zeros in zero-total years; genuine zero-production nodes
+# in non-zero-total years are left alone so ratios continue to sum to 1.
+_zero_total_years = (
+    li_total
+    .filter(pl.col("Value") == 0.0)
+    .select(["Region", "Year"])
+    .with_columns(pl.lit(True).alias("_zero_total"))
+)
+
+combined = (
+    combined
+    .join(_zero_total_years, on=["Region", "Year"], how="left")
+    .with_columns(
+        pl.when(
+            (pl.col("Unit") == "% of $M 2017 GDP") &
+            pl.col("_zero_total").fill_null(False)
+        )
+        .then(pl.lit(None).cast(pl.Float64))
+        .otherwise(pl.col("Value"))
+        .alias("_nonzero")
+    )
+    .with_columns(
+        pl.col("_nonzero").forward_fill().over(["Region", "Variable"]).alias("_ffilled")
+    )
+    .with_columns(
+        pl.col("_ffilled").backward_fill().over(["Region", "Variable"]).alias("_bfilled")
+    )
+    .with_columns(
+        pl.when(pl.col("Unit") == "% of $M 2017 GDP")
+        .then(pl.col("_bfilled").fill_null(0.0))
+        .otherwise(pl.col("Value"))
+        .alias("Value")
+    )
+    .drop(["_zero_total", "_nonzero", "_ffilled", "_bfilled"])
+)
+
 
 # -- L5. Extend to 2100 -------------------------------------------------------
 #
@@ -274,6 +313,8 @@ for (region, variable, unit), grp in combined_pd.groupby(["Region", "Variable", 
             override=CAGR_OVERRIDES.get(region),
         )
         for yr, val in ext.items():
+            if yr <= last_year:
+                continue
             future_rows_list.append({
                 "Region": region,
                 "Variable": variable,
@@ -294,6 +335,17 @@ combined = pl.concat([
 
 
 # -- L6. Save -----------------------------------------------------------------
+
+combined = (
+    combined
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["stat_can_gdp"])
+        .then(pl.lit("Stats Can"))
+        .otherwise(pl.lit("Assumptions"))
+        .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+)
 
 print(f'\n✅ Light industrial complete')
 print(f'   Total rows:          {len(combined):,}')
