@@ -312,6 +312,8 @@ for (region, variable, unit), grp in (
         override=CAGR_OVERRIDES.get(region),
     )
     for yr, val in ext.items():
+        if yr <= last_year:
+            continue
         future_rows_list.append({
             "Region":   region,
             "Variable": variable,
@@ -322,7 +324,17 @@ for (region, variable, unit), grp in (
 
 future_rows = pl.DataFrame(future_rows_list).cast({"Year": pl.Int64})
 
-refinery_output = pl.concat([refinery_output, future_rows]).sort(["Region", "Year"])
+refinery_output = (
+    pl.concat([refinery_output, future_rows])
+    .sort(["Region", "Year"])
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["stat_can_crude_new"])
+        .then(pl.lit("Stats Can"))
+        .otherwise(pl.lit("Assumptions"))
+        .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
+)
 
 
 # -- R6. Save -----------------------------------------------------------------

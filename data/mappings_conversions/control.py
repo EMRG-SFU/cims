@@ -35,7 +35,7 @@ with app.setup(hide_code=True):
             "projection_end": 2100
         },
         "last_data_year": {
-            "ceud": 2022,
+            "ceud": 2023,
             "nir": 2024,
             "cer": 2050,
             "ceedc": 2024,
@@ -44,7 +44,7 @@ with app.setup(hide_code=True):
             "stat_can_ippi": 2025,
             "stat_can_rmpi": 2025,
             "stat_can_gross_output": 2022,
-            "stat_can_gdp": 2025,
+            "stat_can_gdp": 2024,
             "stat_can_coal": 2025,
             "stat_can_crude_new": 2025,
             "aer_st98": 2025,
