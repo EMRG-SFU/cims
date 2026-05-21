@@ -412,7 +412,7 @@ def main():
         .groupby(['CIMS_Branch', 'Region', 'Year'], as_index=False)['Value']
         .sum()
     )
-    df_out['Value'] = df_out['Value'].round(4)
+    df_out['Value'] = (df_out['Value'] * 1_000_000).round(4)
 
     df_out = df_out.sort_values(['Region', 'Year', 'CIMS_Branch']).reset_index(drop=True)
 
@@ -423,8 +423,8 @@ def main():
     from pipeline.utils.add_cims_totals import add_totals
     df_out = add_totals(df_out)
 
-    df_out.insert(df_out.columns.get_loc('Year'), 'Unit', 'MtCO2e')
-    df_out.insert(df_out.columns.get_loc('Year'), 'Source', 'ECCC')
+    df_out.insert(df_out.columns.get_loc('Year'), 'Unit', 'tCO2e')
+    df_out.insert(df_out.columns.get_loc('Year'), 'Source', 'NIR')
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     df_out.to_csv(OUTPUT, index=False)
