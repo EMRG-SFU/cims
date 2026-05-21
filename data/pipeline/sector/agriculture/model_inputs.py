@@ -188,28 +188,28 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     """
     return (
         multipliers
-        .filter(pl.col('sector') == 'Agriculture')
+        .filter(pl.col('Sector') == 'Agriculture')
         .select([
-            ('CIMS.CAN.' + pl.col('region') + '.Agriculture').alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region') + '.Agriculture').alias('Branch'),
             pl.lit('Sector').alias('Type'),
-            pl.col('region').alias('Region'),
+            pl.col('Region').alias('Region'),
             pl.lit('Agriculture').alias('Sector'),
             pl.lit('').alias('Service'),
             pl.lit('').alias('Technology'),
             pl.lit('multiplier_price').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            pl.when(pl.col('energy').is_in([
+            pl.when(pl.col('Energy').is_in([
                 'Electricity', 'Biodiesel', 'Renewable Diesel',
                 'Ethanol', 'Renewable Gasoline', 'Hydrogen',
             ]))
-            .then(pl.lit('CIMS.CAN.') + pl.col('region') + pl.lit('.') + pl.col('energy'))
-            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('energy'))
+            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
+            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
             .alias('Target'),
-            pl.col('source').alias('Source'),
+            pl.col('Source').alias('Source'),
             pl.lit('').alias('Unit'),
-            pl.col('year').cast(pl.String).alias('Year'),
-            pl.col('multiplier').cast(pl.String).alias('Value'),
+            pl.col('Year').cast(pl.String).alias('Year'),
+            pl.col('Multiplier').cast(pl.String).alias('Value'),
         ])
     )
 

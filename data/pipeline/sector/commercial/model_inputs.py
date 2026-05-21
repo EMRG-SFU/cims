@@ -181,8 +181,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
     """
     data = (
         multipliers
-        .filter((pl.col('sector') == 'Commercial') & (pl.col('region') == region))
-        .sort('energy', 'year')
+        .filter((pl.col('Sector') == 'Commercial') & (pl.col('Region') == region))
+        .sort('Energy', 'Year')
     )
     n = len(data)
     return data.select([
@@ -195,14 +195,14 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
         pl.lit('multiplier_price').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.when(pl.col('energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
-        .then(pl.lit(f'CIMS.CAN.{region}.') + pl.col('energy'))
-        .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('energy'))
+        pl.when(pl.col('Energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
+        .then(pl.lit(f'CIMS.CAN.{region}.') + pl.col('Energy'))
+        .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
         .alias('Target'),
-        pl.col('source').alias('Source'),
+        pl.col('Source').alias('Source'),
         pl.lit('').alias('Unit'),
-        pl.col('year').cast(pl.String).alias('Year'),
-        pl.col('multiplier').cast(pl.String).alias('Value'),
+        pl.col('Year').cast(pl.String).alias('Year'),
+        pl.col('Multiplier').cast(pl.String).alias('Value'),
         pl.Series('_order', [start_order + i * 1e-4 for i in range(n)],
                   dtype=pl.Float64).alias('_order'),
     ])
