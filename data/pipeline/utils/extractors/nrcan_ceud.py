@@ -24,12 +24,12 @@ import numpy as np
 
 def extract_year_cols(df: pl.DataFrame, header_row: int = 4, start_col: int = 2):
     """Extract year columns from CEUD format
-    
+
     Args:
         df: Polars DataFrame
         header_row: Row index containing years
         start_col: First column containing data
-        
+
     Returns:
         List of (year, column_index) tuples
     """
@@ -38,12 +38,13 @@ def extract_year_cols(df: pl.DataFrame, header_row: int = 4, start_col: int = 2)
     for c in range(start_col, arr.shape[1]):
         v = arr[header_row, c]
         if v is None or (isinstance(v, float) and np.isnan(v)):
-            break
+            continue  # skip blank/spacer columns rather than stopping
         try:
             year = int(v)
-            years.append((year, c))
+            if 1990 <= year <= 2040:
+                years.append((year, c))
         except Exception:
-            break
+            continue
     return years
 
 

@@ -432,7 +432,7 @@ def main():
     print(f"\n✅ NIR crosswalk complete")
     print(f"   Total rows:          {len(df_out):,}")
     print(f"   Regions processed:   {df_out['Region'].nunique()}")
-    print(f"   Variables:           {df_out['CIMS Branch'].nunique()} branches")
+    print(f"   Variables:           {df_out['CIMS_Branch'].nunique()} branches")
     print(f"   Years covered:       {df_out['Year'].min()} – {df_out['Year'].max()}")
     print(f"   Saved to:            {OUTPUT}")
 

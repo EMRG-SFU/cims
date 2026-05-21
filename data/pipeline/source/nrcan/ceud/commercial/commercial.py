@@ -49,8 +49,10 @@ from pipeline.utils.extractors.nrcan_ceud import get_row_series, row_to_series, 
 from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
 from pipeline.utils.extractors.stats_can import build_population_shares
 from pipeline.utils.data_extensions import (
-    extend_series_linear,
     extend_series_trend_dampener,
+    load_cagr_assumptions,
+    compute_cagr,
+    extend_cagr_periods,
 )
 from pipeline.utils.extractors.stats_can import load_resd
 from pipeline.utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH as _CIMS_BASE
@@ -61,6 +63,7 @@ from pipeline.utils.controls_conversions import DATA_START, PROJECTION_END, BASE
 
 BASE_PATH        = _CIMS_BASE / 'raw_data/nrcan/ceud/commercial'
 ASSUMPTIONS_CSV  = _CIMS_BASE / 'raw_data/assumptions/commercial_assumptions.csv'
+ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
 NG_EFFICIENCY_CSV = _CIMS_BASE / 'raw_data/assumptions/ng_eff_assumptions_commercial.csv'
 OUTPUT_DIR       = _CIMS_BASE / 'processed_data/nrcan/ceud'
 RESD_CSV       = _CIMS_BASE / 'raw_data/stats_can/resd/25100029.csv'
@@ -132,23 +135,20 @@ def _long(region: str, variable: str, category: str, parameter: str,
 # PARAMETER LOADING
 # ==============================================================================
 
-def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
+def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
+                           activity_cagr_csv: Path = ACTIVITY_CAGR_CSV) -> dict:
     """
-    Parse the flat commercial assumptions CSV and return projection parameters.
+    Load commercial projection parameters.
 
-    Expected CSV columns:
-        Variable, Method, Variable.1,
-        1st period rate, 1st period start, 1st period end,
-        2nd period rate, 2nd period start, 2nd period end,
-        3rd period rate, 3rd period start, 3rd period end
+    Floorspace uses the shared activity CAGR file (activity_cagr_projections.csv),
+    sector 'Commercial': CAGR Period, dampener periods — same pattern as activity scripts.
 
-    'first' in a start column means LAST_HIST_YEAR + 1.
-    End values are stored inclusive and made exclusive (+1) here.
+    Building shell uses commercial_assumptions.csv.
 
     Returns
     -------
     dict with keys 'floorspace' and 'building_shell_shares'.
-    Empty dict if file not found.
+    Empty dict if files not found.
     """
     def parse_pct(val) -> float | None:
         if val is None or (isinstance(val, float) and np.isnan(val)):
@@ -182,28 +182,17 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
     try:
         raw = pd.read_csv(assumptions_csv)
     except FileNotFoundError:
-        print(f"⚠️  Assumptions CSV {assumptions_csv} not found. "
-              "Extensions will not be applied.")
-        return {}
-    except Exception as exc:
-        print(f"❌ Error reading assumptions CSV: {exc}")
         return {}
 
     params = {}
 
-    # -- 1. Floorspace — CAGR per region ---------------------------------------
-    params['floorspace'] = {'method': 'linear'}
-    for _, row in raw[raw['Variable'] == 'Floorspace'].iterrows():
-        code = str(row['Variable.1']).strip()
-        r1   = parse_pct(row['1st period rate'])
-        y1   = parse_period(row, '1st period')
-        r2   = parse_pct(row['2nd period rate'])
-        y2   = parse_period(row, '2nd period')
-        if r1 and y1:
-            periods = [(y1[0], y1[1], r1)]
-            if r2 and y2:
-                periods.append((y2[0], y2[1], r2))
-            params['floorspace'][code] = {'periods': periods}
+    # -- 1. Floorspace — activity-style CAGR (activity_cagr_projections.csv)
+    cagr_start, cagr_end, periods = load_cagr_assumptions('Commercial', activity_cagr_csv)
+    params['floorspace'] = {
+        'cagr_start': cagr_start,
+        'cagr_end':   cagr_end,
+        'periods':    periods,
+    }
 
     # -- 2. Building shell shares — trend then dampener, per activity ----------
     bs_rows = raw[raw['Variable'] == 'Building Shell']
@@ -232,7 +221,6 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
         'decline2_years': decline2_yrs,
     }
 
-    print(f"✅ Loaded commercial projection parameters from {assumptions_csv}")
     return params
 def load_ng_efficiency_splits(ng_efficiency_csv: Path = NG_EFFICIENCY_CSV) -> dict:
     """
@@ -252,8 +240,7 @@ def load_ng_efficiency_splits(ng_efficiency_csv: Path = NG_EFFICIENCY_CSV) -> di
 
     try:
         df = pl.read_csv(str(ng_efficiency_csv), has_header=True)
-    except Exception as exc:
-        print(f"⚠️  NG efficiency CSV not readable: {exc}")
+    except Exception:
         return default
 
     tech_col = df.columns[0]
@@ -283,8 +270,6 @@ def load_ng_efficiency_splits(ng_efficiency_csv: Path = NG_EFFICIENCY_CSV) -> di
         if year not in splits:
             splits[year] = last_vals.copy()
 
-    print(f"✅ Loaded NG efficiency splits (data: {min(splits)}-{last_year}, "
-          f"extrapolated to {max(YEARS)})")
     return splits
 
 
@@ -576,10 +561,8 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
         Historical data combined with projected rows through 2100.
     """
     if not params:
-        print(f"  ⚠️  No projection parameters — skipping extensions for {region}")
         return df
 
-    print(f"  📈 Applying extensions for {region}...")
     frames = [df]
 
     def _series(variable: str, category: str) -> pd.Series:
@@ -604,16 +587,23 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
             return pl.DataFrame()
         parameter = pl_get_scalar(meta, 'parameter')
         unit      = pl_get_scalar(meta, 'unit')
-        source    = pl_get_scalar(meta, 'source') if 'source' in meta.columns else 'CEUD'
-        return _long(region, variable, category, parameter, unit, new, source)
+        return _long(region, variable, category, parameter, unit, new)
 
-    # 1. Total floorspace — linear growth
+    # 1. Total floorspace — activity-style CAGR (same pattern as activity scripts)
     fs_params = params.get('floorspace', {})
-    if region in fs_params:
-        periods = fs_params[region].get('periods', [(LAST_HIST_YEAR + 1, 2051, 0.01), (2051, 2101, 0.005)])
-        frames.append(_apply('total_floorspace', '', extend_series_linear,
-                             periods=periods))
-        print("    ✓ Total floorspace extended (linear)")
+    if fs_params:
+        _cagr_start = fs_params['cagr_start']
+        _cagr_end   = fs_params['cagr_end']
+        _periods    = fs_params['periods']
+
+        def _extend_floorspace(series, base_year,
+                               cs=_cagr_start, ce=_cagr_end, p=_periods):
+            raw_cagr = compute_cagr(series, cs, min(ce, base_year))
+            base_val = float(series[base_year])
+            projected = extend_cagr_periods(base_val, raw_cagr, p)
+            return pd.concat([series, projected]).sort_index()
+
+        frames.append(_apply('total_floorspace', '', _extend_floorspace))
 
     # 2. Building shell shares — trend then dampener, per activity
     bs_params = params.get('building_shell_shares', {})
@@ -672,8 +662,6 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
                                     pl_get_scalar(meta, 'unit'),
                                     other_series))
 
-        print("    ✓ Building shell shares extended")
-
     return pl.concat([f for f in frames if f is not None and len(f) > 0],
                      how='diagonal_relaxed')
 
@@ -729,8 +717,10 @@ def extract_all_data(
     # -- Hot water -----------------------------------------------------------
     hw_frames = extract_hot_water(region, tables)
 
-    # Assemble
-    all_frames = (floorspace_frames + shell_frames + hvac_frames + hw_frames)
+    # Assemble — floorspace_by_activity was only needed to derive shell shares
+    total_floorspace_frames = [f for f in floorspace_frames
+                               if f['variable'][0] == 'total_floorspace']
+    all_frames = (total_floorspace_frames + shell_frames + hvac_frames + hw_frames)
     df = pl.concat(all_frames, how='diagonal_relaxed')
 
     if apply_projections:
@@ -765,16 +755,10 @@ def extract_all_regions(
 
     for region in region_codes:
         try:
-            print(f"Extracting data for {region}...")
             results[region] = extract_all_data(region, apply_projections,
                                                params, ng_splits)
-            print(f"✅ {region} — {REGIONS[region.upper()]} complete")
         except Exception as exc:
-            print(f"❌ {region} — {REGIONS[region.upper()]} failed: {exc}")
             failed.append((region, str(exc)))
-
-    if failed:
-        print(f"\n⚠️  Failed regions: {', '.join(r for r, _ in failed)}")
 
     return results
 
@@ -1294,16 +1278,6 @@ def main(
     if region_codes is None:
         region_codes = list(REGIONS.keys())
 
-    print("=" * 80)
-    print("COMMERCIAL DATA EXTRACTION")
-    print("=" * 80)
-    print(f"Regions:           {', '.join(region_codes)}")
-    print(f"Apply projections: {apply_projections}")
-    print(f"Export to CSV:     {export_csv}")
-    if export_csv:
-        print(f"Output directory:  {output_dir}")
-    print("=" * 80)
-
     if export_csv:
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1313,40 +1287,46 @@ def main(
 
     for region in region_codes:
         try:
-            print(f"\n{region} — {REGIONS[region.upper()]}:")
             df = extract_all_data(region, apply_projections, params, ng_splits)
             results[region] = df
             all_frames.append(df)
-            print(f"  ✅ Extraction complete")
         except Exception as exc:
-            print(f"  ❌ Failed: {exc}")
             failed.append((region, str(exc)))
 
     # Disaggregate AT → NL/PE/NS/NB and BC territories → YT/NT/NU
     if not failed or any(r not in [f[0] for f in failed] for r in ['AT', 'BC']):
-        print("\n  🗺️  Disaggregating AT and BC into provinces/territories...")
         results = disaggregate_commercial(results, RESD_CSV, POP_CSV, EFFICIENCY_XLS)
-        print("  ✅ Disaggregation complete")
 
     all_frames = list(results.values())
 
     if export_csv and all_frames:
         combined = pl.concat(all_frames, how='diagonal_relaxed')
+        combined = combined.with_columns(
+            pl.when(pl.col('year') <= LAST_HIST_YEAR)
+            .then(pl.lit('CEUD'))
+            .otherwise(pl.lit('Assumptions'))
+            .alias('source')
+        )
         combined = combined.sort(['region', 'variable', 'category', 'year'])
         output_file = output_dir / "commercial.csv"
         output_file.parent.mkdir(parents=True, exist_ok=True)
+        print(f"\n✅ Commercial extraction complete")
+        print(f"   Total rows:          {combined.height:,}")
+        print(f"   Regions processed:   {combined['region'].n_unique()}")
+        print(f"   Variables:           {sorted(combined['variable'].unique().to_list())}")
+        print(f"   Years covered:       {combined['year'].min()} – {combined['year'].max()}")
+        print(f"   Saved to:            {output_file}")
+        combined = combined.rename({
+            'region': 'Region', 'variable': 'Variable', 'category': 'Category',
+            'parameter': 'Parameter', 'unit': 'Unit', 'source': 'Source',
+            'year': 'Year', 'value': 'Value',
+        })
         combined.write_csv(str(output_file))
-        print(f"\n  ✅ Saved {len(combined):,} rows to {output_file}")
-        
-    print("\n" + "=" * 80)
-    print("SUMMARY")
-    print("=" * 80)
-    print(f"✅ Successful: {len(results)}/{13} regions")
+
     if failed:
-        print(f"❌ Failed: {len(failed)} regions")
+        print(f"\n⚠️  Failed regions ({len(failed)}):")
         for region, err in failed:
             print(f"   • {region}: {err}")
-    print("=" * 80)
 
     return results
 

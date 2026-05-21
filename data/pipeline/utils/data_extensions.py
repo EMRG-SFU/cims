@@ -312,7 +312,9 @@ def load_cagr_assumptions(
             return None
         return float(text.replace('%', '')) / 100.0
 
-    df = pd.read_csv(assumptions_file)
+    df = pd.read_csv(assumptions_file, encoding='utf-8-sig')
+    df.columns = df.columns.str.strip()
+    df['Sector'] = df['Sector'].str.strip()
     row = df[df['Sector'] == sector].iloc[0]
 
     parsed = _parse_period(row['CAGR Period'])
@@ -343,10 +345,13 @@ def load_cagr_assumptions(
 
 def compute_cagr(series: pd.Series, start_year: int, end_year: int) -> float:
     """
-    Compute the compound annual growth rate between two years.
+    Compute a robust CAGR as the median of consecutive year-over-year growth
+    rates within [start_year, end_year].
 
-    Returns 0.0 if either year is missing, null, or the start value is
-    zero or negative.
+    Using the median rather than the point-to-point formula avoids sensitivity
+    to outlier values at either endpoint (e.g. revised or preliminary data).
+    Falls back to point-to-point if fewer than two consecutive year pairs exist
+    in the window.
 
     Parameters
     ----------
@@ -362,6 +367,17 @@ def compute_cagr(series: pd.Series, start_year: int, end_year: int) -> float:
     float
         CAGR as a decimal (e.g. 0.03 = 3 % per year).
     """
+    window = series.dropna()
+    window = window[(window.index >= start_year) & (window.index <= end_year)]
+    idx = sorted(window.index)
+    yoy = [
+        float(window.loc[idx[i]] / window.loc[idx[i - 1]] - 1)
+        for i in range(1, len(idx))
+        if idx[i] == idx[i - 1] + 1 and window.loc[idx[i - 1]] > 0
+    ]
+    if yoy:
+        return float(np.median(yoy))
+    # Fallback: point-to-point
     if start_year not in series.index or end_year not in series.index:
         return 0.0
     val_start = series.loc[start_year]
