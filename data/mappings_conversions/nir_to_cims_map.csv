@@ -28,5 +28,5 @@
 .Residential,Buildings,Residential,,
 .Transportation Freight.Freight,Transport,Freight Transport,,
 .Transportation Freight.Off Road,Transport,"Other: Recreational, Commercial and Residential",,
-.Transportation Personal,Transport,Passenger Transport,,
+.Transportation Passenger,Transport,Passenger Transport,,
 .Waste,Waste,,,

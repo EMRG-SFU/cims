@@ -550,7 +550,6 @@ def calculate_jcims_multipliers(
     jcims_to_cims_sector: Dict[str, str] = {
         'Natural Gas Extraction':  'Natural Gas',
         'Other Manufacturing':     'Light Industrial',
-        'Transportation Personal': 'Transportation Passenger',
     }
 
     use_light_ind = ['Construction', 'Forestry', 'Hydrogen']

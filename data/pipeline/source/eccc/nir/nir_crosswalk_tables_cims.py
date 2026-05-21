@@ -215,7 +215,6 @@ def find_x_locations(region, raw):
 # ── Suppression imputation ─────────────────────────────────────────────────────
 
 def impute_x_values(data, x_locs):
-    print("\nImputing suppressed (x) values in full regions...")
     for region in FULL_REGIONS:
         n_imputed = 0
         for year in YEARS:
@@ -268,7 +267,6 @@ def impute_x_values(data, x_locs):
                             )
                             n_imputed += 1
 
-        print(f"  {region}: imputed {n_imputed} values")
 
 
 # ── Constrained two-level proportional solver ─────────────────────────────────
@@ -335,32 +333,18 @@ def solve_constrained(year, data, estimates):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    print(f"Loading NIR→CIMS mapping from {MAPPING_FILE} ...")
     nir_to_cims_map = load_nir_to_cims_map(str(MAPPING_FILE))
-    print(f"  Loaded {len(nir_to_cims_map)} mapping entries.")
 
-    print("Loading CSVs...")
     raw = {}
     for region in ['CAN'] + ALL_REGIONS:
         fname = DATA_DIR / f'{region.lower()}_crosswalk_nir.csv'
         raw[region] = pd.read_csv(fname, header=None)
-        print(f"  {region}: {raw[region].shape}")
 
-    print("\nExtracting data...")
     data   = {r: extract(r, raw)          for r in ['CAN'] + ALL_REGIONS}
     x_locs = {r: find_x_locations(r, raw) for r in FULL_REGIONS}
 
-    total_x = sum(
-        len(cols)
-        for r in FULL_REGIONS
-        for yr in x_locs[r].values()
-        for cols in yr.values()
-    )
-    print(f"  Found {total_x} suppressed (x) values across BC/AB/ON/QC")
-
     impute_x_values(data, x_locs)
 
-    print("Setting up estimates for full regions...")
     estimates = {}
     for region in FULL_REGIONS:
         estimates[region] = {
@@ -376,13 +360,11 @@ def main():
             for year in YEARS
         }
 
-    print("Running constrained two-level proportional solver...")
     for year in YEARS:
         solve_constrained(year, data, estimates)
 
     # ── Build flat tidy CSV with CIMS branches ────────────────────────────────
 
-    print("\nBuilding CIMS-branch output DataFrame...")
 
     unmapped_combos = set()
     records = []
@@ -434,18 +416,6 @@ def main():
 
     df_out = df_out.sort_values(['Region', 'Year', 'CIMS_Branch']).reset_index(drop=True)
 
-    print(f"  Total rows:      {len(df_out):,}")
-    print(f"  Regions:         {df_out['Region'].nunique()}  ({', '.join(sorted(df_out['Region'].unique()))})")
-    print(f"  Years:           {sorted(df_out['Year'].unique())}")
-    print(f"  Unique branches: {df_out['CIMS_Branch'].nunique()}")
-
-    if unmapped_combos:
-        print(f"\n  ⚠️  {len(unmapped_combos)} NIR combos had no CIMS mapping and were skipped:")
-        for combo in sorted(unmapped_combos):
-            print(f"     {combo}")
-    else:
-        print("\n  ✅  All NIR combos mapped successfully.")
-
     # ── Save CSV ──────────────────────────────────────────────────────────────
 
     df_out = df_out[df_out['Value'] != 0].reset_index(drop=True)
@@ -455,25 +425,13 @@ def main():
 
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
     df_out.to_csv(OUTPUT, index=False)
-    print(f"\n✅  Saved: {OUTPUT}")
 
-    # ── Quick spot-check ──────────────────────────────────────────────────────
-
-    print("\n── Spot-check: AB 2000, Agriculture branches ──")
-    check = df_out[
-        (df_out['Region'] == 'AB') &
-        (df_out['Year']   == 2000) &
-        (df_out['CIMS_Branch'].str.contains('Agriculture'))
-    ][['CIMS_Branch', 'Value']]
-    print(check.to_string(index=False))
-
-    print("\n── Spot-check: SK 2000, Natural Gas Production branches ──")
-    check2 = df_out[
-        (df_out['Region'] == 'SK') &
-        (df_out['Year']   == 2000) &
-        (df_out['CIMS_Branch'].str.contains('Natural Gas.Production'))
-    ][['CIMS_Branch', 'Value']]
-    print(check2.to_string(index=False))
+    print(f"\n✅ NIR crosswalk complete")
+    print(f"   Total rows:          {len(df_out):,}")
+    print(f"   Regions processed:   {df_out['Region'].nunique()}")
+    print(f"   Variables:           {df_out['CIMS_Branch'].nunique()} branches")
+    print(f"   Years covered:       {df_out['Year'].min()} – {df_out['Year'].max()}")
+    print(f"   Saved to:            {OUTPUT}")
 
 
 if __name__ == '__main__':
