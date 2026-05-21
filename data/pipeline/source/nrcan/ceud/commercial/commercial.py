@@ -72,6 +72,10 @@ EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
 YEARS            = list(range(DATA_START, PROJECTION_END + 1))
 LAST_HIST_YEAR   = CONTROLS["last_data_year"]["ceud"]
 
+# Per-region overrides — explicit annual rate per period, bypasses computed CAGR.
+CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
+}
+
 REGIONS = {
     'AB': 'Alberta',
     'AT': 'Atlantic',
@@ -600,7 +604,9 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
                                cs=_cagr_start, ce=_cagr_end, p=_periods):
             raw_cagr = compute_cagr(series, cs, min(ce, base_year))
             base_val = float(series[base_year])
-            projected = extend_cagr_periods(base_val, raw_cagr, p)
+            projected = extend_cagr_periods(
+                base_val, raw_cagr, p, CAGR_OVERRIDES.get(region)
+            )
             return pd.concat([series, projected]).sort_index()
 
         frames.append(_apply('total_floorspace', '', _extend_floorspace))

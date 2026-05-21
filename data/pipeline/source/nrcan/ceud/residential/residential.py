@@ -46,8 +46,10 @@ from pipeline.utils.output_builder import pl_to_series, pl_get_scalar
 from pipeline.utils.extractors.stats_can import build_population_shares
 from pipeline.utils.data_extensions import (
     extend_series_constant,
-    extend_series_linear,
     extend_series_trend_dampener,
+    load_cagr_assumptions,
+    compute_cagr,
+    extend_cagr_periods,
 )
 from pipeline.utils.extractors.stats_can import load_resd
 from pipeline.utils.controls_conversions import BASE_PATH as _CIMS_BASE
@@ -62,7 +64,12 @@ OUTPUT_DIR     = _CIMS_BASE / 'processed_data/nrcan/ceud'
 RESD_CSV = _CIMS_BASE / 'raw_data/stats_can/resd/25100029.csv'
 POP_CSV  = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
 EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
+ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
+
+# Per-province overrides — explicit annual rate per period, bypasses computed CAGR.
+CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
+}
 
 PROVINCES = {
     'AB': 'Alberta',
@@ -151,7 +158,8 @@ def _long(province: str, variable: str, category: str, parameter: str,
 # PROJECTION PARAMETER LOADING
 # ==============================================================================
 
-def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
+def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
+                           activity_cagr_csv: Path = ACTIVITY_CAGR_CSV) -> dict:
     """
     Parse the flat residential assumptions CSV and return projection parameters.
 
@@ -203,26 +211,17 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
     try:
         raw = pd.read_csv(assumptions_csv)
     except FileNotFoundError:
-        print(f"⚠️  Assumptions CSV {assumptions_csv} not found.")
-        return {}
-    except Exception as exc:
-        print(f"❌ Error reading assumptions CSV: {exc}")
         return {}
 
     params = {}
 
-    # -- 1. Housing stock — CAGR per province ----------------------------------
-    params['housing_stock'] = {'method': 'linear'}
-    for _, row in raw[raw['Variable'] == 'Households'].iterrows():
-        code = str(row['Variable.1']).strip()
-        r1 = parse_pct(row['1st period rate'])
-        y1 = parse_period(row, '1st period')
-        r2 = parse_pct(row['2nd period rate'])
-        y2 = parse_period(row, '2nd period')
-        if r1 and y1 and r2 and y2:
-            params['housing_stock'][code] = {
-                'periods': [(y1[0], y1[1], r1), (y2[0], y2[1], r2)]
-            }
+    # -- 1. Housing stock — activity-style CAGR (activity_cagr_projections.csv)
+    cagr_start, cagr_end, periods = load_cagr_assumptions('Residential', activity_cagr_csv)
+    params['housing_stock'] = {
+        'cagr_start': cagr_start,
+        'cagr_end':   cagr_end,
+        'periods':    periods,
+    }
 
     # -- 2. Building shares — trend then dampener ------------------------------
     bs_row = raw[(raw['Variable'] == 'Housing by type') &
@@ -263,7 +262,6 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV) -> dict:
         ],
     }
 
-    print(f"✅ Loaded projection parameters from {assumptions_csv}")
     return params
 
 
@@ -682,7 +680,6 @@ def extract_cooling_technologies(province: str, tables: dict) -> list[pl.DataFra
                     s.get(miss, 0) == 0
                 ):
                     s[miss] = s[fill]
-                    print(f"  → Filled {cooling_type} {miss} with {fill} value: {s[fill]:.4f}")
 
         frames.append(_long(province, 'cooling_share_data', cooling_type,
                             'service_request', 'GJ/GJ', s))
@@ -834,10 +831,8 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         Same schema as input, extended through 2100.
     """
     if not params:
-        print(f"  ⚠️  No projection parameters — skipping extensions for {province}")
         return df
- 
-    print(f"  📈 Applying extensions for {province}...")
+
     frames = [df]
  
     def _apply_to_variable(variable: str, category: str,
@@ -863,17 +858,24 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
             df.filter((pl.col('variable') == variable) & (pl.col('category') == category))
         ).sort_index()
  
-    # -- 1. Housing stock — CAGR growth ----------------------------------------
+    # -- 1. Housing stock — activity-style CAGR --------------------------------
     hs_params = params.get('housing_stock', {})
-    if province in hs_params:
+    if hs_params:
+        _cs = hs_params['cagr_start']
+        _ce = hs_params['cagr_end']
+        _p  = hs_params['periods']
+
+        def _extend_households(series, base_year,
+                               cs=_cs, ce=_ce, p=_p):
+            raw_cagr = compute_cagr(series, cs, min(ce, base_year))
+            base_val = float(series[base_year])
+            projected = extend_cagr_periods(
+                base_val, raw_cagr, p, CAGR_OVERRIDES.get(province)
+            )
+            return pd.concat([series, projected]).sort_index()
+
         s = _series('housing_thousand', '')
-        periods = hs_params[province].get('periods', [
-            (LAST_HIST_YEAR + 1, 2051, 0.01),
-            (2051, 2101, 0.005),
-        ])
-        frames.append(_apply_to_variable(
-            'housing_thousand', '', s, extend_series_linear, periods=periods))
-        print("    ✓ Housing stock extended")
+        frames.append(_apply_to_variable('housing_thousand', '', s, _extend_households))
  
     # -- 2. Building shares — trend then dampener; Apartments = remainder ------
     bs_params = params.get('building_shares', {})
@@ -917,7 +919,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
                                 pl_get_scalar(meta, 'parameter'),
                                 pl_get_scalar(meta, 'unit'),
                                 apts_series))
-        print("    ✓ Building shares extended")
+
  
     # -- 3. Floorspace — trend then dampener -----------------------------------
     fs_params = params.get('floorspace_per_building', {})
@@ -932,7 +934,6 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
             s = _series('floorspace_per_building', bt)
             frames.append(_apply_to_variable('floorspace_per_building', bt, s,
                                              extend_series_trend_dampener, **trend_kwargs))
-        print("    ✓ Floorspace per building extended")
     
     # -- 4. Appliances per household — constant (hold last historical value) --
     appliance_types = ['Refrigerators', 'Freezers', 'Ranges', 'Dishwashing',
@@ -942,13 +943,11 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         if not s.dropna().empty:
             frames.append(_apply_to_variable('appliances_per_household', app,
                                              s, extend_series_constant))
-    print("    ✓ Appliances extended (constant)")
  
     # -- 5. Water heating intensity — constant (hold last historical value) ----
     for var in ['wh_lowmed', 'wh_high']:
         s = _series(var, '')
         frames.append(_apply_to_variable(var, '', s, extend_series_constant))
-    print("    ✓ Water heating extended (constant)")
  
     # -- 6. Cooling — constant (hold last historical value) --------------------
     for cooling_type in ['Room', 'Central']:
@@ -956,7 +955,6 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         if not s.dropna().empty:
             frames.append(_apply_to_variable('cooling_share_data', cooling_type,
                                              s, extend_series_constant))
-    print("    ✓ Cooling extended (constant)")
  
     return pl.concat([f for f in frames if f is not None and len(f) > 0],
                      how='diagonal_relaxed')
@@ -1274,7 +1272,6 @@ def disaggregate_territories(
                 ].iloc[0]
                 return result
             except (IndexError, KeyError):
-                print(f'  ⚠️  Missing pop share for {geo} year {row["year"]} — using last available')
                 available = pop_shares[pop_shares['territory'] == geo]
                 if available.empty:
                     return np.nan
@@ -1434,15 +1431,9 @@ def extract_all_provinces(
 
     for prov in province_codes:
         try:
-            print(f"Extracting data for {prov}...")
             results[prov] = extract_all_data(prov, apply_projections, params)
-            print(f"✅ {prov} — {PROVINCES[prov.upper()]} complete")
         except Exception as exc:
-            print(f"❌ {prov} — {PROVINCES[prov.upper()]} failed: {exc}")
             failed.append((prov, str(exc)))
-
-    if failed:
-        print(f"\n⚠️  Failed provinces: {', '.join(p for p, _ in failed)}")
 
     return results
 
@@ -1474,16 +1465,6 @@ def main(
     if province_codes is None:
         province_codes = list(PROVINCES.keys())
 
-    print("=" * 80)
-    print("RESIDENTIAL DATA EXTRACTION")
-    print("=" * 80)
-    print(f"Provinces:         {', '.join(province_codes)}")
-    print(f"Apply projections: {apply_projections}")
-    print(f"Export to CSV:     {export_csv}")
-    if export_csv:
-        print(f"Output directory:  {output_dir}")
-    print("=" * 80)
-
     if export_csv:
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1492,44 +1473,49 @@ def main(
 
     for prov in province_codes:
         try:
-            print(f"\n{prov} — {PROVINCES[prov.upper()]}:")
             df = extract_all_data(prov, apply_projections, params)
 
             if prov.upper() == 'TR':
-                # Disaggregate TR into YT, NT, NU — TR itself is dropped
-                print("  🗺️  Disaggregating territories into YT, NT, NU...")
                 territory_df = disaggregate_territories(df, RESD_CSV, POP_CSV, EFFICIENCY_XLS)
                 for terr_code in ['YT', 'NT', 'NU']:
                     terr_data = territory_df.filter(pl.col('province') == terr_code)
                     results[terr_code] = terr_data
                     all_frames.append(terr_data)
-                print("  ✅ YT, NT, NU disaggregation complete")
             else:
                 results[prov] = df
                 all_frames.append(df)
-                print(f"  ✅ Extraction complete")
 
         except Exception as exc:
-            print(f"  ❌ Failed: {exc}")
             failed.append((prov, str(exc)))
 
     if export_csv and all_frames:
         combined = pl.concat(all_frames, how='diagonal_relaxed')
+        combined = combined.with_columns(
+            pl.when(pl.col('year') <= LAST_HIST_YEAR)
+            .then(pl.lit('CEUD'))
+            .otherwise(pl.lit('Assumptions'))
+            .alias('source')
+        )
         combined = combined.sort(['province', 'variable', 'category', 'year'])
         output_file = output_dir / "residential.csv"
         output_file.parent.mkdir(parents=True, exist_ok=True)
+        print(f"\n✅ Residential extraction complete")
+        print(f"   Total rows:          {combined.height:,}")
+        print(f"   Provinces processed: {combined['province'].n_unique()}")
+        print(f"   Variables:           {sorted(combined['variable'].unique().to_list())}")
+        print(f"   Years covered:       {combined['year'].min()} – {combined['year'].max()}")
+        print(f"   Saved to:            {output_file}")
+        combined = combined.rename({
+            'province': 'Region', 'variable': 'Variable', 'category': 'Category',
+            'parameter': 'Parameter', 'unit': 'Unit', 'source': 'Source',
+            'year': 'Year', 'value': 'Value',
+        })
         combined.write_csv(str(output_file))
-        print(f"\n  ✅ Saved {len(combined):,} rows to {output_file}")
 
-    print("\n" + "=" * 80)
-    print("SUMMARY")
-    print("=" * 80)
-    print(f"✅ Successful: {len(results)}/{13} provinces")
     if failed:
-        print(f"❌ Failed: {len(failed)} provinces")
+        print(f"\n⚠️  Failed provinces ({len(failed)}):")
         for prov, err in failed:
             print(f"   • {prov}: {err}")
-    print("=" * 80)
 
     return results
 
