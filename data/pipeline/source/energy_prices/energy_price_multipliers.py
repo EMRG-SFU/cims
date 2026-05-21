@@ -63,7 +63,6 @@ def load_control_data() -> Dict:
         Dictionary containing sector, region, and energy mapping DataFrames,
         as well as derived lists and lookup dictionaries.
     """
-    print("Loading control and mapping data...")
 
     sectors_df = pd.read_csv(SECTOR_MAP_FILE)
     regions_df = pd.read_csv(REGION_MAP_FILE)
@@ -108,7 +107,6 @@ def load_price_data(control_data: Dict) -> Dict:
         Dictionary containing end-use prices, electricity multipliers,
         JCIMS prices, macro indicators, and the active scenario name.
     """
-    print("Loading price data...")
 
     end_use_prices = pl.read_csv(END_USE_PRICES_FILE)
     elec_mult_df = pd.read_excel(CIMS_PRICES_FILE, sheet_name='CIMS Electricity')
@@ -153,7 +151,6 @@ def calculate_electricity_multipliers(
     pd.DataFrame
         Long-format DataFrame with columns: region, sector, energy, year, multiplier, source.
     """
-    print("Processing Electricity multipliers...")
 
     sector_to_group: Dict[str, str] = {}
     for _, row in sectors_df.iterrows():
@@ -214,7 +211,6 @@ def calculate_hydrogen_multipliers(
     pd.DataFrame
         Long-format DataFrame with columns: region, sector, energy, year, multiplier, source.
     """
-    print("Processing Hydrogen multipliers...")
 
     sector_groups: Dict[str, str] = {}
     for _, row in sectors_df.iterrows():
@@ -279,7 +275,6 @@ def calculate_end_use_energy_multipliers(
     pd.DataFrame
         Long-format DataFrame with columns: region, sector, energy, year, multiplier, source.
     """
-    print("Processing end-use energy multipliers (Diesel, Gasoline, Fuel Oils, Natural Gas)...")
 
     energy_mapping = {
         'Diesel': 'Diesel',
@@ -335,15 +330,15 @@ def calculate_end_use_energy_multipliers(
                 cims_energy = energy_mapping[fuel_name]
 
             prod_cost_row = production_costs[
-                (production_costs['energy'] == cims_energy) &
-                (production_costs['region'] == 'generic') &
-                (production_costs['year'] == year)
+                (production_costs['Energy'] == cims_energy) &
+                (production_costs['Region'] == 'generic') &
+                (production_costs['Year'] == year)
             ]
 
             if len(prod_cost_row) == 0:
                 continue
 
-            prod_cost = prod_cost_row['price'].values[0]
+            prod_cost = prod_cost_row['Price'].values[0]
             multiplier = end_use_price / prod_cost if prod_cost > 0 else 1.0
             base_multipliers[(cims_region, cer_sector, cims_energy, year)] = multiplier
 
@@ -460,7 +455,6 @@ def calculate_simple_fuel_multipliers(
     pd.DataFrame
         Long-format DataFrame with columns: region, sector, energy, year, multiplier, source.
     """
-    print("Processing simple fuel multipliers...")
 
     simple_fuels = [
         'Asphalt',
@@ -534,7 +528,6 @@ def calculate_jcims_multipliers(
     pd.DataFrame
         Long-format DataFrame with columns: region, sector, energy, year, multiplier.
     """
-    print("Processing JCIMS multipliers...")
 
     # Build one-to-many mapping: one JCIMS fuel can map to multiple CIMS fuels
     # (e.g. JCIMS 'Natural Gas' -> CIMS 'Natural Gas' AND 'Natural Gas Feedstock')
@@ -543,7 +536,6 @@ def calculate_jcims_multipliers(
         if pd.notna(row.get('JCIMS')) and pd.notna(row.get('CIMS')):
             jcims_to_cims_fuels.setdefault(row['JCIMS'], []).append(row['CIMS'])
 
-    print(f"  Fuel mappings: {jcims_to_cims_fuels}")
 
     # Translate JCIMS sector names to CIMS sector names so base_multipliers keys
     # are consistent with the CIMS sector names used in the output loop.
@@ -591,15 +583,15 @@ def calculate_jcims_multipliers(
             # Store a multiplier for every CIMS fuel this JCIMS fuel maps to
             for cims_fuel in cims_fuels:
                 prod_cost_row = production_costs[
-                    (production_costs['energy'] == cims_fuel) &
-                    (production_costs['region'] == 'generic') &
-                    (production_costs['year'] == year)
+                    (production_costs['Energy'] == cims_fuel) &
+                    (production_costs['Region'] == 'generic') &
+                    (production_costs['Year'] == year)
                 ]
 
                 if len(prod_cost_row) == 0:
                     continue
 
-                prod_cost = prod_cost_row['price'].values[0]
+                prod_cost = prod_cost_row['Price'].values[0]
                 multiplier = jcims_price_converted / prod_cost if prod_cost > 0 else 1.0
                 base_multipliers[(jcims_region, cims_sector, cims_fuel, year)] = multiplier
 
@@ -750,7 +742,6 @@ def apply_derivative_multipliers(
     pd.DataFrame
         Long-format DataFrame of derivative multipliers.
     """
-    print("Applying derivative multipliers...")
 
     direct_mappings = {
         'Natural Gas Feedstock': 'Natural Gas',
@@ -793,14 +784,10 @@ def main() -> pd.DataFrame:
     pd.DataFrame
         Final output DataFrame of price multipliers.
     """
-    print("=" * 80)
-    print("ENERGY PRICE MULTIPLIERS PROCESSING")
-    print("=" * 80)
 
     control_data = load_control_data()
     price_data = load_price_data(control_data)
 
-    print("\nGetting production costs...")
     production_costs = get_production_costs()
 
     all_multipliers = []
@@ -847,9 +834,7 @@ def main() -> pd.DataFrame:
     for label, step_fn in steps:
         try:
             all_multipliers.append(step_fn())
-            print(f"  ✅ {label} complete")
         except Exception as e:
-            print(f"  ❌ {label} failed: {e}")
             failed.append((label, str(e)))
 
     base_mult_df = pd.concat(all_multipliers, ignore_index=True)
@@ -862,21 +847,32 @@ def main() -> pd.DataFrame:
         )
         if len(derivative_mult) > 0:
             all_multipliers.append(derivative_mult)
-        print("  ✅ Derivative multipliers complete")
     except Exception as e:
-        print(f"  ❌ Derivative multipliers failed: {e}")
         failed.append(("Derivative multipliers", str(e)))
 
-    print("\nCombining all multipliers...")
     output_df = pd.concat(all_multipliers, ignore_index=True)
-    output_df = output_df.sort_values(['energy', 'region', 'sector', 'year']).reset_index(drop=True)
+    output_df = (
+        output_df
+        .rename(columns={
+            'region':     'Region',
+            'energy':     'Energy',
+            'sector':     'Sector',
+            'source':     'Source',
+            'year':       'Year',
+            'multiplier': 'Multiplier',
+        })
+        .assign(Unit='ratio')
+        [['Region', 'Energy', 'Sector', 'Unit', 'Source', 'Year', 'Multiplier']]
+        .sort_values(['Energy', 'Region', 'Sector', 'Year'])
+        .reset_index(drop=True)
+    )
 
     print(f"\n✅ Multipliers complete")
     print(f"   Total rows:  {len(output_df):,}")
-    print(f"   Energies:    {output_df['energy'].nunique()}")
-    print(f"   Regions:     {output_df['region'].nunique()}")
-    print(f"   Sectors:     {output_df['sector'].nunique()}")
-    print(f"   Years:       {output_df['year'].min()} – {output_df['year'].max()}")
+    print(f"   Energies:    {output_df['Energy'].nunique()}")
+    print(f"   Regions:     {output_df['Region'].nunique()}")
+    print(f"   Sectors:     {output_df['Sector'].nunique()}")
+    print(f"   Years:       {output_df['Year'].min()} – {output_df['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = OUTPUT_DIR / 'energy_price_multipliers.csv'
