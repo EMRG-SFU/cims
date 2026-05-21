@@ -319,7 +319,32 @@ oil_pivot = oil_pivot.with_columns(
 )
 
 
-# -- O5c. Extend to 2100 via CAGR ---------------------------------------------
+# -- O5c. Fill ratio columns over zero-production years ----------------------
+#
+#   When total = 0 the ratios are 0/0, which is meaningless. Carry the last
+#   (or next) valid split forward/backward so ratios stay defined throughout.
+_pct_fill_cols = ["pct_bitumen", "pct_light_medium", "pct_heavy"]
+oil_pivot = (
+    oil_pivot
+    .sort(["Region", "Year"])
+    .with_columns([
+        pl.when(pl.col("total").is_null() | (pl.col("total") == 0.0))
+        .then(pl.lit(None).cast(pl.Float64))
+        .otherwise(pl.col(c))
+        .alias(c)
+        for c in _pct_fill_cols
+    ])
+    .with_columns([
+        pl.col(c).forward_fill().over("Region").alias(c)
+        for c in _pct_fill_cols
+    ])
+    .with_columns([
+        pl.col(c).backward_fill().over("Region").alias(c)
+        for c in _pct_fill_cols
+    ])
+)
+
+# -- O5d. Extend to 2100 via CAGR ---------------------------------------------
 #
 #   Total: CAGR computed from 2040-2050 per region,
 #   floored at 0, compounding from the 2050 base. Mirrors gas production.
@@ -449,7 +474,13 @@ oil_output = (
         }).alias("Unit"),
     )
     .filter(~pl.col("Region").is_in(["Canada", "CAN"]))
-    .select(["Region", "Variable", "Unit", "Year", "Value"])
+    .with_columns(
+        pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
+        .then(pl.lit("CER"))
+        .otherwise(pl.lit("Assumptions"))
+        .alias("Source")
+    )
+    .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
     .sort(["Region", "Variable", "Year"])
 )
 
