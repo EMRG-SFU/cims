@@ -526,28 +526,22 @@ def load_all_data() -> Dict:
     dict
         Dictionary containing all loaded DataFrames and configuration values.
     """
-    print("Loading configuration and conversion factors...")
     config = load_control_config()
     conversions = load_energy_conversions()
     energy_map = load_energy_mapping()
 
-    print("Loading macro indicators...")
     scenario = config.get('cer_ef_reference_scenario', 'Current Measures')
     macro_df = load_macro_indicators(MACRO_FILE, scenario)
 
-    print("Loading benchmark prices...")
     benchmark_df = pl.read_csv(BENCHMARK_FILE)
 
-    print("Loading end-use prices and demand...")
     end_use_prices = pl.read_csv(END_USE_PRICES_FILE)
     end_use_demand = pl.read_csv(END_USE_DEMAND_FILE)
 
-    print("Loading CIMS prices...")
     jcims_prod = pd.read_excel(CIMS_PRICES_FILE, sheet_name='JCIMS Production Cost')
     elec_prices = pd.read_excel(CIMS_PRICES_FILE, sheet_name='CIMS Electricity')
     h2_prices = pd.read_excel(CIMS_PRICES_FILE, sheet_name='CIMS Hydrogen')
 
-    print("Loading alternative fuel prices...")
     import warnings
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore', category=UserWarning, module='openpyxl')
@@ -602,7 +596,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     from_year = int(config['currency_year_cer_benchmark'])
     from_currency = config['currency_country_cer_benchmark']
 
-    print("\nProcessing Natural Gas...")
     ng_prices, ng_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'Nova Inventory Transfer (NIT) - US$/MMBtu',
@@ -611,10 +604,8 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Natural Gas', 'generic', ng_prices, 'CER', ng_max))
 
-    print("Processing Natural Gas Feedstock...")
     results.append(('Natural Gas Feedstock', 'generic', ng_prices, 'Assumption', 0))
 
-    print("Processing Petrochemical Feedstock...")
     petro_prices, petro_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
@@ -624,7 +615,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Petrochemical Feedstock', 'generic', petro_prices, 'CER', petro_max))
 
-    print("Processing Naphtha Specialties...")
     naphtha_prices, naphtha_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
@@ -634,7 +624,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Naphtha Specialties', 'generic', naphtha_prices, 'CER', naphtha_max))
 
-    print("Processing Asphalt...")
     asphalt_prices, asphalt_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
@@ -644,7 +633,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Asphalt', 'generic', asphalt_prices, 'CER', asphalt_max))
 
-    print("Processing Lubricants...")
     lube_prices, lube_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
@@ -654,7 +642,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Lubricants', 'generic', lube_prices, 'CER', lube_max))
 
-    print("Processing Other Non-Energy Products...")
     other_prices, other_max = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
@@ -664,38 +651,32 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     )
     results.append(('Other Non-Energy Products', 'generic', other_prices, 'CER', other_max))
 
-    print("Processing Heavy Fuel Oil...")
     hfo_prices, hfo_max = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Industrial', 'Oil', 'RPP',
     )
     results.append(('Heavy Fuel Oil', 'generic', hfo_prices, 'CER', hfo_max))
 
-    print("Processing Light Fuel Oil...")
     lfo_prices, lfo_max = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Commercial', 'Oil', 'RPP',
     )
     results.append(('Light Fuel Oil', 'generic', lfo_prices, 'CER', lfo_max))
 
-    print("Processing Gasoline...")
     gasoline_prices, gasoline_max = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Transportation', 'Gasoline', 'Motor Gasoline',
     )
     results.append(('Gasoline', 'generic', gasoline_prices, 'CER', gasoline_max))
 
-    print("Processing Diesel...")
     diesel_prices, diesel_max = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Transportation', 'Diesel', 'Diesel',
     )
     results.append(('Diesel', 'generic', diesel_prices, 'CER', diesel_max))
 
-    print("Processing Kerosene...")
     results.append(('Kerosene', 'generic', diesel_prices, 'Assumption', 0))
 
-    print("Processing Renewable Natural Gas...")
     rng_prices = ng_prices * 1.5
     results.append(('Renewable Natural Gas', 'generic', rng_prices, 'Assumption', 0))
 
@@ -715,7 +696,6 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     }
 
     for cims_energy, jcims_energy in jcims_energies.items():
-        print(f"Processing {cims_energy}...")
         prices, jcims_max = process_jcims_energy(jcims_prod, macro_df, jcims_energy)
         results.append((cims_energy, 'generic', prices, 'JCIMS', jcims_max))
 
@@ -723,10 +703,8 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     propane_prices, _ = process_jcims_energy(jcims_prod, macro_df, 'Propane')
 
     for fuel in ['Ethane', 'Butane']:
-        print(f"Processing {fuel} (using Propane prices)...")
         results.append((fuel, 'generic', propane_prices, 'Assumption', 0))
 
-    print("Processing SAF...")
     jet_prices = [r[2] for r in results if r[0] == 'Jet Fuel'][0]
     saf_prices = process_saf_prices(jet_prices)
     results.append(('SAF', 'generic', saf_prices, 'Assumption', 0))
@@ -756,19 +734,16 @@ def process_regional_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     renewable_diesel_df = data['renewable_diesel']
     conversions = data['conversions']
 
-    print("\nProcessing Electricity (regional)...")
     for region in REGIONS:
         prices, elec_max = process_electricity_regional(elec_prices, region)
         if len(prices) > 0:
             results.append(('Electricity', region, prices, 'CER', elec_max))
 
-    print("Processing Hydrogen (regional)...")
     for region in REGIONS:
         prices, h2_max = process_hydrogen_regional(h2_prices, macro_df, region)
         if len(prices) > 0:
             results.append(('Hydrogen', region, prices, 'JCIMS', h2_max))
 
-    print("Processing Ethanol (regional)...")
     ethanol_prices, eth_max = process_afdc_energy(
         retail_fuel, macro_df, 'E85', conversions, 'ethanol', backfill_to_2000=True
     )
@@ -776,7 +751,6 @@ def process_regional_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         if len(ethanol_prices) > 0:
             results.append(('Ethanol', region, ethanol_prices.copy(), 'AFDC', eth_max))
 
-    print("Processing Biodiesel (regional)...")
     biodiesel_prices, bio_max = process_afdc_energy(
         retail_fuel, macro_df, 'B20', conversions, 'biodiesel', backfill_to_2000=True
     )
@@ -784,7 +758,6 @@ def process_regional_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         if len(biodiesel_prices) > 0:
             results.append(('Biodiesel', region, biodiesel_prices.copy(), 'AFDC', bio_max))
 
-    print("Processing Renewable Diesel (regional)...")
     ren_diesel_prices, rd_max = process_afdc_energy(
         renewable_diesel_df, macro_df, 'Renewable Diesel', conversions,
         'renewable_diesel', backfill_to_2000=True,
@@ -793,7 +766,6 @@ def process_regional_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
         if len(ren_diesel_prices) > 0:
             results.append(('Renewable Diesel', region, ren_diesel_prices.copy(), 'AFDC', rd_max))
 
-    print("Processing Renewable Gasoline (regional)...")
     for region in REGIONS:
         if len(ren_diesel_prices) > 0:
             ren_gas_prices = ren_diesel_prices * 1.1
@@ -827,12 +799,12 @@ def create_output_dataframe(
         for year, price in prices.items():
             if pd.notna(price):
                 rows.append({
-                    'region': region,
-                    'energy': energy,
-                    'year': int(year),
-                    'unit': '2025 C$/GJ',
-                    'price': price,
-                    'source': source if int(year) <= max_yr else 'Assumption',
+                    'Region': region,
+                    'Energy': energy,
+                    'Unit': '2025 C$/GJ',
+                    'Source': source if int(year) <= max_yr else 'Assumption',
+                    'Year': int(year),                    
+                    'Price': price,
                 })
 
     for energy, region, prices, source, max_yr in regional_results:
@@ -840,16 +812,16 @@ def create_output_dataframe(
             for year, price in prices.items():
                 if pd.notna(price):
                     rows.append({
-                        'region': region,
-                        'energy': energy,
-                        'year': int(year),
-                        'unit': '2025 C$/GJ',
-                        'price': price,
-                        'source': source if int(year) <= max_yr else 'Assumption',
+                    'Region': region,
+                    'Energy': energy,
+                    'Unit': '2025 C$/GJ',
+                    'Source': source if int(year) <= max_yr else 'Assumption',
+                    'Year': int(year),                    
+                    'Price': price,
                     })
 
     df = pd.DataFrame(rows)
-    df = df.sort_values(['energy', 'region', 'year']).reset_index(drop=True)
+    df = df.sort_values(['Energy', 'Region', 'Year']).reset_index(drop=True)
 
     return df
 
@@ -863,23 +835,18 @@ def main() -> pd.DataFrame:
     pd.DataFrame
         Final output DataFrame of production costs.
     """
-    print("=" * 80)
-    print("ENERGY PRICE PROCESSING")
-    print("=" * 80)
-
     data = load_all_data()
 
     generic_results = process_generic_energies(data)
     regional_results = process_regional_energies(data)
 
-    print("\n" + "=" * 80)
     print("Creating output dataframe...")
     output_df = create_output_dataframe(generic_results, regional_results)
 
     print(f"\n✅ Production costs complete")
     print(f"   Total rows:          {len(output_df):,}")
-    print(f"   Energies processed:  {output_df['energy'].nunique()}")
-    print(f"   Years covered:       {output_df['year'].min()} – {output_df['year'].max()}")
+    print(f"   Energies processed:  {output_df['Energy'].nunique()}")
+    print(f"   Years covered:       {output_df['Year'].min()} – {output_df['Year'].max()}")
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output_path = OUTPUT_DIR / 'energy_prices.csv'
