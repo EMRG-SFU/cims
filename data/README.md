@@ -1,6 +1,6 @@
 # CIMS Data Processing
 
-This directory transforms energy data into model-ready input files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only pipeline scripts, mappings, and this documentation are tracked.
+This directory transforms energy data into model input files and calibration files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only pipeline scripts, mappings, and this documentation are tracked. Raw data is stored on the External-CIMS sharpoint. Model input files are used to build the model with information like sectors, activity levels, services, technologies, model parameters, and fuel prices. Calibration files include the historical demand, emissions, and technology shares publicly available. During the calibration step, the user will match the model from 2000-last historical year to the calibration data in order to determine intangible costs, trends, and a vetted starting point from which the projection begins. 
 
 ---
 
@@ -25,10 +25,8 @@ This directory transforms energy data into model-ready input files for the CIMS 
 
 Raw data from various sources is converted into CIMS-formatted CSVs covering Canada's 13 provinces and territories. It operates in two stages:
 
-- **Stage 1 — Source processing** (`pipeline/source/`): Each script ingests one government data source and writes a normalized intermediate CSV to `processed_data/`.
-- **Stage 2 — Sector assembly** (`pipeline/sector/`): Each sector script combines fixed structural parameters (`raw_data/fixed_data/`) with one or more processed intermediates and writes final CIMS model input files to `model_inputs/model/{sector}/`.
-
-A parallel **calibration** branch writes validation outputs to `calibration/{sector}/`. Calibration files contain the historical demand, emissions, and technology shares available from public sources. During the calibration step, the user matches the model over 2000–last historical year to this data in order to determine intangible costs, trends, and a vetted starting point from which the projection begins.
+- **Stage 1 — Source processing** (`pipeline/source/`): Each script ingests data and writes a CSV to `processed_data/` for user vetting. The processed_data csvs are not used elsewhere in the pipeline.
+- **Stage 2 — Sector assembly** (`pipeline/sector/`): Each sector's model_inputs script combines fixed structural parameters (`raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
 
 All configuration (currency years, data years, scenarios) lives in a single file: `mappings_conversions/control.py`.
 
@@ -83,12 +81,12 @@ C:\cims\data\
 │   │   ├── Chemical Products/
 │   │   ├── Commercial/
 │   │   └── Residential/
-│   ├── eccc/nir/               # GHG_Econ_Can_Prov_Terr.csv
-│   ├── cer/                    # Canada's Energy Future tables
-│   ├── nrcan/ceud/             # CEUD Excel workbooks (residential + commercial)
-│   ├── stats_can/              # Stats Can CSVs (GDP by industry, population, RESD)
-│   ├── ceedc/                  # CEEDC coal emission factors
-│   ├── ipcc/                   # IPCC 2006 reference emission factors
+│   ├── eccc/nir/               # NIR data
+│   ├── cer/                    # CER data
+│   ├── nrcan/ceud/             # CEUD data
+│   ├── stats_can/              # Stats Can data
+│   ├── ceedc/                  # CEEDC data
+│   ├── ipcc/                   # IPCC data
 │   ├── ab_gov/                 # Alberta government data
 │   └── bc_gov/                 # BC government data
 │
@@ -144,65 +142,18 @@ python pipeline/source/eccc/nir/nir_to_cims.py
 python pipeline/source/emission_factors/emission_factors.py
 ```
 
-Then run Stage 2 sector assemblers (each is independent):
+Run Stage 2 sector assemblers (order of sector vs source assembler running does not matter):
 
 ```powershell
 python pipeline/sector/agriculture/model_inputs.py
-python pipeline/sector/residential/model_inputs.py
+python pipeline/sector/agriculture/calibration.py
 python pipeline/sector/commercial/model_inputs.py
-python pipeline/sector/biodiesel/model_inputs.py
-python pipeline/sector/chemical_products/model_inputs.py
+python pipeline/sector/commercial/calibration.py
+...
 ```
 
-Outputs land in `model_inputs/model/{sector}/` — one CSV per province/territory (13 files per sector).
+Model inputs outputs land in `model_inputs/model/{sector}/` — one CSV per province/territory (13 files per sector). Calibration outputs land in `calibration/{sector}/`
 
----
-
-## Data Flow
-
-```
-RAW DATA (gitignored)
-        │
-        ├─ ECCC GHG inventory CSV
-        │   └─→ activity/emissions_drivers.py
-        │       └─→ processed_data/activity/emissions_drivers.csv
-        │
-        ├─ NRCan CEUD Excel workbooks
-        │   ├─→ nrcan/ceud/residential/residential.py
-        │   │   └─→ processed_data/nrcan/ceud/residential.csv
-        │   └─→ nrcan/ceud/commercial/commercial.py
-        │       └─→ processed_data/nrcan/ceud/commercial.csv
-        │
-        ├─ Stats Can GDP table (36-10-0711-01)
-        │   └─→ activity/light_industrial.py
-        │       └─→ processed_data/activity/light_industrial.csv
-        │
-        ├─ CER + AFDC price data
-        │   └─→ energy_prices/energy_price_multipliers.py
-        │       └─→ processed_data/energy_prices/energy_price_multipliers.csv
-        │
-        └─ NIR Annex 6 + CEEDC emission factors
-            └─→ emission_factors/emission_factors.py
-                └─→ (used directly by sector scripts)
-
-STAGE 2 — SECTOR ASSEMBLY
-        │
-        ├─ raw_data/fixed_data/{Sector}/         (structural parameters)
-        ├─ processed_data/ intermediates above
-        ├─ mappings_conversions/ crosswalks
-        └─ mappings_conversions/control.py       (configuration)
-                │
-                ├─→ sector/agriculture/model_inputs.py
-                │   └─→ model_inputs/model/agriculture/agriculture_{region}.csv  ×13
-                ├─→ sector/residential/model_inputs.py
-                │   └─→ model_inputs/model/residential/residential_{region}.csv  ×13
-                ├─→ sector/commercial/model_inputs.py
-                │   └─→ model_inputs/model/commercial/commercial_{region}.csv    ×13
-                ├─→ sector/biodiesel/model_inputs.py
-                │   └─→ model_inputs/model/biodiesel/biodiesel_{region}.csv      ×13
-                └─→ sector/chemical_products/model_inputs.py
-                    └─→ model_inputs/model/chemical products/..._{region}.csv    ×13
-```
 
 ---
 
@@ -238,7 +189,7 @@ When a new data vintage arrives:
    ```
 3. Update the relevant `last_data_year_*` value (and currency year or scenario name if needed). The pipeline uses the year *after* the last data year as the start of its projection assumptions, so keeping this current is important.
 4. Hit **Save to control.py** and exit the Marimo session.
-5. Re-run the affected source script(s) from Stage 1, then the dependent sector script(s) from Stage 2.
+5. Re-run the affected source script(s) and sector script(s).
 
 ---
 
@@ -246,7 +197,7 @@ When a new data vintage arrives:
 
 ### `pipeline/source/activity/`
 
-Extracts emissions-driver time series used as activity inputs in sector models.
+Extracts activity drivers.
 
 **`emissions_drivers.py`**
 - **Input**: `raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv` (ECCC national GHG inventory by province)
