@@ -287,6 +287,34 @@ Files are saved as CSV with the first 12 columns as metadata and years 2000–21
 
 ## Common Patterns
 
+### Source Script Structure
+
+Despite pulling from different government sources, all scripts in `pipeline/source/` share the same structure:
+
+**1. Module-level docstring** — Every script opens with a prominent docstring (sometimes a `===` banner) that states what it does, its input files and output location, and its specific suppression-handling strategy. This is the first place to look when diagnosing unexpected output.
+
+**2. `sys.path` setup** — Immediately after imports, every script locates the project root relative to `__file__` and inserts it into `sys.path`:
+
+```python
+_current_file = Path(__file__)
+_project_root = _current_file.parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+```
+
+This lets the script be run from any working directory (`python pipeline/source/activity/emissions_drivers.py` from `C:\cims\data\`, or directly from its own folder) without import errors.
+
+**3. Configuration block** — Input/output paths and key constants (e.g. `DATA_START`, `LAST_HIST_YEAR`, `REGIONS`) are declared at module level, loaded from `controls_conversions.py`. All paths are built with `BASE_PATH / '...'` so they resolve correctly regardless of working directory.
+
+**4. `main()` function + `__main__` guard** — All processing is wrapped in a `main()` function that returns a DataFrame. The `if __name__ == '__main__': main()` guard at the bottom means:
+- Scripts can be run directly: `python emissions_drivers.py`
+- `run_all.py` can import and call each `main()` in-process without spawning subprocesses
+- Sector assemblers that need to chain outputs can import a source script's `main()` directly
+
+**5. Console summary on completion** — Every script prints a ✅ block at the end showing row count, regions/variables processed, years covered, and the output path. This gives quick confirmation that the data landed where expected without opening the output file.
+
+---
+
 ### Suppression Handling
 
 Government data sources use various codes for confidential or unavailable cells:
@@ -294,7 +322,7 @@ Government data sources use various codes for confidential or unavailable cells:
 | Source | Suppression codes | Handling strategy |
 |--------|-------------------|-------------------|
 | Stats Can CSVs | `'x'`, `'..'`, `'F'`, `'E'` | Read as string, detect, fill by interpolation or population proxy |
-| CEUD Excel | `'X'`, `-1.0` | `_to_float()` returns NaN; filled by interpolation or province share |
+| CEUD Excel | `'X'` | `_to_float()` converts `'X'` (and any non-numeric cell) to `NaN`; `pct_series()` additionally filters negatives to catch cases where Polars numerically coerces `'X'` to `-1.0` in percentage columns |
 | NIR inventory | `'x'` | Algebraic back-calculation from Canada total + known provinces |
 
 ### Regional Disaggregation
