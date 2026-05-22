@@ -9,13 +9,12 @@ This directory transforms energy data into model input files and calibration fil
 1. [Overview](#overview)
 2. [Directory Structure](#directory-structure)
 3. [Quick Start](#quick-start)
-4. [Data Flow](#data-flow)
-5. [Configuration](#configuration)
-6. [Utility Library](#utility-library)
-7. [Output Format](#output-format)
-8. [Common Patterns](#common-patterns)
-9. [Dependencies](#dependencies)
-10. [What is and is not Committed](#what-is-and-is-not-committed)
+4. [Configuration](#configuration)
+5. [Utility Library](#utility-library)
+6. [Output Format](#output-format)
+7. [Common Patterns](#common-patterns)
+8. [Dependencies](#dependencies)
+9. [What is and is not Committed](#what-is-and-is-not-committed)
 
 ---
 
