@@ -40,12 +40,18 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+_ep_spec = importlib.util.spec_from_file_location(
+    'energy_price_multipliers',
+    _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
+)
+_energy_price_mod = importlib.util.module_from_spec(_ep_spec)
+_ep_spec.loader.exec_module(_energy_price_mod)
+
 from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Biodiesel'
-MULTIPLIERS_CSV = BASE_PATH / 'processed_data/energy_prices/energy_price_multipliers.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/biodiesel'
 
 OUTPUT_COLS = [
@@ -187,10 +193,7 @@ def main() -> dict[str, pl.DataFrame]:
     print('=' * 60)
 
     print('\nLoading pipeline data...')
-    multipliers = pl.read_csv(
-        MULTIPLIERS_CSV,
-        schema_overrides={'year': pl.Int64, 'multiplier': pl.Float64},
-    )
+    multipliers = pl.from_pandas(_energy_price_mod.main())
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: dict[str, pl.DataFrame] = {}

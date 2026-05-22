@@ -48,13 +48,25 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+_ed_spec = importlib.util.spec_from_file_location(
+    'emissions_drivers',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'emissions_drivers.py',
+)
+_emissions_mod = importlib.util.module_from_spec(_ed_spec)
+_ed_spec.loader.exec_module(_emissions_mod)
+
+_ep_spec = importlib.util.spec_from_file_location(
+    'energy_price_multipliers',
+    _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
+)
+_energy_price_mod = importlib.util.module_from_spec(_ep_spec)
+_ep_spec.loader.exec_module(_energy_price_mod)
+
 from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Agriculture'
-EMISSIONS_CSV   = BASE_PATH / 'processed_data/activity/emissions_drivers.csv'
-MULTIPLIERS_CSV = BASE_PATH / 'processed_data/energy_prices/energy_price_multipliers.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/agriculture'
 
 OUTPUT_COLS = [
@@ -110,6 +122,13 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
     _SOILS   = 'Agriculture.Process.Soils'
     _ENTERIC = 'Agriculture.Process.Enteric Fermentation and Manure Management'
 
+    # Preserve Source per (Region, Year) before pivoting drops it
+    source_map = (
+        emissions
+        .filter(pl.col('Variable') == 'Agriculture')
+        .select(['Region', 'Year', 'Source'])
+    )
+
     wide = (
         emissions
         .filter(pl.col('Variable').is_in(['Agriculture', 'Agriculture.Heat', _SOILS, _ENTERIC]))
@@ -123,6 +142,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
         .with_columns(
             (pl.col('soils_tco2e') + pl.col('enteric_tco2e')).alias('process_tco2e'),
         )
+        .join(source_map, on=['Region', 'Year'], how='left')
     )
 
     def _service_rows(
@@ -141,7 +161,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
             ('CIMS.CAN.' + pl.col('Region') + '.' + pl.lit(target_suffix)).alias('Target'),
-            pl.lit('NIR').alias('Source'),
+            pl.col('Source'),
             pl.lit('tCO2e').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col(value_col).cast(pl.String).alias('Value'),
@@ -158,7 +178,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
         ('CIMS.CAN.' + pl.col('Region') + pl.lit('.Agriculture')).alias('Target'),
-        pl.lit('NIR').alias('Source'),
+        pl.col('Source'),
         pl.lit('tCO2e').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Agriculture').cast(pl.String).alias('Value'),
@@ -227,18 +247,15 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(fixed):,}')
 
     print('Building emission rows...')
-    emissions = pl.read_csv(
-        EMISSIONS_CSV,
-        schema_overrides={'Year': pl.Int64, 'Value': pl.Float64},
-    ).filter(pl.col('Variable').str.starts_with('Agriculture'))
+    emissions = (
+        _emissions_mod.main()
+        .filter(pl.col('Variable').str.starts_with('Agriculture'))
+    )
     total_emissions, share_emissions = _build_emission_rows(emissions)
     print(f'  Rows: {len(total_emissions) + len(share_emissions):,}')
 
     print('Building energy price multiplier rows...')
-    multipliers = pl.read_csv(
-        MULTIPLIERS_CSV,
-        schema_overrides={'year': pl.Int64, 'multiplier': pl.Float64},
-    )
+    multipliers = pl.from_pandas(_energy_price_mod.main())
     price_rows = _build_price_mult_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
 

@@ -32,7 +32,7 @@ from utils.controls_conversions import (
 from utils.data_fill import backfill_constant, interpolate_5year_to_annual
 from utils.data_extensions import extend_constant
 from utils.extractors.cer import find_cer_file
-from utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH
+from utils.controls_conversions import DATA_START, PROJECTION_END, BASE_PATH, LAST_DATA_YEAR, ARCHIVED_DATA
 
 
 # Configuration
@@ -596,89 +596,89 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     from_year = int(config['currency_year_cer_benchmark'])
     from_currency = config['currency_country_cer_benchmark']
 
-    ng_prices, ng_max = process_cer_benchmark_energy(
+    ng_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'Nova Inventory Transfer (NIT) - US$/MMBtu',
         'MMBtu', conversions['mmbtu_to_gj'],
         from_year, from_currency,
     )
-    results.append(('Natural Gas', 'generic', ng_prices, 'CER', ng_max))
+    results.append(('Natural Gas', 'generic', ng_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    results.append(('Natural Gas Feedstock', 'generic', ng_prices, 'Assumption', 0))
+    results.append(('Natural Gas Feedstock', 'generic', ng_prices, 'Assumptions', 0))
 
-    petro_prices, petro_max = process_cer_benchmark_energy(
+    petro_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
         1/(conversions['bbl_to_m3'] * conversions['petrochemical feedstock']),
         from_year, from_currency,
     )
-    results.append(('Petrochemical Feedstock', 'generic', petro_prices, 'CER', petro_max))
+    results.append(('Petrochemical Feedstock', 'generic', petro_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    naphtha_prices, naphtha_max = process_cer_benchmark_energy(
+    naphtha_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
         1/(conversions['bbl_to_m3'] * conversions['naphtha specialties']),
         from_year, from_currency,
     )
-    results.append(('Naphtha Specialties', 'generic', naphtha_prices, 'CER', naphtha_max))
+    results.append(('Naphtha Specialties', 'generic', naphtha_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    asphalt_prices, asphalt_max = process_cer_benchmark_energy(
+    asphalt_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
         1/(conversions['bbl_to_m3'] * conversions['asphalt']),
         from_year, from_currency,
     )
-    results.append(('Asphalt', 'generic', asphalt_prices, 'CER', asphalt_max))
+    results.append(('Asphalt', 'generic', asphalt_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    lube_prices, lube_max = process_cer_benchmark_energy(
+    lube_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
         1/(conversions['bbl_to_m3'] * conversions['lubes and greases']),
         from_year, from_currency,
     )
-    results.append(('Lubricants', 'generic', lube_prices, 'CER', lube_max))
+    results.append(('Lubricants', 'generic', lube_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    other_prices, other_max = process_cer_benchmark_energy(
+    other_prices, _ = process_cer_benchmark_energy(
         benchmark_df, macro_df, scenario,
         'West Texas Intermediate (WTI) - US$/bbl',
         'bbl',
         1/(conversions['bbl_to_m3'] * conversions['other products']),
         from_year, from_currency,
     )
-    results.append(('Other Non-Energy Products', 'generic', other_prices, 'CER', other_max))
+    results.append(('Other Non-Energy Products', 'generic', other_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    hfo_prices, hfo_max = process_end_use_weighted_avg(
+    hfo_prices, _ = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Industrial', 'Oil', 'RPP',
     )
-    results.append(('Heavy Fuel Oil', 'generic', hfo_prices, 'CER', hfo_max))
+    results.append(('Heavy Fuel Oil', 'generic', hfo_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    lfo_prices, lfo_max = process_end_use_weighted_avg(
+    lfo_prices, _ = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Commercial', 'Oil', 'RPP',
     )
-    results.append(('Light Fuel Oil', 'generic', lfo_prices, 'CER', lfo_max))
+    results.append(('Light Fuel Oil', 'generic', lfo_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    gasoline_prices, gasoline_max = process_end_use_weighted_avg(
+    gasoline_prices, _ = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Transportation', 'Gasoline', 'Motor Gasoline',
     )
-    results.append(('Gasoline', 'generic', gasoline_prices, 'CER', gasoline_max))
+    results.append(('Gasoline', 'generic', gasoline_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    diesel_prices, diesel_max = process_end_use_weighted_avg(
+    diesel_prices, _ = process_end_use_weighted_avg(
         end_use_prices, end_use_demand, scenario,
         'Transportation', 'Diesel', 'Diesel',
     )
-    results.append(('Diesel', 'generic', diesel_prices, 'CER', diesel_max))
+    results.append(('Diesel', 'generic', diesel_prices, 'CER', LAST_DATA_YEAR["cer"]))
 
-    results.append(('Kerosene', 'generic', diesel_prices, 'Assumption', 0))
+    results.append(('Kerosene', 'generic', diesel_prices, 'Assumptions', 0))
 
     rng_prices = ng_prices * 1.5
-    results.append(('Renewable Natural Gas', 'generic', rng_prices, 'Assumption', 0))
+    results.append(('Renewable Natural Gas', 'generic', rng_prices, 'Assumptions', 0))
 
     jcims_energies = {
         'Black Liquor': 'Black Liquor',
@@ -696,18 +696,18 @@ def process_generic_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     }
 
     for cims_energy, jcims_energy in jcims_energies.items():
-        prices, jcims_max = process_jcims_energy(jcims_prod, macro_df, jcims_energy)
-        results.append((cims_energy, 'generic', prices, 'JCIMS', jcims_max))
+        prices, _ = process_jcims_energy(jcims_prod, macro_df, jcims_energy)
+        results.append((cims_energy, 'generic', prices, 'JCIMS', ARCHIVED_DATA["jcims_prices"]))
 
     # --- Add Ethane and Butane using Propane prices (derived assumption) ---
     propane_prices, _ = process_jcims_energy(jcims_prod, macro_df, 'Propane')
 
     for fuel in ['Ethane', 'Butane']:
-        results.append((fuel, 'generic', propane_prices, 'Assumption', 0))
+        results.append((fuel, 'generic', propane_prices, 'Assumptions', 0))
 
     jet_prices = [r[2] for r in results if r[0] == 'Jet Fuel'][0]
     saf_prices = process_saf_prices(jet_prices)
-    results.append(('SAF', 'generic', saf_prices, 'Assumption', 0))
+    results.append(('SAF', 'generic', saf_prices, 'Assumptions', 0))
 
     return results
 
@@ -735,41 +735,41 @@ def process_regional_energies(data: Dict) -> List[Tuple[str, str, pd.Series]]:
     conversions = data['conversions']
 
     for region in REGIONS:
-        prices, elec_max = process_electricity_regional(elec_prices, region)
+        prices, _ = process_electricity_regional(elec_prices, region)
         if len(prices) > 0:
-            results.append(('Electricity', region, prices, 'CER', elec_max))
+            results.append(('Electricity', region, prices, 'CER', LAST_DATA_YEAR["cer"]))
 
     for region in REGIONS:
-        prices, h2_max = process_hydrogen_regional(h2_prices, macro_df, region)
+        prices, _ = process_hydrogen_regional(h2_prices, macro_df, region)
         if len(prices) > 0:
-            results.append(('Hydrogen', region, prices, 'JCIMS', h2_max))
+            results.append(('Hydrogen', region, prices, 'JCIMS', ARCHIVED_DATA["jcims_prices"]))
 
-    ethanol_prices, eth_max = process_afdc_energy(
+    ethanol_prices, _ = process_afdc_energy(
         retail_fuel, macro_df, 'E85', conversions, 'ethanol', backfill_to_2000=True
     )
     for region in REGIONS:
         if len(ethanol_prices) > 0:
-            results.append(('Ethanol', region, ethanol_prices.copy(), 'AFDC', eth_max))
+            results.append(('Ethanol', region, ethanol_prices.copy(), 'AFDC', LAST_DATA_YEAR["afdc"]))
 
-    biodiesel_prices, bio_max = process_afdc_energy(
+    biodiesel_prices, _ = process_afdc_energy(
         retail_fuel, macro_df, 'B20', conversions, 'biodiesel', backfill_to_2000=True
     )
     for region in REGIONS:
         if len(biodiesel_prices) > 0:
-            results.append(('Biodiesel', region, biodiesel_prices.copy(), 'AFDC', bio_max))
+            results.append(('Biodiesel', region, biodiesel_prices.copy(), 'AFDC', LAST_DATA_YEAR["afdc"]))
 
-    ren_diesel_prices, rd_max = process_afdc_energy(
+    ren_diesel_prices, _ = process_afdc_energy(
         renewable_diesel_df, macro_df, 'Renewable Diesel', conversions,
         'renewable_diesel', backfill_to_2000=True,
     )
     for region in REGIONS:
         if len(ren_diesel_prices) > 0:
-            results.append(('Renewable Diesel', region, ren_diesel_prices.copy(), 'AFDC', rd_max))
+            results.append(('Renewable Diesel', region, ren_diesel_prices.copy(), 'AFDC', LAST_DATA_YEAR["afdc"]))
 
     for region in REGIONS:
         if len(ren_diesel_prices) > 0:
             ren_gas_prices = ren_diesel_prices * 1.1
-            results.append(('Renewable Gasoline', region, ren_gas_prices.copy(), 'Assumption', 0))
+            results.append(('Renewable Gasoline', region, ren_gas_prices.copy(), 'Assumptions', 0))
 
     return results
 
@@ -802,7 +802,7 @@ def create_output_dataframe(
                     'Region': region,
                     'Energy': energy,
                     'Unit': '2025 C$/GJ',
-                    'Source': source if int(year) <= max_yr else 'Assumption',
+                    'Source': source if int(year) <= max_yr else 'Assumptions',
                     'Year': int(year),                    
                     'Price': price,
                 })
@@ -815,7 +815,7 @@ def create_output_dataframe(
                     'Region': region,
                     'Energy': energy,
                     'Unit': '2025 C$/GJ',
-                    'Source': source if int(year) <= max_yr else 'Assumption',
+                    'Source': source if int(year) <= max_yr else 'Assumptions',
                     'Year': int(year),                    
                     'Price': price,
                     })

@@ -58,13 +58,25 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+_hi_spec = importlib.util.spec_from_file_location(
+    'heavy_industry',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'heavy_industry.py',
+)
+_heavy_industry_mod = importlib.util.module_from_spec(_hi_spec)
+_hi_spec.loader.exec_module(_heavy_industry_mod)
+
+_ep_spec = importlib.util.spec_from_file_location(
+    'energy_price_multipliers',
+    _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
+)
+_energy_price_mod = importlib.util.module_from_spec(_ep_spec)
+_ep_spec.loader.exec_module(_energy_price_mod)
+
 from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Chemical Products'
-HEAVY_IND_CSV   = BASE_PATH / 'processed_data/activity/heavy_industry.csv'
-MULTIPLIERS_CSV = BASE_PATH / 'processed_data/energy_prices/energy_price_multipliers.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/chemical products'
 
 OUTPUT_COLS = [
@@ -73,15 +85,6 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-# Full province name (as used in heavy_industry.csv) → CIMS region code
-REGION_MAP = pl.DataFrame({
-    'Region': [
-        'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick',
-        'Newfoundland and Labrador', 'Nova Scotia', 'Ontario',
-        'Prince Edward Island', 'Quebec', 'Saskatchewan',
-    ],
-    'region_code': ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'ON', 'PE', 'QC', 'SK'],
-})
 
 SUBPRODUCTS = [
     'Other Petrochemicals',
@@ -120,21 +123,16 @@ def _read_flattened_fixed() -> pl.DataFrame:
     return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
 
 
-def _with_code(df: pl.DataFrame) -> pl.DataFrame:
-    """Join the region_code column onto a DataFrame that has a 'Region' column."""
-    return df.join(REGION_MAP, on='Region', how='inner')
-
-
 def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_provide rows for the Chemical Products sector.
     Value = total Chemical Product tonnes from heavy_industry.
     """
-    df = _with_code(heavy_ind.filter(pl.col('Variable') == 'Chemical Product'))
+    df = heavy_ind.filter(pl.col('Variable') == 'Chemical Product')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('region_code') + pl.lit('.Chemical Products')).alias('Branch'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Chemical Products')).alias('Branch'),
         pl.lit('Sector').alias('Type'),
-        pl.col('region_code').alias('Region'),
+        pl.col('Region'),
         pl.lit('Chemical Products').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
@@ -142,7 +140,7 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
         pl.lit('').alias('Target'),
-        pl.lit('heavy_industry').alias('Source'),
+        pl.col('Source'),
         pl.lit('tonne').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
@@ -207,23 +205,23 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     parts = []
     for sub in SUBPRODUCTS:
-        df = _with_code(heavy_ind.filter(pl.col('Variable') == f'Chemical Product.{sub}'))
+        df = heavy_ind.filter(pl.col('Variable') == f'Chemical Product.{sub}')
         if df.is_empty():
             continue
         parts.append(df.select([
-            (pl.lit('CIMS.CAN.') + pl.col('region_code')
+            (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit('.Chemical Products.Chemical Product')).alias('Branch'),
             pl.lit('Service').alias('Type'),
-            pl.col('region_code').alias('Region'),
+            pl.col('Region'),
             pl.lit('Chemical Products').alias('Sector'),
             pl.lit('Chemical Product').alias('Service'),
             pl.lit('').alias('Technology'),
             pl.lit('service_request').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            (pl.lit('CIMS.CAN.') + pl.col('region_code')
+            (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Chemical Products.Chemical Product.{sub}')).alias('Target'),
-            pl.lit('heavy_industry').alias('Source'),
+            pl.col('Source'),
             pl.lit('% of tonnes').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
@@ -246,20 +244,14 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(fixed):,}')
 
     print('Loading heavy industry activity data...')
-    heavy_ind = pl.read_csv(
-        HEAVY_IND_CSV,
-        schema_overrides={'Year': pl.Int64, 'Value': pl.Float64},
-    )
+    heavy_ind = _heavy_industry_mod.main()
 
     print('Building total chemicals rows...')
     total_rows = _build_total_rows(heavy_ind)
     print(f'  Rows: {len(total_rows):,}')
 
     print('Building energy price multiplier rows...')
-    multipliers = pl.read_csv(
-        MULTIPLIERS_CSV,
-        schema_overrides={'year': pl.Int64, 'multiplier': pl.Float64},
-    )
+    multipliers = pl.from_pandas(_energy_price_mod.main())
     price_rows = _build_price_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
 

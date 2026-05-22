@@ -55,13 +55,25 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+_comm_spec = importlib.util.spec_from_file_location(
+    'commercial',
+    _PIPELINE_ROOT / 'source' / 'nrcan' / 'ceud' / 'commercial' / 'commercial.py',
+)
+_commercial_mod = importlib.util.module_from_spec(_comm_spec)
+_comm_spec.loader.exec_module(_commercial_mod)
+
+_ep_spec = importlib.util.spec_from_file_location(
+    'energy_price_multipliers',
+    _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
+)
+_energy_price_mod = importlib.util.module_from_spec(_ep_spec)
+_ep_spec.loader.exec_module(_energy_price_mod)
+
 from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Commercial'
-COMMERCIAL_CSV  = BASE_PATH / 'processed_data/nrcan/ceud/commercial.csv'
-MULTIPLIERS_CSV = BASE_PATH / 'processed_data/energy_prices/energy_price_multipliers.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/commercial'
 
 OUTPUT_COLS = [
@@ -242,7 +254,7 @@ def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
                 'Sector': 'Commercial', 'Service': 'Shell', 'Technology': '',
                 'Parameter': 'service_request', 'Context': '', 'Sub_Context': '',
                 'Target': f'{branch}.{cold_svc}',
-                'Source': 'CEUD', 'Unit': '% of m2',
+                'Source': r['source'], 'Unit': '% of m2',
                 'Year': yr,
                 'Value': str(val * BC_COLD_FRACTION if is_bc else val),
                 '_order': insert_order,
@@ -253,7 +265,7 @@ def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
                 'Sector': 'Commercial', 'Service': 'Shell', 'Technology': '',
                 'Parameter': 'service_request', 'Context': '', 'Sub_Context': '',
                 'Target': f'{branch}.{marine_svc}',
-                'Source': 'CEUD', 'Unit': '% of m2',
+                'Source': r['source'], 'Unit': '% of m2',
                 'Year': yr, 'Value': str(val * BC_MARINE_FRACTION),
                 '_order': insert_order,
             })
@@ -298,11 +310,12 @@ def _build_tech_mst_rows(
         if t not in tech_lifetime_max or o > tech_lifetime_max[t]:
             tech_lifetime_max[t] = o
 
-    # Build a lookup from pipeline: category → year-2000 value
-    pipeline_vals: dict[str, float] = {
-        r['category']: r['value']
-        for r in data.iter_rows(named=True)
-    }
+    # Build lookups from pipeline: category → year-2000 value and source
+    pipeline_vals: dict[str, float] = {}
+    pipeline_sources: dict[str, str] = {}
+    for r in data.iter_rows(named=True):
+        pipeline_vals[r['category']] = r['value']
+        pipeline_sources[r['category']] = r['source']
     pipeline_unit = data['unit'][0] if len(data) > 0 else '% of GJ'
 
     # Emit a market_share_total row for every technology in the fixed data,
@@ -314,7 +327,7 @@ def _build_tech_mst_rows(
             'Sector': 'Commercial', 'Service': service_name,
             'Technology': tech,
             'Parameter': 'market_share_total', 'Context': '', 'Sub_Context': '',
-            'Target': '', 'Source': 'CEUD', 'Unit': pipeline_unit,
+            'Target': '', 'Source': pipeline_sources.get(tech, 'CEUD'), 'Unit': pipeline_unit,
             'Year': '2000', 'Value': str(val),
             '_order': lifetime_max + 0.5,
         })
@@ -428,14 +441,17 @@ def main() -> dict[str, pl.DataFrame]:
     print('=' * 60)
 
     print('\nLoading pipeline data...')
-    commercial = pl.read_csv(
-        COMMERCIAL_CSV,
-        schema_overrides={'year': pl.Int64, 'value': pl.Float64},
+    _commercial_results = _commercial_mod.main()
+    commercial = (
+        pl.concat(list(_commercial_results.values()), how='diagonal_relaxed')
+        .with_columns(
+            pl.when(pl.col('year') <= _commercial_mod.LAST_HIST_YEAR)
+            .then(pl.lit('CEUD'))
+            .otherwise(pl.lit('Assumptions'))
+            .alias('source')
+        )
     )
-    multipliers = pl.read_csv(
-        MULTIPLIERS_CSV,
-        schema_overrides={'year': pl.Int64, 'multiplier': pl.Float64},
-    )
+    multipliers = pl.from_pandas(_energy_price_mod.main())
     print(f'  Commercial data: {len(commercial):,} rows, '
           f'regions: {sorted(commercial["region"].unique().to_list())}')
 
