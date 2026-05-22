@@ -28,7 +28,7 @@ Raw data from various sources is converted into CIMS-formatted CSVs covering Can
 - **Stage 1 — Source processing** (`pipeline/source/`): Each script ingests one government data source and writes a normalized intermediate CSV to `processed_data/`.
 - **Stage 2 — Sector assembly** (`pipeline/sector/`): Each sector script combines fixed structural parameters (`raw_data/fixed_data/`) with one or more processed intermediates and writes final CIMS model input files to `model_inputs/model/{sector}/`.
 
-A parallel **calibration** branch writes validation outputs to `calibration/{sector}/`. This branch is used to calibrate the model to demand, emissions, and market shares throughout the historical period. 
+A parallel **calibration** branch writes validation outputs to `calibration/{sector}/`. Calibration files contain the historical demand, emissions, and technology shares available from public sources. During the calibration step, the user matches the model over 2000–last historical year to this data in order to determine intangible costs, trends, and a vetted starting point from which the projection begins.
 
 All configuration (currency years, data years, scenarios) lives in a single file: `mappings_conversions/control.py`.
 
@@ -76,8 +76,8 @@ C:\cims\data\
 │       └── controls_conversions.py
 │
 ├── raw_data/                   # Source files — gitignored, never committed
-│   ├── assumptions/            # Projection assumption CSVs
-│   ├── fixed_data/             # Structural parameters per sector (wide-format CSVs)
+│   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
+│   ├── fixed_data/             # Structural parameters per sector from the JCIMS model (wide-format CSVs; should be updated over time)
 │   │   ├── Agriculture/
 │   │   ├── Biodiesel/
 │   │   ├── Chemical Products/
@@ -118,11 +118,20 @@ C:\cims\data\
 ### Prerequisites
 
 1. Install Python dependencies (see [Dependencies](#dependencies)).
-2. Obtain raw data from SharePoint and place it under `raw_data/` following the structure above.
+2. Obtain raw data from the **External-CIMS SharePoint** and place it under `raw_data/` following the structure above.
+   - `raw_data/data_dictionary.xlsx` documents every source: what it contains, where to download it, and how often it is published.
 
 ### Running the pipeline
 
-Run Stage 1 source processors first (order within Stage 1 generally does not matter):
+You can run scripts individually (useful when only one source has been updated) or run everything at once:
+
+```powershell
+# Run the full pipeline in one go
+python pipeline/source/run_all.py   # all Stage 1 source processors
+python pipeline/sector/run_all.py   # all Stage 2 sector assemblers
+```
+
+Or run stages selectively. Stage 1 source processors (order generally does not matter):
 
 ```powershell
 # Examples — run each script that corresponds to the data you have
@@ -217,7 +226,19 @@ Key parameters:
 | `last_data_year_statscan_resd` | Last year of Stats Can RESD table | `2024` |
 | `last_data_year_statscan_pop` | Last year of Stats Can population table | `2026` |
 
-To update for a new data vintage, change the relevant `last_data_year_*` value and re-run the affected source scripts followed by dependent sector scripts.
+### Updating Data
+
+When a new data vintage arrives:
+
+1. Download the file and replace it in its folder under `raw_data/`.
+2. Open the `control.py` Marimo notebook:
+   ```powershell
+   cd C:\cims\data\mappings_conversions
+   marimo edit control.py
+   ```
+3. Update the relevant `last_data_year_*` value (and currency year or scenario name if needed). The pipeline uses the year *after* the last data year as the start of its projection assumptions, so keeping this current is important.
+4. Hit **Save to control.py** and exit the Marimo session.
+5. Re-run the affected source script(s) from Stage 1, then the dependent sector script(s) from Stage 2.
 
 ---
 
