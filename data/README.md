@@ -11,13 +11,11 @@ This directory transforms energy data into model input files and calibration fil
 3. [Quick Start](#quick-start)
 4. [Data Flow](#data-flow)
 5. [Configuration](#configuration)
-6. [Source Processors](#source-processors)
-7. [Sector Assemblers](#sector-assemblers)
-8. [Utility Library](#utility-library)
-9. [Output Format](#output-format)
-10. [Common Patterns](#common-patterns)
-11. [Dependencies](#dependencies)
-12. [What is and is not Committed](#what-is-and-is-not-committed)
+6. [Utility Library](#utility-library)
+7. [Output Format](#output-format)
+8. [Common Patterns](#common-patterns)
+9. [Dependencies](#dependencies)
+10. [What is and is not Committed](#what-is-and-is-not-committed)
 
 ---
 
@@ -190,127 +188,6 @@ When a new data vintage arrives:
 3. Update the relevant `last_data_year_*` value (and currency year or scenario name if needed). The pipeline uses the year *after* the last data year as the start of its projection assumptions, so keeping this current is important.
 4. Hit **Save to control.py** and exit the Marimo session.
 5. Re-run the affected source script(s) and sector script(s).
-
----
-
-## Source Processors
-
-### `pipeline/source/activity/`
-
-Extracts activity drivers.
-
-**`emissions_drivers.py`**
-- **Input**: `raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv` (ECCC national GHG inventory by province)
-- **Sectors covered**: Agriculture, Waste, Construction, Forestry
-- **Output**: `processed_data/activity/emissions_drivers.csv`
-- Suppressed 'x' cells are filled by interpolation then forward-fill.
-- Historical data (2000–last NIR year) is extended to 2100 with multi-period CAGR and dampening. Province-specific CAGR overrides are applied where the national rate is inappropriate (e.g., Alberta Waste).
-
-**`light_industrial.py`**
-- **Input**: `raw_data/stats_can/activity/36100711.csv` (Stats Can GDP by industry, chained 2017 dollars)
-- **Sectors covered**: 7 light manufacturing industries
-- **Output**: `processed_data/activity/light_industrial.csv`
-
-Other activity scripts (`petroleum_refining.py`, `coal_mining.py`, `oil_production.py`, `gas_production.py`, `heavy_industry.py`) follow the same pattern for their respective sectors.
-
----
-
-### `pipeline/source/eccc/nir/`
-
-**`nir_to_cims.py`**
-- **Input**: `raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv`
-- **Output**: `processed_data/eccc/NIR_to_CIMS.csv`
-
-Two-step process:
-1. **Solve suppressed values** — Where provinces are suppressed ('x'), uses the Canada total and the known provincial values to back-calculate suppressed cells algebraically. Handles co-suppression years where multiple provinces are suppressed simultaneously (e.g., 2005 where NS, NWT, and NU are all suppressed in the same row).
-2. **Map to CIMS nodes** — Applies `NIR_to_CIMS_map.csv` to assign each NIR row to a CIMS branch identifier. Rolls up leaf-level rows to parent aggregates using `add_cims_totals.py`.
-
----
-
-### `pipeline/source/energy_prices/`
-
-**`energy_prices.py`**
-- **Inputs**: CER Canada's Energy Future tables, AFDC biofuel prices
-- Extracts production cost time series by fuel and region.
-
-**`energy_price_multipliers.py`**
-- **Input**: `energy_prices.py` outputs + mapping files
-- **Output**: `processed_data/energy_prices/energy_price_multipliers.csv`
-- Computes region × fuel price multipliers relative to a base, adjusted for currency-year differences using CPI deflators.
-
-See `pipeline/source/energy_prices/README.md` for source-specific detail.
-
----
-
-### `pipeline/source/emission_factors/`
-
-**`emission_factors.py`**
-- **Primary source**: NIR Annex 6 Emission Factors Tables (Excel)
-- **Secondary sources**: CEEDC (coal), IPCC 2006 (LPG)
-- Covers 30+ fuels: natural gas, diesel, gasoline, coal grades, renewable fuels, hydrogen, electricity
-- Outputs CO₂, CH₄, and N₂O factors in t/GJ
-- Results are consumed directly by sector assemblers (not written to an intermediate CSV).
-
----
-
-### `pipeline/source/nrcan/ceud/`
-
-Extracts data from NRCan's Comprehensive Energy Use Database (CEUD) Excel workbooks.
-
-**`residential/residential.py`**
-- **Inputs**: Provincial CEUD Excel files (`res_{prov}_e.xls`, `res_ca_e_32.xls`)
-- **Output**: `processed_data/nrcan/ceud/residential.csv`
-- Extracts: housing stock, vintage distribution (age bins), space heating technology market shares, space cooling, domestic hot water heating
-- **Regional disaggregation**: Canada-level totals are split to provinces using territory population shares (from Stats Can table 17-10-0009-01). Where CEUD suppresses provincial data ('X'), population-share proxies fill the gap.
-- See `pipeline/source/nrcan/ceud/residential/README.md` for workbook layout details.
-
-**`commercial/commercial.py`**
-- **Inputs**: Provincial CEUD Excel files for commercial buildings
-- **Output**: `processed_data/nrcan/ceud/commercial.csv`
-- Extracts: floorspace by building type, HVAC technology splits, hot water technology splits
-- **Regional grouping**: Data grouped into AB, AT (Atlantic), BC, MB, ON, QC, SK
-- **BC climate split**: BC floorspace and HVAC shares split 80% Cold / 20% Marine to reflect two distinct climate zones in the CIMS model.
-
----
-
-## Sector Assemblers
-
-Each sector script in `pipeline/sector/{sector}/model_inputs.py` follows the same broad pattern:
-
-1. Load fixed structural parameters from `raw_data/fixed_data/{Sector}/{sector}_{region}.csv` and flatten from wide (year columns) to long format.
-2. Load relevant processed intermediates from `processed_data/`.
-3. Interleave rows from both sources, maintaining the structural ordering CIMS expects.
-4. Write one output CSV per region (13 files: AB, BC, MB, NB, NL, NS, NT, NU, ON, PE, QC, SK, YT).
-
-### Agriculture
-
-- Fixed data + emissions driver activity series (from ECCC GHG, extended to 2100)
-- Service request rows for total Agriculture and sub-services (Process heat, etc.)
-- Energy price multipliers for Diesel, Natural Gas, Electricity, Hydrogen
-
-### Commercial
-
-The most complex assembler. Interleaves in strict order:
-
-1. Fixed structural data (lifetime, capital cost, output capacity, etc.)
-2. CEUD floorspace rows as `service_request` inputs
-3. Energy price multipliers (inserted after the Commercial header row)
-4. Building shell market shares (from CEUD, with BC Cold/Marine split)
-5. HVAC and hot water technology `market_share_total` rows (inserted between fixed lifetime and output rows per technology)
-
-### Residential
-
-- Fixed data + CEUD calibration extracts (housing stock, vintage shares, technology market shares)
-- One file per province/territory, structured identically to commercial
-
-### Biodiesel
-
-- Fixed data + energy price multipliers
-- No emissions drivers or CEUD data
-
-### Chemical Products
-
-- Fixed data + energy price multipliers
 
 ---
 
