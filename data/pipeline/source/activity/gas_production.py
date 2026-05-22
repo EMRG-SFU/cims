@@ -76,9 +76,8 @@ CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
 
 # Minor region configuration.
 # AB, BC, SK use the latest CER file with full CAGR extension.
-# All other regions use EF2023 historical data through 2023, then phase to 0 by 2030.
+# All other regions use historical data through LAST_MINOR_DATA_YEAR, then phase to 0 by 2030.
 MAJOR_REGIONS_CER       = ["Alberta", "British Columbia", "Saskatchewan"]
-NATURAL_GAS_EF2023_FILE = CER_DIR / 'natural-gas-production-2023.csv'
 LAST_MINOR_DATA_YEAR    = 2023
 PHASE_OUT_YEAR          = 2030
 MINOR_REGIONS           = ["NB", "NS", "NT", "ON", "YT"]  # CIMS codes
@@ -92,7 +91,7 @@ CONVERSION = 1_000 * 365
 
 raw = pl.read_csv(NATURAL_GAS_PRODUCTION_FILE)
 
-# Major regions (AB, BC, SK): full 2026 CER file, 2000–2050, CAGR to 2100
+# Major regions (AB, BC, SK): latest CER file, 2000–2050, CAGR to 2100
 df_major = (
     raw
     .filter(
@@ -105,12 +104,10 @@ df_major = (
     .drop("Value")
 )
 
-# Minor regions (all others): EF2023 file, historical only through 2023.
+# Minor regions (all others): historical only through LAST_MINOR_DATA_YEAR.
 # Production is phased to 0 by 2030 in step 5f below.
-raw_ef2023 = pl.read_csv(NATURAL_GAS_EF2023_FILE)
-
 df_minor = (
-    raw_ef2023
+    raw
     .filter(
         (pl.col("Scenario") == SCENARIO) &
         (pl.col("Unit")     == "Million Cubic Metres per day") &
