@@ -325,21 +325,15 @@ Government data sources use various codes for confidential or unavailable cells:
 | CEUD Excel | `'X'` | `_to_float()` converts `'X'` (and any non-numeric cell) to `NaN`; `pct_series()` additionally filters negatives to catch cases where Polars numerically coerces `'X'` to `-1.0` in percentage columns |
 | NIR inventory | `'x'` | Algebraic back-calculation from Canada total + known provinces |
 
-### Regional Disaggregation
+### Projections
 
-Where only a Canada-level total is available:
-1. **Preferred**: Use the province-level CEUD workbook directly.
-2. **Fallback**: Split Canada total by annual population shares (from Stats Can table 17-10-0009-01).
-3. **BC special case**: BC totals are split 80% Cold climate / 20% Marine climate for HVAC and shell market shares.
+Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the data_extensions.py util. A common one used across activity drivers is the CAGR function. It uses paramters defined  C:\cims\data\raw_data\assumptions\activity_cagr_projections.csv to determine the CAGR calculation period, and determine the projection period splits and dampeners. 
 
-### Multi-Period CAGR Projection
-
-Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in three phases:
-
+CAGR Example
 ```
-Historical → 2050 : 100% of computed CAGR
-2050 → 2075       : 50%  of computed CAGR
-2075 → 2100       : 20%  of computed CAGR
+2014 → 2024       : Computed CAGR
+2025 → 2050       : 50%  of computed CAGR
+2036 → 2100       : 20%  of computed CAGR
 ```
 
 Sector- and province-specific overrides are applied where the national historical CAGR is unrepresentative (e.g., Alberta Waste: 2%, 1%, 0.5% across the three periods).
