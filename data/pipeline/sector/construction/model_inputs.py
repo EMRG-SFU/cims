@@ -12,14 +12,12 @@ Fixed structural parameters
     Construction sector to its Transport sub-service.
 
 Activity demand  (service_provide levels)
-    processed_data/activity/emissions_drivers.csv
-    Produced by pipeline/source/activity/emissions_drivers.py.
+    pipeline/source/activity/emissions_drivers.py  (called directly via main())
     Variables used:
       'Construction'   → total tCO2e (region-level service_request)
 
 Energy price multipliers  (price_mult rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
-    Produced by pipeline/source/energy_prices/energy_price_multipliers.py.
+    pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
     Energies applied: Diesel, Electricity (matching Transport technologies).
 
 Output columns
@@ -47,13 +45,25 @@ _spec = importlib.util.spec_from_file_location(
 _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
+_ed_spec = importlib.util.spec_from_file_location(
+    'emissions_drivers',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'emissions_drivers.py',
+)
+_emissions_mod = importlib.util.module_from_spec(_ed_spec)
+_ed_spec.loader.exec_module(_emissions_mod)
+
+_ep_spec = importlib.util.spec_from_file_location(
+    'energy_price_multipliers',
+    _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
+)
+_energy_price_mod = importlib.util.module_from_spec(_ep_spec)
+_ep_spec.loader.exec_module(_energy_price_mod)
+
 from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Construction'
-EMISSIONS_CSV   = BASE_PATH / 'processed_data/activity/emissions_drivers.csv'
-MULTIPLIERS_CSV = BASE_PATH / 'processed_data/energy_prices/energy_price_multipliers.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/construction'
 
 OUTPUT_COLS = [
@@ -110,7 +120,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
         emissions
         .filter(pl.col('Variable') == 'Construction')
         .select([
-            ('CIMS.CAN.' + pl.col('Region')).alias('Branch'),
+            ('JCIMS.CAN.' + pl.col('Region')).alias('Branch'),
             pl.lit('Region').alias('Type'),
             pl.col('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -119,8 +129,8 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
             pl.lit('service_request').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            ('CIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
-            pl.lit('NIR').alias('Source'),
+            ('JCIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
+            pl.col('Source'),
             pl.lit('tCO2e').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
@@ -139,7 +149,7 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
         multipliers
         .filter(pl.col('Sector') == 'Construction')
         .select([
-            ('CIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
+            ('JCIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
             pl.lit('Sector').alias('Type'),
             pl.col('Region').alias('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -152,8 +162,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
                 'Electricity', 'Biodiesel', 'Renewable Diesel',
                 'Ethanol', 'Renewable Gasoline', 'Hydrogen',
             ]))
-            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
+            .then(pl.lit('JCIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
+            .otherwise(pl.lit('JCIMS.Generic Fuels.') + pl.col('Energy'))
             .alias('Target'),
             pl.col('Source').alias('Source'),
             pl.lit('').alias('Unit'),
@@ -176,18 +186,15 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(fixed):,}')
 
     print('Building emission rows...')
-    emissions = pl.read_csv(
-        EMISSIONS_CSV,
-        schema_overrides={'Year': pl.Int64, 'Value': pl.Float64},
-    ).filter(pl.col('Variable') == 'Construction')
+    emissions = (
+        _emissions_mod.main()
+        .filter(pl.col('Variable').str.starts_with('Construction'))
+    )
     total_emissions = _build_emission_rows(emissions)
     print(f'  Rows: {len(total_emissions):,}')
 
     print('Building energy price multiplier rows...')
-    multipliers = pl.read_csv(
-        MULTIPLIERS_CSV,
-        schema_overrides={'year': pl.Int64, 'multiplier': pl.Float64},
-    )
+    multipliers = pl.from_pandas(_energy_price_mod.main())
     price_rows = _build_price_mult_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
 
@@ -200,12 +207,13 @@ def main() -> pl.DataFrame:
     fixed_con_header       = fixed_str.filter(_con_branch & _header_params)
     fixed_con_tail         = fixed_str.filter(_con_branch & ~_header_params)
     fixed_transport_header = fixed_str.filter(_transport_branch & _header_params)
+    fixed_transport_tail   = fixed_str.filter(_transport_branch & ~_header_params)
     fixed_rest             = fixed_str.filter(~_con_branch & ~_transport_branch)
 
     output = (
         pl.concat(
             [total_emissions, fixed_con_header, price_rows,
-             fixed_con_tail, fixed_transport_header, fixed_rest],
+             fixed_con_tail, fixed_transport_header, fixed_transport_tail, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)
