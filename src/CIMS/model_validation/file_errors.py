@@ -97,10 +97,14 @@ def techs_no_base_market_share(validator):
     base_year_ms = ms_rows[(ms_rows["Year"] == base_year) & ms_rows["Value"].notna()]
     has_base_year_ms = set(zip(base_year_ms[validator.node_col], base_year_ms[COL.technology]))
 
-    flagged = unique_defined[
+    # Use pd.Series so an empty mask is treated as boolean indexing, not column selection
+    missing_base_year = pd.Series(
         [(n, t) not in has_base_year_ms
-         for n, t in zip(unique_defined[validator.node_col], unique_defined[COL.technology])]
-    ]
+         for n, t in zip(unique_defined[validator.node_col], unique_defined[COL.technology])],
+        index=unique_defined.index,
+        dtype=bool,
+    )
+    flagged = unique_defined[missing_base_year]
     techs_no_base_year_ms = list(zip(flagged.index, flagged[validator.node_col], flagged[COL.technology]))
 
     concern_desc = "technologies are missing a base year Market share"
