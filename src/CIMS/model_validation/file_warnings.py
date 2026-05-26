@@ -1,11 +1,8 @@
 import pandas as pd
 import numpy as np
 
-from .validation_utils import get_year_cols
-
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import is_year
 
 
 def missing_parameter_default(validator):
@@ -120,23 +117,17 @@ def bad_service_req(validator):
     Identify nodes/technologies that have a service requested line, but where the values in these
     lines are either blank or exogenously specified as 0.
     """
-    # The model's DataFrame
     data = validator.model_df
+    services_req = data[data[COL.parameter] == PARAM.service_request].copy()
+    services_req["Value_num"] = pd.to_numeric(services_req["Value"], errors="coerce")
+    group_keys = [validator.node_col, COL.technology, validator.target_col]
 
-    # Filter to Only Include Service Requested
-    services_req = data[data[COL.parameter] == PARAM.service_request]
+    # True for each row where ALL values in the (node, tech, target) group are 0 or NaN
+    all_bad_mask = services_req.groupby(group_keys, dropna=False)["Value_num"] \
+        .transform(lambda g: (g.isna() | (g == 0)).all())
 
-    # Select only the year columns
-    year_cols = [c for c in services_req.columns if is_year(c)]
-    year_values = services_req[year_cols]
-
-    # Identify rows that have 0's or missing values
-    row_has_bad_values = year_values.isin([0, np.nan]).all(axis=1)
-    rows_with_bad_values = services_req[row_has_bad_values]
-
-    # Create our Warning information
-    bad_service_requests = list(
-        zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col]))
+    bad_rows = services_req[all_bad_mask].drop_duplicates(subset=group_keys)
+    bad_service_requests = list(zip(bad_rows.index, bad_rows[validator.node_col]))
 
     concern_desc = "nodes/technologies have Service requested values of only \
         0's or are missing all values"
@@ -151,14 +142,13 @@ def zero_requested_nodes(validator, providers):
     0.
     """
     data = validator.model_df
-    request_lines = data[data[COL.parameter] == PARAM.service_request]
+    request_lines = data[data[COL.parameter] == PARAM.service_request].copy()
+    request_lines["Value_num"] = pd.to_numeric(request_lines["Value"], errors="coerce").fillna(0)
     all_requested = set(request_lines[validator.target_col])
 
-    numeric_values = request_lines[get_year_cols(
-        data)].replace("None", None).astype(float)
-    zero_request_line = numeric_values.sum(axis=1) == 0
-    non_zero_request_lines = request_lines[~zero_request_line]
-    non_zero_requested = set(non_zero_request_lines[validator.target_col])
+    group_keys = [validator.node_col, COL.technology, validator.target_col]
+    group_sums = request_lines.groupby(group_keys, dropna=False)["Value_num"].sum()
+    non_zero_requested = set(group_sums[group_sums != 0].reset_index()[validator.target_col])
 
     zero_requested = [(i, v) for i, v in providers.items() if
                       (v in all_requested) and

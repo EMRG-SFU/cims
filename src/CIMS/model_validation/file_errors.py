@@ -1,12 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from .validation_utils import get_providers, get_year_cols, get_nodes
 
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import is_year
-
 
 def invalid_competition_type(validator):
     """
@@ -54,10 +51,9 @@ def nodes_with_zero_output(validator):
     Identify nodes or technologies where the "Output" line has been set to 0 for
     any of the year values in the model description.
     """
-    year_cols = get_year_cols(validator.model_df)
     output = validator.model_df[validator.model_df[COL.parameter] == PARAM.output]
-    zero_outputs = output[(output[year_cols] == 0).any(axis=1)]
-    zero_output_nodes = list(zero_outputs[COL.branch].items())
+    zero_outputs = output[pd.to_numeric(output["Value"], errors="coerce") == 0]
+    zero_output_nodes = list(zero_outputs.drop_duplicates(subset=COL.branch)[COL.branch].items())
 
     concern_desc = "nodes have an Output value of 0"
     return zero_output_nodes, concern_desc
@@ -82,21 +78,24 @@ def techs_no_base_market_share(validator):
     """
     Identify technologies which have a market share line, but do not have a base year market share.
     """
-    # The model's DataFrame
     data = validator.model_df
+    base_year = str(data["Year"].dropna().min())
+    ms_rows = data[data[COL.parameter] == PARAM.market_share_new]
 
-    base_year = [c for c in data.columns if is_year(c)][0]
-    base_year_market_shares = data[data[COL.parameter] == PARAM.market_share_new]
-    no_base_year_ms = base_year_market_shares[base_year_market_shares[base_year].isna()]
+    # Unique (node, tech) pairs with any market share value defined
+    unique_defined = ms_rows[ms_rows["Value"].notna()].drop_duplicates(subset=[validator.node_col, COL.technology])
 
-    techs_no_base_year_ms = []
-    for idx in no_base_year_ms.index:
-        techs_no_base_year_ms.append((idx,
-                                      data.loc[idx, validator.node_col],
-                                      data.loc[idx, COL.technology]))
+    # (node, tech) pairs that have a value at the base year
+    base_year_ms = ms_rows[(ms_rows["Year"] == base_year) & ms_rows["Value"].notna()]
+    has_base_year_ms = set(zip(base_year_ms[validator.node_col], base_year_ms[COL.technology]))
+
+    flagged = unique_defined[
+        [(n, t) not in has_base_year_ms
+         for n, t in zip(unique_defined[validator.node_col], unique_defined[COL.technology])]
+    ]
+    techs_no_base_year_ms = list(zip(flagged.index, flagged[validator.node_col], flagged[COL.technology]))
 
     concern_desc = "technologies are missing a base year Market share"
-
     return techs_no_base_year_ms, concern_desc
 
 def tech_compete_nodes_no_techs(validator):
@@ -150,24 +149,21 @@ def revenue_recycling_at_techs(validator):
 
 def both_cop_p2000_defined(validator):
     """
-    No node should have both COP & P2000 exogenously defined
+    No node should have both COP & P2000 exogenously defined.
     """
-
     data = validator.model_df
 
-    # Find all instances of COP & P2000 in the model description
-    cop_p2000 = data[data[COL.parameter].isin([PARAM.cop, PARAM.p2000])]
+    # Rows where COP or P2000 has a value defined
+    cop_p2000 = data[data[COL.parameter].isin([PARAM.cop, PARAM.p2000]) & data["Value"].notna()]
 
-    # Only keep the rows that aren't completely None
-    cop_p2000 = cop_p2000.dropna(how='all',
-                                 subset=[c for c in cop_p2000.columns if is_year(c)])
-    duplicated = cop_p2000[cop_p2000.duplicated(
-                 subset=[validator.node_col],
-                 keep='first')]
+    # Nodes with each parameter defined
+    has_cop   = set(cop_p2000[cop_p2000[COL.parameter] == PARAM.cop][validator.node_col])
+    has_p2000 = set(cop_p2000[cop_p2000[COL.parameter] == PARAM.p2000][validator.node_col])
 
-    nodes_with_cop_and_p2000 = []
-    for i, node in duplicated[validator.node_col].items():
-        nodes_with_cop_and_p2000.append((i, node))
+    # One representative row per node that has both defined (for the index)
+    flagged = cop_p2000[cop_p2000[validator.node_col].isin(has_cop & has_p2000)] \
+                       .drop_duplicates(subset=[validator.node_col])
+    nodes_with_cop_and_p2000 = list(zip(flagged.index, flagged[validator.node_col]))
 
     concern_desc = "nodes have both COP & P2000 exogenously defined"
     return nodes_with_cop_and_p2000, concern_desc
@@ -243,35 +239,24 @@ def min_max_conflicts(validator):
     Identify technologies where the market share limits set conflict with one
     another. For example, max=0.5<min=0.7.
     """
-    # The model's DataFrame
     data = validator.model_df
 
-    # Min/Max Marketshare Limits
     ms_min_limits = data[data[COL.parameter] == PARAM.market_share_new_min]
     ms_max_limits = data[data[COL.parameter] == PARAM.market_share_new_max]
 
-    # Build a Node -> [Technologies] map
     df = pd.merge(ms_min_limits, ms_max_limits,
                   how='inner', validate='many_to_many',
-                  on=[COL.branch, COL.region, COL.sector, COL.technology],
+                  on=[COL.branch, COL.region, COL.sector, COL.technology, "Year"],
                   suffixes=["_min", "_max"])
 
-    issues = {}
-    for y in get_year_cols(data):
-        incongruent_nodes = df[df[f"{y}_min"] > df[f"{y}_max"]]
-        for branch, tech in zip(incongruent_nodes[COL.branch], incongruent_nodes[COL.technology]):
-            if (branch, tech) not in issues:
-                issues[(branch, tech)] = []
-            issues[(branch, tech)].append(y)
+    df["Value_min"] = pd.to_numeric(df["Value_min"], errors="coerce")
+    df["Value_max"] = pd.to_numeric(df["Value_max"], errors="coerce")
+    incongruent = df[df["Value_min"] > df["Value_max"]]
 
+    issues = incongruent.groupby([COL.branch, COL.technology])["Year"].apply(list).reset_index()
+    min_max_conflicts = list(zip(issues[COL.branch], issues[COL.technology], issues["Year"]))
 
-    # Find Unique Node/Branch + Technology rows
-    min_max_conflicts = []
-    for ((node, tech), years) in issues.items():
-        min_max_conflicts.append((node, tech, years))
-
-    # Create Warning information
-    concern_desc = "technologies contain market share limits that  conflict \
+    concern_desc = "technologies contain market share limits that conflict \
         with one another (e.g., min > max)"
 
     return min_max_conflicts, concern_desc
@@ -346,31 +331,30 @@ def lcc_at_tech(validator):
 
 def base_year_market_share_not_one(validator):
     """
-    Identifies branches where the sum of base year market shares 
+    Identifies branches where the sum of base year market shares
     for competing technologies does not equal 1.
     """
     # Extract market share data from model
     model_df = validator.model_df
     market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share_total]
 
-    # Identify base year column
-    base_year_col = next(col for col in market_share_df.columns if is_year(col))
+    # Identify base year (minimum year in the dataset)
+    base_year = str(model_df["Year"].dropna().min())
 
-    # Select relevant columns and ensure numeric market shares
-    selected_cols = [COL.branch, COL.technology, base_year_col]
-    market_share_df = market_share_df[selected_cols].copy()
-    market_share_df[base_year_col] = pd.to_numeric(market_share_df[base_year_col], errors='coerce')
+    # Filter to base year rows and ensure numeric market shares
+    market_share_df = market_share_df[market_share_df["Year"] == base_year].copy()
+    market_share_df["Value"] = pd.to_numeric(market_share_df["Value"], errors='coerce')
 
     # Sum market shares for each branch
-    grouped = market_share_df.groupby(COL.branch)[base_year_col].sum().reset_index()
+    grouped = market_share_df.groupby(COL.branch)["Value"].sum().reset_index()
 
     # Identify branches where the market share sum is not ~1
-    invalid = grouped[~np.isclose(grouped[base_year_col], 1.0, atol=0.001)]
+    invalid = grouped[~np.isclose(grouped["Value"], 1.0, atol=0.001)]
 
     # Build result: list of (node index, branch name, summed market share)
     nodes_with_bad_shares = [
         (validator.branch2node_index_map[branch], branch, total_share)
-        for branch, total_share in zip(invalid[COL.branch], invalid[base_year_col])
+        for branch, total_share in zip(invalid[COL.branch], invalid["Value"])
     ]
 
     concern_desc = "nodes whose base year market shares do not sum to 1"
