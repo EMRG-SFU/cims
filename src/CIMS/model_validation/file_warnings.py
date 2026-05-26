@@ -89,7 +89,7 @@ def duplicate_service_requests(validator):
 
     serv_request = data[data[COL.parameter] == PARAM.service_request]
     duplicated = serv_request[serv_request.duplicated(
-        subset=[validator.node_col, COL.technology, validator.target_col],
+        subset=[validator.node_col, COL.technology, validator.target_col, "Year"],
         keep=False)]
 
     if len(duplicated) > 0:

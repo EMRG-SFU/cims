@@ -60,14 +60,22 @@ def nodes_with_zero_output(validator):
 
 def supply_without_lcc_or_price(validator):
     """
-    Identify supply nodes (fixed price or cost curve) that have no price, 
+    Identify supply nodes (fixed price or cost curve) that have no price,
     lcc financial, or cost curve price specified in the base year.
     """
-    supply_nodes = validator.model_df[(validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False)) &
-                                       (validator.model_df[COL.context] is True)][COL.branch]
+    # Supply nodes: is_supply parameter with context == "True"
+    supply_nodes = validator.model_df[
+        validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False) &
+        (validator.model_df[COL.context].str.lower() == "true")
+    ][COL.branch]
 
-    cost_df = validator.model_df[validator.model_df[COL.parameter].isin([PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
-    has_base_year_cost = cost_df[~cost_df[PARAM.base_year].isna()][COL.branch]
+    # Cost rows with a value defined in the base year
+    cost_df = validator.model_df[validator.model_df[COL.parameter].isin(
+        [PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
+    has_base_year_cost = cost_df[
+        (cost_df["Year"] == PARAM.base_year) & cost_df["Value"].notna()
+    ][COL.branch]
+
     no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
                     f not in has_base_year_cost.values]
 
@@ -317,16 +325,14 @@ def lcc_at_tech(validator):
     """
     Identify any technologies where an LCC value has been set exogenously.
     """
-    techs = validator.model_df[[COL.branch, COL.technology]].drop_duplicates().dropna(how='any')
-    
-    lcc_techs = validator.model_df[COL.branch][
+    lcc_tech_rows = validator.model_df[
         ~validator.model_df[COL.technology].isna() &
-        validator.model_df[COL.parameter].str.lower().str.contains('lcc')]
-    
-    lcc_at_techs = [(i, n) for i, n in lcc_techs.items() if n in techs]
+        validator.model_df[COL.parameter].str.lower().str.contains('lcc')
+    ].drop_duplicates(subset=[COL.branch, COL.technology])
+
+    lcc_at_techs = list(zip(lcc_tech_rows.index, lcc_tech_rows[COL.branch]))
 
     concern_desc = "technologies have exogenously defined LCC values"
-
     return lcc_at_techs, concern_desc
 
 def base_year_market_share_not_one(validator):
