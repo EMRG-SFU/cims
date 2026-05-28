@@ -35,7 +35,7 @@ class ModelReader:
                     csv_file,
                     use_pyarrow=False,
                     infer_schema_length=0,
-                ).with_columns(pl.all().replace({np.nan: None})).to_pandas()
+                ).to_pandas().replace({np.nan: None, "": None})
                 appended_data.append(sheet_df)
             except ValueError:
                 print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
