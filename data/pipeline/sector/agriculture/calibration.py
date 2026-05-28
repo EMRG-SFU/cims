@@ -1,0 +1,327 @@
+"""
+Extract Agriculture calibration data and save to CIMS-formatted CSV files.
+
+Sources
+-------
+Emissions  (calibration_emissions_total_cumul_net)
+    nir_crosswalk_tables_cims.py  → total tCO2e per agriculture CIMS branch
+                                    5-year intervals (2000–2020);
+                                    abbreviation regions (AB, BC, …)
+    nir_to_cims.py                → per-gas kt per agriculture CIMS branch,
+                                    annual resolution (2000–latest NIR year);
+                                    summed to tCO2e using AR5 GWP100 factors;
+                                    full province names mapped to abbreviations
+
+Energy demand  (calibration_quantity_requested)
+    cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
+                                    abbreviation regions
+
+Output columns
+--------------
+Branch, Type, Region, Sector, Service, Technology, Parameter,
+Context, Sub_Context, Target, Source, Unit, Year, Value
+"""
+
+import sys
+import importlib.util
+from pathlib import Path
+
+import polars as pl
+import pandas as pd
+
+# ── path setup ────────────────────────────────────────────────────────────────
+_PIPELINE_ROOT = Path(__file__).parent.parent.parent   # .../data/pipeline
+if str(_PIPELINE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PIPELINE_ROOT))
+
+
+def _load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_crosswalk_mod = _load_module(
+    'nir_crosswalk_tables_cims',
+    _PIPELINE_ROOT / 'source/eccc/nir/nir_crosswalk_tables_cims.py',
+)
+_nir_mod = _load_module(
+    'nir_to_cims',
+    _PIPELINE_ROOT / 'source/eccc/nir/nir_to_cims.py',
+)
+_cer_mod = _load_module(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source/cer/cer_resd_demand.py',
+)
+
+from utils.controls_conversions import BASE_PATH
+
+# ── configuration ─────────────────────────────────────────────────────────────
+OUTPUT_DIR = BASE_PATH / 'calibration/agriculture'
+
+
+OUTPUT_COLS = [
+    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
+    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
+    'Year', 'Value',
+]
+
+# AR5 GWP100 factors: kt of gas → kt CO2e (multiply by 1000 for tCO2e)
+# HFCs and PFCs are already reported in kt CO2e in the NIR, so GWP = 1.
+_GWP: dict[str, float] = {
+    'CO2':  1.0,
+    'CH4':  28.0,
+    'N2O':  265.0,
+    'HFCs': 1.0,
+    'PFCs': 1.0,
+    'SF6':  23500.0,
+    'NF3':  16100.0,
+}
+
+# NIR full province name → CIMS abbreviation (excludes Canada)
+_REGION_MAP: dict[str, str] = {
+    'British Columbia':          'BC',
+    'Alberta':                   'AB',
+    'Saskatchewan':              'SK',
+    'Manitoba':                  'MB',
+    'Ontario':                   'ON',
+    'Quebec':                    'QC',
+    'New Brunswick':             'NB',
+    'Nova Scotia':               'NS',
+    'Prince Edward Island':      'PE',
+    'Newfoundland and Labrador': 'NL',
+    'Yukon':                     'YT',
+    'Northwest Territories':     'NT',
+    'Nunavut':                   'NU',
+}
+
+# Fuels that have region-specific CIMS branches
+_REGIONAL_FUELS = {
+    'Electricity', 'Biodiesel', 'Renewable Diesel',
+    'Ethanol', 'Renewable Gasoline', 'Hydrogen',
+}
+
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+def _branch_meta(branch: str) -> dict:
+    """Infer Type, Region, Sector, Service from a CIMS branch string.
+
+    Branch structure: CIMS.CAN.{Region}[.{Sector}[.{Service}[...]]]
+    """
+    parts = branch.split('.')
+    if len(parts) < 3:
+        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
+    region = parts[2]
+    if len(parts) == 3:
+        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
+    sector = parts[3]
+    if len(parts) == 4:
+        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
+    service = parts[4]
+    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
+
+
+def _fuel_target(region: str, fuel: str) -> str:
+    """Build CIMS branch for a fuel (mirrors model_inputs.py price_mult logic)."""
+    if fuel in _REGIONAL_FUELS:
+        return f'CIMS.CAN.{region}.{fuel}'
+    return f'CIMS.Generic Fuels.{fuel}'
+
+
+def _empty_df() -> pl.DataFrame:
+    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── emission builders ─────────────────────────────────────────────────────────
+
+def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Filter nir_crosswalk_tables_cims output to Agriculture CIMS branches.
+
+    Provides total tCO2e at 5-year intervals (2000–2020) using abbreviation
+    regions already present in the crosswalk output.
+    """
+    ag = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Agriculture'))
+    if ag.is_empty():
+        return _empty_df()
+
+    rows = []
+    for row in ag.to_dicts():
+        branch = row['CIMS_Branch']
+        meta = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      meta['Region'],
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      '',
+            'Source':      str(row.get('Source', 'NIR')),
+            'Unit':        str(row.get('Unit', 'tCO2e')),
+            'Year':        str(row['Year']),
+            'Value':       str(row['Value']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Convert nir_to_cims per-gas data to annual tCO2e for Agriculture branches.
+
+    Applies AR5 GWP100 factors to sum all gas types into a single tCO2e total
+    per branch/region/year. Full province names are mapped to CIMS abbreviations.
+    Canada-level rows are excluded (calibration is per-province only).
+    """
+    known_regions = set(_REGION_MAP.keys())
+    ag = nir_df.filter(
+        pl.col('CIMS Branch').str.contains(r'\.Agriculture')
+        & pl.col('Region').is_in(known_regions)
+    )
+    if ag.is_empty():
+        return _empty_df()
+
+    gwp_lf = pl.DataFrame({
+        'Variable': list(_GWP.keys()),
+        'GWP': list(_GWP.values()),
+    })
+
+    # tco2e = value_tonnes * GWP (nir_to_cims already converts kt → tonnes)
+    ag = (
+        ag
+        .join(gwp_lf, on='Variable', how='left')
+        .with_columns((pl.col('Value') * pl.col('GWP')).alias('tco2e'))
+    )
+
+    # Sum across gas types → one tCO2e total per branch/region/year
+    totals = (
+        ag
+        .group_by(['CIMS Branch', 'Region', 'Year'])
+        .agg(pl.col('tco2e').sum())
+        .sort(['Region', 'Year', 'CIMS Branch'])
+    )
+
+    rows = []
+    for row in totals.to_dicts():
+        full_region = row['Region']
+        abbr = _REGION_MAP[full_region]
+        # Replace full province name in branch with abbreviation
+        branch = row['CIMS Branch'].replace(
+            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
+        )
+        meta = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      abbr,
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      '',
+            'Source':      'NIR',
+            'Unit':        'tCO2e',
+            'Year':        str(row['Year']),
+            'Value':       str(row['tco2e']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── energy demand builder ─────────────────────────────────────────────────────
+
+def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
+    """
+    Filter cer_resd_demand output to Agriculture CIMS nodes.
+
+    Provides energy demand in PJ by fuel, region, and year.
+    The fuel name is stored in Technology; Target points to the CIMS fuel branch.
+    """
+    ag = cer_df[cer_df['Node'].str.startswith('.Agriculture')].copy()
+    if ag.empty:
+        return _empty_df()
+
+    rows = []
+    for _, row in ag.iterrows():
+        region = str(row['Region'])
+        node = str(row['Node'])
+        fuel = str(row['Variable'])
+        branch = f'CIMS.CAN.{region}{node}'
+        meta = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      region,
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_quantity_requested',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      _fuel_target(region, fuel),
+            'Source':      str(row.get('Source', 'CER')),
+            'Unit':        str(row.get('Unit', 'GJ')),
+            'Year':        str(int(row['Year'])),
+            'Value':       str(row['Value']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+def main() -> pl.DataFrame:
+    """Assemble agriculture calibration data and write one CSV per region."""
+    print('=' * 60)
+    print('AGRICULTURE CALIBRATION')
+    print('=' * 60)
+
+    print('\nRunning NIR crosswalk (nir_crosswalk_tables_cims)...')
+    crosswalk_df = pl.from_pandas(_crosswalk_mod.main())
+
+    print('\nRunning NIR to CIMS (nir_to_cims)...')
+    nir_df = _nir_mod.main()
+
+    print('\nRunning CER demand (cer_resd_demand)...')
+    cer_df = _cer_mod.main()
+
+    print('\nBuilding crosswalk emission rows...')
+    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    print(f'  Rows: {len(crosswalk_rows):,}')
+
+    print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
+    nir_rows = _build_nir_emissions(nir_df)
+    print(f'  Rows: {len(nir_rows):,}')
+
+    print('Building CER energy demand rows...')
+    cer_rows = _build_cer_energy(cer_df)
+    print(f'  Rows: {len(cer_rows):,}')
+
+    print('Combining...')
+    output = (
+        pl.concat([crosswalk_rows, nir_rows, cer_rows], how='diagonal_relaxed')
+        .select(OUTPUT_COLS)
+    )
+
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    regions = output['Region'].drop_nulls().unique().sort().to_list()
+    for region in regions:
+        region_df = output.filter(pl.col('Region') == region)
+        out_path = OUTPUT_DIR / f'agriculture_{region}.csv'
+        region_df.write_csv(out_path)
+        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+
+    print(f'\n✅ Agriculture calibration complete')
+    print(f'   Total rows:  {len(output):,}')
+    print(f'   Files:       {len(regions)} (one per region)')
+
+    return output
+
+
+if __name__ == '__main__':
+    main()

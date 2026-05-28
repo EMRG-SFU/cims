@@ -38,11 +38,11 @@ from controls_conversions import load_control_config, BASE_PATH
 # Update folder with new nir when released each year
 NIR_CSV  = BASE_PATH / 'raw_data/eccc/nir/GHG_Econ_Can_Prov_Terr.csv'
 # Manual map - should stay the same unless there are changes to nir or cims naming
-MAP_CSV  = BASE_PATH / 'mappings_conversions/NIR_to_CIMS_map.csv'
+MAP_CSV  = BASE_PATH / 'mappings_conversions/nir_to_cims_map.csv'
 # Script outputs a version of the nir with the suppressed values solved
 OUT_NIR  = BASE_PATH / 'processed_data/eccc/NIR_Suppressed_Solved.csv'
 # Main output - NIR emissions mapped to cims nodes
-OUT_CIMS = BASE_PATH / 'processed_data/eccc/NIR_to_CIMS.csv'
+OUT_CIMS = BASE_PATH / 'processed_data/eccc/nir/nir_to_cims.csv'
 
 _config = load_control_config()
 _archived = _config["archived_data"]
@@ -427,24 +427,24 @@ def main() -> pl.DataFrame:
     print("Suppressed values solved.\n")
 
     # ── Write Stage 1 output ──────────────────────────────────────────────────────
-    print(f"Writing solved NIR → {OUT_NIR}")
-    headers = list(raw.columns)
-    with open(str(OUT_NIR), "w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(headers)
-        for key in row_order:
-            row = data[key]
-            out_row = []
-            for h in headers:
-                v = row.get(h)
-                if v is None:
-                    out_row.append("")
-                else:
-                    try:
-                        out_row.append(float(v))
-                    except (ValueError, TypeError):
-                        out_row.append(v)
-            writer.writerow(out_row)
+    # print(f"Writing solved NIR → {OUT_NIR}")
+    # headers = list(raw.columns)
+    # with open(str(OUT_NIR), "w", newline="", encoding="utf-8") as f:
+    #     writer = csv.writer(f)
+    #     writer.writerow(headers)
+    #     for key in row_order:
+    #         row = data[key]
+    #         out_row = []
+    #         for h in headers:
+    #             v = row.get(h)
+    #             if v is None:
+    #                 out_row.append("")
+    #             else:
+    #                 try:
+    #                     out_row.append(float(v))
+    #                 except (ValueError, TypeError):
+    #                     out_row.append(v)
+    #         writer.writerow(out_row)
 
     # ═══════════════════════════════════════════════════════════════════════════════
     # STAGE 2 — Map NIR rows to CIMS branch nodes
@@ -568,19 +568,19 @@ def main() -> pl.DataFrame:
             val = out.get(gas)
             if val is not None:
                 long_rows.append({
-                    "CIMS Branch":         branch,
-                    "Region":              region,
-                    "Year":                out["Year"],
-                    "Emissions Type (kt)": label,
-                    "Value":               val,
+                    "CIMS Branch": branch,
+                    "Region":      region,
+                    "Year":        out["Year"],
+                    "Variable":    label,
+                    "Value":       val * 1000,  # kt → tonnes
                 })
 
     df_long = pl.DataFrame(long_rows, schema={
-        "CIMS Branch":         pl.Utf8,
-        "Region":              pl.Utf8,
-        "Year":                pl.Int64,
-        "Emissions Type (kt)": pl.Utf8,
-        "Value":               pl.Float64,
+        "CIMS Branch": pl.Utf8,
+        "Region":      pl.Utf8,
+        "Year":        pl.Int64,
+        "Variable":    pl.Utf8,
+        "Value":       pl.Float64,
     })
 
     # ═══════════════════════════════════════════════════════════════════════════════
@@ -594,7 +594,7 @@ def main() -> pl.DataFrame:
     COL_BRANCH = "CIMS Branch"
     COL_REGION = "Region"
     COL_YEAR   = "Year"
-    COL_ETYPE  = "Emissions Type (kt)"
+    COL_ETYPE  = "Variable"
     COL_VALUE  = "Value"
 
     # Separate inventory total rows from sector leaves.
@@ -627,6 +627,15 @@ def main() -> pl.DataFrame:
     df_totals = pl.concat([df_inventory, df_totals])
     df_totals = df_totals.sort([COL_REGION, COL_YEAR, COL_BRANCH, COL_ETYPE])
 
+    df_totals = (
+        df_totals
+        .with_columns([
+            pl.lit('tonnes').alias('Unit'),
+            pl.lit('NIR').alias('Source'),
+        ])
+        .select([COL_BRANCH, COL_REGION, COL_ETYPE, 'Unit', 'Source', COL_YEAR, COL_VALUE])
+    )
+
     # ── Write output ──────────────────────────────────────────────────────────────
     print(f"\nWriting NIR to CIMS → {OUT_CIMS}")
     df_totals.write_csv(str(OUT_CIMS))
@@ -635,7 +644,7 @@ def main() -> pl.DataFrame:
 
     print(f"\n{'='*60}")
     print("Done.")
-    print(f"  Solved NIR:  {OUT_NIR}")
+    # print(f"  Solved NIR:  {OUT_NIR}")
     print(f"  CIMS output: {OUT_CIMS}")
 
     return df_totals
