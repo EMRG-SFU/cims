@@ -1,0 +1,143 @@
+cer_sector,cer_enduse,cims_node
+Single Family,,.Residential
+Multi Family,,.Residential
+Other Residential,,.Residential
+Single Family,Space Heating,.Residential.Dwellings.Building Type.LowMed Density
+Single Family,Water Heating,.Residential.Water Heating.LowMed Density
+Single Family,Air Conditioning,.Residential.Dwellings.Building Type.LowMed Density.Cooling
+Single Family,Lighting,.Residential.Dwellings.Lighting
+Single Family,Refrigeration,.Residential.Dwellings.Refrigerators
+Multi Family,Space Heating,.Residential.Dwellings.Building Type.High Density
+Multi Family,Water Heating,.Residential.Water Heating.High Density
+Multi Family,Air Conditioning,.Residential.Dwellings.Building Type.High Density.Cooling
+Multi Family,Lighting,.Residential.Dwellings.Lighting
+Multi Family,Refrigeration,.Residential.Dwellings.Refrigerators
+Other Residential,Space Heating,.Residential.Dwellings.Building Type.LowMed Density
+Other Residential,Water Heating,.Residential.Water Heating.LowMed Density
+Other Residential,Air Conditioning,.Residential.Dwellings.Building Type.LowMed Density.Cooling
+Other Residential,Lighting,.Residential.Dwellings.Lighting
+Other Residential,Refrigeration,.Residential.Dwellings.Refrigerators
+Accommodation and Food Services,,.Commercial
+"Arts, Entertainment and Recreation",,.Commercial
+Educational Services,,.Commercial
+Health Care and Social Assistance,,.Commercial
+Information and Cultural Industries,,.Commercial
+Offices,,.Commercial
+Other Commercial,,.Commercial
+Retail Trade,,.Commercial
+Warehousing and Storage,,.Commercial
+Wholesale Trade,,.Commercial
+Street Lighting,,.Commercial
+Wholesale Trade,Space Heating,.Commercial.Buildings.Shell.Wholesale (Marine)
+Wholesale Trade,Space Heating,.Commercial.Buildings.Shell.Wholesale (Cold)
+Retail Trade,Space Heating,.Commercial.Buildings.Shell.Retail (Marine)
+Retail Trade,Space Heating,.Commercial.Buildings.Shell.Retail (Cold)
+Warehousing and Storage,Space Heating,.Commercial.Buildings.Shell.Transportation and Warehousing (Marine)
+Warehousing and Storage,Space Heating,.Commercial.Buildings.Shell.Transportation and Warehousing (Cold)
+Information and Cultural Industries,Space Heating,.Commercial.Buildings.Shell.Information and Cultural (Marine)
+Information and Cultural Industries,Space Heating,.Commercial.Buildings.Shell.Information and Cultural (Cold)
+Offices,Space Heating,.Commercial.Buildings.Shell.Offices (Marine)
+Offices,Space Heating,.Commercial.Buildings.Shell.Offices (Cold)
+Educational Services,Space Heating,.Commercial.Buildings.Shell.Educational (Marine)
+Educational Services,Space Heating,.Commercial.Buildings.Shell.Educational (Cold)
+Health Care and Social Assistance,Space Heating,.Commercial.Buildings.Shell.Healthcare and Social Assistance (Marine)
+Health Care and Social Assistance,Space Heating,.Commercial.Buildings.Shell.Healthcare and Social Assistance (Cold)
+"Arts, Entertainment and Recreation",Space Heating,.Commercial.Buildings.Shell.Arts Entertainment and Recreation (Marine)
+"Arts, Entertainment and Recreation",Space Heating,.Commercial.Buildings.Shell.Arts Entertainment and Recreation (Cold)
+Accommodation and Food Services,Space Heating,.Commercial.Buildings.Shell.Accommodation and Food services (Marine)
+Accommodation and Food Services,Space Heating,.Commercial.Buildings.Shell.Accommodation and Food services (Cold)
+Other Commercial,Space Heating,.Commercial.Buildings.Shell.Other Services (Marine)
+Other Commercial,Space Heating,.Commercial.Buildings.Shell.Other Services (Cold)
+Accommodation and Food Services,Space Heating,.Commercial.HVAC (Cold)
+Accommodation and Food Services,Space Heating,.Commercial.HVAC (Marine)
+"Arts, Entertainment and Recreation",Space Heating,.Commercial.HVAC (Cold)
+"Arts, Entertainment and Recreation",Space Heating,.Commercial.HVAC (Marine)
+Educational Services,Space Heating,.Commercial.HVAC (Cold)
+Educational Services,Space Heating,.Commercial.HVAC (Marine)
+Health Care and Social Assistance,Space Heating,.Commercial.HVAC (Cold)
+Health Care and Social Assistance,Space Heating,.Commercial.HVAC (Marine)
+Information and Cultural Industries,Space Heating,.Commercial.HVAC (Cold)
+Information and Cultural Industries,Space Heating,.Commercial.HVAC (Marine)
+Offices,Space Heating,.Commercial.HVAC (Cold)
+Offices,Space Heating,.Commercial.HVAC (Marine)
+Other Commercial,Space Heating,.Commercial.HVAC (Cold)
+Other Commercial,Space Heating,.Commercial.HVAC (Marine)
+Retail Trade,Space Heating,.Commercial.HVAC (Cold)
+Retail Trade,Space Heating,.Commercial.HVAC (Marine)
+Warehousing and Storage,Space Heating,.Commercial.HVAC (Cold)
+Warehousing and Storage,Space Heating,.Commercial.HVAC (Marine)
+Wholesale Trade,Space Heating,.Commercial.HVAC (Cold)
+Wholesale Trade,Space Heating,.Commercial.HVAC (Marine)
+Accommodation and Food Services,Air Conditioning,.Commercial.Cooling
+Accommodation and Food Services,Lighting,.Commercial.Buildings.Lighting
+Accommodation and Food Services,Water Heating,.Commercial.Buildings.Hot Water
+"Arts, Entertainment and Recreation",Air Conditioning,.Commercial.Cooling
+"Arts, Entertainment and Recreation",Lighting,.Commercial.Buildings.Lighting
+"Arts, Entertainment and Recreation",Water Heating,.Commercial.Buildings.Hot Water
+Educational Services,Air Conditioning,.Commercial.Cooling
+Educational Services,Lighting,.Commercial.Buildings.Lighting
+Educational Services,Water Heating,.Commercial.Buildings.Hot Water
+Health Care and Social Assistance,Air Conditioning,.Commercial.Cooling
+Health Care and Social Assistance,Lighting,.Commercial.Buildings.Lighting
+Health Care and Social Assistance,Water Heating,.Commercial.Buildings.Hot Water
+Information and Cultural Industries,Air Conditioning,.Commercial.Cooling
+Information and Cultural Industries,Lighting,.Commercial.Buildings.Lighting
+Information and Cultural Industries,Water Heating,.Commercial.Buildings.Hot Water
+Offices,Air Conditioning,.Commercial.Cooling
+Offices,Lighting,.Commercial.Buildings.Lighting
+Offices,Water Heating,.Commercial.Buildings.Hot Water
+Other Commercial,Air Conditioning,.Commercial.Cooling
+Other Commercial,Lighting,.Commercial.Buildings.Lighting
+Other Commercial,Water Heating,.Commercial.Buildings.Hot Water
+Retail Trade,Air Conditioning,.Commercial.Cooling
+Retail Trade,Lighting,.Commercial.Buildings.Lighting
+Retail Trade,Water Heating,.Commercial.Buildings.Hot Water
+Warehousing and Storage,Air Conditioning,.Commercial.Cooling
+Warehousing and Storage,Lighting,.Commercial.Buildings.Lighting
+Warehousing and Storage,Water Heating,.Commercial.Buildings.Hot Water
+Wholesale Trade,Air Conditioning,.Commercial.Cooling
+Wholesale Trade,Lighting,.Commercial.Buildings.Lighting
+Wholesale Trade,Water Heating,.Commercial.Buildings.Hot Water
+Street Lighting,Lighting,.Commercial.Buildings.Lighting
+Agriculture,,.Agriculture
+Agriculture,Process Heat,.Agriculture.Heat
+Agriculture,Off-Road,.Agriculture.Tractors
+Agriculture,Miscellaneous,.Agriculture
+Aluminum and Non-Ferrous,,.Metal Smelting
+Aluminum and Non-Ferrous,Process Heat,.Metal Smelting.Steam
+Cement,,.Industrial Minerals
+Cement,Process Heat,.Industrial Minerals.Heat
+Chemicals and Fertilizers,,.Chemical Products
+Chemicals and Fertilizers,Process Heat,.Chemical Products.Steam
+Coal Mining,,.Coal Mining
+Coal Mining,Off-Road,.Coal Mining.Coal.Raw Product. Transportation
+Construction,,.Construction
+Construction,Off-Road,.Construction.Transport
+Forestry,,.Forestry
+Forestry,Off-Road,.Forestry.Transport
+Iron and Steel,,.Iron and Steel
+Iron and Steel,Process Heat,.Iron and Steel.Steam
+Metal Mining,,.Mining
+Non-metal Mining,,.Mining
+Other Manufacturing,,.Light Industrial
+Other Manufacturing,Motors,.Light Industrial.Motive Power
+Paper,,.Pulp and Paper
+Paper,Process Heat,.Pulp and Paper.Steam
+Petroleum Refining,,.Petroleum Refining
+Natural Gas Distribution,,.Natural Gas Market.Distribution
+Natural Gas Pipelines,,.Natural Gas Market.Transmission
+Gas Mining,,.Natural Gas
+Gas Mining,Off-Road,.Natural Gas.Production.Supply.Extraction.Off road transport
+Oil Pipelines,,.Petroleum Crude.Transmission?
+Heavy Oil Mining,,.Petroleum Crude.Production.Heavy
+Light Oil Mining,,.Petroleum Crude.Production.Light Medium
+Oil Sands In-situ,,.Petroleum Crude.Production.Bitumen.In-Situ
+Oil Sands Mining,,.Petroleum Crude.Production.Bitumen.Mining
+Oil Sands Upgraders,,.Petroleum Crude.Production.Bitumen.Upgrading
+Passenger,,.Transportation Passenger
+Air Passenger,,.Transportation Passenger
+Foreign Passenger,,.Transportation Passenger
+Freight,,.Transportation Freight
+Air Freight,,.Transportation Freight
+Foreign Freight,,.Transportation Freight
+Off-Road,Off-Road,.Transportation Freight.Off Road

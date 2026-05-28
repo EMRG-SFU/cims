@@ -1,0 +1,827 @@
+﻿node
+.Agriculture
+.Agriculture.Heat
+.Agriculture.Process
+.Agriculture.Process.Enteric Fermentation and Manure Management
+.Agriculture.Process.Soils
+.Agriculture.Tractors
+.Biodiesel
+.Biodiesel.Agricultural Input
+.Biodiesel.CCS
+.Biodiesel.Methane Fuel
+.Biodiesel.Production
+.Biodiesel.Steam
+.Chemical Products
+.Chemical Products.CCS
+.Chemical Products.Chemical Product
+.Chemical Products.Chemical Product.Adipic Acid
+.Chemical Products.Chemical Product.Adipic Acid.Process
+.Chemical Products.Chemical Product.Ammonia Methanol
+.Chemical Products.Chemical Product.Ammonia Methanol.Ammonia Synthesis
+.Chemical Products.Chemical Product.Ammonia Methanol.Combined Ammonia Methanol Synthesis
+.Chemical Products.Chemical Product.Ammonia Methanol.Methanol Synthesis
+.Chemical Products.Chemical Product.Chlor Alkali
+.Chemical Products.Chemical Product.Chlor Alkali.Caustic Sodium
+.Chemical Products.Chemical Product.Chlor Alkali.Caustic Sodium.Caustic Process
+.Chemical Products.Chemical Product.Chlor Alkali.Caustic Sodium.Chlor Alkali Evaporation
+.Chemical Products.Chemical Product.Chlor Alkali.Chlorine Electrolysis
+.Chemical Products.Chemical Product.Hydrogen Peroxide
+.Chemical Products.Chemical Product.Hydrogen Peroxide.Process
+.Chemical Products.Chemical Product.Other Petrochemicals
+.Chemical Products.Chemical Product.Other Petrochemicals.Petrochemicals
+.Chemical Products.Chemical Product.Other Petrochemicals.Petrochemicals.All Polymerization
+.Chemical Products.Chemical Product.Other Petrochemicals.Petrochemicals.BTX Reforming
+.Chemical Products.Chemical Product.Other Petrochemicals.Petrochemicals.Intermediate Production
+.Chemical Products.Chemical Product.Other Petrochemicals.Pyrolysis
+.Chemical Products.Chemical Product.Sodium Chlorate
+.Chemical Products.Chemical Product.Sodium Chlorate.Process
+.Chemical Products.Compression
+.Chemical Products.Compression.Large
+.Chemical Products.Compression.Small
+.Chemical Products.Conveyance
+.Chemical Products.Direct Drive
+.Chemical Products.HVAC
+.Chemical Products.HVAC.Space Cooling
+.Chemical Products.HVAC.Space Heating
+.Chemical Products.Lighting
+.Chemical Products.Machine Drive
+.Chemical Products.Machine Drive.Size 1
+.Chemical Products.Machine Drive.Size 2
+.Chemical Products.Machine Drive.Size 3
+.Chemical Products.Machine Drive.Size 4
+.Chemical Products.Machine Drive.Size 5
+.Chemical Products.Machine Drive.Size 6
+.Chemical Products.Methane Blend
+.Chemical Products.Pumping
+.Chemical Products.Pumping.General
+.Chemical Products.Pumping.General.Large
+.Chemical Products.Pumping.General.Small
+.Chemical Products.Pumping.Precision
+.Chemical Products.Pumping.Precision.Large
+.Chemical Products.Pumping.Precision.Small
+.Chemical Products.Pumping.Slurry Stock
+.Chemical Products.Pumping.Slurry Stock.Large
+.Chemical Products.Pumping.Slurry Stock.Small
+.Chemical Products.Steam
+.Chemical Products.Ventilation
+.Coal Mining
+.Coal Mining.Coal
+.Coal Mining.Coal.Extraction
+.Coal Mining.Coal.Metallurgical Finishing
+.Coal Mining.Coal.Metallurgical Finishing.Cleaning
+.Coal Mining.Coal.Metallurgical Finishing.Tailings Disposal
+.Coal Mining.Coal.Metallurgical Finishing.Washing
+.Coal Mining.Coal.Production
+.Coal Mining.Coal.Raw Product
+.Coal Mining.Coal.Raw Product.Extraction
+.Coal Mining.Coal.Raw Product.Mine Ventilation
+.Coal Mining.Coal.Raw Product.Transportation
+.Coal Mining.Coal.Size Reduced Product
+.Coal Mining.Coal.Size Reduced Product.Primary Crushing
+.Coal Mining.Coal.Size Reduced Product.Primary Milling
+.Coal Mining.Coal.Size Reduced Product.Secondary Milling
+.Coal Mining.Compression
+.Coal Mining.Compression.Large
+.Coal Mining.Compression.Small
+.Coal Mining.Conveyance
+.Coal Mining.Direct Drive
+.Coal Mining.HVAC
+.Coal Mining.HVAC.Space Cooling
+.Coal Mining.HVAC.Space Heating
+.Coal Mining.Lighting
+.Coal Mining.Machine Drive
+.Coal Mining.Machine Drive.Size 1
+.Coal Mining.Machine Drive.Size 2
+.Coal Mining.Machine Drive.Size 3
+.Coal Mining.Machine Drive.Size 4
+.Coal Mining.Machine Drive.Size 5
+.Coal Mining.Machine Drive.Size 6
+.Coal Mining.Methane Blend
+.Coal Mining.Pumping
+.Coal Mining.Pumping.General
+.Coal Mining.Pumping.General.Large
+.Coal Mining.Pumping.General.Small
+.Coal Mining.Pumping.Precision
+.Coal Mining.Pumping.Precision.Large
+.Coal Mining.Pumping.Precision.Small
+.Coal Mining.Pumping.Slurry Stock
+.Coal Mining.Pumping.Slurry Stock.Large
+.Coal Mining.Pumping.Slurry Stock.Small
+.Coal Mining.Ventilation
+.Commercial
+.Commercial.Buildings
+.Commercial.Buildings.Cooking
+.Commercial.Buildings.Hot Water
+.Commercial.Buildings.Lighting
+.Commercial.Buildings.Lighting.General Area
+.Commercial.Buildings.Lighting.High Bay
+.Commercial.Buildings.Lighting.Service Lighting
+.Commercial.Buildings.Plug Load
+.Commercial.Buildings.Refrigeration
+.Commercial.Buildings.Shell
+.Commercial.Buildings.Shell.Accommodation and Food services (Cold)
+.Commercial.Buildings.Shell.Accommodation and Food services (Marine)
+.Commercial.Buildings.Shell.Arts Entertainment and Recreation (Cold)
+.Commercial.Buildings.Shell.Arts Entertainment and Recreation (Marine)
+.Commercial.Buildings.Shell.Educational (Cold)
+.Commercial.Buildings.Shell.Educational (Marine)
+.Commercial.Buildings.Shell.Healthcare and Social Assistance (Cold)
+.Commercial.Buildings.Shell.Healthcare and Social Assistance (Marine)
+.Commercial.Buildings.Shell.Information and Cultural (Cold)
+.Commercial.Buildings.Shell.Information and Cultural (Marine)
+.Commercial.Buildings.Shell.Offices (Cold)
+.Commercial.Buildings.Shell.Offices (Marine)
+.Commercial.Buildings.Shell.Other Services (Cold)
+.Commercial.Buildings.Shell.Other Services (Marine)
+.Commercial.Buildings.Shell.Retail (Cold)
+.Commercial.Buildings.Shell.Retail (Marine)
+.Commercial.Buildings.Shell.Transportation and Warehousing (Cold)
+.Commercial.Buildings.Shell.Transportation and Warehousing (Marine)
+.Commercial.Buildings.Shell.Wholesale (Cold)
+.Commercial.Buildings.Shell.Wholesale (Marine)
+.Commercial.Cooling
+.Commercial.HVAC (Cold)
+.Commercial.HVAC (Marine)
+.Commercial.Methane Blend
+.Commercial.Motive Power
+.Construction
+.Construction.Transport
+.Electricity
+.Electricity.CCS
+.Electricity.CCS.CCS_Biomass
+.Electricity.CCS.CCS_Coal
+.Electricity.CCS.CCS_Natural Gas
+.Electricity.Storage
+.Electricity.Storage.Battery
+.Electricity.Storage.Seasonal
+.Electricity.Transmission
+.Electricity.Utility Generation
+.Electricity.Utility Generation.Base Load
+.Electricity.Utility Generation.Peak Load
+.Electricity.Utility Generation.Shoulder Load
+.Ethanol
+.Ethanol.Agricultural Input
+.Ethanol.CCS
+.Ethanol.Methane Fuel
+.Ethanol.Production
+.Ethanol.Production.Cellulosic
+.Ethanol.Production.Corn
+.Ethanol.Steam
+.Forestry
+.Forestry.Transport
+.Hydrogen
+.Hydrogen.CCS
+.Hydrogen.Infrastructure
+.Hydrogen.Production
+.Industrial Minerals
+.Industrial Minerals.CCS
+.Industrial Minerals.Compression
+.Industrial Minerals.Compression.Large
+.Industrial Minerals.Compression.Small
+.Industrial Minerals.Conveyance
+.Industrial Minerals.Direct Drive
+.Industrial Minerals.Heat
+.Industrial Minerals.HVAC
+.Industrial Minerals.HVAC.Space Cooling
+.Industrial Minerals.HVAC.Space Heating
+.Industrial Minerals.Lighting
+.Industrial Minerals.Machine Drive
+.Industrial Minerals.Machine Drive.Size 1
+.Industrial Minerals.Machine Drive.Size 2
+.Industrial Minerals.Machine Drive.Size 3
+.Industrial Minerals.Machine Drive.Size 4
+.Industrial Minerals.Machine Drive.Size 5
+.Industrial Minerals.Machine Drive.Size 6
+.Industrial Minerals.Methane Blend
+.Industrial Minerals.Products
+.Industrial Minerals.Products.Bricks
+.Industrial Minerals.Products.Bricks.Process
+.Industrial Minerals.Products.Cement
+.Industrial Minerals.Products.Cement.Portland cement
+.Industrial Minerals.Products.Cement.Portland cement.Clinker
+.Industrial Minerals.Products.Cement.Portland cement.Clinker.Dry process rotary kiln
+.Industrial Minerals.Products.Cement.Portland cement.Clinker.Fluidized bed
+.Industrial Minerals.Products.Cement.Portland cement.Dry Ground Cement
+.Industrial Minerals.Products.Cement.Portland cement.Finish Grinding
+.Industrial Minerals.Products.Glass
+.Industrial Minerals.Products.Glass.Blown Pressed
+.Industrial Minerals.Products.Glass.Blown Pressed.Fire Polish
+.Industrial Minerals.Products.Glass.Blown Pressed.Form and Finish
+.Industrial Minerals.Products.Glass.Blown Pressed.Furnaces
+.Industrial Minerals.Products.Glass.Blown Pressed.Preparation
+.Industrial Minerals.Products.Glass.Containers
+.Industrial Minerals.Products.Glass.Containers.Form and Finish
+.Industrial Minerals.Products.Glass.Containers.Furnaces
+.Industrial Minerals.Products.Glass.Containers.Preparation
+.Industrial Minerals.Products.Glass.Fibreglass
+.Industrial Minerals.Products.Glass.Fibreglass.Form and Finish
+.Industrial Minerals.Products.Glass.Fibreglass.Furnaces
+.Industrial Minerals.Products.Glass.Fibreglass.Preparation
+.Industrial Minerals.Products.Glass.Flat
+.Industrial Minerals.Products.Glass.Flat.Form and Finish
+.Industrial Minerals.Products.Glass.Flat.Furnaces
+.Industrial Minerals.Products.Glass.Flat.Preparation
+.Industrial Minerals.Products.Glass.Flat.Temper
+.Industrial Minerals.Products.Lime
+.Industrial Minerals.Products.Lime.Dolomitic
+.Industrial Minerals.Products.Lime.Kilns
+.Industrial Minerals.Pumping
+.Industrial Minerals.Pumping.General
+.Industrial Minerals.Pumping.General.Large
+.Industrial Minerals.Pumping.General.Small
+.Industrial Minerals.Pumping.Precision
+.Industrial Minerals.Pumping.Precision.Large
+.Industrial Minerals.Pumping.Precision.Small
+.Industrial Minerals.Pumping.Slurry Stock
+.Industrial Minerals.Pumping.Slurry Stock.Large
+.Industrial Minerals.Pumping.Slurry Stock.Small
+.Industrial Minerals.Ventilation
+.Iron and Steel
+.Iron and Steel.Agglomeration
+.Iron and Steel.CCS
+.Iron and Steel.Compression
+.Iron and Steel.Compression.Large
+.Iron and Steel.Compression.Small
+.Iron and Steel.Conveyance
+.Iron and Steel.Direct Drive
+.Iron and Steel.HVAC
+.Iron and Steel.HVAC.Space Cooling
+.Iron and Steel.HVAC.Space Heating
+.Iron and Steel.Iron Process Gas
+.Iron and Steel.Iron Process Gas.Reheating
+.Iron and Steel.Iron Process Gas.Steam
+.Iron and Steel.Lighting
+.Iron and Steel.Machine Drive
+.Iron and Steel.Machine Drive.Size 1
+.Iron and Steel.Machine Drive.Size 2
+.Iron and Steel.Machine Drive.Size 3
+.Iron and Steel.Machine Drive.Size 4
+.Iron and Steel.Machine Drive.Size 5
+.Iron and Steel.Machine Drive.Size 6
+.Iron and Steel.Methane Blend
+.Iron and Steel.Molten Steel
+.Iron and Steel.Molten Steel.Integrated
+.Iron and Steel.Molten Steel.Ladle Preheat
+.Iron and Steel.Molten Steel.Ladle Refining
+.Iron and Steel.Molten Steel.Recycled
+.Iron and Steel.Oxygen
+.Iron and Steel.Oxygen.Cryogenics
+.Iron and Steel.Pumping
+.Iron and Steel.Pumping.General
+.Iron and Steel.Pumping.General.Large
+.Iron and Steel.Pumping.General.Small
+.Iron and Steel.Pumping.Precision
+.Iron and Steel.Pumping.Precision.Large
+.Iron and Steel.Pumping.Precision.Small
+.Iron and Steel.Pumping.Slurry Stock
+.Iron and Steel.Pumping.Slurry Stock.Large
+.Iron and Steel.Pumping.Slurry Stock.Small
+.Iron and Steel.Reheating
+.Iron and Steel.Reheating.Reheators
+.Iron and Steel.Steam
+.Iron and Steel.Steel Product
+.Iron and Steel.Steel Product.Billets
+.Iron and Steel.Steel Product.Billets.Bar
+.Iron and Steel.Steel Product.Billets.Billet Casting
+.Iron and Steel.Steel Product.Billets.Light Structural Shapes
+.Iron and Steel.Steel Product.Billets.Rod
+.Iron and Steel.Steel Product.Blooms
+.Iron and Steel.Steel Product.Blooms.Bloom Casting
+.Iron and Steel.Steel Product.Blooms.Heavy Structural Shapes
+.Iron and Steel.Steel Product.Blooms.Tubes
+.Iron and Steel.Steel Product.Slabs
+.Iron and Steel.Steel Product.Slabs.Casting
+.Iron and Steel.Steel Product.Slabs.Cold Rolled
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.Cold Roll
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.ElectroClean
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.ElectroClean.Anneal Temper
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.ElectroClean.Electric Steel
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.ElectroClean.Electrocleancomp
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.ElectroClean.Tin Plate
+.Iron and Steel.Steel Product.Slabs.Cold Rolled.Galvanize
+.Iron and Steel.Steel Product.Slabs.Pickled Slabs
+.Iron and Steel.Steel Product.Slabs.Skin Pass
+.Iron and Steel.Steel Product.Slabs.Slab Finishing
+.Iron and Steel.Steel Product.Slabs.Slab Finishing.Finishing Mills
+.Iron and Steel.Steel Product.Slabs.Slab Roughing
+.Iron and Steel.Steel Product.Slabs.Slab Roughing.Roughing Mills
+.Iron and Steel.Ventilation
+.Light Industrial
+.Light Industrial.Heat
+.Light Industrial.Heat.Direct
+.Light Industrial.Heat.Indirect
+.Light Industrial.HVAC
+.Light Industrial.HVAC.Ventilation AC
+.Light Industrial.Lighting
+.Light Industrial.Manufacturing
+.Light Industrial.Manufacturing.Electronics and Other
+.Light Industrial.Manufacturing.Food Tobacco and Beverage
+.Light Industrial.Manufacturing.Furniture Printing and Machinery
+.Light Industrial.Manufacturing.Leather and Textiles
+.Light Industrial.Manufacturing.Rubber and Plastics
+.Light Industrial.Manufacturing.Transportation Equipment
+.Light Industrial.Manufacturing.Wood Products
+.Light Industrial.Methane Blend
+.Light Industrial.Motive Power
+.Light Industrial.Steam
+.Light Industrial.Water Heating
+.Metal Smelting
+.Metal Smelting.Compression
+.Metal Smelting.Compression.Large
+.Metal Smelting.Compression.Small
+.Metal Smelting.Conveyance
+.Metal Smelting.Direct Drive
+.Metal Smelting.HVAC
+.Metal Smelting.HVAC.Space Cooling
+.Metal Smelting.HVAC.Space Heating
+.Metal Smelting.Lighting
+.Metal Smelting.Machine Drive
+.Metal Smelting.Machine Drive.Size 1
+.Metal Smelting.Machine Drive.Size 2
+.Metal Smelting.Machine Drive.Size 3
+.Metal Smelting.Machine Drive.Size 4
+.Metal Smelting.Machine Drive.Size 5
+.Metal Smelting.Machine Drive.Size 6
+.Metal Smelting.Methane Blend
+.Metal Smelting.Oxygen
+.Metal Smelting.Oxygen.Cryogenics
+.Metal Smelting.Pre-bake Anode
+.Metal Smelting.Primary Metals
+.Metal Smelting.Primary Metals.Aluminum
+.Metal Smelting.Primary Metals.Aluminum.Primary Aluminum
+.Metal Smelting.Primary Metals.Aluminum.Primary Aluminum.Alumina
+.Metal Smelting.Primary Metals.Aluminum.Primary Aluminum.Electrolysis
+.Metal Smelting.Primary Metals.Aluminum.Recycle
+.Metal Smelting.Primary Metals.Copper
+.Metal Smelting.Primary Metals.Copper.Melt Cast
+.Metal Smelting.Primary Metals.Copper.Metallurgy
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Smelting Process.Continuous Smelting
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Convert
+.Metal Smelting.Primary Metals.Copper.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Smelt
+.Metal Smelting.Primary Metals.Lead
+.Metal Smelting.Primary Metals.Lead.Melt Cast
+.Metal Smelting.Primary Metals.Lead.Metallurgy
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Smelting Process.Continuous Smelting
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Roast
+.Metal Smelting.Primary Metals.Lead.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Smelt
+.Metal Smelting.Primary Metals.Magnesium
+.Metal Smelting.Primary Metals.Magnesium.Melt Cast
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Roast
+.Metal Smelting.Primary Metals.Magnesium.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Smelt
+.Metal Smelting.Primary Metals.Nickel
+.Metal Smelting.Primary Metals.Nickel.Melt Cast
+.Metal Smelting.Primary Metals.Nickel.Metallurgy
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Smelting Process.Continuous Smelting
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Convert
+.Metal Smelting.Primary Metals.Nickel.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Smelt
+.Metal Smelting.Primary Metals.Titanium
+.Metal Smelting.Primary Metals.Titanium.Melt Cast
+.Metal Smelting.Primary Metals.Titanium.Metallurgy
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy.Smelting Process.Continuous Smelting
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Titanium.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Roast
+.Metal Smelting.Primary Metals.Zinc
+.Metal Smelting.Primary Metals.Zinc.Melt Cast
+.Metal Smelting.Primary Metals.Zinc.Metallurgy
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Hydro Metallurgy
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Refine
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Smelting Process
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Smelting Process.Continuous Smelting
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Roast
+.Metal Smelting.Primary Metals.Zinc.Metallurgy.Pyro Metallurgy.Smelting Process.Conventional Smelting.Smelt
+.Metal Smelting.Pumping
+.Metal Smelting.Pumping.General
+.Metal Smelting.Pumping.General.Large
+.Metal Smelting.Pumping.General.Small
+.Metal Smelting.Pumping.Precision
+.Metal Smelting.Pumping.Precision.Large
+.Metal Smelting.Pumping.Precision.Small
+.Metal Smelting.Pumping.Slurry Stock
+.Metal Smelting.Pumping.Slurry Stock.Large
+.Metal Smelting.Pumping.Slurry Stock.Small
+.Metal Smelting.Soderberg Anode
+.Metal Smelting.Steam
+.Metal Smelting.Ventilation
+.Mining
+.Mining.Compression
+.Mining.Compression.Large
+.Mining.Compression.Small
+.Mining.Conveyance
+.Mining.Direct Drive
+.Mining.Final Product
+.Mining.Final Product.Metal Open Pit
+.Mining.Final Product.Metal Open Pit.Cleaning
+.Mining.Final Product.Metal Open Pit.Mineral Separation
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Agglomeration
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Primary Crushing
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Raw Product
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Raw Product.Extraction
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Raw Product.Transportation
+.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product.Secondary Crushing
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Primary Crushing
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Primary Milling
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Raw Product
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Raw Product.Extraction
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Raw Product.Transportation
+.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product.Secondary Crushing
+.Mining.Final Product.Metal Open Pit.Tailing Disposal
+.Mining.Final Product.Metal Open Pit.Unassigned Energy
+.Mining.Final Product.Metal Underground
+.Mining.Final Product.Metal Underground.Cleaning
+.Mining.Final Product.Metal Underground.Mineral Separation
+.Mining.Final Product.Metal Underground.Size Reduced Product
+.Mining.Final Product.Metal Underground.Size Reduced Product.Primary Crushing
+.Mining.Final Product.Metal Underground.Size Reduced Product.Primary Milling
+.Mining.Final Product.Metal Underground.Size Reduced Product.Raw Product
+.Mining.Final Product.Metal Underground.Size Reduced Product.Raw Product.Extraction
+.Mining.Final Product.Metal Underground.Size Reduced Product.Raw Product.Transportation
+.Mining.Final Product.Metal Underground.Size Reduced Product.Secondary Crushing
+.Mining.Final Product.Metal Underground.Tailing Disposal
+.Mining.Final Product.Metal Underground.Unassigned Energy
+.Mining.Final Product.Potash
+.Mining.Final Product.Potash.Compaction
+.Mining.Final Product.Potash.Drying
+.Mining.Final Product.Potash.Separated Product
+.Mining.Final Product.Potash.Separated Product.Crystalization
+.Mining.Final Product.Potash.Separated Product.Flotation
+.Mining.Final Product.Potash.Separated Product.Raw Product
+.Mining.Final Product.Potash.Separated Product.Raw Product.Conventional Mining
+.Mining.Final Product.Potash.Separated Product.Raw Product.Conventional Mining.Crush and Screen
+.Mining.Final Product.Potash.Separated Product.Raw Product.Conventional Mining.Dissolution
+.Mining.Final Product.Potash.Separated Product.Raw Product.Conventional Mining.Extraction
+.Mining.Final Product.Potash.Separated Product.Raw Product.Conventional Mining.Transportation
+.Mining.Final Product.Potash.Separated Product.Raw Product.Solution Mining
+.Mining.Final Product.Potash.Separated Product.Raw Product.Solution Mining.Extraction
+.Mining.Final Product.Potash.Separated Product.Raw Product.Solution Mining.Transportation
+.Mining.Final Product.Potash.Tailings Disposal
+.Mining.HVAC
+.Mining.HVAC.Space Cooling
+.Mining.HVAC.Space Heating
+.Mining.Lighting
+.Mining.Machine Drive
+.Mining.Machine Drive.Size 1
+.Mining.Machine Drive.Size 2
+.Mining.Machine Drive.Size 3
+.Mining.Machine Drive.Size 4
+.Mining.Machine Drive.Size 5
+.Mining.Machine Drive.Size 6
+.Mining.Methane Blend
+.Mining.Pumping
+.Mining.Pumping.General
+.Mining.Pumping.General.Large
+.Mining.Pumping.General.Small
+.Mining.Pumping.Precision
+.Mining.Pumping.Precision.Large
+.Mining.Pumping.Precision.Small
+.Mining.Pumping.Slurry Stock
+.Mining.Pumping.Slurry Stock.Large
+.Mining.Pumping.Slurry Stock.Small
+.Mining.Steam
+.Mining.Ventilation
+.Natural Gas
+.Natural Gas Market
+.Natural Gas Market.Distribution
+.Natural Gas Market.Supply
+.Natural Gas Market.Transmission
+.Natural Gas.OG Diesel Blend
+.Natural Gas.OG Gasoline Blend
+.Natural Gas.OG Methane Blend
+.Natural Gas.Production
+.Natural Gas.Production.Distribution
+.Natural Gas.Production.Supply
+.Natural Gas.Production.Supply.CCS
+.Natural Gas.Production.Supply.Controls
+.Natural Gas.Production.Supply.Direct Drive Large
+.Natural Gas.Production.Supply.Direct Drive Small
+.Natural Gas.Production.Supply.Direct Heat
+.Natural Gas.Production.Supply.Extraction
+.Natural Gas.Production.Supply.Extraction.Coalbed Methane
+.Natural Gas.Production.Supply.Extraction.Compression
+.Natural Gas.Production.Supply.Extraction.Conventional
+.Natural Gas.Production.Supply.Extraction.Drilling
+.Natural Gas.Production.Supply.Extraction.Off road transport
+.Natural Gas.Production.Supply.Extraction.Shale
+.Natural Gas.Production.Supply.Extraction.Tight
+.Natural Gas.Production.Supply.Flaring
+.Natural Gas.Production.Supply.Formation CO2
+.Natural Gas.Production.Supply.Fugitive
+.Natural Gas.Production.Supply.LNG Compression
+.Natural Gas.Production.Supply.Processing
+.Natural Gas.Production.Supply.Processing.Compression
+.Natural Gas.Production.Supply.Pumping
+.Natural Gas.Production.Supply.Testing and Maintenance
+.Natural Gas.Production.Supply.Testing and Maintenance.Blowdowns
+.Natural Gas.Production.Supply.Testing and Maintenance.Liquid Unloading
+.Natural Gas.Production.Supply.Testing and Maintenance.Well Tests
+.Natural Gas.Production.Supply.Venting
+.Natural Gas.Production.Supply.Venting.Diffuse Venting
+.Natural Gas.Production.Supply.Venting.Point Venting
+.Natural Gas.Production.Transmission
+.Natural Gas.Production.Transmission.Compression
+.Petroleum Crude
+.Petroleum Crude.CCS
+.Petroleum Crude.Hydrogen
+.Petroleum Crude.Industrial Engines
+.Petroleum Crude.Production
+.Petroleum Crude.Production.Bitumen
+.Petroleum Crude.Production.Bitumen.In-Situ
+.Petroleum Crude.Production.Bitumen.Mining
+.Petroleum Crude.Production.Bitumen.Upgrading
+.Petroleum Crude.Production.Exploration
+.Petroleum Crude.Production.Heavy
+.Petroleum Crude.Production.Light Medium
+.Petroleum Crude.Production.Light Medium.Offshore
+.Petroleum Crude.Production.Light Medium.Onshore
+.Petroleum Crude.Steam
+.Petroleum Crude.Still Gas Steam
+.Petroleum Refining
+.Petroleum Refining.CCS
+.Petroleum Refining.Compression
+.Petroleum Refining.Compression.Large
+.Petroleum Refining.Compression.Small
+.Petroleum Refining.Direct Heat
+.Petroleum Refining.HVAC
+.Petroleum Refining.HVAC.Space Cooling
+.Petroleum Refining.HVAC.Space Heating
+.Petroleum Refining.Hydrogen
+.Petroleum Refining.Lighting
+.Petroleum Refining.Machine Drive
+.Petroleum Refining.Machine Drive.Size 1
+.Petroleum Refining.Machine Drive.Size 2
+.Petroleum Refining.Machine Drive.Size 3
+.Petroleum Refining.Machine Drive.Size 4
+.Petroleum Refining.Machine Drive.Size 5
+.Petroleum Refining.Machine Drive.Size 6
+.Petroleum Refining.Methane Blend
+.Petroleum Refining.Pumping
+.Petroleum Refining.Pumping.General
+.Petroleum Refining.Pumping.General.Large
+.Petroleum Refining.Pumping.General.Small
+.Petroleum Refining.Pumping.Precision
+.Petroleum Refining.Pumping.Precision.Large
+.Petroleum Refining.Pumping.Precision.Small
+.Petroleum Refining.Pumping.Slurry Stock
+.Petroleum Refining.Pumping.Slurry Stock.Large
+.Petroleum Refining.Pumping.Slurry Stock.Small
+.Petroleum Refining.Refined Petroleum Products
+.Petroleum Refining.Refined Petroleum Products.Alkylates
+.Petroleum Refining.Refined Petroleum Products.Alkylates.Alkylation
+.Petroleum Refining.Refined Petroleum Products.Alkylates.Isoparaffins
+.Petroleum Refining.Refined Petroleum Products.Alkylates.Isoparaffins.Isomerization
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Asphalt
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Coking
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Hydrocracking
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Hydrocracking.Cracking
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Hydrocracking.High
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Hydrocracking.Low
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Cracked Gas Oil.Hydrocracking.Medium
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Distillation
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Distillation.Atmospheric
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Distillation.Vacuum
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Hydrotreating
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Hydrotreating.Desulphurization
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Hydrotreating.Sulphur Recovery
+.Petroleum Refining.Refined Petroleum Products.Petroleum Fractions.Lubes
+.Petroleum Refining.Refined Petroleum Products.Reforming
+.Petroleum Refining.Steam
+.Petroleum Refining.Still Gas
+.Petroleum Refining.Still Gas.Heater
+.Petroleum Refining.Still Gas.Steam
+.Petroleum Refining.Ventilation
+.Pulp and Paper
+.Pulp and Paper.Black Liquor Service
+.Pulp and Paper.Black Liquor Service.Concentrated Black Liquor
+.Pulp and Paper.Black Liquor Service.Concentrated Black Liquor.Lime Kiln
+.Pulp and Paper.Black Liquor Service.Concentrated Black Liquor.Recovery Furnace
+.Pulp and Paper.Black Liquor Service.Evaporator
+.Pulp and Paper.Compression
+.Pulp and Paper.Compression.Large
+.Pulp and Paper.Compression.Small
+.Pulp and Paper.Conveyance
+.Pulp and Paper.Direct Drive
+.Pulp and Paper.HVAC
+.Pulp and Paper.HVAC.Space Cooling
+.Pulp and Paper.HVAC.Space Heating
+.Pulp and Paper.Lighting
+.Pulp and Paper.Machine Drive
+.Pulp and Paper.Machine Drive.Size 1
+.Pulp and Paper.Machine Drive.Size 2
+.Pulp and Paper.Machine Drive.Size 3
+.Pulp and Paper.Machine Drive.Size 4
+.Pulp and Paper.Machine Drive.Size 5
+.Pulp and Paper.Machine Drive.Size 6
+.Pulp and Paper.Methane Blend
+.Pulp and Paper.Paper
+.Pulp and Paper.Paper.Coated
+.Pulp and Paper.Paper.Coated.Coated Drying
+.Pulp and Paper.Paper.Coated.Coated Forming Pressing Finishing
+.Pulp and Paper.Paper.Coated.Coated Stock Prep
+.Pulp and Paper.Paper.Linerboard
+.Pulp and Paper.Paper.Linerboard.Linerboard Drying
+.Pulp and Paper.Paper.Linerboard.Linerboard Forming Pressing Finishing
+.Pulp and Paper.Paper.Linerboard.Linerboard Stock Prep
+.Pulp and Paper.Paper.Newsprint
+.Pulp and Paper.Paper.Newsprint.Newsprint Drying
+.Pulp and Paper.Paper.Newsprint.Newsprint Prep Form Press Finish
+.Pulp and Paper.Paper.Tissue
+.Pulp and Paper.Paper.Tissue.Tissue Drying
+.Pulp and Paper.Paper.Tissue.Tissue Forming Pressing Finishing
+.Pulp and Paper.Paper.Tissue.Tissue Stock Prep
+.Pulp and Paper.Paper.Uncoated
+.Pulp and Paper.Paper.Uncoated.Uncoated Drying
+.Pulp and Paper.Paper.Uncoated.Uncoated Forming Pressing Finishing
+.Pulp and Paper.Paper.Uncoated.Uncoated Stock Prep
+.Pulp and Paper.Pulp
+.Pulp and Paper.Pulp.Bleached Pulp
+.Pulp and Paper.Pulp.Bleached Pulp.Bleaching
+.Pulp and Paper.Pulp.Bleached Pulp.Bleaching.Bleaching Fully
+.Pulp and Paper.Pulp.Bleached Pulp.Bleaching.Bleaching Semi
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Pulp Washing
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Log Preparation
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Log Preparation.Cut and Chip
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Log Preparation.Debark
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Pulping Chemical
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Pulping Mechanical
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Pulping Recycled
+.Pulp and Paper.Pulp.Bleached Pulp.Washed Pulp.Raw Pulp.Pulping Semi Chemical
+.Pulp and Paper.Pulp.Pulp Drying
+.Pulp and Paper.Pumping
+.Pulp and Paper.Pumping.General
+.Pulp and Paper.Pumping.General.Large
+.Pulp and Paper.Pumping.General.Small
+.Pulp and Paper.Pumping.Precision
+.Pulp and Paper.Pumping.Precision.Large
+.Pulp and Paper.Pumping.Precision.Small
+.Pulp and Paper.Pumping.Slurry Stock
+.Pulp and Paper.Pumping.Slurry Stock.Large
+.Pulp and Paper.Pumping.Slurry Stock.Small
+.Pulp and Paper.Steam
+.Pulp and Paper.Ventilation
+.Residential
+.Residential.Clothes Drying
+.Residential.Clothes Drying.Air dry
+.Residential.Clothes Drying.Machine
+.Residential.Dwellings
+.Residential.Dwellings.Building Type
+.Residential.Dwellings.Building Type.High Density
+.Residential.Dwellings.Building Type.High Density.Cooling
+.Residential.Dwellings.Building Type.High Density.Cooling.Central
+.Residential.Dwellings.Building Type.High Density.Cooling.Room
+.Residential.Dwellings.Building Type.High Density.Vintage
+.Residential.Dwellings.Building Type.High Density.Vintage.<1960 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.<1960 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.<1960 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.High Density.Vintage.>2035 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.>2035 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.>2035 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.High Density.Vintage.1961-1980 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.1961-1980 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.1961-1980 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.High Density.Vintage.2001-2020 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.2001-2020 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.2001-2020 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.High Density.Vintage.2021-2035 Bldg Code
+.Residential.Dwellings.Building Type.High Density.Vintage.2021-2035 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.High Density.Vintage.2021-2035 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density
+.Residential.Dwellings.Building Type.LowMed Density.Cooling
+.Residential.Dwellings.Building Type.LowMed Density.Cooling.Central
+.Residential.Dwellings.Building Type.LowMed Density.Cooling.Room
+.Residential.Dwellings.Building Type.LowMed Density.Vintage
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.<1960 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.<1960 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.<1960 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.>2035 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.>2035 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.>2035 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1961-1980 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1961-1980 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1961-1980 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1981-2000 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1981-2000 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.1981-2000 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2001-2020 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2001-2020 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2001-2020 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2021-2035 Bldg Code
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2021-2035 Bldg Code.Heating (Cold)
+.Residential.Dwellings.Building Type.LowMed Density.Vintage.2021-2035 Bldg Code.Heating (Marine)
+.Residential.Dwellings.Clothes Washing
+.Residential.Dwellings.Dishwashing
+.Residential.Dwellings.Dishwashing.Machine
+.Residential.Dwellings.Dishwashing.Non-machine
+.Residential.Dwellings.Freezers
+.Residential.Dwellings.Lighting
+.Residential.Dwellings.Minor Appliances
+.Residential.Dwellings.Non-appliance Hot Water
+.Residential.Dwellings.Ranges
+.Residential.Dwellings.Refrigerators
+.Residential.Dwellings.Solar PV
+.Residential.Methane Blend
+.Residential.Water Heating
+.Residential.Water Heating.High Density
+.Residential.Water Heating.LowMed Density
+.Transportation Freight
+.Transportation Freight.Catenary Infrastructure
+.Transportation Freight.EV Infrastructure
+.Transportation Freight.EV Infrastructure.Depot Stations
+.Transportation Freight.EV Infrastructure.Rapid Charging Stations
+.Transportation Freight.FCEV Infrastructure
+.Transportation Freight.Freight
+.Transportation Freight.Freight.Air
+.Transportation Freight.Freight.Land
+.Transportation Freight.Freight.Land.Heavy
+.Transportation Freight.Freight.Land.Heavy.Rail
+.Transportation Freight.Freight.Land.Heavy.Trucks
+.Transportation Freight.Freight.Land.Light Medium
+.Transportation Freight.Freight.Marine
+.Transportation Freight.Off Road
+.Transportation Personal
+.Transportation Personal.Intercity Bus
+.Transportation Personal.Intercity Rail
+.Transportation Personal.Mode
+.Transportation Personal.Mode.Intercity Air
+.Transportation Personal.Mode.Intercity Land
+.Transportation Personal.Mode.Urban
+.Transportation Personal.Passenger Vehicle Motors
+.Transportation Personal.Passenger Vehicles
+.Transportation Personal.Transit
+.Transportation Personal.Transit.Public Bus
+.Transportation Personal.Transit.Rapid Transit
+.Waste
+.Waste.Sites
+.Waste.Sites.Large Sites
+.Waste.Sites.Medium Sites
+.Waste.Sites.Small Sites
+.Fuel Blends
+.Fuel Blends.Diesel_Industrial
+.Fuel Blends.Diesel_Transportation
+.Fuel Blends.Gasoline_Transportation
+.Fuel Blends.Methane_Agriculture
+.Fuel Blends.Methane_Buildings
+.Generic Fuels
+.Generic Fuels.Biogas
+.Generic Fuels.Black Liquor
+.Generic Fuels.Coal
+.Generic Fuels.Coke
+.Generic Fuels.Diesel
+.Generic Fuels.Fuel Oil
+.Generic Fuels.Gasoline
+.Generic Fuels.Jet Fuel
+.Generic Fuels.LPG
+.Generic Fuels.Metallurgical Coal
+.Generic Fuels.Natural Gas
+.Generic Fuels.Natural Gas Feedstock
+.Generic Fuels.Petroleum Coke
+.Generic Fuels.Propane
+.Generic Fuels.Refinery Fuel Gas
+.Generic Fuels.Renewable Diesel
+.Generic Fuels.Renewable Gasoline
+.Generic Fuels.Solid Biomass
+.Generic Fuels.Uranium
+.Generic Fuels.VOM
+.Generic Fuels.Waste Fuel
+.Transmission
+.Transmission.CCS TS AB
+.Transmission.CCS TS AT
+.Transmission.CCS TS BC
+.Transmission.CCS TS MB
+.Transmission.CCS TS ON
+.Transmission.CCS TS QC
+.Transmission.CCS TS SK
