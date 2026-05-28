@@ -28,8 +28,7 @@ def missing_parameter_default(validator):
         # Find Unique Node/Branch + Technology rows
         missing_parameter_default = []
         for parameter, occurences in params_no_defs.items():
-            missing_parameter_default.append((parameter,
-                                              f"{occurences} occurences"))
+            missing_parameter_default.append((parameter, int(occurences)))
 
         # Create Warning information
         concern_desc = "parameters are in the model, but do not have default \
@@ -82,9 +81,14 @@ def nodes_no_requested_service(validator):
 
 def duplicate_service_requests(validator):
     """
-    Identify nodes and technologies which request the same service twice.
+    Identify nodes and technologies which request the same service more than once.
+
+    Returns {(node, tech, target): {year: count}} so the caller can see exactly
+    which (node, technology, target) combinations have duplicates and how many
+    times each year appears. All years duplicated at the same count suggests the
+    same rows exist in multiple files; only some years duplicated suggests a
+    data entry error.
     """
-    # The model's DataFrame
     data = validator.model_df
 
     serv_request = data[data[COL.parameter] == PARAM.service_request]
@@ -92,24 +96,16 @@ def duplicate_service_requests(validator):
         subset=[validator.node_col, COL.technology, validator.target_col, "Year"],
         keep=False)]
 
-    if len(duplicated) > 0:
-        # Group & list rows (index) where duplicates exist
-        duplicated_with_idx = duplicated.reset_index()
-        duplicated_groups = duplicated_with_idx.groupby(
-            [validator.node_col, COL.technology, validator.target_col],
-            dropna=False)['index'].apply(list)
-        duplicated_groups = duplicated_groups.reset_index()
+    result: dict = {}
+    for _, row in duplicated.iterrows():
+        key = (row[validator.node_col], row[COL.technology], row[validator.target_col])
+        year = row["Year"]
+        result.setdefault(key, {})
+        result[key][year] = result[key].get(year, 0) + 1
 
-        # Create our Warning information
-        duplicate_req = list(zip(duplicated_groups['index'],
-                                 duplicated_groups[COL.branch],
-                                 duplicated_groups[COL.technology]))
-    else:
-        duplicate_req = []
+    concern_desc = "(node, technology, target) combination(s) have duplicate service_request rows"
 
-    concern_desc = "nodes/technologies request the same service more than once"
-
-    return duplicate_req, concern_desc
+    return result, concern_desc
 
 
 def bad_service_req(validator):
@@ -127,7 +123,12 @@ def bad_service_req(validator):
         .transform(lambda g: (g.isna() | (g == 0)).all())
 
     bad_rows = services_req[all_bad_mask].drop_duplicates(subset=group_keys)
-    bad_service_requests = list(zip(bad_rows.index, bad_rows[validator.node_col]))
+    bad_service_requests = list(zip(
+        bad_rows.index,
+        bad_rows[validator.node_col],
+        bad_rows[COL.technology],
+        bad_rows[validator.target_col],
+    ))
 
     concern_desc = "nodes/technologies have Service requested values of only \
         0's or are missing all values"

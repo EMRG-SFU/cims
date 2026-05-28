@@ -5,32 +5,61 @@ import numpy as np
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
 
+
+def _base_year(validator):
+    """Return the base year: min of year_list if provided, else min Year in model_df."""
+    if validator.year_list:
+        return min(validator.year_list, key=int)
+    return str(validator.model_df["Year"].dropna().min())
+
 def invalid_competition_type(validator):
     """
-    Find list of nodes with an invalid competition type.
+    Find nodes with an invalid or missing competition type.
+
+    Requires a list CSV (validator.competition_types). Returns None to signal
+    skipped when no list is provided — the valid types are unknown without it.
     """
+    if not len(validator.competition_types):
+        return None, "no list CSV provided"
+
     df = validator.model_df
-    valid_competition_list = validator.competition_types
-    
     comp_rows = df[df[COL.parameter] == PARAM.competition_type]
     context_str = comp_rows[COL.context].astype(str).str.strip().str.lower()
-    missing_context = comp_rows[COL.context].isna() | context_str.eq("")
-    invalid_context = missing_context | ~context_str.isin(valid_competition_list)
-    invalid_rows = comp_rows[invalid_context]
+    missing_or_invalid = (
+        comp_rows[COL.context].isna()
+        | context_str.eq("")
+        | ~context_str.isin(validator.competition_types)
+    )
+
+    invalid_rows = comp_rows[missing_or_invalid]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
 
-    concern_desc = "nodes have an invalid 'Competition Type'"
+    concern_desc = "nodes have an invalid or missing competition type"
     return invalid_nodes, concern_desc
 
 def undefined_nodes(validator, providers, requested):
     """
     Identify any nodes which are targets of other nodes, but have not been specified within
     the model description.
-    """
-    referenced_unspecified = [(i, v) for i, v in requested.items() if v not in providers.values]
-    concern_desc = "nodes are requested by other nodes without being defined in the model"
 
-    return referenced_unspecified, concern_desc
+    Returns a dict {undefined_node: [row_indexes]} so the caller can see both
+    the number of unique undefined nodes and every row that references each one.
+    The concern_desc reports both the unique node count (via len(concerns) in
+    _raise_concerns) and the total number of service_request rows involved.
+    """
+    # Group row indexes by undefined target node
+    undefined: dict = {}
+    for i, v in requested.items():
+        if v not in providers.values:
+            undefined.setdefault(v, []).append(i)
+
+    total_requests = sum(len(idxs) for idxs in undefined.values())
+    concern_desc = (
+        f"node(s) are referenced across {total_requests} service_request row(s) "
+        "without being defined in the model"
+    )
+
+    return undefined, concern_desc
 
 
 def nodes_requesting_self(validator):
@@ -40,8 +69,7 @@ def nodes_requesting_self(validator):
     request_rows = validator.model_df[validator.model_df[COL.parameter] == PARAM.service_request]
     self_requests = request_rows[
         request_rows[validator.node_col] == request_rows[validator.target_col]]
-    self_requesting = [(i, node) for i, node in
-                       zip(self_requests[validator.node_col], self_requests.index)]
+    self_requesting = list(zip(self_requests.index, self_requests[validator.node_col]))
 
     concern_desc = "nodes have a Service requested of themselves"
     return self_requesting, concern_desc
@@ -53,7 +81,11 @@ def nodes_with_zero_output(validator):
     """
     output = validator.model_df[validator.model_df[COL.parameter] == PARAM.output]
     zero_outputs = output[pd.to_numeric(output["Value"], errors="coerce") == 0]
-    zero_output_nodes = list(zero_outputs.drop_duplicates(subset=COL.branch)[COL.branch].items())
+
+    zero_output_nodes = []
+    for node, group in zero_outputs.groupby(COL.branch):
+        years = sorted(group["Year"].dropna().tolist())
+        zero_output_nodes.append((group.index[0], node, years))
 
     concern_desc = "nodes have an Output value of 0"
     return zero_output_nodes, concern_desc
@@ -70,10 +102,11 @@ def supply_without_lcc_or_price(validator):
     ][COL.branch]
 
     # Cost rows with a value defined in the base year
+    base_year = _base_year(validator)
     cost_df = validator.model_df[validator.model_df[COL.parameter].isin(
         [PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
     has_base_year_cost = cost_df[
-        (cost_df["Year"] == PARAM.base_year) & cost_df["Value"].notna()
+        (cost_df["Year"] == base_year) & cost_df["Value"].notna()
     ][COL.branch]
 
     no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
@@ -87,7 +120,7 @@ def techs_no_base_market_share(validator):
     Identify technologies which have a market share line, but do not have a base year market share.
     """
     data = validator.model_df
-    base_year = str(data["Year"].dropna().min())
+    base_year = _base_year(validator)
     ms_rows = data[data[COL.parameter] == PARAM.market_share_new]
 
     # Unique (node, tech) pairs with any market share value defined
@@ -107,7 +140,7 @@ def techs_no_base_market_share(validator):
     flagged = unique_defined[missing_base_year]
     techs_no_base_year_ms = list(zip(flagged.index, flagged[validator.node_col], flagged[COL.technology]))
 
-    concern_desc = "technologies are missing a base year Market share"
+    concern_desc = f"technologies are missing a base year ({base_year}) market share"
     return techs_no_base_year_ms, concern_desc
 
 def tech_compete_nodes_no_techs(validator):
@@ -136,7 +169,9 @@ def tech_compete_nodes_no_techs(validator):
 
 def revenue_recycling_at_techs(validator):
     """
-    Revenue recycling should only happen at nodes, never at techs
+    Identify technologies with a revenue_recycled parameter row.
+
+    Revenue recycling must only be applied at the node level, never at a technology.
     """
 
     # The model's DataFrame
@@ -182,36 +217,39 @@ def both_cop_p2000_defined(validator):
 
 def inconsistent_tech_refs(validator):
     """
-    Identify nodes which include `Technology` column values and reference a
-    technology which does not exist at that node.
+    Identify data rows whose Technology value doesn't match any technology
+    declared (via Parameter='technology') at that node.
+
+    Returns a dict {(node, tech_name): [row_indexes]} so the caller can see
+    the number of unique mismatches (dict keys) and every affected row for
+    each one. Common cause: typos or capitalisation differences between the
+    declaration row and data rows.
     """
-    # The model's DataFrame
     data = validator.model_df
-    tech_data = data[~data[COL.technology].isna()]
+    tech_data = data[data[COL.technology].notna() & (data[COL.technology].str.strip() != "")]
 
-    # Build a Node -> [Technologies] map
-    tech_rows = tech_data[tech_data[COL.parameter]==COL.technology.lower()]
-    node_tech_map = {}
+    # Build node → [declared tech names] from Parameter='technology' rows
+    tech_rows = tech_data[tech_data[COL.parameter] == COL.technology.lower()]
+    node_tech_map: dict = {}
     for node, tech_name in zip(tech_rows[validator.node_col], tech_rows[COL.technology]):
-        if node not in node_tech_map:
-            node_tech_map[node] = []
-        node_tech_map[node].append(tech_name)
+        node_tech_map.setdefault(node, []).append(tech_name)
 
-    # Find Unique Node/Branch + Technology rows
-    inconsistent_tech_refs = []
-    tech_other = tech_data[~tech_data.isin(tech_rows)].dropna(how='all')
+    # Find data rows that reference an undeclared tech at their node.
+    # Result: {node: {tech: [row_indexes]}} so callers can drill down
+    # node → undeclared tech names → affected rows.
+    tech_other = tech_data[~tech_data.index.isin(tech_rows.index)]
+    mismatches: dict = {}
     for idx, node, tech in zip(tech_other.index, tech_other[validator.node_col], tech_other[COL.technology]):
-        try:
-            if tech not in node_tech_map[node]:
-                inconsistent_tech_refs.append((idx, node, tech))
-        except KeyError:
-            inconsistent_tech_refs.append((idx, node, tech))
+        if tech not in node_tech_map.get(node, []):
+            mismatches.setdefault(node, {}).setdefault(tech, []).append(idx)
 
+    total_rows = sum(len(idxs) for techs in mismatches.values() for idxs in techs.values())
+    concern_desc = (
+        f"node(s) contain data rows for technology names missing from that node's "
+        f"'technology' parameter declaration — {total_rows} data row(s) affected"
+    )
 
-    # Create Warning information
-    concern_desc = "rows have inconsistent technology names"
-
-    return inconsistent_tech_refs, concern_desc
+    return mismatches, concern_desc
 
 def service_req_at_tech_node(validator):
     """
@@ -348,8 +386,8 @@ def base_year_market_share_not_one(validator):
     model_df = validator.model_df
     market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share_total]
 
-    # Identify base year (minimum year in the dataset)
-    base_year = str(model_df["Year"].dropna().min())
+    # Identify base year
+    base_year = _base_year(validator)
 
     # Filter to base year rows and ensure numeric market shares
     market_share_df = market_share_df[market_share_df["Year"] == base_year].copy()
@@ -428,19 +466,14 @@ def no_structural_parent_node_exists(validator):
     # All defined branches in the model (base + scenario files)
     branch_set = set(data[COL.branch].dropna().unique())
     
-    missing_parent_nodes = []
-    for node in branch_set:
-        # Root never requires a parent
+    missing_parents: dict = {}
+    for node in sorted(branch_set):
         if node == validator.root_node:
             continue
-
-        # Parent is everything before the final dot segment
         parent = ".".join(node.split(".")[:-1])
-        # Flag when the parent node is missing or undefined (non-root only)
         if not parent or parent not in branch_set:
-            missing_parent_nodes.append((validator.branch2node_index_map[node], node))
+            missing_parents.setdefault(parent, []).append(node)
 
-    # Keep output ordered by source line/index for readability
-    missing_parent_nodes.sort(key=lambda x: x[0])
-    concern_desc = "nodes are missing a structural parent node"
-    return missing_parent_nodes, concern_desc
+    total_children = sum(len(c) for c in missing_parents.values())
+    concern_desc = f"parent node(s) are not defined — {total_children} child node(s) affected"
+    return missing_parents, concern_desc
