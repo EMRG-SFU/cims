@@ -39,6 +39,8 @@ SCRIPTS = [
     SOURCE_DIR / "nrcan/ceud/commercial/commercial.py",
     # CER RESD demand data
     SOURCE_DIR / "cer/cer_resd_demand.py",
+    # Statistics Canada macro drivers
+    SOURCE_DIR / "stats_can/pop_gdp.py",
 ]
 
 STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
