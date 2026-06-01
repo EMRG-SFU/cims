@@ -781,19 +781,6 @@ def extract_water_heating(province: str, tables: dict,
         "Electricity_Boiler_High Efficiency":     elec_wh,
     }
 
-    # High density
-    ng_tot_h  = _ng_total('heating_high_cold')
-    oil_tot_h = _oil_total('heating_high_cold')
-
-    wh_tech_high = {
-        "Natural Gas_Boiler_Low Efficiency":      ng_wh * (_heat_tech('heating_high_cold', "NG - Low Efficiency")     / ng_tot_h),
-        "Natural Gas_Boiler_Medium Efficiency":   ng_wh * (_heat_tech('heating_high_cold', "NG - Medium Efficiency")  / ng_tot_h),
-        "Natural Gas_Boiler_High Efficiency":     ng_wh * (_heat_tech('heating_high_cold', "NG - High Efficiency")    / ng_tot_h),
-        "Light Fuel Oil_Boiler_Low Efficiency":   oil_wh * (_heat_tech('heating_high_cold', "Heating Oil - Low Efficiency") / oil_tot_h),
-        "Light Fuel Oil_Boiler_Medium Efficiency":oil_wh * (_heat_tech('heating_high_cold', "Heating Oil - Medium Efficiency") / oil_tot_h),
-        "Electricity_Boiler_High Efficiency":     elec_wh,
-    }
-
     frames = [
         _long(province, 'wh_lowmed', '', 'service_request', 'GJ/GJ', wh_lowmed),
         _long(province, 'wh_high',   '', 'service_request', 'GJ/GJ', wh_high),

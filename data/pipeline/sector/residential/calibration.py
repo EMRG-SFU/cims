@@ -1,57 +1,145 @@
 """
 Extract residential calibration data and save to CIMS-formatted CSV files.
 
-This script:
-1. Extracts data for ALL provinces and territories (including disaggregated
-   YT, NT, NU from TR)
-2. ALWAYS applies projections from residential_assumptions.csv
-3. Exports one CIMS-formatted CSV file per province/territory
+Sources
+-------
+Emissions  (calibration_emissions_total_cumul_net)
+    nir_crosswalk_tables_cims.py  → total tCO2e per residential CIMS branch
+                                    5-year intervals (2000–2020);
+                                    abbreviation regions (AB, BC, …)
+    nir_to_cims.py                → per-gas kt per residential CIMS branch,
+                                    annual resolution (2000–latest NIR year);
+                                    summed to tCO2e using AR5 GWP100 factors;
+                                    full province names mapped to abbreviations
 
-Output columns: Branch, Type, Region, Sector, Service, Technology, Parameter,
-                Context, Sub_Context, Target, Source, Unit, Year, Value
+Energy demand  (calibration_quantity_requested)
+    cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
+                                    abbreviation regions
 
-The following data is extracted:
-- Housing stock (households)
-- Building shares by type (Single Detached, Single Attached, Apartments, Mobile Homes)
-- Floorspace per building
-- Appliances per household
-- Vintage bins (building age distributions) — LowMed and High density
-- Heating technologies — Cold climate (all provinces), Marine climate (BC only)
-  NOTE: BC exports BOTH Marine AND Cold climate heating data
-- Cooling technologies (Room and Central)
-- Water heating service request and technologies
+Heating and water heating technologies  (market_share_total)
+    residential.py                → CEUD-derived market shares with projections;
+                                    one DataFrame per province/territory
 
-All percentage values are on 0-1 scale (fractions) as produced by the pipeline.
+Output columns
+--------------
+Branch, Type, Region, Sector, Service, Technology, Parameter,
+Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
 import sys
-import argparse
+import importlib.util
 from pathlib import Path
 
 import polars as pl
 import pandas as pd
 
-_current_file = Path(__file__)
-_project_root = _current_file.parent.parent.parent
-if str(_project_root) not in sys.path:
-    sys.path.insert(0, str(_project_root))
-
-from source.nrcan.ceud.residential.residential import main as residential_main
+# ── path setup ────────────────────────────────────────────────────────────────
+_PIPELINE_ROOT = Path(__file__).parent.parent.parent
+if str(_PIPELINE_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PIPELINE_ROOT))
 
 
-# ==============================================================================
-# HELPERS
-# ==============================================================================
+def _load_module(name: str, path: Path):
+    spec = importlib.util.spec_from_file_location(name, path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+_crosswalk_mod = _load_module(
+    'nir_crosswalk_tables_cims',
+    _PIPELINE_ROOT / 'source/eccc/nir/nir_crosswalk_tables_cims.py',
+)
+_nir_mod = _load_module(
+    'nir_to_cims',
+    _PIPELINE_ROOT / 'source/eccc/nir/nir_to_cims.py',
+)
+_cer_mod = _load_module(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source/cer/cer_resd_demand.py',
+)
+
+from source.nrcan.ceud.residential.residential import main as _ceud_main
+from utils.controls_conversions import BASE_PATH
+
+# ── configuration ─────────────────────────────────────────────────────────────
+OUTPUT_DIR = BASE_PATH / 'calibration/residential'
+
+OUTPUT_COLS = [
+    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
+    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
+    'Year', 'Value',
+]
+
+# AR5 GWP100 factors: kt of gas → kt CO2e (multiply by 1000 for tCO2e)
+# HFCs and PFCs are already reported in kt CO2e in the NIR, so GWP = 1.
+_GWP: dict[str, float] = {
+    'CO2':  1.0,
+    'CH4':  28.0,
+    'N2O':  265.0,
+    'HFCs': 1.0,
+    'PFCs': 1.0,
+    'SF6':  23500.0,
+    'NF3':  16100.0,
+}
+
+# NIR full province name → CIMS abbreviation (excludes Canada)
+_REGION_MAP: dict[str, str] = {
+    'British Columbia':          'BC',
+    'Alberta':                   'AB',
+    'Saskatchewan':              'SK',
+    'Manitoba':                  'MB',
+    'Ontario':                   'ON',
+    'Quebec':                    'QC',
+    'New Brunswick':             'NB',
+    'Nova Scotia':               'NS',
+    'Prince Edward Island':      'PE',
+    'Newfoundland and Labrador': 'NL',
+    'Yukon':                     'YT',
+    'Northwest Territories':     'NT',
+    'Nunavut':                   'NU',
+}
+
+# Fuels that have region-specific CIMS branches
+_REGIONAL_FUELS = {
+    'Electricity', 'Biodiesel', 'Renewable Diesel',
+    'Ethanol', 'Renewable Gasoline', 'Hydrogen',
+}
+
+
+# ── helpers ───────────────────────────────────────────────────────────────────
+
+def _branch_meta(branch: str) -> dict:
+    """Infer Type, Region, Sector, Service from a CIMS branch string.
+
+    Branch structure: CIMS.CAN.{Region}[.{Sector}[.{Service}[...]]]
+    """
+    parts = branch.split('.')
+    if len(parts) < 3:
+        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
+    region = parts[2]
+    if len(parts) == 3:
+        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
+    sector = parts[3]
+    if len(parts) == 4:
+        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
+    service = parts[4]
+    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
+
+
+def _fuel_target(region: str, fuel: str) -> str:
+    """Build CIMS branch for a fuel (mirrors model_inputs.py price_mult logic)."""
+    if fuel in _REGIONAL_FUELS:
+        return f'CIMS.CAN.{region}.{fuel}'
+    return f'CIMS.Generic Fuels.{fuel}'
+
+
+def _empty_df() -> pl.DataFrame:
+    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
 
 def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
-    """
-    Extract {year: value} from a long-format Polars DataFrame for one
-    variable/category combination.
-
-    Returns
-    -------
-    dict  {int year: float value}  — empty dict if nothing matches.
-    """
+    """Extract {year: value} from a long-format Polars DataFrame."""
     mask = pl.col('variable') == variable
     if category:
         mask = mask & (pl.col('category') == category)
@@ -64,303 +152,298 @@ def _get_series(df: pl.DataFrame, variable: str, category: str = '') -> dict:
 
 
 def _get_categories(df: pl.DataFrame, variable: str) -> list[str]:
-    """Return sorted list of unique category values for a given variable."""
+    """Return sorted unique category values for a given variable."""
     subset = df.filter(pl.col('variable') == variable)
     return sorted(subset.get_column('category').unique().to_list())
 
 
-# ==============================================================================
-# CIMS FORMATTER
-# ==============================================================================
+# ── energy demand builder ─────────────────────────────────────────────────────
 
-def format_to_cims(df: pl.DataFrame, output_file: str | Path,
-                   province_code: str) -> str:
+def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
+    """Filter cer_resd_demand output to Residential CIMS nodes."""
+    res = cer_df[cer_df['Node'].str.startswith('.Residential')].copy()
+    if res.empty:
+        return _empty_df()
+
+    rows = []
+    for _, row in res.iterrows():
+        region = str(row['Region'])
+        node   = str(row['Node'])
+        fuel   = str(row['Variable'])
+        branch = f'CIMS.CAN.{region}{node}'
+        meta   = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      region,
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_quantity_requested',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      _fuel_target(region, fuel),
+            'Source':      str(row.get('Source', 'CER')),
+            'Unit':        str(row.get('Unit', 'GJ')),
+            'Year':        str(int(row['Year'])),
+            'Value':       str(row['Value']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── emission builders ─────────────────────────────────────────────────────────
+
+def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
+    """Filter nir_crosswalk_tables_cims output to Residential CIMS branches."""
+    res = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Residential'))
+    if res.is_empty():
+        return _empty_df()
+
+    rows = []
+    for row in res.to_dicts():
+        branch = row['CIMS_Branch']
+        meta   = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      meta['Region'],
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      '',
+            'Source':      str(row.get('Source', 'NIR')),
+            'Unit':        str(row.get('Unit', 'tCO2e')),
+            'Year':        str(row['Year']),
+            'Value':       str(row['Value']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
+    """Convert nir_to_cims per-gas data to annual tCO2e for Residential branches."""
+    known_regions = set(_REGION_MAP.keys())
+    res = nir_df.filter(
+        pl.col('CIMS Branch').str.contains(r'\.Residential')
+        & pl.col('Region').is_in(known_regions)
+    )
+    if res.is_empty():
+        return _empty_df()
+
+    gwp_lf = pl.DataFrame({
+        'Variable': list(_GWP.keys()),
+        'GWP':      list(_GWP.values()),
+    })
+
+    res = (
+        res
+        .join(gwp_lf, on='Variable', how='left')
+        .with_columns((pl.col('Value') * pl.col('GWP')).alias('tco2e'))
+    )
+
+    totals = (
+        res
+        .group_by(['CIMS Branch', 'Region', 'Year'])
+        .agg(pl.col('tco2e').sum())
+        .sort(['Region', 'Year', 'CIMS Branch'])
+    )
+
+    rows = []
+    for row in totals.to_dicts():
+        full_region = row['Region']
+        abbr        = _REGION_MAP[full_region]
+        branch      = row['CIMS Branch'].replace(
+            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
+        )
+        meta = _branch_meta(branch)
+        rows.append({
+            'Branch':      branch,
+            'Type':        meta['Type'],
+            'Region':      abbr,
+            'Sector':      meta['Sector'],
+            'Service':     meta['Service'],
+            'Technology':  '',
+            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Context':     '',
+            'Sub_Context': '',
+            'Target':      '',
+            'Source':      'NIR',
+            'Unit':        'tCO2e',
+            'Year':        str(row['Year']),
+            'Value':       str(row['tco2e']),
+        })
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── technology builders ───────────────────────────────────────────────────────
+
+def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """Extract heating technology market shares from CEUD data.
+
+    BC exports both Marine and Cold climate; all other provinces export Cold only.
     """
-    Convert a province's long-format Polars DataFrame to a CIMS-formatted CSV.
-
-    Parameters
-    ----------
-    df : pl.DataFrame
-        Output of residential main() for one province/territory.
-    output_file : str or Path
-    province_code : str
-
-    Returns
-    -------
-    str  Path to the saved CSV file.
-    """
-    prov  = province_code.upper()
-    is_bc = prov == 'BC'
     rows: list[dict] = []
 
-    def make_row(meta: dict, year_dict: dict, scale: float = 1.0) -> list[dict]:
-        """Build one CIMS output row per year from a {year: value} dict."""
-        result = []
-        for year, value in year_dict.items():
-            if value is not None:
-                result.append({
-                    'Branch':      meta.get('Branch', ''),
-                    'Type':        meta.get('Type', ''),
-                    'Region':      prov,
-                    'Sector':      'Residential',
-                    'Service':     meta.get('Service', ''),
-                    'Technology':  meta.get('Technology', ''),
-                    'Parameter':   meta.get('Parameter', ''),
-                    'Context':     meta.get('Context', ''),
-                    'Sub_Context': meta.get('Sub_Context', ''),
-                    'Target':      meta.get('Target', ''),
-                    'Source':      'CEUD',
-                    'Unit':        meta.get('Unit', ''),
-                    'Year':        int(year),
-                    'Value':       float(value) * scale,
-                })
-        return result
+    for prov_code, df in ceud_results.items():
+        prov   = prov_code.upper()
+        is_bc  = prov == 'BC'
 
-    # ------------------------------------------------------------------
-    # 1. HOUSING STOCK
-    # ------------------------------------------------------------------
-    rows.extend(make_row(
-        {'Branch':    f'CIMS.CAN.{prov}',
-         'Type':      'Region',
-         'Parameter': 'service_request',
-         'Target':    f'CIMS.CAN.{prov}.Residential',
-         'Unit':      'household'},
-        _get_series(df, 'housing_thousand'),
-    ))
+        lowmed_vintages = _get_categories(df, 'vintage_bins_lowmed')
+        high_vintages   = _get_categories(df, 'vintage_bins_high')
 
-    # ------------------------------------------------------------------
-    # 2. APPLIANCES
-    # ------------------------------------------------------------------
-    for appl_name in _get_categories(df, 'appliances_per_household'):
-        rows.extend(make_row(
-            {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings',
-             'Type':      'Service',
-             'Service':   'Dwellings',
-             'Parameter': 'service_request',
-             'Target':    f'CIMS.CAN.{prov}.Residential.Dwellings.{appl_name}',
-             'Unit':      'unit/building'},
-            _get_series(df, 'appliances_per_household', appl_name),
-        ))
+        climates = (
+            [('heating_lowmed_marine', 'heating_high_marine', 'Marine'),
+             ('heating_lowmed_cold',   'heating_high_cold',   'Cold')]
+            if is_bc else
+            [('heating_lowmed_cold', 'heating_high_cold', 'Cold')]
+        )
 
-    # ------------------------------------------------------------------
-    # 3. BUILDING TYPES — shares and floorspace per building
-    # ------------------------------------------------------------------
-    building_map = {
-        'Apartments':      ('Apartment', 'High Density'),
-        'Single Detached': ('Detached',  'LowMed Density'),
-        'Single Attached': ('Attached',  'LowMed Density'),
-        'Mobile Homes':    ('Mobile',    'LowMed Density'),
-    }
-    base_branch = f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+        for lowmed_var, high_var, climate_label in climates:
+            for vint in lowmed_vintages:
+                for tech in _get_categories(df, lowmed_var):
+                    for year, value in _get_series(df, lowmed_var, tech).items():
+                        rows.append({
+                            'Branch':      (f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+                                            f'.LowMed Density.Vintage.{vint} Bldg Code'
+                                            f'.Heating ({climate_label})'),
+                            'Type':        'Service',
+                            'Region':      prov,
+                            'Sector':      'Residential',
+                            'Service':     'Heating',
+                            'Technology':  tech,
+                            'Parameter':   'market_share_total',
+                            'Context':     '',
+                            'Sub_Context': '',
+                            'Target':      '',
+                            'Source':      'CEUD',
+                            'Unit':        '% of GJ of heat',
+                            'Year':        str(year),
+                            'Value':       str(value),
+                        })
 
-    for source_key, (tech_name, density) in building_map.items():
-        share = _get_series(df, 'building_shares', source_key)
-        if share:
-            rows.extend(make_row(
-                {'Branch':    base_branch,
-                 'Type':      'Service',
-                 'Service':   'Building Type',
-                 'Technology': tech_name,
-                 'Parameter': 'market_share_total',
-                 'Unit':      '%'},
-                share,
-            ))
+            for vint in high_vintages:
+                for tech in _get_categories(df, high_var):
+                    for year, value in _get_series(df, high_var, tech).items():
+                        rows.append({
+                            'Branch':      (f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
+                                            f'.High Density.Vintage.{vint} Bldg Code'
+                                            f'.Heating ({climate_label})'),
+                            'Type':        'Service',
+                            'Region':      prov,
+                            'Sector':      'Residential',
+                            'Service':     'Heating',
+                            'Technology':  tech,
+                            'Parameter':   'market_share_total',
+                            'Context':     '',
+                            'Sub_Context': '',
+                            'Target':      '',
+                            'Source':      'CEUD',
+                            'Unit':        '% of GJ of heat',
+                            'Year':        str(year),
+                            'Value':       str(value),
+                        })
 
-        fs = _get_series(df, 'floorspace_per_building', source_key)
-        if fs:
-            rows.extend(make_row(
-                {'Branch':    base_branch,
-                 'Type':      'Service',
-                 'Service':   'Building Type',
-                 'Technology': tech_name,
-                 'Parameter': 'service_request',
-                 'Target':    f'{base_branch}.{density}',
-                 'Unit':      'm2'},
-                fs,
-            ))
-
-    # ------------------------------------------------------------------
-    # 4 & 5. COOLING
-    # ------------------------------------------------------------------
-    for ac_tech in _get_categories(df, 'cooling_share_data'):
-        cooling = _get_series(df, 'cooling_share_data', ac_tech)
-        if not cooling:
-            continue
-        for density_label in ['LowMed Density', 'High Density']:
-            rows.extend(make_row(
-                {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Cooling',
-                 'Type':      'Service',
-                 'Service':   'Cooling',
-                 'Parameter': 'service_request',
-                 'Target':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Cooling.{ac_tech}',
-                 'Unit':      'GJ cooling/GJ cooling'},
-                cooling,
-            ))
-
-    # ------------------------------------------------------------------
-    # 6 & 7. WATER HEATING SERVICE REQUEST
-    # ------------------------------------------------------------------
-    for var, density_label in [('wh_lowmed', 'LowMed Density'), ('wh_high', 'High Density')]:
-        wh = _get_series(df, var)
-        if wh:
-            rows.extend(make_row(
-                {'Branch':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
-                 'Type':      'Service',
-                 'Service':   'Water Heating',
-                 'Parameter': 'service_request',
-                 'Target':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
-                 'Unit':      'GJ water heating/GJ water heating'},
-                wh,
-            ))
-
-    # ------------------------------------------------------------------
-    # 8 & 9. WATER HEATING TECHNOLOGIES
-    # ------------------------------------------------------------------
-    for var, density_label in [('wh_tech_lowmed', 'LowMed Density'),
-                                ('wh_tech_high',   'High Density')]:
-        for tech in _get_categories(df, var):
-            wh_tech = _get_series(df, var, tech)
-            if wh_tech:
-                rows.extend(make_row(
-                    {'Branch':    f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
-                     'Type':      'Service',
-                     'Service':   density_label,
-                     'Technology': tech,
-                     'Parameter': 'market_share_total',
-                     'Unit':      '% of GJ of water heating'},
-                    wh_tech,
-                ))
-
-    # ------------------------------------------------------------------
-    # 10 & 11. VINTAGE BINS
-    # ------------------------------------------------------------------
-    for var, density_label in [('vintage_bins_high',   'High Density'),
-                                ('vintage_bins_lowmed', 'LowMed Density')]:
-        for vint in _get_categories(df, var):
-            vint_data = _get_series(df, var, vint)
-            if vint_data:
-                rows.extend(make_row(
-                    {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density_label}.Vintage',
-                     'Type':      'Service',
-                     'Service':   'Vintage',
-                     'Technology': vint,
-                     'Parameter': 'market_share_total',
-                     'Unit':      '% of m2'},
-                    vint_data,
-                ))
-
-    # ------------------------------------------------------------------
-    # 12–15. HEATING TECHNOLOGIES
-    # ------------------------------------------------------------------
-    lowmed_vintages = _get_categories(df, 'vintage_bins_lowmed')
-    high_vintages   = _get_categories(df, 'vintage_bins_high')
-
-    def export_heating(lowmed_var: str, high_var: str, climate_label: str) -> None:
-        """Export heating market shares for one climate (Cold or Marine)."""
-        lowmed_techs = _get_categories(df, lowmed_var)
-        high_techs   = _get_categories(df, high_var)
-
-        for vint in lowmed_vintages:
-            for tech in lowmed_techs:
-                tech_data = _get_series(df, lowmed_var, tech)
-                if tech_data:
-                    rows.extend(make_row(
-                        {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
-                                      f'.LowMed Density.Vintage.{vint} Bldg Code.Heating ({climate_label})',
-                         'Type':      'Service',
-                         'Service':   'Heating',
-                         'Technology': tech,
-                         'Parameter': 'market_share_total',
-                         'Unit':      '% of GJ of heat'},
-                        tech_data,
-                    ))
-
-        for vint in high_vintages:
-            for tech in high_techs:
-                tech_data = _get_series(df, high_var, tech)
-                if tech_data:
-                    rows.extend(make_row(
-                        {'Branch':    f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type'
-                                      f'.High Density.Vintage.{vint} Bldg Code.Heating ({climate_label})',
-                         'Type':      'Service',
-                         'Service':   'Heating',
-                         'Technology': tech,
-                         'Parameter': 'market_share_total',
-                         'Unit':      '% of GJ of heat'},
-                        tech_data,
-                    ))
-
-    if is_bc:
-        export_heating('heating_lowmed_marine', 'heating_high_marine', 'Marine')
-        export_heating('heating_lowmed_cold',   'heating_high_cold',   'Cold')
-    else:
-        export_heating('heating_lowmed_cold', 'heating_high_cold', 'Cold')
-
-    # ------------------------------------------------------------------
-    # Assemble output DataFrame
-    # ------------------------------------------------------------------
-    out = pd.DataFrame(rows)
-    column_order = ['Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
-                    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source',
-                    'Unit', 'Year', 'Value']
-    out = out[column_order]
-    if not out.empty:
-        out = out.sort_values(['Branch', 'Technology', 'Year'])
-
-    output_path = Path(output_file)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-    out.to_csv(output_path, index=False)
-    print(f"  ✅ Saved {len(out):,} rows to {output_path}")
-    return str(output_path)
+    if not rows:
+        return _empty_df()
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
-# ==============================================================================
-# MAIN
-# ==============================================================================
+def _build_wh_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """Extract water heating technology market shares from CEUD data."""
+    rows: list[dict] = []
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Extract residential data from CEUD and export to CIMS-formatted CSV files"
+    for prov_code, df in ceud_results.items():
+        prov = prov_code.upper()
+
+        for var, density_label in [('wh_tech_lowmed', 'LowMed Density'),
+                                    ('wh_tech_high',   'High Density')]:
+            for tech in _get_categories(df, var):
+                for year, value in _get_series(df, var, tech).items():
+                    rows.append({
+                        'Branch':      f'CIMS.CAN.{prov}.Residential.Water Heating.{density_label}',
+                        'Type':        'Service',
+                        'Region':      prov,
+                        'Sector':      'Residential',
+                        'Service':     density_label,
+                        'Technology':  tech,
+                        'Parameter':   'market_share_total',
+                        'Context':     '',
+                        'Sub_Context': '',
+                        'Target':      '',
+                        'Source':      'CEUD',
+                        'Unit':        '% of GJ of water heating',
+                        'Year':        str(year),
+                        'Value':       str(value),
+                    })
+
+    if not rows:
+        return _empty_df()
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+# ── main ──────────────────────────────────────────────────────────────────────
+
+def main() -> pl.DataFrame:
+    """Assemble residential calibration data and write one CSV per region."""
+    print('=' * 60)
+    print('RESIDENTIAL CALIBRATION')
+    print('=' * 60)
+
+    print('\nRunning NIR crosswalk (nir_crosswalk_tables_cims)...')
+    crosswalk_df = pl.from_pandas(_crosswalk_mod.main())
+
+    print('\nRunning NIR to CIMS (nir_to_cims)...')
+    nir_df = _nir_mod.main()
+
+    print('\nRunning CER demand (cer_resd_demand)...')
+    cer_df = _cer_mod.main()
+
+    print('\nRunning CEUD residential pipeline (with projections)...')
+    ceud_results = _ceud_main(apply_projections=True, export_csv=False)
+
+    print('\nBuilding CER energy demand rows...')
+    cer_rows = _build_cer_energy(cer_df)
+    print(f'  Rows: {len(cer_rows):,}')
+
+    print('Building crosswalk emission rows...')
+    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    print(f'  Rows: {len(crosswalk_rows):,}')
+
+    print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
+    nir_rows = _build_nir_emissions(nir_df)
+    print(f'  Rows: {len(nir_rows):,}')
+
+    print('Building heating technology rows...')
+    heating_rows = _build_heating_techs(ceud_results)
+    print(f'  Rows: {len(heating_rows):,}')
+
+    print('Building water heating technology rows...')
+    wh_rows = _build_wh_techs(ceud_results)
+    print(f'  Rows: {len(wh_rows):,}')
+
+    print('Combining...')
+    output = (
+        pl.concat([cer_rows, crosswalk_rows, nir_rows, heating_rows, wh_rows],
+                  how='diagonal_relaxed')
+        .select(OUTPUT_COLS)
     )
-    parser.add_argument(
-        "--output-dir",
-        default=r"C:\cims\data\calibration\residential",
-        help=r"Output directory for CSV files (default: C:\cims\data\calibration\residential)",
-    )
-    args = parser.parse_args()
 
-    output_dir = Path(args.output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    regions = output['Region'].drop_nulls().unique().sort().to_list()
+    for region in regions:
+        region_df = output.filter(pl.col('Region') == region)
+        out_path  = OUTPUT_DIR / f'residential_{region}.csv'
+        region_df.write_csv(out_path)
+        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 
-    print("=" * 80)
-    print("RESIDENTIAL CALIBRATION DATA EXTRACTION - ALL PROVINCES & TERRITORIES")
-    print("=" * 80)
-    print(f"Projections:      ENABLED")
-    print(f"Output format:    CIMS")
-    print(f"Output directory: {output_dir}")
-    print("=" * 80)
+    print(f'\n✅ Residential calibration complete')
+    print(f'   Total rows:  {len(output):,}')
+    print(f'   Files:       {len(regions)} (one per region)')
 
-    # Run the full pipeline including TR → YT/NT/NU disaggregation
-    # Returns {province_code: pl.DataFrame} for all 13 provinces/territories
-    results = residential_main(apply_projections=True, export_csv=False)
+    return output
 
-    failed = []
-    for prov_code, df in results.items():
-        try:
-            format_to_cims(df, output_dir / f"residential_{prov_code.upper()}.csv", prov_code)
-        except Exception as exc:
-            import traceback
-            traceback.print_exc()
-            print(f"  ❌ Failed formatting {prov_code}: {exc}")
-            failed.append((prov_code, str(exc)))
 
-    print("\n" + "=" * 80)
-    print("SUMMARY")
-    print("=" * 80)
-    print(f"✅ Successful: {len(results) - len(failed)}/{len(results)} provinces/territories")
-    if failed:
-        print(f"❌ Failed: {len(failed)}")
-        for prov, err in failed:
-            print(f"  • {prov}: {err}")
-    print("=" * 80)
-    print(f"\n✅ Complete! CSV files saved to: {output_dir}")
+if __name__ == '__main__':
+    main()
