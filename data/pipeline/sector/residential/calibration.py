@@ -71,18 +71,6 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-# AR5 GWP100 factors: kt of gas → kt CO2e (multiply by 1000 for tCO2e)
-# HFCs and PFCs are already reported in kt CO2e in the NIR, so GWP = 1.
-_GWP: dict[str, float] = {
-    'CO2':  1.0,
-    'CH4':  28.0,
-    'N2O':  265.0,
-    'HFCs': 1.0,
-    'PFCs': 1.0,
-    'SF6':  23500.0,
-    'NF3':  16100.0,
-}
-
 # NIR full province name → CIMS abbreviation (excludes Canada)
 _REGION_MAP: dict[str, str] = {
     'British Columbia':          'BC',
@@ -223,7 +211,7 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
 
 
 def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """Convert nir_to_cims per-gas data to annual tCO2e for Residential branches."""
+    """Extract per-gas NIR emissions for Residential branches."""
     known_regions = set(_REGION_MAP.keys())
     res = nir_df.filter(
         pl.col('CIMS Branch').str.contains(r'\.Residential')
@@ -232,26 +220,8 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
     if res.is_empty():
         return _empty_df()
 
-    gwp_lf = pl.DataFrame({
-        'Variable': list(_GWP.keys()),
-        'GWP':      list(_GWP.values()),
-    })
-
-    res = (
-        res
-        .join(gwp_lf, on='Variable', how='left')
-        .with_columns((pl.col('Value') * pl.col('GWP')).alias('tco2e'))
-    )
-
-    totals = (
-        res
-        .group_by(['CIMS Branch', 'Region', 'Year'])
-        .agg(pl.col('tco2e').sum())
-        .sort(['Region', 'Year', 'CIMS Branch'])
-    )
-
     rows = []
-    for row in totals.to_dicts():
+    for row in res.to_dicts():
         full_region = row['Region']
         abbr        = _REGION_MAP[full_region]
         branch      = row['CIMS Branch'].replace(
@@ -266,13 +236,13 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
             'Service':     meta['Service'],
             'Technology':  '',
             'Parameter':   'calibration_emissions_total_cumul_net',
-            'Context':     '',
+            'Context':     str(row['Variable']),
             'Sub_Context': '',
             'Target':      '',
             'Source':      'NIR',
-            'Unit':        'tCO2e',
+            'Unit':        str(row['Unit']),
             'Year':        str(row['Year']),
-            'Value':       str(row['tco2e']),
+            'Value':       str(row['Value']),
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 

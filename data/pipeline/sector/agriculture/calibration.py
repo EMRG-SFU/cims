@@ -67,18 +67,6 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-# AR5 GWP100 factors: kt of gas → kt CO2e (multiply by 1000 for tCO2e)
-# HFCs and PFCs are already reported in kt CO2e in the NIR, so GWP = 1.
-_GWP: dict[str, float] = {
-    'CO2':  1.0,
-    'CH4':  28.0,
-    'N2O':  265.0,
-    'HFCs': 1.0,
-    'PFCs': 1.0,
-    'SF6':  23500.0,
-    'NF3':  16100.0,
-}
-
 # NIR full province name → CIMS abbreviation (excludes Canada)
 _REGION_MAP: dict[str, str] = {
     'British Columbia':          'BC',
@@ -171,13 +159,7 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
 
 
 def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """
-    Convert nir_to_cims per-gas data to annual tCO2e for Agriculture branches.
-
-    Applies AR5 GWP100 factors to sum all gas types into a single tCO2e total
-    per branch/region/year. Full province names are mapped to CIMS abbreviations.
-    Canada-level rows are excluded (calibration is per-province only).
-    """
+    """Extract per-gas NIR emissions for Agriculture branches."""
     known_regions = set(_REGION_MAP.keys())
     ag = nir_df.filter(
         pl.col('CIMS Branch').str.contains(r'\.Agriculture')
@@ -186,32 +168,11 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
     if ag.is_empty():
         return _empty_df()
 
-    gwp_lf = pl.DataFrame({
-        'Variable': list(_GWP.keys()),
-        'GWP': list(_GWP.values()),
-    })
-
-    # tco2e = value_tonnes * GWP (nir_to_cims already converts kt → tonnes)
-    ag = (
-        ag
-        .join(gwp_lf, on='Variable', how='left')
-        .with_columns((pl.col('Value') * pl.col('GWP')).alias('tco2e'))
-    )
-
-    # Sum across gas types → one tCO2e total per branch/region/year
-    totals = (
-        ag
-        .group_by(['CIMS Branch', 'Region', 'Year'])
-        .agg(pl.col('tco2e').sum())
-        .sort(['Region', 'Year', 'CIMS Branch'])
-    )
-
     rows = []
-    for row in totals.to_dicts():
+    for row in ag.to_dicts():
         full_region = row['Region']
-        abbr = _REGION_MAP[full_region]
-        # Replace full province name in branch with abbreviation
-        branch = row['CIMS Branch'].replace(
+        abbr        = _REGION_MAP[full_region]
+        branch      = row['CIMS Branch'].replace(
             f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
         )
         meta = _branch_meta(branch)
@@ -223,13 +184,13 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
             'Service':     meta['Service'],
             'Technology':  '',
             'Parameter':   'calibration_emissions_total_cumul_net',
-            'Context':     '',
+            'Context':     str(row['Variable']),
             'Sub_Context': '',
             'Target':      '',
             'Source':      'NIR',
-            'Unit':        'tCO2e',
+            'Unit':        str(row['Unit']),
             'Year':        str(row['Year']),
-            'Value':       str(row['tco2e']),
+            'Value':       str(row['Value']),
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
