@@ -271,23 +271,22 @@ def _build_appliance_rows(residential: pl.DataFrame, region: str,
 def _build_building_type_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
                                region: str) -> pl.DataFrame:
     """
-    Per Building Type technology: market_share_total (year 2000) at tech_order+0.3
+    Per Building Type technology: market_share_total (all years) at tech_order+0.3
     and service_request floorspace rows (all years) at tech_order+0.6.
     """
     bt_branch = f'CIMS.CAN.{region}.Residential.Dwellings.Building Type'
 
-    # Pipeline building shares year-2000 lookup by CIMS tech name
+    # Pipeline building shares — all years, keyed by CIMS tech name
     bs_data = residential.filter(
         (pl.col('province') == region) &
-        (pl.col('variable') == 'building_shares') &
-        (pl.col('year') == 2000)
-    )
-    bs_vals: dict[str, float] = {}
-    bs_sources: dict[str, str] = {}
+        (pl.col('variable') == 'building_shares')
+    ).sort('category', 'year')
+    bs_by_tech: dict[str, list] = {}
     for r in bs_data.iter_rows(named=True):
         cims_tech = PIPELINE_TO_CIMS_BUILDING.get(r['category'], r['category'])
-        bs_vals[cims_tech] = r['value']
-        bs_sources[cims_tech] = r['source']
+        bs_by_tech.setdefault(cims_tech, []).append(
+            (r['year'], r['value'], r['source'])
+        )
     bs_unit = bs_data['unit'][0] if len(bs_data) > 0 else '%'
 
     # Pipeline floorspace lookup: {cims_tech: [(year, value, source, unit)]}
@@ -317,18 +316,19 @@ def _build_building_type_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
         density = CIMS_BUILDING_TO_DENSITY.get(tech, 'LowMed Density')
         density_target = f'{bt_branch}.{density}'
 
-        # market_share_total at tech_order + 0.3
-        rows.append({
-            'Branch': bt_branch, 'Type': 'Service', 'Region': region,
-            'Sector': 'Residential', 'Service': 'Building Type',
-            'Technology': tech,
-            'Parameter': 'market_share_total',
-            'Context': '', 'Sub_Context': '', 'Target': '',
-            'Source': bs_sources.get(tech, 'CEUD'),
-            'Unit': bs_unit, 'Year': '2000',
-            'Value': str(bs_vals.get(tech, 0.0)),
-            '_order': tech_order + 0.3,
-        })
+        # market_share_total — all years at tech_order + 0.3
+        for i, (year, value, source) in enumerate(bs_by_tech.get(tech, [])):
+            rows.append({
+                'Branch': bt_branch, 'Type': 'Service', 'Region': region,
+                'Sector': 'Residential', 'Service': 'Building Type',
+                'Technology': tech,
+                'Parameter': 'market_share_total',
+                'Context': '', 'Sub_Context': '', 'Target': '',
+                'Source': source,
+                'Unit': bs_unit, 'Year': str(year),
+                'Value': str(value),
+                '_order': tech_order + 0.3 + i * 1e-4,
+            })
 
         # service_request (all years) at tech_order + 0.6
         for year, value, source, unit in fs_by_tech.get(tech, []):
