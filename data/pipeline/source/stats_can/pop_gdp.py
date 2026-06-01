@@ -241,7 +241,7 @@ def main() -> pd.DataFrame:
         pop_hist, cer_pop, POP_LAST,
         variable="Population",
         unit="persons",
-        source="Statistics Canada / CER",
+        source="StatsCan/CER",
         cer_unit_scale=1000.0,  # CER population is in thousands; output in persons
     )
 
