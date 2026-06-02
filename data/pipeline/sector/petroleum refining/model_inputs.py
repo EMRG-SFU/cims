@@ -201,7 +201,7 @@ def main() -> pl.DataFrame:
     regions = activity_rows['Region'].unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'petroleum_refining_{region}.csv'
+        out_path = OUTPUT_DIR / f'petroleum refining_{region}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

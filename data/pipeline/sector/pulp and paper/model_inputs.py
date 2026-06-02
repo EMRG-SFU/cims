@@ -15,11 +15,11 @@ Fixed structural parameters
     fixed data and are sourced from the pipeline instead (see below).
 
 Total production  (service_provide at sector level)
-    processed_data/activity/heavy_industry.csv
+    pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Pulp and Paper'  (tonnes, per province, 2000–2100)
 
 Sub-product splits  (service_request rows at Paper service level)
-    processed_data/activity/heavy_industry.csv
+    pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variables (% of tonnes, routed into Paper sub-services):
       'Pulp and Paper.Newsprint'   → Paper.Newsprint
       'Pulp and Paper.Linerboard'  → Paper.Linerboard
@@ -29,7 +29,7 @@ Sub-product splits  (service_request rows at Paper service level)
       'Pulp and Paper.Pulp'        → Paper.Prepared Pulp
 
 Energy price multipliers  (multiplier_price rows)
-    processed_data/energy_prices/energy_price_multipliers.csv
+    pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
 
 Output columns
 --------------
