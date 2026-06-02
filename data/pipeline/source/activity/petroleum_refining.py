@@ -51,7 +51,7 @@ Atlantic split (old file only):
   (earliest stable period with both provinces individually reported):
       NL fraction = 0.2439,  NB fraction = 0.7561
 
-Output unit: m3/year  (annual sum of monthly volumes)
+Output unit: m3 of RPP/year  (annual sum of monthly volumes)
 =============================================================================
 """
 
@@ -257,7 +257,7 @@ def main() -> pl.DataFrame:
         .filter((pl.col('Year') >= 2000) & (pl.col('Year') <= LAST_DATA_YEAR["stat_can_crude_new"]))
         .with_columns(
             pl.lit('Petroleum Refining').alias('Variable'),
-            pl.lit('m3').alias('Unit'),
+            pl.lit('m3 of RPP').alias('Unit'),
         )
         .select(['Region', 'Variable', 'Unit', 'Year', 'Value'])
         .sort(['Region', 'Year'])

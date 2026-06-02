@@ -8,7 +8,7 @@ Fixed structural parameters
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
-Activity demand  (service_provide)
+Activity demand  (service_request)
     processed_data/activity/petroleum_refining.csv
     Produced by pipeline/source/activity/petroleum_refining.py.
     Variable: 'Petroleum Refining'  (m3 crude input, per province, 2000–2100)
@@ -24,10 +24,11 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. service_provide  — total petroleum refining activity (from petroleum_refining)
-2. competition      — from fixed data (sector level)
-3. multiplier_price — from energy_price_multipliers
-4. rest of fixed data (sector service_request + all sub-service rows)
+1. service_request              — region-level demand (from petroleum_refining activity)
+2. service_provide, competition — sector header from fixed data
+3. multiplier_price             — from energy_price_multipliers
+4. service_request              — sector tail from fixed data (→ Refined Petroleum Products)
+5. rest of fixed data (all sub-service rows)
 """
 
 import sys
@@ -106,21 +107,21 @@ def _read_flattened_fixed() -> pl.DataFrame:
 
 def _build_activity_rows(activity: pl.DataFrame) -> pl.DataFrame:
     """
-    service_provide rows for the Petroleum Refining sector.
+    Region-level service_request rows pointing to the Petroleum Refining sector.
     Value = total crude input to refineries in m3 from petroleum_refining.
     """
     df = activity.filter(pl.col('Variable') == 'Petroleum Refining')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Petroleum Refining')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Petroleum Refining').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
-        pl.lit('service_provide').alias('Parameter'),
+        pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Petroleum Refining')).alias('Target'),
         pl.col('Source'),
         pl.col('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
@@ -178,20 +179,18 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(price_rows):,}')
 
     print('Combining...')
-
+    fixed_str = fixed.cast(pl.String)
     _sector_branch = pl.col('Branch').str.ends_with('.Petroleum Refining')
+    _header_params = pl.col('Parameter').is_in(['service_provide', 'competition'])
 
-    fixed_sector_competition = fixed.filter(
-        _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
-    )
-
-    fixed_rest = fixed.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition']))
-    )
+    fixed_sector_header = fixed_str.filter(_sector_branch & _header_params)
+    fixed_sector_tail   = fixed_str.filter(_sector_branch & ~_header_params)
+    fixed_rest          = fixed_str.filter(~_sector_branch)
 
     output = (
         pl.concat(
-            [activity_rows, fixed_sector_competition, price_rows, fixed_rest],
+            [activity_rows, fixed_sector_header, price_rows,
+             fixed_sector_tail, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)

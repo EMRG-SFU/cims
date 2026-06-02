@@ -257,6 +257,8 @@ def main() -> pl.DataFrame:
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
+        if not (region_df['Value'].cast(pl.Float64, strict=False).fill_null(0) != 0).any():
+            continue
         out_path  = OUTPUT_DIR / f'electricity_{region}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
