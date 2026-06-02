@@ -10,7 +10,7 @@ Sources:
        GEO = Canada, row = "To refineries, [region]"
        Scalar = thousands  →  VALUE × 1,000 = m3
        Regions: Atlantic provinces (NL+NB combined), Quebec, Ontario,
-                Saskatchewan, Alberta, British Columbia, Northwest Territories
+                Saskatchewan, Alberta, British Columbia
 
   NEW: Table 25-10-0063 (2016-01 onward)
        GEO = [province], row = "Input to Canadian refineries"
@@ -50,11 +50,6 @@ Atlantic split (old file only):
   using the average NL fraction observed in 2017–2019 from the new file
   (earliest stable period with both provinces individually reported):
       NL fraction = 0.2439,  NB fraction = 0.7561
-
-Northwest Territories:
-  Reported in the old file (Norman Wells refinery — small volumes).
-  Not present in the new file after 2016 (refinery activity ceased).
-  NWT rows are included for the years data exists and drop naturally.
 
 Output unit: m3/year  (annual sum of monthly volumes)
 =============================================================================
@@ -104,7 +99,6 @@ _OLD_REGION_MAP = {
     'To refineries, Saskatchewan':          'Saskatchewan',
     'To refineries, Alberta':               'Alberta',
     'To refineries, British Columbia':      'British Columbia',
-    'To refineries, Northwest Territories': 'Northwest Territories',
     'To refineries, Atlantic provinces':    '_Atlantic',
 }
 
@@ -269,8 +263,7 @@ def main() -> pl.DataFrame:
         .sort(['Region', 'Year'])
     )
 
-    # Drop region-years where Value = 0 so NWT appears only while actively refining
-    refinery_output = refinery_annual.filter(pl.col('Value') > 0)
+    refinery_output = refinery_annual
 
 
     # -- R4. Map Stats Can province names to CIMS codes ---------------------------
