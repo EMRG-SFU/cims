@@ -23,7 +23,7 @@ SCRIPTS = [
     # Activity drivers
     SOURCE_DIR / "activity/emissions_drivers.py",
     SOURCE_DIR / "activity/light_industrial.py",
-    SOURCE_DIR / "activity/petroleum_refining.py",
+    SOURCE_DIR / "activity/petroleum refining.py",
     SOURCE_DIR / "activity/coal_mining.py",
     SOURCE_DIR / "activity/oil_production.py",
     SOURCE_DIR / "activity/gas_production.py",

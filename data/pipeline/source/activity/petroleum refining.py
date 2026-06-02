@@ -341,7 +341,7 @@ def main() -> pl.DataFrame:
     print(f'   Regions:             {sorted(refinery_output["Region"].unique().to_list())}')
     print(f'   Years covered:       {refinery_output["Year"].min()} – {refinery_output["Year"].max()}')
 
-    refinery_path = OUTPUT_DIR / 'petroleum_refining.csv'
+    refinery_path = OUTPUT_DIR / 'petroleum refining.csv'
     refinery_path.parent.mkdir(parents=True, exist_ok=True)
     refinery_output.write_csv(refinery_path)
     print(f'   Saved to:            {refinery_path}')

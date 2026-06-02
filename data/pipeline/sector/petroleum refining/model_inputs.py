@@ -9,8 +9,8 @@ Fixed structural parameters
     utils/flatten_fixed_data.
 
 Activity demand  (service_request)
-    processed_data/activity/petroleum_refining.csv
-    Produced by pipeline/source/activity/petroleum_refining.py.
+    processed_data/activity/petroleum refining.csv
+    Produced by pipeline/source/activity/petroleum refining.py.
     Variable: 'Petroleum Refining'  (m3 crude input, per province, 2000–2100)
 
 Energy price multipliers  (multiplier_price rows)
@@ -52,7 +52,7 @@ _spec.loader.exec_module(_flatten_mod)
 
 _pr_spec = importlib.util.spec_from_file_location(
     'petroleum_refining_activity',
-    _PIPELINE_ROOT / 'source' / 'activity' / 'petroleum_refining.py',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'petroleum refining.py',
 )
 _petroleum_refining_mod = importlib.util.module_from_spec(_pr_spec)
 _pr_spec.loader.exec_module(_petroleum_refining_mod)
