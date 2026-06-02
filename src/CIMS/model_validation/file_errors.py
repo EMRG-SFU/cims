@@ -94,12 +94,22 @@ def supply_without_lcc_or_price(validator):
     """
     Identify supply nodes (fixed price or cost curve) that have no price,
     lcc financial, or cost curve price specified in the base year.
+
+    Aggregation nodes with competition = Sector are excluded: they derive
+    their base-year price from children and do not need a direct price row.
     """
     # Supply nodes: is_supply parameter with context == "True"
     supply_nodes = validator.model_df[
         validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False) &
         (validator.model_df[COL.context].str.lower() == "true")
     ][COL.branch]
+
+    # Aggregation nodes (competition = Sector) derive price from children — skip them
+    sector_nodes = validator.model_df[
+        (validator.model_df[COL.parameter] == PARAM.competition_type) &
+        (validator.model_df[COL.context].str.lower() == "sector")
+    ][COL.branch]
+    supply_nodes = supply_nodes[~supply_nodes.isin(sector_nodes)]
 
     # Cost rows with a value defined in the base year
     base_year = _base_year(validator)
