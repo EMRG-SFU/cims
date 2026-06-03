@@ -26,6 +26,7 @@ SCRIPTS = [
     SECTOR_DIR / "pulp and paper/model_inputs.py",
     SECTOR_DIR / "petroleum refining/model_inputs.py",
     SECTOR_DIR / "coal mining/model_inputs.py",
+    SECTOR_DIR / "light industrial/model_inputs.py",
 ]
 
 STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
