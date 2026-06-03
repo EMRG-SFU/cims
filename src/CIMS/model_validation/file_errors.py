@@ -24,11 +24,11 @@ def invalid_competition_type(validator):
 
     df = validator.model_df
     comp_rows = df[df[COL.parameter] == PARAM.competition_type]
-    context_str = comp_rows[COL.context].astype(str).str.strip().str.lower()
+    value_str = comp_rows[COL.value].astype(str).str.strip().str.lower()
     missing_or_invalid = (
-        comp_rows[COL.context].isna()
-        | context_str.eq("")
-        | ~context_str.isin(validator.competition_types)
+        comp_rows[COL.value].isna()
+        | value_str.eq("")
+        | ~value_str.isin(validator.competition_types)
     )
 
     invalid_rows = comp_rows[missing_or_invalid]
@@ -98,16 +98,16 @@ def supply_without_lcc_or_price(validator):
     Aggregation nodes with competition = Sector are excluded: they derive
     their base-year price from children and do not need a direct price row.
     """
-    # Supply nodes: is_supply parameter with context == "True"
+    # Supply nodes: is_supply parameter with value == "True"
     supply_nodes = validator.model_df[
         validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False) &
-        (validator.model_df[COL.context].str.lower() == "true")
+        (validator.model_df[COL.value].str.lower() == "true")
     ][COL.branch]
 
     # Aggregation nodes (competition = Sector) derive price from children — skip them
     sector_nodes = validator.model_df[
         (validator.model_df[COL.parameter] == PARAM.competition_type) &
-        (validator.model_df[COL.context].str.lower() == "sector")
+        (validator.model_df[COL.value].str.lower() == "sector")
     ][COL.branch]
     supply_nodes = supply_nodes[~supply_nodes.isin(sector_nodes)]
 
@@ -162,7 +162,7 @@ def tech_compete_nodes_no_techs(validator):
 
     # Find all Tech Compete Nodes
     tech_compete_nodes = data[(data[COL.parameter].str.lower().str.contains(PARAM.competition_type)) &
-                              (data[COL.context].str.lower().str.contains(PARAM.competition_compete))][validator.node_col]
+                              (data[COL.value].str.lower().str.contains(PARAM.competition_compete))][validator.node_col]
 
     # Find all Technology Header Rows
     techs = data[data[COL.parameter] == COL.technology.lower()]
@@ -273,7 +273,7 @@ def service_req_at_tech_node(validator):
 
     # Find all Tech compete nodes
     tech_nodes = data[(data[COL.parameter]==PARAM.competition_type) &
-                      (data[COL.context].str.lower().str.contains(PARAM.competition_compete))][validator.node_col].unique()
+                      (data[COL.value].str.lower().str.contains(PARAM.competition_compete))][validator.node_col].unique()
 
 
     # Find service request rows specified at the node level of a [node-]tech
@@ -362,7 +362,7 @@ def lcc_at_tech_node(validator):
     """
     Identify any tech-compete nodes where an LCC value has been set exogenously.
     """
-    tech_nodes = validator.model_df[COL.branch][(validator.model_df[COL.parameter] == PARAM.competition_type) & (validator.model_df[COL.context].str.lower().str.contains(PARAM.competition_compete))]
+    tech_nodes = validator.model_df[COL.branch][(validator.model_df[COL.parameter] == PARAM.competition_type) & (validator.model_df[COL.value].str.lower().str.contains(PARAM.competition_compete))]
     lcc_nodes = validator.model_df[COL.branch][
         validator.model_df[COL.technology].isna() &
         validator.model_df[COL.parameter].str.lower().str.contains('lcc')]
