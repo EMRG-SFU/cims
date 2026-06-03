@@ -130,7 +130,7 @@ REGISTRY.register("invalid_competition_type", CheckSpec(
         "  Each entry is a node whose competition parameter is blank or not in the\n"
         "  valid competition types list; row_index is that node's competition row\n"
         "  in model_df, node is the branch name.\n\n"
-        "Reading: check the Context column at the flagged row to see what value was\n"
+        "Reading: check the Value column at the flagged row to see what value was\n"
         "set. This check is skipped entirely when no list CSV is provided."
     ),
 ))
