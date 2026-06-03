@@ -1,39 +1,65 @@
 import pandas as pd
 import numpy as np
 
-from .validation_utils import get_providers, get_year_cols, get_nodes
 
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import is_year
 
+
+def _base_year(validator):
+    """Return the base year: min of year_list if provided, else min Year in model_df."""
+    if validator.year_list:
+        return min(validator.year_list, key=int)
+    return str(validator.model_df["Year"].dropna().min())
 
 def invalid_competition_type(validator):
     """
-    Find list of nodes with an invalid competition type.
+    Find nodes with an invalid or missing competition type.
+
+    Requires a list CSV (validator.competition_types). Returns None to signal
+    skipped when no list is provided — the valid types are unknown without it.
     """
+    if not len(validator.competition_types):
+        return None, "no list CSV provided"
+
     df = validator.model_df
-    valid_competition_list = validator.competition_types
-    
     comp_rows = df[df[COL.parameter] == PARAM.competition_type]
     context_str = comp_rows[COL.context].astype(str).str.strip().str.lower()
-    missing_context = comp_rows[COL.context].isna() | context_str.eq("")
-    invalid_context = missing_context | ~context_str.isin(valid_competition_list)
-    invalid_rows = comp_rows[invalid_context]
+    missing_or_invalid = (
+        comp_rows[COL.context].isna()
+        | context_str.eq("")
+        | ~context_str.isin(validator.competition_types)
+    )
+
+    invalid_rows = comp_rows[missing_or_invalid]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
 
-    concern_desc = "nodes have an invalid 'Competition Type'"
+    concern_desc = "nodes have an invalid or missing competition type"
     return invalid_nodes, concern_desc
 
 def undefined_nodes(validator, providers, requested):
     """
     Identify any nodes which are targets of other nodes, but have not been specified within
     the model description.
-    """
-    referenced_unspecified = [(i, v) for i, v in requested.items() if v not in providers.values]
-    concern_desc = "nodes are requested by other nodes without being defined in the model"
 
-    return referenced_unspecified, concern_desc
+    Returns a dict {undefined_node: [row_indexes]} so the caller can see both
+    the number of unique undefined nodes and every row that references each one.
+    The concern_desc reports both the unique node count (via len(concerns) in
+    _raise_concerns) and the total number of service_request rows involved.
+    """
+    # Group row indexes by undefined target node
+    undefined: dict = {}
+    for i, v in requested.items():
+        if v not in providers.values:
+            undefined.setdefault(v, []).append(i)
+
+    total_requests = sum(len(idxs) for idxs in undefined.values())
+    concern_desc = (
+        f"node(s) are referenced across {total_requests} service_request row(s) "
+        "without being defined in the model"
+    )
+
+    return undefined, concern_desc
 
 
 def nodes_requesting_self(validator):
@@ -43,8 +69,7 @@ def nodes_requesting_self(validator):
     request_rows = validator.model_df[validator.model_df[COL.parameter] == PARAM.service_request]
     self_requests = request_rows[
         request_rows[validator.node_col] == request_rows[validator.target_col]]
-    self_requesting = [(i, node) for i, node in
-                       zip(self_requests[validator.node_col], self_requests.index)]
+    self_requesting = list(zip(self_requests.index, self_requests[validator.node_col]))
 
     concern_desc = "nodes have a Service requested of themselves"
     return self_requesting, concern_desc
@@ -54,24 +79,46 @@ def nodes_with_zero_output(validator):
     Identify nodes or technologies where the "Output" line has been set to 0 for
     any of the year values in the model description.
     """
-    year_cols = get_year_cols(validator.model_df)
     output = validator.model_df[validator.model_df[COL.parameter] == PARAM.output]
-    zero_outputs = output[(output[year_cols] == 0).any(axis=1)]
-    zero_output_nodes = list(zero_outputs[COL.branch].items())
+    zero_outputs = output[pd.to_numeric(output["Value"], errors="coerce") == 0]
+
+    zero_output_nodes = []
+    for node, group in zero_outputs.groupby(COL.branch):
+        years = sorted(group["Year"].dropna().tolist())
+        zero_output_nodes.append((group.index[0], node, years))
 
     concern_desc = "nodes have an Output value of 0"
     return zero_output_nodes, concern_desc
 
 def supply_without_lcc_or_price(validator):
     """
-    Identify supply nodes (fixed price or cost curve) that have no price, 
+    Identify supply nodes (fixed price or cost curve) that have no price,
     lcc financial, or cost curve price specified in the base year.
-    """
-    supply_nodes = validator.model_df[(validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False)) &
-                                       (validator.model_df[COL.context] is True)][COL.branch]
 
-    cost_df = validator.model_df[validator.model_df[COL.parameter].isin([PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
-    has_base_year_cost = cost_df[~cost_df[PARAM.base_year].isna()][COL.branch]
+    Aggregation nodes with competition = Sector are excluded: they derive
+    their base-year price from children and do not need a direct price row.
+    """
+    # Supply nodes: is_supply parameter with context == "True"
+    supply_nodes = validator.model_df[
+        validator.model_df[COL.parameter].str.contains(PARAM.is_supply, case=False, na=False) &
+        (validator.model_df[COL.context].str.lower() == "true")
+    ][COL.branch]
+
+    # Aggregation nodes (competition = Sector) derive price from children — skip them
+    sector_nodes = validator.model_df[
+        (validator.model_df[COL.parameter] == PARAM.competition_type) &
+        (validator.model_df[COL.context].str.lower() == "sector")
+    ][COL.branch]
+    supply_nodes = supply_nodes[~supply_nodes.isin(sector_nodes)]
+
+    # Cost rows with a value defined in the base year
+    base_year = _base_year(validator)
+    cost_df = validator.model_df[validator.model_df[COL.parameter].isin(
+        [PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
+    has_base_year_cost = cost_df[
+        (cost_df["Year"] == base_year) & cost_df["Value"].notna()
+    ][COL.branch]
+
     no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
                     f not in has_base_year_cost.values]
 
@@ -82,21 +129,28 @@ def techs_no_base_market_share(validator):
     """
     Identify technologies which have a market share line, but do not have a base year market share.
     """
-    # The model's DataFrame
     data = validator.model_df
+    base_year = _base_year(validator)
+    ms_rows = data[data[COL.parameter] == PARAM.market_share_new]
 
-    base_year = [c for c in data.columns if is_year(c)][0]
-    base_year_market_shares = data[data[COL.parameter] == PARAM.market_share_new]
-    no_base_year_ms = base_year_market_shares[base_year_market_shares[base_year].isna()]
+    # Unique (node, tech) pairs with any market share value defined
+    unique_defined = ms_rows[ms_rows["Value"].notna()].drop_duplicates(subset=[validator.node_col, COL.technology])
 
-    techs_no_base_year_ms = []
-    for idx in no_base_year_ms.index:
-        techs_no_base_year_ms.append((idx,
-                                      data.loc[idx, validator.node_col],
-                                      data.loc[idx, COL.technology]))
+    # (node, tech) pairs that have a value at the base year
+    base_year_ms = ms_rows[(ms_rows["Year"] == base_year) & ms_rows["Value"].notna()]
+    has_base_year_ms = set(zip(base_year_ms[validator.node_col], base_year_ms[COL.technology]))
 
-    concern_desc = "technologies are missing a base year Market share"
+    # Use pd.Series so an empty mask is treated as boolean indexing, not column selection
+    missing_base_year = pd.Series(
+        [(n, t) not in has_base_year_ms
+         for n, t in zip(unique_defined[validator.node_col], unique_defined[COL.technology])],
+        index=unique_defined.index,
+        dtype=bool,
+    )
+    flagged = unique_defined[missing_base_year]
+    techs_no_base_year_ms = list(zip(flagged.index, flagged[validator.node_col], flagged[COL.technology]))
 
+    concern_desc = f"technologies are missing a base year ({base_year}) market share"
     return techs_no_base_year_ms, concern_desc
 
 def tech_compete_nodes_no_techs(validator):
@@ -125,7 +179,9 @@ def tech_compete_nodes_no_techs(validator):
 
 def revenue_recycling_at_techs(validator):
     """
-    Revenue recycling should only happen at nodes, never at techs
+    Identify technologies with a revenue_recycled parameter row.
+
+    Revenue recycling must only be applied at the node level, never at a technology.
     """
 
     # The model's DataFrame
@@ -150,60 +206,60 @@ def revenue_recycling_at_techs(validator):
 
 def both_cop_p2000_defined(validator):
     """
-    No node should have both COP & P2000 exogenously defined
+    No node should have both COP & P2000 exogenously defined.
     """
-
     data = validator.model_df
 
-    # Find all instances of COP & P2000 in the model description
-    cop_p2000 = data[data[COL.parameter].isin([PARAM.cop, PARAM.p2000])]
+    # Rows where COP or P2000 has a value defined
+    cop_p2000 = data[data[COL.parameter].isin([PARAM.cop, PARAM.p2000]) & data["Value"].notna()]
 
-    # Only keep the rows that aren't completely None
-    cop_p2000 = cop_p2000.dropna(how='all',
-                                 subset=[c for c in cop_p2000.columns if is_year(c)])
-    duplicated = cop_p2000[cop_p2000.duplicated(
-                 subset=[validator.node_col],
-                 keep='first')]
+    # Nodes with each parameter defined
+    has_cop   = set(cop_p2000[cop_p2000[COL.parameter] == PARAM.cop][validator.node_col])
+    has_p2000 = set(cop_p2000[cop_p2000[COL.parameter] == PARAM.p2000][validator.node_col])
 
-    nodes_with_cop_and_p2000 = []
-    for i, node in duplicated[validator.node_col].items():
-        nodes_with_cop_and_p2000.append((i, node))
+    # One representative row per node that has both defined (for the index)
+    flagged = cop_p2000[cop_p2000[validator.node_col].isin(has_cop & has_p2000)] \
+                       .drop_duplicates(subset=[validator.node_col])
+    nodes_with_cop_and_p2000 = list(zip(flagged.index, flagged[validator.node_col]))
 
     concern_desc = "nodes have both COP & P2000 exogenously defined"
     return nodes_with_cop_and_p2000, concern_desc
 
 def inconsistent_tech_refs(validator):
     """
-    Identify nodes which include `Technology` column values and reference a
-    technology which does not exist at that node.
+    Identify data rows whose Technology value doesn't match any technology
+    declared (via Parameter='technology') at that node.
+
+    Returns a dict {(node, tech_name): [row_indexes]} so the caller can see
+    the number of unique mismatches (dict keys) and every affected row for
+    each one. Common cause: typos or capitalisation differences between the
+    declaration row and data rows.
     """
-    # The model's DataFrame
     data = validator.model_df
-    tech_data = data[~data[COL.technology].isna()]
+    tech_data = data[data[COL.technology].notna() & (data[COL.technology].str.strip() != "")]
 
-    # Build a Node -> [Technologies] map
-    tech_rows = tech_data[tech_data[COL.parameter]==COL.technology.lower()]
-    node_tech_map = {}
+    # Build node → [declared tech names] from Parameter='technology' rows
+    tech_rows = tech_data[tech_data[COL.parameter] == COL.technology.lower()]
+    node_tech_map: dict = {}
     for node, tech_name in zip(tech_rows[validator.node_col], tech_rows[COL.technology]):
-        if node not in node_tech_map:
-            node_tech_map[node] = []
-        node_tech_map[node].append(tech_name)
+        node_tech_map.setdefault(node, []).append(tech_name)
 
-    # Find Unique Node/Branch + Technology rows
-    inconsistent_tech_refs = []
-    tech_other = tech_data[~tech_data.isin(tech_rows)].dropna(how='all')
+    # Find data rows that reference an undeclared tech at their node.
+    # Result: {node: {tech: [row_indexes]}} so callers can drill down
+    # node → undeclared tech names → affected rows.
+    tech_other = tech_data[~tech_data.index.isin(tech_rows.index)]
+    mismatches: dict = {}
     for idx, node, tech in zip(tech_other.index, tech_other[validator.node_col], tech_other[COL.technology]):
-        try:
-            if tech not in node_tech_map[node]:
-                inconsistent_tech_refs.append((idx, node, tech))
-        except KeyError:
-            inconsistent_tech_refs.append((idx, node, tech))
+        if tech not in node_tech_map.get(node, []):
+            mismatches.setdefault(node, {}).setdefault(tech, []).append(idx)
 
+    total_rows = sum(len(idxs) for techs in mismatches.values() for idxs in techs.values())
+    concern_desc = (
+        f"node(s) contain data rows for technology names missing from that node's "
+        f"'technology' parameter declaration — {total_rows} data row(s) affected"
+    )
 
-    # Create Warning information
-    concern_desc = "rows have inconsistent technology names"
-
-    return inconsistent_tech_refs, concern_desc
+    return mismatches, concern_desc
 
 def service_req_at_tech_node(validator):
     """
@@ -243,35 +299,24 @@ def min_max_conflicts(validator):
     Identify technologies where the market share limits set conflict with one
     another. For example, max=0.5<min=0.7.
     """
-    # The model's DataFrame
     data = validator.model_df
 
-    # Min/Max Marketshare Limits
     ms_min_limits = data[data[COL.parameter] == PARAM.market_share_new_min]
     ms_max_limits = data[data[COL.parameter] == PARAM.market_share_new_max]
 
-    # Build a Node -> [Technologies] map
     df = pd.merge(ms_min_limits, ms_max_limits,
                   how='inner', validate='many_to_many',
-                  on=[COL.branch, COL.region, COL.sector, COL.technology],
+                  on=[COL.branch, COL.region, COL.sector, COL.technology, "Year"],
                   suffixes=["_min", "_max"])
 
-    issues = {}
-    for y in get_year_cols(data):
-        incongruent_nodes = df[df[f"{y}_min"] > df[f"{y}_max"]]
-        for branch, tech in zip(incongruent_nodes[COL.branch], incongruent_nodes[COL.technology]):
-            if (branch, tech) not in issues:
-                issues[(branch, tech)] = []
-            issues[(branch, tech)].append(y)
+    df["Value_min"] = pd.to_numeric(df["Value_min"], errors="coerce")
+    df["Value_max"] = pd.to_numeric(df["Value_max"], errors="coerce")
+    incongruent = df[df["Value_min"] > df["Value_max"]]
 
+    issues = incongruent.groupby([COL.branch, COL.technology])["Year"].apply(list).reset_index()
+    min_max_conflicts = list(zip(issues[COL.branch], issues[COL.technology], issues["Year"]))
 
-    # Find Unique Node/Branch + Technology rows
-    min_max_conflicts = []
-    for ((node, tech), years) in issues.items():
-        min_max_conflicts.append((node, tech, years))
-
-    # Create Warning information
-    concern_desc = "technologies contain market share limits that  conflict \
+    concern_desc = "technologies contain market share limits that conflict \
         with one another (e.g., min > max)"
 
     return min_max_conflicts, concern_desc
@@ -332,45 +377,42 @@ def lcc_at_tech(validator):
     """
     Identify any technologies where an LCC value has been set exogenously.
     """
-    techs = validator.model_df[[COL.branch, COL.technology]].drop_duplicates().dropna(how='any')
-    
-    lcc_techs = validator.model_df[COL.branch][
+    lcc_tech_rows = validator.model_df[
         ~validator.model_df[COL.technology].isna() &
-        validator.model_df[COL.parameter].str.lower().str.contains('lcc')]
-    
-    lcc_at_techs = [(i, n) for i, n in lcc_techs.items() if n in techs]
+        validator.model_df[COL.parameter].str.lower().str.contains('lcc')
+    ].drop_duplicates(subset=[COL.branch, COL.technology])
+
+    lcc_at_techs = list(zip(lcc_tech_rows.index, lcc_tech_rows[COL.branch]))
 
     concern_desc = "technologies have exogenously defined LCC values"
-
     return lcc_at_techs, concern_desc
 
 def base_year_market_share_not_one(validator):
     """
-    Identifies branches where the sum of base year market shares 
+    Identifies branches where the sum of base year market shares
     for competing technologies does not equal 1.
     """
     # Extract market share data from model
     model_df = validator.model_df
     market_share_df = model_df[model_df[COL.parameter] == PARAM.market_share_total]
 
-    # Identify base year column
-    base_year_col = next(col for col in market_share_df.columns if is_year(col))
+    # Identify base year
+    base_year = _base_year(validator)
 
-    # Select relevant columns and ensure numeric market shares
-    selected_cols = [COL.branch, COL.technology, base_year_col]
-    market_share_df = market_share_df[selected_cols].copy()
-    market_share_df[base_year_col] = pd.to_numeric(market_share_df[base_year_col], errors='coerce')
+    # Filter to base year rows and ensure numeric market shares
+    market_share_df = market_share_df[market_share_df["Year"] == base_year].copy()
+    market_share_df["Value"] = pd.to_numeric(market_share_df["Value"], errors='coerce')
 
     # Sum market shares for each branch
-    grouped = market_share_df.groupby(COL.branch)[base_year_col].sum().reset_index()
+    grouped = market_share_df.groupby(COL.branch)["Value"].sum().reset_index()
 
     # Identify branches where the market share sum is not ~1
-    invalid = grouped[~np.isclose(grouped[base_year_col], 1.0, atol=0.001)]
+    invalid = grouped[~np.isclose(grouped["Value"], 1.0, atol=0.001)]
 
     # Build result: list of (node index, branch name, summed market share)
     nodes_with_bad_shares = [
         (validator.branch2node_index_map[branch], branch, total_share)
-        for branch, total_share in zip(invalid[COL.branch], invalid[base_year_col])
+        for branch, total_share in zip(invalid[COL.branch], invalid["Value"])
     ]
 
     concern_desc = "nodes whose base year market shares do not sum to 1"
@@ -434,19 +476,14 @@ def no_structural_parent_node_exists(validator):
     # All defined branches in the model (base + scenario files)
     branch_set = set(data[COL.branch].dropna().unique())
     
-    missing_parent_nodes = []
-    for node in branch_set:
-        # Root never requires a parent
+    missing_parents: dict = {}
+    for node in sorted(branch_set):
         if node == validator.root_node:
             continue
-
-        # Parent is everything before the final dot segment
         parent = ".".join(node.split(".")[:-1])
-        # Flag when the parent node is missing or undefined (non-root only)
         if not parent or parent not in branch_set:
-            missing_parent_nodes.append((validator.branch2node_index_map[node], node))
+            missing_parents.setdefault(parent, []).append(node)
 
-    # Keep output ordered by source line/index for readability
-    missing_parent_nodes.sort(key=lambda x: x[0])
-    concern_desc = "nodes are missing a structural parent node"
-    return missing_parent_nodes, concern_desc
+    total_children = sum(len(c) for c in missing_parents.values())
+    concern_desc = f"parent node(s) are not defined — {total_children} child node(s) affected"
+    return missing_parents, concern_desc
