@@ -121,11 +121,12 @@ def _update_year_dict(existing_year_dict, update_data):
                     ((param in existing_year_dict) and (PARAM.year_value not in existing_year_dict[param])):
                     year_dict[param][context] = value_dict
 
-                # 3. We save context as the year_value, which will remain constant
-                #    across all years.
+                # 3. Context present but Value null — old format no longer supported.
                 else:
-                    value_dict[PARAM.year_value] = infer_type(context)
-                    year_dict[param] = value_dict
+                    raise ValueError(
+                        f"Parameter '{param}' has a Context value ('{context}') but no Value. "
+                        "Constants must use the Value column with a null Year."
+                    )
             else:
                 year_dict[param] = value_dict
 
