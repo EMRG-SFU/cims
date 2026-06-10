@@ -533,6 +533,12 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
@@ -580,13 +586,13 @@ window.Quarto = {
   <ul>
   <li><a href="#scope-and-definition" id="toc-scope-and-definition" class="nav-link active" data-scroll-target="#scope-and-definition"><span class="header-section-number">9.1</span> Scope and Definition</a></li>
   <li><a href="#industrial-subsectors-and-end-uses" id="toc-industrial-subsectors-and-end-uses" class="nav-link" data-scroll-target="#industrial-subsectors-and-end-uses"><span class="header-section-number">9.2</span> Industrial Subsectors and End-Uses</a></li>
-  <li><a href="#technology-set-for-low--and-zero-emission-supply" id="toc-technology-set-for-low--and-zero-emission-supply" class="nav-link" data-scroll-target="#technology-set-for-low--and-zero-emission-supply"><span class="header-section-number">9.3</span> Technology Set for Low- and Zero-Emission Supply</a>
+  <li><a href="#technologies-for-low--and-zero-emission-heat-supply" id="toc-technologies-for-low--and-zero-emission-heat-supply" class="nav-link" data-scroll-target="#technologies-for-low--and-zero-emission-heat-supply"><span class="header-section-number">9.3</span> Technologies for Low- and Zero-Emission Heat Supply</a>
   <ul class="collapse">
   <li><a href="#industrial-heat-pumps" id="toc-industrial-heat-pumps" class="nav-link" data-scroll-target="#industrial-heat-pumps"><span class="header-section-number">9.3.1</span> Industrial Heat Pumps</a></li>
   <li><a href="#direct-electrification" id="toc-direct-electrification" class="nav-link" data-scroll-target="#direct-electrification"><span class="header-section-number">9.3.2</span> Direct Electrification</a></li>
   <li><a href="#solar-thermal" id="toc-solar-thermal" class="nav-link" data-scroll-target="#solar-thermal"><span class="header-section-number">9.3.3</span> Solar Thermal</a></li>
   <li><a href="#bioenergy" id="toc-bioenergy" class="nav-link" data-scroll-target="#bioenergy"><span class="header-section-number">9.3.4</span> Bioenergy</a></li>
-  <li><a href="#geothermal-and-recovered-waste-heat" id="toc-geothermal-and-recovered-waste-heat" class="nav-link" data-scroll-target="#geothermal-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geothermal and Recovered Waste Heat</a></li>
+  <li><a href="#geoexchange-and-recovered-waste-heat" id="toc-geoexchange-and-recovered-waste-heat" class="nav-link" data-scroll-target="#geoexchange-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geoexchange and Recovered Waste Heat</a></li>
   </ul></li>
   <li><a href="#cross-cutting-treatment" id="toc-cross-cutting-treatment" class="nav-link" data-scroll-target="#cross-cutting-treatment"><span class="header-section-number">9.4</span> Cross-Cutting Treatment</a>
   <ul class="collapse">
@@ -624,12 +630,12 @@ window.Quarto = {
 
 <section id="scope-and-definition" class="level2" data-number="9.1">
 <h2 data-number="9.1" class="anchored" data-anchor-id="scope-and-definition"><span class="header-section-number">9.1</span> Scope and Definition</h2>
-<p>Low-temperature industrial process heat in CIMS is modeled as the steam, hot-water, and direct-heating service supplied to the industrial sub-models at end-use temperatures below approximately 200 °C. Process heat is partitioned into three temperature bands — low (below 200 °C), medium (200–400 °C), and high (above 400 °C). The bands are defined by end-use temperature rather than by energy or equipment type, because the technology set admitted to the relevant service nodes differs substantially across them. The 200 °C boundary follows the convention adopted by the U.S. Department of Energy and applied in the recent peer-reviewed techno-economic literature <span class="citation" data-cites="schoeneberger">(<a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>. Industrial heat globally accounts for approximately two-thirds of final industrial energy use and roughly one-fifth of energy-related CO<sub>2</sub> emissions; analyses across IEA member countries place 30–45 % of industrial heat demand within the low-temperature band <span class="citation" data-cites="iea-fop iea-renewables madeddu">(<a href="history.html#ref-iea-fop" role="doc-biblioref">International Energy Agency 2022</a>, <a href="history.html#ref-iea-renewables" role="doc-biblioref">2024</a>; <a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
+<p>Low-temperature industrial process heat in CIMS is modeled as the steam, hot-water, and direct-heating services supplied at end-use temperatures below approximately 200 °C. Process heat is partitioned into three temperature bands — low (below 200 °C), medium (200–400 °C), and high (above 400 °C). The bands are defined by end-use temperature rather than by energy or equipment type, because the technology set admitted to the relevant service nodes differs substantially across them. The 200 °C boundary follows the convention adopted by the U.S. Department of Energy, Natural Resources Canada, and applied in the recent peer-reviewed techno-economic literature <span class="citation" data-cites="schoeneberger">(e.g., <a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>. Industrial heat globally accounts for approximately two-thirds of final industrial energy use and roughly one-fifth of energy-related CO<sub>2</sub> emissions; analyses across IEA member countries place 30–45 % of industrial heat demand within the low-temperature band <span class="citation" data-cites="iea-fop iea-renewables madeddu">(<a href="history.html#ref-iea-fop" role="doc-biblioref">International Energy Agency 2022</a>, <a href="history.html#ref-iea-renewables" role="doc-biblioref">2024</a>; <a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
 <p>The allocation of base-year low-temperature heat demand across sub-models on a provincial basis is the result of a calibration exercise bringing together information from Statistics Canada and Natural Resources Canada’s Comprehensive Energy Use Database (CEUD), Environment and Climate Change Canada’s National Inventory Report (NIR), and U.S. Energy Information Administration Manufacturing Energy Consumption Survey (MECS) data used for analogous subsector benchmarks. The CEUD does not publish process heat disaggregated by temperature band; end-use accounting nevertheless indicates that conventional steam systems, boilers, and process heating account for the majority of fossil-fuel consumption in Canadian manufacturing <span class="citation" data-cites="nrcan-ceud">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>.</p>
 </section>
 <section id="industrial-subsectors-and-end-uses" class="level2" data-number="9.2">
 <h2 data-number="9.2" class="anchored" data-anchor-id="industrial-subsectors-and-end-uses"><span class="header-section-number">9.2</span> Industrial Subsectors and End-Uses</h2>
-<p>Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemical Products, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in <a href="#tbl-low_temp_heat-1" class="quarto-xref">Table&nbsp;<span>9.1</span></a>; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.</p>
+<p>Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemicals, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in <a href="#tbl-low_temp_heat-1" class="quarto-xref">Table&nbsp;<span>9.1</span></a>; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.</p>
 <div id="tbl-low_temp_heat-1" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-low_temp_heat-1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -651,49 +657,48 @@ Table&nbsp;9.1: Representative low-temperature end-uses and temperature ranges b
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Food and beverage processing</td>
-<td style="text-align: left;">Pasteurization, sterilization, spray and tray drying, clean-in-place wash water</td>
-<td style="text-align: center;">60–200</td>
-</tr>
-<tr class="even">
 <td style="text-align: left;">Pulp and paper</td>
 <td style="text-align: left;">Black-liquor evaporation, paper drying on steam-heated cylinders, digester heating</td>
 <td style="text-align: center;">100–180</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Chemicals and pharmaceuticals</td>
 <td style="text-align: left;">Distillation reboilers for low-boiling solvents, batch reactor heating, crystallization</td>
 <td style="text-align: center;">80–180</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Textiles, leather, and laundry services</td>
-<td style="text-align: left;">Dyeing baths, drying, finishing</td>
-<td style="text-align: center;">60–160</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">Wood products and prefabricated building products</td>
-<td style="text-align: left;">Lumber kiln drying, panel pressing</td>
-<td style="text-align: center;">60–200</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">Light manufacturing and assembly</td>
-<td style="text-align: left;">Paint cure, parts washing, fabrication-hall conditioning</td>
-<td style="text-align: center;">50–180</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mining and oil and gas</td>
 <td style="text-align: left;">Produced-water heating, glycol regeneration, remote-site building heat, mid-stream gas processing</td>
 <td style="text-align: center;">60–200</td>
 </tr>
+<tr class="even">
+<td style="text-align: left;">Food and beverage processing</td>
+<td style="text-align: left;">Pasteurization, sterilization, spray and tray drying, clean-in-place wash water</td>
+<td style="text-align: center;">60–200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Textiles, leather, and laundry services</td>
+<td style="text-align: left;">Dyeing baths, drying, finishing</td>
+<td style="text-align: center;">60–160</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Wood products and prefabricated building products</td>
+<td style="text-align: left;">Lumber kiln drying, panel pressing</td>
+<td style="text-align: center;">60–200</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Light manufacturing and assembly</td>
+<td style="text-align: left;">Paint cure, parts washing, fabrication-hall space conditioning</td>
+<td style="text-align: center;">50–180</td>
+</tr>
 </tbody>
 </table>
 </div>
 </figure>
 </div>
-<p>Aggregate energy demand in the food and beverage subsector in Canada is on the order of 100 PJ/yr, predominantly supplied as low-pressure natural-gas steam <span class="citation" data-cites="nrcan-ceud">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. The pulp and paper subsector is among the largest industrial consumers of natural gas in Canada and the largest non-electric thermal load on a per-establishment basis <span class="citation" data-cites="nrcan-pp">(<a href="history.html#ref-nrcan-pp" role="doc-biblioref">Natural Resources Canada 2005</a>)</span>. ECCC’s NIR attributes the majority of stationary combustion emissions in Canadian manufacturing to natural gas, with secondary contributions from heavy fuel oil (concentrated in Atlantic Canada) and refinery still gas; aggregate sectoral activity used to disaggregate these emissions in CIMS is taken from the CEUD and the NIR <span class="citation" data-cites="eccc-nir">(<a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. The U.S. EIA’s MECS provides a parallel accounting for U.S. industry: conventional boilers and process heaters account for over 70 % of manufacturing energy use <span class="citation" data-cites="eia-mecs">(<a href="history.html#ref-eia-mecs" role="doc-biblioref">U.S. Energy Information Administration 2021</a>)</span>.</p>
 </section>
-<section id="technology-set-for-low--and-zero-emission-supply" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="technology-set-for-low--and-zero-emission-supply"><span class="header-section-number">9.3</span> Technology Set for Low- and Zero-Emission Supply</h2>
+<section id="technologies-for-low--and-zero-emission-heat-supply" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="technologies-for-low--and-zero-emission-heat-supply"><span class="header-section-number">9.3</span> Technologies for Low- and Zero-Emission Heat Supply</h2>
 <p>This section enumerates the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in <a href="#tbl-low_temp_heat-2" class="quarto-xref">Table&nbsp;<span>9.2</span></a>. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 <span class="citation" data-cites="eia-mecs iea-hp">(<a href="history.html#ref-eia-mecs" role="doc-biblioref">U.S. Energy Information Administration 2021</a>; <a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>)</span>.</p>
 <div id="tbl-low_temp_heat-2" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -706,12 +711,12 @@ Table&nbsp;9.2: Assumed efficiencies and coefficients of performance for low-tem
 <tr class="header">
 <th style="text-align: left;">Technology</th>
 <th style="text-align: center;">Efficiency / COP</th>
-<th style="text-align: center;">Maximum sink temperature</th>
+<th style="text-align: center;">Maximum temperature</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;">Gas boiler (reference)</td>
+<td style="text-align: left;">Natural gas boiler</td>
 <td style="text-align: center;">80–85 %</td>
 <td style="text-align: center;">250 °C</td>
 </tr>
@@ -736,19 +741,19 @@ Table&nbsp;9.2: Assumed efficiencies and coefficients of performance for low-tem
 <td style="text-align: center;">250 °C</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Heat pump, sink ≤ 100 °C</td>
+<td style="text-align: left;">Heat pump</td>
 <td style="text-align: center;">COP 4.0–6.0</td>
-<td style="text-align: center;">100 °C</td>
+<td style="text-align: center;">≤ 100 °C</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;">Heat pump, sink 100–150 °C</td>
+<td style="text-align: left;">Heat pump</td>
 <td style="text-align: center;">COP 2.5–4.0</td>
-<td style="text-align: center;">150 °C</td>
+<td style="text-align: center;">100–150 °C</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;">Heat pump, sink 150–200 °C</td>
+<td style="text-align: left;">Heat pump</td>
 <td style="text-align: center;">COP 2.0–3.0</td>
-<td style="text-align: center;">200 °C (demonstration)</td>
+<td style="text-align: center;">150–200 °C (demonstration)</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;">Mechanical vapour recompression</td>
@@ -770,26 +775,26 @@ Table&nbsp;9.2: Assumed efficiencies and coefficients of performance for low-tem
 </div>
 </figure>
 </div>
-<p>Combustion boilers and electric resistance boilers are assumed to have a model life of 25 years; industrial heat pumps and mechanical vapour recompression units are assumed to have a model life of 15 years; solar thermal collectors are assumed to have a model life of 20 years. Both existing and new boilers are limited to annual capacity factor thresholds that vary by industrial sub-model and are calibrated to historic data. All values are stated in 2020 CAD terms; capital cost and fixed operating-and-maintenance parameters are populated separately in the techno-economic data files referenced by the relevant industrial sub-model.</p>
+<p>Combustion boilers and electric resistance boilers are assumed to have a lifetime of 25 years; industrial heat pumps and mechanical vapour recompression units a lifetime of 15 years; and solar thermal collectors a lifetime of 20 years.</p>
 <section id="industrial-heat-pumps" class="level3" data-number="9.3.1">
 <h3 data-number="9.3.1" class="anchored" data-anchor-id="industrial-heat-pumps"><span class="header-section-number">9.3.1</span> Industrial Heat Pumps</h3>
-<p>Closed-cycle vapour-compression heat pumps upgrade ambient or recovered low-grade heat to a useful sink temperature. Commercially available products reach sink temperatures of approximately 165 °C; units operating at 200 °C with novel working fluids are at the demonstration stage <span class="citation" data-cites="arpagaus zuhlsdorf">(<a href="history.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>; <a href="history.html#ref-zuhlsdorf" role="doc-biblioref">Zühlsdorf et al. 2019</a>)</span>. On the Canadian electricity system, with weighted-average grid emissions intensity well below that of natural gas combustion, replacement of gas-fired boilers with heat pumps is estimated to reduce direct CO<sub>2</sub> emissions by 70–95 % <span class="citation" data-cites="iea-hp">(<a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>)</span>. Mechanical vapour recompression, an open-cycle heat pump configuration applied to evaporators in dairy, sugar, and pulp operations, is the most mature variant and is represented as a distinct technology in the food and beverage and pulp and paper sub-models.</p>
+<p>Closed-cycle vapour-compression heat pumps upgrade ambient or recovered low-grade heat to a useful end-use temperature. Commercially available products reach temperatures of approximately 165 °C; units operating at 200 °C with novel working fluids are at the demonstration stage <span class="citation" data-cites="arpagaus zuhlsdorf">(<a href="history.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>; <a href="history.html#ref-zuhlsdorf" role="doc-biblioref">Zühlsdorf et al. 2019</a>)</span>. Mechanical vapour recompression, an open-cycle heat pump configuration applied to evaporators in dairy, sugar, and pulp operations, is the most mature variant and is represented as a distinct technology in the food and beverage and pulp and paper sub-models.</p>
 </section>
 <section id="direct-electrification" class="level3" data-number="9.3.2">
 <h3 data-number="9.3.2" class="anchored" data-anchor-id="direct-electrification"><span class="header-section-number">9.3.2</span> Direct Electrification</h3>
-<p>Electric resistance and electrode boilers deliver low-pressure steam at near-unity end-use efficiency at lower capital cost than heat pumps, and are represented as the simplest like-for-like replacement for packaged gas-fired boilers. Application is favoured in provinces with low-emissions grids — Quebec, British Columbia, Manitoba, and Newfoundland and Labrador, where average grid emissions intensity is below 30 g CO<sub>2</sub>/kWh — and in retrofit configurations where capital constraints favour low first-cost equipment <span class="citation" data-cites="eccc-nir">(<a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. Direct-contact electric processes (induction, infrared, microwave, and dielectric heating) are commercially deployed for specific drying, curing, and surface-heating duties and are admitted as candidate technologies at the corresponding service nodes <span class="citation" data-cites="madeddu">(<a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
+<p>Electric resistance and electrode boilers deliver low-pressure steam at near-100% end-use efficiency at lower capital cost than heat pumps, and are represented as the simplest like-for-like replacement for packaged gas-fired boilers. Application is favoured in retrofit configurations where capital constraints favour low first-cost equipment <span class="citation" data-cites="eccc-nir">(<a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. Direct-contact electric processes (induction, infrared, microwave, and dielectric heating) are commercially deployed for specific drying, curing, and surface-heating duties in the corresponding service nodes <span class="citation" data-cites="madeddu">(<a href="history.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>.</p>
 </section>
 <section id="solar-thermal" class="level3" data-number="9.3.3">
 <h3 data-number="9.3.3" class="anchored" data-anchor-id="solar-thermal"><span class="header-section-number">9.3.3</span> Solar Thermal</h3>
-<p>Flat-plate and evacuated-tube collectors economically supply heat up to approximately 100 °C; linear concentrating systems (parabolic-trough and linear-Fresnel) extend the addressable range to 200 °C and beyond. Schoeneberger et al.&nbsp;estimate that approximately half of global industrial heat demand falls within the temperature window addressable by current commercial solar thermal technologies <span class="citation" data-cites="schoeneberger">(<a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>. Within Canada, the resource is concentrated in the southern Prairies and the southern interior of British Columbia; representation in CIMS is restricted to the relevant provincial sub-models, with capacity factors calibrated to regional direct normal irradiance <span class="citation" data-cites="iea-renewables">(<a href="history.html#ref-iea-renewables" role="doc-biblioref">International Energy Agency 2024</a>)</span>.</p>
+<p>Flat-plate and evacuated-tube collectors economically supply heat up to approximately 100 °C; linear concentrating systems (parabolic-trough and linear-Fresnel) extend the addressable range to 200 °C and beyond. <span class="citation" data-cites="schoeneberger">Schoeneberger et al. (<a href="history.html#ref-schoeneberger" role="doc-biblioref">2020</a>)</span> estimate that approximately half of global industrial heat demand falls within the temperature window addressable by current commercial solar thermal technologies. Within Canada, solar resources are most favourable in the Prairie region and the southern interior of British Columbia; representation in CIMS uses capacity factors calibrated to regional direct normal irradiance <span class="citation" data-cites="iea-renewables">(<a href="history.html#ref-iea-renewables" role="doc-biblioref">International Energy Agency 2024</a>)</span>.</p>
 </section>
 <section id="bioenergy" class="level3" data-number="9.3.4">
 <h3 data-number="9.3.4" class="anchored" data-anchor-id="bioenergy"><span class="header-section-number">9.3.4</span> Bioenergy</h3>
-<p>Biomass-fired boilers, anaerobic-digestion biogas, and renewable natural gas from landfill and agricultural sources are admitted as drop-in low-carbon supply technologies in facilities configured around combustion equipment. Biomass is the dominant on-site thermal energy source in the Canadian pulp and paper subsector and is also relevant in food processing operations co-located with feedstock supply <span class="citation" data-cites="nrcan-bioheat">(<a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>)</span>. Outside the pulp and paper subsector, deployed bioheat in Canada is concentrated at the 50 kW–5 MW thermal capacity range tracked by CanmetENERGY’s Canadian Bioheat Database; the 2023 survey update reports that more than 90 % of catalogued commercial, institutional, and small-industrial systems use either clean wood chips or energy chips (approximately 45 %, dominant in small-industrial and agricultural installations) or wood pellets (approximately 46 %, dominant in commercial and multi-unit residential applications), with hog fuel and agricultural residues uncommon at this scale and concentrated in pulp and paper and adjacent forest-products operations <span class="citation" data-cites="nrcan-bioheat-survey">(<a href="history.html#ref-nrcan-bioheat-survey" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2023</a>)</span>. Regional fuel-type preferences are pronounced: wood chips dominate in Quebec and British Columbia, while pellets account for nearly all installations in New Brunswick, Ontario, and the Northwest Territories. These distributional facts inform the technology entries admitted to the bioenergy supply node feeding the Light Industrial sub-model, and the regional weighting applied to wood-chip versus pellet capital and operating cost assumptions. Sustainable supply is the binding constraint at the system level and is represented in CIMS through energy supply curves rather than at the device level.</p>
+<p>Biomass-fired boilers, anaerobic-digestion biogas, and renewable natural gas from landfill and agricultural sources are admitted as drop-in low-carbon supply technologies in facilities configured around combustion equipment. Biomass is the dominant on-site thermal energy source in the Canadian pulp and paper sector and is also relevant in food processing operations co-located with feedstock supply <span class="citation" data-cites="nrcan-bioheat">(<a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>)</span>. Outside the pulp and paper sector, deployed bioheat in Canada is concentrated at the 50 kW–5 MW thermal capacity range tracked by CanmetENERGY’s Canadian Bioheat Database; the 2023 survey update reports that more than 90 % of catalogued commercial, institutional, and small-industrial systems use either wood chips (approximately 45 %, dominant in institutional, agricultural, and light industrial installations) or wood pellets (approximately 46 %, dominant in institutional and commercial applications), with hog fuel and agricultural residues uncommon at this scale and concentrated in pulp and paper and adjacent forest-products operations <span class="citation" data-cites="nrcan-bioheat-survey">(<a href="history.html#ref-nrcan-bioheat-survey" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2023</a>)</span>. Regional fuel-type preferences are pronounced: wood chips dominate in Quebec, Ontario, British Columbia, and Nova Scotia, while pellets account for nearly all use in New Brunswick and the Northwest Territories, with lesser amounts in Quebec and BC. These distributional facts inform the technologies admitted to the bioenergy supply node feeding the Light Industrial sub-model, and the regional weighting applied to wood-chip versus pellet capital and operating cost assumptions. Sustainable supply is the binding constraint at the system level and is represented in CIMS through energy supply curves rather than at the device level.</p>
 </section>
-<section id="geothermal-and-recovered-waste-heat" class="level3" data-number="9.3.5">
-<h3 data-number="9.3.5" class="anchored" data-anchor-id="geothermal-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geothermal and Recovered Waste Heat</h3>
-<p>Deep geothermal reaches useful process temperatures in parts of western Canada; shallow geothermal coupled with a heat pump is deployable across all provinces for facility heat. Independent of geothermal extraction, every industrial site is itself a source of low-grade waste heat — compressors, condensers, flue gases, and effluents — that is conventionally rejected to the environment. National-laboratory analyses estimate that 20–50 % of industrial process heat could in principle be supplied via recovered waste heat <span class="citation" data-cites="ornl-waste">(<a href="history.html#ref-ornl-waste" role="doc-biblioref">Thekdi and Nimbalkar 2014</a>)</span>. Process integration (pinch analysis) and heat-pump-assisted recovery are represented in CIMS as a service-side reduction in the demand directed to other supply technologies, parameterized by sub-model based on recoverable-heat fractions reported in MECS and CanmetENERGY studies, rather than as a competing supply technology at the service node.</p>
+<section id="geoexchange-and-recovered-waste-heat" class="level3" data-number="9.3.5">
+<h3 data-number="9.3.5" class="anchored" data-anchor-id="geoexchange-and-recovered-waste-heat"><span class="header-section-number">9.3.5</span> Geoexchange and Recovered Waste Heat</h3>
+<p>Shallow enhanced geoexchange coupled with a heat pump is deployable across all provinces for facility heat. Independent of geoexchange extraction, every industrial site is itself a source of low-grade waste heat — compressors, condensers, flue gases, and effluents — that is conventionally rejected to the environment. National-laboratory analyses estimate that 20–50 % of industrial process heat could in principle be supplied via recovered waste heat <span class="citation" data-cites="ornl-waste">(<a href="history.html#ref-ornl-waste" role="doc-biblioref">Thekdi and Nimbalkar 2014</a>)</span>. Process integration and heat-pump-assisted recovery are represented in CIMS as a service-side reduction in the demand directed to other supply technologies, parameterized by sub-model based on recoverable-heat fractions reported in MECS and CanmetENERGY studies, rather than as a competing supply technology at the service node.</p>
 </section>
 </section>
 <section id="cross-cutting-treatment" class="level2" data-number="9.4">
@@ -800,17 +805,17 @@ Table&nbsp;9.2: Assumed efficiencies and coefficients of performance for low-tem
 </section>
 <section id="hydrogen" class="level3" data-number="9.4.2">
 <h3 data-number="9.4.2" class="anchored" data-anchor-id="hydrogen"><span class="header-section-number">9.4.2</span> Hydrogen</h3>
-<p>Direct combustion of hydrogen below 200 °C is not competitive with electrification under most modeled conditions: round-trip energy efficiency from electricity to hydrogen to heat is substantially lower than direct or heat-pump electrification, and the system value of hydrogen is concentrated in genuinely high-temperature or feedstock applications. Hydrogen is therefore not included in the default low-temperature technology set; it remains available in the broader CIMS technology library for the medium- and high-temperature sub-models <span class="citation" data-cites="thiel rissman">(<a href="history.html#ref-thiel" role="doc-biblioref">Thiel and Stark 2021</a>; <a href="history.html#ref-rissman" role="doc-biblioref">Rissman et al. 2020</a>)</span>.</p>
+<p>Direct combustion of hydrogen below 200 °C is not competitive with electrification under most modelled conditions: round-trip energy efficiency from electricity to hydrogen to heat is substantially lower than direct electrification or heat-pumps, and the system value of hydrogen is concentrated in genuinely high-temperature or feedstock applications. Hydrogen is therefore not included in the default low-temperature technology set; it remains available in the broader CIMS technology library for the medium- and high-temperature sub-models <span class="citation" data-cites="thiel rissman">(<a href="history.html#ref-thiel" role="doc-biblioref">Thiel and Stark 2021</a>; <a href="history.html#ref-rissman" role="doc-biblioref">Rissman et al. 2020</a>)</span>.</p>
 </section>
 <section id="endogenous-and-exogenous-parameters" class="level3" data-number="9.4.3">
 <h3 data-number="9.4.3" class="anchored" data-anchor-id="endogenous-and-exogenous-parameters"><span class="header-section-number">9.4.3</span> Endogenous and Exogenous Parameters</h3>
-<p>Provincial grid emissions intensity, electricity price, and natural gas price are determined endogenously by the CIMS energy supply sub-models. Sectoral output projections, technology capital and fixed operating-and-maintenance costs, model lifetimes, and biomass supply curves are exogenously specified. The model includes the option to accelerate the rate of efficiency improvement at additional cost in response to rising energy prices, consistent with the treatment of efficiency in other CIMS industrial sub-models.</p>
+<p>Provincial grid emissions intensity, electricity price, and natural gas price are determined endogenously by the CIMS energy supply sub-models. Sectoral output projections, technology capital and fixed operating-and-maintenance costs, technology lifetimes, and biomass supply curves are exogenously specified.</p>
 </section>
 </section>
 <section id="implications-for-the-cims-industrial-sub-models" class="level2" data-number="9.5">
 <h2 data-number="9.5" class="anchored" data-anchor-id="implications-for-the-cims-industrial-sub-models"><span class="header-section-number">9.5</span> Implications for the CIMS Industrial Sub-Models</h2>
-<p>The technology competitions in the food and beverage, pulp and paper, chemicals, mining, and light manufacturing sub-models admit, at the relevant service nodes, conventional gas, oil, and (where regionally relevant) heavy fuel oil boilers, used for calibration to CEUD and NIR baseline data; electric resistance and electrode boilers, parameterized by provincial industrial electricity rates; industrial heat pumps disaggregated by sink-temperature class (≤ 100 °C, 100–150 °C, 150–200 °C) with explicit COP and source-temperature assumptions drawn from IEA HPT Annex 58; mechanical vapour recompression where evaporation duties exist; biomass and biogas boilers, with energy availability governed by the bioenergy supply sub-model; and solar thermal in southern Prairie and southern British Columbia provincial sub-models, parameterized to regional irradiance <span class="citation" data-cites="nrcan-ceud eccc-nir iea-hp nrcan-bioheat schoeneberger">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>; <a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>; <a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>; <a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>.</p>
-<p>Existing boiler stock, distinguished by sub-model and temperature class, is estimated based on CEUD and NIR base-year data. All existing boiler stock is assumed to stay online for modeled lifetimes past the base year, after which replacement is required. Policy or other drivers may drive earlier retirement and replacement of some of these existing units. Capital costs, retrofit feasibility (as defined in <a href="./technologies.html">the technology chapter</a>), and electricity-price sensitivity vary substantially across these technologies. The lifecycle-cost formulation already in CIMS is applicable without modification once the techno-economic parameters are populated. The present chapter is intended to provide the technical basis for those parameter selections.</p>
+<p>The technology competitions in the food and beverage, pulp and paper, chemicals, mining, and light manufacturing sub-models admit, at the relevant service nodes, conventional natuarl gas and (where regionally relevant) heavy fuel oil boilers, used for calibration to CEUD and NIR baseline data; electric resistance and electrode boilers, parameterized by provincial industrial electricity rates; industrial heat pumps disaggregated by sink-temperature class (≤ 100 °C, 100–150 °C, 150–200 °C) with explicit COP and source-temperature assumptions drawn from IEA HPT Annex 58; mechanical vapour recompression where evaporation duties exist; biomass and biogas boilers, with energy availability governed by the bioenergy supply sub-model; and solar thermal in provincial sub-models, parameterized to regional irradiance <span class="citation" data-cites="nrcan-ceud eccc-nir iea-hp nrcan-bioheat schoeneberger">(<a href="history.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="history.html#ref-eccc-nir" role="doc-biblioref">Environment and Climate Change Canada 2024</a>; <a href="history.html#ref-iea-hp" role="doc-biblioref">IEA Heat Pumping Technologies Programme 2023</a>; <a href="history.html#ref-nrcan-bioheat" role="doc-biblioref">Natural Resources Canada, CanmetENERGY 2026</a>; <a href="history.html#ref-schoeneberger" role="doc-biblioref">Schoeneberger et al. 2020</a>)</span>.</p>
+<p>Existing boiler stock, distinguished by sub-model and temperature class, is estimated based on CEUD and NIR base-year data. All existing boiler stock is assumed to stay online for modeled lifetimes past the base year, after which replacement is required. Policy or other drivers may drive earlier retirement and replacement of some of these existing units. Capital costs, retrofit feasibility (as defined in <a href="./technologies.html">the technology chapter</a>), and electricity-price sensitivity vary substantially across these technologies.</p>
 <div style="page-break-after: always;"></div>
 </section>
 <section id="references" class="level2 unnumbered">
@@ -833,9 +838,6 @@ International Energy Agency. 2024. <em>Renewables 2023: Analysis and Forecast to
 </div>
 <div id="ref-madeddu" class="csl-entry" role="listitem">
 Madeddu, Silvia, Falko Ueckerdt, Michaja Pehl, et al. 2020. <span>“The <span>CO<span class="math inline">\(_2\)</span></span> Reduction Potential for the <span>European</span> Industry via Direct Electrification of Heat Supply (Power-to-Heat).”</span> <em>Environmental Research Letters</em> 15 (12): 124004. <a href="https://doi.org/10.1088/1748-9326/abbd02">https://doi.org/10.1088/1748-9326/abbd02</a>.
-</div>
-<div id="ref-nrcan-pp" class="csl-entry" role="listitem">
-Natural Resources Canada. 2005. <em>Benchmarking Energy Use in Canadian Pulp and Paper Mills</em>. Office of Energy Efficiency, in collaboration with the Pulp; Paper Research Institute of Canada (Paprican). <a href="https://natural-resources.canada.ca/sites/www.nrcan.gc.ca/files/oee/pdf/industrial/technical-info/benchmarking/pulp-paper/pdf/benchmark-pulp-paper-e.pdf">https://natural-resources.canada.ca/sites/www.nrcan.gc.ca/files/oee/pdf/industrial/technical-info/benchmarking/pulp-paper/pdf/benchmark-pulp-paper-e.pdf</a>.
 </div>
 <div id="ref-nrcan-ceud" class="csl-entry" role="listitem">
 Natural Resources Canada. 2024. <em>Comprehensive Energy Use Database</em>. Office of Energy Efficiency. <a href="https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm">https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm</a>.

@@ -514,6 +514,12 @@ window.Quarto = {
 </li>
       </ul>
   </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="true">
@@ -633,42 +639,32 @@ value by which demand for the product is multiplied
 </dl>
 </div>
 <p>To accommodate the differences between products in industrial sectors, especially Industrial Minerals, Chemical Products, Metal Smelting, and Light Industrial, demand feedbacks are applied at the level where production of individual products is determined. <a href="#tbl-product_price_elas" class="quarto-xref">Table&nbsp;<span>6.1</span></a> provides the elasticities used for sectors and their products. See Appendix E of Chris Bataille’s PhD dissertation for a full breakdown of their sources and how they were mapped to CIMS’ sub-models and their sub-products.</p>
-<div class="narrow-table">
 <div id="tbl-product_price_elas" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-product_price_elas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Table&nbsp;6.1: Price elasticities used from Wirjanto (1999)
+Table&nbsp;6.1: : Price elasticities used from Wirjanto (1999)
 </figcaption>
 <div aria-describedby="tbl-product_price_elas-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
-<colgroup>
-<col style="width: 66%">
-<col style="width: 33%">
-</colgroup>
 <thead>
 <tr class="header">
-<th style="text-align: left;">Sector / Product</th>
+<th style="text-align: left;">Sector</th>
+<th style="text-align: left;">Product</th>
 <th style="text-align: right;">Elasticity</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: left;"><strong>Metal Smelting</strong></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
+<td rowspan="2" style="text-align: left;"> <strong>Metal Smelting</strong></td>
 <td style="text-align: left;">Lead, Zinc, Aluminium, Nickel</td>
 <td style="text-align: right;">-0.59</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Copper</td>
 <td style="text-align: right;">-0.57</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Chemical products</strong></td>
-<td style="text-align: right;"></td>
-</tr>
 <tr class="odd">
+<td rowspan="2" style="text-align: left;"> <strong>Chemical products</strong></td>
 <td style="text-align: left;">Chlor-alkali, Sodium Chlorate, Hydrogen Peroxide, Ammonia Methanol</td>
 <td style="text-align: right;">-0.44</td>
 </tr>
@@ -677,22 +673,16 @@ Table&nbsp;6.1: Price elasticities used from Wirjanto (1999)
 <td style="text-align: right;">-0.83</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Industrial Minerals</strong></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
+<td rowspan="2" style="text-align: left;"> <strong>Industrial Minerals</strong></td>
 <td style="text-align: left;">Cement</td>
 <td style="text-align: right;">-1.75</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Lime, Glass, Bricks</td>
 <td style="text-align: right;">-0.53</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Pulp and Paper</strong></td>
-<td style="text-align: right;"></td>
-</tr>
 <tr class="odd">
+<td rowspan="3" style="text-align: left;"> <strong>Pulp and Paper</strong></td>
 <td style="text-align: left;">Pulp export</td>
 <td style="text-align: right;">-1.72</td>
 </tr>
@@ -705,18 +695,12 @@ Table&nbsp;6.1: Price elasticities used from Wirjanto (1999)
 <td style="text-align: right;">-1.54</td>
 </tr>
 <tr class="even">
-<td style="text-align: left;"><strong>Iron and Steel</strong></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="odd">
+<td style="text-align: left;"> <strong>Iron and Steel</strong></td>
 <td style="text-align: left;">Slabs, blooms, billets &amp; molten steel</td>
 <td style="text-align: right;">-0.60</td>
 </tr>
-<tr class="even">
-<td style="text-align: left;"><strong>Mining</strong></td>
-<td style="text-align: right;"></td>
-</tr>
 <tr class="odd">
+<td rowspan="2" style="text-align: left;"> <strong>Mining</strong></td>
 <td style="text-align: left;">Open pit, underground</td>
 <td style="text-align: right;">-1.38</td>
 </tr>
@@ -725,30 +709,27 @@ Table&nbsp;6.1: Price elasticities used from Wirjanto (1999)
 <td style="text-align: right;">-0.58</td>
 </tr>
 <tr class="odd">
-<td style="text-align: left;"><strong>Light manufacturing</strong></td>
-<td style="text-align: right;"></td>
-</tr>
-<tr class="even">
+<td rowspan="6" style="text-align: left;"> <strong>Light manufacturing</strong></td>
 <td style="text-align: left;">Food, tobacco, beverage</td>
 <td style="text-align: right;">-0.32</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Leather, textile, clothing; Wood products</td>
 <td style="text-align: right;">-0.86</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Rubber and plastics product</td>
 <td style="text-align: right;">-1.30</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Electrical and electronic equipment</td>
 <td style="text-align: right;">-0.81</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: left;">Transportation equipment</td>
 <td style="text-align: right;">-1.06</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td style="text-align: left;">Furniture, printing, machinery</td>
 <td style="text-align: right;">-0.74</td>
 </tr>
@@ -756,7 +737,6 @@ Table&nbsp;6.1: Price elasticities used from Wirjanto (1999)
 </table>
 </div>
 </figure>
-</div>
 </div>
 </section>
 <section id="commercial-and-residential" class="level2" data-number="6.2">
