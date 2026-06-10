@@ -35,7 +35,7 @@ Fixed structural parameters
         └── Compression, Conveyance, Direct Drive, Machine Drive,
             Pumping  (motor services)
 
-Total production  (service_provide at sector level)
+Total production  (service_request at sector level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Metal Smelting'  (tonnes, per province, 2000–2100)
 
@@ -55,7 +55,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. service_provide  — total production (from heavy_industry)
+1. service_request  — total production (from heavy_industry)
 2. competition      — from fixed data (Sector level)
 3. is_supply        — generated (TRUE)
 4. multiplier_price — from energy_price_multipliers
@@ -148,7 +148,7 @@ def _read_flattened_fixed() -> pl.DataFrame:
 
 def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
-    service_provide rows for the Metal Smelting sector.
+    service_request row for the Metal Smelting sector.
     Value = total Metal Smelting tonnes from heavy_industry.
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Metal Smelting')
@@ -159,7 +159,7 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('Metal Smelting').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
-        pl.lit('service_provide').alias('Parameter'),
+        pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
         pl.lit('').alias('Target'),
@@ -288,18 +288,18 @@ def main() -> pl.DataFrame:
     _sector_branch = pl.col('Branch').str.ends_with('.Metal Smelting')
 
     # Keep only competition from fixed data at sector level;
-    # service_provide is replaced by the pipeline value above.
+    # service_provide rows remain null (fixed data); activity data inserted as service_request.
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Everything from fixed except sector-level service_provide and competition.
+    # Everything from fixed except sector-level competition (service_provide rows remain null).
     # This includes the full Primary Metals sub-tree (with all fixed splits),
     # Methane Blend, Steam, Oxygen, HVAC, Lighting, Ventilation, and all
     # motor services — but the sector-level service_request (linking Metal
     # Smelting → Primary Metals) is also retained here since it is structural.
     fixed_rest = fixed.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition']))
+        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
     )
 
     regions = total_rows['Region'].unique().sort().to_list()
