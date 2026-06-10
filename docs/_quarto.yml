@@ -3,9 +3,14 @@ project:
   output-dir: _book
 
 # Per-chapter bibliographies are declared in each chapter's YAML
-# frontmatter (e.g. `bibliography: technologies.bib`). This isolates
-# each chapter's citation context so references appear at the end of
-# the chapter that cites them rather than being pooled across the book.
+# frontmatter (e.g. `bibliography: technologies.bib`). In HTML this
+# gives each chapter its own References section at the end. In PDF,
+# the biblatex \printbibliography injected by Quarto at the end of
+# each chapter is redefined to a no-op via header-includes under
+# format.pdf below; the saved-original \printbibliographyORIG is then
+# called once from references.qmd to emit a single combined References
+# section at the end of the book. references.qmd also serves as the
+# global References section in HTML (populated via nocite: @*).
 link-citations: true
 
 book:
@@ -50,6 +55,7 @@ book:
       chapters:
         - outputs.qmd           # Output files
         - post_processing.qmd   # Post-processing and reporting
+    - references.qmd
   appendices:
     - appendix_acronyms.qmd
     - appendix_file_formats.qmd
@@ -70,8 +76,43 @@ format:
   #   eval: true
   # pdf:
   #   eval: true
+  #   # Pin figures to exactly where they appear in source rather than
+  #   # letting LaTeX float them to the top/bottom of pages.
+  #   fig-pos: ht
   #   cite-method: biblatex
   #   biblio-style: authoryear
   #   biblatexoptions:
-  #     - refsection=chapter
   #     - backend=biber
+  #   # Each chapter loads its own .bib via its frontmatter. Quarto with
+  #   # cite-method: biblatex auto-injects a per-chapter "References"
+  #   # section (a level-2 \section* heading plus a \printbibliography
+  #   # call). For PDF we want a single combined References section at the
+  #   # end of the book, placed by references.qmd, so:
+  #   #  - strip-chapter-refs.lua removes the per-chapter refs Div and the
+  #   #    "References" Header from the AST before LaTeX is generated.
+  #   #  - The header-includes block saves the real \printbibliography
+  #   #    under \printbibliographyORIG and no-ops the original, as a
+  #   #    belt-and-suspenders fallback in case anything the filter misses
+  #   #    still emits a \printbibliography call. references.qmd calls
+  #   #    \printbibliographyORIG once to emit the combined bibliography.
+  #   filters:
+  #     - strip-chapter-refs.lua
+  #   header-includes:
+  #     - |
+  #       \AtBeginDocument{%
+  #         \let\printbibliographyORIG\printbibliography
+  #         \renewcommand{\printbibliography}[1][]{}%
+  #       }
+  #     - |
+  #       % Cap included images at the text width while leaving smaller
+  #       % images at their natural size. \maxwidth = min(natural, linewidth).
+  #       \makeatletter
+  #       \def\maxwidth{%
+  #         \ifdim\Gin@nat@width>\linewidth
+  #           \linewidth
+  #         \else
+  #           \Gin@nat@width
+  #         \fi
+  #       }
+  #       \makeatother
+  #       \setkeys{Gin}{width=\maxwidth,keepaspectratio}

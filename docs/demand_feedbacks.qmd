@@ -40,34 +40,71 @@ $Multiplier$
 
 To accommodate the differences between products in industrial sectors, especially Industrial Minerals, Chemical Products, Metal Smelting, and Light Industrial, demand feedbacks are applied at the level where production of individual products is determined. @tbl-product_price_elas provides the elasticities used for sectors and their products. See Appendix E of Chris Bataille's PhD dissertation for a full breakdown of their sources and how they were mapped to CIMS' sub-models and their sub-products.
 
-::: {.narrow-table}
-| Sector / Product | Elasticity |
-| :--- | -: |
-| **Metal Smelting** | |
-| Lead, Zinc, Aluminium, Nickel | -0.59 |
-| Copper | -0.57 |
-| **Chemical products** | |
-| Chlor-alkali, Sodium Chlorate, Hydrogen Peroxide, Ammonia Methanol | -0.44 |
-| Polymers | -0.83 |
-| **Industrial Minerals** | |
-| Cement | -1.75 |
-| Lime, Glass, Bricks | -0.53 |
-| **Pulp and Paper** | |
-| Pulp export | -1.72 |
-| Coated | -0.79 |
-| Uncoated, linerboard, tissue & newsprint | -1.54 |
-| **Iron and Steel** | |
-| Slabs, blooms, billets & molten steel | -0.60 |
-| **Mining** | |
-| Open pit, underground | -1.38 |
-| Potash | -0.58 |
-| **Light manufacturing** | |
-| Food, tobacco, beverage | -0.32 |
-| Leather, textile, clothing; Wood products | -0.86 |
-| Rubber and plastics product | -1.30 |
-| Electrical and electronic equipment | -0.81 |
-| Transportation equipment | -1.06 |
-| Furniture, printing, machinery | -0.74 |
+::: {.list-table aligns="l,l,r"}
+- - Sector
+  - Product
+  - Elasticity
+
+- - []{rowspan=2} **Metal Smelting**
+  - Lead, Zinc, Aluminium, Nickel
+  - -0.59
+
+- - Copper
+  - -0.57
+
+- - []{rowspan=2} **Chemical products**
+  - Chlor-alkali, Sodium Chlorate, Hydrogen Peroxide, Ammonia Methanol
+  - -0.44
+
+- - Polymers
+  - -0.83
+
+- - []{rowspan=2} **Industrial Minerals**
+  - Cement
+  - -1.75
+
+- - Lime, Glass, Bricks
+  - -0.53
+
+- - []{rowspan=3} **Pulp and Paper**
+  - Pulp export
+  - -1.72
+
+- - Coated
+  - -0.79
+
+- - Uncoated, linerboard, tissue & newsprint
+  - -1.54
+
+- - []{rowspan=1} **Iron and Steel**
+  - Slabs, blooms, billets & molten steel
+  - -0.60
+
+- - []{rowspan=2} **Mining**
+  - Open pit, underground
+  - -1.38
+
+- - Potash
+  - -0.58
+
+- - []{rowspan=6} **Light manufacturing**
+  - Food, tobacco, beverage
+  - -0.32
+
+- - Leather, textile, clothing; Wood products
+  - -0.86
+
+- - Rubber and plastics product
+  - -1.30
+
+- - Electrical and electronic equipment
+  - -0.81
+
+- - Transportation equipment
+  - -1.06
+
+- - Furniture, printing, machinery
+  - -0.74
 
 : Price elasticities used from Wirjanto (1999) {#tbl-product_price_elas}
 

@@ -12,7 +12,7 @@ CIMS's direct ancestor was the **Industrial Sector Technology Use Model**, ISTUM
 
 Over the next decade ISTUM was extended in several directions. @nyboer-1997 worked out the simulation framework in greater detail and applied it to additional sub-sectors. By the early 2000s ISTUM had been built out into a family of sector-specific sub-models covering most of the Canadian economy: primary energy supply (natural gas, coal, crude oil), energy processing (refining, electricity), and end-use demand for energy services (commercial/institutional, transportation, residential, iron & steel, pulp & paper, metal smelting, chemicals, mining, industrial minerals, "other manufacturing"). Each ISTUM sub-model was, on its own, a partial-equilibrium technology simulation — given exogenous demand for the relevant service and exogenous energy prices, it simulated what technology stock would emerge over time. The pieces did not yet talk to each other.
 
-## The construction of CIMS (early 2000s)
+## Construction of CIMS (early 2000s)
 
 The hybrid energy–economy model that became CIMS was led by Chris Bataille as the central work of his PhD at SFU under the supervision of Mark Jaccard and John Nyboer [@bataille-2005]. The project's animating question was a methodological one: bottom-up models like ISTUM had strong technological realism but treated demand and prices as exogenous; top-down macro-econometric and CGE models had economic completeness but were largely silent on technology. A "hybrid" model — bottom-up in its technology representation, top-down in its market-clearing behaviour — promised to combine the strengths of both [@rivers-jaccard-2005]. Bataille's dissertation established design criteria for what such a hybrid should do, surveyed the prior attempts (MARKAL, MESSAGE-MACRO, NEMS), and then built the integration framework on top of the existing ISTUM sub-models [@bataille-2005]. Other key members of the EMRG team at SFU who contributed to this phase of the model's development included: Jotham Peters, Rose Murphy, Bryn Sadownik, Alison Laurin, and Nic Rivers.
 
@@ -28,7 +28,7 @@ The principal additions to ISTUM that produced CIMS were:
 
 The discrete-choice basis for the technology-competition equation was formalized by @rivers-jaccard-2005, which sets out the family of choice models the CIMS competition function belongs to and discusses calibration of $v$ against empirically estimated behavioural parameters. The empirical-parameter programme — collecting stated- and revealed-preference data for personal vehicle and home heating decisions and using it to constrain the $v$ values in those technology competitions — was developed in parallel through several papers in the mid-2000s [@bataille-et-al-2006; @mau-et-al-2008].
 
-## Implementation evolution
+## Evolution
 
 CIMS has been re-implemented several times since its initial construction. The first integrated version used APL for the sub-model calculations and feedback dynamics, with Microsoft Excel/Access for data tables. That generation was flexible but had a difficult user interface. A second version layered Visual Basic and a C++ front-end on top of the APL engine — easier to use but more rigid because data flowed through four different programs in four different languages. A third generation, kept APL as the calculation engine but moved the interface and data storage into Java.
 
@@ -36,7 +36,7 @@ The current implementation has continued this trajectory: the model engine and s
 
 The Python redevelopment of CIMS has been led by Brad Griffin, Jillian Anderson, and Matt Sniatynski, with considerable support provided by Thomas Budd and Emma Starke as part of their respective PhD research.
 
-## Maintenance and current status
+## Current status
 
 CIMS continues to be maintained at EMRG and is used by a network of researchers and policy clients across Canada [@cme-emh-cims]. It has been registered in the Energy Modelling Hub's open-models inventory and is part of the Open Insights suite of open-source models, where it sits among the country's small set of national-scope hybrid energy-economy models. Recent extensions include the disaggregation of the Atlantic provinces and territories, expanded coverage of low- and high-temperature industrial heat (see @sec-low-temp-heat), updated demand and price-elasticity calibrations, and continued evolution of the calibration workflow described in @sec-calibration.
 
@@ -44,11 +44,12 @@ CIMS continues to be maintained at EMRG and is used by a network of researchers 
 
 A representative — not exhaustive — list of areas where CIMS has been used to inform policy and academic discussion:
 
-- Cross-country comparisons of how malleable national GHG emission intensities are, with cost curves of Canadian abatement at a range of carbon prices [@bataille-et-al-2007].
-- Comparisons of bottom-up and top-down estimates of marginal abatement cost.
+- Evaluation of bottom-up cost curves of US abatement at a range of carbon prices [@murphy-jaccard-2011].
+- Comparisons of bottom-up and top-down estimates of marginal abatement cost for various Canadian sectors and regions.
 - Analyses of provincial climate plans and the federal carbon-pricing benchmark.
-- The book-length academic treatment of the clean-energy-economics research programme in @jaccard-2005, and the later popular-press version in @simpson-jaccard-rivers-2007.
-- Studies of consumer adoption of new vehicle technologies through discrete-choice analysis [@mau-et-al-2008].
+- Behaviourally realistic assessments of the decarbonization potential of innovative technologies.
+- Studies of consumer adoption of new vehicle technologies through discrete-choice analysis [@mau-et-al-2008; @horne-2003].
+- A book-length academic treatment of the energy-economics research programme in @jaccard-2005.
 
 For a deeper academic introduction to the CIMS modelling philosophy and its place in the broader hybrid-modelling literature, the most useful single reference is still @bataille-2005; @rivers-jaccard-2005 is the methodological companion piece on the discrete-choice competition, and @jaccard-2005 gives a book-length statement of the energy-economics research programme which produced CIMS.
 

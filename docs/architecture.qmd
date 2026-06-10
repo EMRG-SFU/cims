@@ -8,7 +8,7 @@ CIMS covers the entire Canadian economy and can connect to aggregated representa
 
 ```{python}
 #| label: tbl-sectors-regions-dynamic
-#| tbl-cap: "Sectors represented by Canadian region"
+#| tbl-cap: "Sectors represented by region"
 #| echo: false
 # Dynamically build the sector x region table from the contents of
 # data/model_inputs/. A sector is marked "X" for a region when at least one
@@ -158,15 +158,27 @@ def _format_header(code):
     return f"**{code}**^[{agg['name']} includes {child_list}.]"
 
 
+# Pandoc allocates pipe-table column widths in proportion to the dash
+# counts in the separator row. Giving the Sectors column a much higher
+# weight (sector_weight) than each region column (region_weight) lets us
+# fix the first column at a wide relative size while every region column
+# shares the remaining width equally, regardless of how many regions are
+# active in this render.
+sector_weight = 40
+region_weight = 4
 lines = [
     "| **Sectors** | " + " | ".join(_format_header(c) for c in column_order) + " |",
-    "|:------------|" + "|".join([":----:" for _ in column_order]) + "|",
+    "|:" + "-" * sector_weight + "|"
+    + "|".join([":" + "-" * region_weight + ":" for _ in column_order])
+    + "|",
 ]
 for sector in sector_order:
-    # An empty bracketed span carrying the .cell-on class lets the
-    # accompanying CSS (`td:has(.cell-on) { ... }` in style.css) shade
-    # the entire cell instead of rendering a symbol inside it.
-    cells = ["[]{.cell-on}" if (code, sector) in found else "" for code in column_order]
+    # Each "on" cell carries a literal "X" wrapped in a .cell-on span.
+    # In HTML, style.css uses `td:has(.cell-on) { ... }` to shade the
+    # cell and `.cell-on { color: transparent; }` to hide the "X", so
+    # only the shading shows. In PDF (no CSS), the "X" renders normally
+    # and acts as the cell marker.
+    cells = ["[+]{.cell-on}" if (code, sector) in found else "" for code in column_order]
     lines.append("| " + sector + " | " + " | ".join(cells) + " |")
 
 Markdown("\n".join(lines))
@@ -179,7 +191,7 @@ While the model is simple in operation, it can appear complex because it is tech
 
 CIMS highlights the interplay of energy supply and demand because energy-related GHG emissions are currently a key policy concern. Thus, the model focuses on the interaction between sectors that use energy (industrial, residential, commercial / institutional, and transportation sectors) and sectors that produce or transform energy (electricity generation, fossil fuel supply, oil refining, natural gas processing, biofuels, and hydrogen). This interaction is shown in @fig-general_model_structure. A policy that seeks to influence energy supply and demand may also influence the cost of producing goods and services, thus affecting their price and final demand. To reflect these interactions, CIMS includes a goods and services final demand feedback loop, composed of Armington elasticities for traded goods and empirically driven relationships between the traded and non-traded sectors.
 
-![General model structure](images/general_model_structure.svg){#fig-general_model_structure .lightbox}
+![General model structure](images/general_model_structure.svg){#fig-general_model_structure .lightbox width=70%}
 
 ## Simulation: Six Steps
 

@@ -57,12 +57,16 @@ section.footnotes,
 }
 
 /* Dynamic sector-by-region table in overview.qmd: cells that should
-   indicate a present sector get an empty `[]{.cell-on}` span, and we
-   shade the surrounding cell here. Uses :has() which is supported by
-   all modern browsers. */
+   indicate a present sector wrap a literal "X" in a `.cell-on` span.
+   In HTML we shade the surrounding cell and hide the "X" so only the
+   shading is visible. In PDF (no CSS), the "X" shows through as the
+   cell marker. Uses :has() which is supported by all modern browsers. */
 td:has(> .cell-on),
 td:has(> p > .cell-on) {
   background-color: rgba(var(--bs-primary-rgb, 39, 128, 227), 0.3);
+}
+.cell-on {
+  color: transparent;
 }
 
 /* Vertical column separators for the dynamic sector-by-region table. */
@@ -94,15 +98,21 @@ td:has(> p > .cell-on) {
   font-size: 0.9em;
 }
 
-/* SVG figures are usually authored with dark lines on a transparent
-   background. In light mode the page is already light so this looks
-   fine; in dark mode the figure content blends into the page. Give SVG
-   <img> figures their own white backplate so they stay readable in
-   either theme, with a touch of padding, rounded corners, and a soft
-   shadow so they read as an intentional card rather than a stark
-   white slab. */
+/* SVG (and sometimes PNG) figures are usually authored with dark lines 
+   on a transparent background. In light mode the page is already light 
+   so this looks fine; in dark mode the figure content blends into the 
+   page. Give SVG <img> figures their own white backplate so they stay 
+   readable in either theme, with a touch of padding, rounded corners, 
+   and a soft shadow so they read as an intentional card rather than a 
+   stark white slab. */
 img.figure-img[src$=".svg"],
 img.img-fluid[src$=".svg"] {
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+img.figure-img[src$=".png"],
+img.img-fluid[src$=".png"] {
   background-color: #fff;
   padding: 1rem;
   border-radius: 0.25rem;

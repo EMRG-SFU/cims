@@ -1,0 +1,22 @@
+---
+bibliography:
+  - history.bib
+  - low_temp_industrial_heat.bib
+  - technologies.bib
+  - theory.bib
+nocite: |
+  @*
+---
+
+# References {.unnumbered}
+
+::: {.content-visible when-format="html"}
+::: {#refs}
+:::
+:::
+
+::: {.content-visible when-format="pdf"}
+```{=latex}
+\printbibliographyORIG[heading=none]
+```
+:::

@@ -129,6 +129,7 @@ $SC_{kt}$
 :   service cost of technology *k* at time *t*
 :::
 
+Note somewhere that technology capital costs should be included as CAPEX where possible to ensure apples-to-apples comparison across the competition.
 $$
 {CC}_{t} = \max\left\{ {DCC}_{t},\, {CC}_{2000} \cdot {DCC}_{limit} \right\}
 $$ {#eq-capital_cost_annual}
