@@ -30,7 +30,7 @@ Fixed structural parameters
     under the Coal branch rather than under Raw Product. SK, NB, and NS do not
     have the Metallurgical Finishing sub-tree (no met coal production).
 
-Total production  (service_provide at sector level)
+Total production  (service_request at sector level)
     pipeline/source/activity/coal_mining.py  (called directly via main())
     Variable: 'Coal Mining'  (kt, per province, 2000–2100)
 
@@ -50,7 +50,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. service_provide  — total production (from coal_mining)
+1. service_request  — total production (from coal_mining)
 2. competition      — from fixed data (Sector level)
 3. is_supply        — generated (TRUE)
 4. multiplier_price — from energy_price_multipliers
@@ -134,7 +134,7 @@ def _read_flattened_fixed() -> pl.DataFrame:
 
 def _build_total_rows(coal: pl.DataFrame) -> pl.DataFrame:
     """
-    service_provide rows for the Coal Mining sector.
+    service_request row for the Coal Mining sector.
     Value = total coal production kt from coal_mining.
     """
     df = coal.filter(pl.col('Variable') == 'Coal Mining')
@@ -145,7 +145,7 @@ def _build_total_rows(coal: pl.DataFrame) -> pl.DataFrame:
         pl.lit('Coal Mining').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
-        pl.lit('service_provide').alias('Parameter'),
+        pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
         pl.lit('').alias('Target'),
@@ -269,7 +269,7 @@ def main() -> pl.DataFrame:
     _sector_branch = pl.col('Branch').str.ends_with('.Coal Mining')
 
     # Keep only competition from fixed data at sector level;
-    # service_provide is replaced by the pipeline value above.
+    # service_provide rows remain null (fixed data); activity data inserted as service_request.
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
@@ -279,7 +279,7 @@ def main() -> pl.DataFrame:
     # Size Reduced Product, HVAC, and Lighting (all fixed constants).
     # The Met Finishing service_request is injected separately as met_rows.
     fixed_rest = fixed.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition']))
+        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
     )
 
     regions = total_rows['Region'].unique().sort().to_list()
