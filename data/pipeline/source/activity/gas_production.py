@@ -3,13 +3,14 @@
 Gas Production Activity Calculator
 ====================================
 Reads the CER natural gas production CSV and outputs:
+  - Regions: AB, BC, SK. Other regions are excluded as the CER only keeps track of gas production in these regions
   - Marketable Production per region (2000–2050) in 1000 m3/year
       (formerly "Total" — this is the CER marketable gas volume)
   - Total (Gross) Production = Marketable Production / Processed ratio
   - Processed ratio per region (2000–2100) as a fraction 0–1
       Derived from StatsCan 25100029 RESD:
         Processed = (Production − Producer consumption) / Production
-      Regions: AB, BC, SK, NB, NS, NT, ON, YT
+      Regions: AB, BC, SK
       NB missing values are set equal to NS.
       2024 value is extended flat to 2100.
   - Percentage splits (as fractions 0–1) for:
@@ -652,7 +653,7 @@ def main() -> pl.DataFrame:
         .with_columns(
             (pl.col("total") / pl.col("gross_total")).alias("Value"),
             pl.lit("Processing").alias("Variable"),
-            pl.lit("1000m3/1000m3").alias("Unit"),
+            pl.lit("% of 1000m3").alias("Unit"),
             pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
               .then(pl.lit("CER/Stats Can"))
               .otherwise(pl.lit("Assumptions"))

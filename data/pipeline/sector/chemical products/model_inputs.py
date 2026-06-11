@@ -10,7 +10,7 @@ Fixed structural parameters
     raw_data/fixed_data/Chemical Products/chemical_products_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
 
-Total chemical production  (service_provide)
+Total chemical production  (service_request at region level)
     processed_data/activity/heavy_industry.csv
     Variable: 'Chemical Product'  (tonnes, per province, 2000–2100)
 
@@ -31,12 +31,13 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. service_provide  — total chemical production (from heavy_industry)
-2. competition      — from fixed data
-3. is_supply        — generated (TRUE)
-4. multiplier_price — from energy_price_multipliers
-5. service_request  — Chemical Product → each subproduct (from heavy_industry)
-6. rest of fixed data
+1. service_request  — region-level demand for Chemical Products (from heavy_industry)
+2. service_provide  — from fixed data
+3. competition      — from fixed data
+4. is_supply        — generated (TRUE)
+5. multiplier_price — from energy_price_multipliers
+6. service_request  — Chemical Product → each subproduct (from heavy_industry)
+7. rest of fixed data
 """
 
 import sys
@@ -125,26 +126,27 @@ def _read_flattened_fixed() -> pl.DataFrame:
 
 def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
-    service_provide rows for the Chemical Products sector.
+    service_request rows at the region level for Chemical Products.
     Value = total Chemical Product tonnes from heavy_industry.
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Chemical Product')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Chemical Products')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Chemical Products').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
-        pl.lit('service_provide').alias('Parameter'),
+        pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Chemical Products')).alias('Target'),
         pl.col('Source'),
         pl.lit('tonne').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
     ])
+
 
 
 def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
@@ -246,7 +248,7 @@ def main() -> pl.DataFrame:
     print('Loading heavy industry activity data...')
     heavy_ind = _heavy_industry_mod.main()
 
-    print('Building total chemicals rows...')
+    print('Building service request rows (region level)...')
     total_rows = _build_total_rows(heavy_ind)
     print(f'  Rows: {len(total_rows):,}')
 
@@ -264,8 +266,10 @@ def main() -> pl.DataFrame:
     # Sector-level branch: ends with '.Chemical Products' (no further sub-path)
     _sector_branch = pl.col('Branch').str.ends_with('.Chemical Products')
 
-    # Rows from fixed data at sector level — competition only
-    # (service_provide replaced by pipeline; is_supply generated below)
+    # service_provide and competition from fixed data at sector level
+    fixed_sector_service_provide = fixed.filter(
+        _sector_branch & (pl.col('Parameter').fill_null('') == 'service_provide')
+    )
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
@@ -280,8 +284,8 @@ def main() -> pl.DataFrame:
 
     output = (
         pl.concat(
-            [total_rows, fixed_sector_competition, is_supply_rows,
-             price_rows, subprod_rows, fixed_rest],
+            [total_rows, fixed_sector_service_provide, fixed_sector_competition,
+             is_supply_rows, price_rows, subprod_rows, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)
