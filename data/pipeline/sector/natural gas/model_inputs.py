@@ -226,8 +226,8 @@ def _build_activity_rows(ng: pl.DataFrame) -> pl.DataFrame:
     return (
         ng.filter(pl.col('Variable') == 'Natural Gas')
         .select([
-            (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Natural Gas')).alias('Branch'),
-            pl.lit('Sector').alias('Type'),
+            (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+            pl.lit('Region').alias('Type'),
             pl.col('Region'),
             pl.lit('Natural Gas').alias('Sector'),
             pl.lit('').alias('Service'),
@@ -388,11 +388,10 @@ def main() -> pl.DataFrame:
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Drop sector-level service_provide (replaced by activity data) and
     # competition (repositioned). All other fixed rows pass through including
     # sub-service null service_provide rows and drilling intensity rows.
     fixed_provincial_rest = fixed_provincial.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition']))
+        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
     )
 
     is_supply_rows = _build_is_supply_rows(PROVINCIAL_REGIONS)
