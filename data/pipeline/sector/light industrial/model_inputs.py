@@ -21,7 +21,7 @@ Fixed structural parameters
               └── Electronics and Other      (Service, Tech Compete)
     Plus Water Heating, Space Heating, Lighting, Ventilation AC at sector level.
 
-    The sector-level service_provide and the Manufacturing-branch service_request
+    The sector-level service_request and the Manufacturing-branch service_request
     rows (splits into each sub-service) have been removed from the fixed data
     and are sourced from the pipeline instead (see below).
 
@@ -55,7 +55,7 @@ Output order per region
 2. competition      — from fixed data (Sector level)
 3. is_supply        — generated (TRUE)
 4. multiplier_price — from energy_price_multipliers
-5. fixed_mfg_header — Manufacturing branch service_provide and competition
+5. fixed_mfg_header — Manufacturing branch competition
 6. service_request  — Manufacturing → each sub-service (from light_industrial)
 7. rest of fixed data
 """
@@ -153,8 +153,8 @@ def _build_total_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
     """
     df = light_ind.filter(pl.col('Variable') == 'Light Industrial')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Light Industrial')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Light Industrial').alias('Sector'),
         pl.lit('').alias('Service'),
@@ -162,7 +162,7 @@ def _build_total_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Light Industrial')).alias('Target'),
         pl.col('Source'),
         pl.lit('M$ GDP').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
@@ -299,10 +299,10 @@ def main() -> pl.DataFrame:
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Keep service_provide and competition from fixed at Manufacturing level;
+    # Keep competition from fixed at Manufacturing level;
     # service_request splits come from the pipeline as mfg_split_rows.
     fixed_mfg_header = fixed.filter(
-        _mfg_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition'])
+        _mfg_branch & pl.col('Parameter').fill_null('').is_in(['competition'])
     )
 
     # Everything else: all Manufacturing sub-services, Water Heating,
