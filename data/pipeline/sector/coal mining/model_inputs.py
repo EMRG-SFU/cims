@@ -139,8 +139,8 @@ def _build_total_rows(coal: pl.DataFrame) -> pl.DataFrame:
     """
     df = coal.filter(pl.col('Variable') == 'Coal Mining')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Coal Mining')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Coal Mining').alias('Sector'),
         pl.lit('').alias('Service'),
@@ -148,7 +148,7 @@ def _build_total_rows(coal: pl.DataFrame) -> pl.DataFrame:
         pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Coal Mining')).alias('Target'),
         pl.col('Source'),
         pl.lit('kt').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
