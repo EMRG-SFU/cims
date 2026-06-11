@@ -137,8 +137,8 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Pulp and Paper')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Pulp and Paper')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Pulp and Paper').alias('Sector'),
         pl.lit('').alias('Service'),
@@ -146,7 +146,7 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Pulp and Paper')).alias('Target'),
         pl.col('Source'),
         pl.lit('tonne').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
@@ -281,11 +281,11 @@ def main() -> pl.DataFrame:
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Keep competition and service_provide from fixed at Paper level
+    # Keep competition and service_request from fixed at Paper level
     # (service_provide null row stays as structural header; service_request splits
     # come from the pipeline instead and are injected as subprod_rows).
     fixed_paper_header = fixed.filter(
-        _paper_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition'])
+        _paper_branch & pl.col('Parameter').fill_null('').is_in(['competition'])
     )
 
     # Everything else from fixed: all sub-services below Paper, plus
