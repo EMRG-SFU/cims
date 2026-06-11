@@ -24,7 +24,7 @@ Fixed structural parameters
         ├── Industrial Engines, Steam, Still Gas Steam,
         │   Hydrogen, CCS  (shared utility services)
 
-Total production  (service_provide at sector level)
+Total production  (service_request at sector level)
     pipeline/source/activity/oil_production.py  (called directly via main())
     Variable: 'Total'  (m3, per province, 2000–2100)
 
@@ -53,7 +53,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. service_provide  — total production (from oil_production)
+1. service_request  — total production (from oil_production)
 2. competition      — from fixed data (Sector level)
 3. is_supply        — generated (TRUE)
 4. multiplier_price — from energy_price_multipliers
@@ -148,21 +148,21 @@ def _read_flattened_fixed() -> pl.DataFrame:
 
 def _build_total_rows(oil: pl.DataFrame) -> pl.DataFrame:
     """
-    service_provide rows for the Petroleum Crude sector.
+    service_request rows for the Petroleum Crude sector.
     Value = total oil production m3 from oil_production.
     """
     df = oil.filter(pl.col('Variable') == 'Total')
     return df.select([
-        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Petroleum Crude')).alias('Branch'),
-        pl.lit('Sector').alias('Type'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region')).alias('Branch'),
+        pl.lit('Region').alias('Type'),
         pl.col('Region'),
         pl.lit('Petroleum Crude').alias('Sector'),
         pl.lit('').alias('Service'),
         pl.lit('').alias('Technology'),
-        pl.lit('service_provide').alias('Parameter'),
+        pl.lit('service_request').alias('Parameter'),
         pl.lit('').alias('Context'),
         pl.lit('').alias('Sub_Context'),
-        pl.lit('').alias('Target'),
+        (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Petroleum Crude')).alias('Target'),
         pl.col('Source'),
         pl.lit('m3').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
@@ -369,12 +369,11 @@ def main() -> pl.DataFrame:
     _sector_branch = pl.col('Branch').str.ends_with('.Petroleum Crude')
 
     # Keep only competition from fixed data at sector level;
-    # service_provide is replaced by the pipeline value above.
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Drop sector-level service_provide and competition only.
+    # Drop sector-level competition.
     # The Bitumen-level service_request rows in the fixed data are intensity
     # coefficients (m3 of service per m3 of bitumen) and are NOT replaced by
     # the pipeline bitumen split rows — those are % of Bitumen activity splits,
@@ -382,7 +381,7 @@ def main() -> pl.DataFrame:
     # Everything else passes through: Production sub-tree with Exploration,
     # Light Medium, Heavy, Bitumen intensity rows, utility services, etc.
     fixed_rest = fixed.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['service_provide', 'competition']))
+        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
     )
 
     regions = total_rows['Region'].unique().sort().to_list()
