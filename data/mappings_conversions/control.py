@@ -48,6 +48,7 @@ with app.setup(hide_code=True):
             "stat_can_prov_gdp": 2024,
             "stat_can_coal": 2025,
             "stat_can_crude_new": 2025,
+            "stat_can_electricity": 2025,
             "aer_st98": 2025,
             "afdc": 2025
         },
@@ -98,6 +99,7 @@ def _():
         "stat_can_prov_gdp":     mo.ui.text(value=str(ld["stat_can_prov_gdp"]),     label="Prov GDP — 36-10-0222-01"),
         "stat_can_coal":         mo.ui.text(value=str(ld["stat_can_coal"]),         label="Coal 2008–present — 25-10-0046-01"),
         "stat_can_crude_new":    mo.ui.text(value=str(ld["stat_can_crude_new"]),    label="Crude New — 25-10-0063-01"),
+        "stat_can_electricity":  mo.ui.text(value=str(ld["stat_can_electricity"]),  label="Electricity — 25-10-0015-01"),
         "aer_st98":              mo.ui.text(value=str(ld["aer_st98"]),              label="AER ST98 (Alberta coal)"),
         "afdc":                  mo.ui.text(value=str(ld["afdc"]),                  label="AFDC Biofuel Prices"),
     })
@@ -224,6 +226,7 @@ def _(params_archived, params_currency, params_ldy, params_pipeline):
             "stat_can_prov_gdp":     int(lv["stat_can_prov_gdp"]),
             "stat_can_coal":         int(lv["stat_can_coal"]),
             "stat_can_crude_new":    int(lv["stat_can_crude_new"]),
+            "stat_can_electricity":  int(lv["stat_can_electricity"]),
             "aer_st98":              int(lv["aer_st98"]),
             "afdc":                  int(lv["afdc"]),
         },
