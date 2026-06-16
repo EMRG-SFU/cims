@@ -135,13 +135,13 @@ SECTORS = [
     {
         "type": "single",
         "naics_code": "21221", "measure": "Production / Shipments",
-        "cims_sector": "Iron Product",
+        "cims_sector": "Size Reduced Iron Product",
         "go_sector": "2122",
         "note": "Iron ore mining (21221); GO sector 2122 used as parent proxy",
     },
     {
         "type": "derived",
-        "cims_sector": "Non-Iron Product",
+        "cims_sector": "Size Reduced Non Iron Product",
         "note": "Derived: 2122 (total metal ore) minus 21221 (iron ore); "
                 "provincial share weighted by real GO from sector 2122",
         "minuend":    {"naics_code": "2122",  "measure": "Production / Shipments", "go_sector": "2122"},
@@ -328,7 +328,7 @@ SECTORS = [
 # HIERARCHY
 # =============================================================================
 HIERARCHY = {
-    "Mining":              ["Iron Product", "Non-Iron Product", "Potash"],
+    "Mining":              ["Size Reduced Iron Product", "Size Reduced Non Iron Product", "Potash"],
     "Pulp and Paper":      ["Pulp", "Uncoated, coated, tissue", "Newsprint", "Linerboard"],
     "Chemical Product":    ["Other Petrochemicals",
                             "Chlor Alkali, Hydrogen Peroxide, Sodium Chlorate",
