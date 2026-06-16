@@ -9,38 +9,16 @@ Sources
 Fixed structural parameters
     raw_data/fixed_data/Hydrogen/hydrogen_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
-    Encodes the full Hydrogen hierarchy:
-      Hydrogen (Sector)
-        ├── Production (Service, Tech Compete)
-        │     ├── Coal gasification_centralised_CCS
-        │     ├── Steam methane reforming_centralised
-        │     ├── Steam methane reforming_centralised_CCS
-        │     ├── Biomass gasification_centralised
-        │     ├── Biomass gasification_centralised_CCS
-        │     ├── Electrolysis_centralised
-        │     ├── Steam methane reforming_distributed
-        │     ├── Ethanol_distributed
-        │     └── Electrolysis_distributed
-        ├── Infrastructure (Service, Tech Compete)
-        └── CCS (Service, Tech Compete)
-
-    No external activity data source is used for this sector.
-    All parameters including market shares, costs, and service_request
-    routing are fully contained in the fixed data.
+    Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
 Energy price multipliers  (multiplier_price rows)
-    pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Hydrogen is classified as Industrial in sector_map.csv.
+    processed_data/energy_prices/energy_price_multipliers.csv
+    Inserted after the Hydrogen sector is_supply row.
 
 Output columns
 --------------
 Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
-
-Output order per region
------------------------
-1. multiplier_price — from energy_price_multipliers
-2. rest of fixed data
 """
 
 import sys
@@ -82,100 +60,147 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-REGION_SPECIFIC_ENERGIES = {
+FIXED_TEMPLATE: dict[str, str] = {
+    'AB': 'AB', 'BC': 'BC', 'MB': 'MB', 'NB': 'NB', 'NL': 'NL',
+    'NS': 'NS', 'NT': 'NT', 'NU': 'NU', 'ON': 'ON', 'PE': 'PE',
+    'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
+}
+
+REGION_SPECIFIC_ENERGIES: set[str] = {
     'Electricity', 'Biodiesel', 'Renewable Diesel',
     'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
 }
 
-
 # ── helpers ────────────────────────────────────────────────────────────────────
 
-def _read_flattened_fixed() -> pl.DataFrame:
-    """Flatten all Hydrogen fixed CSVs and return combined DataFrame."""
+def _read_flattened_fixed(region: str) -> pl.DataFrame:
+    """Flatten one fixed Hydrogen CSV and return as a row-indexed DataFrame."""
+    fixed_path = FIXED_INPUT_DIR / f'hydrogen_{region}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        _flatten_mod.main(
-            input_folder=FIXED_INPUT_DIR,
-            output_folder=tmp_path,
+        out_file = Path(tmp) / f'hydrogen_{region}.csv'
+        _flatten_mod.process_file(
+            input_path=fixed_path,
+            output_path=out_file,
             year_min=DATA_START,
             year_max=LAST_DATA_YEAR["cer"],
             target_start=DATA_START,
             target_end=PROJECTION_END,
             target_step=1,
         )
-        frames = [
-            pl.read_csv(f, infer_schema_length=0)
-            for f in sorted(tmp_path.rglob('*.csv'))
-        ]
-    return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
+        df = pl.read_csv(out_file, infer_schema_length=0)
+    return df.with_row_index('_order')
 
 
-def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
+def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
+                            start_order: float) -> pl.DataFrame:
     """multiplier_price rows for the Hydrogen sector."""
-    return (
+    data = (
         multipliers
-        .filter(pl.col('Sector') == 'Hydrogen')
-        .select([
-            (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Hydrogen')).alias('Branch'),
-            pl.lit('Sector').alias('Type'),
-            pl.col('Region').alias('Region'),
-            pl.lit('Hydrogen').alias('Sector'),
-            pl.lit('').alias('Service'),
-            pl.lit('').alias('Technology'),
-            pl.lit('multiplier_price').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.when(pl.col('Energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
-            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
-            .alias('Target'),
-            pl.col('Source').alias('Source'),
-            pl.lit('').alias('Unit'),
-            pl.col('Year').cast(pl.String).alias('Year'),
-            pl.col('Multiplier').cast(pl.String).alias('Value'),
-        ])
+        .filter((pl.col('Sector') == 'Hydrogen') & (pl.col('Region') == region))
+        .sort('Energy', 'Year')
     )
+    n = len(data)
+    return data.select([
+        pl.lit(f'CIMS.CAN.{region}.Hydrogen').alias('Branch'),
+        pl.lit('Sector').alias('Type'),
+        pl.lit(region).alias('Region'),
+        pl.lit('Hydrogen').alias('Sector'),
+        pl.lit('').alias('Service'),
+        pl.lit('').alias('Technology'),
+        pl.lit('multiplier_price').alias('Parameter'),
+        pl.lit('').alias('Context'),
+        pl.lit('').alias('Sub_Context'),
+        pl.when(pl.col('Energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
+        .then(pl.lit(f'CIMS.CAN.{region}.') + pl.col('Energy'))
+        .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
+        .alias('Target'),
+        pl.col('Source').alias('Source'),
+        pl.lit('').alias('Unit'),
+        pl.col('Year').cast(pl.String).alias('Year'),
+        pl.col('Multiplier').cast(pl.String).alias('Value'),
+        pl.Series('_order', [start_order + i * 1e-4 for i in range(n)],
+                  dtype=pl.Float64).alias('_order'),
+    ])
+
+
+def _find_max_order(df: pl.DataFrame, service: str, parameter: str,
+                    require_tech: bool = False) -> float | None:
+    """Return the max _order value for rows matching service + parameter."""
+    mask = (pl.col('Service').fill_null('') == service) & (pl.col('Parameter').fill_null('') == parameter)
+    if require_tech:
+        mask = mask & (pl.col('Technology').fill_null('') != '')
+    subset = df.filter(mask)
+    if len(subset) == 0:
+        return None
+    return float(subset['_order'].max())
+
+
+def _assemble_region(
+    fixed: pl.DataFrame,
+    multipliers: pl.DataFrame,
+    region: str,
+) -> pl.DataFrame:
+    """Build the complete model-inputs DataFrame for one region."""
+    # Price multipliers: just after Hydrogen sector is_supply row
+    is_supply_max = _find_max_order(fixed, '', 'is_supply') or 0.0
+    price_rows = _build_price_mult_rows(
+        multipliers, region, start_order=is_supply_max + 0.5
+    )
+
+    combined = pl.concat(
+        [f for f in [fixed.cast({'_order': pl.Float64}), price_rows] if len(f) > 0],
+        how='diagonal_relaxed',
+    ).sort('_order')
+
+    return combined.select(OUTPUT_COLS)
 
 
 # ── main ───────────────────────────────────────────────────────────────────────
 
-def main() -> pl.DataFrame:
+def main() -> dict[str, pl.DataFrame]:
     """Assemble Hydrogen model inputs and write one CSV per region."""
     print('=' * 60)
     print('HYDROGEN MODEL INPUTS')
     print('=' * 60)
 
-    print('\nFlattening fixed structural data...')
-    fixed = _read_flattened_fixed()
-    print(f'  Rows: {len(fixed):,}')
-
-    print('Building energy price multiplier rows...')
+    print('\nLoading pipeline data...')
     multipliers = pl.from_pandas(_energy_price_mod.main())
-    price_rows = _build_price_rows(multipliers)
-    print(f'  Rows: {len(price_rows):,}')
-
-    print('Combining...')
-    output = (
-        pl.concat(
-            [price_rows, fixed],
-            how='diagonal_relaxed',
-        )
-        .select(OUTPUT_COLS)
-    )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'hydrogen_{region}.csv'
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    results: dict[str, pl.DataFrame] = {}
 
-    print(f'\n✅ Hydrogen model inputs complete')
-    print(f'   Total rows:  {len(output):,}')
-    print(f'   Files:       {len(regions)} (one per region)')
+    for region, template in sorted(FIXED_TEMPLATE.items()):
+        fixed_path = FIXED_INPUT_DIR / f'hydrogen_{template}.csv'
+        if not fixed_path.exists():
+            print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
+            continue
 
-    return output
+        try:
+            print(f'\n{region}:')
+            print('  Flattening fixed data...')
+            fixed = _read_flattened_fixed(region)
+
+            print('  Assembling...')
+            output = _assemble_region(fixed, multipliers, region)
+
+            out_path = OUTPUT_DIR / f'hydrogen_{region}.csv'
+            output.write_csv(str(out_path))
+            print(f'  Wrote {len(output):,} rows → {out_path.name}')
+            results[region] = output
+
+        except Exception as exc:
+            print(f'  ERROR: {exc}')
+            import traceback
+            traceback.print_exc()
+
+    print('\n' + '=' * 60)
+    print('SUMMARY')
+    print('=' * 60)
+    print(f'Regions complete: {len(results)}/{len(FIXED_TEMPLATE)}')
+    print(f'Output directory: {OUTPUT_DIR}')
+    print('=' * 60)
+
+    return results
 
 
 if __name__ == '__main__':

@@ -1,47 +1,24 @@
 """
 Ethanol Pipeline — Model Inputs
 
-Combines fixed structural parameters with energy price multipliers into
-CIMS-formatted CSVs (one per region). Ethanol has no external activity
-inputs — production levels are demand-driven and all structural parameters
-are sourced from the fixed data.
+Combines fixed structural parameters with pipeline data into
+CIMS-formatted CSVs (one per region).
 
 Sources
 -------
 Fixed structural parameters
     raw_data/fixed_data/Ethanol/ethanol_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
-    Encodes the full Ethanol hierarchy:
-      Ethanol (Sector)
-        └── Production (Service, Fixed Ratio)
-              ├── Corn       (Service, Fixed Ratio)
-              │     ├── Agricultural Input  (shared utility service)
-              │     └── Steam              (shared utility service)
-              └── Cellulosic (Service, Fixed Ratio)
-                    └── Steam              (shared utility service)
-      Ethanol.Agricultural Input  (shared utility service)
-      Ethanol.Steam               (shared utility service)
-      Ethanol.Methane Fuel        (shared utility service)
-      Ethanol.CCS                 (shared utility service)
-
-    All service_provide rows have null values (sector is demand-driven).
-    All service_request rows are static intensity coefficients.
-    CCS.Target is region-specific (CIMS.Transmission.CCS TS {region}).
+    Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
 Energy price multipliers  (multiplier_price rows)
-    pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
+    processed_data/energy_prices/energy_price_multipliers.csv
+    Inserted after the Ethanol sector is_supply row.
 
 Output columns
 --------------
 Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
-
-Output order per region
------------------------
-1. competition      — from fixed data (Sector level)
-2. is_supply        — generated (TRUE)
-3. multiplier_price — from energy_price_multipliers
-4. rest of fixed data
 """
 
 import sys
@@ -83,142 +60,147 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-REGION_SPECIFIC_ENERGIES = {
+FIXED_TEMPLATE: dict[str, str] = {
+    'AB': 'AB', 'AT': 'AT', 'BC': 'BC', 'MB': 'MB', 'NB': 'NB', 'NL': 'NL',
+    'NS': 'NS', 'NT': 'NT', 'NU': 'NU', 'ON': 'ON', 'PE': 'PE',
+    'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
+}
+
+REGION_SPECIFIC_ENERGIES: set[str] = {
     'Electricity', 'Biodiesel', 'Renewable Diesel',
     'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
 }
 
-
 # ── helpers ────────────────────────────────────────────────────────────────────
 
-def _read_flattened_fixed() -> pl.DataFrame:
-    """Flatten all Ethanol fixed CSVs and return combined DataFrame."""
+def _read_flattened_fixed(region: str) -> pl.DataFrame:
+    """Flatten one fixed Ethanol CSV and return as a row-indexed DataFrame."""
+    fixed_path = FIXED_INPUT_DIR / f'ethanol_{region}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        _flatten_mod.main(
-            input_folder=FIXED_INPUT_DIR,
-            output_folder=tmp_path,
+        out_file = Path(tmp) / f'ethanol_{region}.csv'
+        _flatten_mod.process_file(
+            input_path=fixed_path,
+            output_path=out_file,
             year_min=DATA_START,
             year_max=LAST_DATA_YEAR["cer"],
             target_start=DATA_START,
             target_end=PROJECTION_END,
             target_step=1,
         )
-        frames = [
-            pl.read_csv(f, infer_schema_length=0)
-            for f in sorted(tmp_path.rglob('*.csv'))
-        ]
-    return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
+        df = pl.read_csv(out_file, infer_schema_length=0)
+    return df.with_row_index('_order')
 
 
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Ethanol',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Ethanol',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
+def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
+                            start_order: float) -> pl.DataFrame:
+    """multiplier_price rows for the Ethanol sector."""
+    data = (
+        multipliers
+        .filter((pl.col('Sector') == 'Ethanol') & (pl.col('Region') == region))
+        .sort('Energy', 'Year')
+    )
+    n = len(data)
+    return data.select([
+        pl.lit(f'CIMS.CAN.{region}.Ethanol').alias('Branch'),
+        pl.lit('Sector').alias('Type'),
+        pl.lit(region).alias('Region'),
+        pl.lit('Ethanol').alias('Sector'),
+        pl.lit('').alias('Service'),
+        pl.lit('').alias('Technology'),
+        pl.lit('multiplier_price').alias('Parameter'),
+        pl.lit('').alias('Context'),
+        pl.lit('').alias('Sub_Context'),
+        pl.when(pl.col('Energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
+        .then(pl.lit(f'CIMS.CAN.{region}.') + pl.col('Energy'))
+        .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
+        .alias('Target'),
+        pl.col('Source').alias('Source'),
+        pl.lit('').alias('Unit'),
+        pl.col('Year').cast(pl.String).alias('Year'),
+        pl.col('Multiplier').cast(pl.String).alias('Value'),
+        pl.Series('_order', [start_order + i * 1e-4 for i in range(n)],
+                  dtype=pl.Float64).alias('_order'),
     ])
 
 
-def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
-    """multiplier_price rows for the Ethanol sector."""
-    return (
-        multipliers
-        .filter(pl.col('Sector') == 'Ethanol')
-        .select([
-            (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Ethanol')).alias('Branch'),
-            pl.lit('Sector').alias('Type'),
-            pl.col('Region').alias('Region'),
-            pl.lit('Ethanol').alias('Sector'),
-            pl.lit('').alias('Service'),
-            pl.lit('').alias('Technology'),
-            pl.lit('multiplier_price').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.when(pl.col('Energy').is_in(list(REGION_SPECIFIC_ENERGIES)))
-            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
-            .alias('Target'),
-            pl.col('Source').alias('Source'),
-            pl.lit('').alias('Unit'),
-            pl.col('Year').cast(pl.String).alias('Year'),
-            pl.col('Multiplier').cast(pl.String).alias('Value'),
-        ])
+def _find_max_order(df: pl.DataFrame, service: str, parameter: str,
+                    require_tech: bool = False) -> float | None:
+    """Return the max _order value for rows matching service + parameter."""
+    mask = (pl.col('Service').fill_null('') == service) & (pl.col('Parameter').fill_null('') == parameter)
+    if require_tech:
+        mask = mask & (pl.col('Technology').fill_null('') != '')
+    subset = df.filter(mask)
+    if len(subset) == 0:
+        return None
+    return float(subset['_order'].max())
+
+
+def _assemble_region(
+    fixed: pl.DataFrame,
+    multipliers: pl.DataFrame,
+    region: str,
+) -> pl.DataFrame:
+    """Build the complete model-inputs DataFrame for one region."""
+    # Price multipliers: just after Ethanol sector is_supply row
+    is_supply_max = _find_max_order(fixed, '', 'is_supply') or 0.0
+    price_rows = _build_price_mult_rows(
+        multipliers, region, start_order=is_supply_max + 0.5
     )
+
+    combined = pl.concat(
+        [f for f in [fixed.cast({'_order': pl.Float64}), price_rows] if len(f) > 0],
+        how='diagonal_relaxed',
+    ).sort('_order')
+
+    return combined.select(OUTPUT_COLS)
 
 
 # ── main ───────────────────────────────────────────────────────────────────────
 
-def main() -> pl.DataFrame:
+def main() -> dict[str, pl.DataFrame]:
     """Assemble Ethanol model inputs and write one CSV per region."""
     print('=' * 60)
     print('ETHANOL MODEL INPUTS')
     print('=' * 60)
 
-    print('\nFlattening fixed structural data...')
-    fixed = _read_flattened_fixed()
-    print(f'  Rows: {len(fixed):,}')
-
-    print('Building energy price multiplier rows...')
+    print('\nLoading pipeline data...')
     multipliers = pl.from_pandas(_energy_price_mod.main())
-    price_rows = _build_price_rows(multipliers)
-    print(f'  Rows: {len(price_rows):,}')
-
-    print('Combining...')
-
-    # Sector-level branch: ends with '.Ethanol' (no further sub-path)
-    _sector_branch = pl.col('Branch').str.ends_with('.Ethanol')
-
-    # Keep only competition from fixed data at sector level;
-    # service_provide has null values throughout (sector is demand-driven)
-    # and is retained in fixed_rest unchanged.
-    fixed_sector_competition = fixed.filter(
-        _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
-    )
-
-    # Everything from fixed except sector-level competition, which is
-    # repositioned above is_supply to match standard output ordering.
-    fixed_rest = fixed.filter(
-        ~(_sector_branch & (pl.col('Parameter').fill_null('') == 'competition'))
-    )
-
-    regions = fixed['Region'].drop_nulls().unique().sort().to_list()
-    is_supply_rows = _build_is_supply_rows(regions)
-
-    output = (
-        pl.concat(
-            [fixed_sector_competition, is_supply_rows, price_rows, fixed_rest],
-            how='diagonal_relaxed',
-        )
-        .select(OUTPUT_COLS)
-    )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'ethanol_{region}.csv'
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    results: dict[str, pl.DataFrame] = {}
 
-    print(f'\n✅ Ethanol model inputs complete')
-    print(f'   Total rows:  {len(output):,}')
-    print(f'   Files:       {len(regions)} (one per region)')
+    for region, template in sorted(FIXED_TEMPLATE.items()):
+        fixed_path = FIXED_INPUT_DIR / f'ethanol_{template}.csv'
+        if not fixed_path.exists():
+            print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
+            continue
 
-    return output
+        try:
+            print(f'\n{region}:')
+            print('  Flattening fixed data...')
+            fixed = _read_flattened_fixed(region)
+
+            print('  Assembling...')
+            output = _assemble_region(fixed, multipliers, region)
+
+            out_path = OUTPUT_DIR / f'ethanol_{region}.csv'
+            output.write_csv(str(out_path))
+            print(f'  Wrote {len(output):,} rows → {out_path.name}')
+            results[region] = output
+
+        except Exception as exc:
+            print(f'  ERROR: {exc}')
+            import traceback
+            traceback.print_exc()
+
+    print('\n' + '=' * 60)
+    print('SUMMARY')
+    print('=' * 60)
+    print(f'Regions complete: {len(results)}/{len(FIXED_TEMPLATE)}')
+    print(f'Output directory: {OUTPUT_DIR}')
+    print('=' * 60)
+
+    return results
 
 
 if __name__ == '__main__':
