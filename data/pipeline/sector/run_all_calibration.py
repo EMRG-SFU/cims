@@ -35,6 +35,7 @@ SCRIPTS = [
     SECTOR_DIR / "petroleum refining/calibration.py",
     SECTOR_DIR / "pulp and paper/calibration.py",
     SECTOR_DIR / "residential/calibration.py",
+    SECTOR_DIR / "transportation passenger/calibration.py",
     SECTOR_DIR / "waste/calibration.py",
 ]
 

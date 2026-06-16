@@ -1,22 +1,23 @@
 """
-Fuels Pipeline — Model Inputs
+Exogenous Prices Pipeline — Model Inputs
 
 Combines fixed structural parameters with pipeline data into
-CIMS-formatted CSVs.
+CIMS-formatted CSVs (one per region).
 
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fuels/fuels_{region}.csv  (one per region, flattened as-is)
-    raw_data/fixed_data/fuels/fuels_CIMS.csv      (flattened + energy prices + emission factors)
+    raw_data/fixed_data/exogenous prices/exogenous prices_{region}.csv
+    Flattened from wide (2000–2050 year columns) to long format.
 
 Energy prices  (lcc_financial rows)
-    source/energy_prices/energy_prices.py — generic production costs in 2025 C$/GJ.
-    Inserted after each fuel's is_supply, TRUE row in fuels_CIMS.csv.
+    source/energy_prices/energy_prices.py — regional production costs in 2025 C$/GJ.
+    Inserted after each fuel's is_supply, TRUE row.
 
 Emission factors  (emissions / emissions_biomass rows)
     source/emission_factors/emission_factors.py — tGas/GJ from Canada NIR Annex 6.
-    Inserted after each fuel's lcc_financial rows in fuels_CIMS.csv.
+    Inserted after each fuel's lcc_financial rows.
+    Fuels with zero EF (Electricity, Hydrogen) produce no emission factor rows.
 
 Output columns
 --------------
@@ -62,8 +63,8 @@ from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEA
 
 # ── configuration ──────────────────────────────────────────────────────────────
 BASE_PATH       = Path('C:/cims/data')
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fuels'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/fuels'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/exogenous prices'
+OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/exogenous prices'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -71,25 +72,9 @@ OUTPUT_COLS = [
     'Year', 'Value',
 ]
 
-# Each region maps 1:1 to its own fixed-data file (no template sharing).
-REGIONAL_FILES: dict[str, str] = {
-    'AB': 'AB', 'BC': 'BC', 'MB': 'MB', 'NB': 'NB', 'NL': 'NL',
-    'NS': 'NS', 'NT': 'NT', 'NU': 'NU', 'ON': 'ON', 'PE': 'PE',
-    'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
-}
-
-# Service name in fuels_CIMS.csv → fuel name used in energy_prices / emission_factors
-# where the two differ.
-_SERVICE_TO_ENERGY: dict[str, str] = {
-    'Waste Fuel': 'Waste',
-}
-
-# Fuels whose energy_prices rows are regional-only (no 'generic' entry).
-# ON prices are used as the generic proxy — the price is the same across all regions.
-_USE_ON_AS_GENERIC: frozenset[str] = frozenset({
-    'Renewable Diesel',
-    'Renewable Gasoline',
-})
+REGIONS = [
+    'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT',
+]
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
@@ -128,25 +113,24 @@ def _get_branch_map(fixed: pl.DataFrame) -> dict[str, str]:
         service = (row.get('Service') or '').strip()
         branch  = (row.get('Branch')  or '').strip()
         if service and service not in branch_map:
-            branch_map[service] = branch or f'CIMS.Generic Fuels.{service}'
+            branch_map[service] = branch
     return branch_map
 
 
 def _build_lcc_rows(
     service: str,
     branch: str,
+    region: str,
     prices_df: pd.DataFrame,
     start_order: float,
 ) -> pl.DataFrame:
     """
     Build lcc_financial rows for one fuel from energy_prices output.
-    Only generic-region prices are used (all CIMS-level fuels are non-regional).
-    Returns an empty frame if no generic price exists for this fuel.
+    Uses the region-specific price (Electricity, Biodiesel, Ethanol, Hydrogen
+    are all regional in the energy_prices source).
     """
-    energy_name = _SERVICE_TO_ENERGY.get(service, service)
-    region = 'ON' if energy_name in _USE_ON_AS_GENERIC else 'generic'
     data = prices_df[
-        (prices_df['Energy'] == energy_name) &
+        (prices_df['Energy'] == service) &
         (prices_df['Region'] == region)
     ].sort_values('Year').reset_index(drop=True)
 
@@ -156,8 +140,8 @@ def _build_lcc_rows(
     rows = [
         {
             'Branch':      branch,
-            'Type':        'Service',
-            'Region':      'CIMS',
+            'Type':        'Sector',
+            'Region':      region,
             'Sector':      '',
             'Service':     service,
             'Technology':  '',
@@ -179,16 +163,16 @@ def _build_lcc_rows(
 def _build_ef_rows(
     service: str,
     branch: str,
+    region: str,
     ef_df: pl.DataFrame,
     start_order: float,
 ) -> pl.DataFrame:
     """
     Build emission factor rows for one fuel from build_cims_table() output.
-    Branch and Service are overridden to match the fixed data's naming.
+    Branch, Type, Service, and Region are overridden to match the fixed data context.
     Returns an empty frame if no emission factors exist for this fuel.
     """
-    energy_name = _SERVICE_TO_ENERGY.get(service, service)
-    data = ef_df.filter(pl.col('Service') == energy_name)
+    data = ef_df.filter(pl.col('Service') == service)
 
     if len(data) == 0:
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS + ['_order']})
@@ -196,8 +180,8 @@ def _build_ef_rows(
     n = len(data)
     return data.select([
         pl.lit(branch).alias('Branch'),
-        pl.col('Type'),
-        pl.col('Region'),
+        pl.lit('Sector').alias('Type'),
+        pl.lit(region).alias('Region'),
         pl.col('Sector'),
         pl.lit(service).alias('Service'),
         pl.col('Technology'),
@@ -214,19 +198,20 @@ def _build_ef_rows(
     ])
 
 
-def _assemble_cims(
+def _assemble_region(
     fixed: pl.DataFrame,
+    region: str,
     prices_df: pd.DataFrame,
     ef_df: pl.DataFrame,
 ) -> pl.DataFrame:
     """
-    Build the complete model-inputs DataFrame for fuels_CIMS.csv by
-    interleaving fixed structural data with energy prices (lcc_financial)
-    and emission factors at the correct positions.
+    Build the complete model-inputs DataFrame for one region by interleaving
+    fixed structural data with energy prices (lcc_financial) and emission
+    factors at the correct positions.
 
     Injection order per fuel:
         is_supply, TRUE   ← fixed data
-        lcc_financial     ← energy_prices (generic production costs)
+        lcc_financial     ← energy_prices (regional production costs)
         emissions         ← emission_factors (NIR Annex 6)
     """
     is_supply_orders = _find_is_supply_orders(fixed)
@@ -235,14 +220,14 @@ def _assemble_cims(
     frames: list[pl.DataFrame] = [fixed.cast({'_order': pl.Float64})]
 
     for service, is_supply_order in is_supply_orders.items():
-        branch = branch_map.get(service, f'CIMS.Generic Fuels.{service}')
+        branch = branch_map.get(service, f'CIMS.CAN.{region}.{service}')
 
-        lcc_rows = _build_lcc_rows(service, branch, prices_df,
+        lcc_rows = _build_lcc_rows(service, branch, region, prices_df,
                                     start_order=is_supply_order + 0.3)
         if len(lcc_rows) > 0:
             frames.append(lcc_rows)
 
-        ef_rows = _build_ef_rows(service, branch, ef_df,
+        ef_rows = _build_ef_rows(service, branch, region, ef_df,
                                   start_order=is_supply_order + 0.6)
         if len(ef_rows) > 0:
             frames.append(ef_rows)
@@ -258,9 +243,9 @@ def _assemble_cims(
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> dict[str, pl.DataFrame]:
-    """Assemble fuels model inputs and write one CSV per region plus CIMS."""
+    """Assemble exogenous prices model inputs and write one CSV per region."""
     print('=' * 60)
-    print('FUELS MODEL INPUTS')
+    print('EXOGENOUS PRICES MODEL INPUTS')
     print('=' * 60)
 
     print('\nLoading energy prices...')
@@ -275,9 +260,8 @@ def main() -> dict[str, pl.DataFrame]:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: dict[str, pl.DataFrame] = {}
 
-    # ── Regional files: flatten only ──────────────────────────────────────────
-    for region, template in sorted(REGIONAL_FILES.items()):
-        fixed_path = FIXED_INPUT_DIR / f'fuels_{template}.csv'
+    for region in REGIONS:
+        fixed_path = FIXED_INPUT_DIR / f'exogenous prices_{region}.csv'
         if not fixed_path.exists():
             print(f'\n  ⚠  Skipping {region} — file not found: {fixed_path.name}')
             continue
@@ -285,10 +269,12 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region}:')
             print('  Flattening fixed data...')
-            df = _read_flattened(fixed_path)
-            output = df.select(OUTPUT_COLS)
+            fixed = _read_flattened(fixed_path)
 
-            out_path = OUTPUT_DIR / f'fuels_{region}.csv'
+            print('  Assembling with energy prices and emission factors...')
+            output = _assemble_region(fixed, region, prices_df, ef_df)
+
+            out_path = OUTPUT_DIR / f'exogenous prices_{region}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
@@ -298,34 +284,10 @@ def main() -> dict[str, pl.DataFrame]:
             import traceback
             traceback.print_exc()
 
-    # ── CIMS file: flatten + energy prices + emission factors ─────────────────
-    cims_path = FIXED_INPUT_DIR / 'fuels_CIMS.csv'
-    if cims_path.exists():
-        try:
-            print('\nCIMS:')
-            print('  Flattening fixed data...')
-            fixed = _read_flattened(cims_path)
-
-            print('  Assembling with energy prices and emission factors...')
-            output = _assemble_cims(fixed, prices_df, ef_df)
-
-            out_path = OUTPUT_DIR / 'fuels_CIMS.csv'
-            output.write_csv(str(out_path))
-            print(f'  Wrote {len(output):,} rows → {out_path.name}')
-            results['CIMS'] = output
-
-        except Exception as exc:
-            print(f'  ERROR: {exc}')
-            import traceback
-            traceback.print_exc()
-    else:
-        print(f'\n  ⚠  fuels_CIMS.csv not found at {cims_path}')
-
     print('\n' + '=' * 60)
     print('SUMMARY')
     print('=' * 60)
-    total_expected = len(REGIONAL_FILES) + 1  # +1 for CIMS
-    print(f'Files complete: {len(results)}/{total_expected}')
+    print(f'Regions complete: {len(results)}/{len(REGIONS)}')
     print(f'Output directory: {OUTPUT_DIR}')
     print('=' * 60)
 
