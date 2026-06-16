@@ -61,7 +61,7 @@ OUTPUT_COLS = [
 ]
 
 FIXED_TEMPLATE: dict[str, str] = {
-    'AB': 'AB', 'AT': 'AT', 'BC': 'BC', 'MB': 'MB', 'NB': 'NB', 'NL': 'NL',
+    'AB': 'AB', 'BC': 'BC', 'MB': 'MB', 'NB': 'NB', 'NL': 'NL',
     'NS': 'NS', 'NT': 'NT', 'NU': 'NU', 'ON': 'ON', 'PE': 'PE',
     'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
 }
