@@ -34,13 +34,17 @@ SCRIPTS = [
     SECTOR_DIR / "industrial minerals/model_inputs.py",
     SECTOR_DIR / "iron and steel/model_inputs.py",
     SECTOR_DIR / "light industrial/model_inputs.py",
+    SECTOR_DIR / "market share limits/model_inputs.py",
     SECTOR_DIR / "metal smelting/model_inputs.py",
+    SECTOR_DIR / "mining/model_inputs.py",
     SECTOR_DIR / "natural gas/model_inputs.py",
     SECTOR_DIR / "petroleum crude/model_inputs.py",
     SECTOR_DIR / "petroleum refining/model_inputs.py",
     SECTOR_DIR / "pulp and paper/model_inputs.py",
+    SECTOR_DIR / "residential/model_inputs.py",
+    SECTOR_DIR / "transmission/model_inputs.py",
     SECTOR_DIR / "waste/model_inputs.py",
-    SECTOR_DIR / "mining/model_inputs.py",
+
 ]
 
 STOP_ON_ERROR = "--stop-on-error" in sys.argv[1:]
