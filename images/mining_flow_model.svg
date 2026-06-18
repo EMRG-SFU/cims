@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 660" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:10px;fill:#243042;}
+    .ttl{font-size:11.5px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .gray{fill:#eef1f5;stroke:#c3ccd8;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .potash{fill:#8a5a2b;}
+    .dash{stroke-dasharray:5 4;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="430" y="12" width="200" height="46" rx="7"/>
+  <text class="lblw" x="530" y="34" text-anchor="middle">Mining sector</text>
+  <text class="subw" x="530" y="49" text-anchor="middle">driver: ore throughput (tonnes)</text>
+  <path class="edge" d="M530,58 V72"/>
+  <path class="edge" d="M300,72 H760"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M760,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service branch -->
+  <rect class="branch" x="222" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">physical production chain</text>
+  <rect class="branch" x="682" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="760" y="103" text-anchor="middle">Service</text>
+  <text class="subw" x="760" y="118" text-anchor="middle">auxiliary energy services</text>
+
+  <!-- product children -->
+  <path class="edge" d="M300,126 V140"/>
+  <path class="edge" d="M170,140 H470"/>
+  <path class="edge" d="M170,140 V150" marker-end="url(#arrow)"/>
+  <path class="edge" d="M470,140 V150" marker-end="url(#arrow)"/>
+
+  <rect class="prod" x="100" y="150" width="140" height="38" rx="6"/>
+  <text class="lblw" x="170" y="173" text-anchor="middle">Metal</text>
+
+  <rect class="potash" x="395" y="150" width="150" height="44" rx="6"/>
+  <text class="lblw" x="470" y="168" text-anchor="middle">Potash</text>
+  <text class="subw" x="470" y="183" text-anchor="middle">non-metal · see Figure 2</text>
+
+  <!-- metal children -->
+  <path class="edge" d="M170,188 V200"/>
+  <path class="edge" d="M110,200 H300"/>
+  <path class="edge" d="M110,200 V210" marker-end="url(#arrow)"/>
+  <path class="edge" d="M300,200 V210" marker-end="url(#arrow)"/>
+
+  <rect class="prod" x="44" y="210" width="132" height="34" rx="6"/>
+  <text class="lblw" x="110" y="232" text-anchor="middle">Open Pit</text>
+  <rect class="prod" x="214" y="210" width="172" height="34" rx="6"/>
+  <text class="lblw" x="300" y="232" text-anchor="middle">Underground</text>
+
+  <!-- open pit rail to three boxes -->
+  <path class="edge" d="M110,244 V258 H22 V516"/>
+  <path class="edge" d="M22,300 H40" marker-end="url(#arrow)"/>
+  <path class="edge" d="M22,408 H40" marker-end="url(#arrow)"/>
+  <path class="edge" d="M22,508 H40" marker-end="url(#arrow)"/>
+
+  <!-- Iron -->
+  <rect class="det" x="40" y="266" width="158" height="92" rx="6"/>
+  <text class="ttl" x="48" y="282">Iron</text>
+  <text class="li" x="48" y="298">Raw Product — Extraction,</text>
+  <text class="li" x="58" y="311">Transportation</text>
+  <text class="li" x="48" y="326">Primary Crushing</text>
+  <text class="li" x="48" y="339">Secondary Crushing</text>
+  <text class="li" x="48" y="352">Agglomeration</text>
+
+  <!-- Non-Iron -->
+  <rect class="det" x="40" y="374" width="158" height="92" rx="6"/>
+  <text class="ttl" x="48" y="390">Non-Iron</text>
+  <text class="li" x="48" y="406">Raw Product — Extraction,</text>
+  <text class="li" x="58" y="419">Transportation</text>
+  <text class="li" x="48" y="434">Primary Crushing</text>
+  <text class="li" x="48" y="447">Secondary Crushing</text>
+  <text class="li" x="48" y="460">Primary Milling</text>
+
+  <!-- shared open pit -->
+  <rect class="gray" x="40" y="482" width="158" height="74" rx="6"/>
+  <text class="ttl" x="48" y="498">Shared stages</text>
+  <text class="li" x="48" y="514">Mineral Separation</text>
+  <text class="li" x="48" y="527">Cleaning</text>
+  <text class="li" x="48" y="540">Tailing Disposal</text>
+  <text class="li" x="48" y="553">Unassigned Energy</text>
+
+  <!-- Underground detail -->
+  <path class="edge" d="M300,244 V266" marker-end="url(#arrow)"/>
+  <rect class="det" x="214" y="266" width="186" height="148" rx="6"/>
+  <text class="ttl" x="222" y="282">Underground</text>
+  <text class="li" x="222" y="298">Processing —</text>
+  <text class="li" x="232" y="311">Raw Product (Extraction,</text>
+  <text class="li" x="242" y="324">Transportation)</text>
+  <text class="li" x="232" y="337">Primary &amp; Secondary Crushing</text>
+  <text class="li" x="232" y="350">Primary Milling</text>
+  <text class="li" x="222" y="366">Mineral Separation</text>
+  <text class="li" x="222" y="379">Cleaning</text>
+  <text class="li" x="222" y="392">Tailing Disposal</text>
+  <text class="li" x="222" y="405">Unassigned Energy</text>
+
+  <!-- service children rail -->
+  <path class="edge" d="M760,126 V140 H612 V470"/>
+  <path class="edge" d="M612,170 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M612,217 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M612,265 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M612,417 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M612,465 H700" marker-end="url(#arrow)"/>
+
+  <rect class="svc" x="700" y="150" width="320" height="40" rx="6"/>
+  <text class="lbl" x="860" y="167" text-anchor="middle">HVAC</text>
+  <text class="sub" x="860" y="182" text-anchor="middle">Space Heating · Space Cooling</text>
+
+  <rect class="svc" x="700" y="200" width="320" height="34" rx="6"/>
+  <text class="lbl" x="860" y="221" text-anchor="middle">Lighting</text>
+
+  <rect class="svc" x="700" y="248" width="320" height="36" rx="6"/>
+  <text class="lbl" x="860" y="271" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+
+  <!-- MECS chips -->
+  <rect class="det" x="716" y="292" width="288" height="96" rx="6"/>
+  <text class="li" x="730" y="312">• Compressed Air</text>
+  <text class="li" x="730" y="332">• Fans  (incl. mine ventilation)</text>
+  <text class="li" x="730" y="352">• Materials Handling  (conveyance)</text>
+  <text class="li" x="730" y="372">• Materials Processing</text>
+  <text class="li" x="876" y="312">• Pumps</text>
+
+  <rect class="svc" x="700" y="398" width="320" height="38" rx="6"/>
+  <text class="lbl" x="860" y="415" text-anchor="middle">Methane Blend</text>
+  <text class="sub" x="860" y="429" text-anchor="middle">NG · biogas · biomass gas · H₂</text>
+
+  <rect class="svc" x="700" y="446" width="320" height="38" rx="6"/>
+  <text class="lbl" x="860" y="469" text-anchor="middle">Steam &amp; cogeneration</text>
+
+  <text class="sub" x="860" y="510" text-anchor="middle">Each service is modelled as existing vs. higher-efficiency</text>
+  <text class="sub" x="860" y="524" text-anchor="middle">equipment, with fuel-switching options where relevant.</text>
+
+  <!-- service-request arrows -->
+  <path class="dedge" d="M400,330 C520,330 520,322 612,322" marker-end="url(#darrow)"/>
+  <text class="sub" x="506" y="316" text-anchor="middle">service requests (GJ)</text>
+
+  <!-- legend -->
+  <rect class="prod" x="40" y="588" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="598">product / mine type</text>
+  <rect class="det" x="210" y="588" width="16" height="12" rx="2"/>
+  <text class="sub" x="232" y="598">process competition</text>
+  <rect class="gray" x="392" y="588" width="16" height="12" rx="2"/>
+  <text class="sub" x="414" y="598">fixed-ratio / aggregation</text>
+  <rect class="svc" x="588" y="588" width="16" height="12" rx="2"/>
+  <text class="sub" x="610" y="598">energy / utility service</text>
+</svg>

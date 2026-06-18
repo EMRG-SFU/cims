@@ -1,0 +1,160 @@
+project:
+  type: book
+  output-dir: _book
+
+# Bibliography: all chapters share ONE file, references.bib, but it is
+# declared per-document in each citing chapter's YAML frontmatter rather
+# than project-level here. This is deliberate: a project-level bibliography
+# makes Quarto collect references book-wide, which floods every chapter's
+# References section with the full list. Declaring the same file per-document
+# scopes each chapter's References section to only the works it cites.
+# references.qmd declares references.bib + nocite: @* to render the combined
+# global References list (in HTML), and \printbibliographyORIG for PDF, where
+# the per-chapter \printbibliography is no-op'd via header-includes below.
+link-citations: true
+
+book:
+  title: CIMS
+  # author: Energy and Materials Research Group, Simon Fraser University
+  repo-url: https://github.com/EMRG-SFU/cims
+  repo-branch: quarto_docs
+  repo-actions: [issue]
+  sidebar:
+    collapse-level: 1
+  chapters:
+    - index.qmd                 # Introduction
+    - part: "About"
+      chapters:
+        - history.qmd           # History and development
+        - architecture.qmd      # Model architecture
+    - part: "Methodology"
+      chapters:
+        - theory.qmd            # Theory
+        - technologies.qmd      # Technology competition
+        - energy_supply_demand.qmd  # Energy supply and demand
+        - demand_feedbacks.qmd  # Goods and services demand feedbacks
+    - part: "Sector Descriptions"
+      chapters:
+        - sector_overview.qmd      # Industrial sector overview
+        - sector_coal_mining.qmd              # Coal Mining
+        - sector_natural_gas.qmd              # Natural Gas
+        - sector_petroleum_crude.qmd          # Petroleum Crude
+        - sector_petroleum_refining.qmd       # Petroleum Refining
+        - sector_electricity.qmd              # Electricity
+        - sector_ethanol.qmd                  # Ethanol
+        - sector_biodiesel.qmd                # Biodiesel
+        - sector_hydrogen.qmd                 # Hydrogen
+        - sector_mining.qmd                   # Mining
+        - sector_industrial_minerals.qmd      # Industrial Minerals
+        - sector_chemical_products.qmd        # Chemical Products
+        - sector_pulp_and_paper.qmd           # Pulp and Paper
+        - sector_metal_smelting.qmd           # Metal Smelting
+        - sector_iron_and_steel.qmd           # Iron and Steel
+        - sector_light_industrial.qmd         # Light Industrial
+        - sector_construction.qmd             # Construction
+        - sector_residential.qmd              # Residential
+        - sector_commercial.qmd               # Commercial
+        - sector_transportation_passenger.qmd # Transportation Passenger
+        - sector_transportation_freight.qmd   # Transportation Freight
+        - sector_waste.qmd                    # Waste
+        - sector_agriculture.qmd              # Agriculture
+        - sector_forestry.qmd                 # Forestry
+        - sector_carbon_dioxide_removal.qmd   # Carbon dioxide removal / DAC
+        - sector_lulucf.qmd                   # LULUCF
+    - part: "General Services"
+      chapters:
+        - machine_drive.qmd      # Machine drive systems in industry
+        - low_temp_industrial_heat.qmd     # Low-temperature industrial heat, including steam generation
+        - cogeneration.qmd     # Cogeneration of heat and power
+        - ccus.qmd               # Carbon capture, utilization, and storage
+        - energy_storage.qmd     # Energy storage: thermal, short duration, long duration
+    - part: "Data and Calibration"
+      chapters:
+        - data_inputs.qmd       # Data inputs
+        - calibration.qmd       # Calibration
+        - validation.qmd        # Validation
+    - part: "Running the Model"
+      chapters:
+        - setup.qmd             # Installation
+        - getting_started.qmd   # Getting started
+        - policies.qmd          # Scenarios and policies
+        - building_tree.qmd     # Building the model tree
+    - part: "Outputs and Analysis"
+      chapters:
+        - outputs.qmd           # Output files
+        - post_processing.qmd   # Post-processing and reporting
+    - references.qmd
+  appendices:
+    - appendix_acronyms.qmd
+    - appendix_file_formats.qmd
+    - appendix_equations.qmd
+    - appendix_changelog.qmd
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    css: style.css
+    link-external-newwindow: true
+    include-after-body:
+      - comma-fn.html
+      - refs-backlinks.html
+  # docx:
+  #   eval: true
+  pdf:
+    eval: true
+    # --- Typography (TeX Gyre fonts ship with TeX Live; need xelatex) ---
+    pdf-engine: xelatex
+    mainfont: "TeX Gyre Pagella"   # body serif (Palatino-like)
+    sansfont: "TeX Gyre Heros"     # headings sans (Helvetica-like)
+    monofont: "TeX Gyre Cursor"    # code mono (Courier-like)
+    # --- Links & coloured text (cimsblue/cimsink defined in cims-style.sty) ---
+    colorlinks: true
+    linkcolor: cimsblue
+    urlcolor: cimsblue
+    citecolor: cimsblue
+    toccolor: cimsink
+    # Heading/caption styling + accent palette.
+    include-in-header:
+      - cims-style.sty
+    # Pin figures to exactly where they appear in source rather than
+    # letting LaTeX float them to the top/bottom of pages.
+    fig-pos: ht
+    cite-method: biblatex
+    biblio-style: authoryear
+    biblatexoptions:
+      - backend=biber
+    # Each chapter loads its own .bib via its frontmatter. Quarto with
+    # cite-method: biblatex auto-injects a per-chapter "References"
+    # section (a level-2 \section* heading plus a \printbibliography
+    # call). For PDF we want a single combined References section at the
+    # end of the book, placed by references.qmd, so:
+    #  - strip-chapter-refs.lua removes the per-chapter refs Div and the
+    #    "References" Header from the AST before LaTeX is generated.
+    #  - The header-includes block saves the real \printbibliography
+    #    under \printbibliographyORIG and no-ops the original, as a
+    #    belt-and-suspenders fallback in case anything the filter misses
+    #    still emits a \printbibliography call. references.qmd calls
+    #    \printbibliographyORIG once to emit the combined bibliography.
+    filters:
+      - strip-chapter-refs.lua
+    header-includes:
+      - |
+        \AtBeginDocument{%
+          \let\printbibliographyORIG\printbibliography
+          \renewcommand{\printbibliography}[1][]{}%
+        }
+      - |
+        % Cap included images at the text width while leaving smaller
+        % images at their natural size. \maxwidth = min(natural, linewidth).
+        \makeatletter
+        \def\maxwidth{%
+          \ifdim\Gin@nat@width>\linewidth
+            \linewidth
+          \else
+            \Gin@nat@width
+          \fi
+        }
+        \makeatother
+        \setkeys{Gin}{width=\maxwidth,keepaspectratio}
