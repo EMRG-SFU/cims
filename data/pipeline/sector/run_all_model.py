@@ -43,6 +43,8 @@ SCRIPTS = [
     SECTOR_DIR / "pulp and paper/model_inputs.py",
     SECTOR_DIR / "residential/model_inputs.py",
     SECTOR_DIR / "transmission/model_inputs.py",
+    SECTOR_DIR / "transportation passenger/model_inputs.py",
+    SECTOR_DIR / "transportation freight/model_inputs.py",
     SECTOR_DIR / "waste/model_inputs.py",
 
 ]

@@ -73,7 +73,7 @@ from pipeline.utils.controls_conversions import BASE_PATH as _CIMS_BASE
 # CONFIGURATION
 # ==============================================================================
 
-BASE_PATH       = _CIMS_BASE / 'raw_data/nrcan/ceud/transportation_passenger'
+BASE_PATH       = _CIMS_BASE / 'raw_data/nrcan/ceud/transportation'
 CAN_FILE        = BASE_PATH / 'tran_ca_e.xls'
 ASSUMPTIONS_CSV = _CIMS_BASE / 'raw_data/assumptions/transport_passenger_assumptions.csv'
 STATSCAN_POP_PATH = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
