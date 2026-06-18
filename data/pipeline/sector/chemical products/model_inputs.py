@@ -73,10 +73,9 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
-from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Chemical Products'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/chemical products'
 

@@ -58,10 +58,9 @@ _ef_spec = importlib.util.spec_from_file_location(
 _ef_mod = importlib.util.module_from_spec(_ef_spec)
 _ef_spec.loader.exec_module(_ef_mod)
 
-from utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fuels'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/fuels'
 

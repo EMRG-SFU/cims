@@ -30,9 +30,8 @@ _PIPELINE_ROOT = Path(__file__).parent.parent.parent
 if str(_PIPELINE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PIPELINE_ROOT))
 
-from utils.controls_conversions import DATA_START, PROJECTION_END
+from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
 
-BASE_PATH     = Path('C:/cims/data')
 ACTIVITY_PATH = BASE_PATH / 'processed_data/activity/electricity.csv'
 OUTPUT_DIR    = BASE_PATH / 'model_inputs/model/exogenous demand'
 

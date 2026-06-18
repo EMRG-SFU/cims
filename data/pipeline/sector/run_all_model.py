@@ -18,6 +18,7 @@ SCRIPTS = [
     SECTOR_DIR / "agriculture/model_inputs.py",
     SECTOR_DIR / "biodiesel/model_inputs.py",
     SECTOR_DIR / "chemical products/model_inputs.py",
+    SECTOR_DIR / "CIMS_base/model_inputs.py",
     SECTOR_DIR / "coal mining/model_inputs.py",
     SECTOR_DIR / "commercial/model_inputs.py",
     SECTOR_DIR / "construction/model_inputs.py",

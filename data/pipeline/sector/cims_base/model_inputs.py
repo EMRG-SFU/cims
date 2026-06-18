@@ -44,10 +44,9 @@ _pg_spec = importlib.util.spec_from_file_location(
 _pg_mod = importlib.util.module_from_spec(_pg_spec)
 _pg_spec.loader.exec_module(_pg_mod)
 
-from utils.controls_conversions import DATA_START, PROJECTION_END
+from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
 
 # ── configuration ───────────────────────────────────────────────────────────────
-BASE_PATH       = Path('C:/cims/data')
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/CIMS_base'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/CIMS_base'
 
