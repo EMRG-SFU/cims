@@ -22,6 +22,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
 import sys
+import importlib.util
 from pathlib import Path
 
 import polars as pl
@@ -30,10 +31,16 @@ _PIPELINE_ROOT = Path(__file__).parent.parent.parent
 if str(_PIPELINE_ROOT) not in sys.path:
     sys.path.insert(0, str(_PIPELINE_ROOT))
 
+_elec_spec = importlib.util.spec_from_file_location(
+    'electricity_activity',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'electricity.py',
+)
+_elec_mod = importlib.util.module_from_spec(_elec_spec)
+_elec_spec.loader.exec_module(_elec_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
 
-ACTIVITY_PATH = BASE_PATH / 'processed_data/activity/electricity.csv'
-OUTPUT_DIR    = BASE_PATH / 'model_inputs/model/exogenous demand'
+OUTPUT_DIR = BASE_PATH / 'model_inputs/model/exogenous demand'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -104,8 +111,8 @@ def main() -> dict[str, pl.DataFrame]:
     print('EXOGENOUS DEMAND — ELECTRICITY MODEL INPUTS')
     print('=' * 60)
 
-    print('\nLoading electricity activity data...')
-    activity = pl.read_csv(ACTIVITY_PATH, infer_schema_length=0)
+    print('\nBuilding electricity activity data...')
+    activity = _elec_mod.main()
     act_regions = sorted(activity['Region'].unique().to_list())
     print(f'  Rows: {len(activity):,}  regions: {act_regions}')
 

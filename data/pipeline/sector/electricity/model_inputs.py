@@ -67,11 +67,17 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_elec_spec = importlib.util.spec_from_file_location(
+    'electricity_activity',
+    _PIPELINE_ROOT / 'source' / 'activity' / 'electricity.py',
+)
+_elec_mod = importlib.util.module_from_spec(_elec_spec)
+_elec_spec.loader.exec_module(_elec_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Electricity'
-ACTIVITY_PATH   = BASE_PATH / 'processed_data/activity/electricity.csv'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/electricity'
 
 OUTPUT_COLS = [
@@ -282,8 +288,8 @@ def main() -> dict[str, pl.DataFrame]:
     print('ELECTRICITY MODEL INPUTS')
     print('=' * 60)
 
-    print('\nLoading electricity activity data...')
-    activity = pl.read_csv(ACTIVITY_PATH, infer_schema_length=0)
+    print('\nBuilding electricity activity data...')
+    activity = _elec_mod.main()
     act_regions = sorted(activity['Region'].unique().to_list())
     print(f'  Rows: {len(activity):,}  regions: {act_regions}')
 
