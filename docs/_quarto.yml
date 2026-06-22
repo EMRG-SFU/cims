@@ -2,23 +2,28 @@ project:
   type: book
   output-dir: _book
 
-# Per-chapter bibliographies are declared in each chapter's YAML
-# frontmatter (e.g. `bibliography: technologies.bib`). In HTML this
-# gives each chapter its own References section at the end. In PDF,
-# the biblatex \printbibliography injected by Quarto at the end of
-# each chapter is redefined to a no-op via header-includes under
-# format.pdf below; the saved-original \printbibliographyORIG is then
-# called once from references.qmd to emit a single combined References
-# section at the end of the book. references.qmd also serves as the
-# global References section in HTML (populated via nocite: @*).
+execute: 
+  freeze: auto # turn off for actual render and publish
+
+# Bibliography: all chapters share ONE file, references.bib, but it is
+# declared per-document in each citing chapter's YAML frontmatter rather
+# than project-level here. This is deliberate: a project-level bibliography
+# makes Quarto collect references book-wide, which floods every chapter's
+# References section with the full list. Declaring the same file per-document
+# scopes each chapter's References section to only the works it cites.
+# references.qmd declares references.bib + nocite: @* to render the combined
+# global References list (in HTML), and \printbibliographyORIG for PDF, where
+# the per-chapter \printbibliography is no-op'd via header-includes below.
 link-citations: true
 
 book:
   title: CIMS
-  # author: Brad Griffin, Jillian Anderson, and Matt Sniatynski
+  # author: Energy and Materials Research Group, Simon Fraser University
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: quarto_docs
   repo-actions: [issue]
+  sidebar:
+    collapse-level: 1
   chapters:
     - index.qmd                 # Introduction
     - part: "About"
@@ -31,15 +36,41 @@ book:
         - technologies.qmd      # Technology competition
         - energy_supply_demand.qmd  # Energy supply and demand
         - demand_feedbacks.qmd  # Goods and services demand feedbacks
-        - sectors.qmd           # Sector descriptions
-    - part: "Cross-Sector Topics"
+    - part: "Sector Descriptions"
       chapters:
-        - energy_efficiency.qmd  # Energy efficiency
-        - low_temp_industrial_heat.qmd     # Low-temperature industrial heat, including steam generation
+        - sector_overview.qmd      # Industrial sector overview
+        - sector_coal_mining.qmd              # Coal Mining
+        - sector_natural_gas.qmd              # Natural Gas
+        - sector_petroleum_crude.qmd          # Petroleum Crude
+        - sector_petroleum_refining.qmd       # Petroleum Refining
+        - sector_electricity.qmd              # Electricity
+        - sector_ethanol.qmd                  # Ethanol
+        - sector_biodiesel.qmd                # Biodiesel
+        - sector_hydrogen.qmd                 # Hydrogen
+        - sector_mining.qmd                   # Mining
+        - sector_industrial_minerals.qmd      # Industrial Minerals
+        - sector_chemical_products.qmd        # Chemical Products
+        - sector_pulp_and_paper.qmd           # Pulp and Paper
+        - sector_metal_smelting.qmd           # Metal Smelting
+        - sector_iron_and_steel.qmd           # Iron and Steel
+        - sector_light_industrial.qmd         # Light Industrial
+        - sector_construction.qmd             # Construction
+        - sector_residential.qmd              # Residential
+        - sector_commercial.qmd               # Commercial
+        - sector_transportation_passenger.qmd # Transportation Passenger
+        - sector_transportation_freight.qmd   # Transportation Freight
+        - sector_waste.qmd                    # Waste
+        - sector_agriculture.qmd              # Agriculture
+        - sector_forestry.qmd                 # Forestry
+        - sector_carbon_dioxide_removal.qmd   # Carbon dioxide removal / DAC
+        - sector_lulucf.qmd                   # LULUCF
+    - part: "General Services"
+      chapters:
         - machine_drive.qmd      # Machine drive systems in industry
+        - low_temp_industrial_heat.qmd     # Low-temperature industrial heat, including steam generation
+        - cogeneration.qmd     # Cogeneration of heat and power
         - ccus.qmd               # Carbon capture, utilization, and storage
         - energy_storage.qmd     # Energy storage: thermal, short duration, long duration
-        - district_energy.qmd    # District energy supply
     - part: "Data and Calibration"
       chapters:
         - data_inputs.qmd       # Data inputs
@@ -76,6 +107,20 @@ format:
   #   eval: true
   # pdf:
   #   eval: true
+  #   # --- Typography (TeX Gyre fonts ship with TeX Live; need xelatex) ---
+  #   pdf-engine: xelatex
+  #   mainfont: "TeX Gyre Pagella"   # body serif (Palatino-like)
+  #   sansfont: "TeX Gyre Heros"     # headings sans (Helvetica-like)
+  #   monofont: "TeX Gyre Cursor"    # code mono (Courier-like)
+  #   # --- Links & coloured text (cimsblue/cimsink defined in cims-style.sty) ---
+  #   colorlinks: true
+  #   linkcolor: cimsblue
+  #   urlcolor: cimsblue
+  #   citecolor: cimsblue
+  #   toccolor: cimsink
+  #   # Heading/caption styling + accent palette.
+  #   include-in-header:
+  #     - cims-style.sty
   #   # Pin figures to exactly where they appear in source rather than
   #   # letting LaTeX float them to the top/bottom of pages.
   #   fig-pos: ht

@@ -1,9 +1,7 @@
 ---
-bibliography:
-  - history.bib
-  - low_temp_industrial_heat.bib
-  - technologies.bib
-  - theory.bib
+# Declares the shared master bib file so @* below is scoped to THIS
+# page (the combined global References list), not the whole book.
+bibliography: references.bib
 nocite: |
   @*
 ---

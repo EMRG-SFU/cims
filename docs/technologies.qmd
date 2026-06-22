@@ -1,5 +1,5 @@
 ---
-bibliography: technologies.bib
+bibliography: references.bib
 ---
 
 # Technology Competition {#sec-technology-competition}
@@ -13,7 +13,7 @@ Sub-model technology choice occurs according to the following order:
 
 ## Demand Assessment
 
-All of the CIMS energy demand models (industry, transportation, commercial / institutional and residential) start with an exogenously determined demand for physical goods and services in each run period. These demands are mostly taken from Natural Resources Canada forecasts. The energy supply models may either use exogenously determined forecasts or they can be run using energy demand calculated from the demand model plus net exports.
+All of the CIMS energy demand models (industry, transportation, commercial / institutional, and residential) start with an exogenously determined demand for physical goods and services in each run period. These demands are mostly taken from Natural Resources Canada forecasts. The energy supply models may either use exogenously determined forecasts or they can be run using energy demand calculated from the demand model plus net exports.
 
 ### Request-Provide demand
 
@@ -210,7 +210,7 @@ Note that market shares used to calculate the weighted-average LCC of a service 
 
 ### Retrofit
 
-The retrofit option allows functioning equipment to be converted to a different type of equipment before its retirement date. For example, a boiler could be retrofitted into a cogenerator before it's lifetime-based retirement. After existing stock is retired, CIMS treats the initial purchasing price of the incumbent technology as a sunk cost and uses the operating and maintenance (O&M), energy, service and emissions costs as the only costs of the incumbent technology. The costs of the retrofit options are then calculated as the sum of O&M, energy, service and emissions costs plus the annualized retrofit capital cost less any tax or other credit. CIMS then determines, using a similar competition calculation to those already described, how many incumbent technologies will be retrofitted.
+The retrofit option allows functioning equipment to be converted to a different type of equipment before its retirement date. For example, a boiler could be retrofitted into a cogenerator before it's lifetime-based retirement. After existing stock is retired, CIMS treats the initial purchasing price of the incumbent technology as a sunk cost and uses the operating and maintenance (O&M), energy, service, and emissions costs as the only costs of the incumbent technology. The costs of the retrofit options are then calculated as the sum of O&M, energy, service, and emissions costs plus the annualized retrofit capital cost less any tax or other credit. CIMS then determines, using a similar competition calculation to those already described, how many incumbent technologies will be retrofitted.
 
 The analyst can place some bounds on this retrofit option. A maximum (R-MAX) or minimum (R-MIN) market share can be established such that only a certain amount of the old stock could (maximum) or must (minimum) be retrofitted in any year. In an unconstrained market, maximum should be set to 1 and minimum to 0.
 

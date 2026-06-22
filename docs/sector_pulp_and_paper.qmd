@@ -1,0 +1,169 @@
+---
+bibliography: references.bib
+---
+
+# Pulp and Paper {#sec-pulp-and-paper}
+
+As with the other industrial sub-models, the emphasis in the pulp and paper sector is on the structure of the energy-service flow model — the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them — rather than on the chemistry or economics of individual mills. Pulp and paper is distinctive among the industrial branches in two ways. First, it is already largely powered by biomass — the spent pulping liquor and wood residues the mills produce themselves — so its on-site fossil emissions are concentrated in a few stages rather than spread across the whole process. Second, much of the traditional mill products have been declining for many years in Canada, as the long fall in newsprint demand works through the fleet. Both shape the sub-model and the decarbonisation options it admits.
+
+## Scope
+
+CIMS represents the manufacture of **pulp, paper and paperboard** — the energy-intensive core of the sector — organised as a pulp-making chain feeding a set of paper-grade chains. The driving variable is the physical output of pulp and paper in tonnes; a forecast of demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.
+
+Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
+
+- **Forest harvesting and the supply of roundwood and residues** are covered in the [Forestry](sector_forestry.qmd) chapter; the pulp and paper sub-model takes logs, chips and recovered paper as inputs.
+- **Converted paper products** — boxes, bags, asphalt roofing, and other converting industries — are downstream manufacturing and are handled in the [Light Industrial](sector_light_industrial.qmd) branch, not here.
+- **Fuel and electricity supply** enter through the energy-supply sub-models and the shared fuel nodes; the sub-model consumes these as priced inputs and, importantly, can also *generate* electricity and steam on site (see below).
+
+The sub-model stops at saleable pulp and paper grades.
+
+## Real-world context
+
+Canadian pulp and paper is large, export-oriented, regionally concentrated, and in long-run decline (unless significant changes occur within the sector). The industry is largest in **Québec, Ontario and British Columbia**, with significant capacity in the **Atlantic** region and a smaller presence in **Alberta**. Its economic output peaked around 2004 and fell by roughly 45% to 2018 as newsprint demand collapsed [@cer-pulp]; the model's exogenous demand trajectories reflect this, with output declining over the projection in every region except Alberta.
+
+What most distinguishes the sector energetically is its reliance on **self-produced biomass energy**. Kraft (chemical) mills concentrate and burn the **black liquor** — the spent cooking chemicals and dissolved wood lignin left after pulping — in a recovery boiler that both regenerates the pulping chemicals and raises high-pressure steam; mills also burn **hog fuel** (bark and wood residues). Together these supply the majority of mill energy, and a growing number of mills run **biomass cogeneration**, meeting their own steam and power needs and selling surplus electricity to the grid: self-generation supplied on the order of a quarter of the sector's electricity in recent years, across dozens of cogeneration units [@cer-pulp; @nrcan-pp-netzero]. Because this energy is biogenic, the sector's *fossil* emissions are comparatively small and concentrated — most prominently in the **lime kiln**, which calcines lime for the kraft chemical cycle and has traditionally burned natural gas or oil, and in any remaining fossil-fired steam and drying [@ppc-limekiln]. The CIMS structure mirrors this: it carries an explicit **Black Liquor** service representing the recovery-and-energy cycle, it offers biomass and cogeneration options throughout the Steam service, and it concentrates the fossil-fuel choices at the lime kiln and the dryers.
+
+## Model structure
+
+Following the standard CIMS pattern, the sector divides into two sub-trees: a **Product** sub-tree, which holds the pulp-making and paper-making chains, and a **Service** sub-tree, which holds the auxiliary energy and utility services — including the sector-specific black-liquor recovery cycle. @fig-pulp-paper-flow-model shows the overall structure.
+
+In the pulp and paper tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which pulping process, which bleaching sequence, which dryer, which recovery furnace — occur at the tech-compete leaves.
+
+![Energy-service flow model of the pulp and paper sector (region-agnostic master tree). The sector divides into a Product sub-tree — a pulp-making chain (log preparation, pulping, washing, bleaching, drying) and five paper-grade chains — and a Service sub-tree that holds the auxiliary energy services plus the sector-specific Black Liquor recovery-and-energy cycle.](images/pulp_paper_flow_model.svg){#fig-pulp-paper-flow-model .lightbox width=100%}
+
+### Products: pulp
+
+The **Pulp** chain turns wood (or recovered paper) into prepared pulp through a sequence of fixed-ratio stages, with technology competitions at the end of each:
+
+- **Log Preparation** — debark (ring, Rosser-head or biodegradable mechanical debarkers) and cut and chip.
+- **Pulping** — the key fork, where four distinct routes compete and, as in the real industry, generally serve different products rather than competing head-to-head:
+  - **Chemical (kraft)** — batch and continuous digesters (including superbatch and blow-heat-recovery variants), the dominant route for strong, bleachable pulp; it is the route that produces black liquor.
+  - **Mechanical** — stone groundwood, refiner, thermo-mechanical (TMP) and chemi-thermo-mechanical (CTMP) pulping, which use wood fibre efficiently but are very electricity-intensive.
+  - **Semi-chemical** — neutral-sulphite digesters, used for specific grades.
+  - **Recycled** — de-inking of recovered paper by washing, flotation or explosion; the lowest-energy route, limited by feedstock supply.
+- **Washing** — drum and diffusion washers that recover pulping chemicals.
+- **Bleaching** — competing fully and semi bleaching sequences built around elemental-chlorine-free (ECF) chemistry, oxygen delignification, ozone bleaching and chlorine-dioxide substitution.
+- **Drying** — pulp dryers (steam, and steam with electric vapour recompression) for market pulp.
+
+### Products: paper
+
+The **Paper** chain branches into the five grades the sector reports, each a fixed-ratio sequence of **Stock Preparation** (disc or conical refining and screening), **Forming, Pressing and Finishing**, and **Drying**:
+
+- **Newsprint** — historically the largest grade, and the one whose decline drives the sector's contraction.
+- **Uncoated** and **Coated** wood-free (fine) papers.
+- **Linerboard** — packaging board.
+- **Tissue**.
+
+The Forming, Pressing and Finishing competitions include energy-saving extended-nip presses, which remove more water mechanically before the energy-intensive drying step. The Drying competitions are where much of the grade's energy is decided, offering steam, electric, infrared, vapour-recompression, high-humidity-hood and high-intensity dryers.
+
+### Sector-specific service: the black-liquor recovery and energy cycle
+
+The **Black Liquor** service is the energy and chemical heart of a kraft mill, and the feature that most sets this sector apart. It represents the closed loop, shown in @fig-pulp-paper-recovery, that recovers pulping chemicals while generating most of the mill's energy:
+
+- The **Evaporator** concentrates weak black liquor, competing multiple-effect evaporators (with computer control and integrated concentrators) and **vapour-recompression** evaporators.
+- The **Recovery Furnace** burns the concentrated liquor, regenerating cooking chemicals and raising steam. Technologies range from the conventional **Tomlinson** boiler through low-odour, high-solids-firing variants to **cogeneration** configurations (e.g. high-solids firing with 900–1200 psig cogeneration) and **gasification**, which raise the energy recovered from the liquor.
+- The **Lime Kiln** calcines lime to causticise the recovered chemicals. It is the sector's main fossil-fuel choke point, and the model competes conventional natural-gas, oil and coal kilns against **wood-waste gasification** and **lignin-precipitation** retrofits that displace fossil fuel.
+
+![The kraft black-liquor recovery and energy cycle as represented in CIMS. Chemical pulping produces weak black liquor, which is concentrated in the Evaporator and burned in the Recovery Furnace; the furnace regenerates pulping chemicals (via the Lime Kiln) and raises steam and power for the mill, with surplus electricity exported. Biomass and black liquor are biogenic, so this energy carries no fossil CO₂; the kiln is the main fossil load.](images/pulp_paper_recovery.svg){#fig-pulp-paper-recovery .lightbox width=90%}
+
+### Auxiliary energy and utility services
+
+The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The Pulp and Paper sector draws on:
+
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. Pulp and Paper's very large motor loads sit here, especially the refiners of mechanical pulping (materials processing), along with pumps, fans, compressed air and materials handling.
+- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd). This is the sector's largest energy service, and its technology set is unusually rich: alongside natural-gas, oil, coal, electric and hydrogen boilers it includes **solid-biomass** boilers, **biomass steam turbines** and grate firing, and gas- and biomass-fired **cogeneration**, reflecting the mills' reliance on hog fuel and on combined heat and power.
+- **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification and hydrogen.
+- **HVAC** and **Lighting** for mill facilities.
+
+## Decarbonisation technologies
+
+Because the sector is already largely bioenergy-powered, its decarbonisation problem is unusual: it is less about replacing a single dominant fossil process than about (i) squeezing the remaining fossil fuel out of the **lime kiln** and any fossil-fired **steam and drying**, (ii) raising the efficiency of the energy-intensive **drying, pressing and mechanical-pulping** steps, and (iii) capturing the large, concentrated, **biogenic** CO₂ streams to deliver *negative* emissions. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in @tbl-pulp-paper-decarb. The figures quoted are indicative ranges from techno-economic reviews [@nrcan-pp-netzero; @ppc-limekiln], not the calibrated values used in the model.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Recycled / de-inked pulping | Lowest-energy pulp route; limited by feedstock | Commercial |
+| Mechanical pulping with vapour recompression | Recovers refiner heat as usable steam | Commercial |
+| Extended-nip pressing | More water removed before drying; less drying energy | Commercial |
+| Electric / infrared / high-intensity drying | Displaces fossil-fired drying | Commercial |
+| ECF, oxygen-delignification, ozone bleaching | Lower energy and chemical use than legacy bleaching | Commercial |
+| Black-liquor recovery cogeneration | Raises on-site power from spent liquor | Commercial |
+| Black-liquor gasification | Recovery efficiency ~65% → ~75–80%; syngas for power/biofuel | Demonstration |
+| Lime-kiln biomass gasification / lignin firing | Displaces fossil fuel in the kiln | Early commercial |
+| Solid-biomass boilers and steam turbines | Bio-steam and power in place of fossil boilers | Commercial |
+| Electrified lime kiln (e.g. plasma calcination) | Removes the main fossil load | Pilot |
+| BECCS on recovery boiler / kiln | Captures biogenic CO₂ for net-negative emissions | Demonstration |
+
+: Indicative performance and maturity of key pulp and paper decarbonisation technologies {#tbl-pulp-paper-decarb}
+
+### Efficient pulping, pressing and drying
+
+The lowest-cost reductions come from using less energy per tonne. **Recycled (de-inked) pulping** is the least energy-intensive route and is admitted where recovered-paper feedstock is available; **mechanical pulping with vapour recompression** recovers the refiners' large heat output as usable steam. On the paper machine, **extended-nip presses** remove more water mechanically so that less must be evaporated, and the **Drying** competitions admit **electric, infrared, high-intensity and vapour-recompression** dryers that either cut drying energy or shift it from fossil fuel to electricity. In the model's bleaching competitions, the **ECF, oxygen-delignification and ozone** sequences reduce both energy and chemical use relative to legacy chlorine bleaching.
+
+### Black-liquor recovery, cogeneration and gasification
+
+The recovery furnace is both a chemical reactor and the mill's main power plant. The model competes increasingly capable configurations — high-solids firing, low-odour designs, and **cogeneration** at 900–1200 psig — that raise the steam and electricity recovered from each tonne of liquor. **Black-liquor gasification** goes further, lifting energy-recovery efficiency from roughly 65% for a conventional boiler to about 75–80% and producing a syngas that can drive a gas turbine or be converted to biofuels [@iea-blg]. These options let a kraft mill meet more of its own demand and export more surplus power.
+
+### Decarbonising the lime kiln
+
+The lime kiln is the single most stubborn fossil load in a kraft mill, because calcination needs high-temperature heat that has traditionally come from natural gas or oil [@ppc-limekiln]. The model competes wood-waste gasification and lignin-precipitation retrofits that substitute renewable fuel for fossil in the kiln. The emerging frontier option — **electrified calcination** (for example electric plasma kilns) — would remove the load entirely.
+
+<mark>TODO: Add an **electrified lime kiln** (e.g. electric plasma calcination) and **high-temperature heat-pump** options to the relevant competitions, so the model can represent full electrification of the kraft mill's remaining fossil heat.</mark>
+
+### Carbon capture and negative emissions (BECCS)
+
+The pulp and paper sector is widely regarded as one of the most promising hosts for **bioenergy with carbon capture and storage (BECCS)**, because the recovery boiler and lime kiln emit large, relatively concentrated streams of *biogenic* CO₂; capturing them yields **net-negative** emissions at comparatively low cost.
+
+<mark>TODO: Add a **CCS / BECCS** service for pulp and paper, attached to the Recovery Furnace and Lime Kiln, so the model can represent capture of biogenic CO₂ and the resulting negative emissions.</mark>
+
+### Indicative capital and operating costs and energy use
+
+@tbl-pulp-paper-technoecon gathers order-of-magnitude capital and operating costs and energy characteristics for the main pulping and papermaking steps and the black-liquor recovery cycle. The estimates are drawn from public techno-economic literature [@nrcan-pp-netzero; @ppc-limekiln; @iea-blg; @tran-kraft] and expressed in 2025 Canadian dollars. Overnight capital costs are normalised per tonne of annual product capacity (except where another basis is noted), fixed O&M follows the heavy-industry convention of roughly 3–6% of capital cost per year, and energy intensity is per tonne of product. A defining feature of the sector is that much of the heat and power below is **self-supplied** from biomass (black liquor and hog fuel), so the relevant comparison is often net purchased energy rather than gross use.
+
+| Technology | Overnight capex (per t/yr capacity) | Fixed O&M (% of capex) | Energy intensity (per t product) | Main energy carrier |
+|:-----|:-----|:-----|:-----|:-----|
+| Kraft (chemical) pulping | ~2,000–3,500 (integrated mill) | ~4–5%/yr | heat ~10–14 GJ + ≈0.6–0.8 MWh; largely self-supplied | biomass (black liquor) + electricity |
+| Mechanical pulping (TMP / CTMP) | ~1,000–1,800 | ~4%/yr | ~4–15 GJ electricity (1,100–4,300 kWh/t) | electricity |
+| Recycled (de-inked) pulping | ~600–1,200 | ~3–4%/yr | ~1–3 GJ | electricity (+ some heat) |
+| Bleaching (ECF / O₂ / ozone) | moderate (site-specific) | ~4%/yr | steam + bleaching chemicals | steam / electricity |
+| Paper machine + drying | ~1,400–2,700 | ~4%/yr | drying ~4–8 GJ | steam (biomass / gas) ± electricity |
+| Recovery boiler (cogeneration) | ≈35% of mill capital; 25–35 MWe per 1,000 t/day | ~4%/yr | net energy exporter | black liquor (biogenic) |
+| Black-liquor gasification | higher than Tomlinson boiler | — | recovery efficiency ~75–80% vs ~65% | black liquor → syngas |
+| Lime kiln | moderate | — | ~5.4–8.5 GJ/t lime | natural gas / oil (or biomass) |
+| Biomass cogeneration (steam + power) | ~5,500–9,600 CAD/kWe | ~3–4%/yr | bio-steam + power | solid biomass / hog fuel |
+
+: Indicative techno-economic characteristics of pulp and paper technologies, 2025 CAD {#tbl-pulp-paper-technoecon}
+
+## Economics
+
+A few sector-wide conventions are worth noting. Pulp and paper technologies are discounted at a high rate — 35% at most process nodes, with some auxiliary and capital-intensive nodes at 40–50%. These values are **behavioural** (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm's cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity** (variance) parameters at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all. Fuel prices entering the service-cost calculation are scaled by a sector-level block of price multipliers.
+
+The sector's emissions accounting is distinctive. Unlike iron and steel or chemicals, the pulp and paper tree carries no explicit process-emission factors: essentially all of its emissions arise from fuel combustion, and they enter the model through each technology's fuel service requests and the prevailing carbon price. Crucially, the large biomass flows — black liquor and hog fuel — are treated as biogenic and therefore carbon-neutral in the combustion accounting, so the carbon price bites mainly on the fossil fuels that remain, above all in the lime kiln and in any fossil-fired steam and drying. Fuel-switching from these fossil fuels to biomass, electricity, and hydrogen is therefore the model's main channel for emissions reduction, reinforced by the mills' ability to self-generate steam and power and export surplus electricity.
+
+## Regional coverage and differences
+
+Five regions are represented — **Alberta, Atlantic, British Columbia, Ontario, and Québec** — and regional differences show up in scale, grade mix, and trajectory:
+
+- **Québec** and **Ontario** are the largest, and both decline substantially over the projection as newsprint demand falls.
+- The **Atlantic** region carries significant capacity with a particularly steep modelled decline.
+- **British Columbia** is a major kraft- and mechanical-pulp region with biomass cogeneration, declining more gently.
+- **Alberta** is the smallest and the only region whose modelled output grows.
+
+<mark>TODO: Only five regions are represented, and Saskatchewan and the territories are absent. Confirm whether any other region hosts pulp and paper capacity that should be included.</mark>
+
+<mark>TODO: The exogenous demand trajectories are inherited from older calibrations of the newsprint decline. Revisit them against current production and the shift toward packaging (linerboard), tissue and market pulp, which are not declining in the way newsprint is.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

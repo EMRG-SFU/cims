@@ -1,3 +1,3 @@
-# Carbon Capture, Utilization, and Storage
+# Carbon Capture, Utilization, and Storage {#sec-ccus}
 
 <mark>TODO: Describe how the model represents carbon capture, utilization, and storage across sectors, including capture technologies, capture rates, energy penalties, transport and storage infrastructure, and associated costs. The section should explain which emissions sources are eligible for capture, how captured CO₂ flows are tracked, and whether utilization pathways or permanent sequestration are distinguished. It should also document assumptions related to technology availability, deployment constraints, storage capacity, policy incentives, and interactions with hydrogen production, industrial processes, and power generation.</mark>

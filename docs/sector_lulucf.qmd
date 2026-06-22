@@ -1,0 +1,5 @@
+# LULUCF {#sec-lulucf}
+
+Need to include emissions for accounting. Want to have total emissions from CIMS equal the NIR for easy comparison.
+
+Also include credits in GHG accounting, again for easy comparison. Or should this be done 

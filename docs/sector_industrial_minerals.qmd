@@ -1,0 +1,151 @@
+---
+bibliography: references.bib
+---
+
+# Industrial Minerals {#sec-industrial-minerals}
+
+The industrial minerals sector — the non-metallic mineral products industry — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them, rather than the chemistry or economics of individual plants. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node. The sector is defined by high-temperature thermal processing — calcining, clinkering, and glass melting — and, like chemicals, a large share of its emissions are process emissions released by the chemistry of calcination rather than by burning fuel. That single fact shapes both the sub-model and its decarbonisation options.
+
+## Scope
+
+CIMS represents the four energy-intensive branches of the non-metallic mineral products industry: cement, lime, glass, and bricks. Cement and lime dominate the sector's energy and emissions because both depend on calcining carbonate rock at high temperature. The driving variable is the physical output of product in tonnes; a forecast of demand — closely tied to construction activity — drives every upstream process and energy service and is set exogenously, as for the other industrial branches.
+
+Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
+
+- Quarrying and extraction of the raw minerals (limestone, silica, clay, aggregates) are part of the [Mining](sector_mining.qmd) sector and the upstream supply; the industrial-minerals sub-model begins with raw-material preparation inside the plant gate.
+- Concrete batching and downstream fabrication (ready-mix concrete, precast products, finished glazing) are downstream manufacturing and are not part of this sub-model, which ends with cement, lime, glass, and brick as saleable products.
+- Fuel and electricity supply enter through the energy-supply sub-models and the shared fuel nodes.
+
+## Real-world context
+
+The industrial minerals sector is small in tonnage relative to its emissions, because calcination releases CO₂ as an unavoidable part of the chemistry. Canadian cement manufacturing alone emitted about 11.2 Mt CO₂ in 2019, roughly 1.5% of national emissions, and calcination accounts for some 60–65% of the CO₂ from clinker production — released when limestone (CaCO₃) is broken down into lime (CaO) and CO₂ — with the rest coming from the fuel burned to reach clinkering temperature [@cac-netzero; @iea-cement]. Lime production is chemically the same calcination step without the clinkering, and carries an even higher process-CO₂ intensity per tonne of product. Glass is melted rather than calcined, so its emissions are dominated by furnace fuel and by the carbonate batch materials, and brick is fired clay.
+
+Production is concentrated in the populous provinces and tracks construction demand, so unlike most heavy industry it is growing in the model. Ontario is the largest producer, followed by Québec and a fast-growing Alberta, with British Columbia and the Atlantic region smaller. Because so much of the sector's CO₂ is intrinsic to the chemistry, deep decarbonisation depends on options that most other sectors do not need — carbon capture on the kiln, substitution of clinker with other materials, alternative raw meals that avoid carbonate, and CO₂ mineralisation (carbon curing) — alongside the fuel-switching and efficiency levers common to all industry. The CIMS structure reflects this: it carries explicit process-emission factors on the clinker and lime nodes, a shared **CCS** service, and a family of clinker-substitution, alternative-fuel, electrified-kiln, and carbon-curing options.
+
+## Model structure
+
+Following the standard CIMS pattern, the sector divides into a **Product** sub-tree, holding the cement, lime, glass, and brick production chains, and a **Service** sub-tree, holding the auxiliary energy and utility services including a sector-level **Heat** service and the shared **CCS** service. @fig-ind-minerals-flow-model shows the overall structure.
+
+As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the industrial-minerals tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which kiln, which furnace, which fuel, which clinker route — occur at the tech-compete leaves.
+
+![Energy-service flow model of the industrial minerals sector (region-agnostic master tree). The Product sub-tree holds cement, lime, glass, and brick chains; the Service sub-tree holds a sector-level Heat service, the MECS-aligned Machine Drive, and the shared CCS service that the calcination routes draw on.](images/ind_minerals_flow_model.svg){#fig-ind-minerals-flow-model .lightbox width=100%}
+
+### Products: cement
+
+Cement is the most important chain. At the top, a Cement competition selects the overall production strategy — conventional Std process, Increased clinker substitution (replacing clinker with supplementary cementitious materials), and Carbon curing (curing concrete by mineralising CO₂, which the model treats as a net-negative emission). Beneath this, Portland cement resolves into:
+
+- **Clinker** — the energy-and-emissions core, produced in a Dry process rotary kiln or a Fluidized bed. The rotary-kiln node competes a wide range of routes: conventional and efficiency-retrofitted kilns, new preheater and precalciner designs, waste-heat-recovery cogeneration, a new preheat Eff with CCS route, an electrochemical synthesis (electrified clinker) route, and a Std process with calcium minerals route that uses a non-carbonate raw meal to avoid process CO₂ altogether. The fluidized-bed node competes a range of fuels — natural gas, coal, petcoke, distillate oil, and waste-derived and hazardous-waste fuels.
+- **Finish Grinding** — ball mills and roller mills with high-efficiency separators that grind clinker into cement.
+- **Dry Ground Cement** — raw-meal preparation.
+
+The clinker routes carry an explicit process-CO₂ factor (about 0.44 t per unit in the data) reflecting calcination; the calcium-mineral and carbon-curing options are the model's way of breaking that link.
+
+### Products: lime, glass, and bricks
+
+- **Lime** is produced in Kilns (and a Dolomitic branch) competing rotary and vertical-shaft kilns on a range of fuels (NG, coal, petcoke, residual oil), with preheater and internals variants for efficiency, CCS-equipped rotary kilns (NG and coal), and an electrochemical synthesis route. Lime carries the sector's highest process-CO₂ factor (about 0.75 t per unit).
+- **Glass** divides into Container, Flat, Fibreglass, and Blown/Pressed glass, each a chain of Preparation, Furnaces, and Form and Finish (flat glass adds Temper; blown/pressed adds Fire Polish). The furnace competitions are where the energy and emissions are decided, and they include regenerative and oxy-boosted melters, fluidized-bed cullet/batch preheaters, advanced glass melters, and all-electric melters (including fluidized-bed electric melters).
+- **Bricks** are fired in Hoffman or tunnel kilns on natural gas, coal, or residual oil.
+
+### Services, including process heat and CCS
+
+The services follow the standard pattern and are documented in their own chapters in the General Services part; their structure is set out in the [Sector Overview](sector_overview.qmd). Two are worth noting here:
+
+- **Heat** — a sector-level process-heat service whose technology set is unusually broad, competing natural-gas (standard and efficient), oil, coal, coke, biomass, waste-fuel, hydrogen, and CCS-equipped (NG and coal) heat supply. This is a key fuel-switching lever for the non-calcination heat demand.
+- **CCS** — the shared carbon-capture service that the CCS-equipped clinker, lime, and heat routes request; its broader treatment is in the [Carbon Capture, Utilization, and Storage](ccus.qmd) chapter.
+
+The remaining services — **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)), **Methane Blend**, **HVAC**, and **Lighting** — are the cross-cutting utilities common to all sectors.
+
+<mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. They also name the product branch `Products` rather than the master tree's `Product`. Migrate these files to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Because most of the sector's CO₂ comes from calcining carbonate rock, its decarbonisation problem is unusual: efficiency and fuel-switching can only reach the combustion share, so deep cuts require capturing or avoiding the process CO₂ as well. Roughly the first 30–40% of cement emissions can be abated with clinker substitution, alternative fuels, and efficiency, while the remaining 60–70% — the calcination CO₂ — needs CCUS or alternative production chemistry [@doe-liftoff-cement; @cac-netzero]. The model represents the full ladder. @tbl-ind-minerals-decarb summarises maturity and @tbl-ind-minerals-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Clinker substitution / SCMs (incl. LC3) | ~20–40% less clinker CO₂ per tonne cement | Commercial |
+| Alternative & waste-derived fuels | Displaces fossil kiln fuel; up to ~30% combustion CO₂ | Commercial |
+| Preheater / precalciner & efficiency retrofits | Lower kiln fuel use | Commercial |
+| Waste-heat-recovery cogeneration | On-site power from kiln waste heat | Commercial |
+| Calcium-mineral (non-carbonate) raw meal | Eliminates the calcination process CO₂ | Pilot / demonstration |
+| Carbon curing / CO₂ mineralisation | Stores CO₂ in concrete (net-negative in model) | Early commercial |
+| Cement / lime kiln + CCS (CCUS) | Captures ~60% of total; most of process CO₂ | Demonstration |
+| Electrochemical / electrified clinker & lime | Removes combustion CO₂; enables pure-CO₂ capture | Pilot |
+| Electric & oxy-fuel glass melters | Electrifies / concentrates glass-furnace CO₂ | Commercial (electric, small scale) |
+| Cullet / batch preheating (glass) | Lower furnace energy | Commercial |
+| Biomass / hydrogen process heat | Low-carbon non-calcination heat | See Low-Temp Heat |
+
+: Indicative performance and maturity of key industrial minerals decarbonisation technologies {#tbl-ind-minerals-decarb}
+
+The cost estimates in @tbl-ind-minerals-cost are order-of-magnitude figures from public techno-economic literature [@doe-liftoff-cement; @iea-cement; @cac-netzero], expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Capture and avoidance costs are given per tonne of CO₂; incremental capital is relative to a conventional plant. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Decarbonisation technology | Incremental capex | Operating cost / cost of CO₂ | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Clinker substitution / SCMs (LC3) | low (grinding, blending) | often cost-*neutral* or saving | calcined clay / limestone / pozzolan |
+| Alternative & waste-derived fuels | low–moderate (feed handling) | often a fuel-cost *saving* | waste, biomass, RDF |
+| Preheater / precalciner efficiency | moderate | fuel saving | — |
+| Carbon curing / mineralisation | moderate | ~CAD 40–110 / t CO₂ stored | CO₂ + concrete |
+| Cement kiln + CCS | +30–50% plant equipment | ~CAD 100–200 / t CO₂ avoided | steam / electricity for capture |
+| Electrified / electrochemical kiln | high (new process) | ~CAD 130 / t CO₂ avoided (≈87 €/t clinker added) | low-carbon electricity |
+| Lime kiln + CCS | +30–50% plant equipment | ~CAD 110–200 / t CO₂ avoided | steam / electricity |
+| Electric glass melter | lower capex than regenerative; higher energy cost | electricity-priced melt | electricity |
+| Oxy-fuel glass melter | moderate (oxygen plant) | fuel saving; CO₂ concentration | oxygen + gas |
+
+: Indicative techno-economic characteristics of industrial minerals decarbonisation technologies, 2025 CAD {#tbl-ind-minerals-cost}
+
+### Reducing and substituting clinker
+
+The cheapest cement reductions come from making less clinker per tonne of cement. Supplementary cementitious materials (SCMs) — slag, fly ash, calcined clay, limestone, and natural pozzolans — replace a share of clinker; limestone calcined clay cement (LC3) can cut cement CO₂ by around 40% and is commercial [@doe-liftoff-cement]. The model represents this as the Increased clinker substitution route at the Cement node. A complementary lever is the Std process with calcium minerals clinker route, which uses a non-carbonate raw meal so that calcination releases no CO₂ at all.
+
+### Alternative fuels, efficiency, and waste-heat recovery
+
+The combustion share of kiln emissions is addressed by alternative and waste-derived fuels (biomass, refuse-derived and hazardous-waste fuels in the fluidized-bed routes and the Heat service), by preheater/precalciner designs and efficiency retrofits that cut fuel use, and by waste-heat-recovery cogeneration that turns kiln exhaust heat into on-site power. These are mature and often cost-saving, but they cannot touch the calcination CO₂.
+
+### Carbon capture, electrification, and mineralisation
+
+Deep cuts require attacking the process CO₂. The model offers three routes: CCS on the kiln (cement and lime), which captures most of the CO₂ but adds 30–50% more plant equipment and a capture energy penalty; electrochemical/electrified clinker and lime, which both remove the combustion CO₂ and produce a purer CO₂ stream that is cheaper to capture; and carbon curing, which mineralises CO₂ into concrete and is the one route the model scores as net-negative. On the glass side, electric and oxy-fuel melters and cullet preheating electrify or concentrate furnace emissions. Low-carbon process heat — biomass, hydrogen, and CCS-equipped boilers in the Heat service — addresses the non-calcination thermal demand, drawing on the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+<mark>TODO: The model represents clinker substitution as a single aggregate route. Consider distinguishing the main SCM pathways (slag, fly ash, calcined clay/LC3, limestone) since their availability and CO₂ benefit differ markedly and fly-ash/slag supply is constrained as other heavy industries decarbonise.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Industrial minerals technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are **behavioural** (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm's cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** at the process nodes are mostly set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.
+
+The sector's emissions accounting is distinctive. Combustion emissions follow from each technology's fuel service requests and the carbon price, as in the other sectors. In addition, the clinker and lime technologies carry explicit process-emission factors (about 0.44 and 0.75 t CO₂ per unit) representing calcination, applied independently of fuel use; the carbon-curing route carries a net-negative emission factor; and the **CCS** service applies an emissions-removal factor to the technologies that request it. Switching among conventional, substituted, alternative-fuel, captured, and electrified production is therefore the model's main channel for emissions reduction, driven by the interaction of fuel and material costs with a carbon price that applies to both the combustion and the process CO₂.
+
+## Regional coverage and differences
+
+Because the tree is region-agnostic, each modelled province is built from the same master structure and carries no production on branches that do not apply. Five regions are represented — Alberta, the Atlantic region, British Columbia, Ontario, and Québec — and differences show up in scale and growth rather than in the shape of the tree:
+
+- Ontario is the largest producer and grows over the projection.
+- Québec and a fast-growing Alberta follow, reflecting construction-driven demand.
+- British Columbia and the Atlantic region are smaller.
+
+Unlike most heavy industry, modelled output rises in every region, because cement, lime, and glass demand tracks population and construction rather than declining commodity markets.
+
+<mark>TODO: Only five provinces are represented (Saskatchewan and the territories are absent). Confirm whether cement, lime, or glass capacity elsewhere should be added, and build it out on the region-agnostic tree.</mark>
+
+## Limitations and planned extensions
+
+The industrial minerals sub-model is detailed on the product side but carries the same structural debts as the other older sector files. The TODOs above record the main gaps: the migration of the auxiliary services to the MECS-aligned Machine Drive and the Product/Service split; the disaggregation of clinker substitution into specific SCM pathways; and broader provincial coverage. The sector's growth trajectory and its large process-emission share make it one of the most important to keep current, since it is one of the few industrial branches whose absolute emissions are projected to rise without intervention.
+
+<mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled cement, lime, and glass energy use and process emissions against CIEEDAC, Environment and Climate Change Canada (NIR), and the Cement Association of Canada's net-zero roadmap.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

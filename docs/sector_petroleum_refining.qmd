@@ -1,0 +1,121 @@
+---
+bibliography: references.bib
+---
+
+# Petroleum Refining {#sec-petroleum-refining}
+
+Petroleum refining is one of CIMS's energy-supply and processing sub-models: it converts crude oil and bitumen into refined products — gasoline, diesel, jet fuel, fuel oils, petrochemical feedstocks, asphalt, lubricants, and coke. The emphasis is on the structure of the energy-service flow model: the process units that turn crude into products, the technologies that compete at each, and the energy services — above all process heat, steam, and hydrogen — that drive them. The tree is region-agnostic. The defining feature of refining is that almost all of its emissions come from burning fuel for process heat and steam (much of it the refinery's own still gas) and from on-site hydrogen production, so its decarbonisation is about electrifying and decarbonising that energy and capturing the concentrated CO₂ streams — against a backdrop of long-run demand decline as transport electrifies.
+
+## Scope
+
+CIMS represents the refining of crude oil and synthetic crude into finished products, through the standard process units: distillation (atmospheric and vacuum), cracking (coking and hydrocracking), hydrotreating (desulphurisation and sulphur recovery), reforming, alkylation, and isomerisation, plus by-products such as asphalt and lubes. The driving variable is refinery throughput/product output. Lubricating-oil, grease, and asphalt manufacture are included where carried out within refineries. The model carries the supporting energy services — direct process heat, steam, still gas, hydrogen, machine drive, and a **CCS** service.
+
+Adjacent activities are handled elsewhere: crude oil and bitumen production (including oil-sands upgrading) is in [Petroleum Crude](sector_petroleum_crude.qmd); natural gas processing is in [Natural Gas](sector_natural_gas.qmd); petrochemicals made from refinery streams are in [Chemical Products](sector_chemical_products.qmd); and the combustion of the finished fuels is in the demand sectors. This chapter covers the refinery itself.
+
+## Real-world context
+
+Canada has a modest fleet of refineries spread across the country, supplying gasoline, diesel, and other products to domestic and export markets. A refinery's energy use and emissions depend on its complexity — the type of crude it runs and how much cracking, hydrotreating, and reforming it does to make high-value products. The bulk of refinery emissions come from burning fossil fuels for process heating and steam generation, with a further significant share from hydrogen manufacturing (steam methane reforming for hydrotreating and hydrocracking) [@wri-refining]. Much of the process fuel is the refinery's own still gas (off-gas from the process units).
+
+The decarbonisation levers follow from that emissions structure, and Canada's [Roadmap for the Decarbonization of the Oil and Gas Sector](https://natural-resources.canada.ca/climate-change/roadmap-decarbonization-canada-s-oil-gas-sector) names them directly: electrifying low- and medium-grade process heat, fuel-switching to low- and zero-carbon hydrogen for high-temperature heat, energy efficiency, and CCUS — and refining is regarded as one of the lower-cost CCS opportunities, with concentrated CO₂ available from the hydrogen plant and other units [@nrcan-og-roadmap; @wri-refining]. Over the longer term, refinery throughput is expected to decline as road transport electrifies, shifting the product slate toward aviation, petrochemicals, and exports. The CIMS structure captures the decarbonisation levers as competing technologies at the heat, steam, still-gas, and hydrogen services, with a shared CCS service.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the refinery process chain — and a **Service** sub-tree of the energy services. @fig-petroleum-refining-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the process chain is largely fixed-ratio, and the technology choices occur in the energy services.
+
+![Energy-service flow model of the petroleum refining sector (region-agnostic master tree). The Product sub-tree is the refinery process chain — distillation, cracking (coking, hydrocracking), hydrotreating (desulphurisation, sulphur recovery), reforming, alkylation/isomerisation, and by-products (asphalt, lubes); the Service sub-tree supplies the direct process heat, steam, still gas, hydrogen, machine drive, and CCS the process units draw on.](images/petroleum_refining_flow_model.svg){#fig-petroleum-refining-flow-model .lightbox width=100%}
+
+### Products: the refinery process chain
+
+The **Refined Petroleum Products** node holds the process units:
+
+- **Petroleum Fractions** — the main chain: distillation (atmospheric and vacuum) separates crude into fractions; cracked gas oil upgrades heavy fractions via coking and hydrocracking (at low, medium, and high conversion); hydrotreating (desulphurisation and sulphur recovery) cleans the products; and asphalt and lubes are by-product streams.
+- **Alkylates** — alkylation and isoparaffins (isomerisation), which make high-octane gasoline blendstocks.
+- **Reforming** — catalytic reforming for octane and aromatics (and a hydrogen by-product).
+
+These units are the demand for the energy services; their relative throughput sets how much heat, steam, and hydrogen the refinery needs.
+
+### Services: heat, steam, still gas, hydrogen, and capture
+
+- **Direct Heat** — the process furnaces, competing natural-gas, heavy- and light-fuel-oil, LPG, and petcoke firing (with efficiency variants) and electric heaters (high and low efficiency). This is the central electrification lever for low- and medium-grade heat.
+- **Steam** — boiler- and cogeneration-raised steam, competing the full range of fuels (NG, oil, LPG, petcoke, with efficiency and CCS variants), electric and hydrogen steam, and gas cogeneration (CCGT/SCGT/back-pressure turbines, with and without CCS).
+- **Still Gas** — the refinery's own off-gas, used in heaters (with efficiency and CCS variants) and boilers; the dominant self-generated fuel.
+- **Hydrogen** — on-site steam methane reforming (standard, efficient, and efficient + CCS for blue hydrogen), for hydrotreating and hydrocracking.
+- **CCS** — the shared capture service (90% capture), well suited to the concentrated CO₂ from the hydrogen plant and other units.
+- **Machine Drive**, **HVAC**, **Lighting**, **Methane Blend** — the shared utilities.
+
+<mark>TODO: The current regional input files still implement the earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Pumping, and Ventilation sub-trees) and predate the MECS-aligned Machine Drive grouping. Migrate them to the region-agnostic master tree and the shared General Services chapters. Also link the **Hydrogen** service to the [Hydrogen](sector_hydrogen.qmd) sub-model so refinery hydrogen can draw on green and merchant blue supply, not just on-site SMR.</mark>
+
+## Decarbonisation technologies
+
+Refinery decarbonisation works through electrifying and decarbonising process heat and steam, low-carbon hydrogen, efficiency, and CCS on the concentrated streams. @tbl-petroleum-refining-decarb summarises maturity and @tbl-petroleum-refining-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Electric process heaters (low/medium heat) | Removes combustion CO₂ from electrifiable heat | Commercial (low/med grade) |
+| Hydrogen firing (high-temperature heat) | Decarbonises hard-to-electrify furnaces | Emerging |
+| Blue hydrogen (SMR + CCS) for hydrotreating | Captures hydrogen-plant CO₂ | Commercial / demonstration |
+| Green hydrogen (electrolytic) | Zero-carbon hydrogen | Emerging |
+| Cogeneration (gas, with or without CCS) | Combined heat and power; surplus export | Commercial |
+| Energy efficiency (heat integration, units) | Lower fuel use per barrel | Commercial |
+| CCS on hydrogen plant / heaters / still gas | ~90% capture of concentrated CO₂ | Demonstration (low-cost in refining) |
+| Electrified drives + efficient motors | Lower auxiliary electricity | Commercial |
+
+: Indicative performance and maturity of key petroleum refining decarbonisation technologies {#tbl-petroleum-refining-decarb}
+
+The estimates in @tbl-petroleum-refining-cost are order-of-magnitude figures from public sources [@wri-refining; @nrcan-og-roadmap], expressed in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Capex / cost | Effect | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Electric process heater | ~150–400 CAD/kWth | removes combustion CO₂ (low/med heat) | electricity |
+| Hydrogen-fired furnace | retrofit + hydrogen cost | decarbonises high-temp heat | hydrogen |
+| Blue hydrogen (SMR + CCS) | +30–50% on H₂ plant | captures ~90% of H₂-plant CO₂ | natural gas + capture |
+| Gas cogeneration (with or without CCS) | ~1,800–3,000 CAD/kWe | CHP; exports surplus power | natural gas |
+| CCS on concentrated streams | +30–50% plant equipment | ~CAD 50–120 / t CO₂ (low-cost in refining) | steam / electricity |
+| Energy-efficiency / heat integration | unit-specific | lower fuel per barrel | — |
+
+: Indicative techno-economic characteristics of petroleum refining decarbonisation technologies, 2025 CAD {#tbl-petroleum-refining-cost}
+
+### Decarbonising process heat and steam
+
+Process furnaces and boilers are the largest emission source, so the central lever is how their heat is supplied. The model competes electric heaters (viable for low- and medium-grade heat), hydrogen firing (for high-temperature duty that is hard to electrify), and efficiency-improved fossil firing, at the **Direct Heat**, **Steam**, and **Still Gas** services, alongside cogeneration. Electrifying the electrifiable heat and switching the rest to hydrogen is the backbone of a low-carbon refinery [@wri-refining].
+
+### Low-carbon hydrogen and CCS
+
+Hydrogen manufacturing is the second-largest emission source. The model already competes blue hydrogen (SMR with CCS) at the **Hydrogen** service; linking it to the [Hydrogen](sector_hydrogen.qmd) sub-model would also allow green (electrolytic) hydrogen. Because the hydrogen plant and several process units produce concentrated CO₂ streams, **CCS** is comparatively low-cost in refining, and the model routes the CCS-equipped heat, steam, still-gas, and hydrogen options to the shared capture service.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, operating cost, an output basis, service requests for the fuel, steam, hydrogen, and electricity it consumes, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares.
+
+Petroleum-refining technologies are discounted at a high rate — 35% at most process nodes, with auxiliary and capital-intensive nodes at 40–50% in the current data. These values are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the short payback horizons and risk aversion typical of the industry; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** govern how sharply the energy-service competitions respond to cost.
+
+Emissions are overwhelmingly combustion CO₂ from process heat, steam, still gas, and the hydrogen plant, entering through each technology's fuel service requests and the carbon price; the **CCS** service applies a 90% removal factor to the equipped routes. Because so much of the fuel is self-generated still gas, the carbon price acts on the choice of how to supply heat and hydrogen — electrify, switch to hydrogen, or capture — rather than on a single dominant process emission. A structural consideration the model can represent is that refinery throughput is expected to decline over the long run as transport electrifies, which reduces absolute emissions independently of the per-barrel decarbonisation choices.
+
+## Regional coverage and differences
+
+Six regions carry refining — Alberta, the Atlantic region, British Columbia, Ontario, Québec, and Saskatchewan — corresponding to where Canada's refineries are located. Regional differences show up in refinery complexity and product slate, in the fuel mix available for process heat (cheaper gas in the West), and in grid carbon intensity, which determines how much electrifying process heat actually reduces emissions (large in hydro-rich Québec and British Columbia, smaller in Alberta and Saskatchewan until their grids decarbonise).
+
+<mark>TODO: Calibrate the regional refinery configurations (complexity, product slate, hydrogen demand) and the long-run throughput trajectory against Canada Energy Regulator and Statistics Canada data, since both the energy use and the decarbonisation economics depend on them.</mark>
+
+## Limitations and planned extensions
+
+The petroleum refining sub-model captures the process chain and, in detail, the energy services that dominate its emissions — direct heat, steam, still gas, and hydrogen — with a full set of electrification, hydrogen, cogeneration, and CCS options. Its main limitations are the older auxiliary structure (to be migrated to MECS machine drive), the on-site-only hydrogen representation (to be linked to the hydrogen sub-model), and reliance on inherited refinery-configuration and cost data. A broader consideration is the sector's long-run decline: as transport electrifies, the most consequential question for refining emissions may be how fast throughput falls, which is driven by the demand sectors rather than within this sub-model. The TODOs above record the priorities.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled refining energy use and emissions against Canada Energy Regulator and Environment and Climate Change Canada (NIR) data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

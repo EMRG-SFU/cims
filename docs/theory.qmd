@@ -1,8 +1,8 @@
 ---
-bibliography: theory.bib
+bibliography: references.bib
 ---
 
-# Theory
+# Theory {#sec-theory}
 
 ## CIMS in the energy-economy modelling landscape
 
@@ -105,27 +105,29 @@ Discount rates appear in two distinct roles in CIMS, and conflating them is one 
 
 ### Financial rate
 
-The financial discount rate is the rate at which a competently advised firm or household, applying standard cost-benefit logic, would discount the future cash flows associated with a piece of equipment. In a textbook treatment it is the weighted-average cost of capital for a firm, or the appropriate risk-adjusted social discount rate for a public project; in practice it is the rate that converts an undiscounted stream of future operating and energy costs into a present value comparable to today's capital outlay. CIMS uses this rate, denoted $r$, inside the capital recovery factor:
+The financial discount rate is the rate at which a competently advised firm or household, applying standard cost-benefit logic, would discount the future cash flows associated with a piece of equipment. In a textbook treatment it is the weighted-average cost of capital for a firm, or the appropriate risk-adjusted social discount rate for a public project; in practice it is the rate that converts an undiscounted stream of future operating and energy costs into a present value comparable to today's capital outlay. 
+
+CIMS uses a discount rate, denoted $r$, inside the capital recovery factor:
 
 $$
 CRF = \frac{r}{1 - (1 + r)^{-N}}
 $$
 
-which annualises a one-time capital cost over the equipment's lifespan $N$ (see @sec-technology-competition). Conceptually, the CRF is asking "what flat annual payment, discounted at $r$ over $N$ years, has the same present value as the lump-sum capital cost?" The right answer to that question turns on what the analyst thinks the *time-value of money* is, and so the value of $r$ here should reflect a defensible cost-of-capital estimate. Typical values are single-digit annual percentages — a few percent above the prevailing real interest rate, with adjustments for the riskiness of the investment.
+which annualises a one-time capital cost over the equipment's lifespan $N$ (see @sec-technology-competition). Conceptually, the CRF is asking "what flat annual payment, discounted at $r$ over $N$ years, has the same present value as the lump-sum capital cost?" In many financial situations, the right answer to that question turns on what the analyst thinks the *time-value of money* is, and so the value of $r$ should reflect a defensible cost-of-capital estimate. Typical values are single-digit annual percentages — a few percent above the prevailing real interest rate, with adjustments for the riskiness of the investment.
 
 ### Behavioural rate
 
-The behavioural discount rate, by contrast, is not a question about the time value of money at all. It is a question about *how decision-makers actually behave*. Empirical studies of consumer choice over energy-using equipment — refrigerators, light bulbs, water heaters, vehicles — find again and again that the implied trade-off between higher up-front capital cost and lower future operating cost is far steeper than any defensible financial discount rate would predict. Consumers, in the language of the literature, act as though they are discounting future energy savings at rates of 20%, 30%, sometimes higher. Firms making smaller, more reversible equipment decisions exhibit something similar, if usually less extreme.
+A behavioural discount rate, by contrast, is not a question about the time value of money at all. It is a question about *how decision-makers actually behave*. Empirical studies of consumer choice over energy-using equipment — refrigerators, light bulbs, water heaters, vehicles — find again and again that the implied trade-off between higher up-front capital cost and lower future operating cost is far steeper than any defensible financial discount rate would predict. Consumers, in the language of the literature, act as though they are discounting future energy savings at rates of 20%, 30%, sometimes higher. Firms making smaller, more reversible equipment decisions exhibit something similar, if usually less extreme.
 
-This wedge between "what the financial calculation says they should do" and "what they actually do" is real, and it is not just irrationality. It encodes risk aversion in the face of uncertain future fuel prices, liquidity constraints, information costs, the implicit option value of not committing capital to a long-lived piece of equipment, transaction costs of switching, and decision-maker-specific tastes that the analyst cannot observe. A behavioural discount rate is the device CIMS uses to summarise this entire wedge in a single calibratable parameter. When it appears in the lifecycle-cost calculation — in particular in the foresight functions that build expected future emissions charges into today's investment decisions (see @sec-technology-competition) — it is the rate at which a *plausibly modelled* decision-maker, not a textbook one, is treating future costs.
+This wedge between "what the financial calculation says they should do" and "what they actually do" is real, and it is not just irrationality. It encodes risk aversion in the face of uncertain future fuel prices, liquidity constraints, information costs, the implicit option value of not committing capital to a long-lived piece of equipment, transaction costs of switching, and decision-maker-specific tastes that the analyst cannot observe. A behavioural discount rate is the device CIMS uses to summarise this entire wedge, along with the financial time-value of money, in a single parameter. When it appears in the lifecycle-cost calculation, it is the rate at which a *plausibly modelled* decision-maker, not a textbook one, is treating future costs.
 
 ### How the two rates are used in practice
 
-In ordinary use, CIMS applies the *behavioural* rate throughout the lifecycle-cost calculation — the foresight functions, the discounted-expectations evaluation of emissions charges, and the other places where future costs are weighed against present ones. This is the default for the reason given above: if CIMS evaluated those quantities at a textbook financial discount rate, it would predict consumers eagerly switching to high-capital-cost / low-operating-cost technology — heat pumps, LED lighting, electric vehicles — in volumes that decades of empirical observation tell us they do not, in fact, choose. The behavioural rate corrects the model toward observed behaviour without requiring the analyst to encode every individual reason for that behaviour separately.
+In ordinary use, CIMS applies the *behavioural* rate throughout the lifecycle-cost calculation — the capital recovery factor, the foresight expectations of emissions charges, and the other places where future costs are weighed against present ones. This is the default for the reason given above: if CIMS evaluated those quantities at a textbook financial discount rate, it would predict consumers eagerly switching to high-capital-cost / low-operating-cost technologies — heat pumps, LED lighting, electric vehicles — in volumes that decades of empirical observation tell us they do not choose. The behavioural rate corrects the model toward observed behaviour without requiring the analyst to encode every individual reason for that behaviour separately.
 
 The financial rate is still available to use in the model, but as a sensitivity and a normative reference point rather than as the default driver of technology choice. An analyst can substitute it in to test alternative views on the cost of capital, to explore how technology choice would look if decision-makers were behaving textbook-rationally, or to produce an after-the-fact cost-benefit appraisal at a defensible social discount rate.
 
-One caveat that comes with this distinction is that model output should be read with the behavioural rates in mind. A run that holds the behavioural rate fixed across a counterfactual is implicitly assuming that the policy in question does not change the underlying barriers to adoption — and many of the policies CIMS is asked about (information campaigns, financing programmes, dealer-incentive schemes) are precisely policies that target those barriers. In such cases, the behavioural rate itself could be considered an object of policy, not a fixed parameter.
+One caveat that comes with this distinction is that model output should be read with the behavioural rates in mind. A scenario that holds the behavioural rate fixed across a counterfactual is implicitly assuming that the policy in question does not change the underlying barriers to adoption — and many of the policies CIMS is asked about (information campaigns, financing programmes, dealer-incentive schemes) are precisely policies that target those barriers. In such cases, the behavioural rate itself could be considered an object of policy, not a fixed parameter.
 
 ### Behavioural rate versus intangible cost
 

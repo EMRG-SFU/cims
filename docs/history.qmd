@@ -1,8 +1,8 @@
 ---
-bibliography: history.bib
+bibliography: references.bib
 ---
 
-# History and Development
+# History and Development {#sec-history}
 
 CIMS was built on top of, and partly out of, a body of technology-simulation work that had been accumulating at the Energy and Materials Research Group (EMRG) at Simon Fraser University since the late 1980s. Understanding how CIMS arrived at its current shape helps explain why some of its modelling conventions are the way they are — the strong emphasis on technology-by-technology accounting, the partial-equilibrium sub-models that still organize the code, the discrete-choice competition equations, and the iterative supply–demand feedback loop all carry forward decisions made over the model's now thirty-plus year history.
 

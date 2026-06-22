@@ -1,0 +1,129 @@
+---
+bibliography: references.bib
+---
+
+# Light Industrial {#sec-light-industrial}
+
+The light industrial sector — the "other manufacturing" industries — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry activity and through the data attached to each node. Light industrial is the aggregate of the many manufacturing industries that are individually too small to merit their own sub-model but collectively consume a large share of regional industrial energy. Because it has no single physical product, it is the one industrial sector CIMS drives with a monetary output measure rather than a tonnage, and it is modelled as a set of generic energy services rather than specific chemical or metallurgical processes.
+
+## Scope
+
+CIMS groups under light industrial the manufacturing industries not represented elsewhere: food, beverage, and tobacco; rubber and plastics; leather and textiles; wood products; furniture, printing, and machinery; transportation equipment; and electronics and other manufacturing. The driving variable is the real domestic product (RDP) of these industries — their economic output in constant dollars — rather than a physical tonnage, because there is no common physical unit across such a diverse group. A forecast of RDP drives the demand for each energy service and is set exogenously.
+
+Several adjacent activities are deliberately handled elsewhere to avoid double-counting. The energy-intensive industries that do have their own sub-models — iron and steel, chemicals, pulp and paper, industrial minerals, metal smelting, mining, and the rest — are excluded here and covered in their own chapters; light industrial is, by construction, "everything else" in manufacturing. Fuel and electricity supply enter through the energy-supply sub-models and the shared fuel nodes.
+
+## Real-world context
+
+The "other manufacturing" group is heterogeneous but shares an energy signature: its demand is dominated by low- and medium-temperature heat, steam, motor-driven systems, and building services (space conditioning, water heating, lighting), rather than by high-temperature process chemistry. Food and beverage processing is typically the largest energy user in the group, and it is overwhelmingly low-temperature: on the order of 97% of its thermal demand is below about 130 °C — squarely in the range that modern industrial heat pumps can serve at a coefficient of performance of 3.5–4 [@aceee-ihp; @arpagaus]. Wood products, plastics, textiles, and the rest add their own low- and medium-temperature loads.
+
+This matters for decarbonisation. Because the sector's energy is general-purpose rather than locked into a specific reaction, it is among the most readily electrified parts of industry: heat pumps, electric boilers, and resistance heating can replace fossil combustion for much of the heat, high-efficiency motors and drives cut the large motive-power load, and the remaining high-temperature or hard-to-electrify duty can switch to biomass or hydrogen. The CIMS structure reflects this by representing the sector almost entirely through the shared energy-service competitions — the same Heat, Steam, Machine Drive, and building-service structures used across industry — applied to an aggregate manufacturing output.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the manufacturing sub-groups whose aggregate output drives demand — and a **Service** sub-tree holding the energy services that supply them. @fig-light-industrial-flow-model shows the structure. Unlike the process-heavy sectors, almost all of the modelling detail is in the Service sub-tree.
+
+As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. The manufacturing sub-groups are fixed-ratio output nodes that translate RDP into energy-service demand; the technology choices occur at the tech-compete leaves of the services (see @sec-technology-competition).
+
+![Energy-service flow model of the light industrial sector (region-agnostic master tree). The Product sub-tree holds the seven manufacturing sub-groups whose aggregate output (RDP) drives demand; the Service sub-tree holds the generic energy services — process heat, steam, water heating, HVAC, lighting, and the MECS-aligned machine drive — through which essentially all of the sector's energy is modelled.](images/light_industrial_flow_model.svg){#fig-light-industrial-flow-model .lightbox width=100%}
+
+### Products: the manufacturing sub-groups
+
+The **Product** sub-tree divides manufacturing into seven sub-groups: Food, Tobacco, and Beverage; Rubber and Plastics; Leather and Textiles; Wood Products; Furniture, Printing, and Machinery; Transportation Equipment; and Electronics and Other. Each is an output node whose RDP, multiplied by an energy-intensity ratio, generates requests on the shared energy services. The sub-groups differ in how much heat versus motive power versus building service they draw, but they share the same service technologies.
+
+### Services: where the energy is decided
+
+Essentially all of the sector's energy use — and all of its emissions — is decided in the **Service** sub-tree:
+
+- **Heat** — process heat, split into Direct (standard and efficient natural gas, electric, oil/HFO, and wood-waste) and Indirect (electric) firing. This is the central fuel-switching competition.
+- **Steam** — boiler- and turbine-raised steam competing natural gas, oil, coal, electric, hydrogen, solid-biomass, and cogeneration units.
+- **Water Heating** — standard, efficient, and high-efficiency natural-gas and electric units.
+- **HVAC** — space conditioning, competing building-shell efficiency levels with electric and gas systems.
+- **Lighting** — base, more-efficient, and most-efficient lighting.
+- **Machine Drive** — the motor-driven loads (pumps, fans, compressed air, materials handling, and processing), structured on the EIA MECS end uses; see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. (The current files label this Motive Power with high- and low-efficiency options.)
+- **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gas, and hydrogen.
+
+The detailed structure and conventions of these shared services are set out in the [Sector Overview](sector_overview.qmd) and the General Services chapters and are not repeated here.
+
+<mark>TODO: The current regional input files predate the full Product/Service split and the MECS-aligned Machine Drive grouping (they carry a single Motive Power node with high-/low-efficiency options rather than the Compressed Air / Fans / Materials Handling / Materials Processing / Pumps breakdown). Migrate these files to the region-agnostic master tree and the shared General Services chapters, so light industrial draws on the same machine-drive representation as the other sectors.</mark>
+
+## Decarbonisation technologies
+
+Because light industrial energy is general-purpose and low-to-medium temperature, its decarbonisation is unusually tractable: it does not require new process chemistry, only electrification, fuel-switching, and efficiency applied to heat, steam, and motors. @tbl-light-industrial-decarb summarises maturity and @tbl-light-industrial-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Industrial heat pumps (low-temp heat) | COP ~3.5–4; serves heat up to ~120 °C | Commercial |
+| Electric boilers / resistance heating | Eliminates combustion where heat pumps don't fit | Commercial |
+| Biomass / wood-waste heat and steam | Low-carbon heat from residues | Commercial |
+| Hydrogen / biogas in the methane blend | Decarbonises remaining gas-fired duty | Emerging |
+| Cogeneration (steam + power) | Higher fuel utilisation | Commercial |
+| High-efficiency motors + variable-speed drives | Lower motive-power energy | Commercial |
+| Efficient lighting (LED) | Lower lighting energy | Commercial |
+| Building-shell & HVAC efficiency | Lower space-conditioning energy | Commercial |
+
+: Indicative performance and maturity of key light industrial decarbonisation technologies {#tbl-light-industrial-decarb}
+
+The cost estimates in @tbl-light-industrial-cost are order-of-magnitude figures from public techno-economic literature [@aceee-ihp; @arpagaus; @madeddu], expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Capital costs are per kilowatt of delivered service capacity. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Decarbonisation technology | Capex (2025 CAD) | Operating characteristics | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Industrial heat pump (≤120 °C) | ~1,100–2,000 / kWth | COP 3.5–4; high electricity use, low fuel | electricity |
+| Electric boiler / resistance | ~150–400 / kWth | ~99% efficient; electricity-priced heat | electricity |
+| Biomass / wood-waste boiler | ~800–1,400 / kWth | fuel handling; low-carbon if sustainable | solid biomass |
+| Hydrogen burner / blend | retrofit of existing burners | tracks hydrogen cost | hydrogen / blend |
+| Cogeneration (gas, ≈6–40 MW) | ~1,500–2,700 / kWe | sells surplus power; higher fuel use | natural gas / biomass |
+| High-efficiency motor + VSD | small premium over standard motor | ~2–8% drive-energy saving | electricity |
+| LED lighting | low; fast payback | large lighting-energy saving | electricity |
+
+: Indicative techno-economic characteristics of light industrial decarbonisation technologies, 2025 CAD {#tbl-light-industrial-cost}
+
+### Electrified heat: heat pumps and electric boilers
+
+The largest lever is electrifying the sector's abundant low- and medium-temperature heat. Industrial heat pumps deliver heat up to about 120 °C at a coefficient of performance of 3.5–4, so each unit of electricity yields three to four units of heat — a strong economic and emissions case wherever the grid is clean, as in much of Canada [@aceee-ihp; @arpagaus]. Where temperatures or duty cycles do not suit a heat pump, electric boilers and resistance heating electrify the remainder at high efficiency but higher running cost. These appear in the model as the electric options at the **Heat**, **Steam**, and **Water Heating** services, drawing on the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+
+### Biomass, hydrogen, and cogeneration
+
+For heat that is harder to electrify, biomass and wood-waste firing (already a Heat and Steam option, and a natural fit for wood-products manufacturers with on-site residues) and hydrogen and biogas through the **Methane Blend** node decarbonise the remaining combustion. Cogeneration raises the fuel utilisation of any remaining gas use and can export surplus power.
+
+### Efficiency in motors, lighting, and buildings
+
+The motive-power load is reduced by high-efficiency motors and variable-speed drives in the **Machine Drive** service (see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter), lighting by LED upgrades, and space-conditioning by building-shell and HVAC efficiency — all mature, low-cost, and already represented as the efficient options in their respective competitions.
+
+<mark>TODO: Add explicit industrial heat-pump technologies to the Heat and Water Heating competitions. The current files represent electric heat as resistance/standard-electric only; heat pumps' COP of 3.5–4 makes them materially cheaper to run than resistance heating and is the most important missing low-temperature electrification option for this sector.</mark>
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Light industrial technologies are discounted at a high rate — 35% at most nodes in the current data, with some at 40–50%. These values are **behavioural** (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm's cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.
+
+The sector's emissions accounting is the simplest kind: there are no process emissions, so all CO₂ comes from fuel combustion in the Heat, Steam, and Water Heating services, entering through each technology's fuel service requests and the carbon price. Electrification (heat pumps), fuel-switching, and energy efficiency are therefore the only channels for emissions reduction, and their effect depends on the carbon intensity of the regional grid. Because output is measured in real dollars, energy intensities are expressed per unit of RDP, and the sector's projected energy use is driven by the interaction of economic growth with these efficiency and fuel-switching choices.
+
+## Regional coverage and differences
+
+Light industrial has the most complete regional coverage of any industrial sector in the model: all seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the full structure, because every region has a substantial "other manufacturing" base. Differences are matters of scale and growth: Ontario and Québec are the largest, with Québec and Alberta growing strongly over the projection, while Ontario's modelled output is roughly flat to declining. Because the sector is driven by economic output rather than a commodity, its energy use tends to rise with regional GDP unless offset by efficiency and electrification.
+
+<mark>TODO: The relative energy intensities and sub-group mix are inherited from older calibrations. Revisit them against current CIEEDAC manufacturing energy-use data, since the composition of "other manufacturing" (and the share of food and beverage in particular) varies considerably by region.</mark>
+
+## Limitations and planned extensions
+
+The light industrial sub-model is deliberately a generic-services representation: it trades process detail for breadth, capturing a large and diverse slice of manufacturing through a compact set of energy-service competitions. Its main limitations follow from that design — it cannot represent process-specific options, and it depends entirely on the shared service technologies being kept current. The TODOs above record the priorities: migrating to the MECS-aligned Machine Drive, adding industrial heat pumps to the heat competitions, and refreshing the intensities and sub-group mix against current data.
+
+<mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled light industrial energy use against CIEEDAC and Natural Resources Canada data, by sub-group where possible.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

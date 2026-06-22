@@ -1,0 +1,119 @@
+---
+bibliography: references.bib
+---
+
+# Commercial and Institutional {#sec-commercial}
+
+The commercial and institutional buildings sector is represented in CIMS as a demand-side sub-model: it does not make a physical product but consumes energy to deliver building **energy services** — heating, cooling, ventilation, lighting, refrigeration, cooking, hot water, and plug loads — across offices, stores, schools, hospitals, hotels, and the rest of the non-residential building stock. The emphasis, as elsewhere, is on the structure of the energy-service flow model: the building segments that drive demand, the end-use services, and the technologies that compete to supply them. The tree is region-agnostic, but building energy use is climate-sensitive, so the model splits the stock by climate zone. The sector has **no process emissions**; all of its CO₂ comes from the fuels burned for heating, so its decarbonisation is a story of electrification and efficiency.
+
+## Scope
+
+CIMS represents the energy services of commercial and institutional buildings, driven by floor space. It deliberately excludes light industrial facilities (in [Light Industrial](sector_light_industrial.qmd)) and high-rise residential apartments (in [Residential](sector_residential.qmd)). The commercial building sector accounts for roughly 20% of all energy consumed in Canada, of which lighting and HVAC together are about 60% [@nrcan-ceud]. The model includes the end-uses significant enough to matter — space heating and cooling, ventilation, lighting, refrigeration, cooking, hot water, and plug load — and drives each through engineering ratios that link it to floor space; floor space itself is projected exogenously from population and economic growth. Exterior lighting (street, parking, architectural) is not represented for lack of data.
+
+## Real-world context
+
+Commercial buildings are diverse — a warehouse, a hospital, and a small office have very different energy profiles — but their energy use shares a common structure dominated by space conditioning and lighting. The most common fuels are, in order, electricity, natural gas, and light fuel oil; electricity is the sole source for lighting, refrigeration, plug load, cooling, fans, and pumps, while space and water heating use all three. Heating is where most of the sector's direct emissions arise, since lighting and plug loads are already electric.
+
+The decarbonisation path is correspondingly clear. Because the loads are general-purpose and mostly low-temperature, the sector is highly electrifiable: heat pumps (air- and ground-source) can serve space and water heating at a coefficient of performance well above one; LED lighting and efficient HVAC, controls, and refrigeration cut electricity use; and a tighter building envelope reduces the heating and cooling load at source. Larger facilities with coincident heat and power demand can use cogeneration. The CIMS structure captures all of these, and — distinctively for a buildings model — it represents the interaction between the building shell and the HVAC system, since a better envelope reduces the heat load the HVAC must meet.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the building shell, disaggregated by building segment and climate zone — and a **Service** sub-tree of the energy end-uses. @fig-commercial-flow-model shows the structure. The building shell is the organising "product" because the choice of envelope determines the heating and cooling demand placed on the services. Each node carries a competition rule (see @sec-technology-competition).
+
+![Energy-service flow model of the commercial sector (region-agnostic master tree). The Product sub-tree is the building shell, split by building segment (offices, retail, healthcare, education, accommodation, etc.) and by climate zone (Cold / Marine); the Service sub-tree holds the end-use services — HVAC, lighting, cooling, hot water, cooking, refrigeration, plug load, and machine drive — that the shell's demand draws on.](images/commercial_flow_model.svg){#fig-commercial-flow-model .lightbox width=100%}
+
+### Products: the building shell, by segment and climate
+
+The **Building Shell** node disaggregates the stock into about a dozen building segments — Offices, Retail, Wholesale, Transportation and Warehousing, Educational, Healthcare and Social Assistance, Accommodation and Food Services, Arts/Entertainment/Recreation, Information and Cultural, and Other Services — each split by climate zone (Cold / Marine). Each segment competes shell options of differing thermal performance, which set the heat load passed to the HVAC service. This shell-to-HVAC link is the model's way of capturing the main interactive effect in commercial buildings: investing in a better envelope reduces the energy the heating and cooling systems must deliver.
+
+### Services: the end-uses
+
+The **Service** sub-tree holds the end-uses, each linked to floor space (or to the shell's heat load) by historical engineering ratios:
+
+- **HVAC** (split Cold / Marine) — the dominant service, modelled as integrated single systems that compete electric and gas existing/improved units, air-source heat pumps (ASHP) and ground-source heat pumps (GSHP), hybrid heat-pump-with-gas-backup systems, oil and propane, and natural-gas cogeneration.
+- **Lighting** — three sub-categories (General Area, High Bay, Service), competing efficiency levels from base stock to advanced/LED.
+- **Hot Water** — efficient electric, gas, and oil units, heat-pump water heaters (Electric-ASHP), solar pre-heat, and service-load-reduction options.
+- **Cooling**, **Refrigeration**, **Cooking**, **Plug Load** — the remaining electric (and, for cooking, gas) end-uses, modelled at average intensities that evolve with equipment efficiency.
+- **Machine Drive** and **Methane Blend** — the shared motor and gaseous-fuel services.
+
+<mark>TODO: The current regional input files predate parts of the Product/Service split and label some services differently (e.g. Motive Power rather than the MECS-aligned Machine Drive). Migrate them fully to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Commercial decarbonisation is electrification plus efficiency: replace fossil heating with heat pumps, cut electricity demand with efficient lighting, HVAC, and refrigeration, and reduce loads at source with a better envelope. @tbl-commercial-decarb summarises maturity and @tbl-commercial-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Air-source heat pump (space heat) | COP 2–3.5; displaces gas/oil heat | Commercial |
+| Ground-source heat pump | Higher COP; higher capital | Commercial |
+| Hybrid heat pump + gas backup | Heat pump for most hours, gas on peak | Commercial |
+| Heat-pump water heater | Efficient electric hot water | Commercial |
+| Building-envelope / shell upgrade | Lowers heating & cooling load at source | Commercial |
+| LED lighting + controls | Large lighting-electricity cut | Commercial |
+| Efficient HVAC + smart controls | Lower HVAC energy | Commercial |
+| Efficient / low-GWP refrigeration | Lower energy and refrigerant emissions | Commercial |
+| Cogeneration (large facilities) | Combined heat and power; surplus export | Commercial |
+
+: Indicative performance and maturity of key commercial decarbonisation technologies {#tbl-commercial-decarb}
+
+The estimates in @tbl-commercial-cost are order-of-magnitude figures from public literature [@arpagaus; @aceee-ihp; @nrcan-ceud], in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). Capital costs are per kW of delivered capacity unless noted. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Capex (2025 CAD) | Operating characteristics | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Air-source heat pump | ~1,400–2,800 / kWth | COP 2–3.5; backup on cold days | electricity (+ gas backup) |
+| Ground-source heat pump | ~3,000–6,000 / kWth | COP 3.5–5; ground loop cost | electricity |
+| Heat-pump water heater | ~2,000–4,000 / unit | COP 2.5–3.5 | electricity |
+| Envelope / shell upgrade | building-specific | reduces heat & cool load | — (passive) |
+| LED lighting + controls | low; fast payback | large electricity saving | electricity |
+| Gas cogeneration (large bldg) | ~1,800–3,000 / kWe | sized to heat load; exports surplus | natural gas |
+
+: Indicative techno-economic characteristics of commercial decarbonisation technologies, 2025 CAD {#tbl-commercial-cost}
+
+### Heat pumps: the central lever
+
+The largest direct-emissions source in commercial buildings is fossil space and water heating, and the central decarbonisation lever is the heat pump. The model competes air-source and ground-source heat pumps, and hybrid systems that pair a heat pump with a gas backup for the coldest hours — a configuration well suited to Canada's cold climate, which is why the model splits HVAC into Cold and Marine zones. Heat-pump water heaters electrify domestic hot water. These options draw on the broader treatment in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) and [Cogeneration](cogeneration.qmd) chapters.
+
+### Efficiency: envelope, lighting, HVAC, and refrigeration
+
+Reducing demand is as important as switching fuel. A tighter building envelope lowers the heating and cooling load before any equipment runs — the shell-to-HVAC link in the model captures exactly this interaction. LED lighting with controls sharply cuts the single largest electricity end-use, efficient HVAC with smart controls trims the next largest, and efficient, low-GWP refrigeration addresses both energy and refrigerant emissions.
+
+### Cogeneration in large facilities
+
+Large institutions with steady, coincident heat and power demand — hospitals, universities, large offices, hotels — can use natural-gas cogeneration, which the model admits to those segments (limited exogenously to 30–50% of the relevant demand) and sizes to the facility's heat load, selling any surplus electricity back to the grid.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and add cold-climate (low-temperature) heat-pump performance curves so the Cold-zone HVAC competition reflects real winter coefficients of performance.</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition, applied here to building equipment and shells. The sector also makes notable use of retrofit technologies: once existing stock retires, CIMS sets up a competition between leaving the "remembered" stock as-is (operating and maintenance cost only) and attaching a retrofit (adding annualised retrofit capital), so that efficiency upgrades to the existing stock are represented, not just new-build choices.
+
+Commercial technologies are discounted at a high rate — generally 40% in the current data — reflecting the rapid-payback requirements, risk aversion, and capital constraints typical of commercial energy decisions. Two exceptions are encoded: cogeneration and the hospital and school shell/HVAC technologies are discounted at 30%, reflecting their longer, owner-operated planning horizons. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than financial costs of capital — the chapter's own data notes they are "ex post measures … meant to encompass many more factors than simple rate-of-return criterion" — and CIMS applies them throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition.
+
+The emissions accounting is the simplest kind: there are **no process emissions**, so all CO₂ comes from fuel combustion in the heating, hot-water, and cooking services, entering through each technology's fuel service requests and the carbon price. Electrification (heat pumps), fuel-switching, and efficiency are therefore the only channels for emissions reduction, and their effect depends on the carbon intensity of the regional grid. A known simplification is that energy prices are average per-unit charges, so the demand-charge savings of efficiency measures are not captured; the model also captures only the main shell–HVAC interactive effect, not the full set of inter-end-use interactions.
+
+## Regional coverage and differences
+
+All seven modelled regions carry the commercial structure, and the Cold / Marine climate split is the key regional dimension: most of Canada is in the Cold zone, while coastal British Columbia and parts of the Atlantic are Marine, with milder heating demand and different heat-pump performance. Beyond climate, regional differences show up in the fuel mix — the model assumes essentially no new oil heating after 1990 except in the Atlantic region, where natural gas is less available and oil heating remains significant — and in grid carbon intensity, which determines how much electrification actually reduces emissions.
+
+<mark>TODO: Confirm the regional building-segment floor-space mix and the Cold/Marine zone assignments against current commercial building-stock data, since both the heating demand and the heat-pump economics depend on them.</mark>
+
+## Limitations and planned extensions
+
+The commercial sub-model is a mature, detailed buildings representation — segment- and climate-resolved shells, an explicit shell–HVAC interaction, retrofit competitions, and a full set of heat-pump and efficiency options. Its acknowledged limitations are the partial treatment of inter-end-use interactive effects (only the shell–HVAC link is quantified), the average-price treatment of energy (missing demand-charge savings), and reliance on inherited floor-space and intensity calibrations. The TODOs above record the priorities, of which cold-climate heat-pump performance and refreshed floor-space data are the most important for present-day analysis.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled commercial energy use by end-use against Natural Resources Canada's Comprehensive Energy Use Database.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

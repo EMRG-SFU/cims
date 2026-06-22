@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 540" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+    <marker id="garrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#3f7d52"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .gedge{stroke:#3f7d52;stroke-width:1.5;fill:none;}
+    .sector{fill:#33415c;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .out{fill:#3f7d52;}
+    .ccs{fill:#cfe3d6;stroke:#3f7d52;stroke-width:1;}
+  </style>
+
+  <!-- inputs (left) -->
+  <text class="ttl" x="130" y="40" text-anchor="middle">Inputs / Services</text>
+  <rect class="spec" x="30" y="55" width="200" height="50" rx="6"/>
+  <text class="lbl" x="130" y="74" text-anchor="middle">Agricultural Input</text>
+  <text class="sub" x="130" y="90" text-anchor="middle">diesel / eff / biodiesel farming</text>
+
+  <rect class="svc" x="30" y="120" width="200" height="40" rx="6"/>
+  <text class="lbl" x="130" y="137" text-anchor="middle">Steam</text>
+  <text class="sub" x="130" y="152" text-anchor="middle">NG · coal · electric · cogen · +CCS</text>
+
+  <rect class="svc" x="30" y="175" width="200" height="40" rx="6"/>
+  <text class="lbl" x="130" y="192" text-anchor="middle">Methane Fuel</text>
+  <text class="sub" x="130" y="207" text-anchor="middle">NG · biogas · biomass gas · H₂</text>
+
+  <rect class="svc" x="30" y="230" width="200" height="30" rx="6"/>
+  <text class="lbl" x="130" y="250" text-anchor="middle">Electricity</text>
+
+  <!-- production routes (centre) -->
+  <text class="ttl" x="490" y="40" text-anchor="middle">Product — two routes</text>
+  <rect class="prod" x="370" y="80" width="240" height="56" rx="8"/>
+  <text class="lblw" x="490" y="103" text-anchor="middle">Corn (grain fermentation)</text>
+  <text class="subw" x="490" y="120" text-anchor="middle">1st-gen · steam-intensive · feedstock CI</text>
+
+  <rect class="prod" x="370" y="150" width="240" height="56" rx="8"/>
+  <text class="lblw" x="490" y="173" text-anchor="middle">Cellulosic</text>
+  <text class="subw" x="490" y="190" text-anchor="middle">2nd-gen · residues/wood · lower CI</text>
+
+  <!-- input arrows -->
+  <path class="edge" d="M230,80 C300,90 320,100 370,108" marker-end="url(#arrow)"/>
+  <path class="edge" d="M230,140 C300,150 320,150 370,150" marker-end="url(#arrow)"/>
+  <path class="edge" d="M230,195 C300,190 320,185 370,178" marker-end="url(#arrow)"/>
+  <path class="edge" d="M230,245 C310,235 320,200 370,190" marker-end="url(#arrow)"/>
+
+  <!-- output -->
+  <text class="ttl" x="820" y="70" text-anchor="middle">Output</text>
+  <rect class="out" x="720" y="110" width="200" height="56" rx="8"/>
+  <text class="lblw" x="820" y="133" text-anchor="middle">Ethanol</text>
+  <text class="subw" x="820" y="150" text-anchor="middle">to gasoline blend (E10/E15)</text>
+  <path class="edge" d="M610,120 C660,120 680,130 720,134" marker-end="url(#arrow)"/>
+  <path class="edge" d="M610,178 C660,170 680,155 720,148" marker-end="url(#arrow)"/>
+
+  <!-- fermentation CO2 -> CCS/BECCS -->
+  <rect class="ccs" x="370" y="260" width="240" height="76" rx="6"/>
+  <text class="ttl" x="490" y="280" text-anchor="middle" style="fill:#2c6e49">Fermentation CO₂ → CCS / BECCS</text>
+  <text class="li" x="490" y="298" text-anchor="middle">near-pure biogenic CO₂ — cheapest capture</text>
+  <text class="li" x="490" y="313" text-anchor="middle">(~CAD 25–60 / t CO₂); net-negative when stored</text>
+  <text class="sub" x="490" y="329" text-anchor="middle">shared CCS service</text>
+  <path class="gedge" d="M490,206 V260" marker-end="url(#garrow)"/>
+
+  <!-- lifecycle note -->
+  <rect class="det" x="690" y="260" width="230" height="76" rx="6" stroke-dasharray="5 3"/>
+  <text class="ttl" x="805" y="280" text-anchor="middle">Life-cycle GHGs</text>
+  <text class="li" x="805" y="298" text-anchor="middle">CO₂ · CH₄ · N₂O tracked</text>
+  <text class="sub" x="805" y="314" text-anchor="middle">net benefit vs gasoline displaced;</text>
+  <text class="sub" x="805" y="327" text-anchor="middle">cellulosic &lt; corn intensity</text>
+
+  <!-- legend -->
+  <rect class="spec" x="30" y="380" width="16" height="12" rx="2"/>
+  <text class="sub" x="52" y="390">feedstock</text>
+  <rect class="svc" x="160" y="380" width="16" height="12" rx="2"/>
+  <text class="sub" x="182" y="390">energy service</text>
+  <rect class="prod" x="320" y="380" width="16" height="12" rx="2"/>
+  <text class="sub" x="342" y="390">production route</text>
+  <rect class="ccs" x="470" y="380" width="16" height="12" rx="2"/>
+  <text class="sub" x="492" y="390">CCS / BECCS</text>
+  <rect class="out" x="600" y="380" width="16" height="12" rx="2"/>
+  <text class="sub" x="622" y="390">fuel output</text>
+</svg>

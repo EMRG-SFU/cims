@@ -1,4 +1,4 @@
-# Model Architecture
+# Model Architecture {#sec-architecture}
 
 ## Scale and Scope
 
@@ -227,4 +227,4 @@ CIMS is designed to mimic a sector or industry by representing a number of indus
 
 5.  The model reiterates step 2, 3 and 4 until all variables stabilize. It then proceeds to the next time period. Steps 1 through 5 are repeated for all time periods.
 
-6.  Output is provided for new and total capital stock, energy use and trade flows, GHG emissions, levelized lifecycle costs by service and technology, and energy prices.
+6.  Output is provided for new and total capital stock, energy use, and trade flows, GHG emissions, levelized lifecycle costs by service and technology,

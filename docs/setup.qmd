@@ -1,4 +1,4 @@
-# Setup the model
+# Setup the model {#sec-setup}
 
 Welcome to the CIMS repository! This guide will help you set up and run the CIMS Python package for energy-economy modelling.
 

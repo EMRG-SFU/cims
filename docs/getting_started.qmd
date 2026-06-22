@@ -1,4 +1,4 @@
-# Getting started
+# Getting started {#sec-getting-started}
 
 how to run a scenario
 

@@ -1,0 +1,120 @@
+---
+bibliography: references.bib
+---
+
+# Coal Mining {#sec-coal-mining}
+
+Coal mining is one of CIMS's energy-supply and extractive sub-models: it produces coal for metallurgical use (coking coal for steelmaking) and for thermal use (power and industrial heat). The emphasis, as in the other extractive sectors, is on the structure of the energy-service flow model — the production chain, the technologies that compete at each stage, and the engineering ratios that link them. The tree is region-agnostic. Coal mining has a distinctive emissions signature: alongside the diesel its mobile equipment burns, it releases fugitive methane liberated from the coal seam during extraction, and this coal-mine methane is the sector's largest greenhouse-gas source — yet, as discussed below, the current model carries no technology to abate it.
+
+## Scope
+
+CIMS represents the extraction, size reduction, and finishing of coal — from the mine face through crushing, milling, washing, and drying to a saleable product. The driving variable is coal output in tonnes. Both metallurgical (coking) coal and thermal coal are within scope; the chain includes a Metallurgical Finishing stage (washing, cleaning/drying, tailings) that prepares coking coal to the specification the steel industry needs.
+
+Adjacent activities are handled elsewhere to avoid double-counting: the combustion of thermal coal for power is in [Electricity](sector_electricity.qmd) and for industrial heat in the relevant industrial chapters; the conversion of coking coal to coke and its use in ironmaking are in [Iron and Steel](sector_iron_and_steel.qmd); and other (non-coal) mining is in the [Mining](sector_mining.qmd) sector. This chapter covers the mining of the coal itself.
+
+## Real-world context
+
+Canada produced about 42.6 Mt of coal in 2024, roughly two-thirds of it metallurgical [@nrcan-coal]. The geography is concentrated in the West: British Columbia accounts for around 69% of tonnage (the Elk Valley coking-coal mines), Alberta about 19% (metallurgical and thermal), and Saskatchewan about 11% (lignite/thermal). The two coal types are on opposite trajectories. Thermal coal is in steep decline as Canada phases out unabated coal-fired electricity by 2030 and moves to end thermal-coal exports, while metallurgical coal — for which there is no current large-scale substitute in conventional steelmaking — has held up and is increasingly framed as an export commodity [@nrcan-coal]. Canadian coal production has fallen about 31% over the past decade, almost all of it thermal.
+
+The sector's emissions come from two places. Diesel powers the trucks, shovels, and other mobile equipment, as at any large mine. More distinctively, methane trapped in the coal seam is released during extraction — fugitive coal-mine methane (CMM), much of it carried out in the ventilation air (VAM). Coal-mine methane is the dominant greenhouse-gas source from coal mining, on the order of 60% of the total, and mature technologies exist to drain and destroy it — gas drainage, and ventilation-air-methane oxidation that can destroy more than 98% of the methane in mine ventilation air [@iea-methane-coal; @csiro-vam]. The CIMS structure carries the fugitive-methane factor on the extraction node and the diesel emissions on the mobile equipment, but — as noted below — it does not yet offer a methane-capture option.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the coal production chain — and a **Service** sub-tree of auxiliary energy services. @fig-coal-mining-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the production chain is a fixed-ratio sequence and the technology choices occur at the tech-compete leaves.
+
+![Energy-service flow model of the coal mining sector (region-agnostic master tree). The Product sub-tree runs from Raw Product (extraction, mine ventilation, transportation) through Size Reduced Product (crushing and milling) to Metallurgical Finishing (washing, cleaning/drying, tailings); the Service sub-tree holds the MECS-aligned machine drive and building services. Fugitive coal-mine methane is released at extraction.](images/coal_mining_flow_model.svg){#fig-coal-mining-flow-model .lightbox width=100%}
+
+### Products: the coal production chain
+
+- **Raw Product** — the mine itself: Extraction (competing diesel, biodiesel, and electric equipment), Mine Ventilation, and Transportation (diesel and biodiesel trucks, or conveyance). The Extraction node carries the fugitive-methane emission factor.
+- **Size Reduced Product** — Primary Crushing, Primary Milling, and Secondary Milling of the run-of-mine coal.
+- **Metallurgical Finishing** — preparing coking coal: Washing (wash mill), Cleaning (rotary, spray, or fluidized-bed drying, on coal, natural gas, or electricity), and Tailings Disposal (reclamation, with diesel, biodiesel, or electric options).
+
+The master tree also defines Simplified Extraction and Simplified Production nodes — lower-resolution alternatives to the full chain for regions or runs where the detailed structure is not warranted.
+
+### Services
+
+The services follow the standard pattern and are documented in their own chapters in the General Services part: **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)) carries the large motor loads (the model's current files still use the older per-horsepower and separate compression/conveyance/pumping/ventilation structure), together with **HVAC**, **Lighting**, and the **Methane Blend** gaseous-fuel node.
+
+<mark>TODO: The current regional input files still implement the earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the MECS-aligned Machine Drive grouping. Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Coal mining's emissions split into fugitive methane (the larger share) and diesel combustion in mobile equipment, with smaller process-heat (drying) and electricity loads. The decarbonisation levers therefore are methane capture, equipment electrification or fuel-switching, and efficiency. @tbl-coal-mining-decarb summarises maturity and @tbl-coal-mining-cost gives indicative costs. A crucial caveat: the single largest lever — methane capture — is not yet represented in the model.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Coal-mine methane drainage + use | Captures seam methane for energy | Commercial — *not in model* |
+| Ventilation-air-methane (VAM) oxidation | Destroys >98% of dilute vent methane | Commercial / demonstration — *not in model* |
+| Battery-electric / biodiesel extraction & haulage | Cuts mobile-equipment diesel CO₂ | Commercial / emerging |
+| Electric coal/concentrate drying | Removes drying-fuel CO₂ | Commercial |
+| Ventilation-on-demand & efficient fans | Lower ventilation energy | Commercial |
+| Electric conveyance & efficient motors/drives | Lower auxiliary energy | Commercial |
+
+: Indicative performance and maturity of key coal mining decarbonisation technologies {#tbl-coal-mining-decarb}
+
+The estimates in @tbl-coal-mining-cost are order-of-magnitude figures from public literature [@iea-methane-coal; @bisulandu-mining-2026; @srk-haultruck], expressed in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Cost / capex | Operating effect | Energy / emission |
+|:-----|:-----|:-----|:-----|
+| Methane drainage + utilisation | moderate capex; gas revenue offsets | often low net cost per t CO₂e | captures high-GWP CH₄ |
+| VAM oxidation (e.g. CataVAM) | moderate capex | low cost per t CO₂e abated | destroys >98% of vent methane |
+| Battery-electric haul truck | ~CAD 4–7 M per truck (+100–150% vs diesel) | ~65% lower cost per t moved | electricity |
+| Biodiesel in existing equipment | none (drop-in fuel) | fuel-cost dependent | lifecycle CO₂ cut |
+| Electric drying | ~150–400 CAD/kWth | electricity-priced heat | removes drying-fuel CO₂ |
+
+: Indicative techno-economic characteristics of coal mining decarbonisation technologies, 2025 CAD {#tbl-coal-mining-cost}
+
+### Capturing coal-mine methane
+
+The most important lever is the one the model is missing. Because methane has a high global-warming potential and is released in large quantities during mining, draining and using it (where concentrations allow) and oxidising the dilute methane in ventilation air (VAM) together address the majority of the sector's emissions, with mature technology that can destroy more than 98% of vent methane [@csiro-vam; @iea-methane-coal]. The model currently applies the same fugitive-methane factor to every extraction option, with no capture alternative.
+
+<mark>TODO: Add coal-mine methane drainage and use and ventilation-air-methane (VAM) oxidation technologies at the Extraction / Mine Ventilation nodes. Fugitive methane is the largest single source of coal-mining emissions and has commercially available abatement, but the current tree offers no option to reduce it — every extraction technology carries the same methane factor.</mark>
+
+### Electrifying and fuel-switching mobile equipment
+
+As in metal mining, the diesel load is addressed by battery-electric and biodiesel extraction and haulage (already options at the Extraction and Transportation nodes), electric coal drying, ventilation-on-demand, and efficient motors, fans, and conveyors in the machine-drive service. These are the same levers detailed in the [Mining](sector_mining.qmd) chapter.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the energy it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Coal mining technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary nodes at 50%. These values are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the short payback horizons and adoption barriers typical of resource industries; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10.
+
+The emissions accounting combines combustion CO₂ from diesel and drying fuel with the distinctive fugitive CH₄ factor on extraction (entering on a CO₂-equivalent basis at methane's high warming potential). Because there is no methane-capture option and no CCS service, the model's only channels for emissions reduction are equipment electrification, fuel-switching to biodiesel, and efficiency — which reach the combustion emissions but leave the dominant fugitive methane untouched. This is the most consequential representational gap in the sub-model, and it means the model understates the abatement available to the sector.
+
+## Regional coverage and differences
+
+Four regions carry coal mining — Alberta, the Atlantic region, British Columbia, and Saskatchewan — reflecting where Canadian coal is actually mined:
+
+- British Columbia dominates, with metallurgical (coking) coal from the Elk Valley; this production is export-oriented and durable.
+- Alberta has both metallurgical and thermal coal, with thermal declining as coal power is phased out.
+- Saskatchewan mines lignite/thermal coal, the most exposed to the power phase-out.
+- The Atlantic region has a small coal presence.
+
+Ontario, Québec, and Manitoba are absent, consistent with the absence of coal mining there.
+
+<mark>TODO: Represent the diverging trajectories of metallurgical versus thermal coal explicitly — durable, export-driven coking-coal demand versus a sharp thermal-coal decline under the coal-power phase-out and export restrictions — since lumping them understates the structural change underway in the sector.</mark>
+
+## Limitations and planned extensions
+
+The coal mining sub-model captures the production chain and its diesel and electricity loads in good detail, but it has one large gap and several smaller ones. The large gap is the absence of any coal-mine-methane abatement technology, which omits the sector's single most important emissions lever. The smaller debts are the older auxiliary structure (to be migrated to MECS machine drive), the lack of an explicit metallurgical-versus-thermal split, and reliance on inherited cost data. The TODOs above record these priorities.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled coal output and fugitive-methane emissions against Natural Resources Canada coal statistics and Environment and Climate Change Canada's National Inventory Report.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

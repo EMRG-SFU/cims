@@ -1,4 +1,4 @@
-# Building the Model Tree
+# Building the Model Tree {#sec-building-tree}
 
 <mark>TODO: Write up best-practices for designing nodes in the CIMS tree. Cover: when to request services directly at a node vs. through technology competition, how to lay out service nodes for a new sector, naming and Branch-path conventions, where intangible costs are typically anchored, and how to expose policy levers cleanly. Worked examples (one residential heating, one industrial process-heat) would communicate the patterns better than abstract prose.</mark>
 

@@ -1,0 +1,11 @@
+# Carbon Dioxide Removal / Direct Air Capture {#sec-carbon-dioxide-removal}
+
+- Run year as normal with carbon price
+- Re-run year with shadow carbon price, iterate until between:
+  - total emissions difference between runs is equal to maximum DAC quantity
+    - have maximum annual growth rate for DAC?
+    - Expert opinion?
+  - minimum shadow price equals DAC cost
+- Emissions difference between runs is DAC request by tech
+  - Only change shadow price in sectors that are allowed to purchase DAC
+- Total emissions 

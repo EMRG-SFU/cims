@@ -1,0 +1,147 @@
+---
+bibliography: references.bib
+---
+
+# Metal Smelting and Refining {#sec-metal-smelting}
+
+The metal smelting and refining sector — the production of finished non-ferrous metals — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them, rather than the metallurgy of individual smelters. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node. The sector is unusual in two respects. It is dominated by a single metal, aluminium, whose production is overwhelmingly electricity-driven and located in Québec on cheap hydropower; and its hardest-to-cut emissions are process emissions — CO₂ from the consumable carbon anode in aluminium electrolysis, and SF₆ from magnesium melt protection — rather than ordinary combustion.
+
+## Scope
+
+CIMS represents the smelting and refining of the major non-ferrous metals: aluminium, copper, nickel, zinc, and magnesium, with lead and titanium appearing in some regions. The driving variable is the physical output of refined metal in tonnes; a forecast of demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.
+
+Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
+
+- Iron and steel are explicitly excluded and covered in their own [Iron and Steel](sector_iron_and_steel.qmd) chapter.
+- Mining and concentration of the ores are part of the [Mining](sector_mining.qmd) sector; the smelting sub-model takes concentrates (and, for aluminium, alumina) as inputs.
+- Downstream fabrication — rolling, extrusion, casting of finished goods — is downstream manufacturing and is not part of this sub-model, which ends with refined and cast metal.
+
+Minor and precious metals (gold, silver, platinum-group, cadmium) are not represented explicitly because they are recovered in conjunction with the base metals or are produced in quantities too small to require their own representation.
+
+## Real-world context
+
+Canada is one of the world's leading non-ferrous metal producers, and the sector's structure is dominated by aluminium. Almost all Canadian primary aluminium is smelted in Québec, where abundant low-cost hydroelectricity makes the energy-intensive Hall-Héroult electrolysis economic; Canadian smelters are among the lowest-carbon in the world for this reason [@iea-aluminium]. Nickel and copper smelting and refining are concentrated in Ontario (Sudbury) and Manitoba (Thompson), with zinc and other base metals across several provinces.
+
+The sector's emissions profile is distinctive. Hall-Héroult electrolysis consumes roughly 14 MWh of electricity per tonne of aluminium, but even on perfectly clean electricity it emits CO₂ because the carbon anode is consumed in the reaction — about 1.6–1.7 t CO₂ per tonne of aluminium — and intermittent anode effects release perfluorocarbons (PFCs), extremely potent greenhouse gases [@iea-aluminium]. Magnesium production and casting use SF₆ as a melt-protection cover gas; SF₆ has roughly 22,000 times the warming potential of CO₂, so even small quantities matter. Pyrometallurgical copper, nickel, and zinc smelting burns fuel for roasting, smelting, and converting. The CIMS structure reflects all of this: it carries explicit process-emission factors for the aluminium carbon anode and for magnesium SF₆, and it admits the technologies — inert anodes, recycling, oxygen-enriched and flash smelting, and hydrometallurgy — that target each.
+
+## Model structure
+
+Following the standard CIMS pattern, the sector divides into a **Product** sub-tree, holding the per-metal production chains, and a **Service** sub-tree of auxiliary energy services. @fig-metal-smelting-flow-model shows the overall structure.
+
+As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the metal-smelting tree, the disaggregation into metals and process stages is built from fixed-ratio nodes, while the technology choices — which anode, which smelting furnace, which metallurgical route — occur at the tech-compete leaves.
+
+![Energy-service flow model of the metal smelting and refining sector (region-agnostic master tree). The Product sub-tree holds per-metal chains — aluminium (alumina, electrolysis, recycle) and the pyro-/hydro-metallurgical base metals — and the Service sub-tree holds the auxiliary energy services and oxygen supply.](images/metal_smelting_flow_model.svg){#fig-metal-smelting-flow-model .lightbox width=100%}
+
+### Products: aluminium
+
+Aluminium is the largest chain and has its own structure. Primary Aluminum runs through:
+
+- **Alumina** — refining bauxite to alumina by the Bayer process (natural-gas fired, with an efficiency retrofit). (Canada imports alumina, but the step is represented.)
+- **Electrolysis** — the Hall-Héroult cell, the energy and emissions core, competing Søderberg and several pre-bake anode designs (side- and centre-point feeders, with automation) against the inert anode with wetted cathode route that eliminates the carbon anode entirely.
+
+A Recycle branch remelts scrap aluminium at a small fraction of primary energy, and dedicated Pre-bake Anode and Søderberg Anode nodes supply the consumable anodes for the conventional routes.
+
+The conventional electrolysis routes carry a process-CO₂ factor of about 1.6–1.7 t per tonne, representing carbon-anode consumption; the inert-anode route is the model's way of breaking that link.
+
+### Products: copper, nickel, zinc, and magnesium
+
+The base metals share a common structure under Primary Metals, each resolving into a Metallurgy route and a Melt Cast finishing step:
+
+- **Pyro Metallurgy** — the conventional high-temperature route, broken into a Smelting Process (conventional roast–smelt–convert, or continuous smelting such as Mitsubishi) and a Refine step (electrolytic, anode-furnace, or fire refining). The smelting technologies compete fuels and furnace types — flash furnaces, reverberatory and electric-arc furnaces, fluidized-bed and hearth roasting, Pierce-Smith and top-blown rotary converters — with oxygen enrichment options.
+- **Hydro Metallurgy** — the aqueous route (pressure or percolation leaching, solvent extraction, electrolytic precipitation/electrowinning), which is more electricity-intensive but avoids high-temperature smelting.
+
+Magnesium carries an explicit SF₆ process-emission factor on its melt-cast and refining steps, reflecting cover-gas use.
+
+### Services
+
+The services follow the standard pattern and are documented in their own chapters in the General Services part. The sector draws on **Oxygen** (cryogenic air separation, feeding oxygen-enriched smelting and converting), **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)), **Steam** (see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd)), **Methane Blend**, **HVAC**, and **Lighting**. Notably, the sector has no CCS service in the current tree, which is a significant omission for the pyrometallurgical routes whose off-gases are relatively concentrated.
+
+<mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. Migrate these files to the region-agnostic master tree (which places the sector under `Metal.Smelting` with the Product/Service split) and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Because Canadian smelting already runs largely on clean electricity, its decarbonisation problem is less about the energy supply than about the process chemistry — the carbon anode, the SF₆ cover gas, and the fuel burned in pyrometallurgical smelting — and about using less primary metal through recycling. The model represents most of these levers; @tbl-metal-smelting-decarb summarises maturity and @tbl-metal-smelting-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Inert anode (Hall-Héroult) | Eliminates carbon-anode CO₂ and PFCs; emits O₂ | Pilot / pre-commercial (ELYSIS) |
+| Low-carbon electricity (hydro) | Removes most indirect CO₂ from electrolysis | Commercial (in place in Québec) |
+| Secondary (recycled) aluminium | ~95% less energy than primary | Commercial |
+| Oxygen-enriched / flash / continuous smelting | Lower fuel use per tonne (base metals) | Commercial |
+| Hydrometallurgy (vs pyrometallurgy) | Avoids high-temperature smelting fuel | Commercial (metal-specific) |
+| Electrified smelting / process heat | Displaces fossil smelting fuel | Emerging |
+| SF₆-free magnesium cover gas (SO₂, novec) | Removes a very high-GWP emission | Commercial |
+| Smelter off-gas CCS | Captures pyrometallurgical CO₂ | Demonstration — *not yet in model* |
+
+: Indicative performance and maturity of key metal smelting decarbonisation technologies {#tbl-metal-smelting-decarb}
+
+The cost estimates in @tbl-metal-smelting-cost are order-of-magnitude figures from public techno-economic literature [@iea-aluminium; @elysis; @ipcc-sf6-mg], expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Decarbonisation technology | Capex | Operating cost | Energy / emission effect |
+|:-----|:-----|:-----|:-----|
+| Inert anode (new cells) | comparable to new pre-bake cells | conversion cost ~CAD 100/t Al, falling below carbon-anode cost in new cells | eliminates ~1.6 t CO₂/t Al + PFCs |
+| Greenfield primary smelter (reference) | ~CAD 7,400–10,400 per t/yr capacity | electricity-dominated (~14 MWh/t) | indirect CO₂ tracks grid |
+| Secondary (recycled) aluminium | far lower than primary | ~95% less energy | large energy/CO₂ saving |
+| Oxygen-enriched / flash smelting | moderate (oxygen plant) | fuel saving | lower smelting fuel CO₂ |
+| Hydrometallurgy | metal-specific | more electricity, less fuel | shifts energy to electricity |
+| SF₆-free magnesium cover gas | low (gas handling retrofit) | similar or lower gas cost | removes ~22,000× GWP emission |
+| Smelter off-gas CCS (not in model) | +30–50% plant equipment | ~CAD 100–200 / t CO₂ | captures pyrometallurgical CO₂ |
+
+: Indicative techno-economic characteristics of metal smelting decarbonisation technologies, 2025 CAD {#tbl-metal-smelting-cost}
+
+### Inert anodes and clean-power aluminium
+
+Because Québec's aluminium already runs on hydroelectricity, its remaining direct emissions come almost entirely from the consumable carbon anode. The inert anode route — represented in the model as *Hall-Héroult inert anode with wetted cathode* — replaces the carbon anode with a non-consumable material that releases oxygen instead of CO₂, eliminating both the anode CO₂ and the PFCs from anode effects. This is the single largest lever for the sector. It is being commercialised by the ELYSIS joint venture in Québec, which produced primary aluminium at industrial scale with inert anodes in 2021 and targets broader commercial availability later this decade [@elysis]. Conversion cost is expected to fall below that of carbon anodes in new cells.
+
+### Recycling and base-metal process efficiency
+
+Secondary (recycled) aluminium uses on the order of 5% of the energy of primary production and is represented as the Recycle branch; expanding it is a major lever as scrap availability grows. For the base metals, oxygen-enriched, flash, and continuous smelting cut fuel use per tonne, and hydrometallurgy avoids high-temperature smelting altogether for metals where it is applicable — both are in the model. Further electrification of smelting and process heat, and CCS on the concentrated off-gas streams of pyrometallurgical smelters, are the main options not yet fully represented.
+
+### Magnesium SF₆ replacement
+
+Magnesium melt protection traditionally uses SF₆, one of the most potent greenhouse gases known. Replacing it with alternative cover gases (sulphur dioxide, or fluorinated ketones such as Novec 612) removes almost all of this emission at low cost and is mature; the model carries the SF₆ emission explicitly, so an SF₆-free option is a natural addition.
+
+<mark>TODO: Add a **CCS** service to the metal-smelting tree, attached to the pyrometallurgical smelting and converting nodes whose off-gases (especially in copper and nickel flash smelting) are relatively concentrated and capture-amenable.</mark>
+
+<mark>TODO: Represent PFC emissions from aluminium anode effects explicitly (currently only the carbon-anode CO₂ is carried), and add an SF₆-free magnesium cover gas technology so the high-GWP magnesium emission can be abated in-model.</mark>
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Metal smelting technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are **behavioural** (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm's cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.
+
+The sector's emissions accounting is distinctive. Combustion emissions follow from each technology's fuel service requests and the carbon price, as in the other sectors. In addition, the aluminium electrolysis technologies carry an explicit process-CO₂ factor (about 1.6–1.7 t per tonne) for carbon-anode consumption, and the magnesium melt-cast and refining technologies carry an SF₆ factor — both applied independently of fuel use, with SF₆ entering on a CO₂-equivalent basis at its very high warming potential. Because there is no CCS service, the model's main channels for emissions reduction are switching to the inert anode, expanding recycling, switching to lower-fuel smelting routes, and (indirectly) the carbon intensity of the electricity the sector draws.
+
+## Regional coverage and differences
+
+Because the tree is region-agnostic, each modelled region is built from the same master structure and carries no production on branches that do not apply. Five regions are represented — the Atlantic region, British Columbia, Manitoba, Ontario, and Québec — and the differences are stark:
+
+- Québec dominates the sector by a wide margin, carrying essentially all primary aluminium on its hydro power, and grows over the projection.
+- Ontario (Sudbury) carries nickel and copper smelting and refining.
+- Manitoba (Thompson) carries nickel; British Columbia and the Atlantic region carry smaller base-metal operations.
+
+<mark>TODO: Only five provinces are represented (Alberta and Saskatchewan are absent, consistent with the absence of major non-ferrous smelters there). Confirm the regional metal mix — including the lead and titanium branches that appear only in some regions — against current operations.</mark>
+
+## Limitations and planned extensions
+
+The metal-smelting sub-model is detailed on the metallurgical side but carries the structural debts common to the older sector files, plus two sector-specific gaps: the absence of a CCS service and the incomplete representation of the non-CO₂ greenhouse gases (PFCs and the SF₆-abatement option). The TODOs above record these along with the auxiliary-service migration. Because the sector is already largely clean-powered, its remaining emissions are concentrated and high-leverage — the carbon anode, magnesium SF₆, and pyrometallurgical fuel — so closing these representational gaps matters more here than the sector's modest energy total might suggest.
+
+<mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled non-ferrous energy use and process emissions against CIEEDAC and Environment and Climate Change Canada (NIR) data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

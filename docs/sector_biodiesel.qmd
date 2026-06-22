@@ -1,0 +1,116 @@
+---
+bibliography: references.bib
+---
+
+# Biodiesel {#sec-biodiesel}
+
+Biodiesel production is one of CIMS's energy-supply sub-models rather than an end-use sector: it produces a low-carbon liquid fuel that other sectors — chiefly freight and passenger transport, and industrial and agricultural diesel use — consume in place of, or blended with, fossil diesel. The emphasis is on the structure of the energy-service flow model: the production node, the technologies that compete at each service, and the engineering ratios that link them. The tree is region-agnostic. The defining feature of biodiesel is that most of its life-cycle greenhouse-gas footprint sits upstream of the plant, in the feedstock, so the sub-model carries explicit agricultural inputs and life-cycle CO₂, CH₄, and N₂O accounting rather than treating the fuel as automatically carbon-neutral.
+
+## Scope
+
+CIMS represents the production of biodiesel (fatty-acid methyl ester, FAME) by transesterification of vegetable oils and animal fats. The sub-model covers the conversion plant and its main inputs — the agricultural feedstock, process steam, electricity, and a gaseous process fuel — and produces biodiesel as an output that flows into the fuel supply. Demand is set by the blending and fuel-switching choices made in the consuming sectors and by policy (renewable-fuel mandates), rather than by an exogenous production target.
+
+Adjacent activities are handled elsewhere: ethanol is a separate fuel with its own [Ethanol](sector_ethanol.qmd) chapter; fossil diesel is produced in [Petroleum Refining](sector_petroleum_refining.qmd); and the combustion of biodiesel happens in the transport and other end-use sectors, where the blended fuel is burned. The cultivation of the feedstock crop is represented here only through an **Agricultural Input** service that carries its energy and emissions, not through the full [Agriculture](sector_agriculture.qmd) sub-model.
+
+## Real-world context
+
+Biodiesel is a mature, drop-in-capable diesel substitute, and in Canada its production is tied to agriculture and to fuel policy. The country has a handful of biodiesel plants (and a growing number of renewable diesel plants, a different, hydrotreating route), and the dominant feedstock is canola — around 90% of domestic biomass-based diesel is made from Canadian canola — supplemented by tallow and used cooking oil [@nrcan-biodiesel; @cer-renewable-diesel]. Demand is driven by the federal Clean Fuel Regulations and provincial renewable-content mandates, which reward fuels by their measured carbon intensity.
+
+That last point is central. Biodiesel is not automatically low-carbon: its life-cycle intensity depends heavily on the feedstock and on the energy used to grow and process it. Crop feedstocks carry the emissions of cultivation — diesel for farm equipment, and N₂O from nitrogen fertiliser, a potent greenhouse gas — whereas waste and residue feedstocks such as tallow and used cooking oil avoid most of that burden and can achieve 79–86% lower life-cycle emissions than fossil diesel [@cer-renewable-diesel]. The CIMS structure mirrors this by separating the conversion step from an explicit **Agricultural Input** service and by carrying life-cycle CO₂, CH₄, and N₂O factors, so the modelled benefit of biodiesel reflects how it is made rather than assuming neutrality.
+
+## Model structure
+
+The sub-model divides into a **Product** sub-tree — the conversion process — and a **Service** sub-tree of the inputs it draws on. @fig-biodiesel-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the production chain is a fixed-ratio sequence and the technology choices occur at the tech-compete leaves of the services.
+
+![Energy-service flow model of the biodiesel sub-model. A transesterification Production node converts agricultural feedstock into biodiesel, drawing on an Agricultural Input service (feedstock cultivation, diesel- or biodiesel-powered), process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service; life-cycle CO₂, CH₄, and N₂O are tracked.](images/biodiesel_flow_model.svg){#fig-biodiesel-flow-model .lightbox width=90%}
+
+### Product: transesterification
+
+The **Production** node is biodiesel production by transesterification — reacting the feedstock oil with methanol to yield FAME and glycerol. In the model it consumes three things per unit of biodiesel: electricity, an **Agricultural Input** (the feedstock), and **Steam** (process heat). The master tree names this product node Transesterification.
+
+### Services: feedstock, heat, fuel, and capture
+
+- **Agricultural Input** — the feedstock-cultivation service, competing diesel-powered, high-efficiency diesel, and biodiesel-powered farming. This is how the model captures the energy (and the diesel-versus-biodiesel choice) of growing the crop; the associated N₂O and other field emissions enter the life-cycle accounting here.
+- **Steam** — process heat for the reaction and separation, competing natural-gas, coal, and electric boilers, cogeneration units, and CCS-equipped boiler variants.
+- **Methane Fuel** — the gaseous-fuel supply, competing natural gas against biogas, biomass gasification, and hydrogen.
+- **CCS** — the shared carbon-capture service that the CCS-equipped steam routes request.
+
+### Renewable diesel — a gap
+
+The model represents only the transesterification (FAME) route. The fast-growing renewable diesel (hydrotreated vegetable oil, HVO/HDRD) route — chemically a true drop-in diesel made by hydrogenation rather than transesterification — is not represented, even though new Canadian capacity is overwhelmingly of this type.
+
+<mark>TODO: Add a renewable diesel (HVO/HDRD) production pathway (hydrotreating, with its hydrogen demand drawn from the [Hydrogen](sector_hydrogen.qmd) sub-model), since most new Canadian biomass-based diesel capacity is renewable diesel rather than FAME biodiesel.</mark>
+
+<mark>TODO: The current regional input files predate the full Product/Service split (the product node is named `Production` rather than the master tree's `Transesterification`). Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Because biodiesel is already a low-carbon fuel relative to fossil diesel, "decarbonising biodiesel" means lowering its life-cycle carbon intensity — choosing better feedstocks and cleaning up the energy used to grow and process it — so that it earns more credit under carbon-intensity-based policy. @tbl-biodiesel-decarb summarises maturity and @tbl-biodiesel-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Waste / residue feedstock (tallow, used cooking oil) | 79–86% lower life-cycle CO₂ than fossil diesel | Commercial |
+| Biodiesel-powered / efficient farming inputs | Lowers feedstock-cultivation emissions | Commercial |
+| Electric process steam / boilers | Removes fossil process-heat CO₂ | Commercial |
+| Biogas / biomass-gas / hydrogen process fuel | Decarbonises gaseous process fuel | Commercial / emerging |
+| CCS on process steam | Captures process-heat CO₂ | Demonstration |
+| Renewable diesel (HVO) route | True drop-in; very low CI with waste oils | Commercial — *not yet in model* |
+
+: Indicative performance and maturity of key biodiesel decarbonisation options {#tbl-biodiesel-decarb}
+
+The cost estimates in @tbl-biodiesel-cost are order-of-magnitude figures from public literature [@nrcan-biodiesel; @cer-renewable-diesel], expressed in 2025 Canadian dollars (US-dollar sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Decarbonisation option | Capex | Operating cost | Energy / CI effect |
+|:-----|:-----|:-----|:-----|
+| Waste/residue feedstock switch | none (feed handling) | feedstock-cost dependent; often *higher* feed cost | 79–86% lower life-cycle CO₂ |
+| Electric process boiler | ~150–400 CAD/kWth | electricity-priced heat | removes process-heat fossil CO₂ |
+| Biomass / biogas process fuel | ~800–1,400 CAD/kWth (biomass) | low-carbon fuel | decarbonises process heat |
+| CCS on process steam | +30–50% on boiler plant | ~CAD 100–200 / t CO₂ | captures process CO₂ |
+| Renewable diesel (HVO) plant (reference) | higher than FAME (hydrotreater + H₂) | hydrogen-cost dependent | true drop-in, very low CI |
+
+: Indicative techno-economic characteristics of biodiesel decarbonisation options, 2025 CAD {#tbl-biodiesel-cost}
+
+### Feedstock is the main lever
+
+The largest determinant of biodiesel's carbon intensity is the feedstock. Switching from crop oils (canola) to waste and residue oils (tallow, used cooking oil) removes most of the cultivation emissions — including the fertiliser-driven N₂O — and can cut life-cycle emissions to 79–86% below fossil diesel [@cer-renewable-diesel]. The model captures the cultivation side through the **Agricultural Input** service, including the option to run farm equipment on biodiesel rather than fossil diesel, which closes part of the loop. Feedstock supply is, however, constrained: waste oils are limited, so feedstock competition with renewable diesel and other uses is a real-world limit the model should eventually reflect.
+
+### Cleaning up process energy
+
+The plant's own emissions come from process heat and electricity. Switching steam to electric boilers (clean where the grid is clean), to biomass or biogas, or adding CCS to gas-fired steam reduces the conversion step's footprint; the **Methane Fuel** node lets natural gas be displaced by biogas, biomass gas, or hydrogen. These are the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and add an explicit feedstock-supply constraint so waste-oil availability limits the low-CI pathways.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the inputs it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Biodiesel technologies are discounted at rates of roughly 10–40% in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment decisions; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10–25 across the competitions.
+
+The emissions accounting is **life-cycle** in spirit, which distinguishes biodiesel from the end-use sectors. The sub-model carries CO₂, CH₄, and N₂O factors, so the agricultural N₂O from fertiliser and the CH₄ and CO₂ from process energy are all represented, and the net benefit of biodiesel emerges from the difference between these life-cycle emissions and the fossil diesel it displaces — rather than from an assumption that biofuel combustion is automatically zero-carbon. The **CCS** service applies an emissions-removal factor to the process-heat routes that request it. The carbon price therefore rewards low-intensity feedstocks and clean process energy, which is the mechanism by which carbon-intensity policy is represented.
+
+## Regional coverage and differences
+
+All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the biodiesel structure. In practice the Western provinces (Saskatchewan, Alberta, Manitoba) are the natural home of canola-based production, while waste-oil and tallow feedstocks are more widely distributed; the regional differences show up in feedstock availability and in the carbon intensity of the grid that supplies process electricity.
+
+<mark>TODO: Calibrate regional feedstock mixes (canola vs tallow vs used cooking oil) and the resulting carbon intensities against Clean Fuel Regulations pathway data, since the credit value — and therefore the modelled production — depends sensitively on feedstock.</mark>
+
+## Limitations and planned extensions
+
+The biodiesel sub-model is compact and supply-side, and its main limitations follow from that: it represents only the transesterification route (omitting renewable diesel), it treats feedstock through a single Agricultural Input service rather than linking to the full agriculture sub-model, and it lacks an explicit feedstock-supply constraint. The TODOs above record these priorities, of which adding the renewable diesel (HVO) pathway is the most important, since it now dominates new Canadian capacity.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled biodiesel output and carbon intensity against Natural Resources Canada and Clean Fuel Regulations data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

@@ -1,0 +1,34 @@
+% =====================================================================
+% cims-style.sty — PDF styling for the CIMS book (KOMA scrbook).
+% Loaded via `include-in-header` in _quarto.yml (format: pdf).
+% Fonts (TeX Gyre family) and link colours are set in _quarto.yml;
+% this file defines the accent palette and heading/caption styling.
+% Requires xelatex (set in _quarto.yml). Colours match the website
+% accent (cosmo blue #2780E3).
+% =====================================================================
+
+% --- Palette --------------------------------------------------------
+\definecolor{cimsblue}{HTML}{2780E3}  % website accent (cosmo primary)
+\definecolor{cimsink}{HTML}{1A1A1A}   % near-black for body-level headings
+\definecolor{cimsrule}{HTML}{C9DDF6}  % pale blue for rules/dividers
+
+% --- Headings (KOMA fonts) ------------------------------------------
+% Body text stays serif (TeX Gyre Pagella, set in _quarto.yml); all
+% structural headings use the sans face (TeX Gyre Heros) for contrast,
+% with the accent colour reserved for the higher levels.
+\addtokomafont{part}{\sffamily\bfseries\color{cimsblue}}
+\addtokomafont{partnumber}{\sffamily\bfseries\color{cimsblue}}
+\addtokomafont{chapter}{\sffamily\bfseries\color{cimsblue}}
+\addtokomafont{section}{\sffamily\bfseries\color{cimsblue}}
+\addtokomafont{subsection}{\sffamily\bfseries\color{cimsink}}
+\addtokomafont{subsubsection}{\sffamily\bfseries\color{cimsink}}
+\addtokomafont{paragraph}{\sffamily\bfseries\color{cimsink}}
+
+% Running heads / page numbers in the sans face for consistency.
+\addtokomafont{pagehead}{\sffamily}
+\addtokomafont{pagenumber}{\sffamily}
+
+% --- Captions -------------------------------------------------------
+% Accent-coloured "Figure N" / "Table N" labels, smaller caption text.
+\setkomafont{captionlabel}{\sffamily\bfseries\color{cimsblue}}
+\setkomafont{caption}{\small}

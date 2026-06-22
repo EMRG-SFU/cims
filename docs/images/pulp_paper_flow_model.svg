@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 700" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#e7ddc4;stroke:#c2a86a;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="440" y="12" width="200" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Pulp and Paper sector</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: product output (tonnes)</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service branch -->
+  <rect class="branch" x="222" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">pulp &amp; paper chains</text>
+  <rect class="branch" x="702" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="780" y="103" text-anchor="middle">Service</text>
+  <text class="subw" x="780" y="118" text-anchor="middle">auxiliary energy + black liquor</text>
+
+  <!-- product split: Pulp / Paper -->
+  <path class="edge" d="M300,126 V140"/>
+  <path class="edge" d="M160,140 H300"/>
+  <path class="edge" d="M160,140 V150" marker-end="url(#arrow)"/>
+  <path class="edge" d="M300,140 V150" marker-end="url(#arrow)"/>
+
+  <!-- Pulp chain -->
+  <rect class="prod" x="56" y="150" width="208" height="34" rx="6"/>
+  <text class="lblw" x="160" y="171" text-anchor="middle">Pulp</text>
+  <rect class="det" x="56" y="188" width="208" height="262" rx="6"/>
+  <text class="ttl" x="66" y="205">Log Preparation</text>
+  <text class="li" x="66" y="220">Debark · Cut and Chip</text>
+  <text class="ttl" x="66" y="240">Pulping (route competition)</text>
+  <text class="li" x="66" y="255">Chemical — kraft batch / continuous</text>
+  <text class="li" x="66" y="270">Mechanical — TMP / CTMP / groundwood</text>
+  <text class="li" x="66" y="285">Recycled — de-inking (lowest energy)</text>
+  <text class="li" x="66" y="300">Semi-chemical — neutral sulphite</text>
+  <text class="ttl" x="66" y="320">Washing</text>
+  <text class="li" x="66" y="335">drum · diffusion washers</text>
+  <text class="ttl" x="66" y="355">Bleaching</text>
+  <text class="li" x="66" y="370">Fully / Semi — ECF · O₂ deligni-</text>
+  <text class="li" x="76" y="384">fication · ozone</text>
+  <text class="ttl" x="66" y="404">Drying</text>
+  <text class="li" x="66" y="419">steam · vapour recompression</text>
+  <text class="sub" x="66" y="439">chemical pulping → black liquor (Fig. 2)</text>
+
+  <!-- Paper chain -->
+  <rect class="prod" x="300" y="150" width="208" height="34" rx="6"/>
+  <text class="lblw" x="404" y="171" text-anchor="middle">Paper (5 grades)</text>
+  <rect class="det" x="300" y="188" width="208" height="262" rx="6"/>
+  <text class="ttl" x="310" y="205">Newsprint</text>
+  <text class="ttl" x="310" y="227">Uncoated · Coated (wood-free)</text>
+  <text class="ttl" x="310" y="249">Linerboard</text>
+  <text class="ttl" x="310" y="271">Tissue</text>
+  <text class="li" x="310" y="296">Each grade is a chain of:</text>
+  <text class="li" x="310" y="313">• Stock Prep — disc / conical refining</text>
+  <text class="li" x="310" y="330">• Forming, Pressing &amp; Finishing</text>
+  <text class="li" x="320" y="346">(incl. extended-nip press)</text>
+  <text class="li" x="310" y="363">• Drying — steam · electric · infrared ·</text>
+  <text class="li" x="320" y="379">vapour recompression · high-intensity</text>
+  <text class="sub" x="310" y="404">newsprint decline drives sector contraction</text>
+
+  <!-- service rail -->
+  <path class="edge" d="M780,126 V140 H640 V470"/>
+  <path class="edge" d="M640,200 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,300 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,360 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,408 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,456 H700" marker-end="url(#arrow)"/>
+
+  <!-- Black Liquor (sector-specific) -->
+  <rect class="spec" x="700" y="150" width="340" height="34" rx="6"/>
+  <text class="lbl" x="870" y="171" text-anchor="middle">Black Liquor — kraft recovery cycle</text>
+  <rect class="det" x="716" y="190" width="308" height="78" rx="6"/>
+  <text class="li" x="730" y="209">• Evaporator (MEE · vapour recompression)</text>
+  <text class="li" x="730" y="228">• Recovery Furnace (Tomlinson · cogen ·</text>
+  <text class="li" x="740" y="243">gasification)  → steam + power</text>
+  <text class="li" x="730" y="261">• Lime Kiln (NG/oil · biomass · electrified)</text>
+
+  <!-- Machine drive -->
+  <rect class="svc" x="700" y="276" width="340" height="34" rx="6"/>
+  <text class="lbl" x="870" y="297" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="sub" x="870" y="332" text-anchor="middle">Materials Processing (refiners) · Pumps · Fans ·</text>
+  <text class="sub" x="870" y="346" text-anchor="middle">Compressed Air · Materials Handling</text>
+
+  <!-- Steam -->
+  <rect class="svc" x="700" y="342" width="340" height="36" rx="6"/>
+  <text class="lbl" x="870" y="358" text-anchor="middle">Steam (largest service)</text>
+  <text class="sub" x="870" y="372" text-anchor="middle">solid biomass · cogen · NG · oil · electric · H₂</text>
+
+  <rect class="svc" x="700" y="390" width="340" height="36" rx="6"/>
+  <text class="lbl" x="870" y="406" text-anchor="middle">Methane Blend</text>
+  <text class="sub" x="870" y="420" text-anchor="middle">NG · biogas · biomass gas · H₂</text>
+
+  <rect class="svc" x="700" y="438" width="340" height="30" rx="6"/>
+  <text class="lbl" x="870" y="457" text-anchor="middle">HVAC · Lighting</text>
+
+  <!-- service request arrow -->
+  <path class="dedge" d="M508,300 C570,300 590,250 640,240" marker-end="url(#darrow)"/>
+  <text class="sub" x="575" y="287" text-anchor="middle">service requests (GJ)</text>
+
+  <!-- legend -->
+  <rect class="prod" x="56" y="478" width="16" height="12" rx="2"/>
+  <text class="sub" x="78" y="488">product chain</text>
+  <rect class="det" x="190" y="478" width="16" height="12" rx="2"/>
+  <text class="sub" x="212" y="488">process competition</text>
+  <rect class="spec" x="360" y="478" width="16" height="12" rx="2"/>
+  <text class="sub" x="382" y="488">black-liquor recovery cycle</text>
+  <rect class="svc" x="560" y="478" width="16" height="12" rx="2"/>
+  <text class="sub" x="582" y="488">shared energy / utility service</text>
+</svg>

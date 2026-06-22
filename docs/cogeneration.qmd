@@ -1,0 +1,28 @@
+---
+bibliography: references.bib
+---
+
+# Cogeneration {#sec-cogen}
+
+## Scope and Definition
+
+Cogeneartion (also referred to as combined heat and power) is the sequential or simultaneous generation of multiple forms of useful energy (usually mechanical and thermal) in a single, integrated system. Cogeneartion systems consist of a number of individual components—prime mover (heat engine), generator, heat recovery, and electrical interconnection— configured into an integrated whole. The type of equipment that drives the overall system (i.e., the prime mover) typically identifies the cogeneartion system. Prime movers for cogeneartion systems include steam turbines, gas turbines (also called combustion turbines), spark ignition engines, diesel engines, microturbines, and fuel cells. These prime movers are capable of burning a variety of fuels, including biomass/biogas, natural gas, or coal to produce shaft power or mechanical energy. Additional technologies are also used in configuring a complete cogeneartion system, including boilers, absorption chillers, desiccants, engine-driven chillers, and gasifiers. Boilers and gasifiers are discussed in Chapter 5 of this document. (@epa-2007)
+
+Although mechanical energy from the prime mover is most often used to drive a generator to produce electricity, it can also be used to drive rotating equipment such as compressors, pumps, and fans. Thermal energy from the system can be used in direct process applications or indirectly to produce steam, hot water, hot air for drying, or chilled water for process cooling.
+
+The industrial sector currently produces both thermal output and electricity from biomass in CHP facilities in the paper, chemical, wood products, and food processing industries. These industries are major users of biomass fuels—utilizing the heat and steam in their processes can improve energy efficiencies by more than 35 percent. In these applications, the typical CHP system configuration consists of a biomass-fired boiler whose steam is used to propel a steam turbine in addition to the extraction of steam or heat for process use. 
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

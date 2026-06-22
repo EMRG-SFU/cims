@@ -1,0 +1,124 @@
+---
+bibliography: references.bib
+---
+
+# Residential {#sec-residential}
+
+The residential buildings sector is represented in CIMS as a demand-side sub-model, like the commercial sector: it consumes energy to deliver household **energy services** — space and water heating, cooling, lighting, appliances, and cooking — across the full range of dwellings. The emphasis is on the structure of the energy-service flow model: the dwelling types and vintages that drive demand, the end-use services, and the technologies that compete to supply them. The tree is region-agnostic but climate-sensitive, so the housing stock is resolved by building type, construction vintage, and climate zone. The sector has **no process emissions**; all of its CO₂ comes from the fuels burned for space and water heating, so — as in commercial buildings — decarbonisation is fundamentally a story of electrification and efficiency.
+
+## Scope
+
+CIMS represents the energy use of all residential dwellings — single-family detached houses, attached/row housing, low-rise walk-ups, and large apartment buildings (the last included here, rather than in commercial, because their consumption patterns fit the residential model). The driving variable is the number of households, projected exogenously from population growth; it sets the demand for every service except water heating and furnace-fan demand, which are determined by the heating and hot-water technologies themselves.
+
+The residential sector accounts for roughly 17% of all energy consumed in Canada. Space heating is about 60% of that, water heating about 21%, and the remainder is lighting, appliances, and other uses [@nrcan-ceud]. The combustion of the delivered fuels is accounted here; the upstream supply of those fuels and of electricity is in the energy-supply sub-models.
+
+## Real-world context
+
+Household energy is dominated by space and water heating, and that is where the direct emissions sit, because lighting and most appliances are already electric. Heating demand depends on the dwelling — its size, envelope, vintage, and climate — and on the heating system, which in Canada ranges from oil and natural-gas furnaces through electric baseboards and wood stoves to heat pumps.
+
+The decarbonisation path mirrors the commercial sector: because household heat is low-temperature, the stock is highly electrifiable. Air- and ground-source heat pumps can deliver space and water heat at a coefficient of performance well above one, cold-climate and hybrid (heat-pump-with-fuel-backup) systems extend that into Canadian winters, and building-envelope improvements (tracked through construction-vintage cohorts and shell upgrades) cut the heat load at source. Efficient appliances, lighting (LED), and water fixtures reduce the rest. The CIMS structure captures all of this and, like the commercial model, links the building shell to the heating demand it creates.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the dwelling stock, resolved by building type, vintage, and climate — and a **Service** sub-tree of the household end-uses. @fig-residential-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition).
+
+![Energy-service flow model of the residential sector (region-agnostic master tree). The Product sub-tree is the dwelling stock — split by building type (High Density / Low-Med Density), construction vintage (building-code era), and climate zone (Cold / Marine), with cooling — and the Service sub-tree holds the household end-uses: water heating, lighting, and the major and minor appliances.](images/residential_flow_model.svg){#fig-residential-flow-model .lightbox width=100%}
+
+### Products: the dwelling stock
+
+The **Building Type** node resolves the housing stock along three dimensions:
+
+- Building type — High Density (apartments) and Low-Med Density (single-family detached, attached/row, low-rise), reflecting their very different heat loads per dwelling.
+- Vintage — construction-code cohorts (<1960, 1961–1980, 1981–2000, 2001–2020, 2021–2035, >2035), so that the model carries the thermal performance of each era of the stock and can represent both new construction to current codes and retrofits of older stock.
+- Climate zone — each vintage carries Heating (Cold) and Heating (Marine) competitions, since heating demand and heat-pump performance differ sharply between Canada's cold interior and milder coastal regions.
+- **Cooling** — Central and Room air-conditioning, where applicable.
+
+Within each dwelling/vintage/climate combination, the Heating node competes the systems: electric standard and baseboard, natural-gas and oil furnaces (existing, standard, and high-efficiency), wood, air-source heat pumps (with electric or gas backup), ground-source heat pumps, and gas-ASHP hybrids. The vintage-and-shell structure is how the model represents the interaction between envelope quality and heating demand: a better shell (newer vintage or a retrofit) lowers the load the heating system must meet.
+
+### Services: water heating, lighting, and appliances
+
+- **Water Heating** — storage and tankless units on electricity, gas, and oil; heat-pump water heaters (Electric- and NG-ASHP); and solar pre-heat with electric or gas backup. Water-heating demand is itself driven by the hot-water-using services (showers/faucets, dishwashing, clothes washing).
+- **Lighting** — efficiency levels from base stock to LED.
+- Major appliances — refrigerators, freezers, dryers (air-dry or machine), ranges, dishwashers (machine and non-machine), clothes washers, and air conditioners, each modelled by unit and market penetration with a range of efficiency levels.
+- Minor appliances — a diverse, growing category (electronics, block heaters, etc.) whose efficiency gains are often outweighed by rising ownership.
+
+<mark>TODO: The current regional input files have moved to a vintage-and-climate structure that is close to, but not identical with, the master tree's Product/Service split, and some appliance services remain aggregated. Complete the migration to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Residential decarbonisation is electrification plus efficiency: replace fossil furnaces with heat pumps, electrify water heating, tighten the envelope, and improve appliances and lighting. @tbl-residential-decarb summarises maturity and @tbl-residential-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Air-source heat pump (space heat) | COP 2–3.5; displaces furnace fuel | Commercial |
+| Cold-climate / hybrid heat pump | Heat pump in winter, fuel backup on peak | Commercial |
+| Ground-source heat pump | Higher COP; higher capital | Commercial |
+| Heat-pump water heater | Efficient electric hot water | Commercial |
+| Solar water heating | Pre-heats hot water | Commercial |
+| Envelope retrofit / new-code shell | Lowers heat load at source | Commercial |
+| Efficient appliances + LED lighting | Lower electricity use | Commercial |
+| Low-flow hot-water fixtures | Lowers hot-water (and heating) demand | Commercial |
+
+: Indicative performance and maturity of key residential decarbonisation technologies {#tbl-residential-decarb}
+
+The estimates in @tbl-residential-cost are order-of-magnitude figures from public literature [@arpagaus; @aceee-ihp; @nrcan-ceud], in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Capex (2025 CAD) | Operating characteristics | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Air-source heat pump (home) | ~6,000–18,000 / home | COP 2–3.5; fuel backup on cold days | electricity (+ backup) |
+| Cold-climate heat pump | ~10,000–22,000 / home | maintains output to low temperatures | electricity |
+| Ground-source heat pump | ~25,000–55,000 / home | COP 3.5–5; ground loop cost | electricity |
+| Heat-pump water heater | ~3,000–6,000 / unit | COP 2.5–3.5 | electricity |
+| Envelope retrofit | ~10,000–40,000 / home | reduces heat & cooling load | — (passive) |
+| Efficient appliances / LED | low incremental | lower electricity use | electricity |
+
+: Indicative techno-economic characteristics of residential decarbonisation technologies, 2025 CAD {#tbl-residential-cost}
+
+### Heat pumps and the cold-climate question
+
+As in commercial buildings, the central lever is the heat pump. The model competes air-source and ground-source heat pumps and, importantly for Canada, hybrid systems pairing a heat pump with an electric or gas backup for the coldest hours — which is why heating is split into Cold and Marine competitions. Cold-climate heat pumps that maintain output at low temperatures are the key enabling technology for electrifying heat across most of the country. Heat-pump water heaters and solar water heating electrify domestic hot water. These draw on the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter's broader heat-pump treatment.
+
+### Envelope, appliances, and behaviour
+
+The vintage-and-shell structure makes envelope improvement a first-class lever: new dwellings built to tighter codes (the later vintage cohorts) and retrofits of older stock both reduce the heat load before any system runs. Efficient appliances, LED lighting, and low-flow hot-water fixtures cut the non-heating loads — the last also reducing water-heating demand.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and ensure cold-climate heat-pump performance curves are reflected in the Cold-zone heating competition.</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition, with extensive use of retrofit competitions: older-vintage dwellings can retrofit to better-insulated archetypes, and existing heating and water-heating stock can be upgraded, so the model represents improvements to the existing stock and not only new-build choices.
+
+Residential technologies are discounted at high rates — around 25–30% in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than financial costs of capital: households consistently behave as though they discount future energy savings far more steeply than a financial calculation would, and the behavioural rate encodes that wedge — risk aversion, up-front-cost sensitivity, information, and transaction costs. CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** vary across the end-uses.
+
+The emissions accounting carries **no process emissions**: all CO₂ comes from fuel combustion in space and water heating (and gas cooking), entering through each technology's fuel service requests and the carbon price. Electrification (heat pumps), fuel-switching, and efficiency are the only channels for reduction, and their emissions benefit depends on the carbon intensity of the regional grid — large where the grid is clean (Québec, BC, Manitoba), smaller where it is fossil-heavy (Alberta, Saskatchewan). Because the high behavioural discount rates make households reluctant to pay up-front for efficient equipment, the model reproduces the well-documented gap between cost-effective and actually-adopted efficiency — which is itself a target of policy.
+
+## Regional coverage and differences
+
+All seven modelled regions carry the residential structure, and regional differences are pronounced because climate, fuel availability, and grid carbon intensity all vary:
+
+- The Cold / Marine climate split distinguishes most of Canada (Cold) from milder coastal British Columbia and parts of the Atlantic (Marine); coastal and interior British Columbia are modelled as distinct climates for single-family homes.
+- Fuel mix varies: natural gas dominates heating in the West and Ontario, electricity in Québec and parts of the Atlantic, and oil and wood remain significant in the Atlantic region and rural areas.
+- Air conditioning is a large load in hot-summer regions such as Ontario and much smaller elsewhere.
+
+<mark>TODO: Confirm the regional dwelling-type, vintage, and fuel-mix shares against current housing-stock and Comprehensive Energy Use Database data, since heating demand and heat-pump economics depend heavily on all three.</mark>
+
+## Limitations and planned extensions
+
+The residential sub-model is a detailed, vintage- and climate-resolved buildings representation with explicit retrofit competitions and a full set of heat-pump and efficiency options. Its limitations are the usual ones for a stock model: reliance on archetype generalisations, inherited calibration of dwelling and appliance intensities, and incomplete representation of behavioural and rebound effects (e.g. minor-appliance growth outpacing efficiency). The TODOs above record the priorities, of which cold-climate heat-pump performance and refreshed stock data matter most for current analysis.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled residential energy use by end-use and dwelling type against Natural Resources Canada's Comprehensive Energy Use Database.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

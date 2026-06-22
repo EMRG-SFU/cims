@@ -1,3 +1,3 @@
-# Acronyms
+# Acronyms {#sec-acronyms}
 
 <mark>TODO: Single source-of-truth list of acronyms used throughout the book. Build this by walking the existing chapters and pulling out abbreviations on first use — CIMS, ISTUM, LCC, FIC, DIC, DCC, GCC, AEEI, CRF, BS, NS, MS, NMS, PR, CEUD, NIR, NRCan, ECCC, IEA, MVR (mechanical vapour recompression), COP (coefficient of performance), and so on. Use a Pandoc definition list (the same `.eq-vars`-style markup used for equation variables) so the list renders as a clean two-column glossary.</mark>

@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:10.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .branch{fill:#4b5d7e;}
+    .grey{fill:#8a8f98;}
+    .blue{fill:#3d6ea5;}
+    .green{fill:#3f7d52;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .ccs{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+  </style>
+
+  <!-- node -->
+  <rect class="branch" x="380" y="14" width="220" height="44" rx="7"/>
+  <text class="lblw" x="490" y="33" text-anchor="middle">Ammonia / Methanol Synthesis</text>
+  <text class="subw" x="490" y="48" text-anchor="middle">tech-compete on lifecycle cost</text>
+
+  <path class="edge" d="M490,58 V72"/>
+  <path class="edge" d="M160,72 H820"/>
+  <path class="edge" d="M160,72 V86" marker-end="url(#arrow)"/>
+  <path class="edge" d="M490,72 V86" marker-end="url(#arrow)"/>
+  <path class="edge" d="M820,72 V86" marker-end="url(#arrow)"/>
+
+  <!-- grey -->
+  <rect class="grey" x="60" y="88" width="200" height="40" rx="6"/>
+  <text class="lblw" x="160" y="105" text-anchor="middle">Grey — Reform &amp; synthesis</text>
+  <text class="subw" x="160" y="120" text-anchor="middle">conventional SMR</text>
+  <rect class="det" x="60" y="146" width="200" height="120" rx="6"/>
+  <text class="ttl" x="70" y="166">Incumbent</text>
+  <text class="li" x="70" y="185">Reform and synthesis</text>
+  <text class="li" x="70" y="203">New AMV process</text>
+  <text class="li" x="70" y="221">Adv reforming reactors</text>
+  <text class="sub" x="70" y="245">process-CO₂ ≈ 0.9 / unit;</text>
+  <text class="sub" x="70" y="259">efficiency gains, no capture</text>
+
+  <!-- blue -->
+  <rect class="blue" x="390" y="88" width="200" height="40" rx="6"/>
+  <text class="lblw" x="490" y="105" text-anchor="middle">Blue — reforming + CCS</text>
+  <text class="subw" x="490" y="120" text-anchor="middle">capture the process CO₂</text>
+  <rect class="det" x="390" y="146" width="200" height="120" rx="6"/>
+  <text class="ttl" x="400" y="166">Capture route</text>
+  <text class="li" x="400" y="185">Adv reforming reactors CCS</text>
+  <text class="sub" x="400" y="209">keeps the reformer but routes</text>
+  <text class="sub" x="400" y="223">flue CO₂ to the CCS service</text>
+
+  <!-- green -->
+  <rect class="green" x="720" y="88" width="200" height="40" rx="6"/>
+  <text class="lblw" x="820" y="105" text-anchor="middle">Green — electrolytic H₂</text>
+  <text class="subw" x="820" y="120" text-anchor="middle">no reformer</text>
+  <rect class="det" x="720" y="146" width="200" height="120" rx="6"/>
+  <text class="ttl" x="730" y="166">Electrolytic route</text>
+  <text class="li" x="730" y="185">Hydrogen ammonia synthesis</text>
+  <text class="sub" x="730" y="209">~95–98% CO₂ cut vs grey</text>
+  <text class="sub" x="730" y="223">on low-carbon electricity</text>
+
+  <!-- CCS service -->
+  <rect class="ccs" x="390" y="330" width="200" height="44" rx="6"/>
+  <text class="lbl" x="490" y="349" text-anchor="middle">CCS service</text>
+  <text class="sub" x="490" y="364" text-anchor="middle">shared capture · transport · storage</text>
+  <path class="dedge" d="M490,266 V330" marker-end="url(#darrow)"/>
+  <text class="sub" x="540" y="300" text-anchor="middle">CO₂ to CCS</text>
+
+  <!-- hydrogen sub-model -->
+  <rect class="ccs" x="720" y="330" width="200" height="44" rx="6"/>
+  <text class="lbl" x="820" y="349" text-anchor="middle">Hydrogen sub-model</text>
+  <text class="sub" x="820" y="364" text-anchor="middle">electrolysis (TODO: explicit link)</text>
+  <path class="dedge" d="M820,266 V330" marker-end="url(#darrow)"/>
+
+  <!-- carbon price arrow -->
+  <rect class="branch" x="320" y="430" width="340" height="40" rx="6"/>
+  <text class="lblw" x="490" y="447" text-anchor="middle">Carbon price on CO₂ (and N₂O)</text>
+  <text class="subw" x="490" y="462" text-anchor="middle">shifts share grey → blue → green over time</text>
+  <path class="edge" d="M160,266 V410 H490 V430" marker-end="url(#arrow)"/>
+  <path class="edge" d="M490,374 V430" marker-end="url(#arrow)"/>
+  <path class="edge" d="M820,374 V410 H490" marker-end="url(#arrow)"/>
+</svg>

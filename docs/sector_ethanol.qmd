@@ -1,0 +1,113 @@
+---
+bibliography: references.bib
+---
+
+# Ethanol {#sec-ethanol}
+
+Ethanol production is one of CIMS's energy-supply sub-models: it produces a low-carbon liquid fuel that the transport sector blends with gasoline. The emphasis is on the structure of the energy-service flow model — the production routes, the technologies that compete at each service, and the engineering ratios that link them. The tree is region-agnostic. Two features define the ethanol sub-model: it carries two distinct production routes — first-generation corn (grain) fermentation and second-generation cellulosic conversion — that differ markedly in carbon intensity; and, because fermentation releases a stream of nearly pure, biogenic CO₂, it is one of the cheapest places in the whole energy system to apply carbon capture, which the sub-model represents through a CCS service.
+
+## Scope
+
+CIMS represents the production of fuel ethanol by two routes: corn (and, in Western Canada, wheat) starch fermentation, and cellulosic conversion of crop residues and other lignocellulosic material. The sub-model covers the conversion plant and its inputs — agricultural feedstock, process steam, electricity, and a gaseous process fuel — and produces ethanol as an output that flows into the gasoline blend. Demand is set by the blending and fuel-switching choices in the consuming sectors and by renewable-fuel policy, rather than by an exogenous production target.
+
+Adjacent activities are handled elsewhere: biodiesel has its own [Biodiesel](sector_biodiesel.qmd) chapter; gasoline is produced in [Petroleum Refining](sector_petroleum_refining.qmd); the combustion of the ethanol blend happens in the transport sectors; and feedstock cultivation is represented here only through an **Agricultural Input** service rather than the full [Agriculture](sector_agriculture.qmd) sub-model.
+
+## Real-world context
+
+Canadian ethanol is predominantly first-generation: corn in Eastern Canada (Ontario in particular) and wheat in the West, fermented to ethanol and blended into gasoline under the federal Clean Fuel Regulations and provincial renewable-content mandates [@nrcan-ethanol]. Cellulosic ethanol — made from crop residues, wood, and other lignocellulosic feedstock — is a second-generation technology that is much less developed but carries a substantially lower carbon intensity, because it is not burdened by the cultivation emissions (fertiliser N₂O, farm diesel, land use) of a dedicated grain crop and uses material that would otherwise decay or be burned [@cen-ethanol].
+
+The sector has one striking decarbonisation feature. The fermentation step that turns sugars into ethanol releases roughly an equal mass of CO₂, and that CO₂ is biogenic and almost pure — it needs little separation before it can be compressed and stored. This makes ethanol plants among the lowest-cost carbon-capture opportunities anywhere, and capturing biogenic fermentation CO₂ delivers net-negative emissions (BECCS). The CIMS structure reflects both points: it separates the corn and cellulosic routes, carries life-cycle CO₂, CH₄, and N₂O accounting through the feedstock and process services, and provides a **CCS** service the routes can draw on.
+
+## Model structure
+
+The sub-model divides into a **Product** sub-tree — the two production routes — and a **Service** sub-tree of the inputs they draw on. @fig-ethanol-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the production chains are fixed-ratio sequences and the technology choices occur at the service leaves.
+
+![Energy-service flow model of the ethanol sub-model. Two production routes — Corn (grain fermentation) and Cellulosic — convert feedstock into ethanol, drawing on an Agricultural Input service, process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service well suited to the pure biogenic CO₂ from fermentation; life-cycle CO₂, CH₄, and N₂O are tracked.](images/ethanol_flow_model.svg){#fig-ethanol-flow-model .lightbox width=90%}
+
+### Products: corn and cellulosic routes
+
+- **Corn** — first-generation starch fermentation. It draws on the **Agricultural Input** service (the grain feedstock and its cultivation energy) and on **Steam** for cooking, distillation, and drying, and is the more steam-intensive of the two routes.
+- **Cellulosic** — second-generation conversion of lignocellulosic feedstock (crop residues, wood). In the model it draws less on the agricultural-cultivation input and instead consumes some industrial diesel for feedstock handling, plus **Steam**; its lower cultivation burden gives it a lower life-cycle carbon intensity.
+
+### Services: feedstock, heat, fuel, and capture
+
+- **Agricultural Input** — feedstock cultivation, competing diesel-powered, efficient-diesel, and biodiesel-powered farming, so the energy and emissions of growing the grain are represented (including the option to displace farm diesel with biodiesel).
+- **Steam** — process heat, competing natural-gas, coal, and electric boilers, cogeneration, and CCS-equipped variants.
+- **Methane Fuel** — the gaseous-fuel supply, competing natural gas against biogas, biomass gasification, and hydrogen.
+- **CCS** — the shared carbon-capture service, especially valuable here because of the pure fermentation CO₂.
+
+<mark>TODO: The current regional input files predate the full Product/Service split (the routes sit under a `Production` node rather than directly under the master tree's `Product`). Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+Ethanol decarbonisation means lowering life-cycle carbon intensity — shifting toward cellulosic feedstock, cleaning up process energy, and, distinctively, capturing the pure fermentation CO₂ for net-negative emissions. @tbl-ethanol-decarb summarises maturity and @tbl-ethanol-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Fermentation CO₂ capture (BECCS) | Captures near-pure biogenic CO₂; net-negative | Early commercial (low-cost capture) |
+| Cellulosic route (vs corn) | Much lower life-cycle CI; avoids cultivation burden | Pilot / early commercial |
+| Biodiesel-powered / efficient farming | Lowers feedstock-cultivation emissions | Commercial |
+| Electric process steam / boilers | Removes fossil process-heat CO₂ | Commercial |
+| Biogas / biomass-gas / hydrogen process fuel | Decarbonises gaseous process fuel | Commercial / emerging |
+| CCS on process steam | Captures process-heat CO₂ | Demonstration |
+
+: Indicative performance and maturity of key ethanol decarbonisation options {#tbl-ethanol-decarb}
+
+The cost estimates in @tbl-ethanol-cost are order-of-magnitude figures from public literature [@nrcan-ethanol; @cen-ethanol], expressed in 2025 Canadian dollars (US-dollar sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Decarbonisation option | Capex | Operating cost / cost of CO₂ | Energy / CI effect |
+|:-----|:-----|:-----|:-----|
+| Fermentation CO₂ capture (BECCS) | low (compression, dehydration only) | ~CAD 25–60 / t CO₂ (cheapest industrial capture) | net-negative; near-pure CO₂ |
+| Cellulosic conversion (vs corn) | higher than corn plant | feedstock-dependent | much lower life-cycle CI |
+| Electric process boiler | ~150–400 CAD/kWth | electricity-priced heat | removes process-heat fossil CO₂ |
+| Biomass / biogas process fuel | ~800–1,400 CAD/kWth (biomass) | low-carbon fuel | decarbonises process heat |
+| CCS on process steam | +30–50% on boiler plant | ~CAD 100–200 / t CO₂ | captures process CO₂ |
+
+: Indicative techno-economic characteristics of ethanol decarbonisation options, 2025 CAD {#tbl-ethanol-cost}
+
+### Capturing fermentation CO₂ (the cheapest BECCS)
+
+The standout option is capturing the fermentation CO₂. Unlike a flue gas, it emerges nearly pure, so only compression and dehydration are needed before storage — capture costs are a small fraction of those for dilute industrial streams. Because the carbon is biogenic, storing it yields net-negative emissions. The model represents this through the **CCS** service; given the cost advantage, it is the single most valuable lever in the sub-model.
+
+<mark>TODO: Make the fermentation-CO₂ capture pathway explicit and distinct from process-heat CCS, with its own (much lower) capture cost, so the model captures the unusually cheap BECCS opportunity at ethanol plants rather than treating all capture at a single cost.</mark>
+
+### Feedstock and process energy
+
+Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the **Agricultural Input** options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching **Steam** to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the inputs it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Ethanol technologies are discounted at rates of roughly 10–40% in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment decisions; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10–25 across the competitions.
+
+As with biodiesel, the emissions accounting is **life-cycle**: the sub-model carries CO₂, CH₄, and N₂O factors so that agricultural N₂O, process CH₄, and CO₂ are all represented, and the net benefit of ethanol emerges from the difference between these emissions and the gasoline it displaces. The **CCS** service applies an emissions-removal factor to the routes that request it — and because the captured fermentation CO₂ is biogenic, that removal can drive the route's net emissions below zero. The carbon price therefore rewards the cellulosic route, clean process energy, and above all fermentation-CO₂ capture.
+
+## Regional coverage and differences
+
+All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry both the corn and cellulosic routes. In practice corn ethanol is concentrated in Ontario and the East, wheat-based grain ethanol in the Prairies, and cellulosic feedstock potential follows crop-residue and forestry availability. Regional differences show up in feedstock mix and in the carbon intensity of the grid supplying process electricity.
+
+<mark>TODO: Calibrate the regional split between corn/wheat and cellulosic routes, and the associated carbon intensities, against Clean Fuel Regulations pathway data and Canadian crop-residue supply estimates.</mark>
+
+## Limitations and planned extensions
+
+The ethanol sub-model is compact and supply-side. Its main limitations: it treats feedstock through a single Agricultural Input service rather than linking to the agriculture sub-model; it applies a single CCS cost rather than recognising the unusually cheap fermentation-CO₂ capture; and its corn/cellulosic split and intensities are inherited from older calibrations. The TODOs above record these priorities, of which making the cheap fermentation-CO₂ BECCS pathway explicit is the most consequential for emissions outcomes.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled ethanol output and carbon intensity against Natural Resources Canada and Clean Fuel Regulations data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

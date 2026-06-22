@@ -1,0 +1,112 @@
+---
+bibliography: references.bib
+---
+
+# Waste {#sec-waste}
+
+The waste sector is unlike most others CIMS represents: its greenhouse-gas footprint is overwhelmingly a single non-CO₂ gas — methane generated as organic waste decomposes in landfills — rather than energy use. The sub-model is therefore built around the management of that landfill methane: whether it is vented, flared, or captured for energy. The emphasis, as elsewhere, is on the structure of the energy-service flow model — the nodes, the technologies that compete at each, and the engineering ratios that link them. The tree is region-agnostic. Tellingly, the sector's activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not energy or output, are its organising variable.
+
+## Scope
+
+CIMS represents the **management of landfill gas** at municipal solid waste disposal sites — the dominant source of greenhouse gases in the waste sector. Landfills are grouped by size (large, medium, and small), because the economics of gas collection and use depend strongly on how much gas a site produces. The driving variable is the methane-generation potential of the waste in place, expressed in tonnes of CO₂-equivalent; a forecast of that potential — which declines over the projection as waste diversion reduces the organic material sent to landfill — drives the sub-model.
+
+Adjacent activities are handled elsewhere or fall outside the current model. Waste collection and haulage are part of the [Transportation (Freight)](sector_transportation_freight.qmd) sector; the energy services of waste-management facilities are small and not separately represented; and waste used as a fuel (waste-derived fuel in cement kilns, biomass boilers) is accounted in the consuming sectors. The current sub-model focuses on landfill gas; wastewater treatment methane and waste incineration are not yet represented (see the limitations below).
+
+## Real-world context
+
+The waste sector is a small but stubborn share of Canada's greenhouse-gas emissions, and it is dominated by **landfill methane**. As the organic fraction of municipal solid waste — food, paper, wood, yard trimmings — decomposes anaerobically in a landfill, it generates landfill gas that is roughly half methane and half CO₂. Because methane has a global-warming potential many times that of CO₂ (on the order of 28–30 over 100 years, and far higher over 20 years), uncontrolled landfill gas is the sector's defining problem and its largest abatement opportunity.
+
+The levers are well established. Capturing the gas with a collection system and **flaring** it converts the methane to CO₂, cutting the warming impact of that gas by roughly a factor of 25 at modest cost; capturing it and using it for **energy** — electricity generation, or upgrading to pipeline-quality renewable natural gas (RNG) — does the same while displacing fossil energy and earning revenue. Upstream, diverting organics from landfill through composting and anaerobic digestion prevents the methane from being generated in the first place. Canada has committed under the Global Methane Pledge to cut methane sharply by 2030, and federal regulations targeting methane from large municipal landfills (gas capture and control requirements) are a central part of the waste-sector effort [@eccc-waste]. The CIMS structure mirrors the end-of-pipe choice directly: each landfill chooses among venting, flaring, and energy recovery, with the size split capturing the very different economics of large versus small sites.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the landfill sites, grouped by size — with the gas-management technologies competing at each. @fig-waste-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the landfill-gas options compete on lifecycle cost, with the carbon price (applied to methane on a CO₂-equivalent basis) as the main driver.
+
+![Energy-service flow model of the waste sector (region-agnostic master tree). Methane-generation potential (in tonnes of CO₂-equivalent) is allocated across landfill **Sites** by size (Large, Medium, Small); at each, three landfill-gas options compete — No Control (vents CH₄), Flaring (captures and burns the gas, converting CH₄ to CO₂), and Electricity Generation (landfill-gas-to-energy, which also produces electricity). Larger sites more readily justify capture and energy recovery.](images/waste_flow_model.svg){#fig-waste-flow-model .lightbox width=90%}
+
+### Products: landfill sites and their gas-management options
+
+The **Sites** node splits the landfill stock into **Large Sites**, **Medium Sites**, and **Small Sites**. At each, three technologies compete to manage the landfill gas:
+
+- **No Control** — the gas is vented uncontrolled, so the site emits its full methane potential as **CH₄**. This is the do-nothing baseline.
+- **Flaring** — a gas-collection system captures the landfill gas and flares it, combusting the methane. The emission becomes **CO₂** rather than CH₄, cutting the warming impact of the captured gas roughly twenty-five-fold while producing no useful energy.
+- **Electricity Generation** — landfill-gas-to-energy: the captured gas (modelled as a biogas fuel) is burned in an engine to generate electricity, again emitting CO₂ rather than CH₄ and, in addition, displacing grid electricity (the technology returns power to the grid).
+
+The site-size grouping is what lets the model represent the central real-world fact that large landfills generate enough gas to justify a collection system and an engine, while small sites often cannot and are more likely to vent or, at most, flare.
+
+<mark>TODO: The model represents only the end-of-pipe management of landfill gas. Add upstream **organics diversion** (composting and anaerobic digestion) as a competing way to reduce the methane-generation potential itself, since diverting food and yard waste prevents the gas rather than treating it — and is the lever federal and municipal policy increasingly emphasises.</mark>
+
+## Decarbonisation technologies
+
+Waste-sector decarbonisation means **capturing and using landfill methane** and, further upstream, **preventing its generation**. @tbl-waste-decarb summarises maturity and @tbl-waste-cost gives indicative costs (here as cost of abatement per tonne of CO₂-equivalent, since the options are gas-management systems rather than process plant).
+
+| Technology / practice | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Gas collection + flaring | Converts captured CH₄ to CO₂ (~25× lower GWP) | Commercial |
+| Landfill-gas-to-electricity | As flaring, plus displaces grid power | Commercial |
+| Landfill-gas-to-RNG (pipeline upgrading) | As above, plus displaces fossil gas | Commercial — *not yet in model* |
+| Improved collection efficiency / final cover | Captures a larger share of generated gas | Commercial |
+| Organics diversion (composting) | Prevents methane generation | Commercial — *not yet in model* |
+| Anaerobic digestion of organics | Prevents landfill methane; yields biogas | Commercial — *not yet in model* |
+| Source reduction / waste minimisation | Less organic waste landfilled | Policy / behavioural |
+
+: Indicative performance and maturity of key waste decarbonisation options {#tbl-waste-decarb}
+
+The estimates in @tbl-waste-cost are order-of-magnitude figures from public literature [@eccc-waste; @epa-lmop], expressed in 2025 Canadian dollars. Because the options are gas-management systems whose benefit is avoided methane, costs are given as a cost (or net saving) per tonne of CO₂-equivalent abated. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Option | Cost of abatement (2025 CAD/t CO₂e) | Capital | Notes |
+|:-----|:-----|:-----|:-----|
+| Gas collection + flaring | ~5–30 | collection wells + flare | cheap, high-impact; no revenue |
+| Landfill-gas-to-electricity | ~20–60 (net of power revenue) | collection + genset | revenue offsets cost |
+| Landfill-gas-to-RNG | ~30–100 (net of gas revenue) | collection + upgrading | best at large sites |
+| Organics diversion (composting) | ~20–80 | facility + collection | prevents generation; co-benefits |
+| Anaerobic digestion of organics | ~40–120 | digester | biogas revenue offsets |
+
+: Indicative cost of waste-sector methane abatement, 2025 CAD {#tbl-waste-cost}
+
+### Capturing and using landfill gas
+
+The largest and cheapest lever is to stop venting. A **gas-collection system** with **flaring** converts captured methane to CO₂ at low cost and is the workhorse of landfill methane control; it is the Flaring technology in the model. Where a site generates enough gas, **electricity generation** does the same while earning power revenue — the model's Electricity Generation technology, which returns electricity to the grid — and **upgrading to renewable natural gas** (not yet a distinct option in the model) displaces fossil gas instead. Larger sites favour energy recovery; smaller sites favour flaring or remain uncontrolled, which is exactly why the model resolves the stock by size.
+
+### Preventing methane: organics diversion
+
+The deeper lever is to keep the organic material out of the landfill in the first place. **Composting** and **anaerobic digestion** of food and yard waste prevent the anaerobic decomposition that generates landfill methane, and anaerobic digestion additionally yields biogas. These upstream options reduce the methane-generation potential itself rather than managing the gas after the fact, and are the focus of much current policy — but the model does not yet represent them (see the TODO above).
+
+<mark>TODO: Replace the indicative literature ranges above with the abatement costs, gas-capture efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at each site follows the lifecycle-cost competition of @sec-technology-competition. Each landfill-gas option carries a capital cost (collection system, flare or engine), an operating cost, the methane-generation potential it serves, any electricity it returns to the grid, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares by the inverse-power choice rule.
+
+Waste technologies are discounted at rates of roughly 20–35% in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** govern how sharply the gas-management competitions respond to cost.
+
+The emissions accounting is the heart of this sub-model and is almost entirely **non-CO₂**. The No Control technology emits the site's full potential as **CH₄**, while Flaring and Electricity Generation emit the same quantity of carbon as **CO₂** — so the difference between them, on a CO₂-equivalent basis, is the large methane-versus-CO₂ warming gap. Methane enters at its high global-warming potential, which is what makes capture so valuable per dollar. The Electricity Generation route additionally returns power to the grid, an avoided-emissions and revenue benefit that improves its lifecycle cost. Because the activity variable is itself in CO₂-equivalent and the abatement options are inexpensive relative to their methane benefit, even a modest carbon price (or a landfill methane regulation) drives a large shift from venting toward flaring and energy recovery.
+
+## Regional coverage and differences
+
+All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the waste structure, each with its large, medium, and small landfill sites. The methane-generation potential differs by region with population and waste arisings, and it declines over the projection as diversion programmes reduce the organic fraction sent to landfill. Regional differences also show up in the value of the recovered electricity, which depends on the local grid and power price, and in the share of large sites (which can justify energy recovery) versus small ones.
+
+<mark>TODO: Calibrate the regional split of waste across large, medium, and small sites and the baseline control levels (vent / flare / energy) against Environment and Climate Change Canada's National Inventory Report and provincial landfill data, since both the emissions and the abatement potential depend heavily on the site-size distribution.</mark>
+
+## Limitations and planned extensions
+
+The waste sub-model captures the sector's dominant emission — landfill methane — and the core end-of-pipe management choice between venting, flaring, and energy recovery, resolved by site size. But it is deliberately narrow, and several real-world levers and sources are missing. The TODOs above record the priorities: adding upstream **organics diversion** (composting and anaerobic digestion) that prevents methane generation, adding a **renewable natural gas** upgrading pathway alongside electricity generation, and representing **gas-capture efficiency** explicitly rather than as a binary control choice. Two further sources — **wastewater treatment** methane and **waste incineration** — are not represented at all and would round out the sector. Because waste emissions are largely non-CO₂ and cheap to abate, a faithful representation of these levers is valuable out of proportion to the sector's small energy footprint.
+
+<mark>TODO: Add wastewater-treatment methane and waste incineration to complete the sector, and represent the methane-generation potential's dependence on waste composition and diversion policy rather than as a single exogenous CO₂-equivalent forecast.</mark>
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled landfill methane against Environment and Climate Change Canada's National Inventory Report.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

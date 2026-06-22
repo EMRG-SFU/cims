@@ -1,0 +1,188 @@
+---
+bibliography: references.bib
+---
+
+# Iron and Steel {#sec-iron-and-steel}
+
+The iron and steel sector is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model — the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them — rather than on the metallurgy or economics of individual mills. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node, not through separate per-region structures. Iron and steel is one of the most energy- and emissions-intensive branches of Canadian industry, and almost all of its emissions are concentrated in a single step — the reduction of iron ore to metallic iron — which is also where the sector's main decarbonisation choices sit.
+
+## Scope
+
+CIMS represents the integrated process chain of primary and secondary steelmaking, from the preparation of iron-bearing feed through to finished steel products. The sub-model begins with the on-site agglomeration of iron ore and the production of oxygen and process gases, takes in scrap, runs the metallic charge through the ironmaking and steelmaking step that produces molten steel, and ends with casting and finishing into the three basic forms — slabs, blooms, and billets — and their many sub-forms. The driving variable is the physical output of steel in tonnes; a forecast of crude-steel demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.
+
+Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
+
+- Iron-ore mining and ore beneficiation are covered in the [Mining](sector_mining.qmd) chapter; the iron and steel sub-model takes ore (or pellets) as an input and stops short of the mine gate on the upstream side.
+- Smelting and refining of non-ferrous metals — aluminium, nickel, copper, zinc, and the rest — are covered in the [Metal Smelting and Refining](sector_metal_smelting.qmd) chapter, which explicitly excludes iron and steel.
+- Downstream fabrication of steel into final goods (structural fabrication, stamping, machining) belongs to the manufacturing branches and is not part of this sub-model, which ends with saleable cast-and-rolled steel forms.
+
+Coke-making and the on-site reducing gases are treated within the sector because they are integral to the ironmaking step and cannot be cleanly separated from it.
+
+## Real-world context
+
+Canada produces on the order of 12 Mt of crude steel a year, placing it around sixteenth among steelmaking nations, against world output of roughly 1,900 Mt [@worldsteel-2024]. Production is concentrated overwhelmingly in Ontario, which hosts the large integrated and converting plants at Hamilton (ArcelorMittal Dofasco and Stelco) and Sault Ste. Marie (Algoma Steel); Québec, with electric-arc operations at Contrecœur and Longueuil; and Saskatchewan, where the Regina works runs a scrap-based electric-arc mini-mill of about 1 Mt/yr [@worldsteel-2024]. This geography maps directly onto the two production routes the model represents.
+
+Two routes dominate world and Canadian steelmaking, and they differ enormously in energy and emissions:
+
+- The integrated, or primary, route reduces iron ore to pig iron in a blast furnace using coke (itself made on site from coal), then refines the liquid iron together with some scrap in a basic oxygen furnace (BOF) by injecting high-purity oxygen. The blast-furnace/BOF (BF-BOF) route is the most energy-intensive, at roughly 18–21 GJ and around 1.8–2.3 t CO₂ per tonne of crude steel, with most of the carbon entering as the coke that chemically reduces the ore [@iea-steel-roadmap; @cgep-steel].
+- The secondary, or recycled, route melts 100% scrap in an electric arc furnace (EAF). Because it skips ore reduction entirely, it uses on the order of 2–4 GJ of electricity per tonne and a small fraction of the emissions of the integrated route; its footprint is dominated by the carbon intensity of the grid that supplies it [@cgep-steel].
+
+The Canadian industry is in the middle of a historic shift from the first route to the second. Algoma Steel and ArcelorMittal Dofasco are both replacing blast furnaces with electric arc furnaces, conversions expected to cut each plant's CO₂ by around 70% [@algoma-eaf]. Globally the EAF share of crude-steel output passed 29% in 2024 and is rising [@worldsteel-2024]. The CIMS structure is built around exactly this distinction: it separates an Integrated ironmaking-and-steelmaking node from a Recycled (scrap-EAF) node, and it admits to the integrated node a family of emerging low-carbon primary routes — direct-reduced iron, hydrogen direct reduction, smelting reduction, and carbon capture — so that the model can represent the route shift endogenously as costs and carbon prices change.
+
+## Model structure
+
+Following the standard CIMS pattern, the sector divides into two sub-trees: a **Product** sub-tree, which is the physical chain that turns ore and scrap into saleable steel, and a **Service** sub-tree, which holds the auxiliary energy and utility services the production technologies draw on. @fig-iron-steel-flow-model shows the overall structure.
+
+As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the iron and steel tree, the disaggregation of products and process stages is built from fixed-ratio nodes, while the technology choices — which steelmaking route, which casting method, which reheat furnace, which class of motor — occur at the tech-compete leaves.
+
+![Energy-service flow model of the iron and steel sector (region-agnostic master tree). The sector divides into a Product sub-tree — molten-steel production (Integrated and Recycled routes), continuous casting and finishing, and foundry — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the sector-specific Agglomeration, Oxygen, Iron Process Gas, and CCS services.](images/iron_steel_flow_model.svg){#fig-iron-steel-flow-model .lightbox width=100%}
+
+### Products: molten steel
+
+The heart of the sub-model is the **Molten Steel** node, where the metallic charge becomes liquid steel. The exogenous split between primary and secondary production is set here as a service request: a region directs part of its steel demand to the Integrated route and the remainder to the Recycled route. In the current data Ontario runs roughly two-thirds integrated and one-third recycled, drifting toward more EAF over the horizon; Québec starts similarly mixed and shifts to a majority-EAF split by 2050; and Saskatchewan is modelled as 100% recycled, reflecting its scrap-based mini-mill. The molten steel then passes through Ladle Refining and Ladle Preheat (electric or natural-gas) before casting. @fig-iron-steel-routes details the route competition.
+
+The Integrated node is a tech-compete node whose incumbent is the conventional BF-BOF, but to which a full set of lower-carbon primary routes is admitted so they can win share as their costs and the carbon price evolve:
+
+- Direct-reduced iron with EAF (DRI + EAF) and its hydrogen variant (HDRI + EAF) reduce ore in the solid state with reformed natural gas or hydrogen and melt the DRI in an electric furnace, avoiding the blast furnace and coke entirely.
+- Smelting-reduction routes — Corex smelter, HIsarna, Smelter + EAF — reduce ore without coke ovens or sinter plants.
+- Top gas recycling strips CO₂ from blast-furnace gas and reinjects it to cut coke use.
+- Each of these (and BF-BOF itself, via the shared CCS service) has a + CCS variant that routes its flue CO₂ to the capture service.
+
+The Recycled node is a tech-compete node among electric arc furnaces of increasing intensity — High power EAF, High power EAF + O₂, Ultra power EAF + O₂ — with an Ultra power EAF + O₂ + CCS option that captures the small process CO₂ from electrode and charge carbon. The EAF carries a small direct process-emission factor in addition to its electricity draw.
+
+<mark>TODO: The Integrated/Recycled split is currently an exogenous service-request ratio per region. Consider making it (or the scrap-supply constraint behind it) responsive to scrap availability and price, so that the secondary route's growth is limited by domestic and imported scrap rather than set by assumption.</mark>
+
+### Products: casting, finishing, and foundry
+
+Cast and finished products are organised under a Continuous Cast node that branches into the three basic forms and their sub-forms, mirroring the way the industry reports product mix:
+
+- Slabs run through Casting (continuous, thin-slab, strip, or the older ingot route), Slab Roughing and Finishing mills, Pickling, Skin Pass, and a Cold Rolled chain (cold reduction, electrolytic cleaning, annealing and tempering, electric/tin-plate and galvanizing lines).
+- Blooms run through Bloom Casting to heavy structural shapes, tubes, and other heavy products.
+- Billets run through Billet Casting to bar, rod, and light structural shapes.
+
+Casting and rolling technologies generally compete as natural-gas versus fuel-oil fired variants, and the casting node also carries the energy-saving near-net-shape options (thin-slab and strip casting) that reduce or eliminate downstream reheating.
+
+The master tree also defines a Foundry product node alongside Continuous Cast, for cast-iron and cast-steel products that bypass the rolling chain. It is part of the intended design but is not yet populated in the regional input files.
+
+<mark>TODO: Build out the Foundry product branch (technologies, energy intensities, and product split) in the regional input files; it currently exists in the master tree but carries no data.</mark>
+
+### Sector-specific services
+
+Three services are specific to ironmaking and sit in the Service sub-tree alongside the cross-cutting utilities:
+
+- **Agglomeration** binds fine iron ore into sinter suitable for the blast furnace; it competes a conventional sinter technology against a sinter + CCS variant.
+- **Oxygen** is supplied by cryogenic air separation (compression and distillation) and feeds the BOF and oxygen-enriched EAF routes; oxygen is itself an energy-intensive input.
+- **Iron Process Gas** captures the energy value of blast-furnace, coke-oven, and BOF off-gases and uses them on site for **Reheating** and for **Steam** (process-gas boilers and cogenerators), displacing purchased fuel.
+
+### Auxiliary energy and utility services
+
+The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The iron and steel sector draws on:
+
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. The sector's large motive loads sit here: mill drives and materials processing, fans and blowers, materials handling, pumps, and compressed air.
+- **Reheating** — reheat furnaces (natural-gas or oil; unrecuperated, recuperated, induction, or direct-rolling) that bring semi-finished steel back to rolling temperature.
+- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants.
+- **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
+- **HVAC** (space heating and cooling) and **Lighting** for mill facilities.
+
+<mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. Migrate these files to the region-agnostic master tree and the shared General Services chapters.</mark>
+
+## Decarbonisation technologies
+
+The sector's emissions are dominated by the chemical reduction of iron ore in the integrated route — the carbon in coke is the reductant, not merely a fuel — so the decisive decarbonisation lever is the choice of primary route at the Molten Steel Integrated node, backed by carbon capture and by the shift of melting and heating loads to low-carbon electricity and fuels. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in @tbl-iron-steel-decarb. The figures quoted are indicative ranges from technology roadmaps and techno-economic reviews [@iea-steel-roadmap; @cgep-steel], not the calibrated values used in the model.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Scrap-based EAF (recycled route) | ~2–4 GJ/t and a small fraction of BF-BOF CO₂; grid-dependent | Commercial |
+| Natural-gas DRI + EAF | ~1.4–1.7 t CO₂/t vs ~1.8–2.3 for BF-BOF | Commercial |
+| Hydrogen DRI + EAF (HDRI) | Up to ~95–98% CO₂ cut with green hydrogen | Demonstration / early commercial |
+| Smelting reduction (HIsarna, Corex, Smelter+EAF) | ~20% energy and CO₂ cut alone; up to ~80% with CCS | Pilot / demonstration |
+| Top gas recycling blast furnace | ~25% CO₂ avoided by recycling decarbonised top gas | Pilot |
+| Carbon capture (BF-BOF, DRI, smelting, EAF) + CCS | ~90% capture of treated flue CO₂ in the model | Demonstration |
+| Oxygen-enriched / ultra-high-power EAF | Lower melt energy and tap-to-tap time | Commercial |
+| Near-net-shape casting (thin-slab, strip) | Reduces or eliminates reheating | Commercial |
+| Electric / hydrogen reheat and process steam | Displaces gas- and oil-fired heat | See Low-Temp Heat |
+| High-efficiency motors + variable-speed drives | Lower auxiliary drive energy | See Machine Drive |
+
+: Indicative performance and maturity of key iron and steel decarbonisation technologies {#tbl-iron-steel-decarb}
+
+The cost estimates in @tbl-iron-steel-technoecon are order-of-magnitude figures from public techno-economic literature [@iea-steel-roadmap; @cgep-steel; @steelonthenet-capex] and expressed in 2025 Canadian dollars: US-dollar sources were converted at the mid-2025 rate of roughly 1.37 CAD/USD and adjusted to 2025 where the source year differed. Overnight capital costs are normalised per tonne of annual crude-steel capacity (except where another basis is noted), fixed operating and maintenance (O&M) costs follow the heavy-industry convention of roughly 3–6% of capital cost per year, and energy intensity is per tonne of crude steel. The values are for relative comparison only, not project budgeting, and are separate from the plant-specific capital and O&M values the model carries internally for each technology.
+
+| Technology | Overnight capex (2025 CAD per t/yr capacity) | Fixed O&M | Energy intensity (per t crude steel) | Main energy carrier / reductant |
+|:-----|:-----|:-----|:-----|:-----|
+| BF–BOF (integrated, incumbent) | ~2,000 | ~5%/yr | ~18–21 GJ | metallurgical coal / coke (+ some gas) |
+| Scrap EAF (high-power) | ~450–700 | ~4%/yr | ~2–4 GJ (≈0.4–0.6 MWh) | electricity (+ scrap) |
+| Natural-gas DRI–EAF | ~850–1,100 | ~5%/yr | ~16–18 GJ | natural gas + electricity |
+| Hydrogen DRI–EAF (HDRI) | ~1,000–1,300 | ~5%/yr | ~11–13 GJ H₂ + ≈0.6 MWh | hydrogen + electricity |
+| Smelting reduction (HIsarna, Corex) | ~1,000–1,400 | ~5%/yr | ~15–17 GJ | coal (no coke ovens / sinter) |
+| Carbon capture (±CCS add-on) | +10–40% on plant capex (capture ≈70–140 CAD/t CO₂) | — | +2–4 GJ per t CO₂ captured | steam / electricity |
+| Sinter agglomeration | ~70–140 (per t/yr sinter) | ~5%/yr | ~1.5–2.3 GJ/t sinter | coke breeze / gas |
+| Cryogenic oxygen (air separation) | ~200–400 (per t/yr O₂) | ~5%/yr | ~0.7–0.9 GJ/t O₂ (≈200–250 kWh) | electricity |
+
+: Indicative techno-economic characteristics of iron and steel technologies, 2025 CAD {#tbl-iron-steel-technoecon}
+
+![Molten Steel route competition. The exogenous primary/secondary split feeds an Integrated node (BF-BOF and emerging low-carbon primary routes, each with a CCS variant) and a Recycled node (scrap EAFs of increasing power, with an oxygen-and-CCS option). Most routes draw on the shared Agglomeration, Oxygen, and CCS services.](images/iron_steel_routes.svg){#fig-iron-steel-routes .lightbox width=90%}
+
+### Primary-route shift: DRI, hydrogen, and smelting reduction
+
+The largest single emissions reduction available to the sector is to displace the coke-based blast furnace. Direct reduced iron (DRI) reduces ore in the solid state with a reducing gas and melts the product in an EAF; with reformed natural gas it already cuts CO₂ to roughly 1.4–1.7 t/t from the 1.8–2.3 t/t of BF-BOF, and when the reducing gas is green hydrogen the reduction step's emissions essentially disappear, for an overall cut of up to about 95–98% relative to the blast furnace [@cgep-steel]. The model represents both as DRI + EAF and HDRI + EAF at the Integrated node. Smelting-reduction processes — HIsarna, Corex, and the generic Smelter + EAF — eliminate the coke ovens and sinter plant and cut energy and CO₂ by around a fifth on their own, rising toward 80% when paired with CCS [@iea-steel-roadmap]. These compete directly against BF-BOF as the carbon price rises.
+
+### Scrap-based electric steelmaking
+
+Where scrap is available, the Recycled route is already the lowest-emission way to make steel, because it bypasses ore reduction altogether; its footprint then tracks the carbon intensity of the electricity grid, which is low in hydro-rich Québec and increasingly so in Ontario. The model represents progressively more capable furnaces — High power and Ultra power EAFs, with oxygen enrichment to speed melting — and an Ultra power EAF + O₂ + CCS option to capture the residual process CO₂. The practical limit on this route is scrap supply and quality, which is why the primary/secondary split is currently set exogenously rather than allowed to go fully to scrap.
+
+### Carbon capture
+
+Carbon capture is represented as a shared **CCS** service that any equipped route requests; in the model it removes 90% of the CO₂ presented to it. It is the only way to deeply decarbonise the routes that still reduce ore with carbon — hence the BF-BOF + CCS, Corex + CCS, HIsarna CCS, Top gas recycling CCS, Smelter + EAF + CCS, and DRI + EAF + CCS variants. The broader treatment of capture, transport, and storage, and its costs, is in the [Carbon Capture, Utilization, and Storage](ccus.qmd) chapter.
+
+### Electrified and low-carbon heat, and efficient casting
+
+Beyond the reduction step, reheating and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and hydrogen reheat furnaces, electrode and electric-resistance boilers, and process-gas cogeneration — are reached through the **Reheating**, **Steam**, and **Iron Process Gas** services and are described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter; the **Methane Blend** node substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty. On the product side, near-net-shape casting (thin-slab and strip casting) reduces or removes the reheating step entirely, and oxygen-enriched, ultra-high-power EAFs cut melting energy. High-efficiency motors and variable-speed drives in the [Machine Drive](machine_drive.qmd) service reduce the large auxiliary load.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+<mark>TODO: Hydrogen direct reduction is represented as a single HDRI + EAF technology drawing hydrogen through the Methane Blend node. Consider an explicit green-hydrogen reducing-gas supply (electrolysis, storage, and the associated electricity load) so the route's economics reflect hydrogen cost and availability rather than a blended gas price.</mark>
+
+### Indicative capital and operating costs and energy use
+
+@tbl-iron-steel-technoecon (above) gathers order-of-magnitude capital and operating costs and energy characteristics for the main steelmaking routes and the sector-specific services. The values are for relative comparison only, not project budgeting, and they are separate from the plant-specific capital and O&M values the model carries internally for each technology.
+
+## Economics
+
+Technology choice at every tech-compete node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+A few sector-wide conventions are worth noting. Iron and steel technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are **behavioural** (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm's cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all. Fuel prices entering the service-cost calculation are scaled by a sector-level block of price multipliers, allowing the sector to face prices that differ from the generic delivered price of each fuel.
+
+Greenhouse-gas costs enter through two channels. Most emissions follow from each technology's fuel service requests and the prevailing carbon price, so route-switching — from coke-based ironmaking to gas- or hydrogen-based DRI, or from natural gas to hydrogen and biogas in the methane blend — is the model's main channel for emissions reduction. In addition, the EAF routes carry a small direct process-emission factor (electrode and charge carbon), and the **CCS** service applies an emissions-removal factor (90% of the CO₂ routed to it) to the technologies that request it.
+
+## Regional coverage and differences
+
+Because the tree is region-agnostic, each modelled province is built from the same master structure and simply carries no production on the branches that do not apply. Regional differences show up in where production sits and in the primary/secondary split rather than in the shape of the tree:
+
+- Ontario carries most of Canada's steel and runs a mixed integrated and recycled fleet (about two-thirds integrated today), consistent with its large Hamilton and Sault Ste. Marie plants — and with the BF-to-EAF conversions now under way there.
+- Québec is modelled as mixed but shifting strongly to EAF, reaching a majority-recycled split by 2050.
+- Saskatchewan is modelled as 100% recycled, reflecting its single scrap-based mini-mill.
+
+<mark>TODO: Only Ontario, Québec, and Saskatchewan are present in the current input files. Confirm whether any other province (for example Alberta or Manitoba) hosts steelmaking that should be represented, and build it out on the region-agnostic tree; otherwise document explicitly that national coverage is limited to these three regions.</mark>
+
+<mark>TODO: The exogenous primary/secondary trajectories and the regional product mixes are inherited from older calibrations. Revisit them against the announced BF-to-EAF conversions at Algoma and ArcelorMittal Dofasco, which will materially raise Ontario's EAF share within the projection period.</mark>
+
+## Limitations and planned extensions
+
+The iron and steel sub-model is a deliberately simplified representation of a complex, fast-changing industry. The TODOs above record the main gaps between this design and both the current input files and the real Canadian sector: the migration of the auxiliary services to the MECS-aligned Machine Drive and the Product/Service split; the population of the Foundry branch; an explicit scrap-supply constraint behind the primary/secondary split; an explicit green-hydrogen reducing-gas supply for the HDRI route; broader provincial coverage; and the refresh of the exogenous route trajectories in light of the conversions now under construction. Together these define the path from the current state of the model to the region-agnostic, fully populated design described in this chapter.
+
+<mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled iron and steel energy use and emissions against CIEEDAC, Environment and Climate Change Canada (NIR), and Natural Resources Canada data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

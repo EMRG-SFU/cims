@@ -1,0 +1,126 @@
+---
+bibliography: references.bib
+---
+
+# Petroleum Crude {#sec-petroleum-crude}
+
+Crude oil and bitumen production is one of CIMS's energy-supply sub-models, covering the upstream oil industry — conventional crude oil and, dominating both output and emissions in Canada, the oil sands (surface mining, in-situ recovery, and upgrading to synthetic crude). The emphasis is on the structure of the energy-service flow model: the production routes, the technologies that compete at each, and the energy services — above all steam — that drive them. The tree is region-agnostic. The defining feature of the sector is that the energy used to *produce* the oil — particularly the natural gas burned to raise steam for in-situ bitumen recovery — is itself a very large emissions source, so the sector's decarbonisation is mostly about how that production energy is supplied and whether its CO₂ is captured.
+
+## Scope
+
+CIMS represents the production of crude oil and bitumen: conventional light, medium, and heavy crude (onshore and offshore), and the oil sands in their three forms — surface mining, in-situ recovery, and upgrading of bitumen to synthetic crude oil. The driving variable is oil/bitumen output. The model carries the supporting energy services — steam, process hydrogen (for upgrading), industrial engines, and a **CCS** service.
+
+Adjacent activities are handled elsewhere: refining crude into fuels and products is in [Petroleum Refining](sector_petroleum_refining.qmd); natural gas production is in [Natural Gas](sector_natural_gas.qmd); the combustion of the refined fuels is in the demand sectors; and the hydrogen the sector uses can be drawn from the [Hydrogen](sector_hydrogen.qmd) sub-model. This chapter covers getting the oil and bitumen out of the ground and to a refinery-ready state.
+
+## Real-world context
+
+Canadian crude production is dominated by the Alberta oil sands, the largest source of both output and emissions in the sector, supplemented by conventional crude (Saskatchewan, Alberta) and offshore production in the Atlantic (Newfoundland). The oil sands come in two forms: surface mining and upgrading, which digs out near-surface bitumen and upgrades it to synthetic crude; and in-situ recovery, which uses steam to mobilise deeper bitumen and now rivals mining as the main production route.
+
+The sector's emissions profile is distinctive. For in-situ production, the single largest source is steam generation — natural gas burned to make the steam that lowers bitumen viscosity in steam-assisted gravity drainage (SAGD) and cyclic steam — so the carbon intensity of a barrel depends heavily on how much steam it needs and how that steam is produced [@oilsands-intensity]. Upgrading adds the emissions of coking, hydrotreating, and the hydrogen it consumes. The decarbonisation levers follow directly: solvent-assisted in-situ processes that cut steam use (with potential to lower intensity by up to ~50%), low-carbon steam (electric, hydrogen, nuclear, cogeneration), and carbon capture — the focus of the Pathways Alliance, whose proposed oil sands CCS network would be among the world's largest [@pathways-alliance; @oilsands-intensity]. The CIMS structure captures all of these as competing technologies at the production and steam nodes.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the production routes — and a **Service** sub-tree of the energy services that supply them. @fig-petroleum-crude-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition).
+
+![Energy-service flow model of the petroleum crude sector (region-agnostic master tree). The Product sub-tree holds conventional crude (light/medium onshore and offshore, heavy) and the oil sands (in-situ recovery, surface mining, and upgrading to synthetic crude); the Service sub-tree supplies the steam, hydrogen, industrial engines and CCS the production routes draw on. Steam generation is the dominant emission source for in-situ bitumen.](images/petroleum_crude_flow_model.svg){#fig-petroleum-crude-flow-model .lightbox width=100%}
+
+### Products: conventional crude and the oil sands
+
+- Light/Medium crude — Onshore and Offshore conventional production.
+- Heavy crude — conventional heavy oil.
+- Exploration — the upstream drilling and appraisal activity.
+- Bitumen — the oil sands, in three linked nodes:
+  - In-Situ — competing SAGD, SAGD with enhanced leak detection (ELDAR), Cyclic Steam, Solvent, and Hybrid Thermal-Solvent recovery. These differ in steam intensity (and therefore CO₂) and in methane (the solvent and hybrid routes cut both).
+  - Mining — surface mining (Existing and Improved).
+  - Upgrading — converting bitumen to synthetic crude, competing conventional Upgrading, Efficient, ELDAR, and ELDAR + CCS routes.
+
+### Services: steam, hydrogen, engines, and capture
+
+- **Steam** — the most important service, because in-situ recovery is steam-intensive. It competes natural-gas, heavy-fuel-oil, and petcoke boilers (with CCS variants), natural-gas cogeneration (with and without CCS), and electric, hydrogen, and nuclear steam. The choice here largely determines an in-situ barrel's carbon intensity.
+- **Still Gas** — steam raised from refinery/upgrader still gas, with boiler and cogeneration options (with and without CCS).
+- **Hydrogen** — for upgrading (can be sourced from the [Hydrogen](sector_hydrogen.qmd) sub-model's grey, blue, and green routes).
+- **Industrial Engines** — diesel, gasoline, and propane mobile equipment (mine trucks, and the like).
+- **CCS** — the shared capture service (90% capture), central to deep decarbonisation of the sector.
+
+<mark>TODO: Link the sector's hydrogen demand explicitly to the [Hydrogen](sector_hydrogen.qmd) sub-model's production competition, so that upgrading hydrogen carries the cost and carbon intensity of the chosen (grey, blue, or green) route rather than an assumed value.</mark>
+
+## Decarbonisation technologies
+
+Oil-sands and crude decarbonisation works through reducing steam demand (solvent processes), decarbonising the steam and process energy (electric, hydrogen, nuclear, cogeneration), capturing CO₂ (the Pathways CCS network), and controlling methane. @tbl-petroleum-crude-decarb summarises maturity and @tbl-petroleum-crude-cost gives indicative costs.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Solvent / hybrid thermal-solvent SAGD | Up to ~50% lower in-situ CO₂ intensity | Pilot / demonstration |
+| Electric / hydrogen / nuclear steam | Decarbonises SAGD steam | Emerging |
+| Cogeneration (gas, with or without CCS) | Combined heat and power; surplus export | Commercial |
+| CCS on steam / upgrading (Pathways) | Captures ~90% of treated CO₂ | Demonstration (large-scale proposed) |
+| Efficient / ELDAR upgrading | Lower upgrading energy and methane | Commercial |
+| Enhanced leak detection (ELDAR) | Cuts fugitive and vented methane | Commercial |
+| Mining electrification (trucks) | Lower mine-fleet diesel CO₂ | Emerging |
+
+: Indicative performance and maturity of key petroleum-crude decarbonisation technologies {#tbl-petroleum-crude-decarb}
+
+The estimates in @tbl-petroleum-crude-cost are order-of-magnitude figures from public Canadian sources [@pathways-alliance; @oilsands-intensity], expressed in 2025 Canadian dollars. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Cost / capex | Effect | Energy / input |
+|:-----|:-----|:-----|:-----|
+| Solvent / hybrid SAGD | process retrofit / new wells | up to ~50% lower steam CO₂ | solvent + reduced steam |
+| Electric steam (boiler) | ~150–400 CAD/kWth | removes steam combustion CO₂ | electricity |
+| Hydrogen steam / fuel | retrofit + hydrogen cost | low-carbon if blue or green H₂ | hydrogen |
+| Gas cogeneration (with or without CCS) | ~1,800–3,000 CAD/kWe | CHP; exports surplus power | natural gas |
+| CCS on steam / upgrading | +30–50% plant equipment | ~CAD 70–150 / t CO₂ | steam / electricity for capture |
+| Enhanced leak detection (ELDAR) | low; often net-negative | cuts fugitive methane | — (recovered gas) |
+
+: Indicative techno-economic characteristics of petroleum-crude decarbonisation technologies, 2025 CAD {#tbl-petroleum-crude-cost}
+
+### Reducing and decarbonising steam
+
+For in-situ bitumen, the game is steam. Solvent and hybrid thermal-solvent processes inject light hydrocarbons (often propane) in place of, or alongside, steam, cutting the steam needed per barrel and lowering carbon intensity by up to about 50% [@oilsands-intensity]. Where steam is still needed, the **Steam** service can switch from gas boilers to cogeneration, electric, hydrogen, or even nuclear steam — the choice that most determines an in-situ barrel's footprint.
+
+### Carbon capture and methane control
+
+Because the oil sands produce large, relatively concentrated CO₂ streams (from steam generation, upgrading, and hydrogen production), **CCS** is the central deep-decarbonisation lever, and the proposed Pathways Alliance network would capture CO₂ from a cluster of oil-sands facilities at large scale [@pathways-alliance]. The model represents this through the CCS-equipped steam, upgrading, and still-gas routes and the shared **CCS** service. Enhanced leak detection (ELDAR) cuts the sector's fugitive and vented methane, often at net-negative cost.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, steam-to-oil ratios, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and refresh the solvent-SAGD and CCS options against the Pathways Alliance project and current pilots.</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, operating cost, an output (per-barrel) basis, service requests for the steam, hydrogen, and engine energy it consumes, any recovered-gas credit, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares.
+
+Petroleum-crude technologies are discounted at a high rate — about 35% at most nodes, with some at 20–40% in the current data. These values are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and risk typical of the industry; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition.
+
+Emissions are tracked as **CO₂** (chiefly from steam, upgrading, and engine combustion) and **CH₄** (fugitive and vented, with the ELDAR and solvent routes carrying lower factors), and the **CCS** service applies a 90% removal factor to the equipped routes. Because in-situ carbon intensity is dominated by steam, the carbon price acts most powerfully through the **Steam** competition — making solvent processes, electric/hydrogen/nuclear steam, cogeneration, and CCS progressively more attractive as it rises — while methane controls add cheap, often profitable, abatement.
+
+## Regional coverage and differences
+
+Six regions carry crude production, but it is highly concentrated:
+
+- **Alberta** dominates, with essentially all of the oil sands (mining, in-situ, and upgrading) plus conventional crude — and therefore most of the sector's energy use and abatement opportunity.
+- **Saskatchewan** carries conventional heavy and light/medium crude.
+- The **Atlantic** region carries offshore light/medium production (Newfoundland).
+- **British Columbia, Manitoba, and Ontario** carry smaller conventional volumes.
+
+Because the oil sands are so steam- and energy-intensive, Alberta holds the overwhelming majority of the sector's decarbonisation challenge and opportunity.
+
+<mark>TODO: Calibrate the in-situ versus mining production split and the steam-to-oil ratios against current Alberta Energy Regulator data, since the sector's emissions and the value of steam decarbonisation depend heavily on both.</mark>
+
+## Limitations and planned extensions
+
+The petroleum-crude sub-model captures the essential structure — conventional and oil-sands routes, the dominant steam service with its full range of low-carbon options, and CCS — which makes it well suited to analysing oil-sands decarbonisation. Its main limitations are the loose coupling of upgrading hydrogen to the hydrogen sub-model, reliance on inherited steam-to-oil and cost assumptions, and the need to keep the solvent-SAGD and CCS options aligned with fast-moving industry projects. The TODOs above record these priorities.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled crude and bitumen production energy use and emissions intensity against the Alberta Energy Regulator and Environment and Climate Change Canada's National Inventory Report.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

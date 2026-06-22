@@ -1,0 +1,118 @@
+---
+bibliography: references.bib
+---
+
+# Agriculture {#sec-agriculture}
+
+Agriculture is unlike the other sectors CIMS represents: most of its greenhouse-gas emissions are not from burning fuel but from biological and chemical processes — methane (CH₄) from livestock digestion and manure, and nitrous oxide (N₂O) from soils — so the sub-model is built around those process emissions and the options that abate them, rather than around energy services. The emphasis, as elsewhere, is on the structure of the energy-service flow model — the process and service nodes, the technologies that compete at each, and the engineering ratios that link them. The tree is region-agnostic. Tellingly, the sector's activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not energy or output, are its organising variable.
+
+## Scope
+
+CIMS represents the greenhouse-gas-emitting activities of agriculture and the on-farm energy that supports them: livestock enteric fermentation and manure management (the CH₄ sources), agricultural soils (the N₂O source, together with the land-management practices that affect it), farm tractors (mobile diesel equipment), and farm process and building heat. The driving variable is the level of agricultural activity, expressed in CO₂-equivalent terms.
+
+Adjacent activities are handled elsewhere to avoid double-counting: the manufacture of nitrogen fertiliser is in [Chemical Products](sector_chemical_products.qmd) (ammonia synthesis); food and beverage processing is in [Light Industrial](sector_light_industrial.qmd); the biofuels that use agricultural feedstock are in [Biodiesel](sector_biodiesel.qmd) and [Ethanol](sector_ethanol.qmd) (which carry their own Agricultural Input services); and the fuels burned on-farm are supplied by the energy-supply sub-models. This chapter covers the emissions and energy use of farming itself.
+
+## Real-world context
+
+Agriculture is responsible for roughly 8% of Canada's greenhouse-gas emissions, and the composition is distinctive: it is overwhelmingly non-CO₂. Enteric fermentation — the methane cattle and other ruminants produce as they digest forage — is the single largest source, around 46% of agricultural emissions; manure management (CH₄ and N₂O) adds about 27%; and agricultural soils emit N₂O, chiefly from nitrogen fertiliser and crop residues [@nfu-ag-ghg]. On-farm fuel use (tractors, grain drying, heating) is comparatively small and is mostly diesel and natural gas.
+
+This composition shapes the decarbonisation problem. Because the emissions are biological, the levers are agronomic and dietary rather than purely technological: feed additives and rumen modification to cut enteric methane, manure management changes, nitrogen and tillage management to cut soil N₂O, and land-use practices (agroforestry, wetland restoration, reduced tillage) that store carbon in soils and biomass. The feed additive 3-nitrooxypropanol (3-NOP), for example, consistently cuts enteric methane by around 30% on average [@threenop]. The CIMS structure mirrors this: it carries explicit CH₄ and N₂O process-emission factors on the livestock and soils nodes and competes the abatement practices against conventional ones, while representing the on-farm energy through a small set of tractor and heat technologies.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the emitting agricultural processes — and a **Service** sub-tree of the on-farm energy services. @fig-agriculture-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the abatement options compete against conventional practice on a lifecycle-cost basis, with the carbon price (applied to CH₄ and N₂O on a CO₂-equivalent basis) as the main driver.
+
+![Energy-service flow model of the agriculture sector (region-agnostic master tree). The Product sub-tree holds the emitting processes — Enteric Fermentation and Manure Management (CH₄) and Soils (N₂O, with tillage and land-use options including net-sequestering practices) — and the Service sub-tree holds on-farm Tractors and Heat.](images/agriculture_flow_model.svg){#fig-agriculture-flow-model .lightbox width=90%}
+
+### Products: the emitting processes
+
+- **Enteric Fermentation and Manure Management** — the livestock methane source. It competes conventional Livestock against Livestock + Vaccines + Rumen changes, a package of dietary and biological interventions (feed additives such as 3-NOP, methane vaccines, rumen modification) that cuts the enteric-CH₄ factor by roughly 60% in the data.
+- **Soils** — the cropland N₂O source, competing land-management practices that differ in their soil-N₂O intensity and carbon storage: Conventional Tillage, Minimal Tillage, and Zero Tillage (progressively lower N₂O), and Agroforestry and Wetland Restoration, which store carbon and can be net-sequestering.
+
+### Services: tractors and heat
+
+- **Tractors** — on-farm mobile equipment, competing standard and medium-efficiency diesel against a hydrogen option.
+- **Heat** — farm process and building heat (grain drying, livestock housing), competing standard and efficient natural-gas and electric units.
+
+<mark>TODO: The model lumps manure management together with enteric fermentation in a single node. Separate manure management so that its distinct abatement options — anaerobic digestion (biogas capture), covered storage, and solid–liquid separation — can be represented, since manure is about a quarter of agricultural emissions and has different, often cost-effective, mitigation.</mark>
+
+## Decarbonisation technologies
+
+Agricultural decarbonisation means abating CH₄ and N₂O and storing carbon in soils and biomass, with on-farm energy a secondary concern. @tbl-agriculture-decarb summarises maturity and @tbl-agriculture-cost gives indicative costs (here as cost of abatement per tonne of CO₂-equivalent, since most options are practice changes rather than capital equipment).
+
+| Technology / practice | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Feed additives / rumen modification (e.g. 3-NOP) | ~30% (avg) enteric CH₄ cut; up to ~60% in package | Early commercial |
+| Anaerobic manure digestion (biogas) | Captures manure CH₄; yields biogas | Commercial — *not yet separated in model* |
+| Zero / minimal tillage | Lower soil N₂O; soil carbon retention | Commercial |
+| Agroforestry | Stores carbon in biomass and soil | Commercial |
+| Wetland restoration | Avoids/stores emissions; co-benefits | Commercial |
+| Nitrogen management / nitrification inhibitors (4R) | Lower soil N₂O | Commercial — *not yet in model* |
+| Hydrogen / efficient tractors | Lower on-farm diesel CO₂ | Emerging (hydrogen) |
+| Electric / efficient farm heat | Lower heating fuel CO₂ | Commercial |
+
+: Indicative performance and maturity of key agricultural decarbonisation practices {#tbl-agriculture-decarb}
+
+The estimates in @tbl-agriculture-cost are order-of-magnitude figures from public literature [@nfu-ag-ghg; @threenop], expressed in 2025 Canadian dollars. Because most options are practices rather than plant, costs are given as a cost (or saving) per tonne of CO₂-equivalent abated. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Practice | Cost of abatement (2025 CAD/t CO₂e) | Capital / input | Notes |
+|:-----|:-----|:-----|:-----|
+| Feed additives (3-NOP) | ~20–80 | additive cost per head | ~30% enteric CH₄ cut |
+| Anaerobic manure digester | ~30–120 | digester capex (farm-scale) | captures CH₄; biogas revenue offsets |
+| Zero / minimal tillage | often *cost-saving* | none (equipment/practice) | fuel and labour savings |
+| Agroforestry | ~10–60 | land opportunity cost | carbon storage, co-benefits |
+| Wetland restoration | ~10–50 | land opportunity cost | sequestration + co-benefits |
+| Hydrogen tractor | high (early) | hydrogen + new equipment | small share of ag emissions |
+
+: Indicative cost of agricultural abatement practices, 2025 CAD {#tbl-agriculture-cost}
+
+### Cutting enteric and manure methane
+
+The largest single source — enteric methane — is addressed by dietary and biological means: feed additives (notably 3-NOP), methane-suppressing vaccines, and rumen modification, represented in the model as the Livestock + Vaccines + Rumen changes package. Manure methane is best cut by anaerobic digestion, which captures the gas for energy, and by covered storage — high-value options the model does not yet separate from enteric emissions (see the TODO above).
+
+### Cutting soil N₂O and storing carbon
+
+Soil N₂O falls with reduced and zero tillage and with better nitrogen management (right rate, source, timing, and placement — "4R" stewardship — and nitrification inhibitors). Agroforestry and wetland restoration go further by storing carbon in biomass and soils, and are among the few agricultural options that can be net-sequestering. The model competes the tillage and land-use practices directly at the Soils node.
+
+### On-farm energy
+
+On-farm energy is a smaller lever: efficient and hydrogen tractors cut mobile-diesel CO₂, and electric and efficient farm heat cut heating emissions, drawing on the same low-carbon options as the other sectors.
+
+<mark>TODO: Add explicit nitrogen-management / nitrification-inhibitor (4R) options at the Soils node, since fertiliser-driven N₂O is a major and cost-effectively abatable source not currently represented as a distinct technology.</mark>
+
+<mark>TODO: Replace the indicative literature ranges above with the abatement costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition. Each practice carries a capital cost (often small), operating cost, an activity basis, any service requests, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares by the inverse-power choice rule.
+
+Agricultural practices are discounted at about 30% in the current data. As elsewhere in CIMS this is a **behavioural** (revealed or empirical) discount rate rather than a true financial cost of capital, capturing the payback horizons and adoption barriers that govern real farm decisions; CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10–15.
+
+The emissions accounting is the heart of this sub-model and is almost entirely non-CO₂: it carries explicit CH₄ factors on the enteric/manure node and N₂O factors on the soils node, applied per unit of activity and entering on a CO₂-equivalent basis at their high global-warming potentials. Some land-use practices (agroforestry, wetland restoration) can carry net-negative factors, representing carbon storage. Because the activity variable is itself in CO₂-equivalent, the carbon price acts very directly here: it makes the abatement packages — feed additives, reduced tillage, sequestering land use — cost-competitive against conventional practice, which is the model's channel for agricultural mitigation.
+
+## Regional coverage and differences
+
+All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the agriculture structure. The mix of sources differs by region: the Prairie provinces (Alberta, Saskatchewan, Manitoba) dominate both cattle (enteric and manure CH₄) and cropland (soil N₂O from extensive grain and oilseed production); Ontario and Québec have mixed livestock and cropping; and the Atlantic and British Columbia have smaller, more specialised agricultural sectors.
+
+<mark>TODO: Calibrate the regional balance of livestock versus cropland emissions and the baseline tillage mix, since the effectiveness and cost of the abatement practices depend heavily on the regional activity mix.</mark>
+
+## Limitations and planned extensions
+
+The agriculture sub-model captures the sector's dominant emissions — enteric and manure methane, and soil N₂O — and the main practice-based abatement levers, but it is deliberately coarse. Its principal limitations are the lumping of manure with enteric fermentation (hiding the cost-effective digester and storage options), the absence of explicit nitrogen-management options, and the simplified treatment of soil-carbon sequestration, whose permanence and measurement are genuinely difficult. The TODOs above record these priorities. Because agricultural emissions are largely non-CO₂ and biological, they are among the hardest in the whole model to abate deeply, which makes a faithful representation of the available practices especially valuable.
+
+<mark>TODO: Replace the illustrative figures and example discount rate in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled agricultural CH₄ and N₂O against Environment and Climate Change Canada's National Inventory Report and Agriculture and Agri-Food Canada data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

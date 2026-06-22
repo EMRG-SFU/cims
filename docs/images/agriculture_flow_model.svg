@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .green{fill:#cfe3d6;stroke:#3f7d52;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="380" y="12" width="220" height="46" rx="7"/>
+  <text class="lblw" x="490" y="34" text-anchor="middle">Agriculture sector</text>
+  <text class="subw" x="490" y="49" text-anchor="middle">activity measured in t CO₂e</text>
+  <path class="edge" d="M490,58 V72"/>
+  <path class="edge" d="M250,72 H730"/>
+  <path class="edge" d="M250,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M730,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service -->
+  <rect class="branch" x="150" y="86" width="200" height="40" rx="6"/>
+  <text class="lblw" x="250" y="103" text-anchor="middle">Product — emitting processes</text>
+  <text class="subw" x="250" y="118" text-anchor="middle">mostly CH₄ &amp; N₂O</text>
+  <rect class="branch" x="632" y="86" width="196" height="40" rx="6"/>
+  <text class="lblw" x="730" y="103" text-anchor="middle">Service — on-farm energy</text>
+
+  <!-- enteric -->
+  <path class="edge" d="M250,126 V140 H150 V160" marker-end="url(#arrow)"/>
+  <rect class="spec" x="40" y="160" width="430" height="74" rx="6"/>
+  <text class="ttl" x="50" y="178">Enteric Fermentation &amp; Manure Mgmt  (CH₄)</text>
+  <text class="li" x="50" y="196">Livestock  (CH₄ factor 0.036)</text>
+  <text class="li" x="50" y="212" style="fill:#2c6e49">Livestock + Vaccines + Rumen changes  (≈60% less CH₄)</text>
+  <text class="sub" x="50" y="228">feed additives (3-NOP), vaccines, rumen modification</text>
+
+  <!-- soils -->
+  <rect class="spec" x="40" y="246" width="430" height="92" rx="6"/>
+  <text class="ttl" x="50" y="264">Soils  (N₂O + soil carbon)</text>
+  <text class="li" x="50" y="282">Conventional / Minimal / Zero Tillage</text>
+  <text class="li" x="60" y="296">(progressively lower N₂O)</text>
+  <text class="li" x="50" y="313" style="fill:#2c6e49">Agroforestry · Wetland Restoration (net-sequestering)</text>
+  <text class="sub" x="50" y="330">TODO: add nitrogen management / nitrification inhibitors (4R)</text>
+
+  <!-- services -->
+  <path class="edge" d="M730,126 V140 H600 V250"/>
+  <path class="edge" d="M600,180 H660" marker-end="url(#arrow)"/>
+  <path class="edge" d="M600,240 H660" marker-end="url(#arrow)"/>
+
+  <rect class="svc" x="660" y="158" width="300" height="44" rx="6"/>
+  <text class="lbl" x="810" y="177" text-anchor="middle">Tractors</text>
+  <text class="sub" x="810" y="192" text-anchor="middle">diesel std / medium-eff · hydrogen</text>
+
+  <rect class="svc" x="660" y="218" width="300" height="44" rx="6"/>
+  <text class="lbl" x="810" y="237" text-anchor="middle">Heat (grain drying, housing)</text>
+  <text class="sub" x="810" y="252" text-anchor="middle">NG / electric · std / efficient</text>
+
+  <path class="dedge" d="M470,200 C540,200 560,190 600,185" marker-end="url(#darrow)"/>
+  <text class="sub" x="540" y="178" text-anchor="middle">energy requests</text>
+
+  <!-- note -->
+  <rect class="det" x="40" y="360" width="430" height="58" rx="6" stroke-dasharray="5 3"/>
+  <text class="ttl" x="55" y="379">Emissions-driven sector</text>
+  <text class="li" x="55" y="396">CH₄ and N₂O process factors (CO₂-equivalent)</text>
+  <text class="li" x="55" y="410">carbon price makes abatement packages cost-competitive</text>
+
+  <!-- legend -->
+  <rect class="spec" x="40" y="450" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="460">emitting process (CH₄/N₂O)</text>
+  <rect class="green" x="260" y="450" width="16" height="12" rx="2"/>
+  <text class="sub" x="282" y="460">net-sequestering option</text>
+  <rect class="svc" x="470" y="450" width="16" height="12" rx="2"/>
+  <text class="sub" x="492" y="460">on-farm energy service</text>
+</svg>

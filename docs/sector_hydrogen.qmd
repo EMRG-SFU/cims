@@ -1,0 +1,119 @@
+---
+bibliography: references.bib
+---
+
+# Hydrogen {#sec-hydrogen}
+
+Hydrogen production is one of CIMS's energy-supply sub-models: it produces a versatile energy carrier and chemical feedstock that other sectors consume — in oil refining, ammonia and methanol synthesis, potentially in low-carbon steelmaking (direct reduction), and in transport. The emphasis is on the structure of the energy-service flow model: the production routes that compete, the services they draw on, and the engineering ratios that link them. The tree is region-agnostic. The defining feature of hydrogen is that the molecule is identical however it is made, but its emissions are entirely a function of the production route — the familiar "colours" of hydrogen — so the whole sub-model is essentially one competition among production technologies that differ enormously in carbon intensity.
+
+## Scope
+
+CIMS represents the production of hydrogen by all the major routes — natural-gas reforming, coal and biomass gasification, water electrolysis, and ethanol reforming — at both centralised and distributed scale, together with the delivery infrastructure and a shared **CCS** service. The sub-model produces hydrogen as an output that flows to the consuming sectors; its demand is set by those sectors' fuel-switching and feedstock choices and by policy, rather than by an exogenous production target.
+
+Adjacent activities are handled elsewhere: the end uses of hydrogen — as a refinery input ([Petroleum Refining](sector_petroleum_refining.qmd), [Petroleum Crude](sector_petroleum_crude.qmd)), an ammonia/methanol feedstock ([Chemical Products](sector_chemical_products.qmd)), a reductant in steel ([Iron and Steel](sector_iron_and_steel.qmd)), or a transport fuel — are represented in those sectors. This chapter covers only how the hydrogen is made.
+
+## Real-world context
+
+Almost all hydrogen made in Canada today is "grey" — produced by steam methane reforming (SMR) of natural gas without capture, mostly in Alberta to serve oil-sands upgrading, refining, and ammonia production. Grey hydrogen is the cheapest, at roughly CAD 1.5–2.5/kg, but emits on the order of 9–10 kg of CO₂ per kg of hydrogen [@nrcan-h2-strategy]. Canada's Hydrogen Strategy and a new investment tax credit (15–40% of capital, the top rate for the cleanest hydrogen) aim to shift production toward low-carbon routes [@nrcan-h2-strategy].
+
+Two such routes are advancing. "Blue" hydrogen — SMR or gasification with carbon capture (CCS) — is the basis of large Alberta projects such as the Air Products net-zero hydrogen complex (1,500 t/day with ~3 Mt CO₂/yr captured) and Linde's clean-hydrogen facility; it costs roughly CAD 2–3.5/kg [@airproducts-canada; @nrcan-h2-strategy]. "Green" hydrogen — electrolysis powered by low-carbon electricity — is the lowest-emission route and is attractive where power is clean and cheap (Québec and BC hydro, Atlantic wind), but at roughly CAD 4.8–6.3/kg today it remains the most expensive [@nrcan-h2-strategy]. The CIMS structure represents this whole ladder as a single production competition, with explicit life-cycle emissions and a CCS service, so the model can shift the production mix from grey toward blue and green as costs and the carbon price evolve.
+
+## Model structure
+
+The sub-model divides into a **Product** sub-tree — the hydrogen-production competition — and a **Service** sub-tree holding the delivery **Infrastructure** and the **CCS** service. @fig-hydrogen-flow-model shows the structure. The production node is a single tech-compete node (see @sec-technology-competition); the incumbent in the current data is distributed SMR.
+
+![Energy-service flow model of the hydrogen sub-model. A single Production competition spans the "colours" of hydrogen — grey (SMR, coal/biomass gasification), blue (the same routes with CCS), and green (electrolysis; biomass-with-CCS is net-negative) — at centralised and distributed scale, drawing on a delivery Infrastructure service and a shared 90%-capture CCS service; life-cycle CO₂, CH₄, and N₂O are tracked.](images/hydrogen_flow_model.svg){#fig-hydrogen-flow-model .lightbox width=90%}
+
+### Product: the production competition
+
+The **Production** node competes the full set of routes, each consuming a characteristic mix of fuel, feedstock, and electricity and (for the capture routes) requesting the CCS service:
+
+- **Steam methane reforming (SMR)** — centralised and distributed, and a centralised + CCS variant. NG-based; the distributed route is today's incumbent. (Grey, and blue with CCS.)
+- **Coal gasification + CCS** — centralised; coal-based blue hydrogen.
+- **Biomass gasification** — centralised, and a + CCS variant. Renewable feedstock; with CCS it is net-negative (the captured CO₂ is biogenic).
+- **Electrolysis** — centralised and distributed; splits water using electricity, so its emissions track the grid (green where the grid is clean). Electricity-dominated, at roughly 0.2 GJ electricity per unit of hydrogen energy.
+- **Ethanol reforming** — distributed; reforms ethanol from the [Ethanol](sector_ethanol.qmd) sub-model.
+
+The centralised versus distributed distinction matters because it trades production economies of scale against the **Infrastructure** (delivery, compression) cost: distributed production is made near the point of use and needs less delivery infrastructure, while centralised production is cheaper per unit but draws more heavily on the Infrastructure service.
+
+### Services: infrastructure and capture
+
+- **Infrastructure** — the delivery, compression, and storage needed to get hydrogen to users; every production route requests it (distributed routes less so).
+- **CCS** — the shared carbon-capture service, removing 90% of the CO₂ presented to it, requested by the SMR-, coal-, and biomass-with-CCS routes.
+
+<mark>TODO: The hydrogen consumed elsewhere in CIMS is in several places drawn through generic fuel nodes (for example the Methane Blend service in industry, and the green-ammonia and HDRI-steel routes) rather than explicitly sourced from this sub-model. Link those hydrogen demands to the hydrogen Production competition so that the cost and carbon intensity of the hydrogen actually used is consistent across the model.</mark>
+
+## Decarbonisation technologies
+
+Decarbonising hydrogen means shifting the production mix away from unabated SMR toward capture-equipped and electrolytic routes. Because the product is identical, this is a pure cost-and-carbon competition; @tbl-hydrogen-decarb summarises maturity and @tbl-hydrogen-cost gives indicative costs.
+
+| Route (colour) | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| SMR + CCS (blue) | Captures ~90% of SMR CO₂ | Commercial (Alberta projects) |
+| Coal gasification + CCS (blue) | Captures most gasification CO₂ | Commercial |
+| Electrolysis (green) | Near-zero direct CO₂ on clean power | Commercial (scaling) |
+| Biomass gasification (green) | Renewable feedstock; low CO₂ | Demonstration |
+| Biomass gasification + CCS (BECCS) | Net-negative emissions | Demonstration |
+| Ethanol reforming (distributed) | Low-CI where ethanol is low-CI | Niche / distributed |
+| SMR, unabated (grey) | Incumbent; lowest cost, highest CO₂ | Commercial (to be displaced) |
+
+: Indicative performance and maturity of the hydrogen production routes {#tbl-hydrogen-decarb}
+
+The cost estimates in @tbl-hydrogen-cost are order-of-magnitude figures from public literature [@nrcan-h2-strategy; @iea-hydrogen], expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Levelised costs are per kilogram of hydrogen; electrolyser capital is per kilowatt of electrolyser. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Production route | Levelised cost (2025 CAD/kg H₂) | Capex note | Energy / emission |
+|:-----|:-----|:-----|:-----|
+| Grey SMR (incumbent) | ~1.5–2.5 | mature, low capex | ~9–10 kg CO₂/kg H₂ |
+| Blue SMR + CCS | ~2.0–3.5 | SMR + capture (+30–50% equipment) | ~1–2 kg CO₂/kg H₂ (≈90% captured) |
+| Blue coal gasification + CCS | ~2.5–4.0 | gasifier + capture | mostly captured |
+| Green electrolysis | ~4.8–6.3 | electrolyser ~1,400–2,700 CAD/kW | ~0 direct; ~50–55 kWh/kg |
+| Biomass gasification (+CCS) | ~3–6 | gasifier (+ capture) | low / net-negative with CCS |
+
+: Indicative techno-economic characteristics of hydrogen production routes, 2025 CAD {#tbl-hydrogen-cost}
+
+### Blue hydrogen: SMR and gasification with CCS
+
+The nearest-term low-carbon route keeps the established reforming or gasification process but adds carbon capture, cutting CO₂ by around 90%. It is the basis of Canada's largest announced clean-hydrogen capacity, in Alberta, where low-cost natural gas and viable CO₂ storage favour it [@airproducts-canada]. In the model this is the SMR centralised + CCS, coal gasification + CCS, and biomass gasification + CCS routes, each requesting the shared **CCS** service.
+
+### Green and net-negative hydrogen
+
+Electrolysis produces hydrogen with no direct CO₂; its footprint is the carbon intensity of the electricity, so it is genuinely "green" on Canada's hydro and wind power but only as clean as the grid elsewhere. It is the most expensive route today, dominated by electricity cost and electrolyser capital, both of which are falling. Biomass gasification with CCS is distinctive: because the carbon is biogenic, capturing it yields net-negative hydrogen, one of the few production routes anywhere that removes CO₂ from the atmosphere.
+
+<mark>TODO: Add a turquoise hydrogen route (methane pyrolysis, producing solid carbon instead of CO₂) and represent the federal clean-hydrogen investment tax credit, both of which materially change the relative economics of the low-carbon routes.</mark>
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
+
+## Economics
+
+Technology choice at the production node follows the lifecycle-cost competition of @sec-technology-competition. Each route carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the fuel, feedstock, electricity, infrastructure, and capture it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.
+
+Hydrogen technologies are discounted at roughly 25% in the current data. As elsewhere in CIMS this is a **behavioural** (revealed or empirical) discount rate rather than a true financial cost of capital, capturing the payback horizons and adoption barriers that govern real investment; CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 25.
+
+The emissions accounting is **life-cycle**, carrying CO₂, CH₄, and N₂O factors, so the upstream methane and the combustion and process CO₂ of each route are represented; the **CCS** service applies a 90% removal factor to the routes that request it, which can drive biomass-gasification hydrogen net-negative. Because the routes share an identical product, the carbon price acts directly on the production mix: as it rises, it raises the effective cost of grey SMR (through its large CO₂ factor) relative to the blue and green routes, shifting market share toward them. This makes hydrogen one of the clearest illustrations in CIMS of a carbon-price-driven technology transition.
+
+## Regional coverage and differences
+
+All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the hydrogen structure, but the economic route differs sharply by region. Alberta and Saskatchewan, with cheap natural gas and CO₂ storage, favour blue hydrogen; Québec, British Columbia, and Manitoba, with abundant low-carbon hydro electricity, favour green electrolytic hydrogen; and the Atlantic region's wind resource supports green production. The same competition therefore resolves to different winners in different regions, driven by local fuel and electricity prices.
+
+<mark>TODO: Confirm the regional electricity and natural-gas prices and CO₂-storage availability that drive the blue-versus-green split, since the regional production mix is highly sensitive to them.</mark>
+
+## Limitations and planned extensions
+
+The hydrogen sub-model is compact but captures the essential structure of the production-route competition. Its main limitations are the loose coupling to the sectors that consume hydrogen, the absence of a turquoise (pyrolysis) route and of the investment tax credit, and reliance on inherited cost assumptions. The most important is the first: until the hydrogen demands in refining, ammonia, steel, and transport are explicitly sourced from this competition, the model can understate the system value of building clean-hydrogen supply. The TODOs above record these priorities.
+
+<mark>TODO: Replace the illustrative figures and example discount rate in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled hydrogen production cost and carbon intensity against the Hydrogen Strategy for Canada and IEA data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

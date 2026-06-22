@@ -1,4 +1,4 @@
-# Outputs
+# Outputs {#sec-outputs}
 
 Three main classes of output are created by the model:
 
@@ -16,7 +16,7 @@ Three main classes of output are created by the model:
 
     a)  changes in physical output, sorted by sector and by region (CCOMP)
 
-    b)  changes in sector capital, fuel, emissions and labour costs, sorted by sector and by region (CIMCOSTA & CIMCOSTB)
+    b)  changes in sector capital, fuel, emissions, and labour costs, sorted by sector and by region (CIMCOSTA & CIMCOSTB)
 
     c)  changes in sector energy use (by market class Elec., NG, coal and RPP) and GHG emissions, sorted by sector and by region (DCOMP)
 
@@ -72,7 +72,7 @@ Figure 3.4 ISTUM's Levelized Cost Report
 
 There is a separate node competition report for every sector in every region in every year. They are title (region)NC(year)J, e.g. for all sectors in Alberta the 2005 report is called "ABNC2005J.xls". The region codes are: BC, AB, SK, MB, ON, PQ, ATL (for Atlantic).
 
-The node competition report presents the results of a run as a comparison between BAU and POLICY in terms of fuel use, services and emissions. The key difference between this report and the last four is that it organized by technology competition. As there a several fuels, services and emissions in CIMS, these reports tend to be very large. Figure 6 on the next page provides a sample node competition report for the baseload electricity production competition in Alberta in 2005. The shown figure gives the difference in stock, fuel use and emissions, while further to the right on the spreadsheet will be the BAU and policy absolute values. Stock is valued in the output unit of the sector in question, energy in GJ, and emissions in tonnes.
+The node competition report presents the results of a run as a comparison between BAU and POLICY in terms of fuel use, services, and emissions. The key difference between this report and the last four is that it organized by technology competition. As there a several fuels, services, and emissions in CIMS, these reports tend to be very large. Figure 6 on the next page provides a sample node competition report for the baseload electricity production competition in Alberta in 2005. The shown figure gives the difference in stock, fuel use, and emissions, while further to the right on the spreadsheet will be the BAU and policy absolute values. Stock is valued in the output unit of the sector in question, energy in GJ, and emissions in tonnes.
 
 Figure 6: Sample node competition report -- base load electricity production Alberta 2005
 
@@ -80,7 +80,7 @@ Figure 6: Sample node competition report -- base load electricity production Alb
 
 Reports of energy use, financials, intensities, travel, etc. at end user level
 
-For example, household energy spending, average travel and costs
+For example, household energy spending, average travel, and costs
 
 MACC Curve like in EDF report, MACC 2.0
 
@@ -107,4 +107,4 @@ Factors:
 
 ## Attributing emissions reductions to policies
 
-Shapley values using SHAP?
+Shapley val

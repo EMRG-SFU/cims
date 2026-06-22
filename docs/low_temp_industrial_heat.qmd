@@ -1,5 +1,5 @@
 ---
-bibliography: low_temp_industrial_heat.bib
+bibliography: references.bib
 ---
 
 # Low-Temperature Industrial Heat {#sec-low-temp-heat}
@@ -12,7 +12,7 @@ The allocation of base-year low-temperature heat demand across sub-models on a p
 
 ## Industrial Subsectors and End-Uses
 
-Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemicals, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in @tbl-low_temp_heat-1; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.
+Low-temperature heat demand is concentrated in a defined set of CIMS industrial sub-models — Pulp and Paper, Chemicals, Mining, Industrial Minerals, Metal Smelting, Iron and Steel, and Light Industrial (which aggregates food and beverage, textiles, wood, and prefabricated building products, and general light manufacturing). Each sub-model is calibrated independently for base-year energy consumption, and service demand is assumed to scale with industrial sectoral output projections in future years. The relative share of low-, medium-, and high-temperature heat within each subsector is assumed to remain constant in projection years. Subsectors and representative end-use temperature ranges relevant to the Canadian industrial mix are summarized in @tbl-low_temp_heat-1; note that food and beverage processing, textiles and laundry services, wood products, and light manufacturing and assembly are not standalone CIMS sub-models but are represented within the Light Industrial sub-model.
 
 | Subsector | Representative end-uses | Range (°C) |
 |:----|:---------|:-:|
@@ -28,7 +28,7 @@ Low-temperature heat demand is concentrated in a defined set of CIMS industrial 
 
 ## Technologies for Low- and Zero-Emission Heat Supply
 
-This section enumerates the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in @tbl-low_temp_heat-2. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 [@eia-mecs; @iea-hp].
+This section describes the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in @tbl-low_temp_heat-2. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 [@eia-mecs; @iea-hp].
 
 | Technology | Efficiency / COP | Maximum temperature |
 |:----|:----:|:----:|
@@ -68,8 +68,6 @@ Biomass-fired boilers, anaerobic-digestion biogas, and renewable natural gas fro
 
 Shallow enhanced geoexchange coupled with a heat pump is deployable across all provinces for facility heat. Independent of geoexchange extraction, every industrial site is itself a source of low-grade waste heat — compressors, condensers, flue gases, and effluents — that is conventionally rejected to the environment. National-laboratory analyses estimate that 20–50 % of industrial process heat could in principle be supplied via recovered waste heat [@ornl-waste]. Process integration and heat-pump-assisted recovery are represented in CIMS as a service-side reduction in the demand directed to other supply technologies, parameterized by sub-model based on recoverable-heat fractions reported in MECS and CanmetENERGY studies, rather than as a competing supply technology at the service node.
 
-## Cross-Cutting Treatment
-
 ### Thermal Energy Storage
 
 Pressurized hot water, molten salt, and solid-media storage shift electrified heat loads to off-peak hours and extend solar thermal coverage to continuous-process duty cycles. Storage is treated in CIMS as a distinct technology that competes at the same service node as the heat-supply technologies it enables, with round-trip efficiency, capacity, and discharge-duration parameters drawn from IEA reference values [@iea-fop].
@@ -78,13 +76,9 @@ Pressurized hot water, molten salt, and solid-media storage shift electrified he
 
 Direct combustion of hydrogen below 200 °C is not competitive with electrification under most modelled conditions: round-trip energy efficiency from electricity to hydrogen to heat is substantially lower than direct electrification or heat-pumps, and the system value of hydrogen is concentrated in genuinely high-temperature or feedstock applications. Hydrogen is therefore not included in the default low-temperature technology set; it remains available in the broader CIMS technology library for the medium- and high-temperature sub-models [@thiel; @rissman].
 
-### Endogenous and Exogenous Parameters
-
-Provincial grid emissions intensity, electricity price, and natural gas price are determined endogenously by the CIMS energy supply sub-models. Sectoral output projections, technology capital and fixed operating-and-maintenance costs, technology lifetimes, and biomass supply curves are exogenously specified.
-
 ## Implications for the CIMS Industrial Sub-Models
 
-The technology competitions in the food and beverage, pulp and paper, chemicals, mining, and light manufacturing sub-models admit, at the relevant service nodes, conventional natuarl gas and (where regionally relevant) heavy fuel oil boilers, used for calibration to CEUD and NIR baseline data; electric resistance and electrode boilers, parameterized by provincial industrial electricity rates; industrial heat pumps disaggregated by sink-temperature class (≤ 100 °C, 100–150 °C, 150–200 °C) with explicit COP and source-temperature assumptions drawn from IEA HPT Annex 58; mechanical vapour recompression where evaporation duties exist; biomass and biogas boilers, with energy availability governed by the bioenergy supply sub-model; and solar thermal in provincial sub-models, parameterized to regional irradiance [@nrcan-ceud; @eccc-nir; @iea-hp; @nrcan-bioheat; @schoeneberger].
+The technology competitions in the food and beverage, pulp, and paper, chemicals, mining, and light manufacturing sub-models admit, at the relevant service nodes, conventional natuarl gas and (where regionally relevant) heavy fuel oil boilers, used for calibration to CEUD and NIR baseline data; electric resistance and electrode boilers, parameterized by provincial industrial electricity rates; industrial heat pumps disaggregated by sink-temperature class (≤ 100 °C, 100–150 °C, 150–200 °C) with explicit COP and source-temperature assumptions drawn from IEA HPT Annex 58; mechanical vapour recompression where evaporation duties exist; biomass and biogas boilers, with energy availability governed by the bioenergy supply sub-model; and solar thermal in provincial sub-models, parameterized to regional irradiance [@nrcan-ceud; @eccc-nir; @iea-hp; @nrcan-bioheat; @schoeneberger].
 
 Existing boiler stock, distinguished by sub-model and temperature class, is estimated based on CEUD and NIR base-year data. All existing boiler stock is assumed to stay online for modeled lifetimes past the base year, after which replacement is required. Policy or other drivers may drive earlier retirement and replacement of some of these existing units. Capital costs, retrofit feasibility (as defined in [the technology chapter](technologies.qmd)), and electricity-price sensitivity vary substantially across these technologies.
 

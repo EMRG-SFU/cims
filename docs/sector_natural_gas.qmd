@@ -1,0 +1,124 @@
+---
+bibliography: references.bib
+---
+
+# Natural Gas {#sec-natural-gas}
+
+The natural gas supply sector is one of CIMS's energy-supply sub-models, covering the **upstream and midstream** chain — extracting raw gas, processing it, and moving it through transmission and distribution to the point of use. The emphasis is on the structure of the energy-service flow model: the production chain, the technologies that compete at each stage, and — distinctively for this sector — the emission-source nodes where methane and CO₂ escape. The tree is region-agnostic. Natural gas is defined, for climate purposes, by methane: the gas is itself almost pure methane, and the leaks, vents, and flares along the supply chain make fugitive and vented methane the sector's largest controllable emission — and, fortunately, one of the cheapest to abate anywhere in the economy.
+
+## Scope
+
+CIMS represents the supply of natural gas: extraction (conventional, shale, tight, and coalbed methane), field and plant processing, transmission, and distribution, together with the venting, fugitive, flaring, and formation-CO₂ emission sources that occur along the way and the energy the sector consumes for compression, drilling, and heat. The driving variable is gas throughput. The model also carries the oil-and-gas fuel blends (diesel, gasoline, methane) the sector burns for its own operations.
+
+Adjacent activities are handled elsewhere: the combustion of the delivered gas by end users is accounted in the demand sectors (residential, commercial, industry, electricity); crude oil production is in [Petroleum Crude](sector_petroleum_crude.qmd); and downstream gas use as a chemical feedstock is in [Chemical Products](sector_chemical_products.qmd) and as a hydrogen feedstock in [Hydrogen](sector_hydrogen.qmd). This chapter covers getting the gas out of the ground and to market.
+
+## Real-world context
+
+Canada is one of the world's largest natural gas producers, with output concentrated in the Western Canadian Sedimentary Basin — above all the Montney play straddling Alberta and British Columbia. The sector's defining climate issue is methane. Because methane has a high global-warming potential and the product is itself methane, leaks and intentional releases along the chain — fugitive equipment leaks, vented gas from pneumatic devices and tanks, flaring, well blowdowns, and liquid unloading — together make up the sector's largest greenhouse-gas source, and one of the largest controllable methane sources in the economy.
+
+The decisive fact is that this methane is cheap to abate. Canada has set a target to cut oil-and-gas methane by 75% below 2012 levels by 2030, and the measures to do it — leak detection and repair, vapour-recovery units, zero-bleed (electric) pneumatic controllers, vent and blowdown capture, plunger lifts, and flare reduction — are among the lowest-cost greenhouse-gas abatement options available, on the order of $11–48 per tonne of CO₂-equivalent, with much of the captured gas recoverable for sale [@edf-methane-canada; @eccc-methane-og]. Alberta accounts for roughly 68% of the sector's methane, while British Columbia has already cut its oil-and-gas methane about 51% from 2014 levels while increasing production [@edf-methane-canada]. The CIMS structure is built precisely around this: it represents each emission source as its own node with a competition among abatement levels, so the model can buy down methane the way the real policy does.
+
+## Model structure
+
+The sector divides into a **Product** sub-tree — the gas supply chain, including its emission sources — and a **Service** sub-tree of the oil-and-gas fuel blends. @fig-natural-gas-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the emission-source nodes host competitions among abatement options.
+
+![Energy-service flow model of the natural gas supply sector (region-agnostic master tree). The Product sub-tree runs Supply (extraction, processing, and the venting/fugitive/flaring/formation-CO₂/testing emission sources, each with an abatement competition, plus a CCS service) → Transmission → Distribution; the Service sub-tree holds the oil-and-gas fuel blends the sector burns. Methane is the dominant emission, and most nodes carry an explicit abatement choice.](images/natural_gas_flow_model.svg){#fig-natural-gas-flow-model .lightbox width=100%}
+
+### Products: the supply chain and its emission sources
+
+The Supply node is the heart of the model. It combines the productive steps with the emission sources:
+
+- **Extraction** — conventional, shale, tight, and coalbed methane, with drilling, compression, off-road transport, and efficient variants; the energy of getting gas out of the ground.
+- **Processing** — separating and cleaning the raw gas (with compression).
+- **Emission sources, each with an abatement competition:**
+  - **Fugitive** — equipment leaks, competing leak-detection-and-repair (LDAR) intensities (No / Low / Med / High LDAR, cutting the methane factor from 1.0 to 0.75, 0.25, and 0.1).
+  - **Venting** — Point Venting (no vapour-recovery unit, VRU, or flare install) and Diffuse Venting.
+  - **Controls** — pneumatic devices, competing high-, medium-, and low-bleed and electric (zero-bleed, instrument-air or electric controllers).
+  - **Flaring** — with or without CCS.
+  - **Formation CO₂** — the CO₂ separated from the raw gas (acid gas), with or without CCS.
+  - **Testing and Maintenance** — blowdowns (capture high/low), liquid unloading (plunger install), and well tests.
+- **CCS** — a shared capture service (95% capture) for the flaring and formation-CO₂ streams.
+
+Downstream, **Transmission** (with compression) and **Distribution** move the gas to market, each carrying its own (smaller) emission factors.
+
+### Services: the sector's own fuel use
+
+The **Service** sub-tree holds the oil-and-gas fuel blends — diesel, gasoline, and methane — that the sector's own engines, compressors, and heaters consume, allowing the model to track (and decarbonise) the energy the gas industry uses on itself, including electrification of compression and drives.
+
+<mark>TODO: The model carries a separate Natural Gas Market node (Supply / Transmission / Distribution) alongside the production tree, and a Rest-of-World region for trade. Document and, where appropriate, consolidate the market/trade representation, and add an explicit LNG export pathway (the LNG Compression node exists but the export chain is not fully built out).</mark>
+
+## Decarbonisation technologies
+
+Natural gas decarbonisation is, overwhelmingly, methane abatement — stopping the leaks, vents, and flares — supplemented by electrifying the sector's compression and heat and capturing concentrated CO₂ streams. @tbl-natural-gas-decarb summarises maturity and @tbl-natural-gas-cost gives indicative costs. The striking feature is how cheap, even profitable, much of this is.
+
+| Technology | Indicative benefit | Maturity |
+|:-----|:--------|:----|
+| Leak detection and repair (LDAR) | Cuts fugitive methane up to ~90% | Commercial |
+| Zero-bleed / electric pneumatic controllers | Eliminates pneumatic vent methane | Commercial |
+| Vapour-recovery units (VRU) | Captures vented methane for sale | Commercial |
+| Vent / blowdown capture | Recovers methane from maintenance events | Commercial |
+| Plunger lift (liquid unloading) | Avoids unloading vent methane | Commercial |
+| Flare reduction / flare install | Converts vented methane to (lower-GWP) CO₂ or captures it | Commercial |
+| Electric compression & drives | Removes combustion CO₂ from operations | Commercial |
+| Flaring / formation-CO₂ + CCS | Captures concentrated CO₂ streams (95%) | Demonstration / commercial |
+
+: Indicative performance and maturity of key natural gas decarbonisation technologies {#tbl-natural-gas-decarb}
+
+The estimates in @tbl-natural-gas-cost are order-of-magnitude figures from public Canadian sources [@edf-methane-canada; @eccc-methane-og], expressed in 2025 Canadian dollars. Costs are given as cost of abatement per tonne of CO₂-equivalent, since most measures are equipment changes whose benefit is avoided methane (often partly offset by the value of the recovered gas). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Measure | Cost of abatement (2025 CAD/t CO₂e) | Note | Effect |
+|:-----|:-----|:-----|:-----|
+| Leak detection and repair (LDAR) | often *net-negative* to ~30 | recovered gas offsets cost | up to ~90% fugitive cut |
+| Electric (zero-bleed) pneumatics | often *net-negative* | recovered gas; simple swap | eliminates device venting |
+| Vapour-recovery unit | ~10–50 | captures saleable gas | cuts point-source venting |
+| Blowdown / vent capture | ~10–60 | event-based | cuts maintenance methane |
+| Plunger lift | low; often *net-negative* | recovered gas | cuts liquid-unloading venting |
+| Sector-wide 75% methane cut | ~11–48 average | among cheapest GHG abatement | ~$2B recoverable gas value |
+| CCS on flaring / formation CO₂ | ~50–150 | concentrated streams | 95% capture |
+
+: Indicative cost of natural gas methane and CO₂ abatement, 2025 CAD {#tbl-natural-gas-cost}
+
+### Methane abatement: the dominant, low-cost lever
+
+The overwhelming priority is methane. Leak detection and repair finds and fixes fugitive leaks; zero-bleed electric pneumatics replace the gas-driven controllers that vent by design; vapour-recovery units capture vented gas; blowdown and vent capture and plunger lifts address maintenance and liquid-unloading releases; and flare reduction converts otherwise-vented methane to CO₂ or captures it. The model represents each of these as an abatement competition at the relevant emission node. Because the captured methane is saleable gas, many of these measures are net cost-saving — which is why the sector-wide 75% reduction is achievable at an average cost of only around $11–48/tCO₂e [@edf-methane-canada].
+
+### Electrifying operations and capturing CO₂
+
+Beyond methane, the sector burns gas for compression, drilling, and heat; switching these to electric drives and compression (the Controls "electric" and the fuel-blend electrification options) removes that combustion CO₂. Where the raw gas contains formation CO₂ (acid gas) or where gas is flared, the concentrated CO₂ streams can be routed to **CCS** at 95% capture — among the lower-cost capture opportunities because the CO₂ is already concentrated.
+
+<mark>TODO: Replace the indicative literature ranges above with the abatement costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and align the abatement levels with the trajectory of Canada's updated federal oil-and-gas methane regulations (≈75% reduction by 2030).</mark>
+
+## Economics
+
+Technology choice at every node follows the lifecycle-cost competition of @sec-technology-competition. Each technology carries a capital cost, operating cost, an output basis, service requests for the energy it consumes, any recovered-gas credit, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares.
+
+Natural gas technologies are discounted at a high rate — about 35% at most nodes, with some at 20% in the current data. These values are **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers typical of the industry; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** govern how sharply the abatement competitions respond to cost.
+
+The emissions accounting is unusually detailed on the source side: the model carries explicit **CH₄** factors on the fugitive, venting, control, blowdown, liquid-unloading, and distribution nodes (entering on a CO₂-equivalent basis at methane's high warming potential), **CO₂** factors on flaring and formation gas, and a **CCS** removal factor on the equipped routes. Combustion CO₂ from the sector's own fuel use enters through the oil-and-gas fuel blends. A distinctive economic feature is that abatement often carries a recovered-gas value that partly or fully offsets its cost, so a carbon price (or a methane regulation) can drive large reductions at very low or negative net cost — which the model reproduces through the abatement competitions.
+
+## Regional coverage and differences
+
+The sector is represented for the producing regions and for trade. Alberta and British Columbia dominate production (the Montney and related plays) and therefore the sector's emissions and abatement opportunity; Saskatchewan adds production; Ontario, Québec, Manitoba, and the Atlantic carry mainly transmission and distribution. The model also includes a national (CAN) aggregate and a Rest-of-World region to handle trade and, prospectively, LNG export. Regional differences are large: Alberta holds most of the methane-abatement opportunity, while British Columbia has already moved further on methane controls.
+
+<mark>TODO: Calibrate the regional production mix (conventional / shale / tight / coalbed methane) and the baseline methane-source intensities against Canada's National Inventory Report and provincial methane data, since both the emissions and the abatement potential depend heavily on them.</mark>
+
+## Limitations and planned extensions
+
+The natural gas sub-model is unusually well suited to its central question — methane abatement — because it resolves the individual emission sources and gives each an abatement competition. Its main limitations are the incomplete build-out of the LNG export chain, the somewhat separate market/trade representation, and reliance on inherited methane-source intensities that should track the rapidly evolving federal and provincial methane regulations. The TODOs above record these priorities.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled methane and CO₂ emissions against Environment and Climate Change Canada's National Inventory Report and the federal methane-regulation projections.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

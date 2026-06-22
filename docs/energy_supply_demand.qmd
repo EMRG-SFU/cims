@@ -1,4 +1,4 @@
-# Energy Supply and Demand
+# Energy Supply and Demand {#sec-energy-supply-demand}
 
 ## Energy Pricing
 
@@ -31,17 +31,17 @@ Each of the energy markets in CIMS has the option of fixed or dynamic pricing, a
 
 - Petroleum refining regions divide their production amongst demand regions and net exports. All can use endogenous internal pricing based on the cost of production. The amount of refined petroleum products produced is the sum of domestic regional demand and net extra-regional exports.
 
-- Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e. BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve -- for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan and the Atlantic provinces all buy their coal at a fixed market price.
+- Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e. BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve -- for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan, and the Atlantic provinces all buy their coal at a fixed market price.
 
 - **-\> Revise coal description to separate thermal coal (exogenous) and metallurgical (endogenous).**
 
-CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (@fig-final_intermediate_primary_flow). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.
+CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (@fig-final_intermediate_primary_flow). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial, and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.
 
 ![final_intermediate_primary_flow](images/final_intermediate_primary_flow.png){#fig-final_intermediate_primary_flow .lightbox}
 
 The electricity demands of petroleum refining, the refined petroleum product demands of the primary energy supply models, and the interdependencies among the primary energy supply models create feedback loops within the system. Because CIMS operates as a simulation model rather than a computable general equilibrium model, these feedback loops cannot be resolved within a single iteration of the demand–supply algorithm. To address this limitation, CIMS is run iteratively until lifecycle costs throughout the model converge below a specified threshold criterion (typically less than a 5% difference between iterations). Additional iterations may also be performed to ensure that the effects of the feedback loops have stabilized.
 
-Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (@tbl-export_price_elas).
+Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil, and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (@tbl-export_price_elas).
 
 <mark>**change this table to GTAP? talk to Thomas**</mark>
 
@@ -81,4 +81,4 @@ $Adj_{prod}$
 :   additive adjustment to production of the energy commodity
 :::
 
-Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US.
+Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in ele

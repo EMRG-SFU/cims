@@ -1,0 +1,135 @@
+---
+bibliography: references.bib
+---
+
+# Electricity {#sec-electricity}
+
+Electricity generation is the central energy-supply sub-model in CIMS: it converts fuels and renewable resources into the power that every other sector draws on, and as the rest of the economy electrifies, what happens here increasingly determines system-wide emissions. The emphasis, as elsewhere, is on the structure of the energy-service flow model — how demand is split across the load curve, the generation technologies that compete to meet each part of it, and the services (storage, transmission, capture) that support them. The model tree is region-agnostic, but electricity is the sector where regional differences are largest, because each province's grid is built on a different resource base.
+
+## Scope
+
+CIMS represents utility-scale electricity generation and the supporting storage, transmission, and carbon-capture services. Electricity co-generated within industry is accounted for in the industrial sub-models (see, for example, the cogeneration options in [Pulp and Paper](sector_pulp_and_paper.qmd) and [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd)) and is not double-counted here — with the deliberate exception that all renewable generation is accounted in the electricity model regardless of whether a utility or an industrial site operates it. Final electricity demand across the economy drives the sub-model; imports and exports are handled through the macroeconomic module, with an own-price elasticity for export demand of about −1.07.
+
+The combustion of the electricity once delivered, and the end-use equipment that consumes it, belong to the demand sectors. This chapter covers only how the power is generated and delivered.
+
+## Real-world context
+
+Canada has one of the cleanest electricity systems in the world. In 2024 renewables supplied about 65.5% of generation — hydropower 55.3% (with Québec alone producing about half of national hydro), wind 7.2%, and solar 1.3% — nuclear 13.7% (almost entirely Ontario's CANDU reactors), and fossil fuels 20.8% (natural gas 15.8%, coal 4.1%) [@nrcan-electricity-factbook]. More than four-fifths of recent generation investment has gone to non-emitting sources [@nrcan-electricity-factbook].
+
+The system is, however, deeply regional. British Columbia, Québec, and Manitoba run on hydro and are almost emissions-free; Ontario combines nuclear, hydro, and a growing renewable share; the Atlantic provinces are mixed (Prince Edward Island is essentially all wind); and Alberta and Saskatchewan are the fossil-heavy outliers, historically coal and now increasingly natural gas. Federal regulation is phasing out conventional coal generation and pushing toward a net-zero grid, so the model's central question is how each province's mix evolves from its very different starting point. The CIMS structure is built to answer exactly that: it competes a full set of generation technologies — variable renewables, firm low-carbon resources, and flexible balancing resources — within a load-duration framework, and adds the storage, transmission, and capture services that a high-renewables grid needs.
+
+## Model structure
+
+Following the standard CIMS pattern, the sector divides into a **Product** sub-tree — generation, organised by position on the load curve — and a **Service** sub-tree holding **CCS**, **Storage**, and **Transmission**. @fig-electricity-flow-model shows the structure.
+
+Total generation is split across **Base Load**, **Shoulder Load**, and **Peak Load** nodes using ratios derived from historical load-duration curves (the user-specified `fixed_matrix_ratio` decision rule). A load-duration curve re-orders the year's hourly demand from highest to lowest; its height gives the capacity required and its width the utilisation, so the three nodes correspond to power that is needed almost all the time (base), part of the time (shoulder), and only at peak. Within each node, technologies compete on the basis of their annual levelized cost (see @sec-technology-competition).
+
+![Energy-service flow model of the electricity sector (region-agnostic master tree). Total demand is split by load-duration-curve ratios into Base, Shoulder, and Peak Load nodes, each hosting a competition among generation technologies; a Service sub-tree provides CCS (coal, gas, biomass), Storage (battery and seasonal), and Transmission.](images/electricity_flow_model.svg){#fig-electricity-flow-model .lightbox width=100%}
+
+### Products: base, shoulder, and peak generation
+
+The traditional baseload/load-following/peaking classification is, as the model's own framing notes, less meaningful in a system with large wind and solar shares, where dispatch is driven by renewable variability and most low-carbon options are capital-intensive with near-zero variable cost. CIMS therefore keeps the base/shoulder/peak split as the demand-side framework but populates it with three functional classes of technology:
+
+- Variable renewables (VRE) — wind (onshore, offshore), solar PV, run-of-river hydro: zero fuel cost, output set by the resource, valuable when available.
+- Firm low-carbon resources — reservoir hydro, nuclear (including small modular reactors, SMRs), geothermal, biomass and biogas, and fossil plants with CCS: dispatchable over long durations.
+- Fast-burst balancing resources — short-duration battery storage and flexible demand: energy-limited, used to balance supply and demand over short, high-value periods.
+
+In the model the **Base Load** node hosts the widest set — wind (with battery or seasonal storage), solar PV (with battery), hydro reservoir and river, nuclear and nuclear SMR, natural gas combined-cycle (CC) and simple-cycle (SC), gas CC with CCS, coal and coal with CCS, biomass and biomass with CCS, geothermal/geoexchange, and waste-to-energy. **Shoulder Load** hosts a similar but slightly narrower set, and **Peak Load** is limited to fast-responding plant (gas simple-cycle, reservoir hydro, oil, and wind-plus-seasonal-storage) — long-start plant such as nuclear cannot serve peak. The split between conventional and renewable generation within a node can be user-specified over time or determined endogenously by relative levelized cost.
+
+### Services: storage, transmission, and capture
+
+- **Storage** — Battery (short-duration, the fast-burst balancing resource) and Seasonal (long-duration storage that lets variable renewables serve firm demand). Storage is what allows high-VRE grids to remain reliable.
+- **Transmission** — the delivery network that all generation requests.
+- **CCS** — the shared carbon-capture service, with coal, natural gas, and biomass variants; biomass-with-CCS generation is net-negative.
+
+<mark>TODO: The current regional input files predate the full Product/Service split (generation sits under a `Utility Generation` node rather than the master tree's `Product`). Migrate them to the region-agnostic master tree and harmonise the storage and transmission representation with the [Energy Storage](energy_storage.qmd) chapter.</mark>
+
+## Decarbonisation technologies
+
+Electricity decarbonisation is largely about building clean firm and variable capacity to displace unabated coal and gas, and adding the storage and transmission that let a high-renewables system stay reliable. Because Canada starts so clean nationally, the action is concentrated in the fossil-heavy provinces. @tbl-electricity-decarb summarises maturity and @tbl-electricity-cost gives indicative costs.
+
+| Technology | Indicative role | Maturity |
+|:-----|:--------|:----|
+| Onshore wind / solar PV | Lowest-cost new energy; variable | Commercial |
+| Offshore wind | Higher capacity factor; higher cost | Commercial (emerging in Canada) |
+| Reservoir hydro | Firm, flexible, storage-capable | Commercial (site-limited) |
+| Nuclear — large & SMR | Firm low-carbon; SMRs modular | Commercial (large); first-of-kind (SMR) |
+| Battery storage (short-duration) | Fast-burst balancing | Commercial |
+| Seasonal / long-duration storage | Firms up variable renewables | Emerging |
+| Gas CC + CCS | Firm low-carbon dispatchable | Demonstration |
+| Coal + CCS | Retrofit of coal fleet | Demonstration (e.g. Boundary Dam) |
+| Biomass + CCS | Firm and net-negative | Demonstration |
+| Geothermal | Firm low-carbon | Emerging in Canada |
+
+: Indicative role and maturity of key electricity generation and storage technologies {#tbl-electricity-decarb}
+
+The estimates in @tbl-electricity-cost are order-of-magnitude figures from public Canadian and North American sources [@ieso-costs; @nrcan-electricity-factbook; @wnn-smr], in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). Overnight capital is per kW; levelized cost of electricity (LCOE) is per MWh and is highly site- and grid-dependent. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+
+| Technology | Overnight capex (2025 CAD/kW) | LCOE (2025 CAD/MWh) | Notes |
+|:-----|:-----|:-----|:-----|
+| Onshore wind | ~1,800–2,600 | ~45–80 | variable; falling costs |
+| Solar PV (utility) | ~1,300–2,400 | ~45–85 | variable; falling costs |
+| Natural gas combined cycle | ~1,500–2,200 | ~65–100 | + carbon cost on emissions |
+| Natural gas simple cycle (peak) | ~1,100–1,600 | ~140–220 | low utilisation, peaking |
+| Gas CC + CCS | ~3,000–4,500 | ~95–150 | capture +CAD ~25–45/MWh |
+| Reservoir hydro | ~3,500–7,000 | ~50–110 | very site-specific; long-lived |
+| Nuclear (large) | ~7,000–11,000 | ~90–170 | firm; high capital |
+| Nuclear SMR | ~5,500–9,000 | ~120–190 | first-of-kind premium |
+| Battery storage (4-hour) | ~1,800–3,100 (per kW) | ~110–200 | balancing, not bulk energy |
+| Coal + CCS (retrofit) | retrofit-dependent | ~100–160 | ~90% capture |
+
+: Indicative techno-economic characteristics of electricity technologies, 2025 CAD {#tbl-electricity-cost}
+
+### Variable renewables plus storage
+
+The cheapest new energy in most of Canada is now onshore wind and solar PV, but their variability means that beyond modest shares they need balancing. The model represents this directly: wind and solar appear both alone and paired with battery (short-duration) or seasonal (long-duration) storage, and the **Storage** service is what lets a high-renewables node meet firm demand. As battery costs fall — utility four-hour storage is approaching US$100/MWh — the VRE-plus-storage combination displaces more gas.
+
+### Firm low-carbon resources
+
+Where firm capacity is needed over long durations, the model competes reservoir hydro (Canada's traditional firm clean resource, though site-limited), nuclear including small modular reactors (Ontario is building Canada's first SMR), geothermal, biomass, and gas or coal with CCS. These are the technologies that can replace unabated fossil baseload while keeping the grid reliable in low-wind, low-sun periods.
+
+### Carbon capture and net-negative power
+
+In the gas- and coal-heavy provinces, **CCS** on combined-cycle gas, on the existing coal fleet (Saskatchewan's Boundary Dam is a pioneer), or on biomass plants captures most of the combustion CO₂; biomass with CCS goes further and delivers net-negative generation. The shared CCS service and its costs are detailed in the [Carbon Capture, Utilization, and Storage](ccus.qmd) chapter.
+
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, capacity factors, availability years, and emission factors actually used at these nodes in the model input files, and reconcile the storage representation with the [Energy Storage](energy_storage.qmd) chapter.</mark>
+
+## Economics
+
+Technology choice within each load node follows the lifecycle-cost competition of @sec-technology-competition, here on an annual levelized-cost basis: each technology carries an overnight capital cost, fixed and variable operating costs, a capacity factor, fuel service requests where applicable, and availability and lifetime years, which are annualised and combined into a levelized cost per MWh and converted to market shares.
+
+Electricity technologies are discounted at lower rates than most demand sectors — around 12.5–25% in the current data — reflecting the regulated, capital-intensive, long-horizon nature of generation investment. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than pure financial costs of capital, but for a regulated utility they sit closer to the financial end of the range than the 35%+ used in the demand sectors; CIMS applies them throughout the levelized-cost calculation, as set out in the discount-rate discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition. **Heterogeneity (variance) parameters** are set around 10–25.
+
+Emissions are tracked as CO₂, CH₄, and N₂O and arise from fuel combustion in the fossil and biomass plants, entering through each technology's fuel service requests and the carbon price; the **CCS** service applies a removal factor to the captured routes, which can drive biomass-CCS generation net-negative. Because electricity is an input to every other sector, the carbon price acts here with unusual leverage: it raises the cost of unabated coal and gas relative to renewables, nuclear, and CCS, shifting the generation mix and, through the price of delivered electricity, the economics of electrification everywhere else in the model. Electricity imports and exports respond to relative prices through the macroeconomic module's trade elasticities.
+
+## Regional coverage and differences
+
+Electricity is the sector where the region-agnostic tree resolves to the most different outcomes, because each of the seven modelled regions starts from a distinct resource base:
+
+- Québec, British Columbia, and Manitoba are dominated by hydro and are already almost emissions-free; their decarbonisation question is mainly how to add capacity (hydro, wind) for growing electrified demand.
+- Ontario runs on nuclear and hydro with growing renewables, and faces choices about nuclear refurbishment, SMRs, and wind/solar/storage.
+- Alberta and Saskatchewan are the fossil-heavy provinces, where the coal phase-out and the competition among gas, gas-plus-CCS, wind, solar, and storage is most consequential.
+- The Atlantic region is mixed, with significant wind potential.
+
+<mark>TODO: Confirm the regional capacity factors, resource limits (especially hydro and wind siting), and existing-stock vintages, since the regional generation mix and its evolution are highly sensitive to them.</mark>
+
+## Limitations and planned extensions
+
+The electricity sub-model captures the essential structure of a modern power system — a load-duration split, three functional technology classes, and the storage and transmission services a high-renewables grid needs — but it remains a simplified representation of a system whose real behaviour is hourly and spatial. Its main limitations are the coarse (base/shoulder/peak) time resolution relative to the sub-hourly dynamics that actually drive VRE integration, the simplified storage and transmission representation, and reliance on inherited cost and load-curve assumptions. The TODOs above record the priorities, of which keeping the cost and capacity-factor data current and reconciling storage with the dedicated [Energy Storage](energy_storage.qmd) chapter are the most important.
+
+<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark the modelled generation mix and grid emissions intensity by province against Canada Energy Regulator and Canada Energy Future data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::
