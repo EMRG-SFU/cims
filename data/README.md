@@ -368,8 +368,7 @@ Install with:
 pip install polars pandas numpy scipy openpyxl marimo
 ```
 
-**Path convention**: All scripts hardcode `C:/cims/data` as the base path. The raw data directory layout under `raw_data/` must match the structure described above.
-
+**Path convention**: The base path is derived automatically from the location of controls_conversions.py in pipeline/utils/, so scripts work regardless of where the cims/data folder lives on disk. The internal directory layout under the data root (e.g. raw_data/, processed_data/, model_inputs/, mappings_conversions/) must be preserved as described above.
 ---
 
 ## What is and is not Committed
