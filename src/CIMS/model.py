@@ -26,6 +26,7 @@ from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
+from .resource_profiler import ResourceProfiler
 
 
 
@@ -124,6 +125,8 @@ class Model:
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
 
+        self.region_list = list(region_list)
+        self.sector_list = [s for s in sector_list if s is not None]
         self.step = self._infer_year_step(year_list)
         self.years = self._model_reader.get_years()
         self.base_year = int(self.years[0])
@@ -562,6 +565,26 @@ class Model:
         self.status = 'Run completed'
         timing = f" (completed in {time.time() - start:.2f}s)"
         print(f"\n=== Model run complete{timing} ===\n")
+
+    def run_with_profiling(self, **run_kwargs) -> ResourceProfiler:
+        """
+        Run the model and report peak RAM, CPU, and wall-clock time on completion.
+
+        Accepts all the same keyword arguments as `run()`. Returns the
+        ResourceProfiler so callers can inspect raw samples if needed.
+        """
+        context = {
+            "Regions": f"{len(self.region_list)}  ({', '.join(str(r) for r in self.region_list)})",
+            "Sectors": f"{len(self.sector_list)}  ({', '.join(str(s) for s in self.sector_list)})",
+            "Years": f"{len(self.years)}  ({self.years[0]}–{self.years[-1]})",
+            "max_iterations": run_kwargs.get("max_iterations", 10),
+            "Nodes": self.graph.number_of_nodes(),
+            "Edges": self.graph.number_of_edges(),
+        }
+        with ResourceProfiler(context=context) as profiler:
+            self.run(**run_kwargs)
+        profiler.report()
+        return profiler
 
     def check_equilibrium(self, prev: dict, new: dict, iteration: int, threshold: float,
                           print_equilibrium_details: bool) -> bool:
