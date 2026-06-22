@@ -1,0 +1,127 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 700" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="440" y="12" width="200" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Industrial Minerals sector</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: product output (tonnes)</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service branch -->
+  <rect class="branch" x="222" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">mineral product chains</text>
+  <rect class="branch" x="702" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="780" y="103" text-anchor="middle">Service</text>
+  <text class="subw" x="780" y="118" text-anchor="middle">heat, machine drive, CCS</text>
+
+  <!-- product rail -->
+  <path class="edge" d="M300,126 V140 H40 V612"/>
+  <path class="edge" d="M40,168 H58" marker-end="url(#arrow)"/>
+  <path class="edge" d="M40,330 H58" marker-end="url(#arrow)"/>
+  <path class="edge" d="M40,470 H58" marker-end="url(#arrow)"/>
+  <path class="edge" d="M40,560 H58" marker-end="url(#arrow)"/>
+
+  <!-- Cement -->
+  <rect class="prod" x="58" y="150" width="200" height="34" rx="6"/>
+  <text class="lblw" x="158" y="171" text-anchor="middle">Cement</text>
+  <rect class="det" x="58" y="188" width="430" height="128" rx="6"/>
+  <text class="li" x="68" y="205">Strategy: Std · Increased clinker substitution ·</text>
+  <text class="li" x="78" y="219">Carbon curing (negative CO₂)</text>
+  <text class="li" x="68" y="237">Clinker — Dry rotary kiln / Fluidized bed:</text>
+  <text class="li" x="78" y="251">preheat/precalciner · waste-HR cogen ·</text>
+  <text class="li" x="78" y="265">+ CCS · electrochemical · calcium-mineral raw meal</text>
+  <text class="li" x="68" y="283">Finish Grinding — ball / roller mills</text>
+  <text class="spec" x="68" y="301" style="fill:#9a6a1f">process CO₂ ≈ 0.44 / unit (calcination)</text>
+
+  <!-- Lime -->
+  <rect class="prod" x="58" y="318" width="200" height="34" rx="6"/>
+  <text class="lblw" x="158" y="339" text-anchor="middle">Lime</text>
+  <rect class="det" x="58" y="356" width="430" height="98" rx="6"/>
+  <text class="li" x="68" y="373">Kilns — rotary / vertical shaft (NG, coal,</text>
+  <text class="li" x="78" y="387">petcoke, oil); preheat &amp; internals variants</text>
+  <text class="li" x="68" y="405">+ CCS (rotary NG / coal) · electrochemical</text>
+  <text class="li" x="68" y="423">Dolomitic lime branch</text>
+  <text class="li" x="68" y="441" style="fill:#9a6a1f">process CO₂ ≈ 0.75 / unit (highest)</text>
+
+  <!-- Glass -->
+  <rect class="prod" x="58" y="458" width="200" height="34" rx="6"/>
+  <text class="lblw" x="158" y="479" text-anchor="middle">Glass</text>
+  <rect class="det" x="58" y="496" width="430" height="56" rx="6"/>
+  <text class="li" x="68" y="513">Container · Flat · Fibreglass · Blown/Pressed</text>
+  <text class="li" x="68" y="530">Preparation → Furnaces → Form &amp; Finish</text>
+  <text class="li" x="68" y="544">furnaces: regenerative · oxy · electric · cullet preheat</text>
+
+  <!-- Bricks -->
+  <rect class="prod" x="58" y="556" width="200" height="34" rx="6"/>
+  <text class="lblw" x="158" y="577" text-anchor="middle">Bricks</text>
+  <rect class="det" x="278" y="556" width="210" height="34" rx="6"/>
+  <text class="li" x="288" y="577">Hoffman / tunnel kilns (NG, coal, oil)</text>
+
+  <!-- service rail -->
+  <path class="edge" d="M780,126 V140 H640 V470"/>
+  <path class="edge" d="M640,176 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,266 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,326 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,420 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M640,460 H700" marker-end="url(#arrow)"/>
+
+  <rect class="spec" x="700" y="150" width="340" height="52" rx="6"/>
+  <text class="lbl" x="870" y="167" text-anchor="middle">Heat (process heat service)</text>
+  <text class="sub" x="870" y="182" text-anchor="middle">NG · oil · coal · coke · biomass · waste ·</text>
+  <text class="sub" x="870" y="195" text-anchor="middle">hydrogen · + CCS variants</text>
+
+  <rect class="spec" x="700" y="244" width="340" height="34" rx="6"/>
+  <text class="lbl" x="870" y="265" text-anchor="middle">CCS — shared capture service</text>
+
+  <rect class="svc" x="700" y="290" width="340" height="34" rx="6"/>
+  <text class="lbl" x="870" y="311" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="sub" x="870" y="346" text-anchor="middle">Materials Processing (grinding) · Fans · Pumps ·</text>
+  <text class="sub" x="870" y="360" text-anchor="middle">Compressed Air · Materials Handling</text>
+
+  <rect class="svc" x="700" y="402" width="340" height="34" rx="6"/>
+  <text class="lbl" x="870" y="423" text-anchor="middle">Methane Blend</text>
+
+  <rect class="svc" x="700" y="444" width="340" height="30" rx="6"/>
+  <text class="lbl" x="870" y="463" text-anchor="middle">HVAC · Lighting</text>
+
+  <!-- service request arrow -->
+  <path class="dedge" d="M488,250 C560,250 580,210 640,190" marker-end="url(#darrow)"/>
+  <text class="sub" x="560" y="237" text-anchor="middle">service requests (GJ, t CO₂)</text>
+
+  <!-- legend -->
+  <rect class="prod" x="58" y="610" width="16" height="12" rx="2"/>
+  <text class="sub" x="80" y="620">product chain</text>
+  <rect class="det" x="190" y="610" width="16" height="12" rx="2"/>
+  <text class="sub" x="212" y="620">process competition</text>
+  <rect class="spec" x="360" y="610" width="16" height="12" rx="2"/>
+  <text class="sub" x="382" y="620">process-emission / heat / CCS</text>
+  <rect class="svc" x="580" y="610" width="16" height="12" rx="2"/>
+  <text class="sub" x="602" y="620">shared energy / utility service</text>
+</svg>

@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:10.5px;fill:#243042;}
+    .ttl{font-size:11.5px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .ccs{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+  </style>
+
+  <!-- molten steel node -->
+  <rect class="branch" x="400" y="14" width="200" height="44" rx="7"/>
+  <text class="lblw" x="500" y="33" text-anchor="middle">Molten Steel</text>
+  <text class="subw" x="500" y="48" text-anchor="middle">exogenous primary / secondary split</text>
+
+  <path class="edge" d="M500,58 V74"/>
+  <path class="edge" d="M250,74 H750"/>
+  <path class="edge" d="M250,74 V88" marker-end="url(#arrow)"/>
+  <path class="edge" d="M750,74 V88" marker-end="url(#arrow)"/>
+
+  <!-- Integrated -->
+  <rect class="prod" x="160" y="90" width="180" height="40" rx="6"/>
+  <text class="lblw" x="250" y="108" text-anchor="middle">Integrated (primary)</text>
+  <text class="subw" x="250" y="123" text-anchor="middle">tech-compete · ore reduction</text>
+
+  <rect class="det" x="120" y="146" width="260" height="250" rx="6"/>
+  <text class="ttl" x="132" y="166">Routes competing on lifecycle cost</text>
+  <text class="li" x="132" y="186">BF-BOF  (incumbent, coke-based)</text>
+  <text class="li" x="132" y="205">BF-BOF + CCS</text>
+  <text class="li" x="132" y="224">Top gas recycling + CCS</text>
+  <text class="li" x="132" y="243">Corex smelter  ( + CCS )</text>
+  <text class="li" x="132" y="262">HIsarna + CCS</text>
+  <text class="li" x="132" y="281">Smelter + EAF  ( + CCS )</text>
+  <text class="li" x="132" y="300">DRI + EAF  ( + CCS )</text>
+  <text class="li" x="132" y="319">HDRI + EAF  (hydrogen DRI)</text>
+  <text class="sub" x="132" y="344">Lower on the list = lower carbon;</text>
+  <text class="sub" x="132" y="358">share shifts as the carbon price rises.</text>
+  <text class="sub" x="132" y="378">Most routes request Agglomeration</text>
+  <text class="sub" x="132" y="392">and Oxygen; CCS variants request CCS.</text>
+
+  <!-- Recycled -->
+  <rect class="prod" x="660" y="90" width="180" height="40" rx="6"/>
+  <text class="lblw" x="750" y="108" text-anchor="middle">Recycled (secondary)</text>
+  <text class="subw" x="750" y="123" text-anchor="middle">tech-compete · 100% scrap</text>
+
+  <rect class="det" x="620" y="146" width="260" height="160" rx="6"/>
+  <text class="ttl" x="632" y="166">Electric arc furnaces</text>
+  <text class="li" x="632" y="186">High power EAF</text>
+  <text class="li" x="632" y="205">High power EAF + O₂</text>
+  <text class="li" x="632" y="224">Ultra power EAF + O₂</text>
+  <text class="li" x="632" y="243">Ultra power EAF + O₂ + CCS</text>
+  <text class="sub" x="632" y="268">Footprint tracks grid carbon intensity;</text>
+  <text class="sub" x="632" y="282">small direct process emission (electrodes,</text>
+  <text class="sub" x="632" y="296">charge carbon).</text>
+
+  <!-- shared services -->
+  <rect class="ccs" x="300" y="450" width="170" height="44" rx="6"/>
+  <text class="lbl" x="385" y="469" text-anchor="middle">CCS service</text>
+  <text class="sub" x="385" y="484" text-anchor="middle">90% capture</text>
+
+  <rect class="svc" x="120" y="450" width="150" height="44" rx="6"/>
+  <text class="lbl" x="195" y="469" text-anchor="middle">Agglomeration</text>
+  <text class="sub" x="195" y="484" text-anchor="middle">sinter feed</text>
+
+  <rect class="svc" x="500" y="450" width="150" height="44" rx="6"/>
+  <text class="lbl" x="575" y="469" text-anchor="middle">Oxygen</text>
+  <text class="sub" x="575" y="484" text-anchor="middle">BOF · O₂-EAF</text>
+
+  <!-- service request arrows -->
+  <path class="dedge" d="M230,396 V440 H205 V446" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M300,396 C320,420 360,432 385,446" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M340,300 C470,330 560,400 575,446" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M700,306 C640,380 470,430 415,448" marker-end="url(#darrow)"/>
+  <text class="sub" x="500" y="430" text-anchor="middle">service requests</text>
+
+  <!-- downstream -->
+  <rect class="branch" x="400" y="528" width="200" height="40" rx="6"/>
+  <text class="lblw" x="500" y="546" text-anchor="middle">Ladle Refining / Preheat</text>
+  <text class="subw" x="500" y="561" text-anchor="middle">→ Continuous Cast</text>
+  <path class="edge" d="M250,396 V512 H500 V528" marker-end="url(#arrow)"/>
+  <path class="edge" d="M750,306 V512 H500" marker-end="url(#arrow)"/>
+</svg>

@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,29 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">11.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">11.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">11.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-the-refinery-process-chain" id="toc-products-the-refinery-process-chain" class="nav-link" data-scroll-target="#products-the-refinery-process-chain"><span class="header-section-number">11.3.1</span> Products: the refinery process chain</a></li>
+  <li><a href="#services-heat-steam-still-gas-hydrogen-and-capture" id="toc-services-heat-steam-still-gas-hydrogen-and-capture" class="nav-link" data-scroll-target="#services-heat-steam-still-gas-hydrogen-and-capture"><span class="header-section-number">11.3.2</span> Services: heat, steam, still gas, hydrogen, and capture</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">11.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#decarbonising-process-heat-and-steam" id="toc-decarbonising-process-heat-and-steam" class="nav-link" data-scroll-target="#decarbonising-process-heat-and-steam"><span class="header-section-number">11.4.1</span> Decarbonising process heat and steam</a></li>
+  <li><a href="#low-carbon-hydrogen-and-ccs" id="toc-low-carbon-hydrogen-and-ccs" class="nav-link" data-scroll-target="#low-carbon-hydrogen-and-ccs"><span class="header-section-number">11.4.2</span> Low-carbon hydrogen and CCS</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">11.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">11.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">11.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_petroleum_refining.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Petroleum Refining</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Petroleum Refining</span></h1>
+<h1 class="title"><span id="sec-petroleum-refining" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Petroleum Refining</span></span></h1>
 </div>
 
 
@@ -712,12 +755,225 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This industrial sector includes establishments primarily engaged in manufacturing petroleum products. Activities such as the manufacture of lubricating oil and grease or asphalt and coal/coke products are included in CIMS where they are carried out in these plants. Establishments that are primarily engaged in these activities are not included; however, because of their comparatively small size.</p>
-<p>The basic process involves refining crude oil into a number of products including: ethane, propane, butane, motor gasoline (typically 40% of total product), naphthas, jet fuel, petrochemical feedstocks, distillate fuel oil, diesel fuel, residual fuel oils, lubricants, coke and asphalt. All crude includes these products in varying concentrations. However, it is possible to increase output of more desirable products per unit crude input by using cracking and reforming processes.</p>
-<p>The type and quality of crude and the processing requirements to generate the end products determine the refinery’s complexity and have significant impact on energy consumption in the plant. In spite of this, however, the basic processing procedures are common to all refineries. The major process steps include: atmospheric distillation, vacuum distillation, cracking, desulphurization, alkylation, isomerization, reforming, sulphur recovery and hydrogen production. The last two processes should not be considered part of the actual refining process; they act as utility functions to clean out sulphurous compounds or provide hydrogen for specific in-plant operations.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>Petroleum refining is one of CIMS’s energy-supply and processing sub-models: it converts crude oil and bitumen into refined products — gasoline, diesel, jet fuel, fuel oils, petrochemical feedstocks, asphalt, lubricants, and coke. The emphasis is on the structure of the energy-service flow model: the process units that turn crude into products, the technologies that compete at each, and the energy services — above all process heat, steam, and hydrogen — that drive them. The tree is region-agnostic. The defining feature of refining is that almost all of its emissions come from burning fuel for process heat and steam (much of it the refinery’s own still gas) and from on-site hydrogen production, so its decarbonisation is about electrifying and decarbonising that energy and capturing the concentrated CO₂ streams — against a backdrop of long-run demand decline as transport electrifies.</p>
+<section id="scope" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">11.1</span> Scope</h2>
+<p>CIMS represents the refining of crude oil and synthetic crude into finished products, through the standard process units: distillation (atmospheric and vacuum), cracking (coking and hydrocracking), hydrotreating (desulphurisation and sulphur recovery), reforming, alkylation, and isomerisation, plus by-products such as asphalt and lubes. The driving variable is refinery throughput/product output. Lubricating-oil, grease, and asphalt manufacture are included where carried out within refineries. The model carries the supporting energy services — direct process heat, steam, still gas, hydrogen, machine drive, and a <strong>CCS</strong> service.</p>
+<p>Adjacent activities are handled elsewhere: crude oil and bitumen production (including oil-sands upgrading) is in <a href="./sector_petroleum_crude.html">Petroleum Crude</a>; natural gas processing is in <a href="./sector_natural_gas.html">Natural Gas</a>; petrochemicals made from refinery streams are in <a href="./sector_chemical_products.html">Chemical Products</a>; and the combustion of the finished fuels is in the demand sectors. This chapter covers the refinery itself.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">11.2</span> Real-world context</h2>
+<p>Canada has a modest fleet of refineries spread across the country, supplying gasoline, diesel, and other products to domestic and export markets. A refinery’s energy use and emissions depend on its complexity — the type of crude it runs and how much cracking, hydrotreating, and reforming it does to make high-value products. The bulk of refinery emissions come from burning fossil fuels for process heating and steam generation, with a further significant share from hydrogen manufacturing (steam methane reforming for hydrotreating and hydrocracking) <span class="citation" data-cites="wri-refining">(<a href="index.html#ref-wri-refining" role="doc-biblioref">World Resources Institute 2023</a>)</span>. Much of the process fuel is the refinery’s own still gas (off-gas from the process units).</p>
+<p>The decarbonisation levers follow from that emissions structure, and Canada’s <a href="https://natural-resources.canada.ca/climate-change/roadmap-decarbonization-canada-s-oil-gas-sector">Roadmap for the Decarbonization of the Oil and Gas Sector</a> names them directly: electrifying low- and medium-grade process heat, fuel-switching to low- and zero-carbon hydrogen for high-temperature heat, energy efficiency, and CCUS — and refining is regarded as one of the lower-cost CCS opportunities, with concentrated CO₂ available from the hydrogen plant and other units <span class="citation" data-cites="nrcan-og-roadmap wri-refining">(<a href="index.html#ref-nrcan-og-roadmap" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-wri-refining" role="doc-biblioref">World Resources Institute 2023</a>)</span>. Over the longer term, refinery throughput is expected to decline as road transport electrifies, shifting the product slate toward aviation, petrochemicals, and exports. The CIMS structure captures the decarbonisation levers as competing technologies at the heat, steam, still-gas, and hydrogen services, with a shared CCS service.</p>
+</section>
+<section id="model-structure" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">11.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the refinery process chain — and a <strong>Service</strong> sub-tree of the energy services. <a href="#fig-petroleum-refining-flow-model" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the process chain is largely fixed-ratio, and the technology choices occur in the energy services.</p>
+<div id="fig-petroleum-refining-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-petroleum-refining-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/petroleum_refining_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;11.1: Energy-service flow model of the petroleum refining sector (region-agnostic master tree). The Product sub-tree is the refinery process chain — distillation, cracking (coking, hydrocracking), hydrotreating (desulphurisation, sulphur recovery), reforming, alkylation/isomerisation, and by-products (asphalt, lubes); the Service sub-tree supplies the direct process heat, steam, still gas, hydrogen, machine drive, and CCS the process units draw on."><img src="images/petroleum_refining_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-petroleum-refining-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Energy-service flow model of the petroleum refining sector (region-agnostic master tree). The Product sub-tree is the refinery process chain — distillation, cracking (coking, hydrocracking), hydrotreating (desulphurisation, sulphur recovery), reforming, alkylation/isomerisation, and by-products (asphalt, lubes); the Service sub-tree supplies the direct process heat, steam, still gas, hydrogen, machine drive, and CCS the process units draw on.
+</figcaption>
+</figure>
+</div>
+<section id="products-the-refinery-process-chain" class="level3" data-number="11.3.1">
+<h3 data-number="11.3.1" class="anchored" data-anchor-id="products-the-refinery-process-chain"><span class="header-section-number">11.3.1</span> Products: the refinery process chain</h3>
+<p>The <strong>Refined Petroleum Products</strong> node holds the process units:</p>
+<ul>
+<li><strong>Petroleum Fractions</strong> — the main chain: distillation (atmospheric and vacuum) separates crude into fractions; cracked gas oil upgrades heavy fractions via coking and hydrocracking (at low, medium, and high conversion); hydrotreating (desulphurisation and sulphur recovery) cleans the products; and asphalt and lubes are by-product streams.</li>
+<li><strong>Alkylates</strong> — alkylation and isoparaffins (isomerisation), which make high-octane gasoline blendstocks.</li>
+<li><strong>Reforming</strong> — catalytic reforming for octane and aromatics (and a hydrogen by-product).</li>
+</ul>
+<p>These units are the demand for the energy services; their relative throughput sets how much heat, steam, and hydrogen the refinery needs.</p>
+</section>
+<section id="services-heat-steam-still-gas-hydrogen-and-capture" class="level3" data-number="11.3.2">
+<h3 data-number="11.3.2" class="anchored" data-anchor-id="services-heat-steam-still-gas-hydrogen-and-capture"><span class="header-section-number">11.3.2</span> Services: heat, steam, still gas, hydrogen, and capture</h3>
+<ul>
+<li><strong>Direct Heat</strong> — the process furnaces, competing natural-gas, heavy- and light-fuel-oil, LPG, and petcoke firing (with efficiency variants) and electric heaters (high and low efficiency). This is the central electrification lever for low- and medium-grade heat.</li>
+<li><strong>Steam</strong> — boiler- and cogeneration-raised steam, competing the full range of fuels (NG, oil, LPG, petcoke, with efficiency and CCS variants), electric and hydrogen steam, and gas cogeneration (CCGT/SCGT/back-pressure turbines, with and without CCS).</li>
+<li><strong>Still Gas</strong> — the refinery’s own off-gas, used in heaters (with efficiency and CCS variants) and boilers; the dominant self-generated fuel.</li>
+<li><strong>Hydrogen</strong> — on-site steam methane reforming (standard, efficient, and efficient + CCS for blue hydrogen), for hydrotreating and hydrocracking.</li>
+<li><strong>CCS</strong> — the shared capture service (90% capture), well suited to the concentrated CO₂ from the hydrogen plant and other units.</li>
+<li><strong>Machine Drive</strong>, <strong>HVAC</strong>, <strong>Lighting</strong>, <strong>Methane Blend</strong> — the shared utilities.</li>
+</ul>
+<p><mark>TODO: The current regional input files still implement the earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Pumping, and Ventilation sub-trees) and predate the MECS-aligned Machine Drive grouping. Migrate them to the region-agnostic master tree and the shared General Services chapters. Also link the <strong>Hydrogen</strong> service to the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model so refinery hydrogen can draw on green and merchant blue supply, not just on-site SMR.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">11.4</span> Decarbonisation technologies</h2>
+<p>Refinery decarbonisation works through electrifying and decarbonising process heat and steam, low-carbon hydrogen, efficiency, and CCS on the concentrated streams. <a href="#tbl-petroleum-refining-decarb" class="quarto-xref">Table&nbsp;<span>11.1</span></a> summarises maturity and <a href="#tbl-petroleum-refining-cost" class="quarto-xref">Table&nbsp;<span>11.2</span></a> gives indicative costs.</p>
+<div id="tbl-petroleum-refining-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-petroleum-refining-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;11.1: Indicative performance and maturity of key petroleum refining decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-petroleum-refining-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Electric process heaters (low/medium heat)</td>
+<td style="text-align: left;">Removes combustion CO₂ from electrifiable heat</td>
+<td style="text-align: left;">Commercial (low/med grade)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen firing (high-temperature heat)</td>
+<td style="text-align: left;">Decarbonises hard-to-electrify furnaces</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Blue hydrogen (SMR + CCS) for hydrotreating</td>
+<td style="text-align: left;">Captures hydrogen-plant CO₂</td>
+<td style="text-align: left;">Commercial / demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Green hydrogen (electrolytic)</td>
+<td style="text-align: left;">Zero-carbon hydrogen</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cogeneration (gas, with or without CCS)</td>
+<td style="text-align: left;">Combined heat and power; surplus export</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Energy efficiency (heat integration, units)</td>
+<td style="text-align: left;">Lower fuel use per barrel</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CCS on hydrogen plant / heaters / still gas</td>
+<td style="text-align: left;">~90% capture of concentrated CO₂</td>
+<td style="text-align: left;">Demonstration (low-cost in refining)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrified drives + efficient motors</td>
+<td style="text-align: left;">Lower auxiliary electricity</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-petroleum-refining-cost" class="quarto-xref">Table&nbsp;<span>11.2</span></a> are order-of-magnitude figures from public sources <span class="citation" data-cites="wri-refining nrcan-og-roadmap">(<a href="index.html#ref-wri-refining" role="doc-biblioref">World Resources Institute 2023</a>; <a href="index.html#ref-nrcan-og-roadmap" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>, expressed in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-petroleum-refining-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-petroleum-refining-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;11.2: Indicative techno-economic characteristics of petroleum refining decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-petroleum-refining-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Capex / cost</th>
+<th style="text-align: left;">Effect</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Electric process heater</td>
+<td style="text-align: left;">~150–400 CAD/kWth</td>
+<td style="text-align: left;">removes combustion CO₂ (low/med heat)</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen-fired furnace</td>
+<td style="text-align: left;">retrofit + hydrogen cost</td>
+<td style="text-align: left;">decarbonises high-temp heat</td>
+<td style="text-align: left;">hydrogen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Blue hydrogen (SMR + CCS)</td>
+<td style="text-align: left;">+30–50% on H₂ plant</td>
+<td style="text-align: left;">captures ~90% of H₂-plant CO₂</td>
+<td style="text-align: left;">natural gas + capture</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gas cogeneration (with or without CCS)</td>
+<td style="text-align: left;">~1,800–3,000 CAD/kWe</td>
+<td style="text-align: left;">CHP; exports surplus power</td>
+<td style="text-align: left;">natural gas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CCS on concentrated streams</td>
+<td style="text-align: left;">+30–50% plant equipment</td>
+<td style="text-align: left;">~CAD 50–120 / t CO₂ (low-cost in refining)</td>
+<td style="text-align: left;">steam / electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Energy-efficiency / heat integration</td>
+<td style="text-align: left;">unit-specific</td>
+<td style="text-align: left;">lower fuel per barrel</td>
+<td style="text-align: left;">—</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="decarbonising-process-heat-and-steam" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="decarbonising-process-heat-and-steam"><span class="header-section-number">11.4.1</span> Decarbonising process heat and steam</h3>
+<p>Process furnaces and boilers are the largest emission source, so the central lever is how their heat is supplied. The model competes electric heaters (viable for low- and medium-grade heat), hydrogen firing (for high-temperature duty that is hard to electrify), and efficiency-improved fossil firing, at the <strong>Direct Heat</strong>, <strong>Steam</strong>, and <strong>Still Gas</strong> services, alongside cogeneration. Electrifying the electrifiable heat and switching the rest to hydrogen is the backbone of a low-carbon refinery <span class="citation" data-cites="wri-refining">(<a href="index.html#ref-wri-refining" role="doc-biblioref">World Resources Institute 2023</a>)</span>.</p>
+</section>
+<section id="low-carbon-hydrogen-and-ccs" class="level3" data-number="11.4.2">
+<h3 data-number="11.4.2" class="anchored" data-anchor-id="low-carbon-hydrogen-and-ccs"><span class="header-section-number">11.4.2</span> Low-carbon hydrogen and CCS</h3>
+<p>Hydrogen manufacturing is the second-largest emission source. The model already competes blue hydrogen (SMR with CCS) at the <strong>Hydrogen</strong> service; linking it to the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model would also allow green (electrolytic) hydrogen. Because the hydrogen plant and several process units produce concentrated CO₂ streams, <strong>CCS</strong> is comparatively low-cost in refining, and the model routes the CCS-equipped heat, steam, still-gas, and hydrogen options to the shared capture service.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">11.5</span> Economics</h2>
+<p>Technology choice at every node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, operating cost, an output basis, service requests for the fuel, steam, hydrogen, and electricity it consumes, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares.</p>
+<p>Petroleum-refining technologies are discounted at a high rate — 35% at most process nodes, with auxiliary and capital-intensive nodes at 40–50% in the current data. These values are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the short payback horizons and risk aversion typical of the industry; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> govern how sharply the energy-service competitions respond to cost.</p>
+<p>Emissions are overwhelmingly combustion CO₂ from process heat, steam, still gas, and the hydrogen plant, entering through each technology’s fuel service requests and the carbon price; the <strong>CCS</strong> service applies a 90% removal factor to the equipped routes. Because so much of the fuel is self-generated still gas, the carbon price acts on the choice of how to supply heat and hydrogen — electrify, switch to hydrogen, or capture — rather than on a single dominant process emission. A structural consideration the model can represent is that refinery throughput is expected to decline over the long run as transport electrifies, which reduces absolute emissions independently of the per-barrel decarbonisation choices.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">11.6</span> Regional coverage and differences</h2>
+<p>Six regions carry refining — Alberta, the Atlantic region, British Columbia, Ontario, Québec, and Saskatchewan — corresponding to where Canada’s refineries are located. Regional differences show up in refinery complexity and product slate, in the fuel mix available for process heat (cheaper gas in the West), and in grid carbon intensity, which determines how much electrifying process heat actually reduces emissions (large in hydro-rich Québec and British Columbia, smaller in Alberta and Saskatchewan until their grids decarbonise).</p>
+<p><mark>TODO: Calibrate the regional refinery configurations (complexity, product slate, hydrogen demand) and the long-run throughput trajectory against Canada Energy Regulator and Statistics Canada data, since both the energy use and the decarbonisation economics depend on them.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">11.7</span> Limitations and planned extensions</h2>
+<p>The petroleum refining sub-model captures the process chain and, in detail, the energy services that dominate its emissions — direct heat, steam, still gas, and hydrogen — with a full set of electrification, hydrogen, cogeneration, and CCS options. Its main limitations are the older auxiliary structure (to be migrated to MECS machine drive), the on-site-only hydrogen representation (to be linked to the hydrogen sub-model), and reliance on inherited refinery-configuration and cost data. A broader consideration is the sector’s long-run decline: as transport electrifies, the most consequential question for refining emissions may be how fast throughput falls, which is driven by the demand sectors rather than within this sub-model. The TODOs above record the priorities.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled refining energy use and emissions against Canada Energy Regulator and Environment and Climate Change Canada (NIR) data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-nrcan-og-roadmap" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Roadmap for the Decarbonization of Canada’s Oil and Gas Sector</em>. Natural Resources Canada. <a href="https://natural-resources.canada.ca/climate-change/roadmap-decarbonization-canada-s-oil-gas-sector">https://natural-resources.canada.ca/climate-change/roadmap-decarbonization-canada-s-oil-gas-sector</a>.
+</div>
+<div id="ref-wri-refining" class="csl-entry" role="listitem">
+World Resources Institute. 2023. <em>Technological Pathways for Decarbonizing Petroleum Refining</em>. WRI. <a href="https://www.wri.org/research/technological-pathways-decarbonizing-petroleum-refining">https://www.wri.org/research/technological-pathways-decarbonizing-petroleum-refining</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1679,8 +1935,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

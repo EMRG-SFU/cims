@@ -471,7 +471,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -701,7 +701,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./machine_drive.html">General Services</a></li><li class="breadcrumb-item"><a href="./machine_drive.html"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></h1>
+<h1 class="title"><span id="sec-machine-drive" class="quarto-section-identifier"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">Industrial Machine Drive Systems</span></span></h1>
 </div>
 
 
@@ -719,7 +719,7 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p><mark>TODO: Describe how the model represents industrial machine drive systems and their contribution to industrial electricity demand across manufacturing and resource-processing sectors. The section should explain the treatment of end uses such as motors, pumps, compressors, fans, conveyors, and other mechanically driven equipment, including how energy consumption is allocated across industries consistent with sources such as the U.S. Energy Information Administration Manufacturing Energy Consumption Survey (MECS). It should document assumptions related to motor efficiency improvements, variable speed drive adoption, equipment turnover, process electrification, and production-output linkages. The section should also explain how machine drive demand responds to changes in industrial activity, efficiency policies, and technology adoption, as well as any interactions with waste heat recovery, onsite generation, or demand-side flexibility measures.</mark></p>
-<p>Nodes shaded in green represent unique industry processes, while nodes shaded in other colors represent auxiliary systems. These are generic energy services that are supplied to the major process technologies and are shared by all CIMS industry sub-models. The auxiliary systems fall into four general categories: steam generation (boilers and cogenerators), lighting, heating, ventilation and air conditioning (HVAC), and electric motor systems including pumps, fans, compressors and conveyors. Figure 9 shows the energy flow diagrams for auxiliary systems not included in Figure 8. In some cases, the energy service meets the direct need for steam, pumping or compression, while in other cases, it serves only to provide suitable conditions for production to continue, as in the case of lighting and HVAC systems.</p>
+<p>Nodes shaded in green represent unique industry processes, while nodes shaded in other colors represent auxiliary systems. These are generic energy services that are supplied to the major process technologies and are shared by all CIMS industry sub-models. The auxiliary systems fall into four general categories: steam generation (boilers and cogenerators), lighting, heating, ventilation, and air conditioning (HVAC), and electric motor systems including pumps, fans, compressors, and conveyors. Figure 9 shows the energy flow diagrams for auxiliary systems not included in Figure 8. In some cases, the energy service meets the direct need for steam, pumping, or compression, while in other cases, it serves only to provide suitable conditions for production to continue, as in the case of lighting and HVAC systems.</p>
 <p>Figure 9. Auxiliary Flow Model Diagram</p>
 <p>The sections that follow describe how key auxiliary systems and process specific components are captured by the CIMS industrial model. The section on auxiliary systems covers steam generation and electric auxiliary services. Lighting and HVAC are not described in detail because the energy demanded by these services is small. The section on process specific systems covers each of the CIMS industrial sub-models.</p>
 <section id="auxilliary-systems" class="level3" data-number="33.0.1">
@@ -732,16 +732,16 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="electric-auxiliary-systems" class="level4" data-number="33.0.1.2">
 <h4 data-number="33.0.1.2" class="anchored" data-anchor-id="electric-auxiliary-systems"><span class="header-section-number">33.0.1.2</span> Electric Auxiliary Systems</h4>
-<p>The vast majority of electricity consumed by industry is used by motor systems. A motor is the core component of a much broader system of electrical and mechanical equipment that provides services, including hydraulic power, compressed air, motive power and air flow. Opportunities for efficiency improvement exist in both the motor itself, and in the latter systems – pumping, air displacement, compression, conveyance as well as other types of machine drive that are unique to a given production process (direct drive).</p>
+<p>The vast majority of electricity consumed by industry is used by motor systems. A motor is the core component of a much broader system of electrical and mechanical equipment that provides services, including hydraulic power, compressed air, motive power, and air flow. Opportunities for efficiency improvement exist in both the motor itself, and in the latter systems – pumping, air displacement, compression, conveyance as well as other types of machine drive that are unique to a given production process (direct drive).</p>
 <p>Figure 3.3 above is a generic energy flow model representing motor and steam auxiliary systems as they appear in the various CIMS industrial sub-models. As the figure indicates, CIMS simulates six auxiliary groups related to process drive (in red). The first five demand shaft or mechanical drive provided by the sixth group, motors (machine drive). Each group simulates technology evolution of a specific system.</p>
 <p>Increased disaggregation in some of the groups reflects differing end-uses and levels of efficiency. For example, compressor systems vary in electrical efficiency by size. Therefore, competition between different technologies must be separated by size. The energy flow model reflects this by displaying two sizes of compressors, which are available for use by the model.</p>
-<p>Pumping, air displacement, compressing and conveyance systems have been represented as packages within CIMS. The components of each of these systems are associated with the key end-use. For example, a pipe, throttle and speed control device is attached to a pump, and the entire package is called a pump system. In the model, there are at least two types of systems:</p>
+<p>Pumping, air displacement, compressing, and conveyance systems have been represented as packages within CIMS. The components of each of these systems are associated with the key end-use. For example, a pipe, throttle, and speed control device is attached to a pump, and the entire package is called a pump system. In the model, there are at least two types of systems:</p>
 <ol type="1">
 <li><p>The least efficient system comprised of the least efficient components</p></li>
 <li><p>The most efficient system comprised of the most efficient components</p></li>
 </ol>
 <p>The system efficiency is then a function of the efficiency of all the components within that system. In some cases intermediate efficiencies have also been listed. New technologies may be added to reflect the intermediate range.</p>
-<p>Electronic variable speed drives (VSDs) provide speed control by varying the rotating speed of the induction motor to match variable speed requirements of driven equipment. Pumps and fans, for example, are often required to deliver varying qualities of fluid flow. When this control procedure is used the energy consumption of the fan or pump is dramatically reduced during part load operation, as compared to the conventional practice of using a valve or damper to reduce flow.</p>
+<p>Electronic variable speed drives (VSDs) provide speed control by varying the rotating speed of the induction motor to match variable speed requirements of driven equipment. Pumps and fans, for example, are often required to deliver varying qualities of fluid flow. When this control procedure is used the energy consumption of the fan or pump is dramatically reduced during part load operation, as compared to the conventional practice of using a valve or d</p>
 
 
 </section>

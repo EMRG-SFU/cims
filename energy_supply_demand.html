@@ -503,7 +503,7 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -738,7 +738,7 @@ window.Quarto = {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./energy_supply_demand.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></h1>
+<h1 class="title"><span id="sec-energy-supply-demand" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span></h1>
 </div>
 
 
@@ -783,10 +783,10 @@ window.Quarto = {
 <li><p>One national natural gas market is included, with dynamic pricing using a supply curve based on a combination of Canadian and US market feedbacks. The amount of gas produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export price elasticity.</p></li>
 <li><p>One national crude oil market, based on an exogenously specified world price of crude oil. The amount of crude oil produced is the sum of endogenous domestic demand and net exports. Net exports may be adjusted to reflect changes in the domestic cost of production using an export elasticity. The world crude oil price is assumed to be unresponsive to Canadian demand.</p></li>
 <li><p>Petroleum refining regions divide their production amongst demand regions and net exports. All can use endogenous internal pricing based on the cost of production. The amount of refined petroleum products produced is the sum of domestic regional demand and net extra-regional exports.</p></li>
-<li><p>Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e.&nbsp;BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve – for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan and the Atlantic provinces all buy their coal at a fixed market price.</p></li>
+<li><p>Coal producing regions divide their thermal coal production amongst endogenous domestic regional demand and exogenous exports (i.e.&nbsp;BC exports 100% of its production while Alberta exports about 30% of its production). Due to the differences between the ways each non-producing region and sector gets its coal, these regions are assumed to buy coal at a fixed market price or according to a local supply curve – for example, some electricity plants in Alberta and Saskatchewan are sited at coalfields and are the sole customers. British Columbia, Alberta, Saskatchewan, and the Atlantic provinces all buy their coal at a fixed market price.</p></li>
 <li><p><strong>-&gt; Revise coal description to separate thermal coal (exogenous) and metallurgical (endogenous).</strong></p></li>
 </ul>
-<p>CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (<a href="#fig-final_intermediate_primary_flow" class="quarto-xref">Figure&nbsp;<span>5.1</span></a>). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.</p>
+<p>CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (<a href="#fig-final_intermediate_primary_flow" class="quarto-xref">Figure&nbsp;<span>5.1</span></a>). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial, and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.</p>
 <div id="fig-final_intermediate_primary_flow" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-final_intermediate_primary_flow-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -798,7 +798,7 @@ Figure&nbsp;5.1: final_intermediate_primary_flow
 </figure>
 </div>
 <p>The electricity demands of petroleum refining, the refined petroleum product demands of the primary energy supply models, and the interdependencies among the primary energy supply models create feedback loops within the system. Because CIMS operates as a simulation model rather than a computable general equilibrium model, these feedback loops cannot be resolved within a single iteration of the demand–supply algorithm. To address this limitation, CIMS is run iteratively until lifecycle costs throughout the model converge below a specified threshold criterion (typically less than a 5% difference between iterations). Additional iterations may also be performed to ensure that the effects of the feedback loops have stabilized.</p>
-<p>Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (<a href="#tbl-export_price_elas" class="quarto-xref">Table&nbsp;<span>5.1</span></a>).</p>
+<p>Canada trades a significant amount of energy with the United States and, to a lesser extent, with both OPEC and non-OPEC suppliers. Given the possible effect of Canadian energy policy on the price of producing these commodities, and hence their marketability to the US, electricity, crude oil, and natural gas export feedbacks are included in CIMS using price elasticities calculated for the Canadian Federal Department of Finance (<a href="#tbl-export_price_elas" class="quarto-xref">Table&nbsp;<span>5.1</span></a>).</p>
 <p><mark><strong>change this table to GTAP? talk to Thomas</strong></mark></p>
 <div id="tbl-export_price_elas" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
@@ -871,7 +871,7 @@ additive adjustment to production of the energy commodity
 </dd>
 </dl>
 </div>
-<p>Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in electricity exports to the US.</p>
+<p>Western Canadian exports of crude oil are separated from eastern Canadian imports, as there are currently no large cross-country shipments. While electricity trade is currently a very small portion of our energy trade, electricity import substitution elasticities are included to cover the possibility of a policy driven increase or decrease in ele</p>
 
 
 </section>

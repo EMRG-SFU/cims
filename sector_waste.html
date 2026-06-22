@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,28 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">28.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">28.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">28.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-landfill-sites-and-their-gas-management-options" id="toc-products-landfill-sites-and-their-gas-management-options" class="nav-link" data-scroll-target="#products-landfill-sites-and-their-gas-management-options"><span class="header-section-number">28.3.1</span> Products: landfill sites and their gas-management options</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">28.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#capturing-and-using-landfill-gas" id="toc-capturing-and-using-landfill-gas" class="nav-link" data-scroll-target="#capturing-and-using-landfill-gas"><span class="header-section-number">28.4.1</span> Capturing and using landfill gas</a></li>
+  <li><a href="#preventing-methane-organics-diversion" id="toc-preventing-methane-organics-diversion" class="nav-link" data-scroll-target="#preventing-methane-organics-diversion"><span class="header-section-number">28.4.2</span> Preventing methane: organics diversion</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">28.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">28.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">28.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +737,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_waste.html"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Waste</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Waste</span></h1>
+<h1 class="title"><span id="sec-waste" class="quarto-section-identifier"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Waste</span></span></h1>
 </div>
 
 
@@ -712,10 +754,204 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Waste sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>The waste sector is unlike most others CIMS represents: its greenhouse-gas footprint is overwhelmingly a single non-CO₂ gas — methane generated as organic waste decomposes in landfills — rather than energy use. The sub-model is therefore built around the management of that landfill methane: whether it is vented, flared, or captured for energy. The emphasis, as elsewhere, is on the structure of the energy-service flow model — the nodes, the technologies that compete at each, and the engineering ratios that link them. The tree is region-agnostic. Tellingly, the sector’s activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not energy or output, are its organising variable.</p>
+<section id="scope" class="level2" data-number="28.1">
+<h2 data-number="28.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">28.1</span> Scope</h2>
+<p>CIMS represents the <strong>management of landfill gas</strong> at municipal solid waste disposal sites — the dominant source of greenhouse gases in the waste sector. Landfills are grouped by size (large, medium, and small), because the economics of gas collection and use depend strongly on how much gas a site produces. The driving variable is the methane-generation potential of the waste in place, expressed in tonnes of CO₂-equivalent; a forecast of that potential — which declines over the projection as waste diversion reduces the organic material sent to landfill — drives the sub-model.</p>
+<p>Adjacent activities are handled elsewhere or fall outside the current model. Waste collection and haulage are part of the <a href="./sector_transportation_freight.html">Transportation (Freight)</a> sector; the energy services of waste-management facilities are small and not separately represented; and waste used as a fuel (waste-derived fuel in cement kilns, biomass boilers) is accounted in the consuming sectors. The current sub-model focuses on landfill gas; wastewater treatment methane and waste incineration are not yet represented (see the limitations below).</p>
+</section>
+<section id="real-world-context" class="level2" data-number="28.2">
+<h2 data-number="28.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">28.2</span> Real-world context</h2>
+<p>The waste sector is a small but stubborn share of Canada’s greenhouse-gas emissions, and it is dominated by <strong>landfill methane</strong>. As the organic fraction of municipal solid waste — food, paper, wood, yard trimmings — decomposes anaerobically in a landfill, it generates landfill gas that is roughly half methane and half CO₂. Because methane has a global-warming potential many times that of CO₂ (on the order of 28–30 over 100 years, and far higher over 20 years), uncontrolled landfill gas is the sector’s defining problem and its largest abatement opportunity.</p>
+<p>The levers are well established. Capturing the gas with a collection system and <strong>flaring</strong> it converts the methane to CO₂, cutting the warming impact of that gas by roughly a factor of 25 at modest cost; capturing it and using it for <strong>energy</strong> — electricity generation, or upgrading to pipeline-quality renewable natural gas (RNG) — does the same while displacing fossil energy and earning revenue. Upstream, diverting organics from landfill through composting and anaerobic digestion prevents the methane from being generated in the first place. Canada has committed under the Global Methane Pledge to cut methane sharply by 2030, and federal regulations targeting methane from large municipal landfills (gas capture and control requirements) are a central part of the waste-sector effort <span class="citation" data-cites="eccc-waste">(<a href="index.html#ref-eccc-waste" role="doc-biblioref">Environment and Climate Change Canada 2024</a>)</span>. The CIMS structure mirrors the end-of-pipe choice directly: each landfill chooses among venting, flaring, and energy recovery, with the size split capturing the very different economics of large versus small sites.</p>
+</section>
+<section id="model-structure" class="level2" data-number="28.3">
+<h2 data-number="28.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">28.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the landfill sites, grouped by size — with the gas-management technologies competing at each. <a href="#fig-waste-flow-model" class="quarto-xref">Figure&nbsp;<span>28.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the landfill-gas options compete on lifecycle cost, with the carbon price (applied to methane on a CO₂-equivalent basis) as the main driver.</p>
+<div id="fig-waste-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-waste-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/waste_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;28.1: Energy-service flow model of the waste sector (region-agnostic master tree). Methane-generation potential (in tonnes of CO₂-equivalent) is allocated across landfill Sites by size (Large, Medium, Small); at each, three landfill-gas options compete — No Control (vents CH₄), Flaring (captures and burns the gas, converting CH₄ to CO₂), and Electricity Generation (landfill-gas-to-energy, which also produces electricity). Larger sites more readily justify capture and energy recovery."><img src="images/waste_flow_model.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-waste-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;28.1: Energy-service flow model of the waste sector (region-agnostic master tree). Methane-generation potential (in tonnes of CO₂-equivalent) is allocated across landfill <strong>Sites</strong> by size (Large, Medium, Small); at each, three landfill-gas options compete — No Control (vents CH₄), Flaring (captures and burns the gas, converting CH₄ to CO₂), and Electricity Generation (landfill-gas-to-energy, which also produces electricity). Larger sites more readily justify capture and energy recovery.
+</figcaption>
+</figure>
+</div>
+<section id="products-landfill-sites-and-their-gas-management-options" class="level3" data-number="28.3.1">
+<h3 data-number="28.3.1" class="anchored" data-anchor-id="products-landfill-sites-and-their-gas-management-options"><span class="header-section-number">28.3.1</span> Products: landfill sites and their gas-management options</h3>
+<p>The <strong>Sites</strong> node splits the landfill stock into <strong>Large Sites</strong>, <strong>Medium Sites</strong>, and <strong>Small Sites</strong>. At each, three technologies compete to manage the landfill gas:</p>
+<ul>
+<li><strong>No Control</strong> — the gas is vented uncontrolled, so the site emits its full methane potential as <strong>CH₄</strong>. This is the do-nothing baseline.</li>
+<li><strong>Flaring</strong> — a gas-collection system captures the landfill gas and flares it, combusting the methane. The emission becomes <strong>CO₂</strong> rather than CH₄, cutting the warming impact of the captured gas roughly twenty-five-fold while producing no useful energy.</li>
+<li><strong>Electricity Generation</strong> — landfill-gas-to-energy: the captured gas (modelled as a biogas fuel) is burned in an engine to generate electricity, again emitting CO₂ rather than CH₄ and, in addition, displacing grid electricity (the technology returns power to the grid).</li>
+</ul>
+<p>The site-size grouping is what lets the model represent the central real-world fact that large landfills generate enough gas to justify a collection system and an engine, while small sites often cannot and are more likely to vent or, at most, flare.</p>
+<p><mark>TODO: The model represents only the end-of-pipe management of landfill gas. Add upstream <strong>organics diversion</strong> (composting and anaerobic digestion) as a competing way to reduce the methane-generation potential itself, since diverting food and yard waste prevents the gas rather than treating it — and is the lever federal and municipal policy increasingly emphasises.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="28.4">
+<h2 data-number="28.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">28.4</span> Decarbonisation technologies</h2>
+<p>Waste-sector decarbonisation means <strong>capturing and using landfill methane</strong> and, further upstream, <strong>preventing its generation</strong>. <a href="#tbl-waste-decarb" class="quarto-xref">Table&nbsp;<span>28.1</span></a> summarises maturity and <a href="#tbl-waste-cost" class="quarto-xref">Table&nbsp;<span>28.2</span></a> gives indicative costs (here as cost of abatement per tonne of CO₂-equivalent, since the options are gas-management systems rather than process plant).</p>
+<div id="tbl-waste-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-waste-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;28.1: Indicative performance and maturity of key waste decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-waste-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology / practice</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gas collection + flaring</td>
+<td style="text-align: left;">Converts captured CH₄ to CO₂ (~25× lower GWP)</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Landfill-gas-to-electricity</td>
+<td style="text-align: left;">As flaring, plus displaces grid power</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Landfill-gas-to-RNG (pipeline upgrading)</td>
+<td style="text-align: left;">As above, plus displaces fossil gas</td>
+<td style="text-align: left;">Commercial — <em>not yet in model</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Improved collection efficiency / final cover</td>
+<td style="text-align: left;">Captures a larger share of generated gas</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Organics diversion (composting)</td>
+<td style="text-align: left;">Prevents methane generation</td>
+<td style="text-align: left;">Commercial — <em>not yet in model</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anaerobic digestion of organics</td>
+<td style="text-align: left;">Prevents landfill methane; yields biogas</td>
+<td style="text-align: left;">Commercial — <em>not yet in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Source reduction / waste minimisation</td>
+<td style="text-align: left;">Less organic waste landfilled</td>
+<td style="text-align: left;">Policy / behavioural</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-waste-cost" class="quarto-xref">Table&nbsp;<span>28.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="eccc-waste epa-lmop">(<a href="index.html#ref-eccc-waste" role="doc-biblioref">Environment and Climate Change Canada 2024</a>; <a href="index.html#ref-epa-lmop" role="doc-biblioref">U.S. Environmental Protection Agency 2024</a>)</span>, expressed in 2025 Canadian dollars. Because the options are gas-management systems whose benefit is avoided methane, costs are given as a cost (or net saving) per tonne of CO₂-equivalent abated. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-waste-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-waste-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;28.2: Indicative cost of waste-sector methane abatement, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-waste-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Cost of abatement (2025 CAD/t CO₂e)</th>
+<th style="text-align: left;">Capital</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gas collection + flaring</td>
+<td style="text-align: left;">~5–30</td>
+<td style="text-align: left;">collection wells + flare</td>
+<td style="text-align: left;">cheap, high-impact; no revenue</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Landfill-gas-to-electricity</td>
+<td style="text-align: left;">~20–60 (net of power revenue)</td>
+<td style="text-align: left;">collection + genset</td>
+<td style="text-align: left;">revenue offsets cost</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Landfill-gas-to-RNG</td>
+<td style="text-align: left;">~30–100 (net of gas revenue)</td>
+<td style="text-align: left;">collection + upgrading</td>
+<td style="text-align: left;">best at large sites</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Organics diversion (composting)</td>
+<td style="text-align: left;">~20–80</td>
+<td style="text-align: left;">facility + collection</td>
+<td style="text-align: left;">prevents generation; co-benefits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Anaerobic digestion of organics</td>
+<td style="text-align: left;">~40–120</td>
+<td style="text-align: left;">digester</td>
+<td style="text-align: left;">biogas revenue offsets</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="capturing-and-using-landfill-gas" class="level3" data-number="28.4.1">
+<h3 data-number="28.4.1" class="anchored" data-anchor-id="capturing-and-using-landfill-gas"><span class="header-section-number">28.4.1</span> Capturing and using landfill gas</h3>
+<p>The largest and cheapest lever is to stop venting. A <strong>gas-collection system</strong> with <strong>flaring</strong> converts captured methane to CO₂ at low cost and is the workhorse of landfill methane control; it is the Flaring technology in the model. Where a site generates enough gas, <strong>electricity generation</strong> does the same while earning power revenue — the model’s Electricity Generation technology, which returns electricity to the grid — and <strong>upgrading to renewable natural gas</strong> (not yet a distinct option in the model) displaces fossil gas instead. Larger sites favour energy recovery; smaller sites favour flaring or remain uncontrolled, which is exactly why the model resolves the stock by size.</p>
+</section>
+<section id="preventing-methane-organics-diversion" class="level3" data-number="28.4.2">
+<h3 data-number="28.4.2" class="anchored" data-anchor-id="preventing-methane-organics-diversion"><span class="header-section-number">28.4.2</span> Preventing methane: organics diversion</h3>
+<p>The deeper lever is to keep the organic material out of the landfill in the first place. <strong>Composting</strong> and <strong>anaerobic digestion</strong> of food and yard waste prevent the anaerobic decomposition that generates landfill methane, and anaerobic digestion additionally yields biogas. These upstream options reduce the methane-generation potential itself rather than managing the gas after the fact, and are the focus of much current policy — but the model does not yet represent them (see the TODO above).</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the abatement costs, gas-capture efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="28.5">
+<h2 data-number="28.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">28.5</span> Economics</h2>
+<p>Technology choice at each site follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each landfill-gas option carries a capital cost (collection system, flare or engine), an operating cost, the methane-generation potential it serves, any electricity it returns to the grid, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares by the inverse-power choice rule.</p>
+<p>Waste technologies are discounted at rates of roughly 20–35% in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> govern how sharply the gas-management competitions respond to cost.</p>
+<p>The emissions accounting is the heart of this sub-model and is almost entirely <strong>non-CO₂</strong>. The No Control technology emits the site’s full potential as <strong>CH₄</strong>, while Flaring and Electricity Generation emit the same quantity of carbon as <strong>CO₂</strong> — so the difference between them, on a CO₂-equivalent basis, is the large methane-versus-CO₂ warming gap. Methane enters at its high global-warming potential, which is what makes capture so valuable per dollar. The Electricity Generation route additionally returns power to the grid, an avoided-emissions and revenue benefit that improves its lifecycle cost. Because the activity variable is itself in CO₂-equivalent and the abatement options are inexpensive relative to their methane benefit, even a modest carbon price (or a landfill methane regulation) drives a large shift from venting toward flaring and energy recovery.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="28.6">
+<h2 data-number="28.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">28.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the waste structure, each with its large, medium, and small landfill sites. The methane-generation potential differs by region with population and waste arisings, and it declines over the projection as diversion programmes reduce the organic fraction sent to landfill. Regional differences also show up in the value of the recovered electricity, which depends on the local grid and power price, and in the share of large sites (which can justify energy recovery) versus small ones.</p>
+<p><mark>TODO: Calibrate the regional split of waste across large, medium, and small sites and the baseline control levels (vent / flare / energy) against Environment and Climate Change Canada’s National Inventory Report and provincial landfill data, since both the emissions and the abatement potential depend heavily on the site-size distribution.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="28.7">
+<h2 data-number="28.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">28.7</span> Limitations and planned extensions</h2>
+<p>The waste sub-model captures the sector’s dominant emission — landfill methane — and the core end-of-pipe management choice between venting, flaring, and energy recovery, resolved by site size. But it is deliberately narrow, and several real-world levers and sources are missing. The TODOs above record the priorities: adding upstream <strong>organics diversion</strong> (composting and anaerobic digestion) that prevents methane generation, adding a <strong>renewable natural gas</strong> upgrading pathway alongside electricity generation, and representing <strong>gas-capture efficiency</strong> explicitly rather than as a binary control choice. Two further sources — <strong>wastewater treatment</strong> methane and <strong>waste incineration</strong> — are not represented at all and would round out the sector. Because waste emissions are largely non-CO₂ and cheap to abate, a faithful representation of these levers is valuable out of proportion to the sector’s small energy footprint.</p>
+<p><mark>TODO: Add wastewater-treatment methane and waste incineration to complete the sector, and represent the methane-generation potential’s dependence on waste composition and diversion policy rather than as a single exogenous CO₂-equivalent forecast.</mark></p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled landfill methane against Environment and Climate Change Canada’s National Inventory Report.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-eccc-waste" class="csl-entry" role="listitem">
+Environment and Climate Change Canada. 2024. <em>Reducing Methane Emissions from Canada’s Municipal Solid Waste Landfills: Proposed Regulatory Framework</em>. Government of Canada. <a href="https://www.canada.ca/en/environment-climate-change/services/managing-reducing-waste/municipal-solid/reducing-methane-emissions-landfills.html">https://www.canada.ca/en/environment-climate-change/services/managing-reducing-waste/municipal-solid/reducing-methane-emissions-landfills.html</a>.
+</div>
+<div id="ref-epa-lmop" class="csl-entry" role="listitem">
+U.S. Environmental Protection Agency. 2024. <em>Landfill Methane Outreach Program (<span>LMOP</span>): Basic Information about Landfill Gas</em>. US EPA. <a href="https://www.epa.gov/lmop/basic-information-about-landfill-gas">https://www.epa.gov/lmop/basic-information-about-landfill-gas</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1913,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

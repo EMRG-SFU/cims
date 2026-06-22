@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,30 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">29.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">29.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">29.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-the-emitting-processes" id="toc-products-the-emitting-processes" class="nav-link" data-scroll-target="#products-the-emitting-processes"><span class="header-section-number">29.3.1</span> Products: the emitting processes</a></li>
+  <li><a href="#services-tractors-and-heat" id="toc-services-tractors-and-heat" class="nav-link" data-scroll-target="#services-tractors-and-heat"><span class="header-section-number">29.3.2</span> Services: tractors and heat</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">29.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#cutting-enteric-and-manure-methane" id="toc-cutting-enteric-and-manure-methane" class="nav-link" data-scroll-target="#cutting-enteric-and-manure-methane"><span class="header-section-number">29.4.1</span> Cutting enteric and manure methane</a></li>
+  <li><a href="#cutting-soil-n₂o-and-storing-carbon" id="toc-cutting-soil-n₂o-and-storing-carbon" class="nav-link" data-scroll-target="#cutting-soil-n₂o-and-storing-carbon"><span class="header-section-number">29.4.2</span> Cutting soil N₂O and storing carbon</a></li>
+  <li><a href="#on-farm-energy" id="toc-on-farm-energy" class="nav-link" data-scroll-target="#on-farm-energy"><span class="header-section-number">29.4.3</span> On-farm energy</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">29.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">29.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">29.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +739,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_agriculture.html"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Agriculture</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Agriculture</span></h1>
+<h1 class="title"><span id="sec-agriculture" class="quarto-section-identifier"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Agriculture</span></span></h1>
 </div>
 
 
@@ -712,10 +756,223 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Agriculture sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>Agriculture is unlike the other sectors CIMS represents: most of its greenhouse-gas emissions are not from burning fuel but from biological and chemical processes — methane (CH₄) from livestock digestion and manure, and nitrous oxide (N₂O) from soils — so the sub-model is built around those process emissions and the options that abate them, rather than around energy services. The emphasis, as elsewhere, is on the structure of the energy-service flow model — the process and service nodes, the technologies that compete at each, and the engineering ratios that link them. The tree is region-agnostic. Tellingly, the sector’s activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not energy or output, are its organising variable.</p>
+<section id="scope" class="level2" data-number="29.1">
+<h2 data-number="29.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">29.1</span> Scope</h2>
+<p>CIMS represents the greenhouse-gas-emitting activities of agriculture and the on-farm energy that supports them: livestock enteric fermentation and manure management (the CH₄ sources), agricultural soils (the N₂O source, together with the land-management practices that affect it), farm tractors (mobile diesel equipment), and farm process and building heat. The driving variable is the level of agricultural activity, expressed in CO₂-equivalent terms.</p>
+<p>Adjacent activities are handled elsewhere to avoid double-counting: the manufacture of nitrogen fertiliser is in <a href="./sector_chemical_products.html">Chemical Products</a> (ammonia synthesis); food and beverage processing is in <a href="./sector_light_industrial.html">Light Industrial</a>; the biofuels that use agricultural feedstock are in <a href="./sector_biodiesel.html">Biodiesel</a> and <a href="./sector_ethanol.html">Ethanol</a> (which carry their own Agricultural Input services); and the fuels burned on-farm are supplied by the energy-supply sub-models. This chapter covers the emissions and energy use of farming itself.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="29.2">
+<h2 data-number="29.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">29.2</span> Real-world context</h2>
+<p>Agriculture is responsible for roughly 8% of Canada’s greenhouse-gas emissions, and the composition is distinctive: it is overwhelmingly non-CO₂. Enteric fermentation — the methane cattle and other ruminants produce as they digest forage — is the single largest source, around 46% of agricultural emissions; manure management (CH₄ and N₂O) adds about 27%; and agricultural soils emit N₂O, chiefly from nitrogen fertiliser and crop residues <span class="citation" data-cites="nfu-ag-ghg">(<a href="index.html#ref-nfu-ag-ghg" role="doc-biblioref">National Farmers Union 2022</a>)</span>. On-farm fuel use (tractors, grain drying, heating) is comparatively small and is mostly diesel and natural gas.</p>
+<p>This composition shapes the decarbonisation problem. Because the emissions are biological, the levers are agronomic and dietary rather than purely technological: feed additives and rumen modification to cut enteric methane, manure management changes, nitrogen and tillage management to cut soil N₂O, and land-use practices (agroforestry, wetland restoration, reduced tillage) that store carbon in soils and biomass. The feed additive 3-nitrooxypropanol (3-NOP), for example, consistently cuts enteric methane by around 30% on average <span class="citation" data-cites="threenop">(<a href="index.html#ref-threenop" role="doc-biblioref"><span class="nocase">Kebreab et al.</span> 2021</a>)</span>. The CIMS structure mirrors this: it carries explicit CH₄ and N₂O process-emission factors on the livestock and soils nodes and competes the abatement practices against conventional ones, while representing the on-farm energy through a small set of tractor and heat technologies.</p>
+</section>
+<section id="model-structure" class="level2" data-number="29.3">
+<h2 data-number="29.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">29.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the emitting agricultural processes — and a <strong>Service</strong> sub-tree of the on-farm energy services. <a href="#fig-agriculture-flow-model" class="quarto-xref">Figure&nbsp;<span>29.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the abatement options compete against conventional practice on a lifecycle-cost basis, with the carbon price (applied to CH₄ and N₂O on a CO₂-equivalent basis) as the main driver.</p>
+<div id="fig-agriculture-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-agriculture-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/agriculture_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;29.1: Energy-service flow model of the agriculture sector (region-agnostic master tree). The Product sub-tree holds the emitting processes — Enteric Fermentation and Manure Management (CH₄) and Soils (N₂O, with tillage and land-use options including net-sequestering practices) — and the Service sub-tree holds on-farm Tractors and Heat."><img src="images/agriculture_flow_model.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-agriculture-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;29.1: Energy-service flow model of the agriculture sector (region-agnostic master tree). The Product sub-tree holds the emitting processes — Enteric Fermentation and Manure Management (CH₄) and Soils (N₂O, with tillage and land-use options including net-sequestering practices) — and the Service sub-tree holds on-farm Tractors and Heat.
+</figcaption>
+</figure>
+</div>
+<section id="products-the-emitting-processes" class="level3" data-number="29.3.1">
+<h3 data-number="29.3.1" class="anchored" data-anchor-id="products-the-emitting-processes"><span class="header-section-number">29.3.1</span> Products: the emitting processes</h3>
+<ul>
+<li><strong>Enteric Fermentation and Manure Management</strong> — the livestock methane source. It competes conventional Livestock against Livestock + Vaccines + Rumen changes, a package of dietary and biological interventions (feed additives such as 3-NOP, methane vaccines, rumen modification) that cuts the enteric-CH₄ factor by roughly 60% in the data.</li>
+<li><strong>Soils</strong> — the cropland N₂O source, competing land-management practices that differ in their soil-N₂O intensity and carbon storage: Conventional Tillage, Minimal Tillage, and Zero Tillage (progressively lower N₂O), and Agroforestry and Wetland Restoration, which store carbon and can be net-sequestering.</li>
+</ul>
+</section>
+<section id="services-tractors-and-heat" class="level3" data-number="29.3.2">
+<h3 data-number="29.3.2" class="anchored" data-anchor-id="services-tractors-and-heat"><span class="header-section-number">29.3.2</span> Services: tractors and heat</h3>
+<ul>
+<li><strong>Tractors</strong> — on-farm mobile equipment, competing standard and medium-efficiency diesel against a hydrogen option.</li>
+<li><strong>Heat</strong> — farm process and building heat (grain drying, livestock housing), competing standard and efficient natural-gas and electric units.</li>
+</ul>
+<p><mark>TODO: The model lumps manure management together with enteric fermentation in a single node. Separate manure management so that its distinct abatement options — anaerobic digestion (biogas capture), covered storage, and solid–liquid separation — can be represented, since manure is about a quarter of agricultural emissions and has different, often cost-effective, mitigation.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="29.4">
+<h2 data-number="29.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">29.4</span> Decarbonisation technologies</h2>
+<p>Agricultural decarbonisation means abating CH₄ and N₂O and storing carbon in soils and biomass, with on-farm energy a secondary concern. <a href="#tbl-agriculture-decarb" class="quarto-xref">Table&nbsp;<span>29.1</span></a> summarises maturity and <a href="#tbl-agriculture-cost" class="quarto-xref">Table&nbsp;<span>29.2</span></a> gives indicative costs (here as cost of abatement per tonne of CO₂-equivalent, since most options are practice changes rather than capital equipment).</p>
+<div id="tbl-agriculture-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-agriculture-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;29.1: Indicative performance and maturity of key agricultural decarbonisation practices
+</figcaption>
+<div aria-describedby="tbl-agriculture-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology / practice</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Feed additives / rumen modification (e.g.&nbsp;3-NOP)</td>
+<td style="text-align: left;">~30% (avg) enteric CH₄ cut; up to ~60% in package</td>
+<td style="text-align: left;">Early commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anaerobic manure digestion (biogas)</td>
+<td style="text-align: left;">Captures manure CH₄; yields biogas</td>
+<td style="text-align: left;">Commercial — <em>not yet separated in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Zero / minimal tillage</td>
+<td style="text-align: left;">Lower soil N₂O; soil carbon retention</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Agroforestry</td>
+<td style="text-align: left;">Stores carbon in biomass and soil</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wetland restoration</td>
+<td style="text-align: left;">Avoids/stores emissions; co-benefits</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nitrogen management / nitrification inhibitors (4R)</td>
+<td style="text-align: left;">Lower soil N₂O</td>
+<td style="text-align: left;">Commercial — <em>not yet in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen / efficient tractors</td>
+<td style="text-align: left;">Lower on-farm diesel CO₂</td>
+<td style="text-align: left;">Emerging (hydrogen)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric / efficient farm heat</td>
+<td style="text-align: left;">Lower heating fuel CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-agriculture-cost" class="quarto-xref">Table&nbsp;<span>29.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="nfu-ag-ghg threenop">(<a href="index.html#ref-nfu-ag-ghg" role="doc-biblioref">National Farmers Union 2022</a>; <a href="index.html#ref-threenop" role="doc-biblioref"><span class="nocase">Kebreab et al.</span> 2021</a>)</span>, expressed in 2025 Canadian dollars. Because most options are practices rather than plant, costs are given as a cost (or saving) per tonne of CO₂-equivalent abated. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-agriculture-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-agriculture-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;29.2: Indicative cost of agricultural abatement practices, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-agriculture-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Practice</th>
+<th style="text-align: left;">Cost of abatement (2025 CAD/t CO₂e)</th>
+<th style="text-align: left;">Capital / input</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Feed additives (3-NOP)</td>
+<td style="text-align: left;">~20–80</td>
+<td style="text-align: left;">additive cost per head</td>
+<td style="text-align: left;">~30% enteric CH₄ cut</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Anaerobic manure digester</td>
+<td style="text-align: left;">~30–120</td>
+<td style="text-align: left;">digester capex (farm-scale)</td>
+<td style="text-align: left;">captures CH₄; biogas revenue offsets</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Zero / minimal tillage</td>
+<td style="text-align: left;">often <em>cost-saving</em></td>
+<td style="text-align: left;">none (equipment/practice)</td>
+<td style="text-align: left;">fuel and labour savings</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Agroforestry</td>
+<td style="text-align: left;">~10–60</td>
+<td style="text-align: left;">land opportunity cost</td>
+<td style="text-align: left;">carbon storage, co-benefits</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Wetland restoration</td>
+<td style="text-align: left;">~10–50</td>
+<td style="text-align: left;">land opportunity cost</td>
+<td style="text-align: left;">sequestration + co-benefits</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen tractor</td>
+<td style="text-align: left;">high (early)</td>
+<td style="text-align: left;">hydrogen + new equipment</td>
+<td style="text-align: left;">small share of ag emissions</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="cutting-enteric-and-manure-methane" class="level3" data-number="29.4.1">
+<h3 data-number="29.4.1" class="anchored" data-anchor-id="cutting-enteric-and-manure-methane"><span class="header-section-number">29.4.1</span> Cutting enteric and manure methane</h3>
+<p>The largest single source — enteric methane — is addressed by dietary and biological means: feed additives (notably 3-NOP), methane-suppressing vaccines, and rumen modification, represented in the model as the Livestock + Vaccines + Rumen changes package. Manure methane is best cut by anaerobic digestion, which captures the gas for energy, and by covered storage — high-value options the model does not yet separate from enteric emissions (see the TODO above).</p>
+</section>
+<section id="cutting-soil-n₂o-and-storing-carbon" class="level3" data-number="29.4.2">
+<h3 data-number="29.4.2" class="anchored" data-anchor-id="cutting-soil-n₂o-and-storing-carbon"><span class="header-section-number">29.4.2</span> Cutting soil N₂O and storing carbon</h3>
+<p>Soil N₂O falls with reduced and zero tillage and with better nitrogen management (right rate, source, timing, and placement — “4R” stewardship — and nitrification inhibitors). Agroforestry and wetland restoration go further by storing carbon in biomass and soils, and are among the few agricultural options that can be net-sequestering. The model competes the tillage and land-use practices directly at the Soils node.</p>
+</section>
+<section id="on-farm-energy" class="level3" data-number="29.4.3">
+<h3 data-number="29.4.3" class="anchored" data-anchor-id="on-farm-energy"><span class="header-section-number">29.4.3</span> On-farm energy</h3>
+<p>On-farm energy is a smaller lever: efficient and hydrogen tractors cut mobile-diesel CO₂, and electric and efficient farm heat cut heating emissions, drawing on the same low-carbon options as the other sectors.</p>
+<p><mark>TODO: Add explicit nitrogen-management / nitrification-inhibitor (4R) options at the Soils node, since fertiliser-driven N₂O is a major and cost-effectively abatable source not currently represented as a distinct technology.</mark></p>
+<p><mark>TODO: Replace the indicative literature ranges above with the abatement costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="29.5">
+<h2 data-number="29.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">29.5</span> Economics</h2>
+<p>Technology choice at every node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each practice carries a capital cost (often small), operating cost, an activity basis, any service requests, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares by the inverse-power choice rule.</p>
+<p>Agricultural practices are discounted at about 30% in the current data. As elsewhere in CIMS this is a <strong>behavioural</strong> (revealed or empirical) discount rate rather than a true financial cost of capital, capturing the payback horizons and adoption barriers that govern real farm decisions; CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10–15.</p>
+<p>The emissions accounting is the heart of this sub-model and is almost entirely non-CO₂: it carries explicit CH₄ factors on the enteric/manure node and N₂O factors on the soils node, applied per unit of activity and entering on a CO₂-equivalent basis at their high global-warming potentials. Some land-use practices (agroforestry, wetland restoration) can carry net-negative factors, representing carbon storage. Because the activity variable is itself in CO₂-equivalent, the carbon price acts very directly here: it makes the abatement packages — feed additives, reduced tillage, sequestering land use — cost-competitive against conventional practice, which is the model’s channel for agricultural mitigation.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="29.6">
+<h2 data-number="29.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">29.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the agriculture structure. The mix of sources differs by region: the Prairie provinces (Alberta, Saskatchewan, Manitoba) dominate both cattle (enteric and manure CH₄) and cropland (soil N₂O from extensive grain and oilseed production); Ontario and Québec have mixed livestock and cropping; and the Atlantic and British Columbia have smaller, more specialised agricultural sectors.</p>
+<p><mark>TODO: Calibrate the regional balance of livestock versus cropland emissions and the baseline tillage mix, since the effectiveness and cost of the abatement practices depend heavily on the regional activity mix.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="29.7">
+<h2 data-number="29.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">29.7</span> Limitations and planned extensions</h2>
+<p>The agriculture sub-model captures the sector’s dominant emissions — enteric and manure methane, and soil N₂O — and the main practice-based abatement levers, but it is deliberately coarse. Its principal limitations are the lumping of manure with enteric fermentation (hiding the cost-effective digester and storage options), the absence of explicit nitrogen-management options, and the simplified treatment of soil-carbon sequestration, whose permanence and measurement are genuinely difficult. The TODOs above record these priorities. Because agricultural emissions are largely non-CO₂ and biological, they are among the hardest in the whole model to abate deeply, which makes a faithful representation of the available practices especially valuable.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rate in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled agricultural CH₄ and N₂O against Environment and Climate Change Canada’s National Inventory Report and Agriculture and Agri-Food Canada data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-threenop" class="csl-entry" role="listitem">
+<span class="nocase">Kebreab, Ermias et al.</span> 2021. <span>“A Review of 3-Nitrooxypropanol for Enteric Methane Mitigation from Ruminant Livestock.”</span> <em>Animals</em> 11 (9): 2712. <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8697901/">https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8697901/</a>.
+</div>
+<div id="ref-nfu-ag-ghg" class="csl-entry" role="listitem">
+National Farmers Union. 2022. <em>Agricultural Greenhouse Gas Emissions in Canada: A New Clarity</em>. 2nd ed. National Farmers Union. <a href="https://www.nfu.ca/wp-content/uploads/2022/06/Comprehensive-Ag-GHG-Emissions-EN-2nd-Ed.pdf">https://www.nfu.ca/wp-content/uploads/2022/06/Comprehensive-Ag-GHG-Emissions-EN-2nd-Ed.pdf</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1934,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

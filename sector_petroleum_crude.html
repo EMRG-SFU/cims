@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -691,9 +713,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#conventional-crude-oil" id="toc-conventional-crude-oil" class="nav-link active" data-scroll-target="#conventional-crude-oil"><span class="header-section-number">10.1</span> Conventional crude oil</a></li>
-  <li><a href="#oil-sands-miningupgrading" id="toc-oil-sands-miningupgrading" class="nav-link" data-scroll-target="#oil-sands-miningupgrading"><span class="header-section-number">10.2</span> Oil sands mining/upgrading</a></li>
-  <li><a href="#in-situ-bitumen" id="toc-in-situ-bitumen" class="nav-link" data-scroll-target="#in-situ-bitumen"><span class="header-section-number">10.3</span> In-situ Bitumen</a></li>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">10.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">10.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">10.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-conventional-crude-and-the-oil-sands" id="toc-products-conventional-crude-and-the-oil-sands" class="nav-link" data-scroll-target="#products-conventional-crude-and-the-oil-sands"><span class="header-section-number">10.3.1</span> Products: conventional crude and the oil sands</a></li>
+  <li><a href="#services-steam-hydrogen-engines-and-capture" id="toc-services-steam-hydrogen-engines-and-capture" class="nav-link" data-scroll-target="#services-steam-hydrogen-engines-and-capture"><span class="header-section-number">10.3.2</span> Services: steam, hydrogen, engines, and capture</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">10.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#reducing-and-decarbonising-steam" id="toc-reducing-and-decarbonising-steam" class="nav-link" data-scroll-target="#reducing-and-decarbonising-steam"><span class="header-section-number">10.4.1</span> Reducing and decarbonising steam</a></li>
+  <li><a href="#carbon-capture-and-methane-control" id="toc-carbon-capture-and-methane-control" class="nav-link" data-scroll-target="#carbon-capture-and-methane-control"><span class="header-section-number">10.4.2</span> Carbon capture and methane control</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">10.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">10.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">10.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -703,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_petroleum_crude.html"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Petroleum Crude</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Petroleum Crude</span></h1>
+<h1 class="title"><span id="sec-petroleum-crude" class="quarto-section-identifier"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Petroleum Crude</span></span></h1>
 </div>
 
 
@@ -720,39 +755,227 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The petroleum crude industry in Canada includes:</p>
+<p>Crude oil and bitumen production is one of CIMS’s energy-supply sub-models, covering the upstream oil industry — conventional crude oil and, dominating both output and emissions in Canada, the oil sands (surface mining, in-situ recovery, and upgrading to synthetic crude). The emphasis is on the structure of the energy-service flow model: the production routes, the technologies that compete at each, and the energy services — above all steam — that drive them. The tree is region-agnostic. The defining feature of the sector is that the energy used to <em>produce</em> the oil — particularly the natural gas burned to raise steam for in-situ bitumen recovery — is itself a very large emissions source, so the sector’s decarbonisation is mostly about how that production energy is supplied and whether its CO₂ is captured.</p>
+<section id="scope" class="level2" data-number="10.1">
+<h2 data-number="10.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">10.1</span> Scope</h2>
+<p>CIMS represents the production of crude oil and bitumen: conventional light, medium, and heavy crude (onshore and offshore), and the oil sands in their three forms — surface mining, in-situ recovery, and upgrading of bitumen to synthetic crude oil. The driving variable is oil/bitumen output. The model carries the supporting energy services — steam, process hydrogen (for upgrading), industrial engines, and a <strong>CCS</strong> service.</p>
+<p>Adjacent activities are handled elsewhere: refining crude into fuels and products is in <a href="./sector_petroleum_refining.html">Petroleum Refining</a>; natural gas production is in <a href="./sector_natural_gas.html">Natural Gas</a>; the combustion of the refined fuels is in the demand sectors; and the hydrogen the sector uses can be drawn from the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model. This chapter covers getting the oil and bitumen out of the ground and to a refinery-ready state.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="10.2">
+<h2 data-number="10.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">10.2</span> Real-world context</h2>
+<p>Canadian crude production is dominated by the Alberta oil sands, the largest source of both output and emissions in the sector, supplemented by conventional crude (Saskatchewan, Alberta) and offshore production in the Atlantic (Newfoundland). The oil sands come in two forms: surface mining and upgrading, which digs out near-surface bitumen and upgrades it to synthetic crude; and in-situ recovery, which uses steam to mobilise deeper bitumen and now rivals mining as the main production route.</p>
+<p>The sector’s emissions profile is distinctive. For in-situ production, the single largest source is steam generation — natural gas burned to make the steam that lowers bitumen viscosity in steam-assisted gravity drainage (SAGD) and cyclic steam — so the carbon intensity of a barrel depends heavily on how much steam it needs and how that steam is produced <span class="citation" data-cites="oilsands-intensity">(<a href="index.html#ref-oilsands-intensity" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>. Upgrading adds the emissions of coking, hydrotreating, and the hydrogen it consumes. The decarbonisation levers follow directly: solvent-assisted in-situ processes that cut steam use (with potential to lower intensity by up to ~50%), low-carbon steam (electric, hydrogen, nuclear, cogeneration), and carbon capture — the focus of the Pathways Alliance, whose proposed oil sands CCS network would be among the world’s largest <span class="citation" data-cites="pathways-alliance oilsands-intensity">(<a href="index.html#ref-pathways-alliance" role="doc-biblioref">Pathways Alliance 2024</a>;<a href="index.html#ref-oilsands-intensity" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>. The CIMS structure captures all of these as competing technologies at the production and steam nodes.</p>
+</section>
+<section id="model-structure" class="level2" data-number="10.3">
+<h2 data-number="10.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">10.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the production routes — and a <strong>Service</strong> sub-tree of the energy services that supply them. <a href="#fig-petroleum-crude-flow-model" class="quarto-xref">Figure&nbsp;<span>10.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>).</p>
+<div id="fig-petroleum-crude-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-petroleum-crude-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/petroleum_crude_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;10.1: Energy-service flow model of the petroleum crude sector (region-agnostic master tree). The Product sub-tree holds conventional crude (light/medium onshore and offshore, heavy) and the oil sands (in-situ recovery, surface mining, and upgrading to synthetic crude); the Service sub-tree supplies the steam, hydrogen, industrial engines and CCS the production routes draw on. Steam generation is the dominant emission source for in-situ bitumen."><img src="images/petroleum_crude_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-petroleum-crude-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;10.1: Energy-service flow model of the petroleum crude sector (region-agnostic master tree). The Product sub-tree holds conventional crude (light/medium onshore and offshore, heavy) and the oil sands (in-situ recovery, surface mining, and upgrading to synthetic crude); the Service sub-tree supplies the steam, hydrogen, industrial engines and CCS the production routes draw on. Steam generation is the dominant emission source for in-situ bitumen.
+</figcaption>
+</figure>
+</div>
+<section id="products-conventional-crude-and-the-oil-sands" class="level3" data-number="10.3.1">
+<h3 data-number="10.3.1" class="anchored" data-anchor-id="products-conventional-crude-and-the-oil-sands"><span class="header-section-number">10.3.1</span> Products: conventional crude and the oil sands</h3>
 <ul>
-<li><p>A conventional crude oil production system, which comprises all facilities and associated infrastructure used to extract, treat, and transport light, medium, and heavy crude oils to market.</p></li>
-<li><p>An unconventional crude oil system, which comprises all facilities used to extract crude bitumen from oil sands and subsequently upgrade them to synthetic crude oil. It is disaggregated into in-situ bitumen recovery and oil sands mining/upgrading.</p></li>
-</ul>
-<section id="conventional-crude-oil" class="level2" data-number="10.1">
-<h2 data-number="10.1" class="anchored" data-anchor-id="conventional-crude-oil"><span class="header-section-number">10.1</span> Conventional crude oil</h2>
-<p>The production, treatment and transmission segment of the conventional crude oil system may comprise the following infrastructure:</p>
+<li>Light/Medium crude — Onshore and Offshore conventional production.</li>
+<li>Heavy crude — conventional heavy oil.</li>
+<li>Exploration — the upstream drilling and appraisal activity.</li>
+<li>Bitumen — the oil sands, in three linked nodes:
 <ul>
-<li><p>Oil wells which produce at least one barrel of crude petroleum oil to each 100,000 cubic feet of natural gas.</p></li>
-<li><p>Oil transmission pipelines or tanker vehicles to transport the well effluent to a battery or a cleaning plant.</p></li>
-<li><p>Batteries where effluent from wells is separated into its constituent phases for metering and appropriate disposition.</p></li>
-<li><p>Oil storage tankers.</p></li>
-<li><p>Oil transmission pipelines or tanker vehicles to move crude oil from producers to market.</p></li>
+<li>In-Situ — competing SAGD, SAGD with enhanced leak detection (ELDAR), Cyclic Steam, Solvent, and Hybrid Thermal-Solvent recovery. These differ in steam intensity (and therefore CO₂) and in methane (the solvent and hybrid routes cut both).</li>
+<li>Mining — surface mining (Existing and Improved).</li>
+<li>Upgrading — converting bitumen to synthetic crude, competing conventional Upgrading, Efficient, ELDAR, and ELDAR + CCS routes.</li>
+</ul></li>
 </ul>
 </section>
-<section id="oil-sands-miningupgrading" class="level2" data-number="10.2">
-<h2 data-number="10.2" class="anchored" data-anchor-id="oil-sands-miningupgrading"><span class="header-section-number">10.2</span> Oil sands mining/upgrading</h2>
-<p>Oil sands mining/upgrading usually comprises the following steps:</p>
+<section id="services-steam-hydrogen-engines-and-capture" class="level3" data-number="10.3.2">
+<h3 data-number="10.3.2" class="anchored" data-anchor-id="services-steam-hydrogen-engines-and-capture"><span class="header-section-number">10.3.2</span> Services: steam, hydrogen, engines, and capture</h3>
 <ul>
-<li><p>Surface mining: Since the 1920’s, open pit mining has been central to oil sands development. Mine equipment from the early years was scaled up significantly when large commercial operations started to come on line. In the past, draglines and bucket-wheel reclaimers were used to mine oil sands. This practice has largely been replaced by shovel-and-truck mining, which gives greater flexibility. Run-of-mine oil sands, dug directly from the open pit faces, is hauled to in-pit crushing stations, and is then slurried and pumped to the bitumen extraction plants.</p></li>
-<li><p>Bitumen extraction: The oil in oil sand is called bitumen, a complex hydrocarbon made up of a long chain of molecules. Bitumen is usually separated from oil sands using a warm-water extraction process. The mixing that takes place during slurry transport from the mine to the plant is sufficient to begin the separation process, which recovers over 90% of the bitumen resource. The resulting bitumen froth then forms the feedstock for creating synthetic crude oil.</p></li>
-<li><p>Raw bitumen upgrading: In order for bitumen to be processed in refineries, the complex hydrocarbon chain in bitumen must be broken up and reorganized, which means removing some carbon while adding additional hydrogen to make more valuable hydrocarbon products by upgrading. This is done using four main processes: coking removes carbon and breaks large bitumen molecules into smaller parts, distillation sorts mixtures of hydrocarbon molecules into their components, catalytic conversions help transform hydrocarbons into more valuable forms and hydrotreating is used to help remove sulphur and nitrogen and add hydrogen to molecules. Further treatment and blending produces light low-sulphur (sweet) synthetic crude that is shipped by pipeline to refineries.</p></li>
+<li><strong>Steam</strong> — the most important service, because in-situ recovery is steam-intensive. It competes natural-gas, heavy-fuel-oil, and petcoke boilers (with CCS variants), natural-gas cogeneration (with and without CCS), and electric, hydrogen, and nuclear steam. The choice here largely determines an in-situ barrel’s carbon intensity.</li>
+<li><strong>Still Gas</strong> — steam raised from refinery/upgrader still gas, with boiler and cogeneration options (with and without CCS).</li>
+<li><strong>Hydrogen</strong> — for upgrading (can be sourced from the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model’s grey, blue, and green routes).</li>
+<li><strong>Industrial Engines</strong> — diesel, gasoline, and propane mobile equipment (mine trucks, and the like).</li>
+<li><strong>CCS</strong> — the shared capture service (90% capture), central to deep decarbonisation of the sector.</li>
 </ul>
+<p><mark>TODO: Link the sector’s hydrogen demand explicitly to the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model’s production competition, so that upgrading hydrogen carries the cost and carbon intensity of the chosen (grey, blue, or green) route rather than an assumed value.</mark></p>
 </section>
-<section id="in-situ-bitumen" class="level2" data-number="10.3">
-<h2 data-number="10.3" class="anchored" data-anchor-id="in-situ-bitumen"><span class="header-section-number">10.3</span> In-situ Bitumen</h2>
-<p>About 80% of the oil sands in Alberta are buried too deep below the surface for open pit mining. This oil must be recovered by in situ techniques (“in situ” is Latin for “in place”). Using drilling technology, steam is injected into the deposit to heat the oil sand lowering the viscosity of the bitumen. The hot bitumen migrates towards producing wells, bringing it to the surface, while the sand is left in place.</p>
-<p>The most promising thermal recovery technology for Canadian bitumen resources is the steam-assisted gravity drainage (SAGD) process. In this process, two horizontal wells aligned in a vertical plane are drilled near the bottom of the reservoir. The top horizontal well is used to inject steam, while the bottom well is used to collect the produced liquids (oil, condensed steam, formation water). The steam injected from the top well rises into the formation, forming a large steam chamber above the well. The rising steam condenses on the boundary of the chamber, heating the oil and allowing it to drain to the production well. The process leads to high oil rates and a high recovery of the original oil in place at economic oil-to-steam ratios.</p>
-<p>The SAGD process is energy intensive. For some reservoirs, the vapour extraction (VAPEX)rocess may have more potential. It is an analogue to SAGD, involving the injection of vaporized solvents (e.g.&nbsp;ethane, propane, butane) or solvent/gas mixtures rather than steam. This process results in the formation of a vapor chamber rather than a steam chamber, but with a similar reduction in oil viscosity at the chamber boundary that allows the oil to drain to the production well. Although VAPEX is less energy intensive than SAGD, production rates are also lower.</p>
-<p>In addition, hybrid steam/solvent processes are currently under development for reservoirs in which steam or solvent processes alone are not suitable.</p>
-<p>Production from in situ already rivals open pit mining and in the future may well replace mining as the main source of bitumen production from the oil sands. Challenges facing in situ process are efficient recoveries, management of water used to make steam, and co-generation of all (otherwise waste) heat sources to minimize energy costs.</p>
-<p>Figure: Oil sands</p>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="10.4">
+<h2 data-number="10.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">10.4</span> Decarbonisation technologies</h2>
+<p>Oil-sands and crude decarbonisation works through reducing steam demand (solvent processes), decarbonising the steam and process energy (electric, hydrogen, nuclear, cogeneration), capturing CO₂ (the Pathways CCS network), and controlling methane. <a href="#tbl-petroleum-crude-decarb" class="quarto-xref">Table&nbsp;<span>10.1</span></a> summarises maturity and <a href="#tbl-petroleum-crude-cost" class="quarto-xref">Table&nbsp;<span>10.2</span></a> gives indicative costs.</p>
+<div id="tbl-petroleum-crude-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-petroleum-crude-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10.1: Indicative performance and maturity of key petroleum-crude decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-petroleum-crude-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Solvent / hybrid thermal-solvent SAGD</td>
+<td style="text-align: left;">Up to ~50% lower in-situ CO₂ intensity</td>
+<td style="text-align: left;">Pilot / demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric / hydrogen / nuclear steam</td>
+<td style="text-align: left;">Decarbonises SAGD steam</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cogeneration (gas, with or without CCS)</td>
+<td style="text-align: left;">Combined heat and power; surplus export</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CCS on steam / upgrading (Pathways)</td>
+<td style="text-align: left;">Captures ~90% of treated CO₂</td>
+<td style="text-align: left;">Demonstration (large-scale proposed)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Efficient / ELDAR upgrading</td>
+<td style="text-align: left;">Lower upgrading energy and methane</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Enhanced leak detection (ELDAR)</td>
+<td style="text-align: left;">Cuts fugitive and vented methane</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mining electrification (trucks)</td>
+<td style="text-align: left;">Lower mine-fleet diesel CO₂</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-petroleum-crude-cost" class="quarto-xref">Table&nbsp;<span>10.2</span></a> are order-of-magnitude figures from public Canadian sources <span class="citation" data-cites="pathways-alliance oilsands-intensity">(<a href="index.html#ref-pathways-alliance" role="doc-biblioref">Pathways Alliance 2024</a>;<a href="index.html#ref-oilsands-intensity" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>, expressed in 2025 Canadian dollars. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-petroleum-crude-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-petroleum-crude-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;10.2: Indicative techno-economic characteristics of petroleum-crude decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-petroleum-crude-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Cost / capex</th>
+<th style="text-align: left;">Effect</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Solvent / hybrid SAGD</td>
+<td style="text-align: left;">process retrofit / new wells</td>
+<td style="text-align: left;">up to ~50% lower steam CO₂</td>
+<td style="text-align: left;">solvent + reduced steam</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric steam (boiler)</td>
+<td style="text-align: left;">~150–400 CAD/kWth</td>
+<td style="text-align: left;">removes steam combustion CO₂</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen steam / fuel</td>
+<td style="text-align: left;">retrofit + hydrogen cost</td>
+<td style="text-align: left;">low-carbon if blue or green H₂</td>
+<td style="text-align: left;">hydrogen</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Gas cogeneration (with or without CCS)</td>
+<td style="text-align: left;">~1,800–3,000 CAD/kWe</td>
+<td style="text-align: left;">CHP; exports surplus power</td>
+<td style="text-align: left;">natural gas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CCS on steam / upgrading</td>
+<td style="text-align: left;">+30–50% plant equipment</td>
+<td style="text-align: left;">~CAD 70–150 / t CO₂</td>
+<td style="text-align: left;">steam / electricity for capture</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Enhanced leak detection (ELDAR)</td>
+<td style="text-align: left;">low; often net-negative</td>
+<td style="text-align: left;">cuts fugitive methane</td>
+<td style="text-align: left;">— (recovered gas)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="reducing-and-decarbonising-steam" class="level3" data-number="10.4.1">
+<h3 data-number="10.4.1" class="anchored" data-anchor-id="reducing-and-decarbonising-steam"><span class="header-section-number">10.4.1</span> Reducing and decarbonising steam</h3>
+<p>For in-situ bitumen, the game is steam. Solvent and hybrid thermal-solvent processes inject light hydrocarbons (often propane) in place of, or alongside, steam, cutting the steam needed per barrel and lowering carbon intensity by up to about 50% <span class="citation" data-cites="oilsands-intensity">(<a href="index.html#ref-oilsands-intensity" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>. Where steam is still needed, the <strong>Steam</strong> service can switch from gas boilers to cogeneration, electric, hydrogen, or even nuclear steam — the choice that most determines an in-situ barrel’s footprint.</p>
+</section>
+<section id="carbon-capture-and-methane-control" class="level3" data-number="10.4.2">
+<h3 data-number="10.4.2" class="anchored" data-anchor-id="carbon-capture-and-methane-control"><span class="header-section-number">10.4.2</span> Carbon capture and methane control</h3>
+<p>Because the oil sands produce large, relatively concentrated CO₂ streams (from steam generation, upgrading, and hydrogen production), <strong>CCS</strong> is the central deep-decarbonisation lever, and the proposed Pathways Alliance network would capture CO₂ from a cluster of oil-sands facilities at large scale <span class="citation" data-cites="pathways-alliance">(<a href="index.html#ref-pathways-alliance" role="doc-biblioref">Pathways Alliance 2024</a>)</span>. The model represents this through the CCS-equipped steam, upgrading, and still-gas routes and the shared <strong>CCS</strong> service. Enhanced leak detection (ELDAR) cuts the sector’s fugitive and vented methane, often at net-negative cost.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, steam-to-oil ratios, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and refresh the solvent-SAGD and CCS options against the Pathways Alliance project and current pilots.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="10.5">
+<h2 data-number="10.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">10.5</span> Economics</h2>
+<p>Technology choice at every node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, operating cost, an output (per-barrel) basis, service requests for the steam, hydrogen, and engine energy it consumes, any recovered-gas credit, and availability and lifetime years; these are combined into a lifecycle cost and converted to market shares.</p>
+<p>Petroleum-crude technologies are discounted at a high rate — about 35% at most nodes, with some at 20–40% in the current data. These values are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and risk typical of the industry; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>.</p>
+<p>Emissions are tracked as <strong>CO₂</strong> (chiefly from steam, upgrading, and engine combustion) and <strong>CH₄</strong> (fugitive and vented, with the ELDAR and solvent routes carrying lower factors), and the <strong>CCS</strong> service applies a 90% removal factor to the equipped routes. Because in-situ carbon intensity is dominated by steam, the carbon price acts most powerfully through the <strong>Steam</strong> competition — making solvent processes, electric/hydrogen/nuclear steam, cogeneration, and CCS progressively more attractive as it rises — while methane controls add cheap, often profitable, abatement.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="10.6">
+<h2 data-number="10.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">10.6</span> Regional coverage and differences</h2>
+<p>Six regions carry crude production, but it is highly concentrated:</p>
+<ul>
+<li><strong>Alberta</strong> dominates, with essentially all of the oil sands (mining, in-situ, and upgrading) plus conventional crude — and therefore most of the sector’s energy use and abatement opportunity.</li>
+<li><strong>Saskatchewan</strong> carries conventional heavy and light/medium crude.</li>
+<li>The <strong>Atlantic</strong> region carries offshore light/medium production (Newfoundland).</li>
+<li><strong>British Columbia, Manitoba, and Ontario</strong> carry smaller conventional volumes.</li>
+</ul>
+<p>Because the oil sands are so steam- and energy-intensive, Alberta holds the overwhelming majority of the sector’s decarbonisation challenge and opportunity.</p>
+<p><mark>TODO: Calibrate the in-situ versus mining production split and the steam-to-oil ratios against current Alberta Energy Regulator data, since the sector’s emissions and the value of steam decarbonisation depend heavily on both.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="10.7">
+<h2 data-number="10.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">10.7</span> Limitations and planned extensions</h2>
+<p>The petroleum-crude sub-model captures the essential structure — conventional and oil-sands routes, the dominant steam service with its full range of low-carbon options, and CCS — which makes it well suited to analysing oil-sands decarbonisation. Its main limitations are the loose coupling of upgrading hydrogen to the hydrogen sub-model, reliance on inherited steam-to-oil and cost assumptions, and the need to keep the solvent-SAGD and CCS options aligned with fast-moving industry projects. The TODOs above record these priorities.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled crude and bitumen production energy use and emissions intensity against the Alberta Energy Regulator and Environment and Climate Change Canada’s National Inventory Report.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-oilsands-intensity" class="csl-entry" role="listitem">
+<span class="nocase"></span>. 2025. <span>“Canadian Oil Sands Industry GHG Emissions Intensity and Mitigation Potential of Key Emerging Technologies Towards Its 2050 Net-Zero Commitment.”</span> <em>Energy for Sustainable Development</em>. <a href="https://www.sciencedirect.com/science/article/pii/S0921344925001090">https://www.sciencedirect.com/science/article/pii/S0921344925001090</a>.
+</div>
+<div id="ref-pathways-alliance" class="csl-entry" role="listitem">
+Pathways Alliance. 2024. <em>Oil Sands CO2 Emissions Reduction: Carbon Capture and Storage Network</em>. Pathways Alliance. <a href="https://pathwaysalliance.ca/">https://pathwaysalliance.ca/</a>.
+</div>
+</div>
 
 
 </section>
@@ -1717,8 +1940,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

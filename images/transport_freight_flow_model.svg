@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 620" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .hl{fill:#cfe3d6;stroke:#3f7d52;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="430" y="12" width="220" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Freight Transportation</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: freight demand (tonne-km)</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service -->
+  <rect class="branch" x="200" y="86" width="200" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product — Mode</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">mode competition (incl. road→rail shift)</text>
+  <rect class="branch" x="712" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="790" y="103" text-anchor="middle">Service — infrastructure</text>
+
+  <!-- mode detail -->
+  <path class="edge" d="M300,126 V140 H140 V160" marker-end="url(#arrow)"/>
+  <rect class="det" x="40" y="160" width="340" height="220" rx="6"/>
+  <text class="ttl" x="50" y="178">Land — Heavy</text>
+  <text class="li" x="50" y="194">Trucks: diesel/biodiesel/NG · PHEV ·</text>
+  <text class="li" x="60" y="208" style="fill:#2c6e49">battery-electric · hydrogen · catenary</text>
+  <text class="li" x="50" y="224">Rail: diesel/biodiesel · electric · hydrogen</text>
+  <text class="ttl" x="50" y="244">Land — Light/Medium</text>
+  <text class="li" x="50" y="260">gasoline/diesel/propane/biodiesel ·</text>
+  <text class="li" x="60" y="274" style="fill:#2c6e49">PHEV · battery-electric · hydrogen</text>
+  <text class="ttl" x="50" y="294">Marine</text>
+  <text class="li" x="50" y="310">fuel oil · biodiesel · hydrogen (· ammonia — TODO)</text>
+  <text class="ttl" x="50" y="330">Air</text>
+  <text class="li" x="50" y="346">conventional · efficient · electric · hydrogen (· SAF — TODO)</text>
+  <text class="ttl" x="50" y="366">Off Road — diesel · electric</text>
+
+  <!-- services -->
+  <path class="edge" d="M790,126 V140 H660 V360"/>
+  <path class="edge" d="M660,190 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,270 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,330 H700" marker-end="url(#arrow)"/>
+
+  <rect class="hl" x="700" y="160" width="340" height="62" rx="6"/>
+  <text class="lbl" x="870" y="178" text-anchor="middle">EV Infrastructure</text>
+  <text class="sub" x="870" y="194" text-anchor="middle">Depot Stations (return-to-base)</text>
+  <text class="sub" x="870" y="208" text-anchor="middle">Rapid Charging Stations (en route)</text>
+
+  <rect class="hl" x="700" y="232" width="340" height="44" rx="6"/>
+  <text class="lbl" x="870" y="250" text-anchor="middle">Catenary Infrastructure</text>
+  <text class="sub" x="870" y="265" text-anchor="middle">overhead-wire eHighway corridors</text>
+
+  <rect class="hl" x="700" y="286" width="340" height="44" rx="6"/>
+  <text class="lbl" x="870" y="304" text-anchor="middle">FCEV Infrastructure</text>
+  <text class="sub" x="870" y="319" text-anchor="middle">hydrogen refuelling</text>
+
+  <path class="dedge" d="M380,250 C520,250 560,230 700,200" marker-end="url(#darrow)"/>
+  <text class="sub" x="540" y="240" text-anchor="middle">zero-emission vehicles request infrastructure</text>
+
+  <text class="sub" x="540" y="410" text-anchor="middle">Rail is &gt;5× more emissions-efficient per tonne-km than road → modal shift is a key lever.</text>
+
+  <!-- legend -->
+  <rect class="prod" x="40" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="570">freight demand / mode</text>
+  <rect class="det" x="240" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="262" y="570">powertrain competition</text>
+  <rect class="hl" x="430" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="452" y="570">zero-emission infrastructure service</text>
+</svg>

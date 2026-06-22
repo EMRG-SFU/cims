@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .out{fill:#3f7d52;}
+  </style>
+
+  <!-- inputs (left) -->
+  <rect class="spec" x="30" y="70" width="210" height="60" rx="6"/>
+  <text class="lbl" x="135" y="90" text-anchor="middle">Agricultural Input</text>
+  <text class="sub" x="135" y="106" text-anchor="middle">feedstock cultivation:</text>
+  <text class="sub" x="135" y="119" text-anchor="middle">diesel / HE diesel / biodiesel-powered</text>
+
+  <rect class="svc" x="30" y="150" width="210" height="40" rx="6"/>
+  <text class="lbl" x="135" y="167" text-anchor="middle">Steam (process heat)</text>
+  <text class="sub" x="135" y="182" text-anchor="middle">NG · coal · electric · cogen · + CCS</text>
+
+  <rect class="svc" x="30" y="210" width="210" height="40" rx="6"/>
+  <text class="lbl" x="135" y="227" text-anchor="middle">Methane Fuel</text>
+  <text class="sub" x="135" y="242" text-anchor="middle">NG · biogas · biomass gas · H₂</text>
+
+  <rect class="svc" x="30" y="270" width="210" height="32" rx="6"/>
+  <text class="lbl" x="135" y="290" text-anchor="middle">Electricity</text>
+
+  <rect class="spec" x="30" y="322" width="210" height="32" rx="6"/>
+  <text class="lbl" x="135" y="342" text-anchor="middle">CCS — shared capture service</text>
+
+  <!-- production (centre) -->
+  <rect class="prod" x="380" y="160" width="220" height="80" rx="8"/>
+  <text class="lblw" x="490" y="190" text-anchor="middle">Production</text>
+  <text class="lblw" x="490" y="208" text-anchor="middle">Transesterification</text>
+  <text class="subw" x="490" y="226" text-anchor="middle">oil + methanol → FAME + glycerol</text>
+
+  <!-- arrows inputs -> production -->
+  <path class="edge" d="M240,100 C320,110 330,170 380,185" marker-end="url(#arrow)"/>
+  <path class="edge" d="M240,170 C310,180 330,190 380,196" marker-end="url(#arrow)"/>
+  <path class="edge" d="M240,230 C310,222 330,212 380,208" marker-end="url(#arrow)"/>
+  <path class="edge" d="M240,286 C320,270 330,230 380,220" marker-end="url(#arrow)"/>
+  <path class="dedge" d="M240,338 C330,330 330,250 380,232" marker-end="url(#darrow)"/>
+
+  <!-- output (right) -->
+  <rect class="out" x="720" y="170" width="200" height="60" rx="8"/>
+  <text class="lblw" x="820" y="196" text-anchor="middle">Biodiesel (FAME)</text>
+  <text class="subw" x="820" y="214" text-anchor="middle">to fuel supply → transport, diesel use</text>
+  <path class="edge" d="M600,200 H720" marker-end="url(#arrow)"/>
+
+  <!-- lifecycle emissions note -->
+  <rect class="det" x="380" y="300" width="220" height="70" rx="6" stroke-dasharray="5 3"/>
+  <text class="ttl" x="490" y="320" text-anchor="middle">Life-cycle GHGs tracked</text>
+  <text class="li" x="490" y="338" text-anchor="middle">CO₂ · CH₄ · N₂O</text>
+  <text class="sub" x="490" y="354" text-anchor="middle">incl. fertiliser N₂O from cultivation;</text>
+  <text class="sub" x="490" y="366" text-anchor="middle">net benefit vs fossil diesel displaced</text>
+  <path class="dedge" d="M490,240 V300" marker-end="url(#darrow)"/>
+
+  <!-- title -->
+  <text class="ttl" x="135" y="55" text-anchor="middle">Inputs / Services</text>
+  <text class="ttl" x="490" y="150" text-anchor="middle">Product</text>
+  <text class="ttl" x="820" y="160" text-anchor="middle">Output</text>
+
+  <!-- legend -->
+  <rect class="spec" x="30" y="420" width="16" height="12" rx="2"/>
+  <text class="sub" x="52" y="430">feedstock / capture</text>
+  <rect class="svc" x="200" y="420" width="16" height="12" rx="2"/>
+  <text class="sub" x="222" y="430">energy service</text>
+  <rect class="prod" x="350" y="420" width="16" height="12" rx="2"/>
+  <text class="sub" x="372" y="430">conversion process</text>
+  <rect class="out" x="520" y="420" width="16" height="12" rx="2"/>
+  <text class="sub" x="542" y="430">fuel output</text>
+</svg>

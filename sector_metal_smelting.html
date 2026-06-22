@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,31 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">20.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">20.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">20.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-aluminium" id="toc-products-aluminium" class="nav-link" data-scroll-target="#products-aluminium"><span class="header-section-number">20.3.1</span> Products: aluminium</a></li>
+  <li><a href="#products-copper-nickel-zinc-and-magnesium" id="toc-products-copper-nickel-zinc-and-magnesium" class="nav-link" data-scroll-target="#products-copper-nickel-zinc-and-magnesium"><span class="header-section-number">20.3.2</span> Products: copper, nickel, zinc, and magnesium</a></li>
+  <li><a href="#services" id="toc-services" class="nav-link" data-scroll-target="#services"><span class="header-section-number">20.3.3</span> Services</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">20.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#inert-anodes-and-clean-power-aluminium" id="toc-inert-anodes-and-clean-power-aluminium" class="nav-link" data-scroll-target="#inert-anodes-and-clean-power-aluminium"><span class="header-section-number">20.4.1</span> Inert anodes and clean-power aluminium</a></li>
+  <li><a href="#recycling-and-base-metal-process-efficiency" id="toc-recycling-and-base-metal-process-efficiency" class="nav-link" data-scroll-target="#recycling-and-base-metal-process-efficiency"><span class="header-section-number">20.4.2</span> Recycling and base-metal process efficiency</a></li>
+  <li><a href="#magnesium-sf₆-replacement" id="toc-magnesium-sf₆-replacement" class="nav-link" data-scroll-target="#magnesium-sf₆-replacement"><span class="header-section-number">20.4.3</span> Magnesium SF₆ replacement</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">20.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">20.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">20.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +740,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_metal_smelting.html"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Metal Smelting and Refining</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Metal Smelting and Refining</span></h1>
+<h1 class="title"><span id="sec-metal-smelting" class="quarto-section-identifier"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Metal Smelting and Refining</span></span></h1>
 </div>
 
 
@@ -712,12 +757,254 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The metal smelting and refining model of CIMS includes establishments that are primarily engaged in manufacturing finished metal products excluding iron and steel. These processes consume very high amounts of energy per unit of product. The CIMS sub-model explicitly includes processes related to aluminium, nickel, copper, zinc, lead, magnesium and titanium. Though economically important, minor elements such as gold, silver, platinum and cadmium are not represented explicitly because they are often processed in conjunction with the metals listed or are processed in too small a quantity to require direct representation.</p>
-<p>In metal smelting, metal is typically extracted from the concentrate by leaching (hydrometallurgical recovery) or through heat (pyrometallurgical recovery). In Ontario, for example, all zinc smelters use hydrometallurgical techniques while copper and nickel smelters use pyrometallurgy. Smelting processes generate products that contain between 95% and 99% pure metal. Refining, if it occurs, depends on the type of smelting technique used. Products prepared through hydrometallurgy tend to use electrowinning for refining while products prepared through pyrometallurgy tend to use electrolysis or fire refining. Refined products are at least 99.99% pure metal.</p>
-<p>Purification of the aluminum is accomplished utilizing the Hall-Heroult process, which requires large quantities of electrical energy. Although Canada has no aluminum ore body of sufficient concentration to warrant extraction, readily available, inexpensive electrical energy attracts companies who wish to refine the metal from alumina (concentrated ore). Recycled aluminium requires only 5% of the energy of original production. Increasing demand for conservation and recycling may have a significant effect on the production of virgin metal.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>The metal smelting and refining sector — the production of finished non-ferrous metals — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them, rather than the metallurgy of individual smelters. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node. The sector is unusual in two respects. It is dominated by a single metal, aluminium, whose production is overwhelmingly electricity-driven and located in Québec on cheap hydropower; and its hardest-to-cut emissions are process emissions — CO₂ from the consumable carbon anode in aluminium electrolysis, and SF₆ from magnesium melt protection — rather than ordinary combustion.</p>
+<section id="scope" class="level2" data-number="20.1">
+<h2 data-number="20.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">20.1</span> Scope</h2>
+<p>CIMS represents the smelting and refining of the major non-ferrous metals: aluminium, copper, nickel, zinc, and magnesium, with lead and titanium appearing in some regions. The driving variable is the physical output of refined metal in tonnes; a forecast of demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.</p>
+<p>Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:</p>
+<ul>
+<li>Iron and steel are explicitly excluded and covered in their own <a href="./sector_iron_and_steel.html">Iron and Steel</a> chapter.</li>
+<li>Mining and concentration of the ores are part of the <a href="./sector_mining.html">Mining</a> sector; the smelting sub-model takes concentrates (and, for aluminium, alumina) as inputs.</li>
+<li>Downstream fabrication — rolling, extrusion, casting of finished goods — is downstream manufacturing and is not part of this sub-model, which ends with refined and cast metal.</li>
+</ul>
+<p>Minor and precious metals (gold, silver, platinum-group, cadmium) are not represented explicitly because they are recovered in conjunction with the base metals or are produced in quantities too small to require their own representation.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="20.2">
+<h2 data-number="20.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">20.2</span> Real-world context</h2>
+<p>Canada is one of the world’s leading non-ferrous metal producers, and the sector’s structure is dominated by aluminium. Almost all Canadian primary aluminium is smelted in Québec, where abundant low-cost hydroelectricity makes the energy-intensive Hall-Héroult electrolysis economic; Canadian smelters are among the lowest-carbon in the world for this reason <span class="citation" data-cites="iea-aluminium">(<a href="index.html#ref-iea-aluminium" role="doc-biblioref">International Energy Agency 2024</a>)</span>. Nickel and copper smelting and refining are concentrated in Ontario (Sudbury) and Manitoba (Thompson), with zinc and other base metals across several provinces.</p>
+<p>The sector’s emissions profile is distinctive. Hall-Héroult electrolysis consumes roughly 14 MWh of electricity per tonne of aluminium, but even on perfectly clean electricity it emits CO₂ because the carbon anode is consumed in the reaction — about 1.6–1.7 t CO₂ per tonne of aluminium — and intermittent anode effects release perfluorocarbons (PFCs), extremely potent greenhouse gases <span class="citation" data-cites="iea-aluminium">(<a href="index.html#ref-iea-aluminium" role="doc-biblioref">International Energy Agency 2024</a>)</span>. Magnesium production and casting use SF₆ as a melt-protection cover gas; SF₆ has roughly 22,000 times the warming potential of CO₂, so even small quantities matter. Pyrometallurgical copper, nickel, and zinc smelting burns fuel for roasting, smelting, and converting. The CIMS structure reflects all of this: it carries explicit process-emission factors for the aluminium carbon anode and for magnesium SF₆, and it admits the technologies — inert anodes, recycling, oxygen-enriched and flash smelting, and hydrometallurgy — that target each.</p>
+</section>
+<section id="model-structure" class="level2" data-number="20.3">
+<h2 data-number="20.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">20.3</span> Model structure</h2>
+<p>Following the standard CIMS pattern, the sector divides into a <strong>Product</strong> sub-tree, holding the per-metal production chains, and a <strong>Service</strong> sub-tree of auxiliary energy services. <a href="#fig-metal-smelting-flow-model" class="quarto-xref">Figure&nbsp;<span>20.1</span></a> shows the overall structure.</p>
+<p>As described in the <a href="./sector_overview.html">Sector Overview</a>, each node carries a competition rule. <strong>Fixed-ratio</strong> nodes impose the unavoidable engineering sequence of process steps, while <strong>tech-compete</strong> nodes host competitions among alternative technologies on the basis of lifecycle cost (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). In the metal-smelting tree, the disaggregation into metals and process stages is built from fixed-ratio nodes, while the technology choices — which anode, which smelting furnace, which metallurgical route — occur at the tech-compete leaves.</p>
+<div id="fig-metal-smelting-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-metal-smelting-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/metal_smelting_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;20.1: Energy-service flow model of the metal smelting and refining sector (region-agnostic master tree). The Product sub-tree holds per-metal chains — aluminium (alumina, electrolysis, recycle) and the pyro-/hydro-metallurgical base metals — and the Service sub-tree holds the auxiliary energy services and oxygen supply."><img src="images/metal_smelting_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-metal-smelting-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;20.1: Energy-service flow model of the metal smelting and refining sector (region-agnostic master tree). The Product sub-tree holds per-metal chains — aluminium (alumina, electrolysis, recycle) and the pyro-/hydro-metallurgical base metals — and the Service sub-tree holds the auxiliary energy services and oxygen supply.
+</figcaption>
+</figure>
+</div>
+<section id="products-aluminium" class="level3" data-number="20.3.1">
+<h3 data-number="20.3.1" class="anchored" data-anchor-id="products-aluminium"><span class="header-section-number">20.3.1</span> Products: aluminium</h3>
+<p>Aluminium is the largest chain and has its own structure. Primary Aluminum runs through:</p>
+<ul>
+<li><strong>Alumina</strong> — refining bauxite to alumina by the Bayer process (natural-gas fired, with an efficiency retrofit). (Canada imports alumina, but the step is represented.)</li>
+<li><strong>Electrolysis</strong> — the Hall-Héroult cell, the energy and emissions core, competing Søderberg and several pre-bake anode designs (side- and centre-point feeders, with automation) against the inert anode with wetted cathode route that eliminates the carbon anode entirely.</li>
+</ul>
+<p>A Recycle branch remelts scrap aluminium at a small fraction of primary energy, and dedicated Pre-bake Anode and Søderberg Anode nodes supply the consumable anodes for the conventional routes.</p>
+<p>The conventional electrolysis routes carry a process-CO₂ factor of about 1.6–1.7 t per tonne, representing carbon-anode consumption; the inert-anode route is the model’s way of breaking that link.</p>
+</section>
+<section id="products-copper-nickel-zinc-and-magnesium" class="level3" data-number="20.3.2">
+<h3 data-number="20.3.2" class="anchored" data-anchor-id="products-copper-nickel-zinc-and-magnesium"><span class="header-section-number">20.3.2</span> Products: copper, nickel, zinc, and magnesium</h3>
+<p>The base metals share a common structure under Primary Metals, each resolving into a Metallurgy route and a Melt Cast finishing step:</p>
+<ul>
+<li><strong>Pyro Metallurgy</strong> — the conventional high-temperature route, broken into a Smelting Process (conventional roast–smelt–convert, or continuous smelting such as Mitsubishi) and a Refine step (electrolytic, anode-furnace, or fire refining). The smelting technologies compete fuels and furnace types — flash furnaces, reverberatory and electric-arc furnaces, fluidized-bed and hearth roasting, Pierce-Smith and top-blown rotary converters — with oxygen enrichment options.</li>
+<li><strong>Hydro Metallurgy</strong> — the aqueous route (pressure or percolation leaching, solvent extraction, electrolytic precipitation/electrowinning), which is more electricity-intensive but avoids high-temperature smelting.</li>
+</ul>
+<p>Magnesium carries an explicit SF₆ process-emission factor on its melt-cast and refining steps, reflecting cover-gas use.</p>
+</section>
+<section id="services" class="level3" data-number="20.3.3">
+<h3 data-number="20.3.3" class="anchored" data-anchor-id="services"><span class="header-section-number">20.3.3</span> Services</h3>
+<p>The services follow the standard pattern and are documented in their own chapters in the General Services part. The sector draws on <strong>Oxygen</strong> (cryogenic air separation, feeding oxygen-enriched smelting and converting), <strong>Machine Drive</strong> (see <a href="./machine_drive.html">Industrial Machine Drive Systems</a>), <strong>Steam</strong> (see <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a>), <strong>Methane Blend</strong>, <strong>HVAC</strong>, and <strong>Lighting</strong>. Notably, the sector has no CCS service in the current tree, which is a significant omission for the pyrometallurgical routes whose off-gases are relatively concentrated.</p>
+<p><mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. Migrate these files to the region-agnostic master tree (which places the sector under <code>Metal.Smelting</code> with the Product/Service split) and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="20.4">
+<h2 data-number="20.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">20.4</span> Decarbonisation technologies</h2>
+<p>Because Canadian smelting already runs largely on clean electricity, its decarbonisation problem is less about the energy supply than about the process chemistry — the carbon anode, the SF₆ cover gas, and the fuel burned in pyrometallurgical smelting — and about using less primary metal through recycling. The model represents most of these levers; <a href="#tbl-metal-smelting-decarb" class="quarto-xref">Table&nbsp;<span>20.1</span></a> summarises maturity and <a href="#tbl-metal-smelting-cost" class="quarto-xref">Table&nbsp;<span>20.2</span></a> gives indicative costs.</p>
+<div id="tbl-metal-smelting-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-metal-smelting-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;20.1: Indicative performance and maturity of key metal smelting decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-metal-smelting-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Inert anode (Hall-Héroult)</td>
+<td style="text-align: left;">Eliminates carbon-anode CO₂ and PFCs; emits O₂</td>
+<td style="text-align: left;">Pilot / pre-commercial (ELYSIS)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low-carbon electricity (hydro)</td>
+<td style="text-align: left;">Removes most indirect CO₂ from electrolysis</td>
+<td style="text-align: left;">Commercial (in place in Québec)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Secondary (recycled) aluminium</td>
+<td style="text-align: left;">~95% less energy than primary</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oxygen-enriched / flash / continuous smelting</td>
+<td style="text-align: left;">Lower fuel use per tonne (base metals)</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrometallurgy (vs pyrometallurgy)</td>
+<td style="text-align: left;">Avoids high-temperature smelting fuel</td>
+<td style="text-align: left;">Commercial (metal-specific)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrified smelting / process heat</td>
+<td style="text-align: left;">Displaces fossil smelting fuel</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SF₆-free magnesium cover gas (SO₂, novec)</td>
+<td style="text-align: left;">Removes a very high-GWP emission</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Smelter off-gas CCS</td>
+<td style="text-align: left;">Captures pyrometallurgical CO₂</td>
+<td style="text-align: left;">Demonstration — <em>not yet in model</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-metal-smelting-cost" class="quarto-xref">Table&nbsp;<span>20.2</span></a> are order-of-magnitude figures from public techno-economic literature <span class="citation" data-cites="iea-aluminium elysis ipcc-sf6-mg">(<a href="index.html#ref-iea-aluminium" role="doc-biblioref">International Energy Agency 2024</a>; <a href="index.html#ref-elysis" role="doc-biblioref">ELYSIS 2024</a>; <a href="index.html#ref-ipcc-sf6-mg" role="doc-biblioref">Intergovernmental Panel on Climate Change 2000</a>)</span>, expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-metal-smelting-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-metal-smelting-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;20.2: Indicative techno-economic characteristics of metal smelting decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-metal-smelting-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decarbonisation technology</th>
+<th style="text-align: left;">Capex</th>
+<th style="text-align: left;">Operating cost</th>
+<th style="text-align: left;">Energy / emission effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Inert anode (new cells)</td>
+<td style="text-align: left;">comparable to new pre-bake cells</td>
+<td style="text-align: left;">conversion cost ~CAD 100/t Al, falling below carbon-anode cost in new cells</td>
+<td style="text-align: left;">eliminates ~1.6 t CO₂/t Al + PFCs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Greenfield primary smelter (reference)</td>
+<td style="text-align: left;">~CAD 7,400–10,400 per t/yr capacity</td>
+<td style="text-align: left;">electricity-dominated (~14 MWh/t)</td>
+<td style="text-align: left;">indirect CO₂ tracks grid</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Secondary (recycled) aluminium</td>
+<td style="text-align: left;">far lower than primary</td>
+<td style="text-align: left;">~95% less energy</td>
+<td style="text-align: left;">large energy/CO₂ saving</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Oxygen-enriched / flash smelting</td>
+<td style="text-align: left;">moderate (oxygen plant)</td>
+<td style="text-align: left;">fuel saving</td>
+<td style="text-align: left;">lower smelting fuel CO₂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrometallurgy</td>
+<td style="text-align: left;">metal-specific</td>
+<td style="text-align: left;">more electricity, less fuel</td>
+<td style="text-align: left;">shifts energy to electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SF₆-free magnesium cover gas</td>
+<td style="text-align: left;">low (gas handling retrofit)</td>
+<td style="text-align: left;">similar or lower gas cost</td>
+<td style="text-align: left;">removes ~22,000× GWP emission</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Smelter off-gas CCS (not in model)</td>
+<td style="text-align: left;">+30–50% plant equipment</td>
+<td style="text-align: left;">~CAD 100–200 / t CO₂</td>
+<td style="text-align: left;">captures pyrometallurgical CO₂</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="inert-anodes-and-clean-power-aluminium" class="level3" data-number="20.4.1">
+<h3 data-number="20.4.1" class="anchored" data-anchor-id="inert-anodes-and-clean-power-aluminium"><span class="header-section-number">20.4.1</span> Inert anodes and clean-power aluminium</h3>
+<p>Because Québec’s aluminium already runs on hydroelectricity, its remaining direct emissions come almost entirely from the consumable carbon anode. The inert anode route — represented in the model as <em>Hall-Héroult inert anode with wetted cathode</em> — replaces the carbon anode with a non-consumable material that releases oxygen instead of CO₂, eliminating both the anode CO₂ and the PFCs from anode effects. This is the single largest lever for the sector. It is being commercialised by the ELYSIS joint venture in Québec, which produced primary aluminium at industrial scale with inert anodes in 2021 and targets broader commercial availability later this decade <span class="citation" data-cites="elysis">(<a href="index.html#ref-elysis" role="doc-biblioref">ELYSIS 2024</a>)</span>. Conversion cost is expected to fall below that of carbon anodes in new cells.</p>
+</section>
+<section id="recycling-and-base-metal-process-efficiency" class="level3" data-number="20.4.2">
+<h3 data-number="20.4.2" class="anchored" data-anchor-id="recycling-and-base-metal-process-efficiency"><span class="header-section-number">20.4.2</span> Recycling and base-metal process efficiency</h3>
+<p>Secondary (recycled) aluminium uses on the order of 5% of the energy of primary production and is represented as the Recycle branch; expanding it is a major lever as scrap availability grows. For the base metals, oxygen-enriched, flash, and continuous smelting cut fuel use per tonne, and hydrometallurgy avoids high-temperature smelting altogether for metals where it is applicable — both are in the model. Further electrification of smelting and process heat, and CCS on the concentrated off-gas streams of pyrometallurgical smelters, are the main options not yet fully represented.</p>
+</section>
+<section id="magnesium-sf₆-replacement" class="level3" data-number="20.4.3">
+<h3 data-number="20.4.3" class="anchored" data-anchor-id="magnesium-sf₆-replacement"><span class="header-section-number">20.4.3</span> Magnesium SF₆ replacement</h3>
+<p>Magnesium melt protection traditionally uses SF₆, one of the most potent greenhouse gases known. Replacing it with alternative cover gases (sulphur dioxide, or fluorinated ketones such as Novec 612) removes almost all of this emission at low cost and is mature; the model carries the SF₆ emission explicitly, so an SF₆-free option is a natural addition.</p>
+<p><mark>TODO: Add a <strong>CCS</strong> service to the metal-smelting tree, attached to the pyrometallurgical smelting and converting nodes whose off-gases (especially in copper and nickel flash smelting) are relatively concentrated and capture-amenable.</mark></p>
+<p><mark>TODO: Represent PFC emissions from aluminium anode effects explicitly (currently only the carbon-anode CO₂ is carried), and add an SF₆-free magnesium cover gas technology so the high-GWP magnesium emission can be abated in-model.</mark></p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="20.5">
+<h2 data-number="20.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">20.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Metal smelting technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.</p>
+<p>The sector’s emissions accounting is distinctive. Combustion emissions follow from each technology’s fuel service requests and the carbon price, as in the other sectors. In addition, the aluminium electrolysis technologies carry an explicit process-CO₂ factor (about 1.6–1.7 t per tonne) for carbon-anode consumption, and the magnesium melt-cast and refining technologies carry an SF₆ factor — both applied independently of fuel use, with SF₆ entering on a CO₂-equivalent basis at its very high warming potential. Because there is no CCS service, the model’s main channels for emissions reduction are switching to the inert anode, expanding recycling, switching to lower-fuel smelting routes, and (indirectly) the carbon intensity of the electricity the sector draws.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="20.6">
+<h2 data-number="20.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">20.6</span> Regional coverage and differences</h2>
+<p>Because the tree is region-agnostic, each modelled region is built from the same master structure and carries no production on branches that do not apply. Five regions are represented — the Atlantic region, British Columbia, Manitoba, Ontario, and Québec — and the differences are stark:</p>
+<ul>
+<li>Québec dominates the sector by a wide margin, carrying essentially all primary aluminium on its hydro power, and grows over the projection.</li>
+<li>Ontario (Sudbury) carries nickel and copper smelting and refining.</li>
+<li>Manitoba (Thompson) carries nickel; British Columbia and the Atlantic region carry smaller base-metal operations.</li>
+</ul>
+<p><mark>TODO: Only five provinces are represented (Alberta and Saskatchewan are absent, consistent with the absence of major non-ferrous smelters there). Confirm the regional metal mix — including the lead and titanium branches that appear only in some regions — against current operations.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="20.7">
+<h2 data-number="20.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">20.7</span> Limitations and planned extensions</h2>
+<p>The metal-smelting sub-model is detailed on the metallurgical side but carries the structural debts common to the older sector files, plus two sector-specific gaps: the absence of a CCS service and the incomplete representation of the non-CO₂ greenhouse gases (PFCs and the SF₆-abatement option). The TODOs above record these along with the auxiliary-service migration. Because the sector is already largely clean-powered, its remaining emissions are concentrated and high-leverage — the carbon anode, magnesium SF₆, and pyrometallurgical fuel — so closing these representational gaps matters more here than the sector’s modest energy total might suggest.</p>
+<p><mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled non-ferrous energy use and process emissions against CIEEDAC and Environment and Climate Change Canada (NIR) data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-elysis" class="csl-entry" role="listitem">
+ELYSIS. 2024. <em>Carbon-Free Aluminium Smelting: Inert Anode Technology</em>. ELYSIS (Rio Tinto and Alcoa joint venture). <a href="https://www.elysis.com/en/what-is-elysis">https://www.elysis.com/en/what-is-elysis</a>.
+</div>
+<div id="ref-ipcc-sf6-mg" class="csl-entry" role="listitem">
+Intergovernmental Panel on Climate Change. 2000. <em>SF6 Emissions from Magnesium Production: Good Practice Guidance and Uncertainty Management in National Greenhouse Gas Inventories</em>. IPCC/IGES. <a href="https://www.ipcc-nggip.iges.or.jp/public/gp/bgp/3_4_SF6_Magnesium.pdf">https://www.ipcc-nggip.iges.or.jp/public/gp/bgp/3_4_SF6_Magnesium.pdf</a>.
+</div>
+<div id="ref-iea-aluminium" class="csl-entry" role="listitem">
+International Energy Agency. 2024. <em>Aluminium</em>. IEA Energy System: Industry. <a href="https://www.iea.org/energy-system/industry/aluminium">https://www.iea.org/energy-system/industry/aluminium</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1679,8 +1966,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

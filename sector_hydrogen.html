@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,29 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">15.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">15.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">15.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#product-the-production-competition" id="toc-product-the-production-competition" class="nav-link" data-scroll-target="#product-the-production-competition"><span class="header-section-number">15.3.1</span> Product: the production competition</a></li>
+  <li><a href="#services-infrastructure-and-capture" id="toc-services-infrastructure-and-capture" class="nav-link" data-scroll-target="#services-infrastructure-and-capture"><span class="header-section-number">15.3.2</span> Services: infrastructure and capture</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">15.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#blue-hydrogen-smr-and-gasification-with-ccs" id="toc-blue-hydrogen-smr-and-gasification-with-ccs" class="nav-link" data-scroll-target="#blue-hydrogen-smr-and-gasification-with-ccs"><span class="header-section-number">15.4.1</span> Blue hydrogen: SMR and gasification with CCS</a></li>
+  <li><a href="#green-and-net-negative-hydrogen" id="toc-green-and-net-negative-hydrogen" class="nav-link" data-scroll-target="#green-and-net-negative-hydrogen"><span class="header-section-number">15.4.2</span> Green and net-negative hydrogen</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">15.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">15.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">15.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_hydrogen.html"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Hydrogen</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Hydrogen</span></h1>
+<h1 class="title"><span id="sec-hydrogen" class="quarto-section-identifier"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Hydrogen</span></span></h1>
 </div>
 
 
@@ -712,10 +755,216 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Hydrogen sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>Hydrogen production is one of CIMS’s energy-supply sub-models: it produces a versatile energy carrier and chemical feedstock that other sectors consume — in oil refining, ammonia and methanol synthesis, potentially in low-carbon steelmaking (direct reduction), and in transport. The emphasis is on the structure of the energy-service flow model: the production routes that compete, the services they draw on, and the engineering ratios that link them. The tree is region-agnostic. The defining feature of hydrogen is that the molecule is identical however it is made, but its emissions are entirely a function of the production route — the familiar “colours” of hydrogen — so the whole sub-model is essentially one competition among production technologies that differ enormously in carbon intensity.</p>
+<section id="scope" class="level2" data-number="15.1">
+<h2 data-number="15.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">15.1</span> Scope</h2>
+<p>CIMS represents the production of hydrogen by all the major routes — natural-gas reforming, coal and biomass gasification, water electrolysis, and ethanol reforming — at both centralised and distributed scale, together with the delivery infrastructure and a shared <strong>CCS</strong> service. The sub-model produces hydrogen as an output that flows to the consuming sectors; its demand is set by those sectors’ fuel-switching and feedstock choices and by policy, rather than by an exogenous production target.</p>
+<p>Adjacent activities are handled elsewhere: the end uses of hydrogen — as a refinery input (<a href="./sector_petroleum_refining.html">Petroleum Refining</a>, <a href="./sector_petroleum_crude.html">Petroleum Crude</a>), an ammonia/methanol feedstock (<a href="./sector_chemical_products.html">Chemical Products</a>), a reductant in steel (<a href="./sector_iron_and_steel.html">Iron and Steel</a>), or a transport fuel — are represented in those sectors. This chapter covers only how the hydrogen is made.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="15.2">
+<h2 data-number="15.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">15.2</span> Real-world context</h2>
+<p>Almost all hydrogen made in Canada today is “grey” — produced by steam methane reforming (SMR) of natural gas without capture, mostly in Alberta to serve oil-sands upgrading, refining, and ammonia production. Grey hydrogen is the cheapest, at roughly CAD 1.5–2.5/kg, but emits on the order of 9–10 kg of CO₂ per kg of hydrogen <span class="citation" data-cites="nrcan-h2-strategy">(<a href="index.html#ref-nrcan-h2-strategy" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. Canada’s Hydrogen Strategy and a new investment tax credit (15–40% of capital, the top rate for the cleanest hydrogen) aim to shift production toward low-carbon routes <span class="citation" data-cites="nrcan-h2-strategy">(<a href="index.html#ref-nrcan-h2-strategy" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>.</p>
+<p>Two such routes are advancing. “Blue” hydrogen — SMR or gasification with carbon capture (CCS) — is the basis of large Alberta projects such as the Air Products net-zero hydrogen complex (1,500 t/day with ~3 Mt CO₂/yr captured) and Linde’s clean-hydrogen facility; it costs roughly CAD 2–3.5/kg <span class="citation" data-cites="airproducts-canada nrcan-h2-strategy">(<a href="index.html#ref-airproducts-canada" role="doc-biblioref">Air Products 2024</a>; <a href="index.html#ref-nrcan-h2-strategy" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. “Green” hydrogen — electrolysis powered by low-carbon electricity — is the lowest-emission route and is attractive where power is clean and cheap (Québec and BC hydro, Atlantic wind), but at roughly CAD 4.8–6.3/kg today it remains the most expensive <span class="citation" data-cites="nrcan-h2-strategy">(<a href="index.html#ref-nrcan-h2-strategy" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. The CIMS structure represents this whole ladder as a single production competition, with explicit life-cycle emissions and a CCS service, so the model can shift the production mix from grey toward blue and green as costs and the carbon price evolve.</p>
+</section>
+<section id="model-structure" class="level2" data-number="15.3">
+<h2 data-number="15.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">15.3</span> Model structure</h2>
+<p>The sub-model divides into a <strong>Product</strong> sub-tree — the hydrogen-production competition — and a <strong>Service</strong> sub-tree holding the delivery <strong>Infrastructure</strong> and the <strong>CCS</strong> service. <a href="#fig-hydrogen-flow-model" class="quarto-xref">Figure&nbsp;<span>15.1</span></a> shows the structure. The production node is a single tech-compete node (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the incumbent in the current data is distributed SMR.</p>
+<div id="fig-hydrogen-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-hydrogen-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/hydrogen_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;15.1: Energy-service flow model of the hydrogen sub-model. A single Production competition spans the “colours” of hydrogen — grey (SMR, coal/biomass gasification), blue (the same routes with CCS), and green (electrolysis; biomass-with-CCS is net-negative) — at centralised and distributed scale, drawing on a delivery Infrastructure service and a shared 90%-capture CCS service; life-cycle CO₂, CH₄, and N₂O are tracked."><img src="images/hydrogen_flow_model.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-hydrogen-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;15.1: Energy-service flow model of the hydrogen sub-model. A single Production competition spans the “colours” of hydrogen — grey (SMR, coal/biomass gasification), blue (the same routes with CCS), and green (electrolysis; biomass-with-CCS is net-negative) — at centralised and distributed scale, drawing on a delivery Infrastructure service and a shared 90%-capture CCS service; life-cycle CO₂, CH₄, and N₂O are tracked.
+</figcaption>
+</figure>
+</div>
+<section id="product-the-production-competition" class="level3" data-number="15.3.1">
+<h3 data-number="15.3.1" class="anchored" data-anchor-id="product-the-production-competition"><span class="header-section-number">15.3.1</span> Product: the production competition</h3>
+<p>The <strong>Production</strong> node competes the full set of routes, each consuming a characteristic mix of fuel, feedstock, and electricity and (for the capture routes) requesting the CCS service:</p>
+<ul>
+<li><strong>Steam methane reforming (SMR)</strong> — centralised and distributed, and a centralised + CCS variant. NG-based; the distributed route is today’s incumbent. (Grey, and blue with CCS.)</li>
+<li><strong>Coal gasification + CCS</strong> — centralised; coal-based blue hydrogen.</li>
+<li><strong>Biomass gasification</strong> — centralised, and a + CCS variant. Renewable feedstock; with CCS it is net-negative (the captured CO₂ is biogenic).</li>
+<li><strong>Electrolysis</strong> — centralised and distributed; splits water using electricity, so its emissions track the grid (green where the grid is clean). Electricity-dominated, at roughly 0.2 GJ electricity per unit of hydrogen energy.</li>
+<li><strong>Ethanol reforming</strong> — distributed; reforms ethanol from the <a href="./sector_ethanol.html">Ethanol</a> sub-model.</li>
+</ul>
+<p>The centralised versus distributed distinction matters because it trades production economies of scale against the <strong>Infrastructure</strong> (delivery, compression) cost: distributed production is made near the point of use and needs less delivery infrastructure, while centralised production is cheaper per unit but draws more heavily on the Infrastructure service.</p>
+</section>
+<section id="services-infrastructure-and-capture" class="level3" data-number="15.3.2">
+<h3 data-number="15.3.2" class="anchored" data-anchor-id="services-infrastructure-and-capture"><span class="header-section-number">15.3.2</span> Services: infrastructure and capture</h3>
+<ul>
+<li><strong>Infrastructure</strong> — the delivery, compression, and storage needed to get hydrogen to users; every production route requests it (distributed routes less so).</li>
+<li><strong>CCS</strong> — the shared carbon-capture service, removing 90% of the CO₂ presented to it, requested by the SMR-, coal-, and biomass-with-CCS routes.</li>
+</ul>
+<p><mark>TODO: The hydrogen consumed elsewhere in CIMS is in several places drawn through generic fuel nodes (for example the Methane Blend service in industry, and the green-ammonia and HDRI-steel routes) rather than explicitly sourced from this sub-model. Link those hydrogen demands to the hydrogen Production competition so that the cost and carbon intensity of the hydrogen actually used is consistent across the model.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="15.4">
+<h2 data-number="15.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">15.4</span> Decarbonisation technologies</h2>
+<p>Decarbonising hydrogen means shifting the production mix away from unabated SMR toward capture-equipped and electrolytic routes. Because the product is identical, this is a pure cost-and-carbon competition; <a href="#tbl-hydrogen-decarb" class="quarto-xref">Table&nbsp;<span>15.1</span></a> summarises maturity and <a href="#tbl-hydrogen-cost" class="quarto-xref">Table&nbsp;<span>15.2</span></a> gives indicative costs.</p>
+<div id="tbl-hydrogen-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hydrogen-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;15.1: Indicative performance and maturity of the hydrogen production routes
+</figcaption>
+<div aria-describedby="tbl-hydrogen-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Route (colour)</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SMR + CCS (blue)</td>
+<td style="text-align: left;">Captures ~90% of SMR CO₂</td>
+<td style="text-align: left;">Commercial (Alberta projects)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coal gasification + CCS (blue)</td>
+<td style="text-align: left;">Captures most gasification CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electrolysis (green)</td>
+<td style="text-align: left;">Near-zero direct CO₂ on clean power</td>
+<td style="text-align: left;">Commercial (scaling)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biomass gasification (green)</td>
+<td style="text-align: left;">Renewable feedstock; low CO₂</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass gasification + CCS (BECCS)</td>
+<td style="text-align: left;">Net-negative emissions</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ethanol reforming (distributed)</td>
+<td style="text-align: left;">Low-CI where ethanol is low-CI</td>
+<td style="text-align: left;">Niche / distributed</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">SMR, unabated (grey)</td>
+<td style="text-align: left;">Incumbent; lowest cost, highest CO₂</td>
+<td style="text-align: left;">Commercial (to be displaced)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-hydrogen-cost" class="quarto-xref">Table&nbsp;<span>15.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="nrcan-h2-strategy iea-hydrogen">(<a href="index.html#ref-nrcan-h2-strategy" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-iea-hydrogen" role="doc-biblioref">International Energy Agency 2019</a>)</span>, expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Levelised costs are per kilogram of hydrogen; electrolyser capital is per kilowatt of electrolyser. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-hydrogen-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-hydrogen-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;15.2: Indicative techno-economic characteristics of hydrogen production routes, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-hydrogen-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Production route</th>
+<th style="text-align: left;">Levelised cost (2025 CAD/kg H₂)</th>
+<th style="text-align: left;">Capex note</th>
+<th style="text-align: left;">Energy / emission</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Grey SMR (incumbent)</td>
+<td style="text-align: left;">~1.5–2.5</td>
+<td style="text-align: left;">mature, low capex</td>
+<td style="text-align: left;">~9–10 kg CO₂/kg H₂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Blue SMR + CCS</td>
+<td style="text-align: left;">~2.0–3.5</td>
+<td style="text-align: left;">SMR + capture (+30–50% equipment)</td>
+<td style="text-align: left;">~1–2 kg CO₂/kg H₂ (≈90% captured)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Blue coal gasification + CCS</td>
+<td style="text-align: left;">~2.5–4.0</td>
+<td style="text-align: left;">gasifier + capture</td>
+<td style="text-align: left;">mostly captured</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Green electrolysis</td>
+<td style="text-align: left;">~4.8–6.3</td>
+<td style="text-align: left;">electrolyser ~1,400–2,700 CAD/kW</td>
+<td style="text-align: left;">~0 direct; ~50–55 kWh/kg</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass gasification (+CCS)</td>
+<td style="text-align: left;">~3–6</td>
+<td style="text-align: left;">gasifier (+ capture)</td>
+<td style="text-align: left;">low / net-negative with CCS</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="blue-hydrogen-smr-and-gasification-with-ccs" class="level3" data-number="15.4.1">
+<h3 data-number="15.4.1" class="anchored" data-anchor-id="blue-hydrogen-smr-and-gasification-with-ccs"><span class="header-section-number">15.4.1</span> Blue hydrogen: SMR and gasification with CCS</h3>
+<p>The nearest-term low-carbon route keeps the established reforming or gasification process but adds carbon capture, cutting CO₂ by around 90%. It is the basis of Canada’s largest announced clean-hydrogen capacity, in Alberta, where low-cost natural gas and viable CO₂ storage favour it <span class="citation" data-cites="airproducts-canada">(<a href="index.html#ref-airproducts-canada" role="doc-biblioref">Air Products 2024</a>)</span>. In the model this is the SMR centralised + CCS, coal gasification + CCS, and biomass gasification + CCS routes, each requesting the shared <strong>CCS</strong> service.</p>
+</section>
+<section id="green-and-net-negative-hydrogen" class="level3" data-number="15.4.2">
+<h3 data-number="15.4.2" class="anchored" data-anchor-id="green-and-net-negative-hydrogen"><span class="header-section-number">15.4.2</span> Green and net-negative hydrogen</h3>
+<p>Electrolysis produces hydrogen with no direct CO₂; its footprint is the carbon intensity of the electricity, so it is genuinely “green” on Canada’s hydro and wind power but only as clean as the grid elsewhere. It is the most expensive route today, dominated by electricity cost and electrolyser capital, both of which are falling. Biomass gasification with CCS is distinctive: because the carbon is biogenic, capturing it yields net-negative hydrogen, one of the few production routes anywhere that removes CO₂ from the atmosphere.</p>
+<p><mark>TODO: Add a turquoise hydrogen route (methane pyrolysis, producing solid carbon instead of CO₂) and represent the federal clean-hydrogen investment tax credit, both of which materially change the relative economics of the low-carbon routes.</mark></p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="15.5">
+<h2 data-number="15.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">15.5</span> Economics</h2>
+<p>Technology choice at the production node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each route carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the fuel, feedstock, electricity, infrastructure, and capture it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Hydrogen technologies are discounted at roughly 25% in the current data. As elsewhere in CIMS this is a <strong>behavioural</strong> (revealed or empirical) discount rate rather than a true financial cost of capital, capturing the payback horizons and adoption barriers that govern real investment; CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 25.</p>
+<p>The emissions accounting is <strong>life-cycle</strong>, carrying CO₂, CH₄, and N₂O factors, so the upstream methane and the combustion and process CO₂ of each route are represented; the <strong>CCS</strong> service applies a 90% removal factor to the routes that request it, which can drive biomass-gasification hydrogen net-negative. Because the routes share an identical product, the carbon price acts directly on the production mix: as it rises, it raises the effective cost of grey SMR (through its large CO₂ factor) relative to the blue and green routes, shifting market share toward them. This makes hydrogen one of the clearest illustrations in CIMS of a carbon-price-driven technology transition.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="15.6">
+<h2 data-number="15.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">15.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the hydrogen structure, but the economic route differs sharply by region. Alberta and Saskatchewan, with cheap natural gas and CO₂ storage, favour blue hydrogen; Québec, British Columbia, and Manitoba, with abundant low-carbon hydro electricity, favour green electrolytic hydrogen; and the Atlantic region’s wind resource supports green production. The same competition therefore resolves to different winners in different regions, driven by local fuel and electricity prices.</p>
+<p><mark>TODO: Confirm the regional electricity and natural-gas prices and CO₂-storage availability that drive the blue-versus-green split, since the regional production mix is highly sensitive to them.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="15.7">
+<h2 data-number="15.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">15.7</span> Limitations and planned extensions</h2>
+<p>The hydrogen sub-model is compact but captures the essential structure of the production-route competition. Its main limitations are the loose coupling to the sectors that consume hydrogen, the absence of a turquoise (pyrolysis) route and of the investment tax credit, and reliance on inherited cost assumptions. The most important is the first: until the hydrogen demands in refining, ammonia, steel, and transport are explicitly sourced from this competition, the model can understate the system value of building clean-hydrogen supply. The TODOs above record these priorities.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rate in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled hydrogen production cost and carbon intensity against the Hydrogen Strategy for Canada and IEA data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-airproducts-canada" class="csl-entry" role="listitem">
+Air Products. 2024. <em>Canada Net-Zero Hydrogen Energy Complex</em>. Air Products. <a href="https://www.airproducts.com/energy-transition/canada-net-zero-hydrogen-energy-complex">https://www.airproducts.com/energy-transition/canada-net-zero-hydrogen-energy-complex</a>.
+</div>
+<div id="ref-iea-hydrogen" class="csl-entry" role="listitem">
+International Energy Agency. 2019. <em>The Future of Hydrogen: Assumptions Annex</em>. IEA. <a href="https://iea.blob.core.windows.net/assets/a02a0c80-77b2-462e-a9d5-1099e0e572ce/IEA-The-Future-of-Hydrogen-Assumptions-Annex.pdf">https://iea.blob.core.windows.net/assets/a02a0c80-77b2-462e-a9d5-1099e0e572ce/IEA-The-Future-of-Hydrogen-Assumptions-Annex.pdf</a>.
+</div>
+<div id="ref-nrcan-h2-strategy" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Hydrogen Strategy for Canada: Progress Report</em>. Natural Resources Canada. <a href="https://natural-resources.canada.ca/energy-sources/clean-fuels/hydrogen-strategy/hydrogen-strategy-canada-progress-report">https://natural-resources.canada.ca/energy-sources/clean-fuels/hydrogen-strategy/hydrogen-strategy-canada-progress-report</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1926,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

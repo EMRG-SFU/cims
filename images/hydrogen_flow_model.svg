@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .grey{fill:#8a8f98;}
+    .blue{fill:#3d6ea5;}
+    .green{fill:#3f7d52;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .ccs{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .out{fill:#33415c;}
+  </style>
+
+  <!-- production node -->
+  <rect class="branch" x="390" y="14" width="220" height="44" rx="7"/>
+  <text class="lblw" x="500" y="33" text-anchor="middle">Hydrogen Production</text>
+  <text class="subw" x="500" y="48" text-anchor="middle">one competition · centralised &amp; distributed</text>
+
+  <path class="edge" d="M500,58 V72"/>
+  <path class="edge" d="M170,72 H830"/>
+  <path class="edge" d="M170,72 V86" marker-end="url(#arrow)"/>
+  <path class="edge" d="M500,72 V86" marker-end="url(#arrow)"/>
+  <path class="edge" d="M830,72 V86" marker-end="url(#arrow)"/>
+
+  <!-- grey -->
+  <rect class="grey" x="60" y="90" width="220" height="38" rx="6"/>
+  <text class="lblw" x="170" y="108" text-anchor="middle">Grey (unabated)</text>
+  <text class="subw" x="170" y="122" text-anchor="middle">highest CO₂ · lowest cost</text>
+  <rect class="det" x="60" y="138" width="220" height="86" rx="6"/>
+  <text class="li" x="70" y="156">SMR — centralised / distributed</text>
+  <text class="li" x="70" y="172">(distributed SMR = incumbent)</text>
+  <text class="li" x="70" y="192" style="fill:#7a3b1f">~9–10 kg CO₂ / kg H₂</text>
+  <text class="li" x="70" y="210">~CAD 1.5–2.5 / kg</text>
+
+  <!-- blue -->
+  <rect class="blue" x="390" y="90" width="220" height="38" rx="6"/>
+  <text class="lblw" x="500" y="108" text-anchor="middle">Blue (+ CCS)</text>
+  <text class="subw" x="500" y="122" text-anchor="middle">~90% captured</text>
+  <rect class="det" x="390" y="138" width="220" height="86" rx="6"/>
+  <text class="li" x="400" y="156">SMR centralised + CCS</text>
+  <text class="li" x="400" y="172">Coal gasification + CCS</text>
+  <text class="li" x="400" y="192">~1–2 kg CO₂ / kg H₂</text>
+  <text class="li" x="400" y="210">~CAD 2.0–3.5 / kg (Alberta)</text>
+
+  <!-- green -->
+  <rect class="green" x="720" y="90" width="220" height="38" rx="6"/>
+  <text class="lblw" x="830" y="108" text-anchor="middle">Green / negative</text>
+  <text class="subw" x="830" y="122" text-anchor="middle">near-zero / net-negative</text>
+  <rect class="det" x="720" y="138" width="220" height="86" rx="6"/>
+  <text class="li" x="730" y="156">Electrolysis — central / distrib.</text>
+  <text class="li" x="730" y="172">(tracks grid carbon intensity)</text>
+  <text class="li" x="730" y="192">Biomass gasification (+ CCS</text>
+  <text class="li" x="740" y="206" style="fill:#2c6e49">= net-negative)</text>
+  <text class="li" x="730" y="221">~CAD 4.8–6.3 / kg (electrolysis)</text>
+
+  <!-- services -->
+  <rect class="det" x="120" y="280" width="300" height="44" rx="6"/>
+  <text class="lbl" x="270" y="299" text-anchor="middle">Infrastructure service</text>
+  <text class="sub" x="270" y="314" text-anchor="middle">delivery · compression · storage (more for centralised)</text>
+
+  <rect class="ccs" x="560" y="280" width="300" height="44" rx="6"/>
+  <text class="lbl" x="710" y="299" text-anchor="middle">CCS service — 90% capture</text>
+  <text class="sub" x="710" y="314" text-anchor="middle">requested by blue &amp; biomass-CCS routes</text>
+
+  <path class="dedge" d="M170,224 V280" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M500,224 V280" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M620,224 C600,250 560,265 560,280" marker-end="url(#darrow)"/>
+  <path class="dedge" d="M830,224 V250 H710 V280" marker-end="url(#darrow)"/>
+
+  <!-- output -->
+  <rect class="out" x="350" y="380" width="300" height="56" rx="8"/>
+  <text class="lblw" x="500" y="403" text-anchor="middle">Hydrogen output</text>
+  <text class="subw" x="500" y="420" text-anchor="middle">→ refining · ammonia/methanol · steel (DRI) · transport</text>
+  <path class="edge" d="M270,324 C300,360 380,372 410,382" marker-end="url(#arrow)"/>
+  <path class="edge" d="M710,324 C680,360 620,372 590,382" marker-end="url(#arrow)"/>
+
+  <!-- lifecycle note -->
+  <text class="sub" x="500" y="462" text-anchor="middle">Life-cycle CO₂, CH₄, N₂O tracked; a rising carbon price shifts the mix grey → blue → green.</text>
+
+  <!-- legend -->
+  <rect class="grey" x="120" y="500" width="16" height="12" rx="2"/>
+  <text class="sub" x="142" y="510">grey route</text>
+  <rect class="blue" x="250" y="500" width="16" height="12" rx="2"/>
+  <text class="sub" x="272" y="510">blue (CCS) route</text>
+  <rect class="green" x="410" y="500" width="16" height="12" rx="2"/>
+  <text class="sub" x="432" y="510">green / negative route</text>
+  <rect class="ccs" x="600" y="500" width="16" height="12" rx="2"/>
+  <text class="sub" x="622" y="510">capture / infrastructure service</text>
+</svg>

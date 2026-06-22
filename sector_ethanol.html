@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,29 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">13.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">13.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">13.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-corn-and-cellulosic-routes" id="toc-products-corn-and-cellulosic-routes" class="nav-link" data-scroll-target="#products-corn-and-cellulosic-routes"><span class="header-section-number">13.3.1</span> Products: corn and cellulosic routes</a></li>
+  <li><a href="#services-feedstock-heat-fuel-and-capture" id="toc-services-feedstock-heat-fuel-and-capture" class="nav-link" data-scroll-target="#services-feedstock-heat-fuel-and-capture"><span class="header-section-number">13.3.2</span> Services: feedstock, heat, fuel, and capture</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">13.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#capturing-fermentation-co₂-the-cheapest-beccs" id="toc-capturing-fermentation-co₂-the-cheapest-beccs" class="nav-link" data-scroll-target="#capturing-fermentation-co₂-the-cheapest-beccs"><span class="header-section-number">13.4.1</span> Capturing fermentation CO₂ (the cheapest BECCS)</a></li>
+  <li><a href="#feedstock-and-process-energy" id="toc-feedstock-and-process-energy" class="nav-link" data-scroll-target="#feedstock-and-process-energy"><span class="header-section-number">13.4.2</span> Feedstock and process energy</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">13.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">13.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">13.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_ethanol.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Ethanol</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Ethanol</span></h1>
+<h1 class="title"><span id="sec-ethanol" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Ethanol</span></span></h1>
 </div>
 
 
@@ -712,10 +755,205 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Ethanol sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>Ethanol production is one of CIMS’s energy-supply sub-models: it produces a low-carbon liquid fuel that the transport sector blends with gasoline. The emphasis is on the structure of the energy-service flow model — the production routes, the technologies that compete at each service, and the engineering ratios that link them. The tree is region-agnostic. Two features define the ethanol sub-model: it carries two distinct production routes — first-generation corn (grain) fermentation and second-generation cellulosic conversion — that differ markedly in carbon intensity; and, because fermentation releases a stream of nearly pure, biogenic CO₂, it is one of the cheapest places in the whole energy system to apply carbon capture, which the sub-model represents through a CCS service.</p>
+<section id="scope" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">13.1</span> Scope</h2>
+<p>CIMS represents the production of fuel ethanol by two routes: corn (and, in Western Canada, wheat) starch fermentation, and cellulosic conversion of crop residues and other lignocellulosic material. The sub-model covers the conversion plant and its inputs — agricultural feedstock, process steam, electricity, and a gaseous process fuel — and produces ethanol as an output that flows into the gasoline blend. Demand is set by the blending and fuel-switching choices in the consuming sectors and by renewable-fuel policy, rather than by an exogenous production target.</p>
+<p>Adjacent activities are handled elsewhere: biodiesel has its own <a href="./sector_biodiesel.html">Biodiesel</a> chapter; gasoline is produced in <a href="./sector_petroleum_refining.html">Petroleum Refining</a>; the combustion of the ethanol blend happens in the transport sectors; and feedstock cultivation is represented here only through an <strong>Agricultural Input</strong> service rather than the full <a href="./sector_agriculture.html">Agriculture</a> sub-model.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">13.2</span> Real-world context</h2>
+<p>Canadian ethanol is predominantly first-generation: corn in Eastern Canada (Ontario in particular) and wheat in the West, fermented to ethanol and blended into gasoline under the federal Clean Fuel Regulations and provincial renewable-content mandates <span class="citation" data-cites="nrcan-ethanol">(<a href="index.html#ref-nrcan-ethanol" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. Cellulosic ethanol — made from crop residues, wood, and other lignocellulosic feedstock — is a second-generation technology that is much less developed but carries a substantially lower carbon intensity, because it is not burdened by the cultivation emissions (fertiliser N₂O, farm diesel, land use) of a dedicated grain crop and uses material that would otherwise decay or be burned <span class="citation" data-cites="cen-ethanol">(<a href="index.html#ref-cen-ethanol" role="doc-biblioref">Tullo 2023</a>)</span>.</p>
+<p>The sector has one striking decarbonisation feature. The fermentation step that turns sugars into ethanol releases roughly an equal mass of CO₂, and that CO₂ is biogenic and almost pure — it needs little separation before it can be compressed and stored. This makes ethanol plants among the lowest-cost carbon-capture opportunities anywhere, and capturing biogenic fermentation CO₂ delivers net-negative emissions (BECCS). The CIMS structure reflects both points: it separates the corn and cellulosic routes, carries life-cycle CO₂, CH₄, and N₂O accounting through the feedstock and process services, and provides a <strong>CCS</strong> service the routes can draw on.</p>
+</section>
+<section id="model-structure" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">13.3</span> Model structure</h2>
+<p>The sub-model divides into a <strong>Product</strong> sub-tree — the two production routes — and a <strong>Service</strong> sub-tree of the inputs they draw on. <a href="#fig-ethanol-flow-model" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the production chains are fixed-ratio sequences and the technology choices occur at the service leaves.</p>
+<div id="fig-ethanol-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ethanol-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/ethanol_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;13.1: Energy-service flow model of the ethanol sub-model. Two production routes — Corn (grain fermentation) and Cellulosic — convert feedstock into ethanol, drawing on an Agricultural Input service, process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service well suited to the pure biogenic CO₂ from fermentation; life-cycle CO₂, CH₄, and N₂O are tracked."><img src="images/ethanol_flow_model.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ethanol-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.1: Energy-service flow model of the ethanol sub-model. Two production routes — Corn (grain fermentation) and Cellulosic — convert feedstock into ethanol, drawing on an Agricultural Input service, process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service well suited to the pure biogenic CO₂ from fermentation; life-cycle CO₂, CH₄, and N₂O are tracked.
+</figcaption>
+</figure>
+</div>
+<section id="products-corn-and-cellulosic-routes" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="products-corn-and-cellulosic-routes"><span class="header-section-number">13.3.1</span> Products: corn and cellulosic routes</h3>
+<ul>
+<li><strong>Corn</strong> — first-generation starch fermentation. It draws on the <strong>Agricultural Input</strong> service (the grain feedstock and its cultivation energy) and on <strong>Steam</strong> for cooking, distillation, and drying, and is the more steam-intensive of the two routes.</li>
+<li><strong>Cellulosic</strong> — second-generation conversion of lignocellulosic feedstock (crop residues, wood). In the model it draws less on the agricultural-cultivation input and instead consumes some industrial diesel for feedstock handling, plus <strong>Steam</strong>; its lower cultivation burden gives it a lower life-cycle carbon intensity.</li>
+</ul>
+</section>
+<section id="services-feedstock-heat-fuel-and-capture" class="level3" data-number="13.3.2">
+<h3 data-number="13.3.2" class="anchored" data-anchor-id="services-feedstock-heat-fuel-and-capture"><span class="header-section-number">13.3.2</span> Services: feedstock, heat, fuel, and capture</h3>
+<ul>
+<li><strong>Agricultural Input</strong> — feedstock cultivation, competing diesel-powered, efficient-diesel, and biodiesel-powered farming, so the energy and emissions of growing the grain are represented (including the option to displace farm diesel with biodiesel).</li>
+<li><strong>Steam</strong> — process heat, competing natural-gas, coal, and electric boilers, cogeneration, and CCS-equipped variants.</li>
+<li><strong>Methane Fuel</strong> — the gaseous-fuel supply, competing natural gas against biogas, biomass gasification, and hydrogen.</li>
+<li><strong>CCS</strong> — the shared carbon-capture service, especially valuable here because of the pure fermentation CO₂.</li>
+</ul>
+<p><mark>TODO: The current regional input files predate the full Product/Service split (the routes sit under a <code>Production</code> node rather than directly under the master tree’s <code>Product</code>). Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">13.4</span> Decarbonisation technologies</h2>
+<p>Ethanol decarbonisation means lowering life-cycle carbon intensity — shifting toward cellulosic feedstock, cleaning up process energy, and, distinctively, capturing the pure fermentation CO₂ for net-negative emissions. <a href="#tbl-ethanol-decarb" class="quarto-xref">Table&nbsp;<span>13.1</span></a> summarises maturity and <a href="#tbl-ethanol-cost" class="quarto-xref">Table&nbsp;<span>13.2</span></a> gives indicative costs.</p>
+<div id="tbl-ethanol-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ethanol-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;13.1: Indicative performance and maturity of key ethanol decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-ethanol-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Fermentation CO₂ capture (BECCS)</td>
+<td style="text-align: left;">Captures near-pure biogenic CO₂; net-negative</td>
+<td style="text-align: left;">Early commercial (low-cost capture)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cellulosic route (vs corn)</td>
+<td style="text-align: left;">Much lower life-cycle CI; avoids cultivation burden</td>
+<td style="text-align: left;">Pilot / early commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biodiesel-powered / efficient farming</td>
+<td style="text-align: left;">Lowers feedstock-cultivation emissions</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric process steam / boilers</td>
+<td style="text-align: left;">Removes fossil process-heat CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biogas / biomass-gas / hydrogen process fuel</td>
+<td style="text-align: left;">Decarbonises gaseous process fuel</td>
+<td style="text-align: left;">Commercial / emerging</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CCS on process steam</td>
+<td style="text-align: left;">Captures process-heat CO₂</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-ethanol-cost" class="quarto-xref">Table&nbsp;<span>13.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="nrcan-ethanol cen-ethanol">(<a href="index.html#ref-nrcan-ethanol" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-cen-ethanol" role="doc-biblioref">Tullo 2023</a>)</span>, expressed in 2025 Canadian dollars (US-dollar sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-ethanol-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ethanol-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;13.2: Indicative techno-economic characteristics of ethanol decarbonisation options, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-ethanol-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decarbonisation option</th>
+<th style="text-align: left;">Capex</th>
+<th style="text-align: left;">Operating cost / cost of CO₂</th>
+<th style="text-align: left;">Energy / CI effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Fermentation CO₂ capture (BECCS)</td>
+<td style="text-align: left;">low (compression, dehydration only)</td>
+<td style="text-align: left;">~CAD 25–60 / t CO₂ (cheapest industrial capture)</td>
+<td style="text-align: left;">net-negative; near-pure CO₂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cellulosic conversion (vs corn)</td>
+<td style="text-align: left;">higher than corn plant</td>
+<td style="text-align: left;">feedstock-dependent</td>
+<td style="text-align: left;">much lower life-cycle CI</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric process boiler</td>
+<td style="text-align: left;">~150–400 CAD/kWth</td>
+<td style="text-align: left;">electricity-priced heat</td>
+<td style="text-align: left;">removes process-heat fossil CO₂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biomass / biogas process fuel</td>
+<td style="text-align: left;">~800–1,400 CAD/kWth (biomass)</td>
+<td style="text-align: left;">low-carbon fuel</td>
+<td style="text-align: left;">decarbonises process heat</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CCS on process steam</td>
+<td style="text-align: left;">+30–50% on boiler plant</td>
+<td style="text-align: left;">~CAD 100–200 / t CO₂</td>
+<td style="text-align: left;">captures process CO₂</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="capturing-fermentation-co₂-the-cheapest-beccs" class="level3" data-number="13.4.1">
+<h3 data-number="13.4.1" class="anchored" data-anchor-id="capturing-fermentation-co₂-the-cheapest-beccs"><span class="header-section-number">13.4.1</span> Capturing fermentation CO₂ (the cheapest BECCS)</h3>
+<p>The standout option is capturing the fermentation CO₂. Unlike a flue gas, it emerges nearly pure, so only compression and dehydration are needed before storage — capture costs are a small fraction of those for dilute industrial streams. Because the carbon is biogenic, storing it yields net-negative emissions. The model represents this through the <strong>CCS</strong> service; given the cost advantage, it is the single most valuable lever in the sub-model.</p>
+<p><mark>TODO: Make the fermentation-CO₂ capture pathway explicit and distinct from process-heat CCS, with its own (much lower) capture cost, so the model captures the unusually cheap BECCS opportunity at ethanol plants rather than treating all capture at a single cost.</mark></p>
+</section>
+<section id="feedstock-and-process-energy" class="level3" data-number="13.4.2">
+<h3 data-number="13.4.2" class="anchored" data-anchor-id="feedstock-and-process-energy"><span class="header-section-number">13.4.2</span> Feedstock and process energy</h3>
+<p>Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the <strong>Agricultural Input</strong> options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching <strong>Steam</strong> to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">13.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the inputs it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Ethanol technologies are discounted at rates of roughly 10–40% in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment decisions; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10–25 across the competitions.</p>
+<p>As with biodiesel, the emissions accounting is <strong>life-cycle</strong>: the sub-model carries CO₂, CH₄, and N₂O factors so that agricultural N₂O, process CH₄, and CO₂ are all represented, and the net benefit of ethanol emerges from the difference between these emissions and the gasoline it displaces. The <strong>CCS</strong> service applies an emissions-removal factor to the routes that request it — and because the captured fermentation CO₂ is biogenic, that removal can drive the route’s net emissions below zero. The carbon price therefore rewards the cellulosic route, clean process energy, and above all fermentation-CO₂ capture.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">13.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry both the corn and cellulosic routes. In practice corn ethanol is concentrated in Ontario and the East, wheat-based grain ethanol in the Prairies, and cellulosic feedstock potential follows crop-residue and forestry availability. Regional differences show up in feedstock mix and in the carbon intensity of the grid supplying process electricity.</p>
+<p><mark>TODO: Calibrate the regional split between corn/wheat and cellulosic routes, and the associated carbon intensities, against Clean Fuel Regulations pathway data and Canadian crop-residue supply estimates.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">13.7</span> Limitations and planned extensions</h2>
+<p>The ethanol sub-model is compact and supply-side. Its main limitations: it treats feedstock through a single Agricultural Input service rather than linking to the agriculture sub-model; it applies a single CCS cost rather than recognising the unusually cheap fermentation-CO₂ capture; and its corn/cellulosic split and intensities are inherited from older calibrations. The TODOs above record these priorities, of which making the cheap fermentation-CO₂ BECCS pathway explicit is the most consequential for emissions outcomes.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled ethanol output and carbon intensity against Natural Resources Canada and Clean Fuel Regulations data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-nrcan-ethanol" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Ethanol</em>. Transportation Energy Efficiency. <a href="https://natural-resources.canada.ca/energy-efficiency/transportation-energy-efficiency/ethanol">https://natural-resources.canada.ca/energy-efficiency/transportation-energy-efficiency/ethanol</a>.
+</div>
+<div id="ref-cen-ethanol" class="csl-entry" role="listitem">
+Tullo, Alexander H. 2023. <span>“Will Ethanol Fuel a Low-Carbon Future?”</span> <em>Chemical and Engineering News</em> 101 (6). <a href="https://cen.acs.org/business/specialty-chemicals/ethanol-fuel-low-carbon-future/101/i6">https://cen.acs.org/business/specialty-chemicals/ethanol-fuel-low-carbon-future/101/i6</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1915,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

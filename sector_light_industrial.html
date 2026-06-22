@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -77,6 +99,35 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -471,7 +522,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +737,30 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">22.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">22.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">22.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-the-manufacturing-sub-groups" id="toc-products-the-manufacturing-sub-groups" class="nav-link" data-scroll-target="#products-the-manufacturing-sub-groups"><span class="header-section-number">22.3.1</span> Products: the manufacturing sub-groups</a></li>
+  <li><a href="#services-where-the-energy-is-decided" id="toc-services-where-the-energy-is-decided" class="nav-link" data-scroll-target="#services-where-the-energy-is-decided"><span class="header-section-number">22.3.2</span> Services: where the energy is decided</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">22.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#electrified-heat-heat-pumps-and-electric-boilers" id="toc-electrified-heat-heat-pumps-and-electric-boilers" class="nav-link" data-scroll-target="#electrified-heat-heat-pumps-and-electric-boilers"><span class="header-section-number">22.4.1</span> Electrified heat: heat pumps and electric boilers</a></li>
+  <li><a href="#biomass-hydrogen-and-cogeneration" id="toc-biomass-hydrogen-and-cogeneration" class="nav-link" data-scroll-target="#biomass-hydrogen-and-cogeneration"><span class="header-section-number">22.4.2</span> Biomass, hydrogen, and cogeneration</a></li>
+  <li><a href="#efficiency-in-motors-lighting-and-buildings" id="toc-efficiency-in-motors-lighting-and-buildings" class="nav-link" data-scroll-target="#efficiency-in-motors-lighting-and-buildings"><span class="header-section-number">22.4.3</span> Efficiency in motors, lighting, and buildings</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">22.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">22.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">22.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +768,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_light_industrial.html"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Light Industrial</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Light Industrial</span></h1>
+<h1 class="title"><span id="sec-light-industrial" class="quarto-section-identifier"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Light Industrial</span></span></h1>
 </div>
 
 
@@ -712,12 +785,237 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The CIMS industrial sub-model for other manufacturing industries has been created to capture those industries within a region, which, on their own, do not consume enough energy to merit the development of a separate model. When considered as a group, however, they may consume a significant (if not the dominant) portion of the energy within any one region. The industries considered part of the other manufacturing sector are: food, beverage, tobacco, rubber products, plastic products, leather and allied, primary textiles, textile products, clothing, wood, furniture and fixture, printing and publishing, fabricated metal products, machinery, transportation equipment, electrical and electronic, and other manufacturing.</p>
-<p>The other manufacturing group of industries typically includes a large variety of technologies and processes. Usually, a simplified flow model of generic energy services represents adequately the energy consumption of these industries as a whole. Steam boilers, process heat, space heat, and electricity for lights and electric motors and their attached auxiliary devices (pumps, conveyors, fans and the like) constitute the bulk of energy-using services.</p>
-<p>Unlike other “major” industries the other manufacturing industry as a group does not have any single product which dominates the production processes and to which the production of all other products may be linked. As a proxy for the physical output measures used in the sub-models major industries (i.e., tonnes of steel or cubic metres of gasoline) the output of the other manufacturing industry is represented in monetary terms such as the RDP (real domestic product) of the industry.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>The light industrial sector — the “other manufacturing” industries — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry activity and through the data attached to each node. Light industrial is the aggregate of the many manufacturing industries that are individually too small to merit their own sub-model but collectively consume a large share of regional industrial energy. Because it has no single physical product, it is the one industrial sector CIMS drives with a monetary output measure rather than a tonnage, and it is modelled as a set of generic energy services rather than specific chemical or metallurgical processes.</p>
+<section id="scope" class="level2" data-number="22.1">
+<h2 data-number="22.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">22.1</span> Scope</h2>
+<p>CIMS groups under light industrial the manufacturing industries not represented elsewhere: food, beverage, and tobacco; rubber and plastics; leather and textiles; wood products; furniture, printing, and machinery; transportation equipment; and electronics and other manufacturing. The driving variable is the real domestic product (RDP) of these industries — their economic output in constant dollars — rather than a physical tonnage, because there is no common physical unit across such a diverse group. A forecast of RDP drives the demand for each energy service and is set exogenously.</p>
+<p>Several adjacent activities are deliberately handled elsewhere to avoid double-counting. The energy-intensive industries that do have their own sub-models — iron and steel, chemicals, pulp and paper, industrial minerals, metal smelting, mining, and the rest — are excluded here and covered in their own chapters; light industrial is, by construction, “everything else” in manufacturing. Fuel and electricity supply enter through the energy-supply sub-models and the shared fuel nodes.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="22.2">
+<h2 data-number="22.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">22.2</span> Real-world context</h2>
+<p>The “other manufacturing” group is heterogeneous but shares an energy signature: its demand is dominated by low- and medium-temperature heat, steam, motor-driven systems, and building services (space conditioning, water heating, lighting), rather than by high-temperature process chemistry. Food and beverage processing is typically the largest energy user in the group, and it is overwhelmingly low-temperature: on the order of 97% of its thermal demand is below about 130 °C — squarely in the range that modern industrial heat pumps can serve at a coefficient of performance of 3.5–4 <span class="citation" data-cites="aceee-ihp arpagaus">(<a href="index.html#ref-aceee-ihp" role="doc-biblioref">American Council for an Energy-Efficient Economy 2024</a>; <a href="index.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>)</span>. Wood products, plastics, textiles, and the rest add their own low- and medium-temperature loads.</p>
+<p>This matters for decarbonisation. Because the sector’s energy is general-purpose rather than locked into a specific reaction, it is among the most readily electrified parts of industry: heat pumps, electric boilers, and resistance heating can replace fossil combustion for much of the heat, high-efficiency motors and drives cut the large motive-power load, and the remaining high-temperature or hard-to-electrify duty can switch to biomass or hydrogen. The CIMS structure reflects this by representing the sector almost entirely through the shared energy-service competitions — the same Heat, Steam, Machine Drive, and building-service structures used across industry — applied to an aggregate manufacturing output.</p>
+</section>
+<section id="model-structure" class="level2" data-number="22.3">
+<h2 data-number="22.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">22.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the manufacturing sub-groups whose aggregate output drives demand — and a <strong>Service</strong> sub-tree holding the energy services that supply them. <a href="#fig-light-industrial-flow-model" class="quarto-xref">Figure&nbsp;<span>22.1</span></a> shows the structure. Unlike the process-heavy sectors, almost all of the modelling detail is in the Service sub-tree.</p>
+<p>As described in the <a href="./sector_overview.html">Sector Overview</a>, each node carries a competition rule. The manufacturing sub-groups are fixed-ratio output nodes that translate RDP into energy-service demand; the technology choices occur at the tech-compete leaves of the services (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>).</p>
+<div id="fig-light-industrial-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-light-industrial-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/light_industrial_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;22.1: Energy-service flow model of the light industrial sector (region-agnostic master tree). The Product sub-tree holds the seven manufacturing sub-groups whose aggregate output (RDP) drives demand; the Service sub-tree holds the generic energy services — process heat, steam, water heating, HVAC, lighting, and the MECS-aligned machine drive — through which essentially all of the sector’s energy is modelled."><img src="images/light_industrial_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-light-industrial-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;22.1: Energy-service flow model of the light industrial sector (region-agnostic master tree). The Product sub-tree holds the seven manufacturing sub-groups whose aggregate output (RDP) drives demand; the Service sub-tree holds the generic energy services — process heat, steam, water heating, HVAC, lighting, and the MECS-aligned machine drive — through which essentially all of the sector’s energy is modelled.
+</figcaption>
+</figure>
+</div>
+<section id="products-the-manufacturing-sub-groups" class="level3" data-number="22.3.1">
+<h3 data-number="22.3.1" class="anchored" data-anchor-id="products-the-manufacturing-sub-groups"><span class="header-section-number">22.3.1</span> Products: the manufacturing sub-groups</h3>
+<p>The <strong>Product</strong> sub-tree divides manufacturing into seven sub-groups: Food, Tobacco, and Beverage; Rubber and Plastics; Leather and Textiles; Wood Products; Furniture, Printing, and Machinery; Transportation Equipment; and Electronics and Other. Each is an output node whose RDP, multiplied by an energy-intensity ratio, generates requests on the shared energy services. The sub-groups differ in how much heat versus motive power versus building service they draw, but they share the same service technologies.</p>
+</section>
+<section id="services-where-the-energy-is-decided" class="level3" data-number="22.3.2">
+<h3 data-number="22.3.2" class="anchored" data-anchor-id="services-where-the-energy-is-decided"><span class="header-section-number">22.3.2</span> Services: where the energy is decided</h3>
+<p>Essentially all of the sector’s energy use — and all of its emissions — is decided in the <strong>Service</strong> sub-tree:</p>
+<ul>
+<li><strong>Heat</strong> — process heat, split into Direct (standard and efficient natural gas, electric, oil/HFO, and wood-waste) and Indirect (electric) firing. This is the central fuel-switching competition.</li>
+<li><strong>Steam</strong> — boiler- and turbine-raised steam competing natural gas, oil, coal, electric, hydrogen, solid-biomass, and cogeneration units.</li>
+<li><strong>Water Heating</strong> — standard, efficient, and high-efficiency natural-gas and electric units.</li>
+<li><strong>HVAC</strong> — space conditioning, competing building-shell efficiency levels with electric and gas systems.</li>
+<li><strong>Lighting</strong> — base, more-efficient, and most-efficient lighting.</li>
+<li><strong>Machine Drive</strong> — the motor-driven loads (pumps, fans, compressed air, materials handling, and processing), structured on the EIA MECS end uses; see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter. (The current files label this Motive Power with high- and low-efficiency options.)</li>
+<li><strong>Methane Blend</strong> — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gas, and hydrogen.</li>
+</ul>
+<p>The detailed structure and conventions of these shared services are set out in the <a href="./sector_overview.html">Sector Overview</a> and the General Services chapters and are not repeated here.</p>
+<p><mark>TODO: The current regional input files predate the full Product/Service split and the MECS-aligned Machine Drive grouping (they carry a single Motive Power node with high-/low-efficiency options rather than the Compressed Air / Fans / Materials Handling / Materials Processing / Pumps breakdown). Migrate these files to the region-agnostic master tree and the shared General Services chapters, so light industrial draws on the same machine-drive representation as the other sectors.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="22.4">
+<h2 data-number="22.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">22.4</span> Decarbonisation technologies</h2>
+<p>Because light industrial energy is general-purpose and low-to-medium temperature, its decarbonisation is unusually tractable: it does not require new process chemistry, only electrification, fuel-switching, and efficiency applied to heat, steam, and motors. <a href="#tbl-light-industrial-decarb" class="quarto-xref">Table&nbsp;<span>22.1</span></a> summarises maturity and <a href="#tbl-light-industrial-cost" class="quarto-xref">Table&nbsp;<span>22.2</span></a> gives indicative costs.</p>
+<div id="tbl-light-industrial-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-light-industrial-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;22.1: Indicative performance and maturity of key light industrial decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-light-industrial-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Industrial heat pumps (low-temp heat)</td>
+<td style="text-align: left;">COP ~3.5–4; serves heat up to ~120 °C</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric boilers / resistance heating</td>
+<td style="text-align: left;">Eliminates combustion where heat pumps don’t fit</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass / wood-waste heat and steam</td>
+<td style="text-align: left;">Low-carbon heat from residues</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen / biogas in the methane blend</td>
+<td style="text-align: left;">Decarbonises remaining gas-fired duty</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cogeneration (steam + power)</td>
+<td style="text-align: left;">Higher fuel utilisation</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-efficiency motors + variable-speed drives</td>
+<td style="text-align: left;">Lower motive-power energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Efficient lighting (LED)</td>
+<td style="text-align: left;">Lower lighting energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Building-shell &amp; HVAC efficiency</td>
+<td style="text-align: left;">Lower space-conditioning energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-light-industrial-cost" class="quarto-xref">Table&nbsp;<span>22.2</span></a> are order-of-magnitude figures from public techno-economic literature <span class="citation" data-cites="aceee-ihp arpagaus madeddu">(<a href="index.html#ref-aceee-ihp" role="doc-biblioref">American Council for an Energy-Efficient Economy 2024</a>; <a href="index.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>; <a href="index.html#ref-madeddu" role="doc-biblioref">Madeddu et al. 2020</a>)</span>, expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Capital costs are per kilowatt of delivered service capacity. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-light-industrial-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-light-industrial-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;22.2: Indicative techno-economic characteristics of light industrial decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-light-industrial-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decarbonisation technology</th>
+<th style="text-align: left;">Capex (2025 CAD)</th>
+<th style="text-align: left;">Operating characteristics</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Industrial heat pump (≤120 °C)</td>
+<td style="text-align: left;">~1,100–2,000 / kWth</td>
+<td style="text-align: left;">COP 3.5–4; high electricity use, low fuel</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric boiler / resistance</td>
+<td style="text-align: left;">~150–400 / kWth</td>
+<td style="text-align: left;">~99% efficient; electricity-priced heat</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass / wood-waste boiler</td>
+<td style="text-align: left;">~800–1,400 / kWth</td>
+<td style="text-align: left;">fuel handling; low-carbon if sustainable</td>
+<td style="text-align: left;">solid biomass</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen burner / blend</td>
+<td style="text-align: left;">retrofit of existing burners</td>
+<td style="text-align: left;">tracks hydrogen cost</td>
+<td style="text-align: left;">hydrogen / blend</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cogeneration (gas, ≈6–40 MW)</td>
+<td style="text-align: left;">~1,500–2,700 / kWe</td>
+<td style="text-align: left;">sells surplus power; higher fuel use</td>
+<td style="text-align: left;">natural gas / biomass</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-efficiency motor + VSD</td>
+<td style="text-align: left;">small premium over standard motor</td>
+<td style="text-align: left;">~2–8% drive-energy saving</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">LED lighting</td>
+<td style="text-align: left;">low; fast payback</td>
+<td style="text-align: left;">large lighting-energy saving</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="electrified-heat-heat-pumps-and-electric-boilers" class="level3" data-number="22.4.1">
+<h3 data-number="22.4.1" class="anchored" data-anchor-id="electrified-heat-heat-pumps-and-electric-boilers"><span class="header-section-number">22.4.1</span> Electrified heat: heat pumps and electric boilers</h3>
+<p>The largest lever is electrifying the sector’s abundant low- and medium-temperature heat. Industrial heat pumps deliver heat up to about 120 °C at a coefficient of performance of 3.5–4, so each unit of electricity yields three to four units of heat — a strong economic and emissions case wherever the grid is clean, as in much of Canada <span class="citation" data-cites="aceee-ihp arpagaus">(<a href="index.html#ref-aceee-ihp" role="doc-biblioref">American Council for an Energy-Efficient Economy 2024</a>; <a href="index.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>)</span>. Where temperatures or duty cycles do not suit a heat pump, electric boilers and resistance heating electrify the remainder at high efficiency but higher running cost. These appear in the model as the electric options at the <strong>Heat</strong>, <strong>Steam</strong>, and <strong>Water Heating</strong> services, drawing on the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter.</p>
+</section>
+<section id="biomass-hydrogen-and-cogeneration" class="level3" data-number="22.4.2">
+<h3 data-number="22.4.2" class="anchored" data-anchor-id="biomass-hydrogen-and-cogeneration"><span class="header-section-number">22.4.2</span> Biomass, hydrogen, and cogeneration</h3>
+<p>For heat that is harder to electrify, biomass and wood-waste firing (already a Heat and Steam option, and a natural fit for wood-products manufacturers with on-site residues) and hydrogen and biogas through the <strong>Methane Blend</strong> node decarbonise the remaining combustion. Cogeneration raises the fuel utilisation of any remaining gas use and can export surplus power.</p>
+</section>
+<section id="efficiency-in-motors-lighting-and-buildings" class="level3" data-number="22.4.3">
+<h3 data-number="22.4.3" class="anchored" data-anchor-id="efficiency-in-motors-lighting-and-buildings"><span class="header-section-number">22.4.3</span> Efficiency in motors, lighting, and buildings</h3>
+<p>The motive-power load is reduced by high-efficiency motors and variable-speed drives in the <strong>Machine Drive</strong> service (see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter), lighting by LED upgrades, and space-conditioning by building-shell and HVAC efficiency — all mature, low-cost, and already represented as the efficient options in their respective competitions.</p>
+<p><mark>TODO: Add explicit industrial heat-pump technologies to the Heat and Water Heating competitions. The current files represent electric heat as resistance/standard-electric only; heat pumps’ COP of 3.5–4 makes them materially cheaper to run than resistance heating and is the most important missing low-temperature electrification option for this sector.</mark></p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="22.5">
+<h2 data-number="22.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">22.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Light industrial technologies are discounted at a high rate — 35% at most nodes in the current data, with some at 40–50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.</p>
+<p>The sector’s emissions accounting is the simplest kind: there are no process emissions, so all CO₂ comes from fuel combustion in the Heat, Steam, and Water Heating services, entering through each technology’s fuel service requests and the carbon price. Electrification (heat pumps), fuel-switching, and energy efficiency are therefore the only channels for emissions reduction, and their effect depends on the carbon intensity of the regional grid. Because output is measured in real dollars, energy intensities are expressed per unit of RDP, and the sector’s projected energy use is driven by the interaction of economic growth with these efficiency and fuel-switching choices.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="22.6">
+<h2 data-number="22.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">22.6</span> Regional coverage and differences</h2>
+<p>Light industrial has the most complete regional coverage of any industrial sector in the model: all seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the full structure, because every region has a substantial “other manufacturing” base. Differences are matters of scale and growth: Ontario and Québec are the largest, with Québec and Alberta growing strongly over the projection, while Ontario’s modelled output is roughly flat to declining. Because the sector is driven by economic output rather than a commodity, its energy use tends to rise with regional GDP unless offset by efficiency and electrification.</p>
+<p><mark>TODO: The relative energy intensities and sub-group mix are inherited from older calibrations. Revisit them against current CIEEDAC manufacturing energy-use data, since the composition of “other manufacturing” (and the share of food and beverage in particular) varies considerably by region.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="22.7">
+<h2 data-number="22.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">22.7</span> Limitations and planned extensions</h2>
+<p>The light industrial sub-model is deliberately a generic-services representation: it trades process detail for breadth, capturing a large and diverse slice of manufacturing through a compact set of energy-service competitions. Its main limitations follow from that design — it cannot represent process-specific options, and it depends entirely on the shared service technologies being kept current. The TODOs above record the priorities: migrating to the MECS-aligned Machine Drive, adding industrial heat pumps to the heat competitions, and refreshing the intensities and sub-group mix against current data.</p>
+<p><mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled light industrial energy use against CIEEDAC and Natural Resources Canada data, by sub-group where possible.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-aceee-ihp" class="csl-entry" role="listitem">
+American Council for an Energy-Efficient Economy. 2024. <em>Industrial Heat Pumps</em>. ACEEE. <a href="https://www.aceee.org/industrial-heat-pumps">https://www.aceee.org/industrial-heat-pumps</a>.
+</div>
+<div id="ref-arpagaus" class="csl-entry" role="listitem">
+Arpagaus, Cordin, Frederic Bless, Michael Uhlmann, Jurg Schiffmann, and Stefan S. Bertsch. 2018. <span>“High Temperature Heat Pumps: <span>Market</span> Overview, State of the Art, Research Status, Refrigerants, and Application Potentials.”</span> <em>Energy</em> 152: 985–1010. <a href="https://doi.org/10.1016/j.energy.2018.03.166">https://doi.org/10.1016/j.energy.2018.03.166</a>.
+</div>
+<div id="ref-madeddu" class="csl-entry" role="listitem">
+Madeddu, Silvia, Falko Ueckerdt, Michaja Pehl, et al. 2020. <span>“The <span>CO<span class="math inline">\(_2\)</span></span> Reduction Potential for the <span>European</span> Industry via Direct Electrification of Heat Supply (Power-to-Heat).”</span> <em>Environmental Research Letters</em> 15 (12): 124004. <a href="https://doi.org/10.1088/1748-9326/abbd02">https://doi.org/10.1088/1748-9326/abbd02</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1679,8 +1977,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

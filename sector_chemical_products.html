@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,34 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">18.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">18.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">18.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-ammonia-and-methanol" id="toc-products-ammonia-and-methanol" class="nav-link" data-scroll-target="#products-ammonia-and-methanol"><span class="header-section-number">18.3.1</span> Products: ammonia and methanol</a></li>
+  <li><a href="#products-chlor-alkali-sodium-chlorate-and-hydrogen-peroxide" id="toc-products-chlor-alkali-sodium-chlorate-and-hydrogen-peroxide" class="nav-link" data-scroll-target="#products-chlor-alkali-sodium-chlorate-and-hydrogen-peroxide"><span class="header-section-number">18.3.2</span> Products: chlor-alkali, sodium chlorate, and hydrogen peroxide</a></li>
+  <li><a href="#products-adipic-acid-and-other-petrochemicals" id="toc-products-adipic-acid-and-other-petrochemicals" class="nav-link" data-scroll-target="#products-adipic-acid-and-other-petrochemicals"><span class="header-section-number">18.3.3</span> Products: adipic acid and other petrochemicals</a></li>
+  <li><a href="#auxiliary-energy-and-utility-services" id="toc-auxiliary-energy-and-utility-services" class="nav-link" data-scroll-target="#auxiliary-energy-and-utility-services"><span class="header-section-number">18.3.4</span> Auxiliary energy and utility services</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">18.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#feedstock-and-synthesis-routes-blue-and-green-ammonia-and-methanol" id="toc-feedstock-and-synthesis-routes-blue-and-green-ammonia-and-methanol" class="nav-link" data-scroll-target="#feedstock-and-synthesis-routes-blue-and-green-ammonia-and-methanol"><span class="header-section-number">18.4.1</span> Feedstock and synthesis routes: blue and green ammonia and methanol</a></li>
+  <li><a href="#electrified-and-low-carbon-cracking" id="toc-electrified-and-low-carbon-cracking" class="nav-link" data-scroll-target="#electrified-and-low-carbon-cracking"><span class="header-section-number">18.4.2</span> Electrified and low-carbon cracking</a></li>
+  <li><a href="#n₂o-abatement-in-acid-production" id="toc-n₂o-abatement-in-acid-production" class="nav-link" data-scroll-target="#n₂o-abatement-in-acid-production"><span class="header-section-number">18.4.3</span> N₂O abatement in acid production</a></li>
+  <li><a href="#carbon-capture" id="toc-carbon-capture" class="nav-link" data-scroll-target="#carbon-capture"><span class="header-section-number">18.4.4</span> Carbon capture</a></li>
+  <li><a href="#electrified-heat-and-efficient-drives" id="toc-electrified-heat-and-efficient-drives" class="nav-link" data-scroll-target="#electrified-heat-and-efficient-drives"><span class="header-section-number">18.4.5</span> Electrified heat and efficient drives</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">18.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">18.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">18.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +743,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_chemical_products.html"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Chemical Products</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Chemical Products</span></h1>
+<h1 class="title"><span id="sec-chemical-products" class="quarto-section-identifier"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Chemical Products</span></span></h1>
 </div>
 
 
@@ -712,11 +760,351 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>Unlike some of the other industrial sectors modelled in CIMS, the chemical products sector is not dominated by a single energy intensive product to which all others can be associated. As a result, several products and processes must be modeled to accurately reflect the energy flow within the industry. The dominant chemical products, from an energy consumption perspective, are: chlorine, caustic soda (sodium hydroxide), sodium chlorate, hydrogen peroxide, ammonia, methanol, ethylene, propylene and polymers. Sub-nodes in the model represent different process stages in which energy consumption can be distinctly represented.</p>
-<p>Ethylene, methanol, toluene and xylene are the primary petrochemicals produced. Crude oil and natural gas feedstocks provide the raw material from which these are produced. Ammonia, chlorine (often produced in complement with caustic soda) and sulphuric acid are the major inorganic chemicals produced. Like petrochemicals, natural gas provides the principal raw material used in the manufacture of ammonia. Ammonia, in turn, forms the primary feedstock for urea, ammonium phosphate, ammonium nitrate, ammonium sulfate and nitrogen solutions commonly sold as fertilizers.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>The chemical products sector is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them, rather than the chemistry or economics of individual plants. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node. Unlike most other industrial branches, chemicals is not dominated by a single energy-intensive product; it is a collection of distinct production chains, and a large share of its emissions are <strong>process emissions</strong> — CO₂ released by the reforming and cracking of hydrocarbon feedstock, and N₂O from acid production — rather than combustion of fuel. This shapes both the structure of the sub-model and the decarbonisation options it admits.</p>
+<section id="scope" class="level2" data-number="18.1">
+<h2 data-number="18.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">18.1</span> Scope</h2>
+<p>CIMS represents the energy-intensive chemical products that dominate the sector’s energy and emissions, organised as separate production chains: ammonia and methanol; the chlor-alkali group (chlorine, caustic soda) together with sodium chlorate and hydrogen peroxide; adipic acid; and other petrochemicals — the olefins and aromatics made by steam cracking and reforming, and the polymers made from them. The driving variable is the physical output of chemical product in tonnes; a forecast of demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.</p>
+<p>Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:</p>
+<ul>
+<li>Petroleum refining — the production of fuels and refinery streams from crude oil — is covered in the <a href="./sector_petroleum_refining.html">Petroleum Refining</a> chapter; the chemicals sub-model takes refinery and gas-plant streams (ethane, naphtha, natural gas) as feedstock rather than producing them.</li>
+<li>Merchant hydrogen production is covered in the <a href="./sector_hydrogen.html">Hydrogen</a> chapter; where the chemicals sub-model uses hydrogen as a reactant (for example in electrolytic ammonia) it draws on that representation rather than rebuilding it.</li>
+<li>Fuel and feedstock supply (natural gas, oil, ethane) enters through the energy-supply sub-models and the shared fuel nodes; the chemicals sub-model consumes these as priced inputs.</li>
+</ul>
+<p>The sub-model stops at saleable primary and intermediate chemicals and polymers; downstream compounding and plastics fabrication belong to the manufacturing branches.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="18.2">
+<h2 data-number="18.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">18.2</span> Real-world context</h2>
+<p>Canada’s chemical industry is large, export-oriented, and strongly regionalised, and it sits on the country’s cheap natural gas. Alberta hosts the largest concentration of chemical and petrochemical plants in Canada, centred on the Industrial Heartland northeast of Edmonton: its four ethane crackers have a combined capacity of about 4.1 Mt/yr of ethylene, roughly 80% of national capacity, and the province is also the centre of ammonia, urea, and methanol production, which locate near low-cost gas feedstock <span class="citation" data-cites="invest-alberta cer-ethane">(<a href="index.html#ref-invest-alberta" role="doc-biblioref">Invest Alberta 2025</a>; <a href="index.html#ref-cer-ethane" role="doc-biblioref">Canada Energy Regulator 2024</a>)</span>. Ontario has the most diverse slate, including the country’s adipic-acid production, alongside petrochemicals and chlor-alkali; Québec and Saskatchewan add ammonia/fertilizer and petrochemical capacity; and British Columbia is dominated by the pulp-bleaching chemicals — chlor-alkali, sodium chlorate, and hydrogen peroxide — rather than petrochemicals.</p>
+<p>What distinguishes chemicals from the other industrial sectors is the central role of feedstock and process chemistry in its emissions. In ammonia and methanol, natural gas is reformed to make synthesis gas, and the carbon in that gas is released as CO₂ as an unavoidable part of the chemistry; grey ammonia carries roughly 1.8–2.4 t CO₂ per tonne on this basis <span class="citation" data-cites="rmi-ammonia">(<a href="index.html#ref-rmi-ammonia" role="doc-biblioref">RMI 2024b</a>)</span>. In steam cracking, high-temperature furnaces break naphtha or ethane into olefins, releasing both combustion and process CO₂. In adipic and nitric acid production, nitrous oxide (N₂O) — a greenhouse gas with roughly 270–300 times the warming potential of CO₂ — is the dominant emission. The CIMS structure is built around exactly these distinctions: it carries explicit process-emission factors (CO₂ and N₂O) on the relevant technologies in addition to their fuel use, and it admits the abatement options — carbon capture, electrolytic hydrogen, N₂O destruction, and bio-feedstock — that target each.</p>
+</section>
+<section id="model-structure" class="level2" data-number="18.3">
+<h2 data-number="18.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">18.3</span> Model structure</h2>
+<p>Following the standard CIMS pattern, the sector divides into a <strong>Product</strong> sub-tree, which holds the distinct chemical production chains, and a <strong>Service</strong> sub-tree, which holds the auxiliary energy and utility services the production technologies draw on. <a href="#fig-chemicals-flow-model" class="quarto-xref">Figure&nbsp;<span>18.1</span></a> shows the overall structure.</p>
+<p>As described in the <a href="./sector_overview.html">Sector Overview</a>, each node carries a competition rule. <strong>Fixed-ratio</strong> nodes impose the unavoidable engineering sequence of process steps, while <strong>tech-compete</strong> nodes host competitions among alternative technologies on the basis of lifecycle cost (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). In the chemicals tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which synthesis route, which electrolysis cell, which cracker — occur at the tech-compete leaves.</p>
+<div id="fig-chemicals-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-chemicals-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/chemicals_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;18.1: Energy-service flow model of the chemical products sector (region-agnostic master tree). The sector divides into a Product sub-tree of distinct chemical chains — ammonia and methanol, chlor-alkali, sodium chlorate, hydrogen peroxide, adipic acid, and other petrochemicals — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the shared CCS service."><img src="images/chemicals_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-chemicals-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.1: Energy-service flow model of the chemical products sector (region-agnostic master tree). The sector divides into a Product sub-tree of distinct chemical chains — ammonia and methanol, chlor-alkali, sodium chlorate, hydrogen peroxide, adipic acid, and other petrochemicals — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the shared CCS service.
+</figcaption>
+</figure>
+</div>
+<section id="products-ammonia-and-methanol" class="level3" data-number="18.3.1">
+<h3 data-number="18.3.1" class="anchored" data-anchor-id="products-ammonia-and-methanol"><span class="header-section-number">18.3.1</span> Products: ammonia and methanol</h3>
+<p>The Ammonia Methanol chain is the most emissions-significant in the sector, because reforming natural gas to synthesis gas releases process CO₂ before any fuel is burned. The model carries three production nodes — Ammonia Synthesis, Methanol Synthesis, and a Combined Ammonia Methanol Synthesis node for co-production plants — each a tech-compete node among:</p>
+<ul>
+<li>Reform and synthesis — the conventional steam-methane-reforming route (grey ammonia/methanol), carrying a process-CO₂ factor of about 0.9 t per unit in the data.</li>
+<li>New AMV process and Advanced reforming reactors — more efficient reforming routes.</li>
+<li>Advanced reforming reactors CCS — the same route with carbon capture (blue ammonia/methanol).</li>
+<li>Hydrogen ammonia synthesis — ammonia made from electrolytic (“green”) hydrogen, which displaces reforming entirely.</li>
+</ul>
+<p>This is exactly the grey → blue → green progression along which the real industry is moving, and the model represents it as a cost-and-carbon-price-driven competition.</p>
+</section>
+<section id="products-chlor-alkali-sodium-chlorate-and-hydrogen-peroxide" class="level3" data-number="18.3.2">
+<h3 data-number="18.3.2" class="anchored" data-anchor-id="products-chlor-alkali-sodium-chlorate-and-hydrogen-peroxide"><span class="header-section-number">18.3.2</span> Products: chlor-alkali, sodium chlorate, and hydrogen peroxide</h3>
+<p>These electrochemical and bleaching chemicals are grouped together and are largely electricity-driven, so their emissions track the grid:</p>
+<ul>
+<li><strong>Chlor-Alkali</strong> splits into Chlorine Electrolysis — competing membrane, diaphragm, and the legacy mercury cells — and Caustic Sodium, with a Caustic Process (electrolytic or non-electrolytic) and an energy-intensive Chlor-Alkali Evaporation stage offering progressively more efficient evaporator trains.</li>
+<li><strong>Sodium Chlorate</strong> competes graphite-electrode and metal-anode electrolysis cells and a bipolar membrane route that yields caustic as a by-product.</li>
+<li><strong>Hydrogen Peroxide</strong> competes the dominant anthraquinone route against a methyl-benzyl-alcohol route.</li>
+</ul>
+</section>
+<section id="products-adipic-acid-and-other-petrochemicals" class="level3" data-number="18.3.3">
+<h3 data-number="18.3.3" class="anchored" data-anchor-id="products-adipic-acid-and-other-petrochemicals"><span class="header-section-number">18.3.3</span> Products: adipic acid and other petrochemicals</h3>
+<p><strong>Adipic Acid</strong> (a nylon precursor) is a tech-compete node whose significance is its N₂O process emission; the competition is between conventional Production and Production with N₂O controls, the latter destroying most of the nitrous oxide.</p>
+<p><strong>Other Petrochemicals</strong> is the olefins-and-aromatics chain. A Pyrolysis (steam-cracking) node makes the primary product gas and competes:</p>
+<ul>
+<li>Product gas — conventional steam cracking (process-CO₂ factor ~0.85);</li>
+<li>Product gas new catalyst — a higher-efficiency variant (~0.68);</li>
+<li>Product gas CCS — cracking with carbon capture (~0.24);</li>
+<li>Ligno Fischer-Tropsch naphtha steam cracker — a bio-based feedstock route.</li>
+</ul>
+<p>Downstream, Petrochemicals covers Intermediate Production, BTX Reforming (benzene-toluene-xylene aromatics), and All Polymerization (conversion of monomers to polymers).</p>
+</section>
+<section id="auxiliary-energy-and-utility-services" class="level3" data-number="18.3.4">
+<h3 data-number="18.3.4" class="anchored" data-anchor-id="auxiliary-energy-and-utility-services"><span class="header-section-number">18.3.4</span> Auxiliary energy and utility services</h3>
+<p>The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the “existing versus more efficient equipment, with fuel-switching where relevant” convention they follow — is set out in the <a href="./sector_overview.html">Sector Overview</a>. This chapter does not repeat that detail. The chemicals sector draws on:</p>
+<ul>
+<li><strong>Machine Drive</strong> — see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter. The sector’s large motive loads sit here: compressors (a major load in synthesis and refrigeration), pumps, fans, and materials handling and processing.</li>
+<li><strong>Steam</strong> — see <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a>, covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants. Steam is a large load in chemicals.</li>
+<li><strong>Methane Blend</strong> — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.</li>
+<li><strong>HVAC</strong> (space heating and cooling) and <strong>Lighting</strong> for plant facilities.</li>
+<li><strong>CCS</strong> — the shared carbon-capture service that the reforming, cracking, and other equipped routes request.</li>
+</ul>
+<p><mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. Migrate these files to the region-agnostic master tree and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="18.4">
+<h2 data-number="18.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">18.4</span> Decarbonisation technologies</h2>
+<p>Because so much of the sector’s emissions are tied to feedstock chemistry rather than to energy use, its decarbonisation levers are unusual: the decisive choices are the synthesis and cracking routes (and whether their process CO₂ is captured or avoided), and the destruction of N₂O in acid production, alongside the electrification of heat and the decarbonisation of the grid that already powers the electrochemical products. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in <a href="#tbl-chemicals-decarb" class="quarto-xref">Table&nbsp;<span>18.1</span></a>. The figures quoted are indicative ranges from techno-economic reviews <span class="citation" data-cites="rmi-chemistry rmi-ammonia">(<a href="index.html#ref-rmi-chemistry" role="doc-biblioref">RMI 2024a</a>, <a href="index.html#ref-rmi-ammonia" role="doc-biblioref">2024b</a>)</span>, not the calibrated values used in the model.</p>
+<div id="tbl-chemicals-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-chemicals-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;18.1: Indicative performance and maturity of key chemicals decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-chemicals-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Blue ammonia/methanol (reforming + CCS)</td>
+<td style="text-align: left;">Captures most reforming process CO₂</td>
+<td style="text-align: left;">Commercial / early commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Green ammonia (electrolytic hydrogen)</td>
+<td style="text-align: left;">~95–98% CO₂ cut vs grey ammonia</td>
+<td style="text-align: left;">Demonstration / early commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Adipic-acid N₂O abatement (catalytic destruction)</td>
+<td style="text-align: left;">Removes most N₂O (≈270–300× CO₂ GWP)</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Steam cracking + CCS</td>
+<td style="text-align: left;">Process-CO₂ factor falls to ~0.24 in the model</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Higher-efficiency cracking catalysts</td>
+<td style="text-align: left;">Process-CO₂ factor ~0.85 → ~0.68 in the model</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bio-naphtha (Fischer-Tropsch) steam cracker</td>
+<td style="text-align: left;">Bio-based feedstock displaces fossil carbon</td>
+<td style="text-align: left;">Pilot / demonstration</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electrified steam cracking</td>
+<td style="text-align: left;">Up to ~90% CO₂ cut on cracking heat; ~95% heat to process</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Membrane chlor-alkali / metal-anode cells</td>
+<td style="text-align: left;">Lower electrolysis energy than diaphragm/mercury</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric / hydrogen process steam</td>
+<td style="text-align: left;">Displaces gas-fired steam</td>
+<td style="text-align: left;">See Low-Temp Heat</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-efficiency motors + variable-speed drives</td>
+<td style="text-align: left;">Lower compressor and pump energy</td>
+<td style="text-align: left;">See Machine Drive</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-chemicals-technoecon" class="quarto-xref">Table&nbsp;<span>18.2</span></a> gather order-of-magnitude capital and operating costs and energy characteristics for the main chemical products and routes, drawn from public techno-economic literature <span class="citation" data-cites="irena-ammonia rmi-ammonia rmi-chemistry">(<a href="index.html#ref-irena-ammonia" role="doc-biblioref">International Renewable Energy Agency and Ammonia Energy Association 2022</a>; <a href="index.html#ref-rmi-ammonia" role="doc-biblioref">RMI 2024b</a>, <a href="index.html#ref-rmi-chemistry" role="doc-biblioref">2024a</a>)</span> and expressed in 2025 Canadian dollars: US-dollar sources were converted at the mid-2025 rate of roughly 1.37 CAD/USD and adjusted to 2025 where the source year differed. Overnight capital costs are normalised per tonne of annual product capacity (the specific product is noted where it is not the headline product), fixed O&amp;M follows the heavy-industry convention of roughly 3–6% of capital cost per year, and energy intensity is per tonne of product and includes feedstock energy where the feedstock is also the energy source (as in reforming and cracking). The values are for relative comparison only, not project budgeting, and are separate from the plant-specific values the model carries internally.</p>
+<div id="tbl-chemicals-technoecon" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-chemicals-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;18.2: Indicative techno-economic characteristics of chemical products technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-chemicals-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Overnight capex (2025 CAD per t/yr capacity)</th>
+<th style="text-align: left;">Fixed O&amp;M</th>
+<th style="text-align: left;">Energy intensity (per t product)</th>
+<th style="text-align: left;">Main energy carrier / feedstock</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Grey ammonia (SMR)</td>
+<td style="text-align: left;">~900–2,400</td>
+<td style="text-align: left;">~3–4%/yr</td>
+<td style="text-align: left;">~28–38 GJ</td>
+<td style="text-align: left;">natural gas (feedstock + fuel)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Blue ammonia (SMR + CCS)</td>
+<td style="text-align: left;">~1,400–2,800</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">~30–40 GJ</td>
+<td style="text-align: left;">natural gas + capture energy</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Green ammonia (electrolytic)</td>
+<td style="text-align: left;">~1,800–2,700 (excl. renewables)</td>
+<td style="text-align: left;">~2–3%/yr</td>
+<td style="text-align: left;">~36–43 GJ (≈10–12 MWh)</td>
+<td style="text-align: left;">electricity (+ water)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Methanol (SMR)</td>
+<td style="text-align: left;">~800–1,400</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">~28–33 GJ</td>
+<td style="text-align: left;">natural gas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ethane steam cracker</td>
+<td style="text-align: left;">~1,500 (per t/yr ethylene)</td>
+<td style="text-align: left;">~3–5%/yr</td>
+<td style="text-align: left;">~15–25 GJ</td>
+<td style="text-align: left;">ethane / gas (feedstock + fuel)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Naphtha steam cracker</td>
+<td style="text-align: left;">~2,200 (per t/yr ethylene)</td>
+<td style="text-align: left;">~3–5%/yr</td>
+<td style="text-align: left;">~20–30 GJ</td>
+<td style="text-align: left;">naphtha + fuel gas</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric steam cracker (not yet in model)</td>
+<td style="text-align: left;">cracker capex + electrification premium</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">furnace heat electrified</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Chlor-alkali (membrane cell)</td>
+<td style="text-align: left;">~700–1,200</td>
+<td style="text-align: left;">~3%/yr</td>
+<td style="text-align: left;">~8–10 GJ (≈2,400–2,700 kWh/t Cl₂)</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Sodium chlorate</td>
+<td style="text-align: left;">~700–1,300</td>
+<td style="text-align: left;">~3%/yr</td>
+<td style="text-align: left;">~18–22 GJ (≈5,000–6,000 kWh/t)</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen peroxide (anthraquinone)</td>
+<td style="text-align: left;">~600–1,200</td>
+<td style="text-align: left;">~3%/yr</td>
+<td style="text-align: left;">hydrogen + moderate electricity</td>
+<td style="text-align: left;">hydrogen + electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Adipic acid + N₂O abatement</td>
+<td style="text-align: left;">abatement add-on &lt;5% of plant capex</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">thermal + electric</td>
+<td style="text-align: left;">(abatement destroys N₂O, ~300 kg/t)</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<div id="fig-chemicals-ammonia-routes" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-chemicals-ammonia-routes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/chemicals_ammonia_routes.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;18.2: Ammonia and methanol synthesis routes. The conventional reform-and-synthesis route carries a large process-CO₂ emission; the model competes it against efficiency improvements, a CCS variant (blue), and an electrolytic-hydrogen route (green), with CCS-equipped routes drawing on the shared CCS service."><img src="images/chemicals_ammonia_routes.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-chemicals-ammonia-routes-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;18.2: Ammonia and methanol synthesis routes. The conventional reform-and-synthesis route carries a large process-CO₂ emission; the model competes it against efficiency improvements, a CCS variant (blue), and an electrolytic-hydrogen route (green), with CCS-equipped routes drawing on the shared CCS service.
+</figcaption>
+</figure>
+</div>
+<section id="feedstock-and-synthesis-routes-blue-and-green-ammonia-and-methanol" class="level3" data-number="18.4.1">
+<h3 data-number="18.4.1" class="anchored" data-anchor-id="feedstock-and-synthesis-routes-blue-and-green-ammonia-and-methanol"><span class="header-section-number">18.4.1</span> Feedstock and synthesis routes: blue and green ammonia and methanol</h3>
+<p>Reforming natural gas is the single largest source of process CO₂ in the sector, and <a href="#fig-chemicals-ammonia-routes" class="quarto-xref">Figure&nbsp;<span>18.2</span></a> shows how the model represents the alternatives. Two routes cut it. Blue production keeps the reformer but captures its CO₂ — represented as Advanced reforming reactors CCS, drawing on the shared <strong>CCS</strong> service. Green production replaces the reformer with electrolytic hydrogen — represented as Hydrogen ammonia synthesis — cutting emissions by roughly 95–98% relative to grey ammonia when the electricity is low-carbon <span class="citation" data-cites="rmi-ammonia">(<a href="index.html#ref-rmi-ammonia" role="doc-biblioref">RMI 2024b</a>)</span>. Both compete against the conventional and efficiency-improved reforming routes as costs and the carbon price evolve.</p>
+</section>
+<section id="electrified-and-low-carbon-cracking" class="level3" data-number="18.4.2">
+<h3 data-number="18.4.2" class="anchored" data-anchor-id="electrified-and-low-carbon-cracking"><span class="header-section-number">18.4.2</span> Electrified and low-carbon cracking</h3>
+<p>Steam cracking is both energy- and emissions-intensive. The model represents three decarbonisation paths at the Pyrolysis node: carbon capture on the cracker (cutting the process-CO₂ factor from ~0.85 to ~0.24 in the data), a higher-efficiency catalyst (to ~0.68), and a bio-naphtha feedstock from lignocellulosic Fischer-Tropsch synthesis, which substitutes renewable carbon for fossil. Beyond what the current tree contains, the most prominent emerging option is electrified steam cracking, demonstrated at pilot scale by a BASF–SABIC–Linde plant, which can transfer about 95% of its heat to the process and cut cracking-furnace CO₂ by up to ~90% when run on low-carbon electricity <span class="citation" data-cites="basf-ecracker rmi-chemistry">(<a href="index.html#ref-basf-ecracker" role="doc-biblioref">BASF 2024</a>; <a href="index.html#ref-rmi-chemistry" role="doc-biblioref">RMI 2024a</a>)</span>.</p>
+<p><mark>TODO: Add an electrified steam cracking technology to the Pyrolysis competition (electricity-driven furnace, near-zero direct combustion emissions), so the model can represent the electrification pathway now being demonstrated commercially.</mark></p>
+</section>
+<section id="n₂o-abatement-in-acid-production" class="level3" data-number="18.4.3">
+<h3 data-number="18.4.3" class="anchored" data-anchor-id="n₂o-abatement-in-acid-production"><span class="header-section-number">18.4.3</span> N₂O abatement in acid production</h3>
+<p>Adipic and nitric acid production emit N₂O, which dominates their greenhouse-gas footprint because of its very high global warming potential. Catalytic N₂O destruction is a mature, high-impact abatement option, represented in the model as Production with N₂O controls at the Adipic Acid node. Because the abatement targets a non-CO₂ gas, its value in the model depends on the carbon price being applied to N₂O on a CO₂-equivalent basis.</p>
+</section>
+<section id="carbon-capture" class="level3" data-number="18.4.4">
+<h3 data-number="18.4.4" class="anchored" data-anchor-id="carbon-capture"><span class="header-section-number">18.4.4</span> Carbon capture</h3>
+<p>Carbon capture is represented as a shared <strong>CCS</strong> service that any equipped route requests. It is especially well suited to chemicals because several of the sector’s CO₂ streams — from reforming and from cracking — are relatively concentrated and therefore cheaper to capture than dilute flue gas. The CCS-equipped variants (Advanced reforming reactors CCS, Product gas CCS) route their CO₂ to this service; its broader treatment, including transport and storage and the associated costs, is in the <a href="./ccus.html">Carbon Capture, Utilization, and Storage</a> chapter.</p>
+</section>
+<section id="electrified-heat-and-efficient-drives" class="level3" data-number="18.4.5">
+<h3 data-number="18.4.5" class="anchored" data-anchor-id="electrified-heat-and-efficient-drives"><span class="header-section-number">18.4.5</span> Electrified heat and efficient drives</h3>
+<p>Process steam and lower-temperature heat can shift from gas to electricity and hydrogen through the <strong>Steam</strong> and <strong>Methane Blend</strong> services described in the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter, and the large compressor and pump loads can move to high-efficiency motors and variable-speed drives in the <strong>Machine Drive</strong> service. The electrochemical products (chlor-alkali, sodium chlorate) are already electricity-driven, so their decarbonisation depends mainly on grid intensity and on choosing the more efficient cell and evaporator technologies the model already competes.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+<p><mark>TODO: Electrolytic (“green”) ammonia is represented as a single technology drawing hydrogen at a blended price. Consider linking it explicitly to the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model and an electrolysis electricity load, so the route’s economics reflect hydrogen cost and availability rather than an assumed price.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="18.5">
+<h2 data-number="18.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">18.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>A few sector-wide conventions are worth noting. Chemicals technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.</p>
+<p>Greenhouse-gas costs enter through three channels, which is what makes chemicals distinctive. Combustion emissions follow from each technology’s fuel service requests and the carbon price, as in the other sectors. In addition, many chemical technologies carry an explicit process-emission factor — CO₂ from reforming (~0.9 per unit) and cracking (~0.85, falling with efficient catalysts and capture), and N₂O from adipic acid and intermediate production — applied independently of fuel use. Finally, the <strong>CCS</strong> service applies an emissions-removal factor to the technologies that request it. Route-switching among grey, blue, green, and bio-based production is therefore the model’s main channel for emissions reduction, and it is driven by the interaction of feedstock prices, capital costs, and the carbon price applied to both CO₂ and N₂O.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="18.6">
+<h2 data-number="18.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">18.6</span> Regional coverage and differences</h2>
+<p>Because the tree is region-agnostic, each modelled province is built from the same master structure and simply carries no production on the branches that do not apply to it. Five regions are represented — Alberta, British Columbia, Ontario, Québec, and Saskatchewan — and regional differences show up in which products a region makes and at what scale:</p>
+<ul>
+<li>Alberta is by far the largest, and is dominated by ammonia/methanol and petrochemicals, consistent with its gas-based Industrial Heartland; its modelled output grows over the projection.</li>
+<li>Ontario carries the most diverse slate and is the only region with adipic acid, alongside ammonia/methanol, chlor-alkali, hydrogen peroxide, petrochemicals, and sodium chlorate.</li>
+<li>Québec and Saskatchewan carry ammonia/methanol, the chlor-alkali group, and petrochemicals at smaller scale.</li>
+<li>British Columbia carries the pulp-bleaching chemicals — chlor-alkali, sodium chlorate, and hydrogen peroxide — and ammonia/methanol, but no petrochemicals branch.</li>
+</ul>
+<p><mark>TODO: Only five provinces are represented. Confirm whether any other region hosts chemical production that should be included (and whether the absence of a petrochemicals branch in British Columbia is still accurate), and build out the region-agnostic tree accordingly.</mark></p>
+<p><mark>TODO: The exogenous product-demand trajectories and regional product mixes are inherited from older calibrations. Revisit them against announced Alberta petrochemical and low-carbon ammonia/hydrogen projects, which will materially change the sector’s scale and emissions profile within the projection period.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="18.7">
+<h2 data-number="18.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">18.7</span> Limitations and planned extensions</h2>
+<p>The chemicals sub-model is a deliberately simplified representation of an unusually heterogeneous sector. The TODOs above record the main gaps between this design and both the current input files and the real Canadian sector: the migration of the auxiliary services to the MECS-aligned Machine Drive and the Product/Service split; the addition of electrified steam cracking; an explicit link from green ammonia to the hydrogen sub-model; and the refresh of the exogenous demand trajectories. A further structural simplification is that Other Petrochemicals is represented as an aggregated olefins-aromatics-polymers chain rather than by individual product (ethylene, propylene, BTX, specific polymers); this keeps the tree tractable but limits product-level resolution.</p>
+<p><mark>TODO: Consider disaggregating Other Petrochemicals into the major products (ethylene, propylene, aromatics, key polymers) if product-level energy intensities and demand projections warrant the additional resolution.</mark></p>
+<p><mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled chemicals energy use and emissions (including process CO₂ and N₂O) against CIEEDAC, Environment and Climate Change Canada (NIR), and Natural Resources Canada data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-basf-ecracker" class="csl-entry" role="listitem">
+BASF. 2024. <em>BASF, SABIC and Linde Start up the World’s First Demonstration Plant for Large-Scale Electrically Heated Steam Cracker Furnaces</em>. BASF news release. <a href="https://www.basf.com/global/en/media/news-releases">https://www.basf.com/global/en/media/news-releases</a>.
+</div>
+<div id="ref-cer-ethane" class="csl-entry" role="listitem">
+Canada Energy Regulator. 2024. <em>Market Snapshot: Petrochemical Growth in Alberta Can Bring Significant Changes to Western Canada’s Ethane Market</em>. CER Market Snapshots. <a href="https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2024/market-snapshot-petrochemical-growth-in-alberta-can-bring-significant-changes-to-western-canadas-ethane-market.html">https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2024/market-snapshot-petrochemical-growth-in-alberta-can-bring-significant-changes-to-western-canadas-ethane-market.html</a>.
+</div>
+<div id="ref-irena-ammonia" class="csl-entry" role="listitem">
+International Renewable Energy Agency, and Ammonia Energy Association. 2022. <em>Innovation Outlook: Renewable Ammonia</em>. IRENA. <a href="https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2022/May/IRENA_Innovation_Outlook_Ammonia_2022.pdf">https://www.irena.org/-/media/Files/IRENA/Agency/Publication/2022/May/IRENA_Innovation_Outlook_Ammonia_2022.pdf</a>.
+</div>
+<div id="ref-invest-alberta" class="csl-entry" role="listitem">
+Invest Alberta. 2025. <em>Petrochemicals and Gas: Business and Foreign Direct Investment</em>. Invest Alberta. <a href="https://investalberta.ca/petrochemicals/">https://investalberta.ca/petrochemicals/</a>.
+</div>
+<div id="ref-rmi-chemistry" class="csl-entry" role="listitem">
+RMI. 2024a. <em>Chemistry in Transition: Charting Solutions for a Low-Emissions Chemical Industry</em>. RMI. <a href="https://rmi.org/chemistry-in-transition-charting-solutions-for-a-low-emissions-chemical-industry/">https://rmi.org/chemistry-in-transition-charting-solutions-for-a-low-emissions-chemical-industry/</a>.
+</div>
+<div id="ref-rmi-ammonia" class="csl-entry" role="listitem">
+RMI. 2024b. <em>Low-Carbon Ammonia Technology: Blue, Green, and Beyond</em>. RMI. <a href="https://rmi.org/low-carbon-ammonia-technology-blue-green-and-beyond/">https://rmi.org/low-carbon-ammonia-technology-blue-green-and-beyond/</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1678,8 +2066,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

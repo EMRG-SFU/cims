@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,30 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">14.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">14.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">14.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#product-transesterification" id="toc-product-transesterification" class="nav-link" data-scroll-target="#product-transesterification"><span class="header-section-number">14.3.1</span> Product: transesterification</a></li>
+  <li><a href="#services-feedstock-heat-fuel-and-capture" id="toc-services-feedstock-heat-fuel-and-capture" class="nav-link" data-scroll-target="#services-feedstock-heat-fuel-and-capture"><span class="header-section-number">14.3.2</span> Services: feedstock, heat, fuel, and capture</a></li>
+  <li><a href="#renewable-diesel-a-gap" id="toc-renewable-diesel-a-gap" class="nav-link" data-scroll-target="#renewable-diesel-a-gap"><span class="header-section-number">14.3.3</span> Renewable diesel — a gap</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">14.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#feedstock-is-the-main-lever" id="toc-feedstock-is-the-main-lever" class="nav-link" data-scroll-target="#feedstock-is-the-main-lever"><span class="header-section-number">14.4.1</span> Feedstock is the main lever</a></li>
+  <li><a href="#cleaning-up-process-energy" id="toc-cleaning-up-process-energy" class="nav-link" data-scroll-target="#cleaning-up-process-energy"><span class="header-section-number">14.4.2</span> Cleaning up process energy</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">14.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">14.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">14.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +739,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_biodiesel.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Biodiesel</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Biodiesel</span></h1>
+<h1 class="title"><span id="sec-biodiesel" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Biodiesel</span></span></h1>
 </div>
 
 
@@ -712,10 +756,206 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Biodiesel sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>Biodiesel production is one of CIMS’s energy-supply sub-models rather than an end-use sector: it produces a low-carbon liquid fuel that other sectors — chiefly freight and passenger transport, and industrial and agricultural diesel use — consume in place of, or blended with, fossil diesel. The emphasis is on the structure of the energy-service flow model: the production node, the technologies that compete at each service, and the engineering ratios that link them. The tree is region-agnostic. The defining feature of biodiesel is that most of its life-cycle greenhouse-gas footprint sits upstream of the plant, in the feedstock, so the sub-model carries explicit agricultural inputs and life-cycle CO₂, CH₄, and N₂O accounting rather than treating the fuel as automatically carbon-neutral.</p>
+<section id="scope" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">14.1</span> Scope</h2>
+<p>CIMS represents the production of biodiesel (fatty-acid methyl ester, FAME) by transesterification of vegetable oils and animal fats. The sub-model covers the conversion plant and its main inputs — the agricultural feedstock, process steam, electricity, and a gaseous process fuel — and produces biodiesel as an output that flows into the fuel supply. Demand is set by the blending and fuel-switching choices made in the consuming sectors and by policy (renewable-fuel mandates), rather than by an exogenous production target.</p>
+<p>Adjacent activities are handled elsewhere: ethanol is a separate fuel with its own <a href="./sector_ethanol.html">Ethanol</a> chapter; fossil diesel is produced in <a href="./sector_petroleum_refining.html">Petroleum Refining</a>; and the combustion of biodiesel happens in the transport and other end-use sectors, where the blended fuel is burned. The cultivation of the feedstock crop is represented here only through an <strong>Agricultural Input</strong> service that carries its energy and emissions, not through the full <a href="./sector_agriculture.html">Agriculture</a> sub-model.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">14.2</span> Real-world context</h2>
+<p>Biodiesel is a mature, drop-in-capable diesel substitute, and in Canada its production is tied to agriculture and to fuel policy. The country has a handful of biodiesel plants (and a growing number of renewable diesel plants, a different, hydrotreating route), and the dominant feedstock is canola — around 90% of domestic biomass-based diesel is made from Canadian canola — supplemented by tallow and used cooking oil <span class="citation" data-cites="nrcan-biodiesel cer-renewable-diesel">(<a href="index.html#ref-nrcan-biodiesel" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-cer-renewable-diesel" role="doc-biblioref">Canada Energy Regulator 2023</a>)</span>. Demand is driven by the federal Clean Fuel Regulations and provincial renewable-content mandates, which reward fuels by their measured carbon intensity.</p>
+<p>That last point is central. Biodiesel is not automatically low-carbon: its life-cycle intensity depends heavily on the feedstock and on the energy used to grow and process it. Crop feedstocks carry the emissions of cultivation — diesel for farm equipment, and N₂O from nitrogen fertiliser, a potent greenhouse gas — whereas waste and residue feedstocks such as tallow and used cooking oil avoid most of that burden and can achieve 79–86% lower life-cycle emissions than fossil diesel <span class="citation" data-cites="cer-renewable-diesel">(<a href="index.html#ref-cer-renewable-diesel" role="doc-biblioref">Canada Energy Regulator 2023</a>)</span>. The CIMS structure mirrors this by separating the conversion step from an explicit <strong>Agricultural Input</strong> service and by carrying life-cycle CO₂, CH₄, and N₂O factors, so the modelled benefit of biodiesel reflects how it is made rather than assuming neutrality.</p>
+</section>
+<section id="model-structure" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">14.3</span> Model structure</h2>
+<p>The sub-model divides into a <strong>Product</strong> sub-tree — the conversion process — and a <strong>Service</strong> sub-tree of the inputs it draws on. <a href="#fig-biodiesel-flow-model" class="quarto-xref">Figure&nbsp;<span>14.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the production chain is a fixed-ratio sequence and the technology choices occur at the tech-compete leaves of the services.</p>
+<div id="fig-biodiesel-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-biodiesel-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/biodiesel_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;14.1: Energy-service flow model of the biodiesel sub-model. A transesterification Production node converts agricultural feedstock into biodiesel, drawing on an Agricultural Input service (feedstock cultivation, diesel- or biodiesel-powered), process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service; life-cycle CO₂, CH₄, and N₂O are tracked."><img src="images/biodiesel_flow_model.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-biodiesel-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.1: Energy-service flow model of the biodiesel sub-model. A transesterification Production node converts agricultural feedstock into biodiesel, drawing on an Agricultural Input service (feedstock cultivation, diesel- or biodiesel-powered), process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service; life-cycle CO₂, CH₄, and N₂O are tracked.
+</figcaption>
+</figure>
+</div>
+<section id="product-transesterification" class="level3" data-number="14.3.1">
+<h3 data-number="14.3.1" class="anchored" data-anchor-id="product-transesterification"><span class="header-section-number">14.3.1</span> Product: transesterification</h3>
+<p>The <strong>Production</strong> node is biodiesel production by transesterification — reacting the feedstock oil with methanol to yield FAME and glycerol. In the model it consumes three things per unit of biodiesel: electricity, an <strong>Agricultural Input</strong> (the feedstock), and <strong>Steam</strong> (process heat). The master tree names this product node Transesterification.</p>
+</section>
+<section id="services-feedstock-heat-fuel-and-capture" class="level3" data-number="14.3.2">
+<h3 data-number="14.3.2" class="anchored" data-anchor-id="services-feedstock-heat-fuel-and-capture"><span class="header-section-number">14.3.2</span> Services: feedstock, heat, fuel, and capture</h3>
+<ul>
+<li><strong>Agricultural Input</strong> — the feedstock-cultivation service, competing diesel-powered, high-efficiency diesel, and biodiesel-powered farming. This is how the model captures the energy (and the diesel-versus-biodiesel choice) of growing the crop; the associated N₂O and other field emissions enter the life-cycle accounting here.</li>
+<li><strong>Steam</strong> — process heat for the reaction and separation, competing natural-gas, coal, and electric boilers, cogeneration units, and CCS-equipped boiler variants.</li>
+<li><strong>Methane Fuel</strong> — the gaseous-fuel supply, competing natural gas against biogas, biomass gasification, and hydrogen.</li>
+<li><strong>CCS</strong> — the shared carbon-capture service that the CCS-equipped steam routes request.</li>
+</ul>
+</section>
+<section id="renewable-diesel-a-gap" class="level3" data-number="14.3.3">
+<h3 data-number="14.3.3" class="anchored" data-anchor-id="renewable-diesel-a-gap"><span class="header-section-number">14.3.3</span> Renewable diesel — a gap</h3>
+<p>The model represents only the transesterification (FAME) route. The fast-growing renewable diesel (hydrotreated vegetable oil, HVO/HDRD) route — chemically a true drop-in diesel made by hydrogenation rather than transesterification — is not represented, even though new Canadian capacity is overwhelmingly of this type.</p>
+<p><mark>TODO: Add a renewable diesel (HVO/HDRD) production pathway (hydrotreating, with its hydrogen demand drawn from the <a href="./sector_hydrogen.html">Hydrogen</a> sub-model), since most new Canadian biomass-based diesel capacity is renewable diesel rather than FAME biodiesel.</mark></p>
+<p><mark>TODO: The current regional input files predate the full Product/Service split (the product node is named <code>Production</code> rather than the master tree’s <code>Transesterification</code>). Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">14.4</span> Decarbonisation technologies</h2>
+<p>Because biodiesel is already a low-carbon fuel relative to fossil diesel, “decarbonising biodiesel” means lowering its life-cycle carbon intensity — choosing better feedstocks and cleaning up the energy used to grow and process it — so that it earns more credit under carbon-intensity-based policy. <a href="#tbl-biodiesel-decarb" class="quarto-xref">Table&nbsp;<span>14.1</span></a> summarises maturity and <a href="#tbl-biodiesel-cost" class="quarto-xref">Table&nbsp;<span>14.2</span></a> gives indicative costs.</p>
+<div id="tbl-biodiesel-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-biodiesel-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;14.1: Indicative performance and maturity of key biodiesel decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-biodiesel-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Waste / residue feedstock (tallow, used cooking oil)</td>
+<td style="text-align: left;">79–86% lower life-cycle CO₂ than fossil diesel</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biodiesel-powered / efficient farming inputs</td>
+<td style="text-align: left;">Lowers feedstock-cultivation emissions</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric process steam / boilers</td>
+<td style="text-align: left;">Removes fossil process-heat CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biogas / biomass-gas / hydrogen process fuel</td>
+<td style="text-align: left;">Decarbonises gaseous process fuel</td>
+<td style="text-align: left;">Commercial / emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">CCS on process steam</td>
+<td style="text-align: left;">Captures process-heat CO₂</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Renewable diesel (HVO) route</td>
+<td style="text-align: left;">True drop-in; very low CI with waste oils</td>
+<td style="text-align: left;">Commercial — <em>not yet in model</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-biodiesel-cost" class="quarto-xref">Table&nbsp;<span>14.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="nrcan-biodiesel cer-renewable-diesel">(<a href="index.html#ref-nrcan-biodiesel" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-cer-renewable-diesel" role="doc-biblioref">Canada Energy Regulator 2023</a>)</span>, expressed in 2025 Canadian dollars (US-dollar sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-biodiesel-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-biodiesel-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;14.2: Indicative techno-economic characteristics of biodiesel decarbonisation options, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-biodiesel-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decarbonisation option</th>
+<th style="text-align: left;">Capex</th>
+<th style="text-align: left;">Operating cost</th>
+<th style="text-align: left;">Energy / CI effect</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Waste/residue feedstock switch</td>
+<td style="text-align: left;">none (feed handling)</td>
+<td style="text-align: left;">feedstock-cost dependent; often <em>higher</em> feed cost</td>
+<td style="text-align: left;">79–86% lower life-cycle CO₂</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric process boiler</td>
+<td style="text-align: left;">~150–400 CAD/kWth</td>
+<td style="text-align: left;">electricity-priced heat</td>
+<td style="text-align: left;">removes process-heat fossil CO₂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass / biogas process fuel</td>
+<td style="text-align: left;">~800–1,400 CAD/kWth (biomass)</td>
+<td style="text-align: left;">low-carbon fuel</td>
+<td style="text-align: left;">decarbonises process heat</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">CCS on process steam</td>
+<td style="text-align: left;">+30–50% on boiler plant</td>
+<td style="text-align: left;">~CAD 100–200 / t CO₂</td>
+<td style="text-align: left;">captures process CO₂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Renewable diesel (HVO) plant (reference)</td>
+<td style="text-align: left;">higher than FAME (hydrotreater + H₂)</td>
+<td style="text-align: left;">hydrogen-cost dependent</td>
+<td style="text-align: left;">true drop-in, very low CI</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="feedstock-is-the-main-lever" class="level3" data-number="14.4.1">
+<h3 data-number="14.4.1" class="anchored" data-anchor-id="feedstock-is-the-main-lever"><span class="header-section-number">14.4.1</span> Feedstock is the main lever</h3>
+<p>The largest determinant of biodiesel’s carbon intensity is the feedstock. Switching from crop oils (canola) to waste and residue oils (tallow, used cooking oil) removes most of the cultivation emissions — including the fertiliser-driven N₂O — and can cut life-cycle emissions to 79–86% below fossil diesel <span class="citation" data-cites="cer-renewable-diesel">(<a href="index.html#ref-cer-renewable-diesel" role="doc-biblioref">Canada Energy Regulator 2023</a>)</span>. The model captures the cultivation side through the <strong>Agricultural Input</strong> service, including the option to run farm equipment on biodiesel rather than fossil diesel, which closes part of the loop. Feedstock supply is, however, constrained: waste oils are limited, so feedstock competition with renewable diesel and other uses is a real-world limit the model should eventually reflect.</p>
+</section>
+<section id="cleaning-up-process-energy" class="level3" data-number="14.4.2">
+<h3 data-number="14.4.2" class="anchored" data-anchor-id="cleaning-up-process-energy"><span class="header-section-number">14.4.2</span> Cleaning up process energy</h3>
+<p>The plant’s own emissions come from process heat and electricity. Switching steam to electric boilers (clean where the grid is clean), to biomass or biogas, or adding CCS to gas-fired steam reduces the conversion step’s footprint; the <strong>Methane Fuel</strong> node lets natural gas be displaced by biogas, biomass gas, or hydrogen. These are the same low-carbon heat options described in the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and add an explicit feedstock-supply constraint so waste-oil availability limits the low-CI pathways.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">14.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the inputs it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Biodiesel technologies are discounted at rates of roughly 10–40% in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the payback horizons and adoption barriers that govern real investment decisions; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10–25 across the competitions.</p>
+<p>The emissions accounting is <strong>life-cycle</strong> in spirit, which distinguishes biodiesel from the end-use sectors. The sub-model carries CO₂, CH₄, and N₂O factors, so the agricultural N₂O from fertiliser and the CH₄ and CO₂ from process energy are all represented, and the net benefit of biodiesel emerges from the difference between these life-cycle emissions and the fossil diesel it displaces — rather than from an assumption that biofuel combustion is automatically zero-carbon. The <strong>CCS</strong> service applies an emissions-removal factor to the process-heat routes that request it. The carbon price therefore rewards low-intensity feedstocks and clean process energy, which is the mechanism by which carbon-intensity policy is represented.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="14.6">
+<h2 data-number="14.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">14.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the biodiesel structure. In practice the Western provinces (Saskatchewan, Alberta, Manitoba) are the natural home of canola-based production, while waste-oil and tallow feedstocks are more widely distributed; the regional differences show up in feedstock availability and in the carbon intensity of the grid that supplies process electricity.</p>
+<p><mark>TODO: Calibrate regional feedstock mixes (canola vs tallow vs used cooking oil) and the resulting carbon intensities against Clean Fuel Regulations pathway data, since the credit value — and therefore the modelled production — depends sensitively on feedstock.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="14.7">
+<h2 data-number="14.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">14.7</span> Limitations and planned extensions</h2>
+<p>The biodiesel sub-model is compact and supply-side, and its main limitations follow from that: it represents only the transesterification route (omitting renewable diesel), it treats feedstock through a single Agricultural Input service rather than linking to the full agriculture sub-model, and it lacks an explicit feedstock-supply constraint. The TODOs above record these priorities, of which adding the renewable diesel (HVO) pathway is the most important, since it now dominates new Canadian capacity.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled biodiesel output and carbon intensity against Natural Resources Canada and Clean Fuel Regulations data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-cer-renewable-diesel" class="csl-entry" role="listitem">
+Canada Energy Regulator. 2023. <em>Market Snapshot: New Renewable Diesel Facilities Will Help Reduce Carbon Intensity of Fuels in Canada</em>. CER Market Snapshots. <a href="https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2023/market-snapshot-new-renewable-diesel-facilities-will-help-reduce-carbon-intensity-fuels-canada.html">https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2023/market-snapshot-new-renewable-diesel-facilities-will-help-reduce-carbon-intensity-fuels-canada.html</a>.
+</div>
+<div id="ref-nrcan-biodiesel" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Biodiesel</em>. Transportation Energy Efficiency. <a href="https://natural-resources.canada.ca/energy-efficiency/transportation-energy-efficiency/biodiesel">https://natural-resources.canada.ca/energy-efficiency/transportation-energy-efficiency/biodiesel</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1917,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

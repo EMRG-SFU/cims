@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,30 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">12.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">12.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">12.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-base-shoulder-and-peak-generation" id="toc-products-base-shoulder-and-peak-generation" class="nav-link" data-scroll-target="#products-base-shoulder-and-peak-generation"><span class="header-section-number">12.3.1</span> Products: base, shoulder, and peak generation</a></li>
+  <li><a href="#services-storage-transmission-and-capture" id="toc-services-storage-transmission-and-capture" class="nav-link" data-scroll-target="#services-storage-transmission-and-capture"><span class="header-section-number">12.3.2</span> Services: storage, transmission, and capture</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">12.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#variable-renewables-plus-storage" id="toc-variable-renewables-plus-storage" class="nav-link" data-scroll-target="#variable-renewables-plus-storage"><span class="header-section-number">12.4.1</span> Variable renewables plus storage</a></li>
+  <li><a href="#firm-low-carbon-resources" id="toc-firm-low-carbon-resources" class="nav-link" data-scroll-target="#firm-low-carbon-resources"><span class="header-section-number">12.4.2</span> Firm low-carbon resources</a></li>
+  <li><a href="#carbon-capture-and-net-negative-power" id="toc-carbon-capture-and-net-negative-power" class="nav-link" data-scroll-target="#carbon-capture-and-net-negative-power"><span class="header-section-number">12.4.3</span> Carbon capture and net-negative power</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">12.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">12.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">12.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +739,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_electricity.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Electricity</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Electricity</span></h1>
+<h1 class="title"><span id="sec-electricity" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Electricity</span></span></h1>
 </div>
 
 
@@ -712,31 +756,270 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The electricity model in CIMS is structured to account for utility-generated electricity. Electricity co-generated by industry is accounted for separately in the industrial sub-models. Please note that all electricity generated from renewables is accounted by the electricity model no matter whether it is generated by a utility or an industrial establishment.</p>
-<p>Final electricity demanded in the entire Canadian economy (excluding co-generated electricity by the industry) is represented by the primary node (Electricity). The amounts of electricity allocated to intermediate and competition nodes flows directly from this primary node, which is the principle driver of the simulation runs. Intermediate nodes in the Electricity sub-model reflect the specific characteristics of electricity demand. Electricity demand varies significantly reflecting the fluctuating demand requirements depending on time-of-day (i.e.&nbsp;daily demand typically peaks between 4-6pm) and by time-of-year (i.e.&nbsp;annual peak demand during the cold winter months). Utilities track these varying demand conditions using load curves in an effort to supply electricity on a continual basis.</p>
-<p>Electricity generation technologies have traditionally been classified based on their relative variable costs and the resulting frequency with which they are called upon to meet electricity demand or ‘’load’‘; e.g.,’‘baseload,’’ ‘’load-following,’’ and ‘’peaking’’ resources. This classification is no longer meaningful in power systems with substantial penetration of wind and solar energy, since dispatch of each technology is also driven by the irregular variability of these renewable resources. Moreover, most available low-carbon technologies are capital intensive and have very low variable costs. In this context, the distinguishing attributes of electricity technologies relate more to their resource availability and ability to adapt production output in order to meet instantaneous demand.</p>
-<ol type="1">
-<li><p>‘’Fuel-saving’’ variable renewable energy (VRE) resources. These include wind power, solar photovoltaics (PV), concentrating solar power, and run-of-river hydropower. They harness renewable energy inputs (wind, solar insolation, water) that vary on timescales ranging from seconds to hours to seasons, have zero (or near-zero) variable costs, and have no fuel costs. At lower penetration levels, they may displace the need for firm capacity, but, at higher shares, capacity needs are driven by periods with low VRE availability. At high energy shares, these technologies therefore contribute value primarily by displacing other higher variable cost generating technologies whenever available and reducing the total fuel consumption and variable costs of the system.</p></li>
-<li><p>‘’Fast-burst’’ balancing resources. These include short-duration energy storage (e.g., Li-ion batteries), flexible demand (or schedulable loads), and demand response (or price-responsive demand curtailment). They are either energy constrained (storage, demand flexibility) or have very high variable cost (demand curtailment). These technologies are therefore poorly suited to operating continuously over long periods of time and are better used during high-value periods when relatively fast bursts of power or quick demand adjustments are needed to balance supply and demand.</p></li>
-<li><p>‘’Firm’’ low-carbon resources. These are technologies that can be counted on to meet demand when needed in all seasons and over long durations (e.g., weeks or longer) and include nuclear power plants capable of flexible operations, 12–15 hydro plants with high-capacity reservoirs, coal and natural gas plants with CCS and capable of flexible operations, geothermal power, and biomass- and biogas-fueled power plants.</p></li>
-</ol>
-<p>Aggregating and rearranging the daily load curves in descending order from highest demand (peak) to lowest demand yields a load-duration curve (LDC). An LDC relates the capacity required with the capacity utilized, in other words the number of operating hours required during the year for each proportion of peak capacity demand. The LDC is divided into time segments (i.e.&nbsp;hourly or daily) with the extreme left side representing the province’s peak demand for the year (i.e.&nbsp;usually a winter evening) while the extreme right side represents the baseline power demand (i.e.&nbsp;the minimum amount of power required). Interpretation of the LDC allows for the determination of capacity i.e.&nbsp;represented by the height of each slice, and of the utilization rate i.e.&nbsp;the width of each slice. The product of these two provides’a measure (estimated) of electrical energy (e.g.&nbsp;kilowatt-hours).</p>
-<p>As illustrated by the energy flow model of the electricity industry, total electricity generation in CIMS is split between the base, shoulder and peak nodes using ratios based on historical load curves. These ratios can change over time but are always user-specified.</p>
-<p>Baseload is a utility’s minimum load over a given period. A baseload generating facility provides the basic amount of electric power needed year-round except for maintenance and scheduled or unscheduled outages; normally a large, efficient power plant having a low cost per kilowatt-hour generated. The base node includes conventional technologies such as gas turbines, combined cycle gas turbines, simple cycle coal turbines, pulverized fluidized bed coal, integrated gasification combined cycle coal, small and large hydro, nuclear; and renewable technologies such as biomass steam plant, fuel cell generator, parabolic trough solar generation, geothermal, solar thermal and wind generation.</p>
-<p>The shoulder and peak nodes only contain conventional technologies. Moreover, as a peak node plant needs to be phased in and out of the grid relatively quickly, plants with long start time such as nuclear plants could not be used as peak node facilities</p>
-<p>While the split among base, shoulder and peak nodes are always user-specified (decision rule: fixed_matrix_ratio), the split between conventional and renewable generation in the base node can be either user-specified over time or based on the aggregate relative annual levelized costs of the technologies on each sub-node.</p>
-<p>The current CIMS model deals with electricity imports and exports through the macroeconomic module. The own price elasticity for electric power export demand is -1.07. And the energy trade elasticities are applied using the following equation:</p>
-<p>(Equation 31)</p>
-<p>Where:</p>
-<p>FLCCt = Current financial lifecycle cost for a product</p>
-<p>FLCCt-1 = Previous financial lifecycle cost for a product</p>
-<p>β = % of market price covered by sub-model</p>
-<p>σ = Own price demand elasticity for the energy commodity</p>
-<p>γ = Corrected demand multiplier for the given market</p>
-<p>Figure: Energy Flow Model of Electricity Generation</p>
-<p>Rates</p>
+<p>Electricity generation is the central energy-supply sub-model in CIMS: it converts fuels and renewable resources into the power that every other sector draws on, and as the rest of the economy electrifies, what happens here increasingly determines system-wide emissions. The emphasis, as elsewhere, is on the structure of the energy-service flow model — how demand is split across the load curve, the generation technologies that compete to meet each part of it, and the services (storage, transmission, capture) that support them. The model tree is region-agnostic, but electricity is the sector where regional differences are largest, because each province’s grid is built on a different resource base.</p>
+<section id="scope" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">12.1</span> Scope</h2>
+<p>CIMS represents utility-scale electricity generation and the supporting storage, transmission, and carbon-capture services. Electricity co-generated within industry is accounted for in the industrial sub-models (see, for example, the cogeneration options in <a href="./sector_pulp_and_paper.html">Pulp and Paper</a> and <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a>) and is not double-counted here — with the deliberate exception that all renewable generation is accounted in the electricity model regardless of whether a utility or an industrial site operates it. Final electricity demand across the economy drives the sub-model; imports and exports are handled through the macroeconomic module, with an own-price elasticity for export demand of about −1.07.</p>
+<p>The combustion of the electricity once delivered, and the end-use equipment that consumes it, belong to the demand sectors. This chapter covers only how the power is generated and delivered.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">12.2</span> Real-world context</h2>
+<p>Canada has one of the cleanest electricity systems in the world. In 2024 renewables supplied about 65.5% of generation — hydropower 55.3% (with Québec alone producing about half of national hydro), wind 7.2%, and solar 1.3% — nuclear 13.7% (almost entirely Ontario’s CANDU reactors), and fossil fuels 20.8% (natural gas 15.8%, coal 4.1%) <span class="citation" data-cites="nrcan-electricity-factbook">(<a href="index.html#ref-nrcan-electricity-factbook" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. More than four-fifths of recent generation investment has gone to non-emitting sources <span class="citation" data-cites="nrcan-electricity-factbook">(<a href="index.html#ref-nrcan-electricity-factbook" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>.</p>
+<p>The system is, however, deeply regional. British Columbia, Québec, and Manitoba run on hydro and are almost emissions-free; Ontario combines nuclear, hydro, and a growing renewable share; the Atlantic provinces are mixed (Prince Edward Island is essentially all wind); and Alberta and Saskatchewan are the fossil-heavy outliers, historically coal and now increasingly natural gas. Federal regulation is phasing out conventional coal generation and pushing toward a net-zero grid, so the model’s central question is how each province’s mix evolves from its very different starting point. The CIMS structure is built to answer exactly that: it competes a full set of generation technologies — variable renewables, firm low-carbon resources, and flexible balancing resources — within a load-duration framework, and adds the storage, transmission, and capture services that a high-renewables grid needs.</p>
+</section>
+<section id="model-structure" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">12.3</span> Model structure</h2>
+<p>Following the standard CIMS pattern, the sector divides into a <strong>Product</strong> sub-tree — generation, organised by position on the load curve — and a <strong>Service</strong> sub-tree holding <strong>CCS</strong>, <strong>Storage</strong>, and <strong>Transmission</strong>. <a href="#fig-electricity-flow-model" class="quarto-xref">Figure&nbsp;<span>12.1</span></a> shows the structure.</p>
+<p>Total generation is split across <strong>Base Load</strong>, <strong>Shoulder Load</strong>, and <strong>Peak Load</strong> nodes using ratios derived from historical load-duration curves (the user-specified <code>fixed_matrix_ratio</code> decision rule). A load-duration curve re-orders the year’s hourly demand from highest to lowest; its height gives the capacity required and its width the utilisation, so the three nodes correspond to power that is needed almost all the time (base), part of the time (shoulder), and only at peak. Within each node, technologies compete on the basis of their annual levelized cost (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>).</p>
+<div id="fig-electricity-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-electricity-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/electricity_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;12.1: Energy-service flow model of the electricity sector (region-agnostic master tree). Total demand is split by load-duration-curve ratios into Base, Shoulder, and Peak Load nodes, each hosting a competition among generation technologies; a Service sub-tree provides CCS (coal, gas, biomass), Storage (battery and seasonal), and Transmission."><img src="images/electricity_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-electricity-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.1: Energy-service flow model of the electricity sector (region-agnostic master tree). Total demand is split by load-duration-curve ratios into Base, Shoulder, and Peak Load nodes, each hosting a competition among generation technologies; a Service sub-tree provides CCS (coal, gas, biomass), Storage (battery and seasonal), and Transmission.
+</figcaption>
+</figure>
+</div>
+<section id="products-base-shoulder-and-peak-generation" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="products-base-shoulder-and-peak-generation"><span class="header-section-number">12.3.1</span> Products: base, shoulder, and peak generation</h3>
+<p>The traditional baseload/load-following/peaking classification is, as the model’s own framing notes, less meaningful in a system with large wind and solar shares, where dispatch is driven by renewable variability and most low-carbon options are capital-intensive with near-zero variable cost. CIMS therefore keeps the base/shoulder/peak split as the demand-side framework but populates it with three functional classes of technology:</p>
+<ul>
+<li>Variable renewables (VRE) — wind (onshore, offshore), solar PV, run-of-river hydro: zero fuel cost, output set by the resource, valuable when available.</li>
+<li>Firm low-carbon resources — reservoir hydro, nuclear (including small modular reactors, SMRs), geothermal, biomass and biogas, and fossil plants with CCS: dispatchable over long durations.</li>
+<li>Fast-burst balancing resources — short-duration battery storage and flexible demand: energy-limited, used to balance supply and demand over short, high-value periods.</li>
+</ul>
+<p>In the model the <strong>Base Load</strong> node hosts the widest set — wind (with battery or seasonal storage), solar PV (with battery), hydro reservoir and river, nuclear and nuclear SMR, natural gas combined-cycle (CC) and simple-cycle (SC), gas CC with CCS, coal and coal with CCS, biomass and biomass with CCS, geothermal/geoexchange, and waste-to-energy. <strong>Shoulder Load</strong> hosts a similar but slightly narrower set, and <strong>Peak Load</strong> is limited to fast-responding plant (gas simple-cycle, reservoir hydro, oil, and wind-plus-seasonal-storage) — long-start plant such as nuclear cannot serve peak. The split between conventional and renewable generation within a node can be user-specified over time or determined endogenously by relative levelized cost.</p>
+</section>
+<section id="services-storage-transmission-and-capture" class="level3" data-number="12.3.2">
+<h3 data-number="12.3.2" class="anchored" data-anchor-id="services-storage-transmission-and-capture"><span class="header-section-number">12.3.2</span> Services: storage, transmission, and capture</h3>
+<ul>
+<li><strong>Storage</strong> — Battery (short-duration, the fast-burst balancing resource) and Seasonal (long-duration storage that lets variable renewables serve firm demand). Storage is what allows high-VRE grids to remain reliable.</li>
+<li><strong>Transmission</strong> — the delivery network that all generation requests.</li>
+<li><strong>CCS</strong> — the shared carbon-capture service, with coal, natural gas, and biomass variants; biomass-with-CCS generation is net-negative.</li>
+</ul>
+<p><mark>TODO: The current regional input files predate the full Product/Service split (generation sits under a <code>Utility Generation</code> node rather than the master tree’s <code>Product</code>). Migrate them to the region-agnostic master tree and harmonise the storage and transmission representation with the <a href="./energy_storage.html">Energy Storage</a> chapter.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">12.4</span> Decarbonisation technologies</h2>
+<p>Electricity decarbonisation is largely about building clean firm and variable capacity to displace unabated coal and gas, and adding the storage and transmission that let a high-renewables system stay reliable. Because Canada starts so clean nationally, the action is concentrated in the fossil-heavy provinces. <a href="#tbl-electricity-decarb" class="quarto-xref">Table&nbsp;<span>12.1</span></a> summarises maturity and <a href="#tbl-electricity-cost" class="quarto-xref">Table&nbsp;<span>12.2</span></a> gives indicative costs.</p>
+<div id="tbl-electricity-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-electricity-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12.1: Indicative role and maturity of key electricity generation and storage technologies
+</figcaption>
+<div aria-describedby="tbl-electricity-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative role</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Onshore wind / solar PV</td>
+<td style="text-align: left;">Lowest-cost new energy; variable</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Offshore wind</td>
+<td style="text-align: left;">Higher capacity factor; higher cost</td>
+<td style="text-align: left;">Commercial (emerging in Canada)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Reservoir hydro</td>
+<td style="text-align: left;">Firm, flexible, storage-capable</td>
+<td style="text-align: left;">Commercial (site-limited)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nuclear — large &amp; SMR</td>
+<td style="text-align: left;">Firm low-carbon; SMRs modular</td>
+<td style="text-align: left;">Commercial (large); first-of-kind (SMR)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery storage (short-duration)</td>
+<td style="text-align: left;">Fast-burst balancing</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Seasonal / long-duration storage</td>
+<td style="text-align: left;">Firms up variable renewables</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gas CC + CCS</td>
+<td style="text-align: left;">Firm low-carbon dispatchable</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coal + CCS</td>
+<td style="text-align: left;">Retrofit of coal fleet</td>
+<td style="text-align: left;">Demonstration (e.g.&nbsp;Boundary Dam)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass + CCS</td>
+<td style="text-align: left;">Firm and net-negative</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geothermal</td>
+<td style="text-align: left;">Firm low-carbon</td>
+<td style="text-align: left;">Emerging in Canada</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-electricity-cost" class="quarto-xref">Table&nbsp;<span>12.2</span></a> are order-of-magnitude figures from public Canadian and North American sources <span class="citation" data-cites="ieso-costs nrcan-electricity-factbook wnn-smr">(<a href="index.html#ref-ieso-costs" role="doc-biblioref">Independent Electricity System Operator 2024</a>; <a href="index.html#ref-nrcan-electricity-factbook" role="doc-biblioref">Natural Resources Canada 2024</a>; <a href="index.html#ref-wnn-smr" role="doc-biblioref">World Nuclear News 2025</a>)</span>, in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). Overnight capital is per kW; levelized cost of electricity (LCOE) is per MWh and is highly site- and grid-dependent. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-electricity-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-electricity-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;12.2: Indicative techno-economic characteristics of electricity technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-electricity-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Overnight capex (2025 CAD/kW)</th>
+<th style="text-align: left;">LCOE (2025 CAD/MWh)</th>
+<th style="text-align: left;">Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Onshore wind</td>
+<td style="text-align: left;">~1,800–2,600</td>
+<td style="text-align: left;">~45–80</td>
+<td style="text-align: left;">variable; falling costs</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Solar PV (utility)</td>
+<td style="text-align: left;">~1,300–2,400</td>
+<td style="text-align: left;">~45–85</td>
+<td style="text-align: left;">variable; falling costs</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Natural gas combined cycle</td>
+<td style="text-align: left;">~1,500–2,200</td>
+<td style="text-align: left;">~65–100</td>
+<td style="text-align: left;">+ carbon cost on emissions</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Natural gas simple cycle (peak)</td>
+<td style="text-align: left;">~1,100–1,600</td>
+<td style="text-align: left;">~140–220</td>
+<td style="text-align: left;">low utilisation, peaking</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Gas CC + CCS</td>
+<td style="text-align: left;">~3,000–4,500</td>
+<td style="text-align: left;">~95–150</td>
+<td style="text-align: left;">capture +CAD ~25–45/MWh</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Reservoir hydro</td>
+<td style="text-align: left;">~3,500–7,000</td>
+<td style="text-align: left;">~50–110</td>
+<td style="text-align: left;">very site-specific; long-lived</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Nuclear (large)</td>
+<td style="text-align: left;">~7,000–11,000</td>
+<td style="text-align: left;">~90–170</td>
+<td style="text-align: left;">firm; high capital</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Nuclear SMR</td>
+<td style="text-align: left;">~5,500–9,000</td>
+<td style="text-align: left;">~120–190</td>
+<td style="text-align: left;">first-of-kind premium</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery storage (4-hour)</td>
+<td style="text-align: left;">~1,800–3,100 (per kW)</td>
+<td style="text-align: left;">~110–200</td>
+<td style="text-align: left;">balancing, not bulk energy</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Coal + CCS (retrofit)</td>
+<td style="text-align: left;">retrofit-dependent</td>
+<td style="text-align: left;">~100–160</td>
+<td style="text-align: left;">~90% capture</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="variable-renewables-plus-storage" class="level3" data-number="12.4.1">
+<h3 data-number="12.4.1" class="anchored" data-anchor-id="variable-renewables-plus-storage"><span class="header-section-number">12.4.1</span> Variable renewables plus storage</h3>
+<p>The cheapest new energy in most of Canada is now onshore wind and solar PV, but their variability means that beyond modest shares they need balancing. The model represents this directly: wind and solar appear both alone and paired with battery (short-duration) or seasonal (long-duration) storage, and the <strong>Storage</strong> service is what lets a high-renewables node meet firm demand. As battery costs fall — utility four-hour storage is approaching US$100/MWh — the VRE-plus-storage combination displaces more gas.</p>
+</section>
+<section id="firm-low-carbon-resources" class="level3" data-number="12.4.2">
+<h3 data-number="12.4.2" class="anchored" data-anchor-id="firm-low-carbon-resources"><span class="header-section-number">12.4.2</span> Firm low-carbon resources</h3>
+<p>Where firm capacity is needed over long durations, the model competes reservoir hydro (Canada’s traditional firm clean resource, though site-limited), nuclear including small modular reactors (Ontario is building Canada’s first SMR), geothermal, biomass, and gas or coal with CCS. These are the technologies that can replace unabated fossil baseload while keeping the grid reliable in low-wind, low-sun periods.</p>
+</section>
+<section id="carbon-capture-and-net-negative-power" class="level3" data-number="12.4.3">
+<h3 data-number="12.4.3" class="anchored" data-anchor-id="carbon-capture-and-net-negative-power"><span class="header-section-number">12.4.3</span> Carbon capture and net-negative power</h3>
+<p>In the gas- and coal-heavy provinces, <strong>CCS</strong> on combined-cycle gas, on the existing coal fleet (Saskatchewan’s Boundary Dam is a pioneer), or on biomass plants captures most of the combustion CO₂; biomass with CCS goes further and delivers net-negative generation. The shared CCS service and its costs are detailed in the <a href="./ccus.html">Carbon Capture, Utilization, and Storage</a> chapter.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, capacity factors, availability years, and emission factors actually used at these nodes in the model input files, and reconcile the storage representation with the <a href="./energy_storage.html">Energy Storage</a> chapter.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">12.5</span> Economics</h2>
+<p>Technology choice within each load node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, here on an annual levelized-cost basis: each technology carries an overnight capital cost, fixed and variable operating costs, a capacity factor, fuel service requests where applicable, and availability and lifetime years, which are annualised and combined into a levelized cost per MWh and converted to market shares.</p>
+<p>Electricity technologies are discounted at lower rates than most demand sectors — around 12.5–25% in the current data — reflecting the regulated, capital-intensive, long-horizon nature of generation investment. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than pure financial costs of capital, but for a regulated utility they sit closer to the financial end of the range than the 35%+ used in the demand sectors; CIMS applies them throughout the levelized-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10–25.</p>
+<p>Emissions are tracked as CO₂, CH₄, and N₂O and arise from fuel combustion in the fossil and biomass plants, entering through each technology’s fuel service requests and the carbon price; the <strong>CCS</strong> service applies a removal factor to the captured routes, which can drive biomass-CCS generation net-negative. Because electricity is an input to every other sector, the carbon price acts here with unusual leverage: it raises the cost of unabated coal and gas relative to renewables, nuclear, and CCS, shifting the generation mix and, through the price of delivered electricity, the economics of electrification everywhere else in the model. Electricity imports and exports respond to relative prices through the macroeconomic module’s trade elasticities.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">12.6</span> Regional coverage and differences</h2>
+<p>Electricity is the sector where the region-agnostic tree resolves to the most different outcomes, because each of the seven modelled regions starts from a distinct resource base:</p>
+<ul>
+<li>Québec, British Columbia, and Manitoba are dominated by hydro and are already almost emissions-free; their decarbonisation question is mainly how to add capacity (hydro, wind) for growing electrified demand.</li>
+<li>Ontario runs on nuclear and hydro with growing renewables, and faces choices about nuclear refurbishment, SMRs, and wind/solar/storage.</li>
+<li>Alberta and Saskatchewan are the fossil-heavy provinces, where the coal phase-out and the competition among gas, gas-plus-CCS, wind, solar, and storage is most consequential.</li>
+<li>The Atlantic region is mixed, with significant wind potential.</li>
+</ul>
+<p><mark>TODO: Confirm the regional capacity factors, resource limits (especially hydro and wind siting), and existing-stock vintages, since the regional generation mix and its evolution are highly sensitive to them.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="12.7">
+<h2 data-number="12.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">12.7</span> Limitations and planned extensions</h2>
+<p>The electricity sub-model captures the essential structure of a modern power system — a load-duration split, three functional technology classes, and the storage and transmission services a high-renewables grid needs — but it remains a simplified representation of a system whose real behaviour is hourly and spatial. Its main limitations are the coarse (base/shoulder/peak) time resolution relative to the sub-hourly dynamics that actually drive VRE integration, the simplified storage and transmission representation, and reliance on inherited cost and load-curve assumptions. The TODOs above record the priorities, of which keeping the cost and capacity-factor data current and reconciling storage with the dedicated <a href="./energy_storage.html">Energy Storage</a> chapter are the most important.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark the modelled generation mix and grid emissions intensity by province against Canada Energy Regulator and Canada Energy Future data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-ieso-costs" class="csl-entry" role="listitem">
+Independent Electricity System Operator. 2024. <em>Annual Planning Outlook: Resource Costs and Trends</em>. IESO. <a href="https://www.ieso.ca/-/media/Files/IESO/Document-Library/planning-forecasts/apo/Mar2024/Resource-Costs-and-Trends.pdf">https://www.ieso.ca/-/media/Files/IESO/Document-Library/planning-forecasts/apo/Mar2024/Resource-Costs-and-Trends.pdf</a>.
+</div>
+<div id="ref-nrcan-electricity-factbook" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Energy Fact Book 2024–2025</em>. Natural Resources Canada. <a href="https://energy-information.canada.ca/sites/default/files/2024-10/energy-factbook-2024-2025.pdf">https://energy-information.canada.ca/sites/default/files/2024-10/energy-factbook-2024-2025.pdf</a>.
+</div>
+<div id="ref-wnn-smr" class="csl-entry" role="listitem">
+World Nuclear News. 2025. <em>Canada’s First SMR Project: How Is CAD20.9 Billion Cost Calculated?</em> World Nuclear News. <a href="https://world-nuclear-news.org/articles/what-is-the-budget-for-canadas-first-smr-project">https://world-nuclear-news.org/articles/what-is-the-budget-for-canadas-first-smr-project</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1698,8 +1981,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

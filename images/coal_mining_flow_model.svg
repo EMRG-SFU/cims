@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 600" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .spec{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="430" y="12" width="220" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Coal Mining sector</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: coal output (tonnes)</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service -->
+  <rect class="branch" x="200" y="86" width="200" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product — coal chain</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">fixed-ratio process sequence</text>
+  <rect class="branch" x="712" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="790" y="103" text-anchor="middle">Service</text>
+  <text class="subw" x="790" y="118" text-anchor="middle">machine drive, HVAC, lighting</text>
+
+  <!-- chain (left to right) -->
+  <path class="edge" d="M300,126 V140 H110 V160" marker-end="url(#arrow)"/>
+  <rect class="spec" x="40" y="160" width="200" height="96" rx="6"/>
+  <text class="ttl" x="50" y="178">Raw Product</text>
+  <text class="li" x="50" y="195">Extraction — diesel / biodiesel /</text>
+  <text class="li" x="60" y="208">electric</text>
+  <text class="li" x="50" y="224">Mine Ventilation</text>
+  <text class="li" x="50" y="240">Transportation — truck / conveyance</text>
+  <text class="li" x="50" y="252" style="fill:#9a3b1f">fugitive CH₄ released at extraction</text>
+
+  <path class="edge" d="M240,208 H300" marker-end="url(#arrow)"/>
+  <rect class="det" x="300" y="160" width="190" height="96" rx="6"/>
+  <text class="ttl" x="310" y="178">Size Reduced Product</text>
+  <text class="li" x="310" y="197">Primary Crushing</text>
+  <text class="li" x="310" y="213">Primary Milling</text>
+  <text class="li" x="310" y="229">Secondary Milling</text>
+
+  <path class="edge" d="M490,208 H540" marker-end="url(#arrow)"/>
+  <rect class="det" x="540" y="160" width="200" height="96" rx="6"/>
+  <text class="ttl" x="550" y="178">Metallurgical Finishing</text>
+  <text class="li" x="550" y="197">Washing (wash mill)</text>
+  <text class="li" x="550" y="213">Cleaning — rotary/spray/FB drying</text>
+  <text class="li" x="550" y="229">Tailings Disposal (reclamation)</text>
+  <text class="sub" x="550" y="248">prepares coking coal → iron &amp; steel</text>
+
+  <!-- service rail -->
+  <path class="edge" d="M790,126 V140 H660 V330"/>
+  <path class="edge" d="M660,176 H720" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,250 H720" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,300 H720" marker-end="url(#arrow)"/>
+
+  <rect class="svc" x="720" y="158" width="320" height="44" rx="6"/>
+  <text class="lbl" x="880" y="176" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="sub" x="880" y="192" text-anchor="middle">Materials Processing · Fans · Pumps · Handling</text>
+
+  <rect class="svc" x="720" y="228" width="320" height="44" rx="6"/>
+  <text class="lbl" x="880" y="246" text-anchor="middle">Methane Blend</text>
+  <text class="sub" x="880" y="262" text-anchor="middle">NG · biogas · biomass gas · H₂</text>
+
+  <rect class="svc" x="720" y="288" width="320" height="32" rx="6"/>
+  <text class="lbl" x="880" y="308" text-anchor="middle">HVAC · Lighting</text>
+
+  <path class="dedge" d="M740,210 C760,210 770,200 740,200" />
+  <path class="dedge" d="M490,250 C600,260 620,210 660,190" marker-end="url(#darrow)"/>
+  <text class="sub" x="580" y="248" text-anchor="middle">service requests</text>
+
+  <!-- missing methane capture callout -->
+  <rect class="det" x="40" y="300" width="700" height="60" rx="6" stroke="#b5532e" stroke-dasharray="5 3"/>
+  <text class="ttl" x="55" y="320" style="fill:#9a3b1f">Gap: no methane-capture technology in the model</text>
+  <text class="li" x="55" y="338">Coal-mine methane (VAM) is ~60% of sector emissions and has mature abatement</text>
+  <text class="li" x="55" y="352">(drainage + use; VAM oxidation &gt;98%), but every extraction option carries the same CH₄ factor — see TODO.</text>
+
+  <!-- legend -->
+  <rect class="spec" x="40" y="400" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="410">extraction (fugitive CH₄)</text>
+  <rect class="det" x="230" y="400" width="16" height="12" rx="2"/>
+  <text class="sub" x="252" y="410">process competition</text>
+  <rect class="svc" x="410" y="400" width="16" height="12" rx="2"/>
+  <text class="sub" x="432" y="410">shared energy / utility service</text>
+</svg>

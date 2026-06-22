@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,21 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">30.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">30.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">30.3</span> Model structure</a></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">30.4</span> Decarbonisation technologies</a></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">30.5</span> Economics</a></li>
+  <li><a href="#regional-coverage" id="toc-regional-coverage" class="nav-link" data-scroll-target="#regional-coverage"><span class="header-section-number">30.6</span> Regional coverage</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">30.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +730,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_forestry.html"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Forestry</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Forestry</span></h1>
+<h1 class="title"><span id="sec-forestry" class="quarto-section-identifier"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Forestry</span></span></h1>
 </div>
 
 
@@ -712,10 +747,162 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Forestry sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>The logging industry’s on-site greenhouse-gas footprint comes almost entirely from the diesel burned by mobile harvesting and handling equipment — feller-bunchers, skidders, harvesters, forwarders, and loaders working in the bush — so the sector is represented as a single mobile-equipment energy service in which diesel competes against electric. The tree is region-agnostic, and the sector’s activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not output, are its organising variable. The structure is deliberately coarse; the limitations below set out what a fuller representation would add.</p>
+<section id="scope" class="level2" data-number="30.1">
+<h2 data-number="30.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">30.1</span> Scope</h2>
+<p>CIMS represents the <strong>fuel use of forestry’s mobile equipment</strong> — the off-road machinery that fells, gathers, and moves timber at the harvest site — as one aggregate energy service. The driving variable is an exogenous forecast of the sector’s emissions in tonnes of CO₂-equivalent. Everything downstream of the roadside is handled elsewhere: log haulage on public roads belongs to <a href="./sector_transportation_freight.html">Transportation (Freight)</a>, and the milling of logs into lumber and pulp is in <a href="./sector_pulp_and_paper.html">Pulp and Paper</a> and the wood-products part of <a href="./sector_light_industrial.html">Light Industrial</a>. The biological carbon of the forest itself — growth, harvest, and regrowth — is the domain of <a href="./sector_lulucf.html">LULUCF</a>, not this sector.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="30.2">
+<h2 data-number="30.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">30.2</span> Real-world context</h2>
+<p>Logging is energy-light compared with heavy industry, but what energy it uses is overwhelmingly diesel in rugged off-road machines that run long duty cycles far from grid power. That combination — high power demand, remote sites, and no charging infrastructure — is exactly what makes the harvest fleet hard to electrify, and it is why diesel still does essentially all the work today. The decarbonisation options are the same three that face any off-road diesel fleet: drop-in <strong>renewable diesel</strong> or biodiesel that cuts lifecycle carbon with no equipment change, battery-electric machines where duty cycles and charging allow, and hydrogen fuel-cell machines for the heaviest, longest-running equipment. Canadian work on zero- and low-emission options for the forest sector — much of it through FPInnovations — has so far concentrated on the haulage fleet, where battery-electric Class 8 trucks have demonstrated more than 60% lower energy use and at least 80% lower greenhouse-gas emissions than diesel, with the in-bush machines a harder and later problem <span class="citation" data-cites="fpinnovations-zev">(<a href="index.html#ref-fpinnovations-zev" role="doc-biblioref">FPInnovations 2024</a>)</span>. The CIMS structure mirrors the core choice directly: a single competition between diesel and electric equipment.</p>
+</section>
+<section id="model-structure" class="level2" data-number="30.3">
+<h2 data-number="30.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">30.3</span> Model structure</h2>
+<p>The sector is a single tech-compete node. <a href="#fig-forestry-flow-model" class="quarto-xref">Figure&nbsp;<span>30.1</span></a> shows the structure: the exogenous activity drives one <strong>Transport</strong> service, at which two technologies compete to provide the same mobile-equipment work.</p>
+<div id="fig-forestry-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-forestry-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/forestry_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;30.1: Energy-service flow model of the forestry sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single Transport service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model."><img src="images/forestry_flow_model.svg" class="img-fluid figure-img" style="width:85.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-forestry-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;30.1: Energy-service flow model of the forestry sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single <strong>Transport</strong> service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model.
+</figcaption>
+</figure>
+</div>
+<p>At the <strong>Transport</strong> node, diesel equipment (the entire base-year fleet) requests the diesel transportation fuel blend, while electric equipment requests grid electricity; both carry a twenty-year lifetime and the same energy requirement per unit of activity. Because the diesel option draws on the blended fuel, any renewable-diesel content in that blend lowers its lifecycle carbon automatically (see <a href="./sector_biodiesel.html">Biodiesel</a>). Fuel prices at the node are currently borrowed from <a href="./sector_agriculture.html">Agriculture</a> as a proxy and flagged for review.</p>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="30.4">
+<h2 data-number="30.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">30.4</span> Decarbonisation technologies</h2>
+<p>Forestry decarbonisation means getting the carbon out of the off-road fleet’s fuel: cleaner liquid fuel now, electrification where it fits, and hydrogen for the hardest duty cycles. <a href="#tbl-forestry-decarb" class="quarto-xref">Table&nbsp;<span>30.1</span></a> summarises maturity and <a href="#tbl-forestry-cost" class="quarto-xref">Table&nbsp;<span>30.2</span></a> gives indicative costs.</p>
+<div id="tbl-forestry-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-forestry-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.1: Indicative performance and maturity of key forestry decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-forestry-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology / practice</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Renewable diesel / biodiesel (drop-in)</td>
+<td style="text-align: left;">Cuts lifecycle CO₂ with no equipment change</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Battery-electric equipment</td>
+<td style="text-align: left;">Removes tailpipe CO₂; shifts load to grid</td>
+<td style="text-align: left;">Emerging — <em>electric option in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hybrid diesel-electric machines</td>
+<td style="text-align: left;">Lowers fuel use on variable duty cycles</td>
+<td style="text-align: left;">Emerging — <em>not yet in model</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen fuel-cell equipment</td>
+<td style="text-align: left;">Zero-tailpipe for heavy, long-run machines</td>
+<td style="text-align: left;">Early / demonstration — <em>not yet in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Efficient machines &amp; idle reduction</td>
+<td style="text-align: left;">Lower fuel per unit harvested</td>
+<td style="text-align: left;">Commercial — <em>not explicit in model</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-forestry-cost" class="quarto-xref">Table&nbsp;<span>30.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="fpinnovations-zev cer-renewable-diesel srk-haultruck">(<a href="index.html#ref-fpinnovations-zev" role="doc-biblioref">FPInnovations 2024</a>; <a href="index.html#ref-cer-renewable-diesel" role="doc-biblioref">Canada Energy Regulator 2023</a>; <a href="index.html#ref-srk-haultruck" role="doc-biblioref">SRK Consulting 2024</a>)</span>, expressed in 2025 Canadian dollars. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-forestry-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-forestry-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;30.2: Indicative techno-economic characteristics of forestry decarbonisation options, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-forestry-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Option</th>
+<th style="text-align: left;">Capital vs diesel</th>
+<th style="text-align: left;">Operating effect</th>
+<th style="text-align: left;">Energy / emission</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Renewable diesel / biodiesel</td>
+<td style="text-align: left;">none (drop-in fuel)</td>
+<td style="text-align: left;">fuel-cost dependent</td>
+<td style="text-align: left;">lifecycle CO₂ cut, no fleet change</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Battery-electric machine</td>
+<td style="text-align: left;">~+50–100% on machine price</td>
+<td style="text-align: left;">lower energy and maintenance cost</td>
+<td style="text-align: left;">grid electricity; no tailpipe CO₂</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen fuel-cell machine</td>
+<td style="text-align: left;">high (early-stage)</td>
+<td style="text-align: left;">fuel-cost dependent</td>
+<td style="text-align: left;">zero-tailpipe; needs H₂ supply</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cheapest near-term lever is the fuel itself: switching the diesel blend toward <strong>renewable diesel</strong> or biodiesel cuts lifecycle carbon across the whole fleet with no change to the machines. Battery-electric equipment — the model’s electric option — removes tailpipe emissions and lowers energy and maintenance cost, but is held back by the power, runtime, and remote-charging demands of in-bush work, so it is emerging fastest in lighter machines and at the roadside. Hydrogen fuel cells remain early-stage and depend on hydrogen supply reaching remote sites.</p>
+<p><mark>TODO: Add the renewable-diesel/biodiesel fuel-switching and hydrogen fuel-cell pathways as explicit competing options at the Transport node, and populate the technologies with capital, operating, and emission data rather than the current Agriculture-proxied fuel prices.</mark></p>
+</section>
+<section id="economics" class="level2" data-number="30.5">
+<h2 data-number="30.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">30.5</span> Economics</h2>
+<p>Technology choice at the <strong>Transport</strong> node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. As elsewhere in CIMS, the intended discount rate is <strong>behavioural</strong> (revealed or empirical) rather than a true financial cost of capital, capturing the short payback horizons typical of resource industries (see the <a href="./theory.html">Theory</a> chapter). In the current input files, however, the two technologies carry only a lifetime and their energy requests — capital cost, operating cost, the discount rate, and the heterogeneity (variance) parameter are not yet populated — so the diesel-versus-electric competition cannot yet resolve on cost and the fleet holds near its base-year shares. Emissions enter upstream through the fuels the technologies request: the diesel option carries the carbon of the diesel blend, while the electric option moves the load to the grid, where it is counted in <a href="./sector_electricity.html">Electricity</a>.</p>
+</section>
+<section id="regional-coverage" class="level2" data-number="30.6">
+<h2 data-number="30.6" class="anchored" data-anchor-id="regional-coverage"><span class="header-section-number">30.6</span> Regional coverage</h2>
+<p>All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the forestry structure, scaled by an exogenous emissions forecast that differs sharply with the size of each region’s logging industry: British Columbia is by far the largest, with Québec and Ontario next, and the Prairie provinces much smaller. The structure itself is identical across regions.</p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="30.7">
+<h2 data-number="30.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">30.7</span> Limitations and planned extensions</h2>
+<p>The forestry sub-model is a placeholder: it captures the sector’s dominant emission source — off-road diesel equipment — and the central diesel-to-electric choice, but little else. The off-road fleet is collapsed into a single aggregate <strong>Transport</strong> service rather than resolved by machine type or duty cycle; the competing technologies are not yet costed; the fuel prices are proxied from agriculture; and lower-carbon liquid fuels and hydrogen are not yet explicit options. The TODOs above record the priorities. Because forestry’s footprint is small, this coarse treatment is a reasonable interim, but populating the technology costs is the minimum needed for the diesel-to-electric transition to respond to policy at all.</p>
+<p><mark>TODO: Replace the illustrative figures and the Agriculture-proxied prices in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled forestry fuel use against Natural Resources Canada and FPInnovations data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-cer-renewable-diesel" class="csl-entry" role="listitem">
+Canada Energy Regulator. 2023. <em>Market Snapshot: New Renewable Diesel Facilities Will Help Reduce Carbon Intensity of Fuels in Canada</em>. CER Market Snapshots. <a href="https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2023/market-snapshot-new-renewable-diesel-facilities-will-help-reduce-carbon-intensity-fuels-canada.html">https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2023/market-snapshot-new-renewable-diesel-facilities-will-help-reduce-carbon-intensity-fuels-canada.html</a>.
+</div>
+<div id="ref-fpinnovations-zev" class="csl-entry" role="listitem">
+FPInnovations. 2024. <em>The Future of Forestry Transportation: <span>ZEVs</span> and <span>LEVs</span> Driving Change in Emission and Cost Reductions</em>. FPInnovations. <a href="https://web.fpinnovations.ca/the-future-of-forestry-transportation-zevs-and-levs-driving-change-in-emission-and-cost-reductions/">https://web.fpinnovations.ca/the-future-of-forestry-transportation-zevs-and-levs-driving-change-in-emission-and-cost-reductions/</a>.
+</div>
+<div id="ref-srk-haultruck" class="csl-entry" role="listitem">
+SRK Consulting. 2024. <em>Decarbonizing Mining: Diesel Vs Electric Haul Trucks on Cost and Efficiency</em>. SRK Consulting. <a href="https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency">https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1864,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

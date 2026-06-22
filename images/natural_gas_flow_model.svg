@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 640" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .meth{fill:#f3dede;stroke:#c97b7b;stroke-width:1;}
+    .ccs{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="430" y="12" width="220" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Natural Gas supply sector</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: gas throughput</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service -->
+  <rect class="branch" x="200" y="86" width="200" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product — supply chain</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">+ emission sources</text>
+  <rect class="branch" x="712" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="790" y="103" text-anchor="middle">Service — O&amp;G fuel blends</text>
+
+  <!-- supply chain (left) -->
+  <path class="edge" d="M300,126 V140 H120 V160" marker-end="url(#arrow)"/>
+  <rect class="det" x="40" y="160" width="240" height="120" rx="6"/>
+  <text class="ttl" x="50" y="178">Supply — Extraction &amp; Processing</text>
+  <text class="li" x="50" y="195">Conventional · Shale · Tight ·</text>
+  <text class="li" x="50" y="209">Coalbed Methane (+ efficient)</text>
+  <text class="li" x="50" y="225">Drilling · Compression · Off-road</text>
+  <text class="li" x="50" y="241">Processing (separation, cleaning)</text>
+  <text class="sub" x="50" y="263">energy via O&amp;G fuel blends (electrify →)</text>
+
+  <path class="edge" d="M280,220 H320" marker-end="url(#arrow)"/>
+  <rect class="det" x="320" y="190" width="150" height="60" rx="6"/>
+  <text class="ttl" x="330" y="208">Transmission</text>
+  <text class="ttl" x="330" y="228">Distribution</text>
+  <text class="sub" x="330" y="244">(+ compression)</text>
+
+  <!-- emission sources (centre-bottom) -->
+  <rect class="meth" x="40" y="300" width="600" height="150" rx="6"/>
+  <text class="ttl" x="50" y="318" style="fill:#9a3b3b">Emission sources — each with an abatement competition</text>
+  <text class="li" x="50" y="336">Fugitive — LDAR (No→Low→Med→High): CH₄ ×1.0→0.1</text>
+  <text class="li" x="50" y="352">Venting — Point (No VRU / VRU / Flare install) · Diffuse</text>
+  <text class="li" x="50" y="368">Controls (pneumatics) — High/Med/Low bleed · Electric (zero-bleed)</text>
+  <text class="li" x="50" y="384">Testing &amp; Maintenance — Blowdown capture · Plunger lift · Well tests</text>
+  <text class="li" x="50" y="400" style="fill:#9a6a1f">Flaring (±CCS) · Formation CO₂ / acid gas (±CCS)</text>
+  <text class="sub" x="50" y="420">Methane is the dominant emission; much abatement is net cost-saving</text>
+  <text class="sub" x="50" y="434">(recovered gas value) — among the cheapest GHG measures (~$11–48/t CO₂e).</text>
+
+  <!-- CCS -->
+  <rect class="ccs" x="660" y="300" width="220" height="50" rx="6"/>
+  <text class="lbl" x="770" y="319" text-anchor="middle">CCS — 95% capture</text>
+  <text class="sub" x="770" y="335" text-anchor="middle">flaring &amp; formation-CO₂ streams</text>
+  <path class="dedge" d="M640,400 C660,390 660,360 660,330" marker-end="url(#darrow)"/>
+
+  <!-- services -->
+  <rect class="svc" x="700" y="160" width="340" height="60" rx="6"/>
+  <text class="lbl" x="870" y="180" text-anchor="middle">Oil &amp; Gas fuel blends</text>
+  <text class="sub" x="870" y="197" text-anchor="middle">diesel · gasoline · methane — burned by</text>
+  <text class="sub" x="870" y="211" text-anchor="middle">compressors, drills, heaters (electrify to cut CO₂)</text>
+  <path class="dedge" d="M470,210 C560,200 600,190 700,185" marker-end="url(#darrow)"/>
+
+  <!-- legend -->
+  <rect class="det" x="40" y="480" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="490">production stage</text>
+  <rect class="meth" x="190" y="480" width="16" height="12" rx="2"/>
+  <text class="sub" x="212" y="490">methane / emission source + abatement</text>
+  <rect class="ccs" x="470" y="480" width="16" height="12" rx="2"/>
+  <text class="sub" x="492" y="490">CCS</text>
+  <rect class="svc" x="560" y="480" width="16" height="12" rx="2"/>
+  <text class="sub" x="582" y="490">sector fuel use</text>
+</svg>

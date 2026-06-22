@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,29 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">27.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">27.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">27.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-freight-demand-by-mode" id="toc-products-freight-demand-by-mode" class="nav-link" data-scroll-target="#products-freight-demand-by-mode"><span class="header-section-number">27.3.1</span> Products: freight demand by mode</a></li>
+  <li><a href="#services-zero-emission-infrastructure" id="toc-services-zero-emission-infrastructure" class="nav-link" data-scroll-target="#services-zero-emission-infrastructure"><span class="header-section-number">27.3.2</span> Services: zero-emission infrastructure</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">27.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#zero-emission-trucks-and-their-infrastructure" id="toc-zero-emission-trucks-and-their-infrastructure" class="nav-link" data-scroll-target="#zero-emission-trucks-and-their-infrastructure"><span class="header-section-number">27.4.1</span> Zero-emission trucks and their infrastructure</a></li>
+  <li><a href="#modal-shift-and-the-hard-to-electrify-modes" id="toc-modal-shift-and-the-hard-to-electrify-modes" class="nav-link" data-scroll-target="#modal-shift-and-the-hard-to-electrify-modes"><span class="header-section-number">27.4.2</span> Modal shift and the hard-to-electrify modes</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">27.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">27.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">27.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_transportation_freight.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Freight Transportation</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Freight Transportation</span></h1>
+<h1 class="title"><span id="sec-transportation-freight" class="quarto-section-identifier"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Freight Transportation</span></span></h1>
 </div>
 
 
@@ -712,10 +755,228 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Freight Transportation sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a dedicated written description. General CIMS-Transportation structure, service flow model, and input data are described in the <a href="sector_transportation_overview.qmd">Transportation</a> chapter.</em></p>
+<p>Freight transportation is the goods-movement module of CIMS-Transportation (CIMS-T), a demand-side sub-model: it meets a demand for freight movement (goods moved, in tonne-kilometres) by competing transport modes — road, rail, marine, and air — and, within each, competing vehicle powertrains and fuels. The emphasis is on the structure of the service flow model: the freight-demand nodes, the modes and vehicles that supply them, and the refuelling and charging infrastructure they need. The tree is region-agnostic. The general CIMS-T framework — service flow model, intangible costs, and stock-turnover dynamics — is described in the <a href="./sector_transportation_passenger.html">Transportation (Passenger)</a> chapter and is not repeated here.</p>
+<section id="scope" class="level2" data-number="27.1">
+<h2 data-number="27.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">27.1</span> Scope</h2>
+<p>CIMS represents the movement of goods by road (heavy trucks and light/medium commercial vehicles), rail, marine, and air, plus an off-road category (construction, agricultural, and other off-highway equipment). The driving variable is freight demand in tonne-kilometres, projected exogenously and able to shift between modes. The model also carries explicit infrastructure services — charging, overhead catenary, and hydrogen refuelling — recognising that zero-emission freight depends as much on infrastructure as on the vehicles.</p>
+<p>Adjacent activities are handled elsewhere: passenger mobility is in <a href="./sector_transportation_passenger.html">Transportation (Passenger)</a>; the fuels (diesel, electricity, hydrogen, biofuels, natural gas) are supplied by the energy-supply sub-models; and vehicle manufacturing is in <a href="./sector_light_industrial.html">Light Industrial</a>. This chapter covers the use of vehicles to move goods.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="27.2">
+<h2 data-number="27.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">27.2</span> Real-world context</h2>
+<p>Freight is a large and stubborn share of transport emissions, and it is dominated by on-road heavy trucks. In 2019, on-road freight produced about 64.8 Mt of Canada’s transport emissions, against 7.8 Mt from rail and 4.5 Mt from marine <span class="citation" data-cites="icct-zet">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>)</span>. The disparity reflects efficiency as much as volume: rail freight is more than five times as emissions-efficient per tonne-kilometre as road, so shifting goods from truck to rail or intermodal can cut emissions by up to 30% <span class="citation" data-cites="icct-zet">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>)</span>. Heavy trucks are also among the hardest road vehicles to decarbonise, because their weight, range, and duty cycles strain battery technology.</p>
+<p>Three zero-emission pathways are competing for heavy freight, and the model represents all of them. Battery-electric trucks are favoured for lighter and shorter-range duty; hydrogen fuel-cell trucks are emerging for heavy long-haul, where range and refuelling time matter and where — as techno-economic studies including intangible costs find — hydrogen tends to win over batteries <span class="citation" data-cites="icct-zet pembina-mhd">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>; <a href="index.html#ref-pembina-mhd" role="doc-biblioref">Pembina Institute 2023</a>)</span>; and overhead catenary (eHighway) systems power trucks directly from the road on major corridors. By the 2030s, catenary and battery-electric trucks are projected to cost roughly 30–35% less to own and run than diesel, and hydrogen 15–25% less <span class="citation" data-cites="icct-zet">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>)</span>. For rail, electrification, hydrogen, and biofuels apply; for marine, hydrogen, ammonia, and biofuels; and for aviation, sustainable aviation fuels and e-fuels. The CIMS structure captures these technology competitions and, distinctively, the infrastructure they require.</p>
+</section>
+<section id="model-structure" class="level2" data-number="27.3">
+<h2 data-number="27.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">27.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — freight demand by mode — and a <strong>Service</strong> sub-tree of the refuelling and charging infrastructure. <a href="#fig-transport-freight-flow-model" class="quarto-xref">Figure&nbsp;<span>27.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); mode and powertrain shares are determined by lifecycle cost plus intangible cost.</p>
+<div id="fig-transport-freight-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-transport-freight-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/transport_freight_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;27.1: Service flow model of freight transportation (region-agnostic master tree). The Product sub-tree is freight demand by mode — Land (heavy trucks and rail; light/medium vehicles), Marine, Air, and Off-Road — each competing diesel/biofuel against electric, hydrogen, and (for trucks) catenary powertrains; the Service sub-tree provides the EV charging, overhead-catenary, and hydrogen-refuelling infrastructure that zero-emission freight depends on."><img src="images/transport_freight_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-transport-freight-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;27.1: Service flow model of freight transportation (region-agnostic master tree). The Product sub-tree is freight demand by mode — Land (heavy trucks and rail; light/medium vehicles), Marine, Air, and Off-Road — each competing diesel/biofuel against electric, hydrogen, and (for trucks) catenary powertrains; the Service sub-tree provides the EV charging, overhead-catenary, and hydrogen-refuelling infrastructure that zero-emission freight depends on.
+</figcaption>
+</figure>
+</div>
+<section id="products-freight-demand-by-mode" class="level3" data-number="27.3.1">
+<h3 data-number="27.3.1" class="anchored" data-anchor-id="products-freight-demand-by-mode"><span class="header-section-number">27.3.1</span> Products: freight demand by mode</h3>
+<ul>
+<li><strong>Land — Heavy</strong> — split into Trucks and Rail. Heavy Trucks compete diesel (existing/standard/efficient), biodiesel, natural gas, plug-in hybrid, battery-electric, hydrogen fuel-cell, and catenary (eHighway) powertrains. Heavy Rail competes diesel (and efficient diesel), biodiesel, electric, and hydrogen.</li>
+<li><strong>Land — Light/Medium</strong> — commercial vans and medium trucks, competing gasoline and diesel (existing/standard/efficient), propane, biodiesel, plug-in hybrid, battery-electric, and hydrogen.</li>
+<li><strong>Marine</strong> — competing fuel oil (existing/standard/efficient), biodiesel, and hydrogen.</li>
+<li><strong>Air</strong> — competing conventional, efficient, electric, and hydrogen aircraft.</li>
+<li><strong>Off Road</strong> — construction, agricultural, and other off-highway equipment, competing diesel (standard/medium/high-efficiency) and electric.</li>
+</ul>
+<p>Freight demand can shift between modes — most importantly road to rail — as relative costs change.</p>
+</section>
+<section id="services-zero-emission-infrastructure" class="level3" data-number="27.3.2">
+<h3 data-number="27.3.2" class="anchored" data-anchor-id="services-zero-emission-infrastructure"><span class="header-section-number">27.3.2</span> Services: zero-emission infrastructure</h3>
+<p>A distinctive feature of the freight sub-model is that it carries the infrastructure zero-emission vehicles depend on as explicit services:</p>
+<ul>
+<li><strong>EV Infrastructure</strong> — Depot Stations (overnight/return-to-base charging) and Rapid Charging Stations (en-route fast charging).</li>
+<li><strong>Catenary Infrastructure</strong> — the overhead-wire (eHighway) system for catenary trucks.</li>
+<li><strong>FCEV Infrastructure</strong> — hydrogen refuelling.</li>
+</ul>
+<p>Representing these explicitly means the model can capture the chicken-and-egg coupling between zero-emission trucks and the networks they need, rather than assuming the infrastructure is free.</p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="27.4">
+<h2 data-number="27.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">27.4</span> Decarbonisation technologies</h2>
+<p>Freight decarbonisation works through powertrain switching (electric, hydrogen, catenary, biofuels), modal shift (road to rail/marine), and low-carbon fuels for the hard-to-electrify modes (marine, aviation). <a href="#tbl-transport-freight-decarb" class="quarto-xref">Table&nbsp;<span>27.1</span></a> summarises maturity and <a href="#tbl-transport-freight-cost" class="quarto-xref">Table&nbsp;<span>27.2</span></a> gives indicative costs.</p>
+<div id="tbl-transport-freight-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-transport-freight-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;27.1: Indicative performance and maturity of key freight decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-transport-freight-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology / action</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric truck (light/medium, regional heavy)</td>
+<td style="text-align: left;">Zero tailpipe; ~30–35% lower lifecycle cost by 2030</td>
+<td style="text-align: left;">Early commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen fuel-cell truck (heavy long-haul)</td>
+<td style="text-align: left;">Zero tailpipe; range/refuel suit heavy duty</td>
+<td style="text-align: left;">Demonstration / early commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Catenary (eHighway) truck</td>
+<td style="text-align: left;">Direct road power; ~30–35% lower cost on corridors</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric / hydrogen rail</td>
+<td style="text-align: left;">Displaces diesel; rail already efficient</td>
+<td style="text-align: left;">Commercial (electric)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen / ammonia / biofuel marine</td>
+<td style="text-align: left;">Decarbonises shipping fuel</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SAF / e-fuels / electric / hydrogen aviation</td>
+<td style="text-align: left;">Aviation decarbonisation</td>
+<td style="text-align: left;">Emerging (SAF)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Modal shift road → rail / intermodal</td>
+<td style="text-align: left;">Up to ~30% emissions cut</td>
+<td style="text-align: left;">Policy / logistics</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric off-road equipment</td>
+<td style="text-align: left;">Zero tailpipe off-highway</td>
+<td style="text-align: left;">Emerging</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-transport-freight-cost" class="quarto-xref">Table&nbsp;<span>27.2</span></a> are order-of-magnitude figures from public sources <span class="citation" data-cites="icct-zet pembina-mhd srk-haultruck">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>; <a href="index.html#ref-pembina-mhd" role="doc-biblioref">Pembina Institute 2023</a>; <a href="index.html#ref-srk-haultruck" role="doc-biblioref">SRK Consulting 2024</a>)</span>, in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-transport-freight-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-transport-freight-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;27.2: Indicative techno-economic characteristics of freight decarbonisation options, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-transport-freight-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Capex / cost</th>
+<th style="text-align: left;">Operating effect</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Diesel heavy truck (reference)</td>
+<td style="text-align: left;">baseline</td>
+<td style="text-align: left;">baseline</td>
+<td style="text-align: left;">diesel</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Battery-electric heavy truck</td>
+<td style="text-align: left;">~50–100% higher purchase</td>
+<td style="text-align: left;">~30–35% lower lifecycle cost by 2030</td>
+<td style="text-align: left;">electricity (+ charging)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen fuel-cell truck</td>
+<td style="text-align: left;">higher than BEV truck</td>
+<td style="text-align: left;">~15–25% lower lifecycle cost by 2030</td>
+<td style="text-align: left;">hydrogen (+ refuelling)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Catenary (eHighway) truck</td>
+<td style="text-align: left;">truck premium + road catenary</td>
+<td style="text-align: left;">~30–35% lower cost on equipped corridors</td>
+<td style="text-align: left;">grid electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric rail</td>
+<td style="text-align: left;">electrification capex (corridor)</td>
+<td style="text-align: left;">low energy cost; rail already efficient</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen / biofuel marine</td>
+<td style="text-align: left;">engine/fuel-system + fuel</td>
+<td style="text-align: left;">fuel-cost dependent</td>
+<td style="text-align: left;">hydrogen / biofuel</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="zero-emission-trucks-and-their-infrastructure" class="level3" data-number="27.4.1">
+<h3 data-number="27.4.1" class="anchored" data-anchor-id="zero-emission-trucks-and-their-infrastructure"><span class="header-section-number">27.4.1</span> Zero-emission trucks and their infrastructure</h3>
+<p>Heavy trucks are the centre of gravity for freight emissions, and the model competes the three contenders — battery-electric, hydrogen fuel-cell, and catenary — against diesel and biodiesel. Which wins depends on duty cycle and on the intangible costs of range, refuelling time, and infrastructure availability: studies that include these costs find battery-electric dominating lighter and regional duty while hydrogen emerges for heavy long-haul <span class="citation" data-cites="icct-zet">(<a href="index.html#ref-icct-zet" role="doc-biblioref">International Council on Clean Transportation 2023</a>)</span>. Crucially, all three depend on infrastructure — depot and rapid charging, overhead catenary, and hydrogen refuelling — which the model carries as explicit services, so the cost of building out that infrastructure is part of the competition.</p>
+</section>
+<section id="modal-shift-and-the-hard-to-electrify-modes" class="level3" data-number="27.4.2">
+<h3 data-number="27.4.2" class="anchored" data-anchor-id="modal-shift-and-the-hard-to-electrify-modes"><span class="header-section-number">27.4.2</span> Modal shift and the hard-to-electrify modes</h3>
+<p>Because rail is over five times as efficient per tonne-km as road, shifting freight from truck to rail and intermodal is a powerful lever, and the model allows freight demand to move between modes. Rail itself decarbonises through electrification, hydrogen, and biofuels. Marine and aviation are the hardest: marine switches to hydrogen, ammonia, and biofuels, and aviation to sustainable aviation fuels and e-fuels (the model currently competes efficient, electric, and hydrogen aircraft; SAF/e-fuels remain to be added, consistent with the passenger-aviation TODO).</p>
+<p><mark>TODO: Add sustainable aviation fuel (SAF) and e-fuels to the freight Air competition, and consider ammonia as a marine fuel option, since these are the principal decarbonisation routes for the modes that cannot electrify.</mark></p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, energy intensities, availability years, and intangible-cost parameters actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="27.5">
+<h2 data-number="27.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">27.5</span> Economics</h2>
+<p>Technology and mode choice follow the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, combined — as throughout CIMS-T — with intangible costs that capture the non-financial barriers to alternative-fuel freight: vehicle range, refuelling time and availability, payload penalties, and operator familiarity. These are decisive for heavy trucks, where they tip the competition between battery-electric and hydrogen.</p>
+<p>Financial costs are discounted at behavioural rates — around 12.5% for some capital-intensive, long-lived assets (rail) and around 25–30% for road-vehicle decisions in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than pure financial costs of capital; together with the intangible costs they govern technology choice, as set out in the discount-rate and intangible-cost discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>.</p>
+<p>Emissions arise from fuel combustion in the trucks, trains, ships, and aircraft, entering through each technology’s fuel service requests and the carbon price; battery-electric and catenary options have zero tailpipe emissions and inherit the carbon intensity of the grid, while hydrogen inherits the intensity of the <a href="./sector_hydrogen.html">Hydrogen</a> production mix and biofuels their life-cycle intensity from the <a href="./sector_biodiesel.html">Biodiesel</a> sub-model. The emissions benefit of each option therefore depends on the upstream energy system, and the infrastructure services mean the model accounts for the capital needed to enable the switch, not just the vehicles.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="27.6">
+<h2 data-number="27.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">27.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions carry the freight structure. Regional differences show up in mode mix — long inland corridors (the Prairies, Ontario–Québec) favour rail and long-haul trucking, coastal and Great Lakes regions add marine — in grid carbon intensity (which sets the benefit of electric and catenary trucks and electric rail), and in the hydrogen supply available regionally (Alberta’s blue hydrogen, hydro-based electrolytic hydrogen elsewhere). Infrastructure build-out — charging, catenary corridors, hydrogen refuelling — is inherently regional and enters through the infrastructure services and their intangible costs.</p>
+<p><mark>TODO: Calibrate the regional freight mode-share baselines (road/rail/marine/air) and the corridor-level feasibility of catenary and hydrogen refuelling, since both modal shift and the heavy-truck powertrain competition depend on them.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="27.7">
+<h2 data-number="27.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">27.7</span> Limitations and planned extensions</h2>
+<p>The freight sub-model captures the essential structure — freight demand, mode competition, a full set of zero-emission truck powertrains, and explicit refuelling/charging infrastructure — which makes it well suited to analysing the heavy-duty transition. Its main limitations are the absence of sustainable aviation fuels, e-fuels, and marine ammonia; reliance on intangible-cost parameters still being recalibrated; the exogenous treatment of some freight-technology shares (noted in the CIMS-T overview); and stock-turnover dynamics that make the transition gradual. The TODOs above record the priorities.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled freight energy use and mode shares against Transport Canada and Natural Resources Canada data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-icct-zet" class="csl-entry" role="listitem">
+International Council on Clean Transportation. 2023. <em>Zero-Emission Tractor-Trailers in Canada</em>. ICCT. <a href="https://theicct.org/publication/zero-emission-tractor-trailers-in-canada/">https://theicct.org/publication/zero-emission-tractor-trailers-in-canada/</a>.
+</div>
+<div id="ref-pembina-mhd" class="csl-entry" role="listitem">
+Pembina Institute. 2023. <em>Canada’s Pathway to Net-Zero for Medium- and Heavy-Duty Trucks and Buses</em>. Pembina Institute. <a href="https://www.pembina.org/pub/ZeroX2040-pathway-net-zero-mhd-trucks-buses">https://www.pembina.org/pub/ZeroX2040-pathway-net-zero-mhd-trucks-buses</a>.
+</div>
+<div id="ref-srk-haultruck" class="csl-entry" role="listitem">
+SRK Consulting. 2024. <em>Decarbonizing Mining: Diesel Vs Electric Haul Trucks on Cost and Efficiency</em>. SRK Consulting. <a href="https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency">https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1666,8 +1927,8 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./sector_transportation_passenger.html" class="pagination-link" aria-label="Transportation">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span>
+      <a href="./sector_transportation_passenger.html" class="pagination-link" aria-label="Transportation (Passenger)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
@@ -1677,8 +1938,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

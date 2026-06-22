@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -691,24 +713,22 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#energy-use-in-the-residential-sector" id="toc-energy-use-in-the-residential-sector" class="nav-link active" data-scroll-target="#energy-use-in-the-residential-sector"><span class="header-section-number">24.1</span> Energy Use in the Residential Sector</a>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">24.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">24.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">24.3</span> Model structure</a>
   <ul class="collapse">
-  <li><a href="#space-heating" id="toc-space-heating" class="nav-link" data-scroll-target="#space-heating">Space Heating</a></li>
-  <li><a href="#non-appliance-hot-water-use" id="toc-non-appliance-hot-water-use" class="nav-link" data-scroll-target="#non-appliance-hot-water-use">Non-Appliance Hot Water Use</a></li>
-  <li><a href="#lighting-and-major-appliances" id="toc-lighting-and-major-appliances" class="nav-link" data-scroll-target="#lighting-and-major-appliances">Lighting and Major Appliances</a></li>
-  <li><a href="#minor-appliances" id="toc-minor-appliances" class="nav-link" data-scroll-target="#minor-appliances">Minor Appliances</a></li>
-  <li><a href="#renewable-energy-sources-and-other-distributed-energy" id="toc-renewable-energy-sources-and-other-distributed-energy" class="nav-link" data-scroll-target="#renewable-energy-sources-and-other-distributed-energy">Renewable Energy Sources and Other Distributed Energy</a></li>
-  <li><a href="#water-heating" id="toc-water-heating" class="nav-link" data-scroll-target="#water-heating">Water Heating</a></li>
+  <li><a href="#products-the-dwelling-stock" id="toc-products-the-dwelling-stock" class="nav-link" data-scroll-target="#products-the-dwelling-stock"><span class="header-section-number">24.3.1</span> Products: the dwelling stock</a></li>
+  <li><a href="#services-water-heating-lighting-and-appliances" id="toc-services-water-heating-lighting-and-appliances" class="nav-link" data-scroll-target="#services-water-heating-lighting-and-appliances"><span class="header-section-number">24.3.2</span> Services: water heating, lighting, and appliances</a></li>
   </ul></li>
-  <li><a href="#energy-flow-model-residential-sector" id="toc-energy-flow-model-residential-sector" class="nav-link" data-scroll-target="#energy-flow-model-residential-sector"><span class="header-section-number">24.2</span> Energy Flow Model, Residential Sector</a>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">24.4</span> Decarbonisation technologies</a>
   <ul class="collapse">
-  <li><a href="#energy-end-uses-non-space-heating" id="toc-energy-end-uses-non-space-heating" class="nav-link" data-scroll-target="#energy-end-uses-non-space-heating">Energy End-Uses (Non-Space Heating)</a></li>
-  <li><a href="#space-heating-1" id="toc-space-heating-1" class="nav-link" data-scroll-target="#space-heating-1">Space Heating</a></li>
+  <li><a href="#heat-pumps-and-the-cold-climate-question" id="toc-heat-pumps-and-the-cold-climate-question" class="nav-link" data-scroll-target="#heat-pumps-and-the-cold-climate-question"><span class="header-section-number">24.4.1</span> Heat pumps and the cold-climate question</a></li>
+  <li><a href="#envelope-appliances-and-behaviour" id="toc-envelope-appliances-and-behaviour" class="nav-link" data-scroll-target="#envelope-appliances-and-behaviour"><span class="header-section-number">24.4.2</span> Envelope, appliances, and behaviour</a></li>
   </ul></li>
-  <li><a href="#apartments" id="toc-apartments" class="nav-link" data-scroll-target="#apartments"><span class="header-section-number">24.3</span> Apartments</a></li>
-  <li><a href="#single-family-dwellings" id="toc-single-family-dwellings" class="nav-link" data-scroll-target="#single-family-dwellings"><span class="header-section-number">24.4</span> Single Family Dwellings</a></li>
-  <li><a href="#attached-housing-row" id="toc-attached-housing-row" class="nav-link" data-scroll-target="#attached-housing-row"><span class="header-section-number">24.5</span> Attached Housing (Row)</a></li>
-  <li><a href="#climate-zones" id="toc-climate-zones" class="nav-link" data-scroll-target="#climate-zones"><span class="header-section-number">24.6</span> Climate Zones</a></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">24.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">24.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">24.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -718,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_residential.html"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Residential</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Residential</span></h1>
+<h1 class="title"><span id="sec-residential" class="quarto-section-identifier"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Residential</span></span></h1>
 </div>
 
 
@@ -735,82 +755,229 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The CIMS residential sector sub-model attempts to capture all energy demand by residential buildings within Canada. This includes single family dwellings, duplexes, row housing, walk-ups and large apartments. Large apartment buildings are often considered commercial buildings by utilities, but, since their energy consumption patterns better fit within the residential sector, they have been included as part of this sub-model.</p>
-<p>The number of households drives the residential sector models and is calculated exogenously, based on future population growth estimates. This variable directly determines the demands for all services, except for water heating and furnace fan demand. The technologies for services that require hot water and furnace fans establish those demands.</p>
-<section id="energy-use-in-the-residential-sector" class="level2" data-number="24.1">
-<h2 data-number="24.1" class="anchored" data-anchor-id="energy-use-in-the-residential-sector"><span class="header-section-number">24.1</span> Energy Use in the Residential Sector</h2>
-<p>In 2002, the residential sector accounted for approximately 17% of all energy consumed in Canada. This energy provides services such as space heating, water heating, lighting, cooking, refrigeration and clothes drying. Space heating accounts for about 60% of residential energy consumption, water heating approximately 21% with the remainder going to lighting, appliances and other uses. The exact nature (i.e., quantity, fuel type etc.) of this consumption depends on many variables such as availability, climate, building type and occupancy patterns.</p>
-<p>The following describes energy end-use services common to residence types incorporated into the model, the variables that affect the amount of energy consumed in providing the services, the relationship between the end-use and the driving variable at the primary node (number of households) and any other interrelationships that permit a more accurate simulation of the end-uses.</p>
-<section id="space-heating" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="space-heating">Space Heating</h3>
-<p>A variety of factors uniquely determine the energy consumption required to heat a household. These factors include the physical building envelope, the type of heating system, maintenance of both the envelope and heating system, climate and exterior landscape features, and thermostat settings. Modelling this service requires many assumptions and generalizations. Due to the multitude of housing types, the sector must be condensed into groups consisting of thousands of households which are represented in the model by one typical house archetype. All heating systems cannot be included, due to the large number of possibilities; thus the models contain only the most common systems and those considered likely to gain significant market shares in the future. Case studies and surveys provided estimates for geographical and behavioural assumptions.</p>
-<p>Each space heating technology in the residential CIMS sub-model combines a shell archetype and a heating system. Each archetype, which is a set of physical measurements for components such as floor space, window area, insulation levels, and rate of air exchange, represents a group of households. Modellers use archetype descriptions to calculate the heatload and cost of the typical building as well as the cost and energy savings of retrofitting. For each shell archetype, CIMS includes a choice of four or five different heating systems. These systems include oil furnaces, natural gas furnaces (typically three efficiency levels), high efficiency space heat/hot water systems, wood stoves, electricbaseboard heating, and electric air source heat pumps.</p>
+<p>The residential buildings sector is represented in CIMS as a demand-side sub-model, like the commercial sector: it consumes energy to deliver household <strong>energy services</strong> — space and water heating, cooling, lighting, appliances, and cooking — across the full range of dwellings. The emphasis is on the structure of the energy-service flow model: the dwelling types and vintages that drive demand, the end-use services, and the technologies that compete to supply them. The tree is region-agnostic but climate-sensitive, so the housing stock is resolved by building type, construction vintage, and climate zone. The sector has <strong>no process emissions</strong>; all of its CO₂ comes from the fuels burned for space and water heating, so — as in commercial buildings — decarbonisation is fundamentally a story of electrification and efficiency.</p>
+<section id="scope" class="level2" data-number="24.1">
+<h2 data-number="24.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">24.1</span> Scope</h2>
+<p>CIMS represents the energy use of all residential dwellings — single-family detached houses, attached/row housing, low-rise walk-ups, and large apartment buildings (the last included here, rather than in commercial, because their consumption patterns fit the residential model). The driving variable is the number of households, projected exogenously from population growth; it sets the demand for every service except water heating and furnace-fan demand, which are determined by the heating and hot-water technologies themselves.</p>
+<p>The residential sector accounts for roughly 17% of all energy consumed in Canada. Space heating is about 60% of that, water heating about 21%, and the remainder is lighting, appliances, and other uses <span class="citation" data-cites="nrcan-ceud">(<a href="index.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>. The combustion of the delivered fuels is accounted here; the upstream supply of those fuels and of electricity is in the energy-supply sub-models.</p>
 </section>
-<section id="non-appliance-hot-water-use" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="non-appliance-hot-water-use">Non-Appliance Hot Water Use</h3>
-<p>This service meets the hot water required for baths, showers, hand washing, and cleaning. The competing technologies, shower heads and faucets with varying flow (litres/minute) levels, consume hot water rather than energy. The water demand determined by this node contributes to the hot water demand that drives the hot water heating service.</p>
+<section id="real-world-context" class="level2" data-number="24.2">
+<h2 data-number="24.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">24.2</span> Real-world context</h2>
+<p>Household energy is dominated by space and water heating, and that is where the direct emissions sit, because lighting and most appliances are already electric. Heating demand depends on the dwelling — its size, envelope, vintage, and climate — and on the heating system, which in Canada ranges from oil and natural-gas furnaces through electric baseboards and wood stoves to heat pumps.</p>
+<p>The decarbonisation path mirrors the commercial sector: because household heat is low-temperature, the stock is highly electrifiable. Air- and ground-source heat pumps can deliver space and water heat at a coefficient of performance well above one, cold-climate and hybrid (heat-pump-with-fuel-backup) systems extend that into Canadian winters, and building-envelope improvements (tracked through construction-vintage cohorts and shell upgrades) cut the heat load at source. Efficient appliances, lighting (LED), and water fixtures reduce the rest. The CIMS structure captures all of this and, like the commercial model, links the building shell to the heating demand it creates.</p>
 </section>
-<section id="lighting-and-major-appliances" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="lighting-and-major-appliances">Lighting and Major Appliances</h3>
-<p>Each of the following appliances is modelled as a separate service:</p>
+<section id="model-structure" class="level2" data-number="24.3">
+<h2 data-number="24.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">24.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the dwelling stock, resolved by building type, vintage, and climate — and a <strong>Service</strong> sub-tree of the household end-uses. <a href="#fig-residential-flow-model" class="quarto-xref">Figure&nbsp;<span>24.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>).</p>
+<div id="fig-residential-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-residential-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/residential_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;24.1: Energy-service flow model of the residential sector (region-agnostic master tree). The Product sub-tree is the dwelling stock — split by building type (High Density / Low-Med Density), construction vintage (building-code era), and climate zone (Cold / Marine), with cooling — and the Service sub-tree holds the household end-uses: water heating, lighting, and the major and minor appliances."><img src="images/residential_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-residential-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;24.1: Energy-service flow model of the residential sector (region-agnostic master tree). The Product sub-tree is the dwelling stock — split by building type (High Density / Low-Med Density), construction vintage (building-code era), and climate zone (Cold / Marine), with cooling — and the Service sub-tree holds the household end-uses: water heating, lighting, and the major and minor appliances.
+</figcaption>
+</figure>
+</div>
+<section id="products-the-dwelling-stock" class="level3" data-number="24.3.1">
+<h3 data-number="24.3.1" class="anchored" data-anchor-id="products-the-dwelling-stock"><span class="header-section-number">24.3.1</span> Products: the dwelling stock</h3>
+<p>The <strong>Building Type</strong> node resolves the housing stock along three dimensions:</p>
 <ul>
-<li>Refrigerators</li>
-<li>Freezers</li>
-<li>Dryers</li>
-<li>Ranges</li>
-<li>Dish Washers</li>
-<li>Clothes Washers</li>
-<li>Air Conditioners</li>
-<li>Lighting</li>
+<li>Building type — High Density (apartments) and Low-Med Density (single-family detached, attached/row, low-rise), reflecting their very different heat loads per dwelling.</li>
+<li>Vintage — construction-code cohorts (&lt;1960, 1961–1980, 1981–2000, 2001–2020, 2021–2035, &gt;2035), so that the model carries the thermal performance of each era of the stock and can represent both new construction to current codes and retrofits of older stock.</li>
+<li>Climate zone — each vintage carries Heating (Cold) and Heating (Marine) competitions, since heating demand and heat-pump performance differ sharply between Canada’s cold interior and milder coastal regions.</li>
+<li><strong>Cooling</strong> — Central and Room air-conditioning, where applicable.</li>
 </ul>
-<p>The stock is measured in number of appliance units (i.e., number of refrigerators) and the ratio between the service and the driving variable (number of households) is the market penetration of the appliance. Generally, there is a range of efficiency levels for new stock in each major appliance service.</p>
-<p>Clothes washers demand both electricity and hot water. Dish washers are disaggregated into two categories: machine, which demand electricity and hot water, and non-machine, which only consume hot water. Due to varying demand for air conditioning not all the residential sub-models incorporate them as a separate end-use and they are often combined with the minor appliances.</p>
+<p>Within each dwelling/vintage/climate combination, the Heating node competes the systems: electric standard and baseboard, natural-gas and oil furnaces (existing, standard, and high-efficiency), wood, air-source heat pumps (with electric or gas backup), ground-source heat pumps, and gas-ASHP hybrids. The vintage-and-shell structure is how the model represents the interaction between envelope quality and heating demand: a better shell (newer vintage or a retrofit) lowers the load the heating system must meet.</p>
 </section>
-<section id="minor-appliances" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="minor-appliances">Minor Appliances</h3>
-<p>This service contains many diverse technologies including televisions, car block heaters, lawn mowers, and computers. Although, these appliances collectively consume a significant portion of household energy, individually either their consumption or their market penetration is low. As a group, this end-use is growing considerably. Efficiency improvements are outweighed by increase in number of goods.</p>
-</section>
-<section id="renewable-energy-sources-and-other-distributed-energy" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="renewable-energy-sources-and-other-distributed-energy">Renewable Energy Sources and Other Distributed Energy</h3>
-<p>A number of renewable technologies (in addition to wood stoves) can be applied at the household level to provide both passive and active energy. These include photovoltaic panels, geothermal, solar hot water heating and passive solar design. Options are also increasingly becoming available to generate electricity using combined heat and power generations at the household level, for instance through fuel cells and through micro-CHP (for instance the stirling engine). Some of these options are modelled at the end-use in which they meet thermal demand, rather than as a unique ‘supply’ node in the flow model.</p>
-</section>
-<section id="water-heating" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="water-heating">Water Heating</h3>
-<p>The water heating demand depends on the technologies used to supply services of non-appliance hot water, dish washing, and clothes washing. For most purposes, hot water must be at 60oC and, unheated water generally enters the household at 15oC. Both storage tank and non-storage tank water heaters are modelled. Fuel cell and stirling engines are modelled at this end-use to meet water heat loads (while generating electricity for household use).</p>
+<section id="services-water-heating-lighting-and-appliances" class="level3" data-number="24.3.2">
+<h3 data-number="24.3.2" class="anchored" data-anchor-id="services-water-heating-lighting-and-appliances"><span class="header-section-number">24.3.2</span> Services: water heating, lighting, and appliances</h3>
+<ul>
+<li><strong>Water Heating</strong> — storage and tankless units on electricity, gas, and oil; heat-pump water heaters (Electric- and NG-ASHP); and solar pre-heat with electric or gas backup. Water-heating demand is itself driven by the hot-water-using services (showers/faucets, dishwashing, clothes washing).</li>
+<li><strong>Lighting</strong> — efficiency levels from base stock to LED.</li>
+<li>Major appliances — refrigerators, freezers, dryers (air-dry or machine), ranges, dishwashers (machine and non-machine), clothes washers, and air conditioners, each modelled by unit and market penetration with a range of efficiency levels.</li>
+<li>Minor appliances — a diverse, growing category (electronics, block heaters, etc.) whose efficiency gains are often outweighed by rising ownership.</li>
+</ul>
+<p><mark>TODO: The current regional input files have moved to a vintage-and-climate structure that is close to, but not identical with, the master tree’s Product/Service split, and some appliance services remain aggregated. Complete the migration to the region-agnostic master tree and the shared General Services chapters.</mark></p>
 </section>
 </section>
-<section id="energy-flow-model-residential-sector" class="level2" data-number="24.2">
-<h2 data-number="24.2" class="anchored" data-anchor-id="energy-flow-model-residential-sector"><span class="header-section-number">24.2</span> Energy Flow Model, Residential Sector</h2>
-<p>Although each province in Canada has a number of unique characteristics in terms of climate, the availability of fuel and the structure of the residential sector, all households require the same basic set of energy services. The following section describes the basic structure and the end-uses common to all regional residential models. Major differences between regional models are described later in this section.</p>
-<p>Figure 5 presents CIMS’s residential sector flow sub-model. The number of residences required in any year drives the model. The flow model demonstrates the linkages between the driving variable and the energy end-uses in the residential sector. The number of residences is determined exogenously, based on future growth estimates of population and economic activity. The end-uses are linked to the driving variable through engineering ratios based on historic relationships between a residence and each end-use.</p>
-<section id="energy-end-uses-non-space-heating" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="energy-end-uses-non-space-heating">Energy End-Uses (Non-Space Heating)</h3>
-<p>Due to similarities in service demand and technology choices, the lighting and major appliance services modelled in the residential sector have been aggregated for all housing types. Air conditioning, a large energy consumer in some regions (e.g., Ontario), consists of room or window units and central units. Disaggregating apartment and non-apartment water heating captures the level of use and technology differences between these two categories.</p>
+<section id="decarbonisation-technologies" class="level2" data-number="24.4">
+<h2 data-number="24.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">24.4</span> Decarbonisation technologies</h2>
+<p>Residential decarbonisation is electrification plus efficiency: replace fossil furnaces with heat pumps, electrify water heating, tighten the envelope, and improve appliances and lighting. <a href="#tbl-residential-decarb" class="quarto-xref">Table&nbsp;<span>24.1</span></a> summarises maturity and <a href="#tbl-residential-cost" class="quarto-xref">Table&nbsp;<span>24.2</span></a> gives indicative costs.</p>
+<div id="tbl-residential-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-residential-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;24.1: Indicative performance and maturity of key residential decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-residential-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Air-source heat pump (space heat)</td>
+<td style="text-align: left;">COP 2–3.5; displaces furnace fuel</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cold-climate / hybrid heat pump</td>
+<td style="text-align: left;">Heat pump in winter, fuel backup on peak</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ground-source heat pump</td>
+<td style="text-align: left;">Higher COP; higher capital</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heat-pump water heater</td>
+<td style="text-align: left;">Efficient electric hot water</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solar water heating</td>
+<td style="text-align: left;">Pre-heats hot water</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Envelope retrofit / new-code shell</td>
+<td style="text-align: left;">Lowers heat load at source</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Efficient appliances + LED lighting</td>
+<td style="text-align: left;">Lower electricity use</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Low-flow hot-water fixtures</td>
+<td style="text-align: left;">Lowers hot-water (and heating) demand</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-residential-cost" class="quarto-xref">Table&nbsp;<span>24.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="arpagaus aceee-ihp nrcan-ceud">(<a href="index.html#ref-arpagaus" role="doc-biblioref">Arpagaus et al. 2018</a>; <a href="index.html#ref-aceee-ihp" role="doc-biblioref">American Council for an Energy-Efficient Economy 2024</a>; <a href="index.html#ref-nrcan-ceud" role="doc-biblioref">Natural Resources Canada 2024</a>)</span>, in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-residential-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-residential-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;24.2: Indicative techno-economic characteristics of residential decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-residential-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Capex (2025 CAD)</th>
+<th style="text-align: left;">Operating characteristics</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Air-source heat pump (home)</td>
+<td style="text-align: left;">~6,000–18,000 / home</td>
+<td style="text-align: left;">COP 2–3.5; fuel backup on cold days</td>
+<td style="text-align: left;">electricity (+ backup)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cold-climate heat pump</td>
+<td style="text-align: left;">~10,000–22,000 / home</td>
+<td style="text-align: left;">maintains output to low temperatures</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ground-source heat pump</td>
+<td style="text-align: left;">~25,000–55,000 / home</td>
+<td style="text-align: left;">COP 3.5–5; ground loop cost</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Heat-pump water heater</td>
+<td style="text-align: left;">~3,000–6,000 / unit</td>
+<td style="text-align: left;">COP 2.5–3.5</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Envelope retrofit</td>
+<td style="text-align: left;">~10,000–40,000 / home</td>
+<td style="text-align: left;">reduces heat &amp; cooling load</td>
+<td style="text-align: left;">— (passive)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Efficient appliances / LED</td>
+<td style="text-align: left;">low incremental</td>
+<td style="text-align: left;">lower electricity use</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="heat-pumps-and-the-cold-climate-question" class="level3" data-number="24.4.1">
+<h3 data-number="24.4.1" class="anchored" data-anchor-id="heat-pumps-and-the-cold-climate-question"><span class="header-section-number">24.4.1</span> Heat pumps and the cold-climate question</h3>
+<p>As in commercial buildings, the central lever is the heat pump. The model competes air-source and ground-source heat pumps and, importantly for Canada, hybrid systems pairing a heat pump with an electric or gas backup for the coldest hours — which is why heating is split into Cold and Marine competitions. Cold-climate heat pumps that maintain output at low temperatures are the key enabling technology for electrifying heat across most of the country. Heat-pump water heaters and solar water heating electrify domestic hot water. These draw on the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter’s broader heat-pump treatment.</p>
 </section>
-<section id="space-heating-1" class="level3 unnumbered">
-<h3 class="unnumbered anchored" data-anchor-id="space-heating-1">Space Heating</h3>
-<p>In contrast to the other energy services in the residential sector, the amount of space heating demanded by a residential unit can vary considerably depending on the building type. As a result, the space heating service node of the model is divided into three basic housing types: apartment, attached (row), and single family detached dwellings. The apartment category includes both high and low rise apartments while the attached category consists of duplexes, triplexes, and townhouses. As described above each of these housing types have been divided up into different archetypes to describe the differences in building heatloads and the fuels and efficiencies of the heating systems.</p>
+<section id="envelope-appliances-and-behaviour" class="level3" data-number="24.4.2">
+<h3 data-number="24.4.2" class="anchored" data-anchor-id="envelope-appliances-and-behaviour"><span class="header-section-number">24.4.2</span> Envelope, appliances, and behaviour</h3>
+<p>The vintage-and-shell structure makes envelope improvement a first-class lever: new dwellings built to tighter codes (the later vintage cohorts) and retrofits of older stock both reduce the heat load before any system runs. Efficient appliances, LED lighting, and low-flow hot-water fixtures cut the non-heating loads — the last also reducing water-heating demand.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and ensure cold-climate heat-pump performance curves are reflected in the Cold-zone heating competition.</mark></p>
 </section>
 </section>
-<section id="apartments" class="level2" data-number="24.3">
-<h2 data-number="24.3" class="anchored" data-anchor-id="apartments"><span class="header-section-number">24.3</span> Apartments</h2>
-<p>In the apartment node, two basic technology archetypes are available, standard and ‘improved shell’. The standard archetype generally represents the existing or a baseline shell design that demands a relatively high heat load while the improved apartment shell design represents better insulation, windows, etc., demanding a lower heat load. Each of these archetypes is divided into several different heating system types based on the type of fuel and efficiency of the heating system, e.g., oil heating, several efficiency levels of natural gas heat (62%, 78%, 90%) and electric heat. During each model run new apartments can be purchased either from the options available from existing stock or from a selection of new buildings with an improved shell design and better heating systems. There are no retrofit options currently available for existing apartment stock.</p>
+<section id="economics" class="level2" data-number="24.5">
+<h2 data-number="24.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">24.5</span> Economics</h2>
+<p>Technology choice at every node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, with extensive use of retrofit competitions: older-vintage dwellings can retrofit to better-insulated archetypes, and existing heating and water-heating stock can be upgraded, so the model represents improvements to the existing stock and not only new-build choices.</p>
+<p>Residential technologies are discounted at high rates — around 25–30% in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than financial costs of capital: households consistently behave as though they discount future energy savings far more steeply than a financial calculation would, and the behavioural rate encodes that wedge — risk aversion, up-front-cost sensitivity, information, and transaction costs. CIMS applies it throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> vary across the end-uses.</p>
+<p>The emissions accounting carries <strong>no process emissions</strong>: all CO₂ comes from fuel combustion in space and water heating (and gas cooking), entering through each technology’s fuel service requests and the carbon price. Electrification (heat pumps), fuel-switching, and efficiency are the only channels for reduction, and their emissions benefit depends on the carbon intensity of the regional grid — large where the grid is clean (Québec, BC, Manitoba), smaller where it is fossil-heavy (Alberta, Saskatchewan). Because the high behavioural discount rates make households reluctant to pay up-front for efficient equipment, the model reproduces the well-documented gap between cost-effective and actually-adopted efficiency — which is itself a target of policy.</p>
 </section>
-<section id="single-family-dwellings" class="level2" data-number="24.4">
-<h2 data-number="24.4" class="anchored" data-anchor-id="single-family-dwellings"><span class="header-section-number">24.4</span> Single Family Dwellings</h2>
-<p>The greatest level of technological variety in the residential sector exists in the types of systems for heating single family dwellings (SFDs). These technologies also show the greatest differences between the regions. In the basic CIMS residential sub model, SFDs are divided up into two categories, existing and new housing.</p>
-<p>Two archetypes are used to model all existing houses. Archetype A houses have very little insulation and, therefore, higher heatloads than Archetype B houses. Where wood consumption is present, wood stoves meet part of heat load demand. CIMS allows houses in either of these archetypes to retrofit to improve insulation levels. The six possible heating systems for the current housing stock are oil furnace, electric baseboard heating, air-source heatpump, standard natural gas furnace (78% efficient), high-efficiency natural gas furnace (78% efficient), and high efficiency space heat/hot water systems.</p>
-<p>In each region, three types of houses compete for new stock: standard, improved and R-2000 archetypes. R-2000 houses meet the current heating budget specified by R-2000 standards for the region. The improved archetype is based on the ratio between standard and improved archetypes. Houses can be upgraded to better insulated categories through retrofits. Heating systems are the same as those modelled for existing homes. In some regions wood stoves may be chosen to heat standard and improved archetypes.</p>
+<section id="regional-coverage-and-differences" class="level2" data-number="24.6">
+<h2 data-number="24.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">24.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions carry the residential structure, and regional differences are pronounced because climate, fuel availability, and grid carbon intensity all vary:</p>
+<ul>
+<li>The Cold / Marine climate split distinguishes most of Canada (Cold) from milder coastal British Columbia and parts of the Atlantic (Marine); coastal and interior British Columbia are modelled as distinct climates for single-family homes.</li>
+<li>Fuel mix varies: natural gas dominates heating in the West and Ontario, electricity in Québec and parts of the Atlantic, and oil and wood remain significant in the Atlantic region and rural areas.</li>
+<li>Air conditioning is a large load in hot-summer regions such as Ontario and much smaller elsewhere.</li>
+</ul>
+<p><mark>TODO: Confirm the regional dwelling-type, vintage, and fuel-mix shares against current housing-stock and Comprehensive Energy Use Database data, since heating demand and heat-pump economics depend heavily on all three.</mark></p>
 </section>
-<section id="attached-housing-row" class="level2" data-number="24.5">
-<h2 data-number="24.5" class="anchored" data-anchor-id="attached-housing-row"><span class="header-section-number">24.5</span> Attached Housing (Row)</h2>
-<p>The attached housing category is modelled in the same manner as single family dwellings.</p>
-<p>Figure 5. Energy Flow Model for the Residential Sector</p>
+<section id="limitations-and-planned-extensions" class="level2" data-number="24.7">
+<h2 data-number="24.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">24.7</span> Limitations and planned extensions</h2>
+<p>The residential sub-model is a detailed, vintage- and climate-resolved buildings representation with explicit retrofit competitions and a full set of heat-pump and efficiency options. Its limitations are the usual ones for a stock model: reliance on archetype generalisations, inherited calibration of dwelling and appliance intensities, and incomplete representation of behavioural and rebound effects (e.g.&nbsp;minor-appliance growth outpacing efficiency). The TODOs above record the priorities, of which cold-climate heat-pump performance and refreshed stock data matter most for current analysis.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled residential energy use by end-use and dwelling type against Natural Resources Canada’s Comprehensive Energy Use Database.</mark></p>
+<div style="page-break-after: always;"></div>
 </section>
-<section id="climate-zones" class="level2" data-number="24.6">
-<h2 data-number="24.6" class="anchored" data-anchor-id="climate-zones"><span class="header-section-number">24.6</span> Climate Zones</h2>
-<p>The British Columbia residential sub-model has some differences compared to the other provinces in Canada. It is the only model to make use of the primary/secondary climate distinction available for single family detached homes - coastal SFD (Lower Mainland and Vancouver Island) and interior SFD are represented. The same has not been done for apartment and attached housing since over 80% of these buildings are in the coastal area and this trend is assumed to continue over the modelling period.</p>
-<p>The coastal SFD (Primary Climate) housing portion of the model is as described above. The interior region (Secondary Climate), with only half as many houses as the coastal region, uses only a single archetype to represent existing stock. The archetype heatload is the average of all current housing stock heatloads. These houses, like the others, can be retrofitted to improve insulation levels. Since wood provides primary heat for approximately 20% of interior houses, CIMS includes wood stove heating systems for these archetypes. The other heating systems in the interior are identical to the coastal systems described above.</p>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-aceee-ihp" class="csl-entry" role="listitem">
+American Council for an Energy-Efficient Economy. 2024. <em>Industrial Heat Pumps</em>. ACEEE. <a href="https://www.aceee.org/industrial-heat-pumps">https://www.aceee.org/industrial-heat-pumps</a>.
+</div>
+<div id="ref-arpagaus" class="csl-entry" role="listitem">
+Arpagaus, Cordin, Frederic Bless, Michael Uhlmann, Jurg Schiffmann, and Stefan S. Bertsch. 2018. <span>“High Temperature Heat Pumps: <span>Market</span> Overview, State of the Art, Research Status, Refrigerants, and Application Potentials.”</span> <em>Energy</em> 152: 985–1010. <a href="https://doi.org/10.1016/j.energy.2018.03.166">https://doi.org/10.1016/j.energy.2018.03.166</a>.
+</div>
+<div id="ref-nrcan-ceud" class="csl-entry" role="listitem">
+Natural Resources Canada. 2024. <em>Comprehensive Energy Use Database</em>. Office of Energy Efficiency. <a href="https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm">https://oee.nrcan.gc.ca/corporate/statistics/neud/dpa/menus/trends/comprehensive_tables/list.cfm</a>.
+</div>
+</div>
 
 
 </section>
@@ -1775,8 +1942,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

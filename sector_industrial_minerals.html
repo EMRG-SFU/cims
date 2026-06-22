@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,31 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">17.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">17.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">17.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-cement" id="toc-products-cement" class="nav-link" data-scroll-target="#products-cement"><span class="header-section-number">17.3.1</span> Products: cement</a></li>
+  <li><a href="#products-lime-glass-and-bricks" id="toc-products-lime-glass-and-bricks" class="nav-link" data-scroll-target="#products-lime-glass-and-bricks"><span class="header-section-number">17.3.2</span> Products: lime, glass, and bricks</a></li>
+  <li><a href="#services-including-process-heat-and-ccs" id="toc-services-including-process-heat-and-ccs" class="nav-link" data-scroll-target="#services-including-process-heat-and-ccs"><span class="header-section-number">17.3.3</span> Services, including process heat and CCS</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">17.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#reducing-and-substituting-clinker" id="toc-reducing-and-substituting-clinker" class="nav-link" data-scroll-target="#reducing-and-substituting-clinker"><span class="header-section-number">17.4.1</span> Reducing and substituting clinker</a></li>
+  <li><a href="#alternative-fuels-efficiency-and-waste-heat-recovery" id="toc-alternative-fuels-efficiency-and-waste-heat-recovery" class="nav-link" data-scroll-target="#alternative-fuels-efficiency-and-waste-heat-recovery"><span class="header-section-number">17.4.2</span> Alternative fuels, efficiency, and waste-heat recovery</a></li>
+  <li><a href="#carbon-capture-electrification-and-mineralisation" id="toc-carbon-capture-electrification-and-mineralisation" class="nav-link" data-scroll-target="#carbon-capture-electrification-and-mineralisation"><span class="header-section-number">17.4.3</span> Carbon capture, electrification, and mineralisation</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">17.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">17.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">17.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +740,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_industrial_minerals.html"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Industrial Minerals</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Industrial Minerals</span></h1>
+<h1 class="title"><span id="sec-industrial-minerals" class="quarto-section-identifier"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Industrial Minerals</span></span></h1>
 </div>
 
 
@@ -712,10 +757,284 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The industrial minerals sub-model of CIMS generally includes all industry involved in the production of all non-metallic mineral products. It encompasses the cement, lime, glass and brick industries, with cement and lime as the major energy consumers. These key products both require significant quantities of thermal energy per unit production during the calcining process. Other energy-demanding processes involved in cement or lime production typically include raw materials preparation (this excludes extraction of the raw materials from their in situ locations, even though these may be within the plant gate), and finishing or finished materials preparation. Calcining remains the most energy intensive part of the processes, consuming large quantities of combustible fuel (85% or more of the total energy consumed). Initial and final preparation of the materials requires electricity to drive motors that are attached to various auxiliary and grinding devices.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>The industrial minerals sector — the non-metallic mineral products industry — is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model: the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them, rather than the chemistry or economics of individual plants. The model tree is region-agnostic: a single master structure is instantiated for every province, and regional differences are expressed through which branches carry production and through the data attached to each node. The sector is defined by high-temperature thermal processing — calcining, clinkering, and glass melting — and, like chemicals, a large share of its emissions are process emissions released by the chemistry of calcination rather than by burning fuel. That single fact shapes both the sub-model and its decarbonisation options.</p>
+<section id="scope" class="level2" data-number="17.1">
+<h2 data-number="17.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">17.1</span> Scope</h2>
+<p>CIMS represents the four energy-intensive branches of the non-metallic mineral products industry: cement, lime, glass, and bricks. Cement and lime dominate the sector’s energy and emissions because both depend on calcining carbonate rock at high temperature. The driving variable is the physical output of product in tonnes; a forecast of demand — closely tied to construction activity — drives every upstream process and energy service and is set exogenously, as for the other industrial branches.</p>
+<p>Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:</p>
+<ul>
+<li>Quarrying and extraction of the raw minerals (limestone, silica, clay, aggregates) are part of the <a href="./sector_mining.html">Mining</a> sector and the upstream supply; the industrial-minerals sub-model begins with raw-material preparation inside the plant gate.</li>
+<li>Concrete batching and downstream fabrication (ready-mix concrete, precast products, finished glazing) are downstream manufacturing and are not part of this sub-model, which ends with cement, lime, glass, and brick as saleable products.</li>
+<li>Fuel and electricity supply enter through the energy-supply sub-models and the shared fuel nodes.</li>
+</ul>
+</section>
+<section id="real-world-context" class="level2" data-number="17.2">
+<h2 data-number="17.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">17.2</span> Real-world context</h2>
+<p>The industrial minerals sector is small in tonnage relative to its emissions, because calcination releases CO₂ as an unavoidable part of the chemistry. Canadian cement manufacturing alone emitted about 11.2 Mt CO₂ in 2019, roughly 1.5% of national emissions, and calcination accounts for some 60–65% of the CO₂ from clinker production — released when limestone (CaCO₃) is broken down into lime (CaO) and CO₂ — with the rest coming from the fuel burned to reach clinkering temperature <span class="citation" data-cites="cac-netzero iea-cement">(<a href="index.html#ref-cac-netzero" role="doc-biblioref">Cement Association of Canada and Innovation, Science and Economic Development Canada 2022</a>; <a href="index.html#ref-iea-cement" role="doc-biblioref">International Energy Agency 2024</a>)</span>. Lime production is chemically the same calcination step without the clinkering, and carries an even higher process-CO₂ intensity per tonne of product. Glass is melted rather than calcined, so its emissions are dominated by furnace fuel and by the carbonate batch materials, and brick is fired clay.</p>
+<p>Production is concentrated in the populous provinces and tracks construction demand, so unlike most heavy industry it is growing in the model. Ontario is the largest producer, followed by Québec and a fast-growing Alberta, with British Columbia and the Atlantic region smaller. Because so much of the sector’s CO₂ is intrinsic to the chemistry, deep decarbonisation depends on options that most other sectors do not need — carbon capture on the kiln, substitution of clinker with other materials, alternative raw meals that avoid carbonate, and CO₂ mineralisation (carbon curing) — alongside the fuel-switching and efficiency levers common to all industry. The CIMS structure reflects this: it carries explicit process-emission factors on the clinker and lime nodes, a shared <strong>CCS</strong> service, and a family of clinker-substitution, alternative-fuel, electrified-kiln, and carbon-curing options.</p>
+</section>
+<section id="model-structure" class="level2" data-number="17.3">
+<h2 data-number="17.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">17.3</span> Model structure</h2>
+<p>Following the standard CIMS pattern, the sector divides into a <strong>Product</strong> sub-tree, holding the cement, lime, glass, and brick production chains, and a <strong>Service</strong> sub-tree, holding the auxiliary energy and utility services including a sector-level <strong>Heat</strong> service and the shared <strong>CCS</strong> service. <a href="#fig-ind-minerals-flow-model" class="quarto-xref">Figure&nbsp;<span>17.1</span></a> shows the overall structure.</p>
+<p>As described in the <a href="./sector_overview.html">Sector Overview</a>, each node carries a competition rule. <strong>Fixed-ratio</strong> nodes impose the unavoidable engineering sequence of process steps, while <strong>tech-compete</strong> nodes host competitions among alternative technologies on the basis of lifecycle cost (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). In the industrial-minerals tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which kiln, which furnace, which fuel, which clinker route — occur at the tech-compete leaves.</p>
+<div id="fig-ind-minerals-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ind-minerals-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/ind_minerals_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;17.1: Energy-service flow model of the industrial minerals sector (region-agnostic master tree). The Product sub-tree holds cement, lime, glass, and brick chains; the Service sub-tree holds a sector-level Heat service, the MECS-aligned Machine Drive, and the shared CCS service that the calcination routes draw on."><img src="images/ind_minerals_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ind-minerals-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;17.1: Energy-service flow model of the industrial minerals sector (region-agnostic master tree). The Product sub-tree holds cement, lime, glass, and brick chains; the Service sub-tree holds a sector-level Heat service, the MECS-aligned Machine Drive, and the shared CCS service that the calcination routes draw on.
+</figcaption>
+</figure>
+</div>
+<section id="products-cement" class="level3" data-number="17.3.1">
+<h3 data-number="17.3.1" class="anchored" data-anchor-id="products-cement"><span class="header-section-number">17.3.1</span> Products: cement</h3>
+<p>Cement is the most important chain. At the top, a Cement competition selects the overall production strategy — conventional Std process, Increased clinker substitution (replacing clinker with supplementary cementitious materials), and Carbon curing (curing concrete by mineralising CO₂, which the model treats as a net-negative emission). Beneath this, Portland cement resolves into:</p>
+<ul>
+<li><strong>Clinker</strong> — the energy-and-emissions core, produced in a Dry process rotary kiln or a Fluidized bed. The rotary-kiln node competes a wide range of routes: conventional and efficiency-retrofitted kilns, new preheater and precalciner designs, waste-heat-recovery cogeneration, a new preheat Eff with CCS route, an electrochemical synthesis (electrified clinker) route, and a Std process with calcium minerals route that uses a non-carbonate raw meal to avoid process CO₂ altogether. The fluidized-bed node competes a range of fuels — natural gas, coal, petcoke, distillate oil, and waste-derived and hazardous-waste fuels.</li>
+<li><strong>Finish Grinding</strong> — ball mills and roller mills with high-efficiency separators that grind clinker into cement.</li>
+<li><strong>Dry Ground Cement</strong> — raw-meal preparation.</li>
+</ul>
+<p>The clinker routes carry an explicit process-CO₂ factor (about 0.44 t per unit in the data) reflecting calcination; the calcium-mineral and carbon-curing options are the model’s way of breaking that link.</p>
+</section>
+<section id="products-lime-glass-and-bricks" class="level3" data-number="17.3.2">
+<h3 data-number="17.3.2" class="anchored" data-anchor-id="products-lime-glass-and-bricks"><span class="header-section-number">17.3.2</span> Products: lime, glass, and bricks</h3>
+<ul>
+<li><strong>Lime</strong> is produced in Kilns (and a Dolomitic branch) competing rotary and vertical-shaft kilns on a range of fuels (NG, coal, petcoke, residual oil), with preheater and internals variants for efficiency, CCS-equipped rotary kilns (NG and coal), and an electrochemical synthesis route. Lime carries the sector’s highest process-CO₂ factor (about 0.75 t per unit).</li>
+<li><strong>Glass</strong> divides into Container, Flat, Fibreglass, and Blown/Pressed glass, each a chain of Preparation, Furnaces, and Form and Finish (flat glass adds Temper; blown/pressed adds Fire Polish). The furnace competitions are where the energy and emissions are decided, and they include regenerative and oxy-boosted melters, fluidized-bed cullet/batch preheaters, advanced glass melters, and all-electric melters (including fluidized-bed electric melters).</li>
+<li><strong>Bricks</strong> are fired in Hoffman or tunnel kilns on natural gas, coal, or residual oil.</li>
+</ul>
+</section>
+<section id="services-including-process-heat-and-ccs" class="level3" data-number="17.3.3">
+<h3 data-number="17.3.3" class="anchored" data-anchor-id="services-including-process-heat-and-ccs"><span class="header-section-number">17.3.3</span> Services, including process heat and CCS</h3>
+<p>The services follow the standard pattern and are documented in their own chapters in the General Services part; their structure is set out in the <a href="./sector_overview.html">Sector Overview</a>. Two are worth noting here:</p>
+<ul>
+<li><strong>Heat</strong> — a sector-level process-heat service whose technology set is unusually broad, competing natural-gas (standard and efficient), oil, coal, coke, biomass, waste-fuel, hydrogen, and CCS-equipped (NG and coal) heat supply. This is a key fuel-switching lever for the non-calcination heat demand.</li>
+<li><strong>CCS</strong> — the shared carbon-capture service that the CCS-equipped clinker, lime, and heat routes request; its broader treatment is in the <a href="./ccus.html">Carbon Capture, Utilization, and Storage</a> chapter.</li>
+</ul>
+<p>The remaining services — <strong>Machine Drive</strong> (see <a href="./machine_drive.html">Industrial Machine Drive Systems</a>), <strong>Methane Blend</strong>, <strong>HVAC</strong>, and <strong>Lighting</strong> — are the cross-cutting utilities common to all sectors.</p>
+<p><mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. They also name the product branch <code>Products</code> rather than the master tree’s <code>Product</code>. Migrate these files to the region-agnostic master tree and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="17.4">
+<h2 data-number="17.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">17.4</span> Decarbonisation technologies</h2>
+<p>Because most of the sector’s CO₂ comes from calcining carbonate rock, its decarbonisation problem is unusual: efficiency and fuel-switching can only reach the combustion share, so deep cuts require capturing or avoiding the process CO₂ as well. Roughly the first 30–40% of cement emissions can be abated with clinker substitution, alternative fuels, and efficiency, while the remaining 60–70% — the calcination CO₂ — needs CCUS or alternative production chemistry <span class="citation" data-cites="doe-liftoff-cement cac-netzero">(<a href="index.html#ref-doe-liftoff-cement" role="doc-biblioref">U.S. Department of Energy 2023</a>; <a href="index.html#ref-cac-netzero" role="doc-biblioref">Cement Association of Canada and Innovation, Science and Economic Development Canada 2022</a>)</span>. The model represents the full ladder. <a href="#tbl-ind-minerals-decarb" class="quarto-xref">Table&nbsp;<span>17.1</span></a> summarises maturity and <a href="#tbl-ind-minerals-cost" class="quarto-xref">Table&nbsp;<span>17.2</span></a> gives indicative costs.</p>
+<div id="tbl-ind-minerals-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ind-minerals-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;17.1: Indicative performance and maturity of key industrial minerals decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-ind-minerals-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Clinker substitution / SCMs (incl.&nbsp;LC3)</td>
+<td style="text-align: left;">~20–40% less clinker CO₂ per tonne cement</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alternative &amp; waste-derived fuels</td>
+<td style="text-align: left;">Displaces fossil kiln fuel; up to ~30% combustion CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Preheater / precalciner &amp; efficiency retrofits</td>
+<td style="text-align: left;">Lower kiln fuel use</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Waste-heat-recovery cogeneration</td>
+<td style="text-align: left;">On-site power from kiln waste heat</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Calcium-mineral (non-carbonate) raw meal</td>
+<td style="text-align: left;">Eliminates the calcination process CO₂</td>
+<td style="text-align: left;">Pilot / demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Carbon curing / CO₂ mineralisation</td>
+<td style="text-align: left;">Stores CO₂ in concrete (net-negative in model)</td>
+<td style="text-align: left;">Early commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cement / lime kiln + CCS (CCUS)</td>
+<td style="text-align: left;">Captures ~60% of total; most of process CO₂</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrochemical / electrified clinker &amp; lime</td>
+<td style="text-align: left;">Removes combustion CO₂; enables pure-CO₂ capture</td>
+<td style="text-align: left;">Pilot</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric &amp; oxy-fuel glass melters</td>
+<td style="text-align: left;">Electrifies / concentrates glass-furnace CO₂</td>
+<td style="text-align: left;">Commercial (electric, small scale)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cullet / batch preheating (glass)</td>
+<td style="text-align: left;">Lower furnace energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass / hydrogen process heat</td>
+<td style="text-align: left;">Low-carbon non-calcination heat</td>
+<td style="text-align: left;">See Low-Temp Heat</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The cost estimates in <a href="#tbl-ind-minerals-cost" class="quarto-xref">Table&nbsp;<span>17.2</span></a> are order-of-magnitude figures from public techno-economic literature <span class="citation" data-cites="doe-liftoff-cement iea-cement cac-netzero">(<a href="index.html#ref-doe-liftoff-cement" role="doc-biblioref">U.S. Department of Energy 2023</a>; <a href="index.html#ref-iea-cement" role="doc-biblioref">International Energy Agency 2024</a>; <a href="index.html#ref-cac-netzero" role="doc-biblioref">Cement Association of Canada and Innovation, Science and Economic Development Canada 2022</a>)</span>, expressed in 2025 Canadian dollars (US- and euro-denominated sources converted at roughly 1.37 CAD/USD and 1.48 CAD/EUR and adjusted to 2025). Capture and avoidance costs are given per tonne of CO₂; incremental capital is relative to a conventional plant. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-ind-minerals-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-ind-minerals-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;17.2: Indicative techno-economic characteristics of industrial minerals decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-ind-minerals-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Decarbonisation technology</th>
+<th style="text-align: left;">Incremental capex</th>
+<th style="text-align: left;">Operating cost / cost of CO₂</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Clinker substitution / SCMs (LC3)</td>
+<td style="text-align: left;">low (grinding, blending)</td>
+<td style="text-align: left;">often cost-<em>neutral</em> or saving</td>
+<td style="text-align: left;">calcined clay / limestone / pozzolan</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Alternative &amp; waste-derived fuels</td>
+<td style="text-align: left;">low–moderate (feed handling)</td>
+<td style="text-align: left;">often a fuel-cost <em>saving</em></td>
+<td style="text-align: left;">waste, biomass, RDF</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Preheater / precalciner efficiency</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: left;">fuel saving</td>
+<td style="text-align: left;">—</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Carbon curing / mineralisation</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: left;">~CAD 40–110 / t CO₂ stored</td>
+<td style="text-align: left;">CO₂ + concrete</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cement kiln + CCS</td>
+<td style="text-align: left;">+30–50% plant equipment</td>
+<td style="text-align: left;">~CAD 100–200 / t CO₂ avoided</td>
+<td style="text-align: left;">steam / electricity for capture</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrified / electrochemical kiln</td>
+<td style="text-align: left;">high (new process)</td>
+<td style="text-align: left;">~CAD 130 / t CO₂ avoided (≈87 €/t clinker added)</td>
+<td style="text-align: left;">low-carbon electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lime kiln + CCS</td>
+<td style="text-align: left;">+30–50% plant equipment</td>
+<td style="text-align: left;">~CAD 110–200 / t CO₂ avoided</td>
+<td style="text-align: left;">steam / electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric glass melter</td>
+<td style="text-align: left;">lower capex than regenerative; higher energy cost</td>
+<td style="text-align: left;">electricity-priced melt</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Oxy-fuel glass melter</td>
+<td style="text-align: left;">moderate (oxygen plant)</td>
+<td style="text-align: left;">fuel saving; CO₂ concentration</td>
+<td style="text-align: left;">oxygen + gas</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="reducing-and-substituting-clinker" class="level3" data-number="17.4.1">
+<h3 data-number="17.4.1" class="anchored" data-anchor-id="reducing-and-substituting-clinker"><span class="header-section-number">17.4.1</span> Reducing and substituting clinker</h3>
+<p>The cheapest cement reductions come from making less clinker per tonne of cement. Supplementary cementitious materials (SCMs) — slag, fly ash, calcined clay, limestone, and natural pozzolans — replace a share of clinker; limestone calcined clay cement (LC3) can cut cement CO₂ by around 40% and is commercial <span class="citation" data-cites="doe-liftoff-cement">(<a href="index.html#ref-doe-liftoff-cement" role="doc-biblioref">U.S. Department of Energy 2023</a>)</span>. The model represents this as the Increased clinker substitution route at the Cement node. A complementary lever is the Std process with calcium minerals clinker route, which uses a non-carbonate raw meal so that calcination releases no CO₂ at all.</p>
+</section>
+<section id="alternative-fuels-efficiency-and-waste-heat-recovery" class="level3" data-number="17.4.2">
+<h3 data-number="17.4.2" class="anchored" data-anchor-id="alternative-fuels-efficiency-and-waste-heat-recovery"><span class="header-section-number">17.4.2</span> Alternative fuels, efficiency, and waste-heat recovery</h3>
+<p>The combustion share of kiln emissions is addressed by alternative and waste-derived fuels (biomass, refuse-derived and hazardous-waste fuels in the fluidized-bed routes and the Heat service), by preheater/precalciner designs and efficiency retrofits that cut fuel use, and by waste-heat-recovery cogeneration that turns kiln exhaust heat into on-site power. These are mature and often cost-saving, but they cannot touch the calcination CO₂.</p>
+</section>
+<section id="carbon-capture-electrification-and-mineralisation" class="level3" data-number="17.4.3">
+<h3 data-number="17.4.3" class="anchored" data-anchor-id="carbon-capture-electrification-and-mineralisation"><span class="header-section-number">17.4.3</span> Carbon capture, electrification, and mineralisation</h3>
+<p>Deep cuts require attacking the process CO₂. The model offers three routes: CCS on the kiln (cement and lime), which captures most of the CO₂ but adds 30–50% more plant equipment and a capture energy penalty; electrochemical/electrified clinker and lime, which both remove the combustion CO₂ and produce a purer CO₂ stream that is cheaper to capture; and carbon curing, which mineralises CO₂ into concrete and is the one route the model scores as net-negative. On the glass side, electric and oxy-fuel melters and cullet preheating electrify or concentrate furnace emissions. Low-carbon process heat — biomass, hydrogen, and CCS-equipped boilers in the Heat service — addresses the non-calcination thermal demand, drawing on the <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a> chapter.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+<p><mark>TODO: The model represents clinker substitution as a single aggregate route. Consider distinguishing the main SCM pathways (slag, fly ash, calcined clay/LC3, limestone) since their availability and CO₂ benefit differ markedly and fly-ash/slag supply is constrained as other heavy industries decarbonise.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="17.5">
+<h2 data-number="17.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">17.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Industrial minerals technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary and capital-intensive nodes at 40–50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> at the process nodes are mostly set around 10 so that competitions respond to cost differences without collapsing to winner-take-all.</p>
+<p>The sector’s emissions accounting is distinctive. Combustion emissions follow from each technology’s fuel service requests and the carbon price, as in the other sectors. In addition, the clinker and lime technologies carry explicit process-emission factors (about 0.44 and 0.75 t CO₂ per unit) representing calcination, applied independently of fuel use; the carbon-curing route carries a net-negative emission factor; and the <strong>CCS</strong> service applies an emissions-removal factor to the technologies that request it. Switching among conventional, substituted, alternative-fuel, captured, and electrified production is therefore the model’s main channel for emissions reduction, driven by the interaction of fuel and material costs with a carbon price that applies to both the combustion and the process CO₂.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="17.6">
+<h2 data-number="17.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">17.6</span> Regional coverage and differences</h2>
+<p>Because the tree is region-agnostic, each modelled province is built from the same master structure and carries no production on branches that do not apply. Five regions are represented — Alberta, the Atlantic region, British Columbia, Ontario, and Québec — and differences show up in scale and growth rather than in the shape of the tree:</p>
+<ul>
+<li>Ontario is the largest producer and grows over the projection.</li>
+<li>Québec and a fast-growing Alberta follow, reflecting construction-driven demand.</li>
+<li>British Columbia and the Atlantic region are smaller.</li>
+</ul>
+<p>Unlike most heavy industry, modelled output rises in every region, because cement, lime, and glass demand tracks population and construction rather than declining commodity markets.</p>
+<p><mark>TODO: Only five provinces are represented (Saskatchewan and the territories are absent). Confirm whether cement, lime, or glass capacity elsewhere should be added, and build it out on the region-agnostic tree.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="17.7">
+<h2 data-number="17.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">17.7</span> Limitations and planned extensions</h2>
+<p>The industrial minerals sub-model is detailed on the product side but carries the same structural debts as the other older sector files. The TODOs above record the main gaps: the migration of the auxiliary services to the MECS-aligned Machine Drive and the Product/Service split; the disaggregation of clinker substitution into specific SCM pathways; and broader provincial coverage. The sector’s growth trajectory and its large process-emission share make it one of the most important to keep current, since it is one of the few industrial branches whose absolute emissions are projected to rise without intervention.</p>
+<p><mark>TODO: Replace the illustrative real-world figures and the example discount-rate values in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled cement, lime, and glass energy use and process emissions against CIEEDAC, Environment and Climate Change Canada (NIR), and the Cement Association of Canada’s net-zero roadmap.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-cac-netzero" class="csl-entry" role="listitem">
+Cement Association of Canada, and Innovation, Science and Economic Development Canada. 2022. <em>Roadmap to Net-Zero Carbon Concrete by 2050</em>. Government of Canada, Clean Growth Hub. <a href="https://ised-isde.canada.ca/site/clean-growth-hub/en/cement-and-concrete-canada/roadmap-net-zero-carbon-concrete-2050">https://ised-isde.canada.ca/site/clean-growth-hub/en/cement-and-concrete-canada/roadmap-net-zero-carbon-concrete-2050</a>.
+</div>
+<div id="ref-iea-cement" class="csl-entry" role="listitem">
+International Energy Agency. 2024. <em>Cement</em>. IEA Energy System: Industry. <a href="https://www.iea.org/energy-system/industry/cement">https://www.iea.org/energy-system/industry/cement</a>.
+</div>
+<div id="ref-doe-liftoff-cement" class="csl-entry" role="listitem">
+U.S. Department of Energy. 2023. <em>Pathways to Commercial Liftoff: Low-Carbon Cement</em>. U.S. Department of Energy. <a href="https://liftoff.energy.gov/industrial-decarbonization/low-carbon-cement/">https://liftoff.energy.gov/industrial-decarbonization/low-carbon-cement/</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1996,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

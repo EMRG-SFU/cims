@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 620" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .svc{fill:#e4efe6;stroke:#aacbb0;stroke-width:1;}
+    .hl{fill:#cfe3d6;stroke:#3f7d52;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="430" y="12" width="220" height="46" rx="7"/>
+  <text class="lblw" x="540" y="34" text-anchor="middle">Commercial &amp; Institutional</text>
+  <text class="subw" x="540" y="49" text-anchor="middle">driver: floor space (m²)</text>
+  <path class="edge" d="M540,58 V72"/>
+  <path class="edge" d="M300,72 H780"/>
+  <path class="edge" d="M300,72 V84" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,72 V84" marker-end="url(#arrow)"/>
+
+  <!-- product / service -->
+  <rect class="branch" x="200" y="86" width="200" height="40" rx="6"/>
+  <text class="lblw" x="300" y="103" text-anchor="middle">Product — Building Shell</text>
+  <text class="subw" x="300" y="118" text-anchor="middle">by segment &amp; climate zone</text>
+  <rect class="branch" x="712" y="86" width="156" height="40" rx="6"/>
+  <text class="lblw" x="790" y="103" text-anchor="middle">Service — end uses</text>
+
+  <!-- shell detail -->
+  <path class="edge" d="M300,126 V140 H140 V160" marker-end="url(#arrow)"/>
+  <rect class="det" x="40" y="160" width="300" height="190" rx="6"/>
+  <text class="ttl" x="50" y="178">Building segments (× Cold / Marine zone)</text>
+  <text class="li" x="50" y="196">Offices · Retail · Wholesale</text>
+  <text class="li" x="50" y="212">Transportation &amp; Warehousing</text>
+  <text class="li" x="50" y="228">Educational · Healthcare &amp; Social</text>
+  <text class="li" x="50" y="244">Accommodation &amp; Food services</text>
+  <text class="li" x="50" y="260">Arts/Entertainment · Information/Cultural</text>
+  <text class="li" x="50" y="276">Other Services</text>
+  <text class="sub" x="50" y="300">Each segment competes shell options of</text>
+  <text class="sub" x="50" y="314">differing thermal performance →</text>
+  <text class="sub" x="50" y="328">sets the heat load passed to HVAC</text>
+
+  <!-- shell -> HVAC interaction arrow -->
+  <path class="edge" d="M340,250 C480,250 520,250 700,250" marker-end="url(#arrow)"/>
+  <text class="sub" x="520" y="242" text-anchor="middle">shell heat load → HVAC demand (interactive effect)</text>
+
+  <!-- services -->
+  <path class="edge" d="M790,126 V140 H660 V470"/>
+  <path class="edge" d="M660,180 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,250 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,300 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,340 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,388 H700" marker-end="url(#arrow)"/>
+  <path class="edge" d="M660,430 H700" marker-end="url(#arrow)"/>
+
+  <rect class="hl" x="700" y="156" width="340" height="62" rx="6"/>
+  <text class="lbl" x="870" y="174" text-anchor="middle">HVAC (Cold / Marine)</text>
+  <text class="sub" x="870" y="190" text-anchor="middle">ASHP · GSHP · hybrid HP+gas · cogen ·</text>
+  <text class="sub" x="870" y="204" text-anchor="middle">electric/gas/oil/propane existing &amp; improved</text>
+
+  <rect class="svc" x="700" y="226" width="340" height="44" rx="6"/>
+  <text class="lbl" x="870" y="244" text-anchor="middle">Lighting (General / High Bay / Service)</text>
+  <text class="sub" x="870" y="259" text-anchor="middle">base → LED / advanced + controls</text>
+
+  <rect class="hl" x="700" y="278" width="340" height="44" rx="6"/>
+  <text class="lbl" x="870" y="296" text-anchor="middle">Hot Water</text>
+  <text class="sub" x="870" y="311" text-anchor="middle">heat-pump WH · solar · efficient electric/gas</text>
+
+  <rect class="svc" x="700" y="330" width="340" height="32" rx="6"/>
+  <text class="lbl" x="870" y="350" text-anchor="middle">Cooling · Refrigeration</text>
+
+  <rect class="svc" x="700" y="370" width="340" height="32" rx="6"/>
+  <text class="lbl" x="870" y="390" text-anchor="middle">Cooking · Plug Load</text>
+
+  <rect class="svc" x="700" y="410" width="340" height="32" rx="6"/>
+  <text class="lbl" x="870" y="430" text-anchor="middle">Machine Drive · Methane Blend</text>
+
+  <text class="sub" x="870" y="455" text-anchor="middle">No process emissions — all CO₂ from heating fuels.</text>
+
+  <!-- legend -->
+  <rect class="prod" x="40" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="570">building shell (product)</text>
+  <rect class="svc" x="240" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="262" y="570">end-use service</text>
+  <rect class="hl" x="400" y="560" width="16" height="12" rx="2"/>
+  <text class="sub" x="422" y="570">heat-pump-capable service</text>
+</svg>

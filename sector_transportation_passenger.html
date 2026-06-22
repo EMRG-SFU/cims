@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>26&nbsp; Transportation – CIMS</title>
+<title>26&nbsp; Transportation (Passenger) – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -252,7 +274,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_transportation_passenger.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_transportation_passenger.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -691,10 +713,23 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#service-flow-model" id="toc-service-flow-model" class="nav-link active" data-scroll-target="#service-flow-model"><span class="header-section-number">26.1</span> Service Flow Model</a></li>
-  <li><a href="#endogenous-actions" id="toc-endogenous-actions" class="nav-link" data-scroll-target="#endogenous-actions"><span class="header-section-number">26.2</span> Endogenous Actions</a></li>
-  <li><a href="#input-data" id="toc-input-data" class="nav-link" data-scroll-target="#input-data"><span class="header-section-number">26.3</span> Input Data</a></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references"><span class="header-section-number">26.4</span> References</a></li>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">26.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">26.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">26.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-mobility-demand-by-mode" id="toc-products-mobility-demand-by-mode" class="nav-link" data-scroll-target="#products-mobility-demand-by-mode"><span class="header-section-number">26.3.1</span> Products: mobility demand by mode</a></li>
+  <li><a href="#services-vehicles-and-transit" id="toc-services-vehicles-and-transit" class="nav-link" data-scroll-target="#services-vehicles-and-transit"><span class="header-section-number">26.3.2</span> Services: vehicles and transit</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">26.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#electrifying-the-light-duty-fleet" id="toc-electrifying-the-light-duty-fleet" class="nav-link" data-scroll-target="#electrifying-the-light-duty-fleet"><span class="header-section-number">26.4.1</span> Electrifying the light-duty fleet</a></li>
+  <li><a href="#mode-shift-and-transitrail-electrification" id="toc-mode-shift-and-transitrail-electrification" class="nav-link" data-scroll-target="#mode-shift-and-transitrail-electrification"><span class="header-section-number">26.4.2</span> Mode shift and transit/rail electrification</a></li>
+  <li><a href="#decarbonising-aviation" id="toc-decarbonising-aviation" class="nav-link" data-scroll-target="#decarbonising-aviation"><span class="header-section-number">26.4.3</span> Decarbonising aviation</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">26.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">26.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">26.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -702,9 +737,9 @@ ul.task-list li input[type="checkbox"] {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_transportation_passenger.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_transportation_passenger.html"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></h1>
+<h1 class="title"><span id="sec-transportation-passenger" class="quarto-section-identifier"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></h1>
 </div>
 
 
@@ -721,64 +756,227 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>This document describes the structure and data inputs of CIMS-Transportation (CIMS-T), the transportation module of CIMS. It assumes that the reader is already familiar with the CIMS simulation algorithm and parameters. Additional documentation is available from the Energy and Materials Research Group that describes the general function of CIMS.</p>
-<p><mark>TODO: add sections on SAF, e-fuels</mark></p>
-<section id="service-flow-model" class="level2" data-number="26.1">
-<h2 data-number="26.1" class="anchored" data-anchor-id="service-flow-model"><span class="header-section-number">26.1</span> Service Flow Model</h2>
-<p>Figure 1 presents a simplified version of the service flow model of CIMS-T. The three main energy service categories are personal mobility, freight transport and off-road vehicles. In urban areas, single occupant vehicles (SOV), high occupant vehicles (HOV), public transit, walking and cycling provide personal mobility. Personal vehicles, buses, planes and trains provide transportation between urban areas. Marine, air, road and rail modes provide freight transportation services.</p>
-<p>Figure 5 Service Flow Model of CIMS-Transportation</p>
-<p>The SOV, HOV and personal vehicle nodes attached to the urban and inter-city nodes in the service flow model represent a demand for passenger vehicle services. The passenger vehicle service node located to the bottom left of the diagram supplies this demand. Personal vehicles are designated as either cars or trucks in CIMS. Within these categories, vehicles of different efficiency levels and fuel types (gasoline, diesel, natural gas, propane, methanol, ethanol, battery electric, gasoline-electric hybrid, hydrogen fuel cell) compete to meet demand. Efficiency and fuel type are specified only for new passenger vehicles. The nodes representing old and recent passenger vehicles are used simply to keep track of vintages of vehicles already present in the base year (2000). These vehicles are no longer available to supply new demand for passenger vehicle services. During the simulation, a retirement function removes these vehicles from the existing stock.</p>
+<p>Passenger transportation is the personal-mobility module of CIMS-Transportation (CIMS-T), a demand-side sub-model: it meets a demand for personal mobility (people moved, in passenger-kilometres) by competing transport modes and, within the dominant road mode, competing vehicle powertrains. The emphasis is on the structure of the service flow model: the mobility-demand nodes, the modes and vehicles that supply them, and the costs — financial and intangible — that drive the competition. The tree is region-agnostic. Passenger transport is distinctive in two ways: it is among Canada’s largest emitting sectors, and its technology choices are unusually shaped by consumer preferences (range, refuelling convenience, vehicle size, and power), which CIMS represents through explicit intangible costs alongside financial cost.</p>
+<section id="scope" class="level2" data-number="26.1">
+<h2 data-number="26.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">26.1</span> Scope</h2>
+<p>CIMS represents passenger mobility — urban and inter-city travel of people — driven by passenger-kilometre demand. It covers personal vehicles (cars and light trucks), urban transit (public bus and rapid transit), inter-city bus and rail, and inter-city air. The driving demand is projected exogenously and can itself respond to cost (the model can shift demand for mobility).</p>
+<p>Adjacent activities are handled elsewhere: freight movement is in <a href="./sector_transportation_freight.html">Transportation (Freight)</a>; off-road vehicles are handled separately; the fuels (gasoline, diesel, electricity, hydrogen, biofuels) are supplied by the energy-supply sub-models, including <a href="./sector_ethanol.html">Ethanol</a>, <a href="./sector_biodiesel.html">Biodiesel</a>, <a href="./sector_hydrogen.html">Hydrogen</a>, and <a href="./sector_electricity.html">Electricity</a>; and vehicle manufacturing is in <a href="./sector_light_industrial.html">Light Industrial</a>. This chapter covers the use of vehicles to move people.</p>
 </section>
-<section id="endogenous-actions" class="level2" data-number="26.2">
-<h2 data-number="26.2" class="anchored" data-anchor-id="endogenous-actions"><span class="header-section-number">26.2</span> Endogenous Actions</h2>
-<p>CIMS-T has the capability to simulate the following actions endogenously:</p>
+<section id="real-world-context" class="level2" data-number="26.2">
+<h2 data-number="26.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">26.2</span> Real-world context</h2>
+<p>Transportation is responsible for roughly a quarter of Canada’s greenhouse-gas emissions, and light-duty passenger vehicles are the single largest part of it. The emissions come overwhelmingly from burning gasoline and diesel, with associated health costs estimated in the billions of dollars annually <span class="citation" data-cites="eccc-zev">(<a href="index.html#ref-eccc-zev" role="doc-biblioref">Environment and Climate Change Canada 2023</a>)</span>. Policy is now driving a rapid transition: Canada’s zero-emission-vehicle (ZEV) mandate requires 100% of new light-duty vehicle sales to be zero-emission by 2035, with interim targets of 20% by 2026 and 60% by 2030, where a ZEV is a battery-electric, plug-in-hybrid, or fuel-cell vehicle <span class="citation" data-cites="eccc-zev">(<a href="index.html#ref-eccc-zev" role="doc-biblioref">Environment and Climate Change Canada 2023</a>)</span>.</p>
+<p>Two forces shape the transition in the model. First, vehicle electrification: battery-electric vehicles now cost roughly CAD 50,000–70,000 (entry models from ~$40,000) but have 66–77% lower fuel-and-maintenance costs than gasoline vehicles, and the gap is closing <span class="citation" data-cites="nrcan-ev">(<a href="index.html#ref-nrcan-ev" role="doc-biblioref">Natural Resources Canada 2026</a>)</span>. Second, mode shift and transit electrification: moving trips from single-occupant vehicles to higher-occupancy vehicles, transit, and active modes cuts energy per passenger-km, and electrifying transit buses cuts their emissions by around 93% <span class="citation" data-cites="transit-elec">(<a href="index.html#ref-transit-elec" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>. But consumer choice is not driven by cost alone — range anxiety, refuelling availability, and preferences for larger, more powerful vehicles all matter, which is why CIMS-T carries intangible costs to reproduce observed behaviour. The structure captures all three levers: powertrain competition, mode competition, and the intangible-cost preferences that temper both.</p>
+</section>
+<section id="model-structure" class="level2" data-number="26.3">
+<h2 data-number="26.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">26.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the mobility demand by mode — and a <strong>Service</strong> sub-tree of the vehicles and transit systems that supply it. <a href="#fig-transport-passenger-flow-model" class="quarto-xref">Figure&nbsp;<span>26.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); mode and powertrain shares are determined by lifecycle cost plus intangible cost.</p>
+<div id="fig-transport-passenger-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-transport-passenger-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/transport_passenger_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;26.1: Service flow model of passenger transportation (region-agnostic master tree). The Product sub-tree is mobility demand by mode — Urban (single- and high-occupancy vehicles, public transit, walk/cycle), Intercity Land (vehicle, bus, rail), and Intercity Air — and the Service sub-tree supplies it through passenger vehicles (size classes and competing powertrains), transit (public bus, rapid transit), and intercity bus and rail."><img src="images/transport_passenger_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-transport-passenger-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;26.1: Service flow model of passenger transportation (region-agnostic master tree). The Product sub-tree is mobility demand by mode — Urban (single- and high-occupancy vehicles, public transit, walk/cycle), Intercity Land (vehicle, bus, rail), and Intercity Air — and the Service sub-tree supplies it through passenger vehicles (size classes and competing powertrains), transit (public bus, rapid transit), and intercity bus and rail.
+</figcaption>
+</figure>
+</div>
+<section id="products-mobility-demand-by-mode" class="level3" data-number="26.3.1">
+<h3 data-number="26.3.1" class="anchored" data-anchor-id="products-mobility-demand-by-mode"><span class="header-section-number">26.3.1</span> Products: mobility demand by mode</h3>
+<p>The <strong>Mode</strong> node splits personal mobility into:</p>
 <ul>
-<li>Changes in the efficiency of the gasoline personal vehicle fleet,</li>
-<li>Fuel switching within the personal vehicle market,</li>
-<li>Shifts between the personal vehicle and public transit modes,</li>
-<li>Shifts between SOV use and HOV use,</li>
-<li>Changes in the efficiency of the freight truck fleet, and</li>
-<li>Changes in demand for personal mobility.</li>
+<li><strong>Urban</strong> — single-occupant vehicle (SOV), high-occupant vehicle (HOV), public transit, and walk/cycle. The competition among these is the model’s representation of urban mode shift.</li>
+<li><strong>Intercity Land</strong> — passenger vehicle, bus, and rail.</li>
+<li><strong>Intercity Air</strong> — competing conventional, efficient, electric, and hydrogen aircraft.</li>
 </ul>
-<p>With the exception of efficiency choices between road freight vehicles, technology shares within the freight sector continue to be simulated exogenously. The same is true for the off-road sector. Choices between public transit technologies (bus versus subway) are also specified outside the model. Actions that involve changes in the operation and maintenance characteristics of existing technology stocks are incorporated exogenously as the CIMS models simulate technological change through stock turnover, not through changes in the use and operating characteristics of existing stocks.</p>
+<p>Demand can shift between modes (SOV↔︎HOV↔︎transit↔︎active; vehicle↔︎bus↔︎rail) as relative costs change, one of the endogenous actions CIMS-T simulates.</p>
 </section>
-<section id="input-data" class="level2" data-number="26.3">
-<h2 data-number="26.3" class="anchored" data-anchor-id="input-data"><span class="header-section-number">26.3</span> Input Data</h2>
-<p>The CIMS models are data-intensive: in order to carry out a simulation, input data are required to describe a series of characteristics for each technology. Technology characteristics and data sources for CIMS-T are listed in Table 1. The input data used to describe personal vehicles is described in more detail below, given the importance of this vehicle category to the transportation sector as a whole.</p>
-<p>Table 1: Technology Specific Input Data for CIMS-T</p>
-<p>Personal vehicles are defined by efficiency and type of fuel / technology. Technological characteristics of alternative fuelled vehicles were initially based on the output of the Transportation Issue Table. Vehicle cost differentials relative to conventional gasoline were taken from Levelton Engineering Ltd.’s work for the Issue Table (1999), with the exception of gasoline-electric hybrid and hydrogen fuel cell vehicles – for these vehicle types we used data from the NEMS model of the U.S. Department of Energy (1998). Energy consumption relative to conventional gasoline vehicles was also estimated based on the Levelton (1999) report. In 2004, a comprehensive literature review was undertaken to update the capital cost and energy consumption values for personal vehicles. Sources such as Azar, Lindgren and Andersson (2003); Ogden, Williams and Larson (2004); and Weiss et al.&nbsp;(2003 and 2000) were used to verify and adjust the existing data points.</p>
-<p>The values of the intangible cost parameters within CIMS-T reflect differences between various efficiency levels and fuel types of SOVs, as well as between SOVs and other modes of transportation. The estimates of intangible costs for more fuel efficient vehicles are based on market studies of the revealed willingness-to-pay of many consumers for higher horsepower vehicles, which are generally less efficient (U.S. Department of Energy, 1998; AMG, 1999).</p>
-<p>The estimates of intangible costs for alternative fuelled vehicles represent consumer preferences for longer range and wider fuel availability, as well as a general preference for conventional gasoline vehicles. The range and fuel availability parameters were derived by combining technology data of the U.S. Department of Energy (1998) with the results of a stated preference survey carried out by Bunch et al.&nbsp;(1993). The stated preference approach is necessary in dealing with alternative fuelled vehicles because these tend to be emerging technologies for which revealed preference data do not exist.</p>
-<p>The estimates of intangible costs for public transit and HOVs relative to gasoline-driven SOVs are based on the financial costs and market shares of alternative modes of urban travel in Canada, as well as comparisons to various European countries where the financial costs associated with personal vehicle travel are much higher.</p>
-<p>We are currently reviewing the intangible cost parameters used in CIMS-T based on data from a series of stated preference surveys carried out by the Energy and Materials Research Group and CIEEDAC.</p>
+<section id="services-vehicles-and-transit" class="level3" data-number="26.3.2">
+<h3 data-number="26.3.2" class="anchored" data-anchor-id="services-vehicles-and-transit"><span class="header-section-number">26.3.2</span> Services: vehicles and transit</h3>
+<ul>
+<li><strong>Passenger Vehicles</strong> — the size classes (small/large cars, small/large light trucks) — and <strong>Passenger Vehicle Motors</strong>, where the powertrains compete: gasoline (existing/standard/efficient), hybrid, plug-in hybrid, battery-electric (by range, e.g.&nbsp;500 and 800 km), and hydrogen fuel-cell. Powertrain and efficiency are specified for <em>new</em> vehicles; older vintages are tracked and retired by a stock-turnover function.</li>
+<li><strong>Transit</strong> — Public Bus (diesel, hybrid, electric) and Rapid Transit.</li>
+<li><strong>Intercity Bus</strong> — diesel, gasoline, hybrid, biodiesel-hybrid, natural-gas, hydrogen.</li>
+<li><strong>Intercity Rail</strong> — diesel (and efficient diesel), electric, hydrogen, biodiesel-hybrid.</li>
+</ul>
+<p><mark>TODO: Add sustainable aviation fuel (SAF) and e-fuels to the Intercity Air competition (carried over from the chapter’s original to-do). These are the principal decarbonisation routes for aviation, which is otherwise hard to electrify beyond short-haul, and they are currently absent.</mark></p>
 </section>
-<section id="references" class="level2" data-number="26.4">
-<h2 data-number="26.4" class="anchored" data-anchor-id="references"><span class="header-section-number">26.4</span> References</h2>
-<p>AMG (Analysis and Modelling Group), 1999, Canada’s emissions outlook: An update (AMG, National Climate Change Process, Ottawa).</p>
-<p>Azar, C., K. Lindgren and B.A. Andersson, 2003, Global energy scenarios meeting stringent CO2 constraints—cost-effective fuel choices in the transportation sector, Energy Policy 31, 961–976.</p>
-<p>Bunch, D.S., M. Bradley, T.F. Golob, R. Kitamura and G.P. Occhiuzzo, 1993, Demand for clean-fuel vehicles in California: A discrete-choice stated preference pilot project, Transportation Research 27A(3), 237-253.</p>
-<p>Dunphy, R.T. and K. Fisher, 1996, Transportation, congestion, and density: New insights, Transportation Research Record 1552, 89-96.</p>
-<p>EIA (Energy Information Administration), Sulfur dioxide, nitrogen oxide, and carbon dioxide emission factors. &lt;http://www.eia.doe.gov/cneaf/test/elec/epav2_tables/epav2ta3p1.html&gt;</p>
-<p>EIA, 1994, Alternatives to traditional transportation fuels: An overview (EIA, Office of Coal, Nuclear, Electric and Alternate Fuels, U.S. Department of Energy, Washington, D.C.).</p>
-<p>Hall, A.P., 1994, A model for forecasting transportation energy demand in Ontario, master’s thesis (Management Sciences, University of Waterloo, Waterloo).</p>
-<p>Horne, M., 2003, Incorporating preferences for personal urban transportation technologies into a hybrid energy-economy model, M.R.M. research project (School of Resource and Environmental Management, Simon Fraser University, Burnaby, BC).</p>
-<p>Levelton Engineering Ltd., 1999, Alternative and future fuels and energy sources for road vehicles, report prepared for the Vehicle Technology and Fuels Sub-Group of the Transportation Issue Table, National Climate Change Process (Levelton Engineering Ltd., Richmond, British Columbia).</p>
-<p>Natural Resources Canada, 2002, End-use energy data handbook: 1990-2000 (Office of Energy Efficiency, Ottawa).</p>
-<p>Natural Resources Canada, 1997, Canada’s energy outlook, 1996-2020 (Minister of Supply and Services Canada, Ottawa).</p>
-<p>Ogden, J.M., R.H. Williams and E.D. Larson, 2004, Societal lifecycle costs of cars with alternative fuels/engines, Energy Policy 32, 7-27.</p>
-<p>Sierra Research, Inc., 1999, Alternative and future technologies for reducing greenhouse gas emissions from road vehicles, report prepared for the Vehicle Technology and Fuels Sub-Group of the Transportation Table on Climate Change, under sub-contract to SENES Consultants Limited (Sierra Research, Inc., Sacramento, California).</p>
-<p>Statistics Canada, 2001, Quarterly report on energy supply-demand in Canada, 2000-IV, publication number 57-003 (Statistics Canada, Ottawa).</p>
-<p>Statistics Canada, 1998, Population, Canada, the provinces and territories. &lt;http://www.statcan.ca/english/Pgdb/People/Population/demo02.htm&gt;</p>
-<p>Statistics Canada, 1995a, Passenger bus and urban transit statistics, 1995, publication number 53-215 (Statistics Canada, Ottawa).</p>
-<p>Statistics Canada, 1995b, Quarterly report on energy supply-demand in Canada, 1995-IV, publication number 57-003 (Statistics Canada, Ottawa).</p>
-<p>Statistics Canada, 1995c, Rail in Canada, 1995, publication number 52-216E (Statistics Canada, Ottawa).</p>
-<p>Statistics Canada, 1995d, Trucking in Canada, 1995, publication number 53-222 (Statistics Canada, Ottawa).</p>
-<p>Transport Canada, 1999a, T-facts: Air / freight traffic / cargo carried. &lt;http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp&gt;</p>
-<p>Transport Canada, 1999b, T-Facts: Air / output / passengers and passenger-kilometres. &lt;http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp&gt;</p>
-<p>Transport Canada, 1999c, T-Facts: Marine / output / tonne-kilometres by sector. &lt;http://www.tc.gc.ca/pol/en/ExcelSpreadsheets2/main.asp&gt;</p>
-<p>U.S. Department of Energy, 1998, Transportation sector model of the national energy modeling system (EIA, Washington, D.C.).</p>
-<p>Weiss, M., J.B. Heywood, A. Schafer and V.K. Natarajan, 2003, Comparative assessment of fuel cell cars (MIT, Cambridge, MA).</p>
-<p>Weiss, M.A., J.B. Heywood, E.M. Drake, A. Schafer and F.F. Au Yeung, 2000, On the road in 2020: A lifecycle analysis of new automobile technologies (MIT, Cambridge, MA).</p>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="26.4">
+<h2 data-number="26.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">26.4</span> Decarbonisation technologies</h2>
+<p>Passenger-transport decarbonisation works through three channels: electrifying vehicles (and transit and rail), shifting modes toward higher-occupancy and active travel, and low-carbon fuels where electrification is hard (aviation, some intercity). <a href="#tbl-transport-passenger-decarb" class="quarto-xref">Table&nbsp;<span>26.1</span></a> summarises maturity and <a href="#tbl-transport-passenger-cost" class="quarto-xref">Table&nbsp;<span>26.2</span></a> gives indicative costs.</p>
+<div id="tbl-transport-passenger-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-transport-passenger-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;26.1: Indicative performance and maturity of key passenger-transport decarbonisation options
+</figcaption>
+<div aria-describedby="tbl-transport-passenger-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology / action</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric vehicle (BEV)</td>
+<td style="text-align: left;">Zero tailpipe; 66–77% lower running cost</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Plug-in hybrid (PHEV)</td>
+<td style="text-align: left;">Large tailpipe cut; gasoline backup</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hydrogen fuel-cell vehicle (FCEV)</td>
+<td style="text-align: left;">Zero tailpipe; fast refuel; sparse fuelling</td>
+<td style="text-align: left;">Early commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hybrid-electric vehicle</td>
+<td style="text-align: left;">~20–30% fuel cut, no plug</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric / hydrogen transit bus</td>
+<td style="text-align: left;">~90%+ emissions cut per bus</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric / hydrogen intercity rail</td>
+<td style="text-align: left;">Displaces diesel</td>
+<td style="text-align: left;">Commercial (electric)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Mode shift (SOV→HOV→transit→active)</td>
+<td style="text-align: left;">Lower energy per passenger-km</td>
+<td style="text-align: left;">Policy / behavioural</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">SAF / e-fuels / electric aircraft</td>
+<td style="text-align: left;">Aviation decarbonisation</td>
+<td style="text-align: left;">Emerging — <em>not yet in model</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-transport-passenger-cost" class="quarto-xref">Table&nbsp;<span>26.2</span></a> are order-of-magnitude figures from public Canadian sources <span class="citation" data-cites="eccc-zev nrcan-ev transit-elec">(<a href="index.html#ref-eccc-zev" role="doc-biblioref">Environment and Climate Change Canada 2023</a>; <a href="index.html#ref-nrcan-ev" role="doc-biblioref">Natural Resources Canada 2026</a>;<a href="index.html#ref-transit-elec" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>, in 2025 Canadian dollars. Vehicle costs are per vehicle; running-cost effects are relative to a comparable gasoline vehicle. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-transport-passenger-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-transport-passenger-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;26.2: Indicative techno-economic characteristics of passenger-transport decarbonisation options, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-transport-passenger-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Capex (2025 CAD)</th>
+<th style="text-align: left;">Running cost</th>
+<th style="text-align: left;">Energy / input</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Gasoline car (reference)</td>
+<td style="text-align: left;">~35,000–45,000</td>
+<td style="text-align: left;">baseline</td>
+<td style="text-align: left;">gasoline</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Battery-electric vehicle</td>
+<td style="text-align: left;">~45,000–70,000 (entry ~40,000)</td>
+<td style="text-align: left;">66–77% lower fuel + maintenance</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Plug-in hybrid</td>
+<td style="text-align: left;">~40,000–55,000</td>
+<td style="text-align: left;">lower; gasoline on long trips</td>
+<td style="text-align: left;">electricity + gasoline</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen fuel-cell vehicle</td>
+<td style="text-align: left;">~60,000–90,000 (early)</td>
+<td style="text-align: left;">hydrogen-cost dependent</td>
+<td style="text-align: left;">hydrogen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric transit bus</td>
+<td style="text-align: left;">~1.0–1.5 M / bus (+ depot charging)</td>
+<td style="text-align: left;">lower energy; ~93% emissions cut</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen fuel-cell bus</td>
+<td style="text-align: left;">higher than BEV bus</td>
+<td style="text-align: left;">hydrogen-cost dependent</td>
+<td style="text-align: left;">hydrogen</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="electrifying-the-light-duty-fleet" class="level3" data-number="26.4.1">
+<h3 data-number="26.4.1" class="anchored" data-anchor-id="electrifying-the-light-duty-fleet"><span class="header-section-number">26.4.1</span> Electrifying the light-duty fleet</h3>
+<p>The dominant lever is electrifying personal vehicles. The model competes battery-electric (at different ranges), plug-in hybrid, hybrid, and fuel-cell powertrains against gasoline, with the ZEV transition emerging from their falling capital costs and much lower running costs — tempered by the intangible costs that capture range anxiety, charging/refuelling availability, and the consumer preference for larger vehicles. Because powertrain is set for <em>new</em> vehicles and the fleet turns over through retirement, the modelled transition is gradual even under a sales mandate.</p>
+</section>
+<section id="mode-shift-and-transitrail-electrification" class="level3" data-number="26.4.2">
+<h3 data-number="26.4.2" class="anchored" data-anchor-id="mode-shift-and-transitrail-electrification"><span class="header-section-number">26.4.2</span> Mode shift and transit/rail electrification</h3>
+<p>Beyond the vehicle, shifting trips from single-occupant cars to high-occupancy vehicles, public transit, and walking and cycling lowers energy per passenger-km — one of CIMS-T’s endogenous actions, governed by the intangible cost differences between modes. Electrifying transit buses (and, where lines justify it, rail) cuts those modes’ emissions by around 90% <span class="citation" data-cites="transit-elec">(<a href="index.html#ref-transit-elec" role="doc-biblioref"><span class="nocase"></span> 2025</a>)</span>, and the model competes electric and hydrogen buses and electric and hydrogen rail directly.</p>
+</section>
+<section id="decarbonising-aviation" class="level3" data-number="26.4.3">
+<h3 data-number="26.4.3" class="anchored" data-anchor-id="decarbonising-aviation"><span class="header-section-number">26.4.3</span> Decarbonising aviation</h3>
+<p>Inter-city air is the hardest to abate. The model already competes efficient, electric, and hydrogen aircraft (the last two viable mainly for short-haul), but the principal near-term route — sustainable aviation fuel and e-fuels — is not yet represented (see the TODO above).</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, energy intensities, availability years, and intangible-cost parameters actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="26.5">
+<h2 data-number="26.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">26.5</span> Economics</h2>
+<p>Technology and mode choice follow the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, but passenger transport relies more than any other sector on intangible costs — the non-financial component of the choice. CIMS-T’s intangible costs encode consumers’ revealed willingness to pay for vehicle size and power, their preference for the range and refuelling convenience of gasoline over alternative fuels, and their preferences among urban modes. These are calibrated from market data and stated-preference surveys, and they are what allow the model to reproduce observed adoption rather than the cost-minimising choice a purely financial calculation would predict.</p>
+<p>Financial costs are discounted at behavioural rates — around 8% for some capital-intensive, long-lived assets (rail, transit infrastructure) and around 25% for personal-vehicle decisions in the current data. As elsewhere in CIMS these are <strong>behavioural</strong> (revealed or empirical) discount rates rather than pure financial costs of capital; together with the intangible costs they govern technology choice, as set out in the discount-rate and intangible-cost discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>.</p>
+<p>Emissions arise from fuel combustion in the vehicles, buses, trains, and aircraft, entering through each technology’s fuel service requests and the carbon price; battery-electric options have zero tailpipe emissions and inherit the carbon intensity of the grid. The emissions benefit of electrification therefore depends on regional grid intensity, and the benefit of biofuels on their life-cycle intensity from the <a href="./sector_ethanol.html">Ethanol</a> and <a href="./sector_biodiesel.html">Biodiesel</a> sub-models. A note of caution carried from the original documentation: many of CIMS-T’s intangible-cost parameters are under active review against stated-preference survey data, so the modelled pace of the ZEV transition is sensitive to them.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="26.6">
+<h2 data-number="26.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">26.6</span> Regional coverage and differences</h2>
+<p>All seven modelled regions carry the passenger-transport structure. Regional differences show up in urban form — denser regions (the large metropolitan areas) support more transit and active-mode share, while dispersed regions are more car-dependent — and in grid carbon intensity, which determines how much electrification actually reduces emissions (large in hydro-rich Québec, British Columbia, and Manitoba; smaller in Alberta and Saskatchewan until their grids decarbonise). Fuel availability (charging and hydrogen networks) also varies and enters through the intangible costs.</p>
+<p><mark>TODO: Calibrate the regional mode-share baselines and the intangible costs of transit and active modes against current travel-survey data, since urban mode shift is sensitive to both and varies widely by region.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="26.7">
+<h2 data-number="26.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">26.7</span> Limitations and planned extensions</h2>
+<p>The passenger-transport sub-model captures the essential structure — mobility demand, mode competition, powertrain competition, and a rich intangible-cost representation of consumer preference. Its main limitations are the absence of sustainable aviation fuels and e-fuels, the reliance on intangible-cost parameters that are still being recalibrated, the exogenous treatment of some transit-technology choices, and stock-turnover dynamics that make the modelled transition gradual. The TODOs above record the priorities, of which adding SAF/e-fuels and refreshing the intangible costs are the most important.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled passenger-transport energy use and mode shares against Transport Canada and Natural Resources Canada data.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-transit-elec" class="csl-entry" role="listitem">
+<span class="nocase"></span>. 2025. <span>“National Assessment of Transit Electrification in Canada: Infrastructure Costs, Energy Demand, and Greenhouse Gas Reduction Potential.”</span> <em>Scientific Reports</em>. <a href="https://www.nature.com/articles/s41598-025-30585-2">https://www.nature.com/articles/s41598-025-30585-2</a>.
+</div>
+<div id="ref-eccc-zev" class="csl-entry" role="listitem">
+Environment and Climate Change Canada. 2023. <em>Regulations Amending the Passenger Automobile and Light Truck Greenhouse Gas Emission Regulations (Electric Vehicle Availability Standard)</em>. Government of Canada. <a href="https://gazette.gc.ca/rp-pr/p2/2023/2023-12-20/html/sor-dors275-eng.html">https://gazette.gc.ca/rp-pr/p2/2023/2023-12-20/html/sor-dors275-eng.html</a>.
+</div>
+<div id="ref-nrcan-ev" class="csl-entry" role="listitem">
+Natural Resources Canada. 2026. <em>Zero-Emission Vehicles: Incentives and Costs</em>. Natural Resources Canada. <a href="https://natural-resources.canada.ca/energy-efficiency/transportation-alternative-fuels/zero-emission-vehicles">https://natural-resources.canada.ca/energy-efficiency/transportation-alternative-fuels/zero-emission-vehicles</a>.
+</div>
+</div>
 
 
 </section>
@@ -1743,8 +1941,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

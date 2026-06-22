@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,33 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">19.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">19.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">19.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-pulp" id="toc-products-pulp" class="nav-link" data-scroll-target="#products-pulp"><span class="header-section-number">19.3.1</span> Products: pulp</a></li>
+  <li><a href="#products-paper" id="toc-products-paper" class="nav-link" data-scroll-target="#products-paper"><span class="header-section-number">19.3.2</span> Products: paper</a></li>
+  <li><a href="#sector-specific-service-the-black-liquor-recovery-and-energy-cycle" id="toc-sector-specific-service-the-black-liquor-recovery-and-energy-cycle" class="nav-link" data-scroll-target="#sector-specific-service-the-black-liquor-recovery-and-energy-cycle"><span class="header-section-number">19.3.3</span> Sector-specific service: the black-liquor recovery and energy cycle</a></li>
+  <li><a href="#auxiliary-energy-and-utility-services" id="toc-auxiliary-energy-and-utility-services" class="nav-link" data-scroll-target="#auxiliary-energy-and-utility-services"><span class="header-section-number">19.3.4</span> Auxiliary energy and utility services</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">19.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#efficient-pulping-pressing-and-drying" id="toc-efficient-pulping-pressing-and-drying" class="nav-link" data-scroll-target="#efficient-pulping-pressing-and-drying"><span class="header-section-number">19.4.1</span> Efficient pulping, pressing and drying</a></li>
+  <li><a href="#black-liquor-recovery-cogeneration-and-gasification" id="toc-black-liquor-recovery-cogeneration-and-gasification" class="nav-link" data-scroll-target="#black-liquor-recovery-cogeneration-and-gasification"><span class="header-section-number">19.4.2</span> Black-liquor recovery, cogeneration and gasification</a></li>
+  <li><a href="#decarbonising-the-lime-kiln" id="toc-decarbonising-the-lime-kiln" class="nav-link" data-scroll-target="#decarbonising-the-lime-kiln"><span class="header-section-number">19.4.3</span> Decarbonising the lime kiln</a></li>
+  <li><a href="#carbon-capture-and-negative-emissions-beccs" id="toc-carbon-capture-and-negative-emissions-beccs" class="nav-link" data-scroll-target="#carbon-capture-and-negative-emissions-beccs"><span class="header-section-number">19.4.4</span> Carbon capture and negative emissions (BECCS)</a></li>
+  <li><a href="#indicative-capital-and-operating-costs-and-energy-use" id="toc-indicative-capital-and-operating-costs-and-energy-use" class="nav-link" data-scroll-target="#indicative-capital-and-operating-costs-and-energy-use"><span class="header-section-number">19.4.5</span> Indicative capital and operating costs and energy use</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">19.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">19.6</span> Regional coverage and differences</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +742,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_pulp_and_paper.html"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Pulp and Paper</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Pulp and Paper</span></h1>
+<h1 class="title"><span id="sec-pulp-and-paper" class="quarto-section-identifier"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Pulp and Paper</span></span></h1>
 </div>
 
 
@@ -712,13 +759,333 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>The pulp and paper industry includes establishments primarily engaged in manufacturing pulp, paper, paperboard and building and insulation board. These establishments are included in the CIMS pulp and paper sub-model because they are large in size and their products are highly energy intensive when compared to other industry products. Paper products, which do not form part of the sub-model include: asphalt roofing, paper box and bag, and other converted paper product industries. These are included in the other manufacturing model of CIMS. The pulp and paper industrial branch has a high energy-intensity per tonne of product.</p>
-<p>Pulping processes can be broken down into three basic types: chemical, mechanical, and recycled. Mechanical pulping, which tends to be very electricity intensive, uses wood fibre much more efficiently than does chemical pulping. Recycled pulp consumes considerably less energy than either of the other two major processes but input supply is limited and the collection and transportation of this supply can significantly increase the energy intensity of the product. The products generated from each of these processes are distinct enough that they generally do not compete on the open market.</p>
-<p>Each pulp product serves as the stock for many types of paper products. Newsprint, the largest category in terms of production (&gt; 60%), can use feedstock from each of the pulping processes. Other paper products incorporated into this sub-model includes tissue paper, uncoated and coated paper (or wood-free paper), and linerboard, each of which may have varying degrees of stock inputs.</p>
-<p>The following steps in the production of pulp and paper are common to both chemical and mechanical mills where raw logs serve as feedstock: wood debarking, wood chipping, pulp making, pulp washing, pulp bleaching, pulp drying, paper stock preparation, paper sheet formation, paper pressing and paper drying. Mills that use chips or recycled paper as feedstock may exclude some of these steps.</p>
-<p>Figure: Energy Flow Model for the Chemical Products Industry</p>
+<p>As with the other industrial sub-models, the emphasis in the pulp and paper sector is on the structure of the energy-service flow model — the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them — rather than on the chemistry or economics of individual mills. Pulp and paper is distinctive among the industrial branches in two ways. First, it is already largely powered by biomass — the spent pulping liquor and wood residues the mills produce themselves — so its on-site fossil emissions are concentrated in a few stages rather than spread across the whole process. Second, much of the traditional mill products have been declining for many years in Canada, as the long fall in newsprint demand works through the fleet. Both shape the sub-model and the decarbonisation options it admits.</p>
+<section id="scope" class="level2" data-number="19.1">
+<h2 data-number="19.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">19.1</span> Scope</h2>
+<p>CIMS represents the manufacture of <strong>pulp, paper and paperboard</strong> — the energy-intensive core of the sector — organised as a pulp-making chain feeding a set of paper-grade chains. The driving variable is the physical output of pulp and paper in tonnes; a forecast of demand drives every upstream process and energy service and is set exogenously, as for the other industrial branches.</p>
+<p>Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:</p>
+<ul>
+<li><strong>Forest harvesting and the supply of roundwood and residues</strong> are covered in the <a href="./sector_forestry.html">Forestry</a> chapter; the pulp and paper sub-model takes logs, chips and recovered paper as inputs.</li>
+<li><strong>Converted paper products</strong> — boxes, bags, asphalt roofing, and other converting industries — are downstream manufacturing and are handled in the <a href="./sector_light_industrial.html">Light Industrial</a> branch, not here.</li>
+<li><strong>Fuel and electricity supply</strong> enter through the energy-supply sub-models and the shared fuel nodes; the sub-model consumes these as priced inputs and, importantly, can also <em>generate</em> electricity and steam on site (see below).</li>
+</ul>
+<p>The sub-model stops at saleable pulp and paper grades.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="19.2">
+<h2 data-number="19.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">19.2</span> Real-world context</h2>
+<p>Canadian pulp and paper is large, export-oriented, regionally concentrated, and in long-run decline (unless significant changes occur within the sector). The industry is largest in <strong>Québec, Ontario and British Columbia</strong>, with significant capacity in the <strong>Atlantic</strong> region and a smaller presence in <strong>Alberta</strong>. Its economic output peaked around 2004 and fell by roughly 45% to 2018 as newsprint demand collapsed <span class="citation" data-cites="cer-pulp">(<a href="index.html#ref-cer-pulp" role="doc-biblioref">Canada Energy Regulator 2019</a>)</span>; the model’s exogenous demand trajectories reflect this, with output declining over the projection in every region except Alberta.</p>
+<p>What most distinguishes the sector energetically is its reliance on <strong>self-produced biomass energy</strong>. Kraft (chemical) mills concentrate and burn the <strong>black liquor</strong> — the spent cooking chemicals and dissolved wood lignin left after pulping — in a recovery boiler that both regenerates the pulping chemicals and raises high-pressure steam; mills also burn <strong>hog fuel</strong> (bark and wood residues). Together these supply the majority of mill energy, and a growing number of mills run <strong>biomass cogeneration</strong>, meeting their own steam and power needs and selling surplus electricity to the grid: self-generation supplied on the order of a quarter of the sector’s electricity in recent years, across dozens of cogeneration units <span class="citation" data-cites="cer-pulp nrcan-pp-netzero">(<a href="index.html#ref-cer-pulp" role="doc-biblioref">Canada Energy Regulator 2019</a>; <a href="index.html#ref-nrcan-pp-netzero" role="doc-biblioref">Canadian Climate Institute 2023</a>)</span>. Because this energy is biogenic, the sector’s <em>fossil</em> emissions are comparatively small and concentrated — most prominently in the <strong>lime kiln</strong>, which calcines lime for the kraft chemical cycle and has traditionally burned natural gas or oil, and in any remaining fossil-fired steam and drying <span class="citation" data-cites="ppc-limekiln">(<a href="index.html#ref-ppc-limekiln" role="doc-biblioref">Pulp and Paper Canada 2024</a>)</span>. The CIMS structure mirrors this: it carries an explicit <strong>Black Liquor</strong> service representing the recovery-and-energy cycle, it offers biomass and cogeneration options throughout the Steam service, and it concentrates the fossil-fuel choices at the lime kiln and the dryers.</p>
+</section>
+<section id="model-structure" class="level2" data-number="19.3">
+<h2 data-number="19.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">19.3</span> Model structure</h2>
+<p>Following the standard CIMS pattern, the sector divides into two sub-trees: a <strong>Product</strong> sub-tree, which holds the pulp-making and paper-making chains, and a <strong>Service</strong> sub-tree, which holds the auxiliary energy and utility services — including the sector-specific black-liquor recovery cycle. <a href="#fig-pulp-paper-flow-model" class="quarto-xref">Figure&nbsp;<span>19.1</span></a> shows the overall structure.</p>
+<p>In the pulp and paper tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which pulping process, which bleaching sequence, which dryer, which recovery furnace — occur at the tech-compete leaves.</p>
+<div id="fig-pulp-paper-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pulp-paper-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/pulp_paper_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;19.1: Energy-service flow model of the pulp and paper sector (region-agnostic master tree). The sector divides into a Product sub-tree — a pulp-making chain (log preparation, pulping, washing, bleaching, drying) and five paper-grade chains — and a Service sub-tree that holds the auxiliary energy services plus the sector-specific Black Liquor recovery-and-energy cycle."><img src="images/pulp_paper_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pulp-paper-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.1: Energy-service flow model of the pulp and paper sector (region-agnostic master tree). The sector divides into a Product sub-tree — a pulp-making chain (log preparation, pulping, washing, bleaching, drying) and five paper-grade chains — and a Service sub-tree that holds the auxiliary energy services plus the sector-specific Black Liquor recovery-and-energy cycle.
+</figcaption>
+</figure>
+</div>
+<section id="products-pulp" class="level3" data-number="19.3.1">
+<h3 data-number="19.3.1" class="anchored" data-anchor-id="products-pulp"><span class="header-section-number">19.3.1</span> Products: pulp</h3>
+<p>The <strong>Pulp</strong> chain turns wood (or recovered paper) into prepared pulp through a sequence of fixed-ratio stages, with technology competitions at the end of each:</p>
+<ul>
+<li><strong>Log Preparation</strong> — debark (ring, Rosser-head or biodegradable mechanical debarkers) and cut and chip.</li>
+<li><strong>Pulping</strong> — the key fork, where four distinct routes compete and, as in the real industry, generally serve different products rather than competing head-to-head:
+<ul>
+<li><strong>Chemical (kraft)</strong> — batch and continuous digesters (including superbatch and blow-heat-recovery variants), the dominant route for strong, bleachable pulp; it is the route that produces black liquor.</li>
+<li><strong>Mechanical</strong> — stone groundwood, refiner, thermo-mechanical (TMP) and chemi-thermo-mechanical (CTMP) pulping, which use wood fibre efficiently but are very electricity-intensive.</li>
+<li><strong>Semi-chemical</strong> — neutral-sulphite digesters, used for specific grades.</li>
+<li><strong>Recycled</strong> — de-inking of recovered paper by washing, flotation or explosion; the lowest-energy route, limited by feedstock supply.</li>
+</ul></li>
+<li><strong>Washing</strong> — drum and diffusion washers that recover pulping chemicals.</li>
+<li><strong>Bleaching</strong> — competing fully and semi bleaching sequences built around elemental-chlorine-free (ECF) chemistry, oxygen delignification, ozone bleaching and chlorine-dioxide substitution.</li>
+<li><strong>Drying</strong> — pulp dryers (steam, and steam with electric vapour recompression) for market pulp.</li>
+</ul>
+</section>
+<section id="products-paper" class="level3" data-number="19.3.2">
+<h3 data-number="19.3.2" class="anchored" data-anchor-id="products-paper"><span class="header-section-number">19.3.2</span> Products: paper</h3>
+<p>The <strong>Paper</strong> chain branches into the five grades the sector reports, each a fixed-ratio sequence of <strong>Stock Preparation</strong> (disc or conical refining and screening), <strong>Forming, Pressing and Finishing</strong>, and <strong>Drying</strong>:</p>
+<ul>
+<li><strong>Newsprint</strong> — historically the largest grade, and the one whose decline drives the sector’s contraction.</li>
+<li><strong>Uncoated</strong> and <strong>Coated</strong> wood-free (fine) papers.</li>
+<li><strong>Linerboard</strong> — packaging board.</li>
+<li><strong>Tissue</strong>.</li>
+</ul>
+<p>The Forming, Pressing and Finishing competitions include energy-saving extended-nip presses, which remove more water mechanically before the energy-intensive drying step. The Drying competitions are where much of the grade’s energy is decided, offering steam, electric, infrared, vapour-recompression, high-humidity-hood and high-intensity dryers.</p>
+</section>
+<section id="sector-specific-service-the-black-liquor-recovery-and-energy-cycle" class="level3" data-number="19.3.3">
+<h3 data-number="19.3.3" class="anchored" data-anchor-id="sector-specific-service-the-black-liquor-recovery-and-energy-cycle"><span class="header-section-number">19.3.3</span> Sector-specific service: the black-liquor recovery and energy cycle</h3>
+<p>The <strong>Black Liquor</strong> service is the energy and chemical heart of a kraft mill, and the feature that most sets this sector apart. It represents the closed loop, shown in <a href="#fig-pulp-paper-recovery" class="quarto-xref">Figure&nbsp;<span>19.2</span></a>, that recovers pulping chemicals while generating most of the mill’s energy:</p>
+<ul>
+<li>The <strong>Evaporator</strong> concentrates weak black liquor, competing multiple-effect evaporators (with computer control and integrated concentrators) and <strong>vapour-recompression</strong> evaporators.</li>
+<li>The <strong>Recovery Furnace</strong> burns the concentrated liquor, regenerating cooking chemicals and raising steam. Technologies range from the conventional <strong>Tomlinson</strong> boiler through low-odour, high-solids-firing variants to <strong>cogeneration</strong> configurations (e.g.&nbsp;high-solids firing with 900–1200 psig cogeneration) and <strong>gasification</strong>, which raise the energy recovered from the liquor.</li>
+<li>The <strong>Lime Kiln</strong> calcines lime to causticise the recovered chemicals. It is the sector’s main fossil-fuel choke point, and the model competes conventional natural-gas, oil and coal kilns against <strong>wood-waste gasification</strong> and <strong>lignin-precipitation</strong> retrofits that displace fossil fuel.</li>
+</ul>
+<div id="fig-pulp-paper-recovery" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pulp-paper-recovery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/pulp_paper_recovery.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;19.2: The kraft black-liquor recovery and energy cycle as represented in CIMS. Chemical pulping produces weak black liquor, which is concentrated in the Evaporator and burned in the Recovery Furnace; the furnace regenerates pulping chemicals (via the Lime Kiln) and raises steam and power for the mill, with surplus electricity exported. Biomass and black liquor are biogenic, so this energy carries no fossil CO₂; the kiln is the main fossil load."><img src="images/pulp_paper_recovery.svg" class="img-fluid figure-img" style="width:90.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-pulp-paper-recovery-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;19.2: The kraft black-liquor recovery and energy cycle as represented in CIMS. Chemical pulping produces weak black liquor, which is concentrated in the Evaporator and burned in the Recovery Furnace; the furnace regenerates pulping chemicals (via the Lime Kiln) and raises steam and power for the mill, with surplus electricity exported. Biomass and black liquor are biogenic, so this energy carries no fossil CO₂; the kiln is the main fossil load.
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="auxiliary-energy-and-utility-services" class="level3" data-number="19.3.4">
+<h3 data-number="19.3.4" class="anchored" data-anchor-id="auxiliary-energy-and-utility-services"><span class="header-section-number">19.3.4</span> Auxiliary energy and utility services</h3>
+<p>The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the “existing versus more efficient equipment, with fuel-switching where relevant” convention they follow — is set out in the <a href="./sector_overview.html">Sector Overview</a>. This chapter does not repeat that detail. The Pulp and Paper sector draws on:</p>
+<ul>
+<li><strong>Machine Drive</strong> — see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter. Pulp and Paper’s very large motor loads sit here, especially the refiners of mechanical pulping (materials processing), along with pumps, fans, compressed air and materials handling.</li>
+<li><strong>Steam</strong> — see <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a>. This is the sector’s largest energy service, and its technology set is unusually rich: alongside natural-gas, oil, coal, electric and hydrogen boilers it includes <strong>solid-biomass</strong> boilers, <strong>biomass steam turbines</strong> and grate firing, and gas- and biomass-fired <strong>cogeneration</strong>, reflecting the mills’ reliance on hog fuel and on combined heat and power.</li>
+<li><strong>Methane Blend</strong> — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification and hydrogen.</li>
+<li><strong>HVAC</strong> and <strong>Lighting</strong> for mill facilities.</li>
+</ul>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="19.4">
+<h2 data-number="19.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">19.4</span> Decarbonisation technologies</h2>
+<p>Because the sector is already largely bioenergy-powered, its decarbonisation problem is unusual: it is less about replacing a single dominant fossil process than about (i) squeezing the remaining fossil fuel out of the <strong>lime kiln</strong> and any fossil-fired <strong>steam and drying</strong>, (ii) raising the efficiency of the energy-intensive <strong>drying, pressing and mechanical-pulping</strong> steps, and (iii) capturing the large, concentrated, <strong>biogenic</strong> CO₂ streams to deliver <em>negative</em> emissions. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in <a href="#tbl-pulp-paper-decarb" class="quarto-xref">Table&nbsp;<span>19.1</span></a>. The figures quoted are indicative ranges from techno-economic reviews <span class="citation" data-cites="nrcan-pp-netzero ppc-limekiln">(<a href="index.html#ref-nrcan-pp-netzero" role="doc-biblioref">Canadian Climate Institute 2023</a>; <a href="index.html#ref-ppc-limekiln" role="doc-biblioref">Pulp and Paper Canada 2024</a>)</span>, not the calibrated values used in the model.</p>
+<div id="tbl-pulp-paper-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pulp-paper-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;19.1: Indicative performance and maturity of key pulp and paper decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-pulp-paper-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Recycled / de-inked pulping</td>
+<td style="text-align: left;">Lowest-energy pulp route; limited by feedstock</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mechanical pulping with vapour recompression</td>
+<td style="text-align: left;">Recovers refiner heat as usable steam</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Extended-nip pressing</td>
+<td style="text-align: left;">More water removed before drying; less drying energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric / infrared / high-intensity drying</td>
+<td style="text-align: left;">Displaces fossil-fired drying</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">ECF, oxygen-delignification, ozone bleaching</td>
+<td style="text-align: left;">Lower energy and chemical use than legacy bleaching</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Black-liquor recovery cogeneration</td>
+<td style="text-align: left;">Raises on-site power from spent liquor</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Black-liquor gasification</td>
+<td style="text-align: left;">Recovery efficiency ~65% → ~75–80%; syngas for power/biofuel</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lime-kiln biomass gasification / lignin firing</td>
+<td style="text-align: left;">Displaces fossil fuel in the kiln</td>
+<td style="text-align: left;">Early commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Solid-biomass boilers and steam turbines</td>
+<td style="text-align: left;">Bio-steam and power in place of fossil boilers</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electrified lime kiln (e.g.&nbsp;plasma calcination)</td>
+<td style="text-align: left;">Removes the main fossil load</td>
+<td style="text-align: left;">Pilot</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">BECCS on recovery boiler / kiln</td>
+<td style="text-align: left;">Captures biogenic CO₂ for net-negative emissions</td>
+<td style="text-align: left;">Demonstration</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="efficient-pulping-pressing-and-drying" class="level3" data-number="19.4.1">
+<h3 data-number="19.4.1" class="anchored" data-anchor-id="efficient-pulping-pressing-and-drying"><span class="header-section-number">19.4.1</span> Efficient pulping, pressing and drying</h3>
+<p>The lowest-cost reductions come from using less energy per tonne. <strong>Recycled (de-inked) pulping</strong> is the least energy-intensive route and is admitted where recovered-paper feedstock is available; <strong>mechanical pulping with vapour recompression</strong> recovers the refiners’ large heat output as usable steam. On the paper machine, <strong>extended-nip presses</strong> remove more water mechanically so that less must be evaporated, and the <strong>Drying</strong> competitions admit <strong>electric, infrared, high-intensity and vapour-recompression</strong> dryers that either cut drying energy or shift it from fossil fuel to electricity. In the model’s bleaching competitions, the <strong>ECF, oxygen-delignification and ozone</strong> sequences reduce both energy and chemical use relative to legacy chlorine bleaching.</p>
+</section>
+<section id="black-liquor-recovery-cogeneration-and-gasification" class="level3" data-number="19.4.2">
+<h3 data-number="19.4.2" class="anchored" data-anchor-id="black-liquor-recovery-cogeneration-and-gasification"><span class="header-section-number">19.4.2</span> Black-liquor recovery, cogeneration and gasification</h3>
+<p>The recovery furnace is both a chemical reactor and the mill’s main power plant. The model competes increasingly capable configurations — high-solids firing, low-odour designs, and <strong>cogeneration</strong> at 900–1200 psig — that raise the steam and electricity recovered from each tonne of liquor. <strong>Black-liquor gasification</strong> goes further, lifting energy-recovery efficiency from roughly 65% for a conventional boiler to about 75–80% and producing a syngas that can drive a gas turbine or be converted to biofuels <span class="citation" data-cites="iea-blg">(<a href="index.html#ref-iea-blg" role="doc-biblioref">IEA Bioenergy 2007</a>)</span>. These options let a kraft mill meet more of its own demand and export more surplus power.</p>
+</section>
+<section id="decarbonising-the-lime-kiln" class="level3" data-number="19.4.3">
+<h3 data-number="19.4.3" class="anchored" data-anchor-id="decarbonising-the-lime-kiln"><span class="header-section-number">19.4.3</span> Decarbonising the lime kiln</h3>
+<p>The lime kiln is the single most stubborn fossil load in a kraft mill, because calcination needs high-temperature heat that has traditionally come from natural gas or oil <span class="citation" data-cites="ppc-limekiln">(<a href="index.html#ref-ppc-limekiln" role="doc-biblioref">Pulp and Paper Canada 2024</a>)</span>. The model competes wood-waste gasification and lignin-precipitation retrofits that substitute renewable fuel for fossil in the kiln. The emerging frontier option — <strong>electrified calcination</strong> (for example electric plasma kilns) — would remove the load entirely.</p>
+<p><mark>TODO: Add an <strong>electrified lime kiln</strong> (e.g.&nbsp;electric plasma calcination) and <strong>high-temperature heat-pump</strong> options to the relevant competitions, so the model can represent full electrification of the kraft mill’s remaining fossil heat.</mark></p>
+</section>
+<section id="carbon-capture-and-negative-emissions-beccs" class="level3" data-number="19.4.4">
+<h3 data-number="19.4.4" class="anchored" data-anchor-id="carbon-capture-and-negative-emissions-beccs"><span class="header-section-number">19.4.4</span> Carbon capture and negative emissions (BECCS)</h3>
+<p>The pulp and paper sector is widely regarded as one of the most promising hosts for <strong>bioenergy with carbon capture and storage (BECCS)</strong>, because the recovery boiler and lime kiln emit large, relatively concentrated streams of <em>biogenic</em> CO₂; capturing them yields <strong>net-negative</strong> emissions at comparatively low cost.</p>
+<p><mark>TODO: Add a <strong>CCS / BECCS</strong> service for pulp and paper, attached to the Recovery Furnace and Lime Kiln, so the model can represent capture of biogenic CO₂ and the resulting negative emissions.</mark></p>
+</section>
+<section id="indicative-capital-and-operating-costs-and-energy-use" class="level3" data-number="19.4.5">
+<h3 data-number="19.4.5" class="anchored" data-anchor-id="indicative-capital-and-operating-costs-and-energy-use"><span class="header-section-number">19.4.5</span> Indicative capital and operating costs and energy use</h3>
+<p><a href="#tbl-pulp-paper-technoecon" class="quarto-xref">Table&nbsp;<span>19.2</span></a> gathers order-of-magnitude capital and operating costs and energy characteristics for the main pulping and papermaking steps and the black-liquor recovery cycle. The estimates are drawn from public techno-economic literature <span class="citation" data-cites="nrcan-pp-netzero ppc-limekiln iea-blg tran-kraft">(<a href="index.html#ref-nrcan-pp-netzero" role="doc-biblioref">Canadian Climate Institute 2023</a>; <a href="index.html#ref-ppc-limekiln" role="doc-biblioref">Pulp and Paper Canada 2024</a>; <a href="index.html#ref-iea-blg" role="doc-biblioref">IEA Bioenergy 2007</a>; <a href="index.html#ref-tran-kraft" role="doc-biblioref">Tran and Vakkilainen 2016</a>)</span> and expressed in 2025 Canadian dollars. Overnight capital costs are normalised per tonne of annual product capacity (except where another basis is noted), fixed O&amp;M follows the heavy-industry convention of roughly 3–6% of capital cost per year, and energy intensity is per tonne of product. A defining feature of the sector is that much of the heat and power below is <strong>self-supplied</strong> from biomass (black liquor and hog fuel), so the relevant comparison is often net purchased energy rather than gross use.</p>
+<div id="tbl-pulp-paper-technoecon" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-pulp-paper-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;19.2: Indicative techno-economic characteristics of pulp and paper technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-pulp-paper-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Overnight capex (per t/yr capacity)</th>
+<th style="text-align: left;">Fixed O&amp;M (% of capex)</th>
+<th style="text-align: left;">Energy intensity (per t product)</th>
+<th style="text-align: left;">Main energy carrier</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Kraft (chemical) pulping</td>
+<td style="text-align: left;">~2,000–3,500 (integrated mill)</td>
+<td style="text-align: left;">~4–5%/yr</td>
+<td style="text-align: left;">heat ~10–14 GJ + ≈0.6–0.8 MWh; largely self-supplied</td>
+<td style="text-align: left;">biomass (black liquor) + electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Mechanical pulping (TMP / CTMP)</td>
+<td style="text-align: left;">~1,000–1,800</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">~4–15 GJ electricity (1,100–4,300 kWh/t)</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Recycled (de-inked) pulping</td>
+<td style="text-align: left;">~600–1,200</td>
+<td style="text-align: left;">~3–4%/yr</td>
+<td style="text-align: left;">~1–3 GJ</td>
+<td style="text-align: left;">electricity (+ some heat)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Bleaching (ECF / O₂ / ozone)</td>
+<td style="text-align: left;">moderate (site-specific)</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">steam + bleaching chemicals</td>
+<td style="text-align: left;">steam / electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Paper machine + drying</td>
+<td style="text-align: left;">~1,400–2,700</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">drying ~4–8 GJ</td>
+<td style="text-align: left;">steam (biomass / gas) ± electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Recovery boiler (cogeneration)</td>
+<td style="text-align: left;">≈35% of mill capital; 25–35 MWe per 1,000 t/day</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">net energy exporter</td>
+<td style="text-align: left;">black liquor (biogenic)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Black-liquor gasification</td>
+<td style="text-align: left;">higher than Tomlinson boiler</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">recovery efficiency ~75–80% vs ~65%</td>
+<td style="text-align: left;">black liquor → syngas</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lime kiln</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">~5.4–8.5 GJ/t lime</td>
+<td style="text-align: left;">natural gas / oil (or biomass)</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Biomass cogeneration (steam + power)</td>
+<td style="text-align: left;">~5,500–9,600 CAD/kWe</td>
+<td style="text-align: left;">~3–4%/yr</td>
+<td style="text-align: left;">bio-steam + power</td>
+<td style="text-align: left;">solid biomass / hog fuel</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+</section>
+<section id="economics" class="level2" data-number="19.5">
+<h2 data-number="19.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">19.5</span> Economics</h2>
+<p>A few sector-wide conventions are worth noting. Pulp and paper technologies are discounted at a high rate — 35% at most process nodes, with some auxiliary and capital-intensive nodes at 40–50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital. They sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions; CIMS applies this behavioural rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity</strong> (variance) parameters at the process nodes are set around 10 so that competitions respond to cost differences without collapsing to winner-take-all. Fuel prices entering the service-cost calculation are scaled by a sector-level block of price multipliers.</p>
+<p>The sector’s emissions accounting is distinctive. Unlike iron and steel or chemicals, the pulp and paper tree carries no explicit process-emission factors: essentially all of its emissions arise from fuel combustion, and they enter the model through each technology’s fuel service requests and the prevailing carbon price. Crucially, the large biomass flows — black liquor and hog fuel — are treated as biogenic and therefore carbon-neutral in the combustion accounting, so the carbon price bites mainly on the fossil fuels that remain, above all in the lime kiln and in any fossil-fired steam and drying. Fuel-switching from these fossil fuels to biomass, electricity, and hydrogen is therefore the model’s main channel for emissions reduction, reinforced by the mills’ ability to self-generate steam and power and export surplus electricity.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="19.6">
+<h2 data-number="19.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">19.6</span> Regional coverage and differences</h2>
+<p>Five regions are represented — <strong>Alberta, Atlantic, British Columbia, Ontario, and Québec</strong> — and regional differences show up in scale, grade mix, and trajectory:</p>
+<ul>
+<li><strong>Québec</strong> and <strong>Ontario</strong> are the largest, and both decline substantially over the projection as newsprint demand falls.</li>
+<li>The <strong>Atlantic</strong> region carries significant capacity with a particularly steep modelled decline.</li>
+<li><strong>British Columbia</strong> is a major kraft- and mechanical-pulp region with biomass cogeneration, declining more gently.</li>
+<li><strong>Alberta</strong> is the smallest and the only region whose modelled output grows.</li>
+</ul>
+<p><mark>TODO: Only five regions are represented, and Saskatchewan and the territories are absent. Confirm whether any other region hosts pulp and paper capacity that should be included.</mark></p>
+<p><mark>TODO: The exogenous demand trajectories are inherited from older calibrations of the newsprint decline. Revisit them against current production and the shift toward packaging (linerboard), tissue and market pulp, which are not declining in the way newsprint is.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-cer-pulp" class="csl-entry" role="listitem">
+Canada Energy Regulator. 2019. <em>Market Snapshot: The Pulp and Paper Sector Uses Less Energy and Produces Less Material Than It Did 20 Years Ago</em>. CER Market Snapshots. <a href="https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2019/market-snapshot-pulp-paper-sector-uses-less-energy-produces-less-material-than-it-did-20-years-ago.html">https://www.cer-rec.gc.ca/en/data-analysis/energy-markets/market-snapshots/2019/market-snapshot-pulp-paper-sector-uses-less-energy-produces-less-material-than-it-did-20-years-ago.html</a>.
+</div>
+<div id="ref-nrcan-pp-netzero" class="csl-entry" role="listitem">
+Canadian Climate Institute. 2023. <em>Finding a Path to Net Zero in the Pulp and Paper Industry</em>. 440 Megatonnes. <a href="https://440megatonnes.ca/insight/finding-path-net-zero-pulp-paper-industry/">https://440megatonnes.ca/insight/finding-path-net-zero-pulp-paper-industry/</a>.
+</div>
+<div id="ref-iea-blg" class="csl-entry" role="listitem">
+IEA Bioenergy. 2007. <em>Black Liquor Gasification: Summary and Conclusions</em>. IEA Bioenergy. <a href="https://www.ieabioenergy.com/wp-content/uploads/2013/10/Black-Liquor-Gasification-summary-and-conclusions1.pdf">https://www.ieabioenergy.com/wp-content/uploads/2013/10/Black-Liquor-Gasification-summary-and-conclusions1.pdf</a>.
+</div>
+<div id="ref-ppc-limekiln" class="csl-entry" role="listitem">
+Pulp and Paper Canada. 2024. <em>Kiln Decarbonization: Key Strategies to Improve Lime Kiln Operation and Reduce Fossil Fuel Emissions</em>. Pulp and Paper Canada. <a href="https://www.pulpandpapercanada.com/kiln-decarbonization/">https://www.pulpandpapercanada.com/kiln-decarbonization/</a>.
+</div>
+<div id="ref-tran-kraft" class="csl-entry" role="listitem">
+Tran, Honghi, and Esa K. Vakkilainen. 2016. <em>The Kraft Chemical Recovery Process</em>. TAPPI. <a href="https://www.tappi.org/content/events/08kros/handouts/1-1.pdf">https://www.tappi.org/content/events/08kros/handouts/1-1.pdf</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1680,8 +2047,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

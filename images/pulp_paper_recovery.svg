@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="garrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#3f7d52"/>
+    </marker>
+    <marker id="farrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#b5532e"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:10px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.4;fill:none;}
+    .gedge{stroke:#3f7d52;stroke-width:1.6;fill:none;}
+    .fedge{stroke:#b5532e;stroke-width:1.4;fill:none;stroke-dasharray:5 3;}
+    .prod{fill:#3d6ea5;}
+    .spec{fill:#e7ddc4;stroke:#c2a86a;stroke-width:1;}
+    .energy{fill:#3f7d52;}
+    .fossil{fill:#c98a63;stroke:#b5532e;stroke-width:1;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+  </style>
+
+  <text class="ttl" x="500" y="26" text-anchor="middle">Kraft black-liquor recovery and energy cycle</text>
+
+  <!-- Chemical pulping -->
+  <rect class="prod" x="40" y="70" width="170" height="56" rx="6"/>
+  <text class="lblw" x="125" y="94" text-anchor="middle">Chemical (kraft)</text>
+  <text class="lblw" x="125" y="110" text-anchor="middle">pulping</text>
+
+  <!-- weak black liquor -> evaporator -->
+  <path class="edge" d="M210,98 H300" marker-end="url(#arrow)"/>
+  <text class="sub" x="255" y="90" text-anchor="middle">weak black liquor</text>
+  <rect class="spec" x="300" y="70" width="160" height="56" rx="6"/>
+  <text class="lbl" x="380" y="94" text-anchor="middle">Evaporator</text>
+  <text class="sub" x="380" y="110" text-anchor="middle">MEE · vapour recompression</text>
+
+  <!-- concentrated -> recovery furnace -->
+  <path class="edge" d="M460,98 H550" marker-end="url(#arrow)"/>
+  <text class="sub" x="505" y="90" text-anchor="middle">concentrated</text>
+  <rect class="spec" x="550" y="62" width="200" height="72" rx="6"/>
+  <text class="lbl" x="650" y="86" text-anchor="middle">Recovery Furnace</text>
+  <text class="sub" x="650" y="102" text-anchor="middle">Tomlinson · high-solids ·</text>
+  <text class="sub" x="650" y="116" text-anchor="middle">cogeneration · gasification</text>
+
+  <!-- furnace -> energy out (biogenic) -->
+  <path class="gedge" d="M650,134 V200" marker-end="url(#garrow)"/>
+  <rect class="energy" x="550" y="200" width="200" height="58" rx="6"/>
+  <text class="lblw" x="650" y="224" text-anchor="middle">Steam + power (biogenic)</text>
+  <text class="subw" x="650" y="240" text-anchor="middle">to mill · surplus to grid</text>
+
+  <!-- furnace -> smelt/chemicals -> lime kiln -->
+  <path class="edge" d="M650,62 V44 H810 V70" marker-end="url(#arrow)"/>
+  <text class="sub" x="775" y="40" text-anchor="middle">recovered chemicals</text>
+  <rect class="fossil" x="730" y="70" width="220" height="64" rx="6"/>
+  <text class="lbl" x="840" y="92" text-anchor="middle">Lime Kiln (causticising)</text>
+  <text class="sub" x="840" y="108" text-anchor="middle">NG / oil / coal — or biomass</text>
+  <text class="sub" x="840" y="122" text-anchor="middle">gasification / electrified (TODO)</text>
+
+  <!-- lime kiln -> back to pulping (white liquor) -->
+  <path class="edge" d="M840,134 V300 H125 V126" marker-end="url(#arrow)"/>
+  <text class="sub" x="470" y="316" text-anchor="middle">regenerated white liquor returns to pulping (closed loop)</text>
+
+  <!-- fossil emission from kiln -->
+  <path class="fedge" d="M950,102 H980" marker-end="url(#farrow)"/>
+  <text class="sub" x="930" y="150" text-anchor="middle">fossil CO₂</text>
+  <text class="sub" x="930" y="164" text-anchor="middle">(main fossil load)</text>
+
+  <!-- steam to processes -->
+  <path class="gedge" d="M550,229 H360 V360" marker-end="url(#garrow)"/>
+  <rect class="det" x="240" y="360" width="240" height="58" rx="6"/>
+  <text class="li" x="360" y="383" text-anchor="middle">Mill steam loads:</text>
+  <text class="li" x="360" y="400" text-anchor="middle">pulping · drying · evaporation</text>
+
+  <!-- BECCS TODO -->
+  <rect class="det" x="540" y="360" width="320" height="74" rx="6" stroke-dasharray="6 4"/>
+  <text class="ttl" x="700" y="382" text-anchor="middle">BECCS — not yet in model (TODO)</text>
+  <text class="li" x="700" y="400" text-anchor="middle">Capture the large, concentrated biogenic CO₂</text>
+  <text class="li" x="700" y="416" text-anchor="middle">from the recovery furnace and lime kiln</text>
+  <text class="li" x="700" y="430" text-anchor="middle">→ net-negative emissions</text>
+  <path class="gedge" d="M650,258 C650,300 700,320 700,360" marker-end="url(#garrow)"/>
+
+  <!-- legend -->
+  <rect class="prod" x="40" y="470" width="16" height="12" rx="2"/>
+  <text class="sub" x="62" y="480">pulping</text>
+  <rect class="spec" x="150" y="470" width="16" height="12" rx="2"/>
+  <text class="sub" x="172" y="480">recovery cycle</text>
+  <rect class="energy" x="300" y="470" width="16" height="12" rx="2"/>
+  <text class="sub" x="322" y="480">biogenic energy out</text>
+  <rect class="fossil" x="470" y="470" width="16" height="12" rx="2"/>
+  <text class="sub" x="492" y="480">fossil load</text>
+  <line class="gedge" x1="600" y1="476" x2="630" y2="476"/>
+  <text class="sub" x="636" y="480">biogenic flow</text>
+  <line class="fedge" x1="760" y1="476" x2="790" y2="476"/>
+  <text class="sub" x="796" y="480">fossil CO₂</text>
+</svg>

@@ -493,7 +493,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -728,6 +728,7 @@ div.csl-indent {
   <li><a href="#electrified-and-low-carbon-process-heat" id="toc-electrified-and-low-carbon-process-heat" class="nav-link" data-scroll-target="#electrified-and-low-carbon-process-heat"><span class="header-section-number">16.4.3</span> Electrified and low-carbon process heat</a></li>
   <li><a href="#ventilation-and-auxiliary-drive-underground" id="toc-ventilation-and-auxiliary-drive-underground" class="nav-link" data-scroll-target="#ventilation-and-auxiliary-drive-underground"><span class="header-section-number">16.4.4</span> Ventilation and auxiliary drive (underground)</a></li>
   <li><a href="#potash-specific-options" id="toc-potash-specific-options" class="nav-link" data-scroll-target="#potash-specific-options"><span class="header-section-number">16.4.5</span> Potash-specific options</a></li>
+  <li><a href="#indicative-capital-and-operating-costs-and-energy-use" id="toc-indicative-capital-and-operating-costs-and-energy-use" class="nav-link" data-scroll-target="#indicative-capital-and-operating-costs-and-energy-use"><span class="header-section-number">16.4.6</span> Indicative capital and operating costs and energy use</a></li>
   </ul></li>
   <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">16.5</span> Economics</a></li>
   <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">16.6</span> Regional coverage and differences</a></li>
@@ -759,22 +760,22 @@ div.csl-indent {
 </header>
 
 
-<p>This chapter describes how the mining sector is represented in CIMS. As with the other industrial sub-models, the emphasis is on the structure of the energy-service flow model — the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them — rather than on the geology or economics of individual mines. The model tree is region-agnostic: a single master structure is instantiated for every province and territory, and regional differences are expressed through which branches carry production and through the data attached to each node, not through separate per-region structures.</p>
+<p>The mining sector is represented in CIMS by an energy-service flow model. The emphasis is on the structure of that model — the hierarchy of nodes, the technologies that compete at each node, and the engineering ratios that link them — rather than on the geology or economics of individual mines. The model tree is region-agnostic: a single master structure is instantiated for every province and territory, and regional differences are expressed through which branches carry production and through the data attached to each node, not through separate per-region structures.</p>
 <section id="scope" class="level2" data-number="16.1">
 <h2 data-number="16.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">16.1</span> Scope</h2>
-<p>CIMS represents both <strong>metal mining</strong> and <strong>non-metal mining</strong>. Metal mining is split into open-pit and underground operations, and within open-pit into iron and non-iron ores. Non-metal mining is dominated, in energy terms, by <strong>potash</strong>, which is modelled in full; other non-metal commodities are lower-energy but are within the scope of the sector and are noted below where they are not yet built out. The driving variable for the sub-model is the physical throughput of ore, expressed in tonnes; a forecast of ore throughput drives the demand for every downstream process and energy service, and is set exogenously in the same way as the output of the other industrial branches.</p>
+<p>CIMS represents both metal mining and non-metal mining. Metal mining is split into open-pit and underground operations, and within open-pit into iron and non-iron ores. Non-metal mining is dominated, in energy terms, by potash, which is modelled in full; other non-metal commodities are lower-energy but are within the scope of the sector and are noted below where they are not yet built out. The driving variable for the sub-model is the physical throughput of ore, expressed in tonnes; a forecast of ore throughput drives the demand for every downstream process and energy service, and is set exogenously in the same way as the output of the other industrial branches.</p>
 <p>Several activities that are colloquially called “mining” are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:</p>
 <ul>
-<li><strong>Coal mining</strong> is covered in the <a href="./sector_coal_mining.html">Coal Mining</a> chapter and the energy-supply component.</li>
-<li><strong>Oil and gas extraction</strong> and <strong>oil sands mining</strong> are covered under <a href="./sector_petroleum_crude.html">Petroleum Crude</a>.</li>
-<li><strong>Cement, lime, glass, brick and other non-metallic <em>mineral products</em></strong> are covered under <a href="./sector_industrial_minerals.html">Industrial Minerals</a> — these are downstream manufacturing branches, distinct from the extraction of the non-metal ores treated here.</li>
+<li>Coal mining is covered in the <a href="./sector_coal_mining.html">Coal Mining</a> chapter and the energy-supply component.</li>
+<li>Oil and gas extraction and oil sands mining are covered under <a href="./sector_petroleum_crude.html">Petroleum Crude</a>.</li>
+<li>Cement, lime, glass, brick, and other non-metallic <em>mineral products</em> are covered under <a href="./sector_industrial_minerals.html">Industrial Minerals</a> — these are downstream manufacturing branches, distinct from the extraction of the non-metal ores treated here.</li>
 </ul>
 <p>The smelting and refining of mined concentrates is likewise excluded and handled in the <a href="./sector_metal_smelting.html">Metal Smelting and Refining</a> chapter; the mining sub-model stops at the mine gate, with a saleable concentrate or product as its final output.</p>
 </section>
 <section id="real-world-context" class="level2" data-number="16.2">
 <h2 data-number="16.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">16.2</span> Real-world context</h2>
 <p>Canada is one of the world’s leading mining nations, and the industry is highly regionalised. Metal mines produce base and precious metals — copper, nickel, zinc, gold, iron ore, and others — from both open-pit and underground operations. Saskatchewan is the world’s largest potash-producing region, accounting on the order of 30% of global potash production <span class="citation" data-cites="nrcan-potash">(<a href="index.html#ref-nrcan-potash" role="doc-biblioref">Natural Resources Canada 2025</a>)</span>, and also supplies roughly a quarter of the world’s uranium from the high-grade deposits of the Athabasca Basin <span class="citation" data-cites="wna-uranium">(<a href="index.html#ref-wna-uranium" role="doc-biblioref">World Nuclear Association 2025</a>)</span>. The Northwest Territories host Canada’s diamond industry, and Nunavut has growing gold and iron-ore production. Mining is capital-intensive and strongly export-oriented, so activity levels are driven by world commodity prices and ore grades rather than by domestic demand — which is why CIMS drives the sector with an exogenous throughput forecast rather than an endogenous demand response.</p>
-<p>Mining is energy-intensive, and the energy is concentrated in a few activities. <strong>Comminution</strong> — the crushing, grinding and milling that reduce run-of-mine rock to particles fine enough for mineral separation — is typically the single largest energy consumer at a metal mine; published estimates put it at roughly a quarter of final energy at an average mine site and a majority of mine <em>electricity</em> use <span class="citation" data-cites="ceec-comminution">(<a href="index.html#ref-ceec-comminution" role="doc-biblioref">Coalition for Eco-Efficient Comminution 2021</a>)</span>. <strong>Diesel</strong> dominates mobile equipment, particularly haulage, and is the largest single fuel at many sites; many remote northern mines are off-grid and rely heavily on diesel generation for all loads. <strong>Ventilation</strong> is a large and distinctively underground electricity load, since deep mines must move enormous volumes of air for air quality and temperature control. The CIMS structure is built around exactly these distinctions: it separates open-pit from underground mining, breaks the ore-processing chain into its comminution stages, and represents ventilation, fans, pumping and the other utility loads through the shared machine-drive service (see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter).</p>
+<p>Mining is energy-intensive, and the energy is concentrated in a few activities. Comminution — the crushing, grinding, and milling that reduce run-of-mine rock to particles fine enough for mineral separation — is typically the single largest energy consumer at a metal mine; published estimates put it at roughly a quarter of final energy at an average mine site and a majority of mine <em>electricity</em> use <span class="citation" data-cites="ceec-comminution">(<a href="index.html#ref-ceec-comminution" role="doc-biblioref">Coalition for Eco-Efficient Comminution 2021</a>)</span>. Diesel dominates mobile equipment, particularly haulage, and is the largest single fuel at many sites; many remote northern mines are off-grid and rely heavily on diesel generation for all loads. Ventilation is a large and distinctively underground electricity load, since deep mines must move enormous volumes of air for air quality and temperature control. The CIMS structure is built around exactly these distinctions: it separates open-pit from underground mining, breaks the ore-processing chain into its comminution stages, and represents ventilation, fans, pumping, and the other utility loads through the shared machine-drive service (see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter).</p>
 </section>
 <section id="model-structure" class="level2" data-number="16.3">
 <h2 data-number="16.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">16.3</span> Model structure</h2>
@@ -792,23 +793,23 @@ Figure&nbsp;16.1: Energy-service flow model of the mining sector (region-agnosti
 </div>
 <section id="products-metal-mining" class="level3" data-number="16.3.1">
 <h3 data-number="16.3.1" class="anchored" data-anchor-id="products-metal-mining"><span class="header-section-number">16.3.1</span> Products: metal mining</h3>
-<p>Metal mining divides first into <strong>Open Pit</strong> and <strong>Underground</strong>, reflecting the substantial difference in their energy profiles (most importantly the ventilation load that underground operations carry). Open-pit mining is then split into an <strong>Iron</strong> path and a <strong>Non-Iron</strong> path, because iron ore and base/precious-metal ores follow different processing routes:</p>
+<p>Metal mining divides first into Open Pit and Underground, reflecting the substantial difference in their energy profiles (most importantly the ventilation load that underground operations carry). Open-pit mining is then split into an Iron path and a Non-Iron path, because iron ore and base/precious-metal ores follow different processing routes:</p>
 <ul>
-<li>The <strong>Iron</strong> path runs ore through a Raw Product stage (Extraction and Transportation), Primary and Secondary Crushing, and an <strong>Agglomeration</strong> stage that binds fine iron concentrate into a form suitable for downstream ironmaking.</li>
-<li>The <strong>Non-Iron</strong> path runs ore through Raw Product (Extraction, Transportation), Primary and Secondary Crushing, and <strong>Primary Milling</strong> (fine grinding), but no agglomeration.</li>
+<li>The Iron path runs ore through a Raw Product stage (Extraction and Transportation), Primary and Secondary Crushing, and an Agglomeration stage that binds fine iron concentrate into a form suitable for downstream ironmaking.</li>
+<li>The Non-Iron path runs ore through Raw Product (Extraction, Transportation), Primary and Secondary Crushing, and Primary Milling (fine grinding), but no agglomeration.</li>
 </ul>
-<p>Both open-pit paths feed a set of shared stages — <strong>Mineral Separation</strong>, <strong>Cleaning</strong> (concentrate drying), <strong>Tailing Disposal</strong>, and an <strong>Unassigned Energy</strong> node. <strong>Underground</strong> mining carries the same processing chain (grouped under a Processing node: Raw Product, Primary and Secondary Crushing, Primary Milling) together with its own Mineral Separation, Cleaning, Tailing Disposal, and Unassigned Energy nodes.</p>
-<p>The <strong>Unassigned Energy</strong> node is a reconciliation device: it carries metered sector energy that has not yet been allocated to a specific process stage, so that the modelled total matches reported energy use while the more detailed allocation is still being developed.</p>
-<p><mark>TODO: Progressively reassign the <strong>Unassigned Energy</strong> at each mine type to specific process stages and technologies, and reduce it toward zero as the bottom-up representation improves.</mark></p>
+<p>Both open-pit paths feed a set of shared stages — Mineral Separation, Cleaning (concentrate drying), Tailing Disposal, and an Unassigned Energy node. Underground mining carries the same processing chain (grouped under a Processing node: Raw Product, Primary and Secondary Crushing, Primary Milling) together with its own Mineral Separation, Cleaning, Tailing Disposal, and Unassigned Energy nodes.</p>
+<p>The Unassigned Energy node is a reconciliation device: it carries metered sector energy that has not yet been allocated to a specific process stage, so that the modelled total matches reported energy use while the more detailed allocation is still being developed.</p>
+<p><mark>TODO: Progressively reassign the Unassigned Energy at each mine type to specific process stages and technologies, and reduce it toward zero as the bottom-up representation improves.</mark></p>
 </section>
 <section id="products-non-metal-mining" class="level3" data-number="16.3.2">
 <h3 data-number="16.3.2" class="anchored" data-anchor-id="products-non-metal-mining"><span class="header-section-number">16.3.2</span> Products: non-metal mining</h3>
-<p>Non-metal mining is represented in the same Product sub-tree as a sibling of Metal. The dominant non-metal commodity by energy use is <strong>potash</strong>, whose structure is shown in <a href="#fig-mining-potash-sk" class="quarto-xref">Figure&nbsp;<span>16.2</span></a>. Potash production is met from two distinct mining methods that have markedly different energy profiles, and the model represents both:</p>
+<p>Non-metal mining is represented in the same Product sub-tree as a sibling of Metal. The dominant non-metal commodity by energy use is potash, whose structure is shown in <a href="#fig-mining-potash-sk" class="quarto-xref">Figure&nbsp;<span>16.2</span></a>. Potash production is met from two distinct mining methods that have markedly different energy profiles, and the model represents both:</p>
 <ul>
-<li><strong>Conventional mining</strong> — underground extraction (at depths around 1,000 m), with its own Extraction, Transportation, Crush-and-Screen and Dissolution stages.</li>
-<li><strong>Solution mining</strong> — used for deeper deposits (beyond roughly 1,500 m), where the ore is dissolved in situ and pumped to surface, with a simpler Extraction and Transportation chain.</li>
+<li>Conventional mining — underground extraction (at depths around 1,000 m), with its own Extraction, Transportation, Crush-and-Screen, and Dissolution stages.</li>
+<li>Solution mining — used for deeper deposits (beyond roughly 1,500 m), where the ore is dissolved in situ and pumped to surface, with a simpler Extraction and Transportation chain.</li>
 </ul>
-<p>Both methods feed a shared surface-processing and finishing train — <strong>Crystallization</strong> and <strong>Flotation</strong> (under Processing), followed by <strong>Drying</strong>, <strong>Compaction</strong> and <strong>Tailings Disposal</strong> — and, like the metal mines, both draw on the cross-cutting energy and utility services.</p>
+<p>Both methods feed a shared surface-processing and finishing train — Crystallization and Flotation (under Processing), followed by Drying, Compaction, and Tailings Disposal — and, like the metal mines, both draw on the cross-cutting energy and utility services.</p>
 <div id="fig-mining-potash-sk" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-mining-potash-sk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -820,9 +821,9 @@ Figure&nbsp;16.2: Potash flow model. Potash is a non-metal product sibling of Me
 </figure>
 </div>
 <p>Canada’s other non-metal mining is smaller in energy terms but is within the scope of this sector and is included here for completeness. The most significant omissions are uranium and diamonds, both of which are material parts of the Canadian mining industry even though their energy intensity is lower than that of metal milling.</p>
-<p><mark>TODO: Add <strong>uranium mining</strong> (Saskatchewan, Athabasca Basin — e.g.&nbsp;McArthur River and Cigar Lake). Saskatchewan supplies roughly a quarter of world uranium; it is currently absent from the sector.</mark></p>
-<p><mark>TODO: Add <strong>diamond mining</strong> (Northwest Territories) and other <strong>northern non-metal mining</strong>, once the corresponding regional data are in place.</mark></p>
-<p><mark>TODO: Confirm whether lower-energy non-metal extraction such as <strong>salt, gypsum and aggregates</strong> should be represented explicitly or remain aggregated, given their small share of mining energy.</mark></p>
+<p><mark>TODO: Add uranium mining (Saskatchewan, Athabasca Basin — e.g.&nbsp;McArthur River and Cigar Lake). Saskatchewan supplies roughly a quarter of world uranium; it is currently absent from the sector.</mark></p>
+<p><mark>TODO: Add diamond mining (Northwest Territories) and other northern non-metal mining, once the corresponding regional data are in place.</mark></p>
+<p><mark>TODO: Confirm whether lower-energy non-metal extraction such as salt, gypsum, and aggregates should be represented explicitly or remain aggregated, given their small share of mining energy.</mark></p>
 </section>
 <section id="auxiliary-energy-and-utility-services" class="level3" data-number="16.3.3">
 <h3 data-number="16.3.3" class="anchored" data-anchor-id="auxiliary-energy-and-utility-services"><span class="header-section-number">16.3.3</span> Auxiliary energy and utility services</h3>
@@ -831,15 +832,15 @@ Figure&nbsp;16.2: Potash flow model. Potash is a non-metal product sibling of Me
 <li><strong>Machine Drive</strong> — see the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter. Mining’s largest electrical loads sit here: comminution under Materials Processing, mine ventilation under Fans, and haulage and conveyance under Materials Handling, alongside Pumps and Compressed Air.</li>
 <li><strong>Steam</strong> — see <a href="./low_temp_industrial_heat.html">Low-Temperature Industrial Heat</a>, which covers boiler-raised steam and its fuel options.</li>
 <li><strong>Cogeneration</strong> — see <a href="./cogeneration.html">Cogeneration</a> for combined heat-and-power.</li>
-<li><strong>Methane Blend</strong> — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification and hydrogen.</li>
+<li><strong>Methane Blend</strong> — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.</li>
 <li><strong>HVAC</strong> (space heating and cooling) and <strong>Lighting</strong> for mine facilities.</li>
 </ul>
-<p><mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (per-horsepower machine-drive classes; separate pumping, compression, ventilation and conveyance sub-trees) and predate the Product/Service split. Migrate these files to the region-agnostic master tree and the shared General Services chapters referenced above.</mark></p>
+<p><mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (per-horsepower machine-drive classes; separate pumping, compression, ventilation, and conveyance sub-trees) and predate the Product/Service split. Migrate these files to the region-agnostic master tree and the shared General Services chapters referenced above.</mark></p>
 </section>
 </section>
 <section id="decarbonisation-technologies" class="level2" data-number="16.4">
 <h2 data-number="16.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">16.4</span> Decarbonisation technologies</h2>
-<p>Mining’s emissions are dominated by diesel in mobile equipment and by the electricity and combustion that drive comminution, process heat, and ventilation. The main decarbonisation levers therefore sit at the <strong>Extraction</strong> and <strong>Transportation</strong> nodes (mobile equipment), the comminution stages (<strong>Crushing</strong>, <strong>Milling</strong>), <strong>Cleaning</strong> (concentrate drying), and underground ventilation, alongside the shared services documented in the General Services chapters. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in <a href="#tbl-mining-decarb" class="quarto-xref">Table&nbsp;<span>16.1</span></a>. The figures quoted are indicative ranges from industry and techno-economic reviews <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>, not the calibrated values used in the model.</p>
+<p>Mining’s emissions are dominated by diesel in mobile equipment and by the electricity and combustion that drive comminution, process heat, and ventilation. The main decarbonisation levers therefore sit at the Extraction and Transportation nodes (mobile equipment), the comminution stages (Crushing, Milling), Cleaning (concentrate drying), and underground ventilation, alongside the shared services documented in the General Services chapters. The technologies below are admitted to the relevant tech-compete nodes; representative performance and maturity are summarised in <a href="#tbl-mining-decarb" class="quarto-xref">Table&nbsp;<span>16.1</span></a>. The figures quoted are indicative ranges from industry and techno-economic reviews <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>, not the calibrated values used in the model.</p>
 <div id="tbl-mining-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mining-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -917,11 +918,11 @@ Table&nbsp;16.1: Indicative performance and maturity of key mining decarbonisati
 </div>
 <section id="mobile-equipment-and-haulage" class="level3" data-number="16.4.1">
 <h3 data-number="16.4.1" class="anchored" data-anchor-id="mobile-equipment-and-haulage"><span class="header-section-number">16.4.1</span> Mobile equipment and haulage</h3>
-<p>Diesel haulage is the largest single diesel load at most surface mines. <strong>Trolley-assist</strong> systems feed the truck’s electric drive from an overhead catenary on the energy-intensive loaded uphill segments, cutting energy use on those segments by roughly 40–60% and lifecycle CO₂ by about 28–36% where the connected grid is low-carbon; the technology is commercial and deployed at several open-pit operations <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>. <strong>Battery-electric haul trucks</strong>, now offered by the major equipment makers, remove tailpipe diesel entirely but are constrained by range and charging time and remain early-commercial; <strong>hydrogen fuel-cell haul trucks</strong> are at the demonstration stage. <strong>Biodiesel and renewable diesel</strong> are drop-in fuels that cut lifecycle CO₂ without new equipment and are already represented in the tree (the “Extraction Biodiesel” and “Biodiesel truck” technologies). In CIMS these options compete at the Extraction and Transportation nodes.</p>
+<p>Diesel haulage is the largest single diesel load at most surface mines. Trolley-assist systems feed the truck’s electric drive from an overhead catenary on the energy-intensive loaded uphill segments, cutting energy use on those segments by roughly 40–60% and lifecycle CO₂ by about 28–36% where the connected grid is low-carbon; the technology is commercial and deployed at several open-pit operations <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>. Battery-electric haul trucks, now offered by the major equipment makers, remove tailpipe diesel entirely but are constrained by range and charging time and remain early-commercial; hydrogen fuel-cell haul trucks are at the demonstration stage. Biodiesel and renewable diesel are drop-in fuels that cut lifecycle CO₂ without new equipment and are already represented in the tree (the “Extraction Biodiesel” and “Biodiesel truck” technologies). In CIMS these options compete at the Extraction and Transportation nodes.</p>
 </section>
 <section id="comminution-efficiency" class="level3" data-number="16.4.2">
 <h3 data-number="16.4.2" class="anchored" data-anchor-id="comminution-efficiency"><span class="header-section-number">16.4.2</span> Comminution efficiency</h3>
-<p>Comminution is the single largest electricity consumer at a metal mine, so efficiency gains here have an outsized effect. <strong>High-pressure grinding rolls (HPGR)</strong> pre-fracture ore between counter-rotating rolls and reduce downstream grinding energy by about 20–30%. <strong>Vertical roller and stirred mills</strong> can deliver on the order of 40% energy savings relative to conventional ball mills and combine grinding with drying in a single unit. <strong>Ore sorting and pre-concentration</strong> reject barren rock before milling, lowering the energy spent per unit of contained metal, though their applicability is deposit-specific <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>. These compete at the Crushing and Milling nodes, while ore sorting acts as a service-side reduction in the feed sent to milling.</p>
+<p>Comminution is the single largest electricity consumer at a metal mine, so efficiency gains here have an outsized effect. High-pressure grinding rolls (HPGR) pre-fracture ore between counter-rotating rolls and reduce downstream grinding energy by about 20–30%. Vertical roller and stirred mills can deliver on the order of 40% energy savings relative to conventional ball mills and combine grinding with drying in a single unit. Ore sorting and pre-concentration reject barren rock before milling, lowering the energy spent per unit of contained metal, though their applicability is deposit-specific <span class="citation" data-cites="bisulandu-mining-2026">(<a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>)</span>. These compete at the Crushing and Milling nodes, while ore sorting acts as a service-side reduction in the feed sent to milling.</p>
 </section>
 <section id="electrified-and-low-carbon-process-heat" class="level3" data-number="16.4.3">
 <h3 data-number="16.4.3" class="anchored" data-anchor-id="electrified-and-low-carbon-process-heat"><span class="header-section-number">16.4.3</span> Electrified and low-carbon process heat</h3>
@@ -929,18 +930,107 @@ Table&nbsp;16.1: Indicative performance and maturity of key mining decarbonisati
 </section>
 <section id="ventilation-and-auxiliary-drive-underground" class="level3" data-number="16.4.4">
 <h3 data-number="16.4.4" class="anchored" data-anchor-id="ventilation-and-auxiliary-drive-underground"><span class="header-section-number">16.4.4</span> Ventilation and auxiliary drive (underground)</h3>
-<p>Ventilation can account for roughly 40–50% of an underground mine’s energy use. <strong>Ventilation on demand (VOD)</strong> matches airflow to where vehicles and crews are actually working and can cut ventilation energy by up to about 50% <span class="citation" data-cites="abb-vod">(<a href="index.html#ref-abb-vod" role="doc-biblioref">ABB 2024</a>)</span>; <strong>high-efficiency fans and motors with variable-speed drives</strong> further reduce auxiliary drive energy. These are represented through the Fans and other machine-drive end uses described in the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter.</p>
+<p>Ventilation can account for roughly 40–50% of an underground mine’s energy use. Ventilation on demand (VOD) matches airflow to where vehicles and crews are actually working and can cut ventilation energy by up to about 50% <span class="citation" data-cites="abb-vod">(<a href="index.html#ref-abb-vod" role="doc-biblioref">ABB 2024</a>)</span>; high-efficiency fans and motors with variable-speed drives further reduce auxiliary drive energy. These are represented through the Fans and other machine-drive end uses described in the <a href="./machine_drive.html">Industrial Machine Drive Systems</a> chapter.</p>
 </section>
 <section id="potash-specific-options" class="level3" data-number="16.4.5">
 <h3 data-number="16.4.5" class="anchored" data-anchor-id="potash-specific-options"><span class="header-section-number">16.4.5</span> Potash-specific options</h3>
-<p>Conventional potash mining already relies on electric continuous miners and electric hoisting, so its decarbonisation depends mainly on grid emissions intensity and on electrifying surface haulage; VOD applies in the underground workings. Solution mining and the surface <strong>Drying</strong> and <strong>Compaction</strong> stages are heat-intensive and decarbonise through the same low-carbon heat options as above — in particular mechanical vapour recompression for crystallization and evaporation duties, and electric or biomass boilers for drying.</p>
+<p>Conventional potash mining already relies on electric continuous miners and electric hoisting, so its decarbonisation depends mainly on grid emissions intensity and on electrifying surface haulage; VOD applies in the underground workings. Solution mining and the surface Drying and Compaction stages are heat-intensive and decarbonise through the same low-carbon heat options as above — in particular mechanical vapour recompression for crystallization and evaporation duties, and electric or biomass boilers for drying.</p>
+</section>
+<section id="indicative-capital-and-operating-costs-and-energy-use" class="level3" data-number="16.4.6">
+<h3 data-number="16.4.6" class="anchored" data-anchor-id="indicative-capital-and-operating-costs-and-energy-use"><span class="header-section-number">16.4.6</span> Indicative capital and operating costs and energy use</h3>
+<p><a href="#tbl-mining-technoecon" class="quarto-xref">Table&nbsp;<span>16.2</span></a> gathers order-of-magnitude capital and operating costs and energy characteristics for the main comminution and mobile-equipment technologies. The estimates are drawn from public techno-economic literature <span class="citation" data-cites="ceec-comminution bisulandu-mining-2026 srk-haultruck">(<a href="index.html#ref-ceec-comminution" role="doc-biblioref">Coalition for Eco-Efficient Comminution 2021</a>; <a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>; <a href="index.html#ref-srk-haultruck" role="doc-biblioref">SRK Consulting 2024</a>)</span> and expressed in 2025 Canadian dollars: US-dollar sources were converted at the mid-2025 rate of roughly 1.37 CAD/USD and adjusted to 2025 where the source year differed. Because mining capital is dominated by site-specific concentrators and mobile fleets, the figures are given per piece of equipment or relative to a baseline rather than per tonne of capacity where that is more meaningful; energy intensity is per tonne of ore. Fixed O&amp;M follows the heavy-industry convention of roughly 4–6% of capital cost per year. The values are for relative comparison only, not project budgeting, and are separate from the plant-specific values the model carries internally.</p>
+<div id="tbl-mining-technoecon" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-mining-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;16.2: Indicative techno-economic characteristics of mining technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-mining-technoecon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+<col style="width: 20%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Overnight capex (2025 CAD)</th>
+<th style="text-align: left;">Fixed O&amp;M</th>
+<th style="text-align: left;">Energy intensity</th>
+<th style="text-align: left;">Main energy carrier</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">SAG / ball-mill comminution</td>
+<td style="text-align: left;">site-specific concentrator capital</td>
+<td style="text-align: left;">~4–6%/yr</td>
+<td style="text-align: left;">~20–60 kWh/t ore (≈0.07–0.2 GJ/t)</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-pressure grinding rolls (HPGR)</td>
+<td style="text-align: left;">≈ SAG circuit (±~10 M per circuit)</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">~10–35% less than SAG</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Vertical / stirred mills</td>
+<td style="text-align: left;">moderate</td>
+<td style="text-align: left;">~4%/yr</td>
+<td style="text-align: left;">~40% less than ball mills</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Diesel haul truck (≈150–290 t)</td>
+<td style="text-align: left;">~2–3.4 M per truck</td>
+<td style="text-align: left;">high fuel cost</td>
+<td style="text-align: left;">diesel</td>
+<td style="text-align: left;">diesel</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric haul truck</td>
+<td style="text-align: left;">~4–7 M per truck (+100–150%)</td>
+<td style="text-align: left;">~65% lower cost per t moved</td>
+<td style="text-align: left;">electricity</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Hydrogen fuel-cell haul truck</td>
+<td style="text-align: left;">higher than battery-electric (demonstration)</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">hydrogen</td>
+<td style="text-align: left;">hydrogen</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Trolley-assist (diesel-electric)</td>
+<td style="text-align: left;">overhead catenary infrastructure</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">40–60% energy saving on loaded climbs</td>
+<td style="text-align: left;">grid electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ventilation on demand (VOD)</td>
+<td style="text-align: left;">retrofit controls (low)</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">up to ~50% ventilation energy saving</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
 <p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
 </section>
 </section>
 <section id="economics" class="level2" data-number="16.5">
 <h2 data-number="16.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">16.5</span> Economics</h2>
 <p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output (node-unit) basis, a service request for the energy or upstream service it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
-<p>A few sector-wide conventions are worth noting. Mining technologies are discounted at a high <strong>financial discount rate</strong> (35% in the current data), reflecting the short payback horizons and high hurdle rates typical of capital allocation in resource industries. <strong>Heterogeneity (variance) parameters</strong> at the process nodes are set so that competitions respond to cost differences without collapsing to winner-take-all. Fuel prices entering the service-cost calculation are scaled by a sector-level block of price multipliers, allowing the mining sector to face prices that differ from the generic delivered price of each fuel.</p>
+<p>A few sector-wide conventions are worth noting. Mining technologies are discounted at a high rate (35% in the current data). These values are <strong>behavioural</strong> (revealed or empirical) discount rates, not true financial costs of capital: they sit well above the single-digit rates a firm’s cost of capital would imply because they summarise the short payback horizons, risk aversion, and other non-financial barriers that govern real technology-adoption decisions, and CIMS applies this behavioural rate throughout the lifecycle-cost calculation (see the discount-rate discussion in the <a href="./theory.html">Theory</a> chapter and <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>). <strong>Heterogeneity (variance) parameters</strong> at the process nodes are set so that competitions respond to cost differences without collapsing to winner-take-all. Fuel prices entering the service-cost calculation are scaled by a sector-level block of price multipliers, allowing the mining sector to face prices that differ from the generic delivered price of each fuel.</p>
 <p>Greenhouse-gas costs enter through the fuels: combustion emissions follow from each technology’s fuel service requests and the prevailing carbon price, so fuel-switching — from diesel haulage to biodiesel or electric, or from natural gas to hydrogen or biogas in the methane blend — is the model’s main channel for emissions reduction.</p>
 <p><mark>TODO: Mining has no carbon-capture (CCS) service in the current tree (see the <a href="./ccus.html">Carbon Capture, Utilization, and Storage</a> chapter), on the assumption that its emissions are predominantly combustion-related and dispersed. Confirm this is appropriate, and add process-emissions representation if any mined commodity warrants it.</mark></p>
 </section>
@@ -948,17 +1038,17 @@ Table&nbsp;16.1: Indicative performance and maturity of key mining decarbonisati
 <h2 data-number="16.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">16.6</span> Regional coverage and differences</h2>
 <p>Because the tree is region-agnostic, every province and territory is built from the same master structure, and a region simply carries no production on the branches that do not apply to it. Regional differences therefore show up in <em>where</em> production sits rather than in the shape of the tree:</p>
 <ul>
-<li><strong>Potash</strong> production is concentrated in <strong>Saskatchewan</strong>, which carries essentially all of the potash branch.</li>
-<li><strong>Iron ore</strong> is concentrated in the <strong>Atlantic</strong> region (the Labrador Trough, on the Québec–Newfoundland border) and <strong>Québec</strong>, which carry most of the open-pit iron path.</li>
-<li><strong>Base- and precious-metal mining</strong> is spread across <strong>British Columbia, Ontario, Manitoba, Québec</strong> and the <strong>Atlantic</strong> region (for example nickel in Manitoba and Ontario, and copper and gold in British Columbia), populating the non-iron and underground branches.</li>
-<li><strong>Territorial mining</strong> — diamonds in the Northwest Territories and gold and iron ore in Nunavut — populates the metal and (future) non-metal branches in those regions.</li>
+<li>Potash production is concentrated in Saskatchewan, which carries essentially all of the potash branch.</li>
+<li>Iron ore is concentrated in the Atlantic region (the Labrador Trough, on the Québec–Newfoundland border) and Québec, which carry most of the open-pit iron path.</li>
+<li>Base- and precious-metal mining is spread across British Columbia, Ontario, Manitoba, Québec, and the Atlantic region (for example nickel in Manitoba and Ontario, and copper and gold in British Columbia), populating the non-iron and underground branches.</li>
+<li>Territorial mining — diamonds in the Northwest Territories and gold and iron ore in Nunavut — populates the metal and (future) non-metal branches in those regions.</li>
 </ul>
-<p><mark>TODO: Several regions are not yet populated in the current input files. Build out mining throughput and technology data for <strong>Alberta</strong> and the three <strong>territories</strong> (the territories are not yet represented anywhere in CIMS — see the Architecture chapter), so that the region-agnostic tree is exercised everywhere it should be.</mark></p>
-<p><mark>TODO: The Atlantic, Manitoba, Ontario and Québec metal mines are currently represented generically rather than by commodity. Consider whether the <strong>Iron / Non-Iron</strong> split, plus any commodity-specific energy intensities, adequately capture the real mix in each region, and refine where the averaging is too coarse.</mark></p>
+<p><mark>TODO: Several regions are not yet populated in the current input files. Build out mining throughput and technology data for Alberta and the three territories (the territories are not yet represented anywhere in CIMS — see the Architecture chapter), so that the region-agnostic tree is exercised everywhere it should be.</mark></p>
+<p><mark>TODO: The Atlantic, Manitoba, Ontario, and Québec metal mines are currently represented generically rather than by commodity. Consider whether the Iron / Non-Iron split, plus any commodity-specific energy intensities, adequately capture the real mix in each region, and refine where the averaging is too coarse.</mark></p>
 </section>
 <section id="limitations-and-planned-extensions" class="level2" data-number="16.7">
 <h2 data-number="16.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">16.7</span> Limitations and planned extensions</h2>
-<p>The mining sub-model is a deliberately simplified representation. The TODOs above record the main gaps between this design and both the current input files and the real Canadian mining sector: the auxiliary-service migration to the MECS structure; the reassignment of Unassigned Energy; the addition of uranium, diamonds and the smaller non-metal commodities; full provincial and territorial coverage including Alberta and the territories; and the question of commodity-level detail within metal mining. Together these define the path from the current state of the model to the region-agnostic, fully populated design described in this chapter.</p>
+<p>The mining sub-model is a deliberately simplified representation. The TODOs above record the main gaps between this design and both the current input files and the real Canadian mining sector: the auxiliary-service migration to the MECS structure; the reassignment of Unassigned Energy; the addition of uranium, diamonds, and the smaller non-metal commodities; full provincial and territorial coverage including Alberta and the territories; and the question of commodity-level detail within metal mining. Together these define the path from the current state of the model to the region-agnostic, fully populated design described in this chapter.</p>
 <p><mark>TODO: Replace the illustrative real-world figures and the example discount-rate value in this chapter with quantitative values drawn directly from the model input files, and add a benchmark of modelled mining energy use against CIEEDAC / Natural Resources Canada data.</mark></p>
 <div style="page-break-after: always;"></div>
 </section>
@@ -976,6 +1066,9 @@ Mungyeko Bisulandu, Baby-Jean Robert, Daniel R. Rousse, Marc Pellerin, Mokhtar B
 </div>
 <div id="ref-nrcan-potash" class="csl-entry" role="listitem">
 Natural Resources Canada. 2025. <em>Potash Facts</em>. Minerals and Metals Facts. <a href="https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts/potash-facts">https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts/potash-facts</a>.
+</div>
+<div id="ref-srk-haultruck" class="csl-entry" role="listitem">
+SRK Consulting. 2024. <em>Decarbonizing Mining: Diesel Vs Electric Haul Trucks on Cost and Efficiency</em>. SRK Consulting. <a href="https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency">https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency</a>.
 </div>
 <div id="ref-wna-uranium" class="csl-entry" role="listitem">
 World Nuclear Association. 2025. <em>Uranium in Canada</em>. Country Profiles. <a href="https://world-nuclear.org/information-library/country-profiles/countries-a-f/canada-uranium">https://world-nuclear.org/information-library/country-profiles/countries-a-f/canada-uranium</a>.

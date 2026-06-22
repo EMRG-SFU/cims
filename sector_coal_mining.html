@@ -23,7 +23,26 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -49,6 +68,9 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -471,7 +493,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +708,29 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">8.1</span> Scope</a></li>
+  <li><a href="#real-world-context" id="toc-real-world-context" class="nav-link" data-scroll-target="#real-world-context"><span class="header-section-number">8.2</span> Real-world context</a></li>
+  <li><a href="#model-structure" id="toc-model-structure" class="nav-link" data-scroll-target="#model-structure"><span class="header-section-number">8.3</span> Model structure</a>
+  <ul class="collapse">
+  <li><a href="#products-the-coal-production-chain" id="toc-products-the-coal-production-chain" class="nav-link" data-scroll-target="#products-the-coal-production-chain"><span class="header-section-number">8.3.1</span> Products: the coal production chain</a></li>
+  <li><a href="#services" id="toc-services" class="nav-link" data-scroll-target="#services"><span class="header-section-number">8.3.2</span> Services</a></li>
+  </ul></li>
+  <li><a href="#decarbonisation-technologies" id="toc-decarbonisation-technologies" class="nav-link" data-scroll-target="#decarbonisation-technologies"><span class="header-section-number">8.4</span> Decarbonisation technologies</a>
+  <ul class="collapse">
+  <li><a href="#capturing-coal-mine-methane" id="toc-capturing-coal-mine-methane" class="nav-link" data-scroll-target="#capturing-coal-mine-methane"><span class="header-section-number">8.4.1</span> Capturing coal-mine methane</a></li>
+  <li><a href="#electrifying-and-fuel-switching-mobile-equipment" id="toc-electrifying-and-fuel-switching-mobile-equipment" class="nav-link" data-scroll-target="#electrifying-and-fuel-switching-mobile-equipment"><span class="header-section-number">8.4.2</span> Electrifying and fuel-switching mobile equipment</a></li>
+  </ul></li>
+  <li><a href="#economics" id="toc-economics" class="nav-link" data-scroll-target="#economics"><span class="header-section-number">8.5</span> Economics</a></li>
+  <li><a href="#regional-coverage-and-differences" id="toc-regional-coverage-and-differences" class="nav-link" data-scroll-target="#regional-coverage-and-differences"><span class="header-section-number">8.6</span> Regional coverage and differences</a></li>
+  <li><a href="#limitations-and-planned-extensions" id="toc-limitations-and-planned-extensions" class="nav-link" data-scroll-target="#limitations-and-planned-extensions"><span class="header-section-number">8.7</span> Limitations and planned extensions</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +738,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_coal_mining.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Coal Mining</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Coal Mining</span></h1>
+<h1 class="title"><span id="sec-coal-mining" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Coal Mining</span></span></h1>
 </div>
 
 
@@ -712,10 +755,218 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: Add a description of the Coal Mining sector.</mark></p>
-<p><em>Placeholder chapter — this sector is represented in the model architecture but does not yet have a written description.</em></p>
+<p>Coal mining is one of CIMS’s energy-supply and extractive sub-models: it produces coal for metallurgical use (coking coal for steelmaking) and for thermal use (power and industrial heat). The emphasis, as in the other extractive sectors, is on the structure of the energy-service flow model — the production chain, the technologies that compete at each stage, and the engineering ratios that link them. The tree is region-agnostic. Coal mining has a distinctive emissions signature: alongside the diesel its mobile equipment burns, it releases fugitive methane liberated from the coal seam during extraction, and this coal-mine methane is the sector’s largest greenhouse-gas source — yet, as discussed below, the current model carries no technology to abate it.</p>
+<section id="scope" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">8.1</span> Scope</h2>
+<p>CIMS represents the extraction, size reduction, and finishing of coal — from the mine face through crushing, milling, washing, and drying to a saleable product. The driving variable is coal output in tonnes. Both metallurgical (coking) coal and thermal coal are within scope; the chain includes a Metallurgical Finishing stage (washing, cleaning/drying, tailings) that prepares coking coal to the specification the steel industry needs.</p>
+<p>Adjacent activities are handled elsewhere to avoid double-counting: the combustion of thermal coal for power is in <a href="./sector_electricity.html">Electricity</a> and for industrial heat in the relevant industrial chapters; the conversion of coking coal to coke and its use in ironmaking are in <a href="./sector_iron_and_steel.html">Iron and Steel</a>; and other (non-coal) mining is in the <a href="./sector_mining.html">Mining</a> sector. This chapter covers the mining of the coal itself.</p>
+</section>
+<section id="real-world-context" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="real-world-context"><span class="header-section-number">8.2</span> Real-world context</h2>
+<p>Canada produced about 42.6 Mt of coal in 2024, roughly two-thirds of it metallurgical <span class="citation" data-cites="nrcan-coal">(<a href="index.html#ref-nrcan-coal" role="doc-biblioref">Natural Resources Canada 2025</a>)</span>. The geography is concentrated in the West: British Columbia accounts for around 69% of tonnage (the Elk Valley coking-coal mines), Alberta about 19% (metallurgical and thermal), and Saskatchewan about 11% (lignite/thermal). The two coal types are on opposite trajectories. Thermal coal is in steep decline as Canada phases out unabated coal-fired electricity by 2030 and moves to end thermal-coal exports, while metallurgical coal — for which there is no current large-scale substitute in conventional steelmaking — has held up and is increasingly framed as an export commodity <span class="citation" data-cites="nrcan-coal">(<a href="index.html#ref-nrcan-coal" role="doc-biblioref">Natural Resources Canada 2025</a>)</span>. Canadian coal production has fallen about 31% over the past decade, almost all of it thermal.</p>
+<p>The sector’s emissions come from two places. Diesel powers the trucks, shovels, and other mobile equipment, as at any large mine. More distinctively, methane trapped in the coal seam is released during extraction — fugitive coal-mine methane (CMM), much of it carried out in the ventilation air (VAM). Coal-mine methane is the dominant greenhouse-gas source from coal mining, on the order of 60% of the total, and mature technologies exist to drain and destroy it — gas drainage, and ventilation-air-methane oxidation that can destroy more than 98% of the methane in mine ventilation air <span class="citation" data-cites="iea-methane-coal csiro-vam">(<a href="index.html#ref-iea-methane-coal" role="doc-biblioref">International Energy Agency 2023</a>; <a href="index.html#ref-csiro-vam" role="doc-biblioref">CSIRO 2026</a>)</span>. The CIMS structure carries the fugitive-methane factor on the extraction node and the diesel emissions on the mobile equipment, but — as noted below — it does not yet offer a methane-capture option.</p>
+</section>
+<section id="model-structure" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="model-structure"><span class="header-section-number">8.3</span> Model structure</h2>
+<p>The sector divides into a <strong>Product</strong> sub-tree — the coal production chain — and a <strong>Service</strong> sub-tree of auxiliary energy services. <a href="#fig-coal-mining-flow-model" class="quarto-xref">Figure&nbsp;<span>8.1</span></a> shows the structure. Each node carries a competition rule (see <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>); the production chain is a fixed-ratio sequence and the technology choices occur at the tech-compete leaves.</p>
+<div id="fig-coal-mining-flow-model" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-coal-mining-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<a href="images/coal_mining_flow_model.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;8.1: Energy-service flow model of the coal mining sector (region-agnostic master tree). The Product sub-tree runs from Raw Product (extraction, mine ventilation, transportation) through Size Reduced Product (crushing and milling) to Metallurgical Finishing (washing, cleaning/drying, tailings); the Service sub-tree holds the MECS-aligned machine drive and building services. Fugitive coal-mine methane is released at extraction."><img src="images/coal_mining_flow_model.svg" class="img-fluid figure-img" style="width:100.0%"></a>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-coal-mining-flow-model-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: Energy-service flow model of the coal mining sector (region-agnostic master tree). The Product sub-tree runs from Raw Product (extraction, mine ventilation, transportation) through Size Reduced Product (crushing and milling) to Metallurgical Finishing (washing, cleaning/drying, tailings); the Service sub-tree holds the MECS-aligned machine drive and building services. Fugitive coal-mine methane is released at extraction.
+</figcaption>
+</figure>
+</div>
+<section id="products-the-coal-production-chain" class="level3" data-number="8.3.1">
+<h3 data-number="8.3.1" class="anchored" data-anchor-id="products-the-coal-production-chain"><span class="header-section-number">8.3.1</span> Products: the coal production chain</h3>
+<ul>
+<li><strong>Raw Product</strong> — the mine itself: Extraction (competing diesel, biodiesel, and electric equipment), Mine Ventilation, and Transportation (diesel and biodiesel trucks, or conveyance). The Extraction node carries the fugitive-methane emission factor.</li>
+<li><strong>Size Reduced Product</strong> — Primary Crushing, Primary Milling, and Secondary Milling of the run-of-mine coal.</li>
+<li><strong>Metallurgical Finishing</strong> — preparing coking coal: Washing (wash mill), Cleaning (rotary, spray, or fluidized-bed drying, on coal, natural gas, or electricity), and Tailings Disposal (reclamation, with diesel, biodiesel, or electric options).</li>
+</ul>
+<p>The master tree also defines Simplified Extraction and Simplified Production nodes — lower-resolution alternatives to the full chain for regions or runs where the detailed structure is not warranted.</p>
+</section>
+<section id="services" class="level3" data-number="8.3.2">
+<h3 data-number="8.3.2" class="anchored" data-anchor-id="services"><span class="header-section-number">8.3.2</span> Services</h3>
+<p>The services follow the standard pattern and are documented in their own chapters in the General Services part: <strong>Machine Drive</strong> (see <a href="./machine_drive.html">Industrial Machine Drive Systems</a>) carries the large motor loads (the model’s current files still use the older per-horsepower and separate compression/conveyance/pumping/ventilation structure), together with <strong>HVAC</strong>, <strong>Lighting</strong>, and the <strong>Methane Blend</strong> gaseous-fuel node.</p>
+<p><mark>TODO: The current regional input files still implement the earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the MECS-aligned Machine Drive grouping. Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark></p>
+</section>
+</section>
+<section id="decarbonisation-technologies" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="decarbonisation-technologies"><span class="header-section-number">8.4</span> Decarbonisation technologies</h2>
+<p>Coal mining’s emissions split into fugitive methane (the larger share) and diesel combustion in mobile equipment, with smaller process-heat (drying) and electricity loads. The decarbonisation levers therefore are methane capture, equipment electrification or fuel-switching, and efficiency. <a href="#tbl-coal-mining-decarb" class="quarto-xref">Table&nbsp;<span>8.1</span></a> summarises maturity and <a href="#tbl-coal-mining-cost" class="quarto-xref">Table&nbsp;<span>8.2</span></a> gives indicative costs. A crucial caveat: the single largest lever — methane capture — is not yet represented in the model.</p>
+<div id="tbl-coal-mining-decarb" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-coal-mining-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8.1: Indicative performance and maturity of key coal mining decarbonisation technologies
+</figcaption>
+<div aria-describedby="tbl-coal-mining-decarb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 30%">
+<col style="width: 45%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Indicative benefit</th>
+<th style="text-align: left;">Maturity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Coal-mine methane drainage + use</td>
+<td style="text-align: left;">Captures seam methane for energy</td>
+<td style="text-align: left;">Commercial — <em>not in model</em></td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Ventilation-air-methane (VAM) oxidation</td>
+<td style="text-align: left;">Destroys &gt;98% of dilute vent methane</td>
+<td style="text-align: left;">Commercial / demonstration — <em>not in model</em></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric / biodiesel extraction &amp; haulage</td>
+<td style="text-align: left;">Cuts mobile-equipment diesel CO₂</td>
+<td style="text-align: left;">Commercial / emerging</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric coal/concentrate drying</td>
+<td style="text-align: left;">Removes drying-fuel CO₂</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Ventilation-on-demand &amp; efficient fans</td>
+<td style="text-align: left;">Lower ventilation energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Electric conveyance &amp; efficient motors/drives</td>
+<td style="text-align: left;">Lower auxiliary energy</td>
+<td style="text-align: left;">Commercial</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The estimates in <a href="#tbl-coal-mining-cost" class="quarto-xref">Table&nbsp;<span>8.2</span></a> are order-of-magnitude figures from public literature <span class="citation" data-cites="iea-methane-coal bisulandu-mining-2026 srk-haultruck">(<a href="index.html#ref-iea-methane-coal" role="doc-biblioref">International Energy Agency 2023</a>; <a href="index.html#ref-bisulandu-mining-2026" role="doc-biblioref">Mungyeko Bisulandu et al. 2026</a>; <a href="index.html#ref-srk-haultruck" role="doc-biblioref">SRK Consulting 2024</a>)</span>, expressed in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.</p>
+<div id="tbl-coal-mining-cost" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-coal-mining-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;8.2: Indicative techno-economic characteristics of coal mining decarbonisation technologies, 2025 CAD
+</figcaption>
+<div aria-describedby="tbl-coal-mining-cost-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Technology</th>
+<th style="text-align: left;">Cost / capex</th>
+<th style="text-align: left;">Operating effect</th>
+<th style="text-align: left;">Energy / emission</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Methane drainage + utilisation</td>
+<td style="text-align: left;">moderate capex; gas revenue offsets</td>
+<td style="text-align: left;">often low net cost per t CO₂e</td>
+<td style="text-align: left;">captures high-GWP CH₄</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">VAM oxidation (e.g.&nbsp;CataVAM)</td>
+<td style="text-align: left;">moderate capex</td>
+<td style="text-align: left;">low cost per t CO₂e abated</td>
+<td style="text-align: left;">destroys &gt;98% of vent methane</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Battery-electric haul truck</td>
+<td style="text-align: left;">~CAD 4–7 M per truck (+100–150% vs diesel)</td>
+<td style="text-align: left;">~65% lower cost per t moved</td>
+<td style="text-align: left;">electricity</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Biodiesel in existing equipment</td>
+<td style="text-align: left;">none (drop-in fuel)</td>
+<td style="text-align: left;">fuel-cost dependent</td>
+<td style="text-align: left;">lifecycle CO₂ cut</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Electric drying</td>
+<td style="text-align: left;">~150–400 CAD/kWth</td>
+<td style="text-align: left;">electricity-priced heat</td>
+<td style="text-align: left;">removes drying-fuel CO₂</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<section id="capturing-coal-mine-methane" class="level3" data-number="8.4.1">
+<h3 data-number="8.4.1" class="anchored" data-anchor-id="capturing-coal-mine-methane"><span class="header-section-number">8.4.1</span> Capturing coal-mine methane</h3>
+<p>The most important lever is the one the model is missing. Because methane has a high global-warming potential and is released in large quantities during mining, draining and using it (where concentrations allow) and oxidising the dilute methane in ventilation air (VAM) together address the majority of the sector’s emissions, with mature technology that can destroy more than 98% of vent methane <span class="citation" data-cites="csiro-vam iea-methane-coal">(<a href="index.html#ref-csiro-vam" role="doc-biblioref">CSIRO 2026</a>; <a href="index.html#ref-iea-methane-coal" role="doc-biblioref">International Energy Agency 2023</a>)</span>. The model currently applies the same fugitive-methane factor to every extraction option, with no capture alternative.</p>
+<p><mark>TODO: Add coal-mine methane drainage and use and ventilation-air-methane (VAM) oxidation technologies at the Extraction / Mine Ventilation nodes. Fugitive methane is the largest single source of coal-mining emissions and has commercially available abatement, but the current tree offers no option to reduce it — every extraction technology carries the same methane factor.</mark></p>
+</section>
+<section id="electrifying-and-fuel-switching-mobile-equipment" class="level3" data-number="8.4.2">
+<h3 data-number="8.4.2" class="anchored" data-anchor-id="electrifying-and-fuel-switching-mobile-equipment"><span class="header-section-number">8.4.2</span> Electrifying and fuel-switching mobile equipment</h3>
+<p>As in metal mining, the diesel load is addressed by battery-electric and biodiesel extraction and haulage (already options at the Extraction and Transportation nodes), electric coal drying, ventilation-on-demand, and efficient motors, fans, and conveyors in the machine-drive service. These are the same levers detailed in the <a href="./sector_mining.html">Mining</a> chapter.</p>
+<p><mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark></p>
+</section>
+</section>
+<section id="economics" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="economics"><span class="header-section-number">8.5</span> Economics</h2>
+<p>Technology choice at every tech-compete node follows the lifecycle-cost competition of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. Each technology carries a capital cost, fixed operating and maintenance cost, an output basis, service requests for the energy it consumes, and availability and lifetime years; these are annualised, combined with service costs into a lifecycle cost, and converted to market shares by the inverse-power choice rule.</p>
+<p>Coal mining technologies are discounted at a high rate — 35% at most process nodes in the current data, with some auxiliary nodes at 50%. These values are <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital, capturing the short payback horizons and adoption barriers typical of resource industries; CIMS applies this rate throughout the lifecycle-cost calculation, as set out in the discount-rate discussion of the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>. <strong>Heterogeneity (variance) parameters</strong> are set around 10.</p>
+<p>The emissions accounting combines combustion CO₂ from diesel and drying fuel with the distinctive fugitive CH₄ factor on extraction (entering on a CO₂-equivalent basis at methane’s high warming potential). Because there is no methane-capture option and no CCS service, the model’s only channels for emissions reduction are equipment electrification, fuel-switching to biodiesel, and efficiency — which reach the combustion emissions but leave the dominant fugitive methane untouched. This is the most consequential representational gap in the sub-model, and it means the model understates the abatement available to the sector.</p>
+</section>
+<section id="regional-coverage-and-differences" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="regional-coverage-and-differences"><span class="header-section-number">8.6</span> Regional coverage and differences</h2>
+<p>Four regions carry coal mining — Alberta, the Atlantic region, British Columbia, and Saskatchewan — reflecting where Canadian coal is actually mined:</p>
+<ul>
+<li>British Columbia dominates, with metallurgical (coking) coal from the Elk Valley; this production is export-oriented and durable.</li>
+<li>Alberta has both metallurgical and thermal coal, with thermal declining as coal power is phased out.</li>
+<li>Saskatchewan mines lignite/thermal coal, the most exposed to the power phase-out.</li>
+<li>The Atlantic region has a small coal presence.</li>
+</ul>
+<p>Ontario, Québec, and Manitoba are absent, consistent with the absence of coal mining there.</p>
+<p><mark>TODO: Represent the diverging trajectories of metallurgical versus thermal coal explicitly — durable, export-driven coking-coal demand versus a sharp thermal-coal decline under the coal-power phase-out and export restrictions — since lumping them understates the structural change underway in the sector.</mark></p>
+</section>
+<section id="limitations-and-planned-extensions" class="level2" data-number="8.7">
+<h2 data-number="8.7" class="anchored" data-anchor-id="limitations-and-planned-extensions"><span class="header-section-number">8.7</span> Limitations and planned extensions</h2>
+<p>The coal mining sub-model captures the production chain and its diesel and electricity loads in good detail, but it has one large gap and several smaller ones. The large gap is the absence of any coal-mine-methane abatement technology, which omits the sector’s single most important emissions lever. The smaller debts are the older auxiliary structure (to be migrated to MECS machine drive), the lack of an explicit metallurgical-versus-thermal split, and reliance on inherited cost data. The TODOs above record these priorities.</p>
+<p><mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled coal output and fugitive-methane emissions against Natural Resources Canada coal statistics and Environment and Climate Change Canada’s National Inventory Report.</mark></p>
+<div style="page-break-after: always;"></div>
+</section>
+<section id="references" class="level2 unnumbered">
+<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-csiro-vam" class="csl-entry" role="listitem">
+CSIRO. 2026. <em>From Safety Hazard to Climate Solution: Technology Tackling Fugitive Methane from Coal Mines (CataVAM)</em>. CSIRO News. <a href="https://www.csiro.au/en/news/All/Articles/2026/June/CataVAM">https://www.csiro.au/en/news/All/Articles/2026/June/CataVAM</a>.
+</div>
+<div id="ref-iea-methane-coal" class="csl-entry" role="listitem">
+International Energy Agency. 2023. <em>Global Methane Tracker 2023: Strategies to Reduce Emissions from Coal Supply</em>. IEA. <a href="https://www.iea.org/reports/global-methane-tracker-2023/strategies-to-reduce-emissions-from-coal-supply">https://www.iea.org/reports/global-methane-tracker-2023/strategies-to-reduce-emissions-from-coal-supply</a>.
+</div>
+<div id="ref-bisulandu-mining-2026" class="csl-entry" role="listitem">
+Mungyeko Bisulandu, Baby-Jean Robert, Daniel R. Rousse, Marc Pellerin, Mokhtar Bozorg, and Adrian Ilinca. 2026. <span>“Energy Consumption, Decarbonization Pathways, and Renewable Energy Integration in the Mining Industry: <span>A</span> System-Level Review.”</span> <em>Energies</em> 19 (8): 1890. <a href="https://doi.org/10.3390/en19081890">https://doi.org/10.3390/en19081890</a>.
+</div>
+<div id="ref-nrcan-coal" class="csl-entry" role="listitem">
+Natural Resources Canada. 2025. <em>Coal Facts</em>. Minerals and Metals Facts. <a href="https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts/coal-facts">https://natural-resources.canada.ca/minerals-mining/mining-data-statistics-analysis/minerals-metals-facts/coal-facts</a>.
+</div>
+<div id="ref-srk-haultruck" class="csl-entry" role="listitem">
+SRK Consulting. 2024. <em>Decarbonizing Mining: Diesel Vs Electric Haul Trucks on Cost and Efficiency</em>. SRK Consulting. <a href="https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency">https://www.srk.com/en/publications/decarbonizing-mining-diesel-vs-electric-haul-trucks-on-cost-and-efficiency</a>.
+</div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1677,8 +1928,40 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </div>
 </nav>
 </div> <!-- /content -->
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
 
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+</body></html>

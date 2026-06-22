@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 520" font-family="'Helvetica Neue',Arial,sans-serif">
+  <defs>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#5a6472"/>
+    </marker>
+    <marker id="darrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#8a9aa8"/>
+    </marker>
+    <marker id="garrow" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#3f7d52"/>
+    </marker>
+  </defs>
+  <style>
+    .lbl{font-size:12px;fill:#1f2a37;}
+    .lblw{font-size:12px;fill:#fff;}
+    .sub{font-size:10px;fill:#43506a;}
+    .subw{font-size:10px;fill:#dfe7f2;}
+    .li{font-size:9.5px;fill:#243042;}
+    .ttl{font-size:11px;font-weight:bold;fill:#1f2a37;}
+    .edge{stroke:#5a6472;stroke-width:1.3;fill:none;}
+    .dedge{stroke:#8a9aa8;stroke-width:1.1;stroke-dasharray:4 3;fill:none;}
+    .gedge{stroke:#3f7d52;stroke-width:1.5;fill:none;}
+    .sector{fill:#33415c;}
+    .branch{fill:#4b5d7e;}
+    .prod{fill:#3d6ea5;}
+    .det{fill:#dbe8f6;stroke:#9db8d8;stroke-width:1;}
+    .vent{fill:#f3dede;stroke:#c97b7b;stroke-width:1;}
+    .flare{fill:#f3e7d3;stroke:#d6b483;stroke-width:1;}
+    .energy{fill:#cfe3d6;stroke:#3f7d52;stroke-width:1;}
+  </style>
+
+  <!-- sector -->
+  <rect class="sector" x="370" y="12" width="240" height="48" rx="7"/>
+  <text class="lblw" x="490" y="33" text-anchor="middle">Waste sector</text>
+  <text class="subw" x="490" y="49" text-anchor="middle">driver: methane-generation potential (t CO₂e)</text>
+  <path class="edge" d="M490,60 V74"/>
+  <path class="edge" d="M200,74 H780"/>
+  <path class="edge" d="M200,74 V88" marker-end="url(#arrow)"/>
+  <path class="edge" d="M490,74 V88" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,74 V88" marker-end="url(#arrow)"/>
+
+  <!-- sites by size -->
+  <rect class="prod" x="120" y="88" width="160" height="40" rx="6"/>
+  <text class="lblw" x="200" y="106" text-anchor="middle">Large Sites</text>
+  <text class="subw" x="200" y="120" text-anchor="middle">most gas → energy</text>
+  <rect class="prod" x="410" y="88" width="160" height="40" rx="6"/>
+  <text class="lblw" x="490" y="106" text-anchor="middle">Medium Sites</text>
+  <rect class="prod" x="700" y="88" width="160" height="40" rx="6"/>
+  <text class="lblw" x="780" y="106" text-anchor="middle">Small Sites</text>
+  <text class="subw" x="780" y="120" text-anchor="middle">often vent / flare</text>
+
+  <text class="ttl" x="490" y="158" text-anchor="middle">At each site, three landfill-gas options compete</text>
+
+  <!-- three options -->
+  <rect class="vent" x="60" y="175" width="270" height="92" rx="6"/>
+  <text class="ttl" x="75" y="195" style="fill:#9a3b3b">No Control</text>
+  <text class="li" x="75" y="213">gas vented uncontrolled</text>
+  <text class="li" x="75" y="231" style="fill:#9a3b3b">emits full potential as CH₄</text>
+  <text class="sub" x="75" y="251">the do-nothing baseline (high warming)</text>
+
+  <rect class="flare" x="355" y="175" width="270" height="92" rx="6"/>
+  <text class="ttl" x="370" y="195" style="fill:#9a6a1f">Flaring</text>
+  <text class="li" x="370" y="213">collect gas + flare</text>
+  <text class="li" x="370" y="231" style="fill:#9a6a1f">CH₄ → CO₂ (~25× lower GWP)</text>
+  <text class="sub" x="370" y="251">cheap, high-impact; no energy</text>
+
+  <rect class="energy" x="650" y="175" width="270" height="92" rx="6"/>
+  <text class="ttl" x="665" y="195" style="fill:#2c6e49">Electricity Generation</text>
+  <text class="li" x="665" y="213">landfill-gas-to-energy (biogas engine)</text>
+  <text class="li" x="665" y="231" style="fill:#2c6e49">CH₄ → CO₂, plus power to grid</text>
+  <text class="sub" x="665" y="251">revenue offsets cost (large sites)</text>
+
+  <!-- arrows from sites to options band -->
+  <path class="edge" d="M200,128 V165" marker-end="url(#arrow)"/>
+  <path class="edge" d="M490,128 V165" marker-end="url(#arrow)"/>
+  <path class="edge" d="M780,128 V165" marker-end="url(#arrow)"/>
+
+  <!-- energy output -->
+  <path class="gedge" d="M785,267 V300" marker-end="url(#garrow)"/>
+  <rect class="energy" x="650" y="300" width="270" height="34" rx="6"/>
+  <text class="lbl" x="785" y="321" text-anchor="middle">→ electricity to grid (avoided fossil power)</text>
+
+  <!-- upstream diversion (TODO) -->
+  <rect class="det" x="60" y="300" width="520" height="64" rx="6" stroke-dasharray="5 3"/>
+  <text class="ttl" x="75" y="320">Upstream prevention — not yet in model (TODO)</text>
+  <text class="li" x="75" y="338">Organics diversion: composting and anaerobic digestion keep food and</text>
+  <text class="li" x="75" y="353">yard waste out of the landfill, preventing the methane rather than treating it.</text>
+
+  <!-- emissions note -->
+  <text class="sub" x="490" y="395" text-anchor="middle">Emissions-driven sector: a carbon price on CH₄ (CO₂-equivalent) shifts sites from venting toward flaring and energy recovery.</text>
+
+  <!-- legend -->
+  <rect class="prod" x="120" y="430" width="16" height="12" rx="2"/>
+  <text class="sub" x="142" y="440">landfill site (by size)</text>
+  <rect class="vent" x="300" y="430" width="16" height="12" rx="2"/>
+  <text class="sub" x="322" y="440">vent (CH₄)</text>
+  <rect class="flare" x="430" y="430" width="16" height="12" rx="2"/>
+  <text class="sub" x="452" y="440">flare (CO₂)</text>
+  <rect class="energy" x="540" y="430" width="16" height="12" rx="2"/>
+  <text class="sub" x="562" y="440">energy recovery</text>
+</svg>

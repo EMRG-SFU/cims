@@ -471,7 +471,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./sector_transportation_passenger.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation</span></span></a>
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Transportation (Passenger)</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -686,8 +686,22 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#how-a-sector-is-modelled-the-flow-model" id="toc-how-a-sector-is-modelled-the-flow-model" class="nav-link active" data-scroll-target="#how-a-sector-is-modelled-the-flow-model"><span class="header-section-number">7.1</span> How a sector is modelled: the flow model</a></li>
+  <li><a href="#nodes-and-competition-rules" id="toc-nodes-and-competition-rules" class="nav-link" data-scroll-target="#nodes-and-competition-rules"><span class="header-section-number">7.2</span> Nodes and competition rules</a></li>
+  <li><a href="#product-and-service-sub-trees" id="toc-product-and-service-sub-trees" class="nav-link" data-scroll-target="#product-and-service-sub-trees"><span class="header-section-number">7.3</span> Product and Service sub-trees</a>
+  <ul class="collapse">
+  <li><a href="#auxiliary-services-and-the-mecs-structure" id="toc-auxiliary-services-and-the-mecs-structure" class="nav-link" data-scroll-target="#auxiliary-services-and-the-mecs-structure"><span class="header-section-number">7.3.1</span> Auxiliary services and the MECS structure</a></li>
+  </ul></li>
+  <li><a href="#the-sectors-represented" id="toc-the-sectors-represented" class="nav-link" data-scroll-target="#the-sectors-represented"><span class="header-section-number">7.4</span> The sectors represented</a></li>
+  <li><a href="#what-each-sector-chapter-contains" id="toc-what-each-sector-chapter-contains" class="nav-link" data-scroll-target="#what-each-sector-chapter-contains"><span class="header-section-number">7.5</span> What each sector chapter contains</a></li>
+  <li><a href="#cross-cutting-conventions" id="toc-cross-cutting-conventions" class="nav-link" data-scroll-target="#cross-cutting-conventions"><span class="header-section-number">7.6</span> Cross-cutting conventions</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -695,7 +709,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./sector_overview.html">Sector Descriptions</a></li><li class="breadcrumb-item"><a href="./sector_overview.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Overview</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Overview</span></h1>
+<h1 class="title"><span id="sec-sector-overview" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Sector Overview</span></span></h1>
 </div>
 
 
@@ -712,21 +726,57 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p><mark>TODO: add sections on renewable fuel blending, cogeneration, waste heat recovery.</mark></p>
-<p>In CIMS, the product and energy service demands in a sub-sector are linked in a flow model that describes the sequence of activities required to generate that product. A CIMS flow model is geared towards representing technology evolution and energy consumption rather than economic criteria (as in an econometric model where units are typically in monetary terms) or actual mechanical processes (as in the blueprints or process flow diagrams used by engineers). Because the emphasis is on energy consumption and not material flow, the nodes in the flow model represent process stages in which energy consumption can be distinctly estimated. The flow model describes hierarchical nodes, linked by engineering ratios. Technology competitions take place at the lowest level nodes in the hierarchy.</p>
-<p>Each sector sub-model is represented as a hierarchical tree (implemented in the model code as a NetworkX directed tree). Each node carries a competition rule that determines how demand passed down to it is allocated among its children:</p>
+<p>This part of the documentation sets out how CIMS represents each part of the economy. Every sector is a self-contained sub-model — a flow model of the energy services and products that drive its energy use and emissions — but all of them are built from the same handful of ideas: hierarchical nodes linked by engineering ratios, technologies competing on lifecycle cost at the lowest nodes, and a split between the things a sector produces and the auxiliary services it consumes. The chapters that follow take each sector in turn; this overview sets out the shared structure they rest on, the conventions they have in common, and a map of which sectors are covered and how they relate.</p>
+<section id="how-a-sector-is-modelled-the-flow-model" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="how-a-sector-is-modelled-the-flow-model"><span class="header-section-number">7.1</span> How a sector is modelled: the flow model</h2>
+<p>In CIMS, the product and energy-service demands of a sub-sector are linked in a <strong>flow model</strong> that traces the sequence of activities needed to generate the sector’s output. A CIMS flow model is geared toward representing technology evolution and energy consumption, rather than the monetary flows of an econometric model (where units are typically in dollars) or the literal mechanical detail of the blueprints and process-flow diagrams an engineer would use. Because the emphasis is on energy rather than material flow, each node represents a process stage at which energy consumption can be distinctly estimated. Nodes are arranged hierarchically and linked by engineering ratios — the physical quantity of input each stage requires per unit of its output — and technology competitions take place at the lowest-level nodes in the hierarchy.</p>
+</section>
+<section id="nodes-and-competition-rules" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="nodes-and-competition-rules"><span class="header-section-number">7.2</span> Nodes and competition rules</h2>
+<p>Each sector sub-model is a hierarchical tree, implemented in the model code as a NetworkX directed tree. Every node carries a competition rule that determines how the demand passed down to it is allocated among its children:</p>
 <ul>
-<li><strong>Fixed-ratio</strong> nodes split demand among their children in fixed, exogenously specified proportions (engineering ratios). These represent the unavoidable sequence of process steps required to produce the sector’s output.</li>
-<li><strong>Tech-compete</strong> nodes host a competition among alternative technologies that can provide the same service. Market shares are assigned by the standard CIMS technology-choice rule described in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, based on the technologies’ lifecycle costs and a heterogeneity (variance) parameter.</li>
+<li><strong>Fixed-ratio</strong> nodes split demand among their children in fixed, exogenously specified proportions — the engineering ratios that capture the unavoidable sequence of process steps required to produce the sector’s output.</li>
+<li><strong>Tech-compete</strong> nodes host a competition among alternative technologies that can provide the same service. Each technology carries a capital cost, a fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised and combined with service costs into a lifecycle cost. Market shares are then assigned by the standard CIMS technology-choice rule of <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>, on the basis of those lifecycle costs and a heterogeneity (variance) parameter that governs how sharply the competition responds to cost differences.</li>
 </ul>
-<p>At the top of each sector tree, the nodes are organised into two sub-trees — a <strong>Product</strong> sub-tree and a <strong>Service</strong> sub-tree:</p>
+<p>The interplay of these two rules is what gives each sector its shape: a fixed-ratio backbone fixes the process chain, while tech-compete leaves decide which equipment and fuels actually serve each step — and it is at those leaves that policy, whether a carbon price, a regulation, or a subsidy, changes the outcome.</p>
+</section>
+<section id="product-and-service-sub-trees" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="product-and-service-sub-trees"><span class="header-section-number">7.3</span> Product and Service sub-trees</h2>
+<p>At the top of each sector tree, the nodes are organised into two sub-trees, a <strong>Product</strong> sub-tree and a <strong>Service</strong> sub-tree:</p>
 <ul>
-<li>The <strong>Product</strong> sub-tree is the physical production chain: the sequence of process stages that converts raw inputs into the sector’s saleable output (tonnes of steel, square metres of floor space, vehicle-kilometres, and so on). It is driven by the sector’s exogenous output or activity forecast, and its shape is specific to each sector’s process flow.</li>
-<li>The <strong>Service</strong> sub-tree holds the auxiliary energy and utility services that production technologies request rather than producing themselves — for example space heating and cooling, lighting, machine drive, steam and cogeneration, fuel blending, and carbon capture where applicable. Factoring these shared loads into their own sub-tree avoids re-specifying the same equipment inside every process stage and lets efficiency and fuel-switching measures compete once and serve the whole sector.</li>
+<li>The <strong>Product</strong> sub-tree is the physical production chain: the sequence of process stages that converts raw inputs into the sector’s saleable output — tonnes of steel, square metres of floor space, vehicle-kilometres, and so on. It is driven by the sector’s exogenous output or activity forecast, and its shape is specific to each sector’s process flow.</li>
+<li>The <strong>Service</strong> sub-tree holds the auxiliary energy and utility services that production technologies request rather than producing themselves — for example space heating and cooling, lighting, machine drive, steam and cogeneration, fuel blending, and carbon capture where applicable. Factoring these shared loads into their own sub-tree avoids re-specifying the same equipment inside every process stage, and lets efficiency and fuel-switching measures compete once and serve the whole sector.</li>
 </ul>
-<p>For the industrial sectors, the auxiliary services follow the end-use structure of the U.S. Energy Information Administration’s Manufacturing Energy Consumption Survey (MECS) — in particular, machine drive is disaggregated into compressed air, fans, materials handling, materials processing and pumps. Each service is represented at a general level, as a competition between existing and more efficient equipment with fuel-switching options where relevant, rather than as a detailed equipment catalogue. The specific set of services varies by sector; the buildings and transportation sectors, for instance, carry their own service definitions.</p>
+<section id="auxiliary-services-and-the-mecs-structure" class="level3" data-number="7.3.1">
+<h3 data-number="7.3.1" class="anchored" data-anchor-id="auxiliary-services-and-the-mecs-structure"><span class="header-section-number">7.3.1</span> Auxiliary services and the MECS structure</h3>
+<p>For the industrial sectors, the auxiliary services follow the end-use structure of the U.S. Energy Information Administration’s Manufacturing Energy Consumption Survey (MECS) — in particular, <strong>Machine Drive</strong> is disaggregated into compressed air, fans, materials handling, materials processing, and pumps. Each service is represented at a general level, as a competition between existing and more efficient equipment with fuel-switching options where relevant, rather than as a detailed equipment catalogue. The specific set of services varies by sector; the buildings and transportation sectors, for instance, carry their own service definitions, which are described in their respective chapters. The cross-cutting services that many sectors share — machine drive, low-temperature heat and steam, cogeneration, carbon capture, and energy storage — are documented once in the <a href="./machine_drive.html">General Services</a> part rather than repeated in every chapter.</p>
+<p><mark>TODO: Several shared services are still being consolidated into the General Services part — in particular renewable-fuel blending, cogeneration, and waste-heat recovery — and some sector files still carry older, sector-specific versions of these structures. Migrate them to the shared definitions and cross-reference them here.</mark></p>
+</section>
+</section>
+<section id="the-sectors-represented" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="the-sectors-represented"><span class="header-section-number">7.4</span> The sectors represented</h2>
+<p>The sub-models fall into a few natural groups, reflecting how energy and materials move through the economy.</p>
+<p>Energy supply and transformation covers the industries that produce and convert the fuels everything else burns: <a href="./sector_coal_mining.html">Coal Mining</a>, <a href="./sector_natural_gas.html">Natural Gas</a>, <a href="./sector_petroleum_crude.html">Petroleum Crude</a>, and <a href="./sector_petroleum_refining.html">Petroleum Refining</a> on the fossil side; <a href="./sector_electricity.html">Electricity</a> as the central energy carrier; and the low-carbon fuels <a href="./sector_ethanol.html">Ethanol</a>, <a href="./sector_biodiesel.html">Biodiesel</a>, and <a href="./sector_hydrogen.html">Hydrogen</a>. Because these sectors supply the fuel blends and electricity that every demand sector draws on, their emissions intensity propagates throughout the model.</p>
+<p>Extraction and heavy industry covers the material-producing sectors: <a href="./sector_mining.html">Mining</a>, <a href="./sector_industrial_minerals.html">Industrial Minerals</a> (including cement and lime), <a href="./sector_chemical_products.html">Chemical Products</a>, <a href="./sector_pulp_and_paper.html">Pulp and Paper</a>, <a href="./sector_metal_smelting.html">Metal Smelting</a>, <a href="./sector_iron_and_steel.html">Iron and Steel</a>, and the catch-all <a href="./sector_light_industrial.html">Light Industrial</a>. These carry the richest Product sub-trees and the largest process-heat and process-emission loads, and they are where carbon capture and deep fuel-switching matter most.</p>
+<p>Buildings and construction covers the built environment: <a href="./sector_construction.html">Construction</a>, the activity of building itself, and the <a href="./sector_residential.html">Residential</a> and <a href="./sector_commercial.html">Commercial</a> sectors, which represent the heating, cooling, lighting, and plug loads of the building stock once it is in use.</p>
+<p>Transportation covers the movement of people and goods, split into <a href="./sector_transportation_passenger.html">Transportation (Passenger)</a> and <a href="./sector_transportation_freight.html">Transportation (Freight)</a>, each resolving its vehicle fleet by mode and powertrain.</p>
+<p>Emissions-driven and land-based sectors are those whose footprint is dominated by something other than energy use, and whose activity is therefore often measured directly in tonnes of CO₂-equivalent: <a href="./sector_waste.html">Waste</a> (landfill methane), <a href="./sector_agriculture.html">Agriculture</a>, and <a href="./sector_forestry.html">Forestry</a>, together with the negative-emissions and land-accounting sectors <a href="./sector_carbon_dioxide_removal.html">Carbon Dioxide Removal</a> and <a href="./sector_lulucf.html">LULUCF</a>. Several of these are deliberately simplified placeholders today, and their chapters flag what a fuller representation would add.</p>
+</section>
+<section id="what-each-sector-chapter-contains" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="what-each-sector-chapter-contains"><span class="header-section-number">7.5</span> What each sector chapter contains</h2>
+<p>The sector chapters follow a common template, so that the same questions can be asked of every part of the economy. Each opens with the sector’s <strong>scope</strong> — what it does and does not include, and where adjacent activities are handled to avoid double-counting — and a <strong>real-world context</strong> section that grounds the model in the actual industry: its scale in Canada, its emission sources, and the levers available to reduce them. A <strong>model structure</strong> section then walks through the sector’s tree, anchored by a hand-drawn flow figure, distinguishing the fixed-ratio production chain from the tech-compete leaves and naming the services it draws on.</p>
+<p>A <strong>decarbonisation technologies</strong> section surveys the low- and zero-carbon options for the sector, usually with two tables: a maturity table that places each option on the spectrum from commercial to emerging, and an indicative techno-economic cost table in 2025 Canadian dollars. These cost figures are order-of-magnitude values drawn from public literature, included for relative comparison rather than budgeting, and kept deliberately separate from the calibrated values the model carries internally. An <strong>economics</strong> section explains how the competition resolves for that sector and records its emissions accounting; a <strong>regional coverage</strong> section notes which regions carry the sector and how they differ; and a <strong>limitations and planned extensions</strong> section, with embedded TODOs, records the known gaps and the priorities for future work.</p>
+</section>
+<section id="cross-cutting-conventions" class="level2" data-number="7.6">
+<h2 data-number="7.6" class="anchored" data-anchor-id="cross-cutting-conventions"><span class="header-section-number">7.6</span> Cross-cutting conventions</h2>
+<p>A few conventions hold across all the sector chapters and are worth stating once.</p>
+<p>The trees are written as a <strong>region-agnostic master tree</strong> and then instantiated for each of the seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — which share a structure but differ in their activity forecasts, fuel prices, and grid emissions intensity. Not every sector appears in every region; coal mining, for instance, is carried only where coal is actually mined.</p>
+<p>Technology choice everywhere uses <strong>behavioural</strong> (revealed or empirical) discount rates rather than true financial costs of capital. These higher rates capture the short payback horizons and adoption barriers that govern real investment decisions, and they are applied throughout the lifecycle-cost calculation, as set out in the <a href="./theory.html">Theory</a> chapter and in <a href="technologies.html" class="quarto-xref"><span>Chapter 4</span></a>.</p>
+<p>Emissions accounting combines combustion CO₂ from the fuels each technology requests with <strong>process emissions</strong> released by chemical reactions independent of energy use — calcination in cement, for example — and, in a few sectors, fugitive methane, all expressed on a CO₂-equivalent basis so that high-warming gases enter at their full weight. Fuels reach the demand sectors as blends, so a rising renewable content in a blend lowers the lifecycle carbon of every technology that draws on it, and <strong>carbon capture</strong> is represented as a shared service that sectors can call on where it applies.</p>
+<p>Taken together, these shared structures are what let CIMS treat a landfill, a steel mill, and a passenger-vehicle fleet within one consistent framework: each is a flow model of competing technologies, driven by an activity forecast, discounted behaviourally, and accounted on a common emissions basis. The chapters that follow apply that framework, one sector at a time.</p>
 
 
+</section>
 
 </main> <!-- /main -->
 <script>
@@ -1692,4 +1742,4 @@ body.suppress-tippy-popovers [data-tippy-root] {
 
 
 
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
