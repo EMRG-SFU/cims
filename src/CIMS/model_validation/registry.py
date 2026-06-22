@@ -514,6 +514,22 @@ REGISTRY.register("zero_requested_nodes", CheckSpec(
         "intentionally 0 or whether they should be non-zero."
     ),
 ))
+REGISTRY.register("cost_params_missing_currency_unit", CheckSpec(
+    fn=file_warnings.cost_params_missing_currency_unit,
+    phase=Phase.FILE,
+    severity=Severity.WARNING,
+    argmap={},
+    short_desc="rows with a '$' unit are missing a YYYY_CCC monetary year prefix",
+    help_text=(
+        "Output: [(row_index, node, parameter, unit)]\n"
+        "  Each entry is a row whose Unit contains '$' but lacks a YYYY_CCC prefix;\n"
+        "  row_index is that row in model_df.\n\n"
+        "Reading: configure_unit_conversion() uses the year prefix to identify which\n"
+        "rows to convert. Without it those values are silently skipped. Update the\n"
+        "Unit column to include the dollar-year and currency code\n"
+        "(e.g. '$/GJ' → '2010_CAD/GJ', '$' → '2010_CAD')."
+    ),
+))
 
 # ---------------------------------------------------------------------------
 # GRAPH-PHASE CHECKS (to be added)

@@ -3,6 +3,7 @@ import numpy as np
 
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
+from ..unit_conversion import _MONETARY_PREFIX_RE
 
 
 def missing_parameter_default(validator):
@@ -134,6 +135,32 @@ def bad_service_req(validator):
         0's or are missing all values"
 
     return bad_service_requests, concern_desc
+
+
+def cost_params_missing_currency_unit(validator):
+    """
+    Identify rows whose Unit column looks monetary (contains '$') but is missing
+    a valid YYYY_CCC dollar-year prefix (e.g. '$/GJ' should be '2010_CAD/GJ').
+
+    Without the year prefix, configure_unit_conversion() silently skips those rows
+    and their values are not normalised to the target currency and dollar-year.
+    """
+    data = validator.model_df
+
+    dollar_mask = data[COL.unit].fillna('').str.contains(r'\$', regex=True)
+    monetary_prefix_mask = data[COL.unit].fillna('').str.match(_MONETARY_PREFIX_RE)
+
+    missing = data[dollar_mask & ~monetary_prefix_mask]
+
+    result = list(zip(
+        missing.index,
+        missing[validator.node_col],
+        missing[COL.parameter],
+        missing[COL.unit],
+    ))
+
+    concern_desc = "rows have a '$' unit missing a YYYY_CCC monetary prefix (e.g. '$/GJ' → '2010_CAD/GJ')"
+    return result, concern_desc
 
 
 def zero_requested_nodes(validator, providers):

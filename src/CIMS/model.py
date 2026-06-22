@@ -26,6 +26,7 @@ from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
+from .unit_conversion import CurrencyConverter, apply_currency_conversion
 
 
 
@@ -68,6 +69,9 @@ class Model:
         sector_list: Iterable[str],
         default_values_csv_path: str,
         list_csv_path: str,
+        target_units: dict = None,
+        deflator_path: str = None,
+        exchange_path: str = None,
         ):
         print("\n=== Instantiating Model ===")
         start_init = time.time()
@@ -154,13 +158,22 @@ class Model:
             ]
         )
 
+        # Currency conversion — configured at instantiation so the validator can access
+        # the tables during validate_files(); conversion is applied later in construct_graph()
+        self.currency_converter = None
+        self.target_currency = None
+        self.target_dollar_year = None
+        if target_units is not None:
+            print("  Configuring currency conversion...")
+            self._configure_currency_conversion(target_units, deflator_path, exchange_path)
+
         # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
         self.scenario_model_description_file = self._scenario_reader.csv_files
 
         print(f"=== Model instantiation complete (completed in {time.time() - start_init:.2f}s) ===")
 
-    def validate_files(self):            
+    def validate_files(self):
         self.validator.validate()
         
     def validate_graph(self):
@@ -218,6 +231,11 @@ class Model:
 
         return model
 
+    def _configure_currency_conversion(self, target_units: dict, deflator_path: str, exchange_path: str):
+        self.target_currency = target_units["currency"]
+        self.target_dollar_year = target_units["dollar_year"]
+        self.currency_converter = CurrencyConverter(deflator_path, exchange_path)
+
     def construct_graph(self):
         """
         Build the model graph from the base and scenario descriptions and
@@ -231,13 +249,22 @@ class Model:
 
         start = time.time()
         print("\n=== Constructing model graph ===")
-        
+
         # --- Base graph from model description -------------------------------
         graph = nx.DiGraph()
         graph.cur_tree_index = [0]
         graph.max_tree_index = [0]
 
-        graph = node_utils.make_or_update_nodes(graph, self.node_dfs, self.tech_dfs)
+        node_dfs, tech_dfs = self.node_dfs, self.tech_dfs
+        if self.currency_converter is not None:
+            print(f"  Converting costs to {self.target_dollar_year}_{self.target_currency}...")
+            node_dfs, tech_dfs = apply_currency_conversion(
+                node_dfs, tech_dfs, self.currency_converter,
+                self.target_currency, self.target_dollar_year,
+            )
+
+        print("  Building base graph...")
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
         graph = edge_utils.make_or_update_edges(graph, self.node_dfs, self.tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
@@ -253,7 +280,6 @@ class Model:
         # Initialize parameters on the base graph
         self._inherit_parameter_values()
         self._initialize_tax()
-        print("  Base graph constructed")
 
         # --- Apply scenario overlays (if any) --------------------------------
         if not isinstance(self._scenario_reader, ScenarioReader):
@@ -263,6 +289,7 @@ class Model:
 
         # Only do work if there is scenario content
         if self.scenario_node_dfs or self.scenario_tech_dfs:
+            print("  Applying scenario overlays...")
             self.graph.max_tree_index[0] = 0
             graph = node_utils.make_or_update_nodes(
                 self.graph, self.scenario_node_dfs, self.scenario_tech_dfs
@@ -284,10 +311,9 @@ class Model:
             # Re-initialize parameters after scenario changes
             self._inherit_parameter_values()
             self._initialize_tax()
-            print("  Scenario overlays applied")
 
         else:
-            print("  No scenario overlays to apply")
+            print("  No scenario overlays to apply...")
 
         # Final state after graph is ready
         self.status = "graph constructed"
@@ -1102,8 +1128,8 @@ class Model:
         return self.node_tech_defaults[parameter]
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
-                  target=None, return_source=False, do_calc=False, check_exist=False,
-                  dict_expected=False):
+                  target=None, return_source=False, return_unit=False, do_calc=False,
+                  check_exist=False, dict_expected=False):
         """
         Gets a parameter's value from the model, given a specific context (node,
         year, tech, context, sub-context), calculating the parameter's value if
@@ -1174,6 +1200,7 @@ class Model:
                                     sub_context=sub_context,
                                     target=target,
                                     return_source=return_source,
+                                    return_unit=return_unit,
                                     do_calc=do_calc,
                                     check_exist=check_exist,
                                     dict_expected=dict_expected)
