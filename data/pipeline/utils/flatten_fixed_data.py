@@ -208,7 +208,7 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                                 else:
                                     annual_series = extend_constant(annual_series, end_year=target_end)
                             else:
-                                annual_series = data_extensions.extend_constant(annual_series, end_year=target_end)
+                                annual_series = extend_constant(annual_series, end_year=target_end)
 
                         annual_series = annual_series.reindex(target_years)
                         for year in target_years:
