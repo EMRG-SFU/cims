@@ -51,12 +51,12 @@ Fixed structural parameters
 Activity data  (from gas_production.py, Region/Variable/Unit/Source/Year/Value format)
     Variable mappings:
       'Natural Gas'              → service_request at CIMS.CAN.{r}.Natural Gas, Target: CIMS.CAN.{r}.Natural Gas (1000m3)
-      'Extraction.Conventional'  → service_request at Extraction → Conventional (% of 1000m3)
-      'Extraction.Shale'         → service_request at Extraction → Shale (% of 1000m3)
-      'Extraction.Tight'         → service_request at Extraction → Tight (% of 1000m3)
-      'Extraction.Coalbed Methane' → service_request at Extraction → Coalbed Methane (% of 1000m3)
+      'Extraction.Conventional'  → service_request at Extraction → Conventional (%)
+      'Extraction.Shale'         → service_request at Extraction → Shale (%)
+      'Extraction.Tight'         → service_request at Extraction → Tight (%)
+      'Extraction.Coalbed Methane' → service_request at Extraction → Coalbed Methane (%)
       'Processing'               → service_request at Supply → Processing (1000m3/1000m3)
-      'LNG Compression'          → service_request at Supply → LNG Compression (% of 1000m3, BC only)
+      'LNG Compression'          → service_request at Supply → LNG Compression (%, BC only)
     ('Natural Gas.Extraction' is not used in model inputs)
 
 Energy price multipliers  (multiplier_price rows)
@@ -247,7 +247,7 @@ def _build_extraction_split_rows(ng: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Extraction service level.
     One block per sub-type (Conventional, Shale, Tight, Coalbed Methane);
-    value = % of 1000m3 from gas_production.
+    value = %
     These rows are absent from the fixed data and generated entirely here.
     Target: CIMS.CAN.{region}.Natural Gas.Production.Supply.Extraction.{subtype}
     """
@@ -312,7 +312,7 @@ def _build_processing_rows(ng: pl.DataFrame) -> pl.DataFrame:
 def _build_lng_rows(ng: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Supply service level for LNG Compression (BC only).
-    Value = % of 1000m3 from gas_production.
+    Value = %
     Absent from the fixed data; generated entirely here.
     Target: CIMS.CAN.BC.Natural Gas.Production.Supply.LNG Compression
     """

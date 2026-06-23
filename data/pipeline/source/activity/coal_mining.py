@@ -9,7 +9,7 @@ A long CSV with columns:
 
 Variables:
     Coal Mining                              — total production (kt)
-    Coal Mining.Coal.Metallurgical Finishing — met share as fraction of total (% of kt, held flat to 2100)
+    Coal Mining.Coal.Metallurgical Finishing — met share as fraction of total (%, held flat to 2100)
 
 USAGE
 -----
@@ -593,7 +593,7 @@ def main() -> pl.DataFrame:
         .select(["Region", "Year", pl.col("met_pct").alias("Value")])
         .with_columns([
             pl.lit("Coal Mining.Coal.Metallurgical Finishing").alias("Variable"),
-            pl.lit("% of kt").alias("Unit"),
+            pl.lit("%").alias("Unit"),
             pl.lit("Stats Can/Prov Gvts").alias("Source"),
         ])
         .select(["Region", "Variable", "Unit", "Source", "Year", "Value"])
@@ -627,7 +627,7 @@ def main() -> pl.DataFrame:
     #
     #   Coal Mining total: raw CAGR computed over CAGR_START–CAGR_END (2014–2024),
     #   then applied with near-zero dampeners across three projection periods so that
-    #   growth effectively stops. Metallurgical Finishing share (% of kt): held flat
+    #   growth effectively stops. Metallurgical Finishing share (%): held flat
     #   via extend_constant.
 
     last_year = combined["Year"].max()
@@ -638,7 +638,7 @@ def main() -> pl.DataFrame:
         s = grp.sort("Year").to_pandas().set_index("Year")["Value"]
 
         base_val = s.loc[CAGR_END] if CAGR_END in s.index else s.get(int(last_year), 0.0)
-        if unit == "% of kt" or base_val <= 0:
+        if unit == "%" or base_val <= 0:
             extended = extend_constant(s, end_year=EXTEND_TO)
             for year, value in extended.loc[last_year + 1:].items():
                 future_rows.append({

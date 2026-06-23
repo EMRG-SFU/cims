@@ -271,7 +271,7 @@ def _build_hot_water_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFram
                     'Sub_Context': '',
                     'Target':      '',
                     'Source':      'CEUD',
-                    'Unit':        '% of hot water',
+                    'Unit':        '%',
                     'Year':        str(year),
                     'Value':       str(value),
                 })
@@ -313,7 +313,7 @@ def _build_hvac_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                         'Sub_Context': '',
                         'Target':      '',
                         'Source':      'CEUD',
-                        'Unit':        '% of GJ of heat',
+                        'Unit':        '%',
                         'Year':        str(year),
                         'Value':       str(value),
                     })

@@ -5,8 +5,8 @@ OIL PRODUCTION
 Reads the CER crude oil production CSV and outputs:
   - Total oil production per region (2005–2050) in m3/year
     (Total minus Condensate and C5+)
-  - Level 1 splits (% of m3/year): Bitumen, Light Medium, Heavy
-  - Level 2 splits (% of Bitumen): Upgrading, In-Situ, Mining
+  - Level 1 splits (%): Bitumen, Light Medium, Heavy
+  - Level 2 splits (%): Upgrading, In-Situ, Mining
 
 Variable mapping:
   (Upgraded Bitumen) -> Bitumen.Upgrading
@@ -267,7 +267,7 @@ def main() -> pl.DataFrame:
     )
 
 
-    # -- O5. Compute Level 2 splits: Upgrading, In-Situ, Mining (% of Bitumen) ---
+    # -- O5. Compute Level 2 splits: Upgrading, In-Situ, Mining (%) ---
 
     oil_pivot = oil_pivot.with_columns(
         pl.when(pl.col("bitumen").is_null() | (pl.col("bitumen") == 0.0))
@@ -308,7 +308,7 @@ def main() -> pl.DataFrame:
     ).drop(["pct_upgrading_2005", "pct_in_situ_2005", "pct_mining_2005"])
 
 
-    # -- O5b. Onshore / Offshore splits (% of Light Medium) ----------------------
+    # -- O5b. Onshore / Offshore splits (%) ----------------------
     #
     #   NL is entirely offshore; all other regions are entirely onshore.
     #   These are static fractions — no source data variation to compute.
@@ -467,14 +467,14 @@ def main() -> pl.DataFrame:
             }).alias("Variable"),
             pl.col("Variable").replace({
                 "total":            "m3",
-                "pct_bitumen":      "% of m3",
-                "pct_light_medium": "% of m3",
-                "pct_heavy":        "% of m3",
-                "pct_upgrading":    "% of Bitumen",
-                "pct_in_situ":      "% of Bitumen",
-                "pct_mining":       "% of Bitumen",
-                "pct_onshore":      "% of Light Medium",
-                "pct_offshore":     "% of Light Medium",
+                "pct_bitumen":      "%",
+                "pct_light_medium": "%",
+                "pct_heavy":        "%",
+                "pct_upgrading":    "%",
+                "pct_in_situ":      "%",
+                "pct_mining":       "%",
+                "pct_onshore":      "%",
+                "pct_offshore":     "%",
             }).alias("Unit"),
         )
         .filter(~pl.col("Region").is_in(["Canada", "CAN"]))

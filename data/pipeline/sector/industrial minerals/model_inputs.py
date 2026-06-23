@@ -22,8 +22,8 @@ Activity demand  (service_provide levels)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variables used:
       'Industrial Minerals'        → total tonnes (region-level service_request)
-      'Industrial Minerals.Cement' → fraction of total (% of tonnes)
-      'Industrial Minerals.Lime'   → fraction of total (% of tonnes)
+      'Industrial Minerals.Cement' → fraction of total (%)
+      'Industrial Minerals.Lime'   → fraction of total (%)
 
 Energy price multipliers  (price_mult rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -162,7 +162,7 @@ def _build_emission_rows(
                 pl.lit('').alias('Sub_Context'),
                 ('JCIMS.CAN.' + pl.col('Region') + pl.lit('.') + pl.lit(target_suffix)).alias('Target'),
                 pl.col('Source'),
-                pl.lit('% of tonnes').alias('Unit'),
+                pl.lit('%').alias('Unit'),
                 pl.col('Year').cast(pl.String).alias('Year'),
                 pl.col('Value').cast(pl.String).alias('Value'),
             ])

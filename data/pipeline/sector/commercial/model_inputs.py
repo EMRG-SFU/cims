@@ -253,7 +253,7 @@ def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
                 'Sector': 'Commercial', 'Service': 'Shell', 'Technology': '',
                 'Parameter': 'service_request', 'Context': '', 'Sub_Context': '',
                 'Target': f'{branch}.{cold_svc}',
-                'Source': r['source'], 'Unit': '% of m2',
+                'Source': r['source'], 'Unit': '%',
                 'Year': yr,
                 'Value': str(val * BC_COLD_FRACTION if is_bc else val),
                 '_order': insert_order,
@@ -264,7 +264,7 @@ def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
                 'Sector': 'Commercial', 'Service': 'Shell', 'Technology': '',
                 'Parameter': 'service_request', 'Context': '', 'Sub_Context': '',
                 'Target': f'{branch}.{marine_svc}',
-                'Source': r['source'], 'Unit': '% of m2',
+                'Source': r['source'], 'Unit': '%',
                 'Year': yr, 'Value': str(val * BC_MARINE_FRACTION),
                 '_order': insert_order,
             })
@@ -315,7 +315,7 @@ def _build_tech_mst_rows(
     for r in data.iter_rows(named=True):
         pipeline_vals[r['category']] = r['value']
         pipeline_sources[r['category']] = r['source']
-    pipeline_unit = data['unit'][0] if len(data) > 0 else '% of GJ'
+    pipeline_unit = data['unit'][0] if len(data) > 0 else '%'
 
     # Emit a market_share_total row for every technology in the fixed data,
     # using 0 for any technology absent from the pipeline.

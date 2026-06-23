@@ -22,15 +22,15 @@ Total mining production  (service_request at sector level)
 
 Sub-product splits at Metal Open Pit level
     pipeline/source/activity/heavy_industry.py  (called directly via main())
-    Variable: 'Mining.Size Reduced Iron Product'     (% of tonnes)
-    Variable: 'Mining.Size Reduced Non Iron Product' (% of tonnes)
+    Variable: 'Mining.Size Reduced Iron Product'     (%)
+    Variable: 'Mining.Size Reduced Non Iron Product' (%)
     Target format:
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product
 
 Potash split at Final Product level  (SK and NB only)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
-    Variable: 'Mining.Potash'  (% of tonnes)
+    Variable: 'Mining.Potash'  (%)
     Target format: CIMS.CAN.{region}.Mining.Final Product.Potash
 
 Energy price multipliers  (multiplier_price rows)
@@ -210,7 +210,7 @@ def _build_iron_product_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
       - Size Reduced Non Iron Product
     Branch: CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit
     Target: CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.{sub-service}
-    Value:  % of tonnes from heavy_industry
+    Value:  %
     """
     parts = []
     for var_suffix, sub_service in [
@@ -234,7 +234,7 @@ def _build_iron_product_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Mining.Final Product.Metal Open Pit.{sub_service}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of tonnes').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))
@@ -251,7 +251,7 @@ def _build_potash_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     (currently SK and NB).
     Branch: CIMS.CAN.{region}.Mining.Final Product
     Target: CIMS.CAN.{region}.Mining.Final Product.Potash
-    Value:  % of tonnes from heavy_industry
+    Value:  %
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Mining.Potash')
     if df.is_empty():
@@ -271,7 +271,7 @@ def _build_potash_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         (pl.lit('CIMS.CAN.') + pl.col('Region')
          + pl.lit('.Mining.Final Product.Potash')).alias('Target'),
         pl.col('Source'),
-        pl.lit('% of tonnes').alias('Unit'),
+        pl.lit('%').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
     ])

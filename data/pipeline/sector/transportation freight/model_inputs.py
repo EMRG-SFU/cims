@@ -18,7 +18,7 @@ Energy price multipliers  (multiplier_price rows)
     processed_data/energy_prices/energy_price_multipliers.csv
     Inserted after the sector header (service_provide / competition).
 
-Off-Road service_request  (% of k*tkm)
+Off-Road service_request  (%)
     pipeline → variable = 'Freight.Off-Road'
     Inserted after the sector's fixed service_request to the Freight sub-node.
 

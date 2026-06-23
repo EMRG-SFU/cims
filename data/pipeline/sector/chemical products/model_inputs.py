@@ -16,7 +16,7 @@ Total chemical production  (service_request at region level)
 
 Subproduct shares  (service_request rows at Chemical Product service level)
     processed_data/activity/heavy_industry.csv
-    Variables: 'Chemical Product.{subproduct}'  (% of tonnes)
+    Variables: 'Chemical Product.{subproduct}'  (%)
     Subproducts: Other Petrochemicals, Chlor Alkali, Hydrogen Peroxide,
                  Sodium Chlorate, Adipic Acid, Ammonia Methanol
     Target format: CIMS.CAN.{region}.Chemical Products.Chemical Product.{subproduct}
@@ -201,7 +201,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Chemical Product service level.
-    One block per subproduct; value = ratio (% of tonnes) from heavy_industry.
+    One block per subproduct; value = ratio (%) from heavy_industry.
     Target: CIMS.CAN.{region}.Chemical Products.Chemical Product.{subproduct}
     """
     parts = []
@@ -223,7 +223,7 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Chemical Products.Chemical Product.{sub}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of tonnes').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))

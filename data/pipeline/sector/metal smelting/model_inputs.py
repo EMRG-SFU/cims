@@ -41,7 +41,7 @@ Total production  (service_request at sector level)
 
 Subproduct shares  (service_request rows at Primary Metals service level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
-    Variables: 'Metal Smelting.{subproduct}'  (% of tonnes)
+    Variables: 'Metal Smelting.{subproduct}'  (%)
     Subproducts: Aluminum, Copper, Lead, Magnesium, Nickel, Zinc
     Target format: CIMS.CAN.{region}.Metal Smelting.Primary Metals.{subproduct}
 
@@ -222,7 +222,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Primary Metals service level.
-    One block per subproduct; value = ratio (% of tonnes) from heavy_industry.
+    One block per subproduct; value = ratio (%) from heavy_industry.
     Target: CIMS.CAN.{region}.Metal Smelting.Primary Metals.{subproduct}
     """
     parts = []
@@ -244,7 +244,7 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Metal Smelting.Primary Metals.{sub}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of tonnes').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))

@@ -369,7 +369,7 @@ def extract_building_shell_shares(region: str,
         )
         share = act_s / total_s.replace(0, np.nan)
         frames.append(_long(region, 'building_shell_shares', cims_name,
-                            'market_share_total', '% of m2', share))
+                            'market_share_total', '%', share))
 
     return frames
 
@@ -459,7 +459,7 @@ def extract_hvac_technologies(region: str, tables: dict,
         if s.dropna().empty:
             continue
         frames.append(_long(region, 'hvac_cold', tech,
-                            'market_share_total', '% of GJ HVAC', s))
+                            'market_share_total', '%', s))
 
     if is_bc:
         marine_shares = {
@@ -482,7 +482,7 @@ def extract_hvac_technologies(region: str, tables: dict,
             if s.dropna().empty:
                 continue
             frames.append(_long(region, 'hvac_marine', tech,
-                                'market_share_total', '% of GJ HVAC', s))
+                                'market_share_total', '%', s))
 
     return frames
 
@@ -537,7 +537,7 @@ def extract_hot_water(region: str, tables: dict) -> list[pl.DataFrame]:
     for tech, s in hot_water_tech.items():
         if not s.dropna().empty:
             frames.append(_long(region, 'hot_water_tech', tech,
-                                'market_share_total', '% of GJ hot water', s))
+                                'market_share_total', '%', s))
 
     return frames
 

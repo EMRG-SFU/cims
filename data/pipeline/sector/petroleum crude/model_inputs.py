@@ -30,7 +30,7 @@ Total production  (service_request at sector level)
 
 Production sub-type splits  (service_request rows at Production service level)
     pipeline/source/activity/oil_production.py  (called directly via main())
-    Variables: 'Bitumen', 'Light Medium', 'Heavy'  (% of m3)
+    Variables: 'Bitumen', 'Light Medium', 'Heavy'  (%)
     Targets: CIMS.CAN.{region}.Petroleum Crude.Production.{subtype}
 
 Bitumen sub-splits  (service_request rows at Bitumen service level — AB only)
@@ -40,7 +40,7 @@ Bitumen sub-splits  (service_request rows at Bitumen service level — AB only)
 
 Light Medium sub-splits  (service_request rows at Light Medium service level)
     pipeline/source/activity/oil_production.py  (called directly via main())
-    Variables: 'Light Medium.Onshore', 'Light Medium.Offshore'  (% of Light Medium)
+    Variables: 'Light Medium.Onshore', 'Light Medium.Offshore'  (%)
     Targets: CIMS.CAN.{region}.Petroleum Crude.Production.Light Medium.{subtype}
 
 Energy price multipliers  (multiplier_price rows)
@@ -222,7 +222,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_production_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Production service level.
-    One block per sub-type (Bitumen, Light Medium, Heavy); value = % of m3.
+    One block per sub-type (Bitumen, Light Medium, Heavy); value = %
     Target: CIMS.CAN.{region}.Petroleum Crude.Production.{subtype}
     """
     parts = []
@@ -244,7 +244,7 @@ def _build_production_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Petroleum Crude.Production.{sub}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of m3').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))
@@ -256,7 +256,7 @@ def _build_production_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
 def _build_bitumen_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Bitumen service level (AB only).
-    One block per sub-type (Bitumen.In-Situ, .Mining, .Upgrading); value = % of Bitumen.
+    One block per sub-type (Bitumen.In-Situ, .Mining, .Upgrading); value = %
     These coexist with the fixed data Bitumen service_request rows, which are intensity
     coefficients (m3 of service per m3 of bitumen) — a different thing entirely.
     Target: CIMS.CAN.{region}.Petroleum Crude.Production.Bitumen.{subtype}
@@ -293,7 +293,7 @@ def _build_bitumen_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
 def _build_light_medium_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Light Medium service level.
-    One block per sub-type (Onshore, Offshore); value = % of Light Medium.
+    One block per sub-type (Onshore, Offshore); value = %
     NL is entirely Offshore; all other regions are entirely Onshore.
     Target: CIMS.CAN.{region}.Petroleum Crude.Production.Light Medium.{subtype}
     """
@@ -317,7 +317,7 @@ def _build_light_medium_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Petroleum Crude.Production.Light Medium.{subtype}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of Light Medium').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))
@@ -375,7 +375,7 @@ def main() -> pl.DataFrame:
     # Drop sector-level competition.
     # The Bitumen-level service_request rows in the fixed data are intensity
     # coefficients (m3 of service per m3 of bitumen) and are NOT replaced by
-    # the pipeline bitumen split rows — those are % of Bitumen activity splits,
+    # the pipeline bitumen split rows — those are %,
     # a different quantity that coexists with the fixed intensity rows.
     # Everything else passes through: Production sub-tree with Exploration,
     # Light Medium, Heavy, Bitumen intensity rows, utility services, etc.

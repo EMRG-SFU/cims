@@ -22,6 +22,7 @@ SCRIPTS = [
     SOURCE_DIR / "eccc/nir/nir_crosswalk_tables_cims.py",
     # Activity drivers
     SOURCE_DIR / "activity/emissions_drivers.py",
+    SOURCE_DIR / "activity/electricity.py",
     SOURCE_DIR / "activity/light_industrial.py",
     SOURCE_DIR / "activity/petroleum refining.py",
     SOURCE_DIR / "activity/coal_mining.py",
@@ -37,6 +38,8 @@ SCRIPTS = [
     # NRCan CEUD
     SOURCE_DIR / "nrcan/ceud/residential/residential.py",
     SOURCE_DIR / "nrcan/ceud/commercial/commercial.py",
+    SOURCE_DIR / "nrcan/ceud/transportation_passenger/transportation_passenger.py",
+    SOURCE_DIR / "nrcan/ceud/transportation_freight/transportation_freight.py",
     # CER RESD demand data
     SOURCE_DIR / "cer/cer_resd_demand.py",
     # Statistics Canada macro drivers

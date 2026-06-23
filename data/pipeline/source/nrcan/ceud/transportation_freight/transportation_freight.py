@@ -22,12 +22,12 @@ Variables extracted / derived
 Activity & mode shares (to 2100):
   total_ktkm (service_request, k*tkm)          — Land + Marine + Air only
   Freight.Off-Road (service_request, k*tkm)     — separate absolute; NOT included in total
-  Freight.Land, Freight.Marine, Freight.Air (service_request, % of k*tkm)  — sum to 1
-  Freight.Land.Light Medium, Freight.Land.Heavy (service_request, % of Land k*tkm)
+  Freight.Land, Freight.Marine, Freight.Air (service_request, %)  — sum to 1
+  Freight.Land.Light Medium, Freight.Land.Heavy (service_request, %)
 
 Technology market shares (to LAST_HIST_YEAR, held flat to 2100):
-  Light Medium: fuel-based tech shares (% of Light Medium k*tkm)
-  Freight.Land.Heavy: Trucks vs Rail (% of Heavy k*tkm)
+  Light Medium: fuel-based tech shares (%)
+  Freight.Land.Heavy: Trucks vs Rail (%)
 
 Outputs:
   Light Medium: tech-specific output (k*tkm, historical)
@@ -849,10 +849,10 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
     """
     Project all freight mode M·tkm series to 2100 via CAGR, then compute:
       - total_ktkm (k*tkm, to 2100)
-      - Mode shares: Off-Road, Land, Marine, Air (% of total, to 2100)
-      - Sub-mode shares: Light Medium, Heavy within Land (% of Land, to 2100)
-      - Heavy tech shares: Trucks vs Rail (% of Heavy, historical → flat to 2100)
-      - Light Medium fuel tech shares (% of LM, historical → flat to 2100)
+      - Mode shares: Off-Road, Land, Marine, Air (%, to 2100)
+      - Sub-mode shares: Light Medium, Heavy within Land (%, to 2100)
+      - Heavy tech shares: Trucks vs Rail (%, historical → flat to 2100)
+      - Light Medium fuel tech shares (%, historical → flat to 2100)
       - Light Medium tech output (k*tkm, historical)
       - Heavy Trucks output (k*tkm, historical)
     """
@@ -964,7 +964,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
     # --- Off-road: ratio relative to (Land + Marine + Air) total, same base as other mode shares ---
     offroad_share_out = (_safe_div(offroad_s.reindex(all_years), total_nn)).dropna()
     if not offroad_share_out.empty:
-        frames.append(_long(province, 'Freight.Off-Road', '', 'service_request', '% of k*tkm',
+        frames.append(_long(province, 'Freight.Off-Road', '', 'service_request', '%',
                             offroad_share_out, source_tag))
 
     # --- Top-level mode shares (Land + Marine + Air = 1) ---
@@ -974,7 +974,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         ('Freight.Air',    air_share),
     ]:
         if not s.empty:
-            frames.append(_long(province, var, '', 'service_request', '% of k*tkm', s, source_tag))
+            frames.append(_long(province, var, '', 'service_request', '%', s, source_tag))
 
     # --- Land sub-mode shares ---
     for var, s in [
@@ -982,7 +982,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         ('Freight.Land.Heavy',        heavy_share_land),
     ]:
         if not s.empty:
-            frames.append(_long(province, var, '', 'service_request', '% of Land k*tkm', s, source_tag))
+            frames.append(_long(province, var, '', 'service_request', '%', s, source_tag))
 
     # --- Heavy: Trucks vs Rail market shares (historical → flat to 2100) ---
     for cat, s in [('Trucks', truck_share_heavy), ('Rail', rail_share_heavy)]:
@@ -990,7 +990,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         s_ext  = _extend_flat(s_hist, proj_start, PROJ_HORIZON)
         if not s_ext.empty:
             frames.append(_long(province, 'Freight.Land.Heavy', cat,
-                                'market_share_total', '% of Heavy k*tkm', s_ext, source_tag))
+                                'market_share_total', '%', s_ext, source_tag))
 
     # --- Per-vehicle output: M·tkm (Table 35/36) / stock (Table 37) = k*tkm/vehicle ---
     lt_stock_s = full['lt_stock']
@@ -1014,7 +1014,7 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
         # Market share (historical → flat to 2100)
         share_ext = _extend_flat(fuel_share_hist, proj_start, PROJ_HORIZON)
         frames.append(_long(province, 'Light Medium', fuel_label,
-                            'market_share_total', '% of Light Medium k*tkm', share_ext, source_tag))
+                            'market_share_total', '%', share_ext, source_tag))
 
 
     # --- Light Medium total output (k*tkm/vehicle, all years to 2100) ---

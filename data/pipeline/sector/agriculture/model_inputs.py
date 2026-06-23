@@ -110,9 +110,9 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
 
     The four agriculture variables in emissions_drivers are:
       'Agriculture'         tCO2e  – total agriculture emissions (absolute)
-      'Agriculture.Heat'    % of tCO2e – on-farm fuel-use share (fraction 0–1)
-      'Agriculture.Process.Soils'         % of tCO2e – crop-production share
-      'Agriculture.Process.Enteric ...'   % of tCO2e – animal-production share
+      'Agriculture.Heat'    %(fraction 0–1)
+      'Agriculture.Process.Soils'         %
+      'Agriculture.Process.Enteric ...'   %
 
     Returns (total, shares) where:
       total  = Agriculture tCO2e row

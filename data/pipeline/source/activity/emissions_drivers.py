@@ -217,9 +217,9 @@ def main() -> pl.DataFrame:
             }),
             pl.col("Variable").replace({
                 "agri_total":  "tCO2e",
-                "pct_heat":    "% of tCO2e",
-                "pct_soils":   "% of tCO2e",
-                "pct_animal":  "% of tCO2e",
+                "pct_heat":    "%",
+                "pct_soils":   "%",
+                "pct_animal":  "%",
             }).alias("Unit"),
         ])
         .with_columns(pl.lit("NIR").alias("Source"))
@@ -336,7 +336,7 @@ def main() -> pl.DataFrame:
             .astype(float)
         )
 
-        if unit == "% of tCO2e":
+        if unit == "%":
             # Hold percentage variables flat at the last historical value.
             base_val = series.loc[last_year] if last_year in series.index else series.iloc[-1]
             for yr in range(last_year + 1, CAGR_PERIODS[-1][1] + 1):

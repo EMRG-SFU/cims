@@ -1423,14 +1423,14 @@ def apply_extensions(
     if total_s.notna().any():
         frames.append(_long(province, 'total_kpkm', '', 'service_request', 'k*pkm', total_s.dropna()))
 
-    # --- Mode-level shares (service request, % of k*pkm, all years) ---
+    # --- Mode-level shares (service request, %, all years) ---
     for var, s in [
         ('Mode.Urban',          urban_share),
         ('Mode.Intercity Land', intercity_land_share),
         ('Mode.Intercity Air',  intercity_air_share),
     ]:
         if not s.empty:
-            frames.append(_long(province, var, '', 'service_request', '% of k*pkm', s))
+            frames.append(_long(province, var, '', 'service_request', '%', s))
 
     # Helper: extend a historical share series to 2100 by holding last value flat.
     proj_years = list(range(proj_start, PROJ_HORIZON + 1))
@@ -1451,7 +1451,7 @@ def apply_extensions(
         s_ext = _extend_flat(s)
         if not s_ext.empty:
             frames.append(_long(province, 'Mode.Urban', cat,
-                                'market_share_total', '% of Urban k*pkm', s_ext))
+                                'market_share_total', '%', s_ext))
 
     # --- Intercity land tech shares (Mode.Intercity Land, extended to 2100) ---
     for cat, s in [
@@ -1462,12 +1462,12 @@ def apply_extensions(
         s_ext = _extend_flat(s)
         if not s_ext.empty:
             frames.append(_long(province, 'Mode.Intercity Land', cat,
-                                'market_share_total', '% of Intercity Land k*pkm', s_ext))
+                                'market_share_total', '%', s_ext))
 
     # --- Air intercity tech shares (Mode.Intercity Air, extended to 2100) ---
     for cat, default_val in AIR_TECH_DEFAULTS.items():
         frames.append(_long(province, 'Mode.Intercity Air', cat,
-                            'market_share_total', '% of Intercity Air k*pkm',
+                            'market_share_total', '%',
                             pd.Series(default_val, index=all_years)))
 
     # --- Passenger Vehicles size shares (historical) ---
@@ -1479,7 +1479,7 @@ def apply_extensions(
     ]:
         if not s.empty:
             frames.append(_long(province, 'Passenger Vehicles', cat,
-                                'market_share_total', '% of Passenger Vehicle k*pkm', s))
+                                'market_share_total', '%', s))
 
     # --- Passenger Vehicles avg annual distance per vehicle (k*vkm, all years) ---
     # Both small and large share the same per-vehicle average distance.
@@ -1498,7 +1498,7 @@ def apply_extensions(
     # --- Passenger Vehicle Motors tech shares (extended to 2100) ---
     for cat, default_val in MOTOR_TECH_DEFAULTS.items():
         frames.append(_long(province, 'Passenger Vehicle Motors', cat,
-                            'market_share_total', '% of motors',
+                            'market_share_total', '%',
                             pd.Series(default_val, index=all_years)))
 
     # --- Passenger Vehicle Motors output: LDV fleet-weighted avg annual distance / 100 ---
@@ -1544,10 +1544,10 @@ def apply_extensions(
     # --- Transit PB / RT splits (service request, historical) ---
     if not pb_frac.dropna().empty:
         frames.append(_long(province, 'Transit', 'Public Bus',
-                            'service_request', '% of Transit k*pkm', pb_frac.dropna()))
+                            'service_request', '%', pb_frac.dropna()))
     if not rt_frac.dropna().empty:
         frames.append(_long(province, 'Transit', 'Rapid Transit',
-                            'service_request', '% of Transit k*pkm', rt_frac.dropna()))
+                            'service_request', '%', rt_frac.dropna()))
 
     # --- Transit.Public Bus fuel shares (historical) ---
     for cat, s in [
@@ -1558,7 +1558,7 @@ def apply_extensions(
     ]:
         if not s.empty:
             frames.append(_long(province, 'Transit.Public Bus', cat,
-                                'market_share_total', '% of Public Bus k*pkm', s))
+                                'market_share_total', '%', s))
 
     # --- Transit.Public Bus avg k*pkm per bus (all years) ---
     # Combined school + urban transit fleet; this is what CIMS uses as the node unit.
@@ -1573,10 +1573,10 @@ def apply_extensions(
     ]:
         if not s.empty:
             frames.append(_long(province, 'Intercity Bus', cat,
-                                'market_share_total', '% of Intercity Bus k*pkm', s))
+                                'market_share_total', '%', s))
     for cat, default_val in INTERCITY_BUS_FUEL_DEFAULTS.items():
         frames.append(_long(province, 'Intercity Bus', cat,
-                            'market_share_total', '% of Intercity Bus k*pkm',
+                            'market_share_total', '%',
                             pd.Series(default_val, index=hist_years)))
 
     # --- Intercity Bus avg k*pkm per bus (all years) ---
@@ -1587,7 +1587,7 @@ def apply_extensions(
     # --- Intercity Rail tech shares (historical, fixed defaults) ---
     for cat, default_val in RAIL_TECH_DEFAULTS.items():
         frames.append(_long(province, 'Intercity Rail', cat,
-                            'market_share_total', '% of Intercity Rail k*pkm',
+                            'market_share_total', '%',
                             pd.Series(default_val, index=hist_years)))
 
     if not frames:

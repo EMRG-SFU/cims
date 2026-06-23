@@ -20,7 +20,7 @@ Total production  (service_request at sector level)
 
 Sub-product splits  (service_request rows at Paper service level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
-    Variables (% of tonnes, routed into Paper sub-services):
+    Variables (%, routed into Paper sub-services):
       'Pulp and Paper.Newsprint'   → Paper.Newsprint
       'Pulp and Paper.Linerboard'  → Paper.Linerboard
       'Pulp and Paper.Uncoated'    → Paper.Uncoated
@@ -206,7 +206,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Paper service level.
-    One block per sub-product; value = ratio (% of tonnes) from heavy_industry.
+    One block per sub-product; value = ratio (%) from heavy_industry.
     Branch: CIMS.CAN.{region}.Pulp and Paper.Paper
     Target: CIMS.CAN.{region}.Pulp and Paper.Paper.{sub-service}
     """
@@ -229,7 +229,7 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Pulp and Paper.Paper.{cims_service}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of tonnes').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))

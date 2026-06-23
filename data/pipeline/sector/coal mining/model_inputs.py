@@ -36,7 +36,7 @@ Total production  (service_request at sector level)
 
 Metallurgical finishing share  (service_request at Coal branch level)
     pipeline/source/activity/coal_mining.py  (called directly via main())
-    Variable: 'Coal Mining.Coal.Metallurgical Finishing'  (% of kt)
+    Variable: 'Coal Mining.Coal.Metallurgical Finishing'  (%)
     Only produced for AB and BC (the met coal regions).
 
 Energy price multipliers  (multiplier_price rows)
@@ -208,7 +208,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_met_finishing_rows(coal: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Coal branch level pointing to Metallurgical Finishing.
-    Value = met share as % of kt from coal_mining (only produced for AB and BC).
+    Value = met share as %(only produced for AB and BC).
     Branch: CIMS.CAN.{region}.Coal Mining.Coal
     Target: CIMS.CAN.{region}.Coal Mining.Coal.Metallurgical Finishing
     """
@@ -228,7 +228,7 @@ def _build_met_finishing_rows(coal: pl.DataFrame) -> pl.DataFrame:
         (pl.lit('CIMS.CAN.') + pl.col('Region')
          + pl.lit('.Coal Mining.Coal.Metallurgical Finishing')).alias('Target'),
         pl.col('Source'),
-        pl.lit('% of kt').alias('Unit'),
+        pl.lit('%').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
     ])

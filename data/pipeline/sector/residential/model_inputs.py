@@ -365,7 +365,7 @@ def _build_vintage_bin_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
         for r in data.iter_rows(named=True):
             pipe_vals[r['category']] = r['value']
             pipe_sources[r['category']] = r['source']
-        pipe_unit = data['unit'][0] if len(data) > 0 else '% of m2'
+        pipe_unit = data['unit'][0] if len(data) > 0 else '%'
 
         vint_tech_rows = fixed.filter(
             (pl.col('Service') == 'Vintage') &
@@ -414,7 +414,7 @@ def _build_heating_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
     for r in data.iter_rows(named=True):
         pipe_vals[r['category']] = r['value']
         pipe_sources[r['category']] = r['source']
-    pipe_unit = data['unit'][0] if len(data) > 0 else '% of GJ of heat'
+    pipe_unit = data['unit'][0] if len(data) > 0 else '%'
 
     lifetime_rows = fixed.filter(
         (pl.col('Service') == service_name) &
@@ -542,7 +542,7 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
     for r in data.iter_rows(named=True):
         pipe_vals[r['category']] = r['value']
         pipe_sources[r['category']] = r['source']
-    pipe_unit = data['unit'][0] if len(data) > 0 else '% of GJ of water heat'
+    pipe_unit = data['unit'][0] if len(data) > 0 else '%'
 
     lifetime_rows = fixed.filter(
         (pl.col('Service') == wh_service) &

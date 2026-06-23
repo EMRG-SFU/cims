@@ -288,7 +288,7 @@ def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                             'Sub_Context': '',
                             'Target':      '',
                             'Source':      'CEUD',
-                            'Unit':        '% of GJ of heat',
+                            'Unit':        '%',
                             'Year':        str(year),
                             'Value':       str(value),
                         })
@@ -310,7 +310,7 @@ def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                             'Sub_Context': '',
                             'Target':      '',
                             'Source':      'CEUD',
-                            'Unit':        '% of GJ of heat',
+                            'Unit':        '%',
                             'Year':        str(year),
                             'Value':       str(value),
                         })
@@ -343,7 +343,7 @@ def _build_wh_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                         'Sub_Context': '',
                         'Target':      '',
                         'Source':      'CEUD',
-                        'Unit':        '% of GJ of water heating',
+                        'Unit':        '%',
                         'Year':        str(year),
                         'Value':       str(value),
                     })

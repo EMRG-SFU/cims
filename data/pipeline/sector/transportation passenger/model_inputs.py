@@ -343,7 +343,7 @@ def _build_transit_sr_rows(tp: pl.DataFrame, region: str,
             continue
         yr_map: dict[int, dict] = {r['year']: r for r in cat_rows.iter_rows(named=True)}
         last_r = cat_rows.row(-1, named=True)
-        unit = last_r['unit'] or '% of Transit k*pkm'
+        unit = last_r['unit'] or '%'
         for yr in all_years:
             if yr in yr_map:
                 r = yr_map[yr]

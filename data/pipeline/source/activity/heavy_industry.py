@@ -28,7 +28,7 @@ INPUTS:
 OUTPUTS:
     processed_data/activity/heavy_industry.csv
         Columns: Region | Variable | Unit | Source | Year | Value
-        Variables: parent sectors in tonnes; child sub-products as fraction of parent (% of tonnes)
+        Variables: parent sectors in tonnes; child sub-products as fraction of parent (%)
         Source: "CEEDC/Stats Can" up to last_data_year["ceedc"], "Assumptions" thereafter
         UTF-8-BOM encoded (opens correctly in Excel)
 
@@ -1218,7 +1218,7 @@ def main() -> pl.DataFrame:
         )
         .rename({"GEO": "Region", "YEAR": "Year"})
         .with_columns([
-            pl.lit("% of tonnes").alias("Unit"),
+            pl.lit("%").alias("Unit"),
             pl.col("Year").cast(pl.Int64),
         ])
         .select(["Region", "Variable", "Unit", "Year", pl.col("ratio").alias("Value")])
@@ -1265,7 +1265,7 @@ def main() -> pl.DataFrame:
             (pl.lit("Pulp and Paper.") + pl.col("CIMS_SECTOR")).alias("Variable")
         )
         .rename({"GEO": "Region", "YEAR": "Year"})
-        .with_columns(pl.lit("% of tonnes").alias("Unit"))
+        .with_columns(pl.lit("%").alias("Unit"))
         .select(["Region", "Variable", "Unit", "Year", pl.col("ratio").alias("Value")])
     )
 

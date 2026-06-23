@@ -18,7 +18,7 @@ Reads the CER natural gas production CSV and outputs:
       * Shale
       * Tight
       * Coalbed Methane
-  - LNG Compression % of gross production for BC (2000–2100)
+  - LNG Compression %(2000–2100)
 
 Notes:
   - Source data starts at 2005. Years 2000–2004 are back-extrapolated
@@ -653,7 +653,7 @@ def main() -> pl.DataFrame:
         .with_columns(
             (pl.col("total") / pl.col("gross_total")).alias("Value"),
             pl.lit("Processing").alias("Variable"),
-            pl.lit("% of 1000m3").alias("Unit"),
+            pl.lit("%").alias("Unit"),
             pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
               .then(pl.lit("CER/Stats Can"))
               .otherwise(pl.lit("Assumptions"))
@@ -724,7 +724,7 @@ def main() -> pl.DataFrame:
         .with_columns(
             pl.lit("BC").alias("Region"),
             pl.lit("LNG Compression").alias("Variable"),
-            pl.lit("% of 1000m3").alias("Unit"),
+            pl.lit("%").alias("Unit"),
         )
         .with_columns(
             pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
@@ -771,10 +771,10 @@ def main() -> pl.DataFrame:
             pl.col("Variable").replace({
                 "total":               "1000m3",
                 "gross_total":         "1000m3",
-                "pct_conventional":    "% of 1000m3",
-                "pct_shale":           "% of 1000m3",
-                "pct_tight":           "% of 1000m3",
-                "pct_coalbed_methane": "% of 1000m3",
+                "pct_conventional":    "%",
+                "pct_shale":           "%",
+                "pct_tight":           "%",
+                "pct_coalbed_methane": "%",
             }).alias("Unit"),
         )
         .with_columns(
@@ -794,7 +794,7 @@ def main() -> pl.DataFrame:
         .unique()
         .with_columns([
             pl.lit("Natural Gas.Extraction").alias("Variable"),
-            pl.lit("% of 1000m3").alias("Unit"),
+            pl.lit("%").alias("Unit"),
             pl.lit(1.0).alias("Value"),
             pl.when(pl.col("Year") <= LAST_DATA_YEAR["cer"])
               .then(pl.lit("CER/Stats Can"))

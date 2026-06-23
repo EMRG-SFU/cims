@@ -231,7 +231,7 @@ def main() -> pl.DataFrame:
             .otherwise(0.0)
             .alias("Value"),
             ("Light Industrial.Manufacturing." + pl.col("Variable")).alias("Variable"),
-            pl.lit("% of $M 2017 GDP").alias("Unit"),
+            pl.lit("%").alias("Unit"),
         )
         .select(["Region", "Variable", "Unit", "Year", "Value"])
     )
@@ -254,7 +254,7 @@ def main() -> pl.DataFrame:
         .join(_zero_total_years, on=["Region", "Year"], how="left")
         .with_columns(
             pl.when(
-                (pl.col("Unit") == "% of $M 2017 GDP") &
+                (pl.col("Unit") == "%") &
                 pl.col("_zero_total").fill_null(False)
             )
             .then(pl.lit(None).cast(pl.Float64))
@@ -268,7 +268,7 @@ def main() -> pl.DataFrame:
             pl.col("_ffilled").backward_fill().over(["Region", "Variable"]).alias("_bfilled")
         )
         .with_columns(
-            pl.when(pl.col("Unit") == "% of $M 2017 GDP")
+            pl.when(pl.col("Unit") == "%")
             .then(pl.col("_bfilled").fill_null(0.0))
             .otherwise(pl.col("Value"))
             .alias("Value")
@@ -294,7 +294,7 @@ def main() -> pl.DataFrame:
     for (region, variable, unit), grp in combined_pd.groupby(["Region", "Variable", "Unit"]):
         series = grp.set_index("Year")["Value"].sort_index()
 
-        if unit == "% of $M 2017 GDP":
+        if unit == "%":
             # Percentage splits: hold flat at last historical value
             last_val = series.loc[last_year] if last_year in series.index else series.iloc[-1]
             for yr in range(last_year + 1, CAGR_PERIODS[-1][1] + 1):

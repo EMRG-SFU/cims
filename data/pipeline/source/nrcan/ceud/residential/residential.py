@@ -94,17 +94,17 @@ VARIABLE_CONFIGS = [
     {'key': 'building_shares',        'name': 'building_shares',        'parameter': 'market_share_total', 'unit': '%'},
     {'key': 'floorspace_per_building','name': 'floorspace_per_building','parameter': 'service_request',    'unit': 'm2/building'},
     {'key': 'appliances_per_household','name': 'appliances_per_household','parameter': 'service_request', 'unit': 'unit/building'},
-    {'key': 'vintage_bins_lowmed',    'name': 'vintage_bins_low_med',   'parameter': 'market_share_total', 'unit': '% of m2'},
-    {'key': 'vintage_bins_high',      'name': 'vintage_bins_high',      'parameter': 'market_share_total', 'unit': '% of m2'},
-    {'key': 'heating_lowmed_cold',    'name': 'heating_data_lowmed_cold','parameter': 'market_share_total','unit': '% of GJ of heat'},
-    {'key': 'heating_high_cold',      'name': 'heating_data_high_cold', 'parameter': 'market_share_total', 'unit': '% of GJ of heat'},
-    {'key': 'heating_lowmed_marine',  'name': 'heating_data_lowmed_marine','parameter': 'market_share_total','unit': '% of GJ of heat'},
-    {'key': 'heating_high_marine',    'name': 'heating_data_high_marine','parameter': 'market_share_total','unit': '% of GJ of heat'},
+    {'key': 'vintage_bins_lowmed',    'name': 'vintage_bins_low_med',   'parameter': 'market_share_total', 'unit': '%'},
+    {'key': 'vintage_bins_high',      'name': 'vintage_bins_high',      'parameter': 'market_share_total', 'unit': '%'},
+    {'key': 'heating_lowmed_cold',    'name': 'heating_data_lowmed_cold','parameter': 'market_share_total','unit': '%'},
+    {'key': 'heating_high_cold',      'name': 'heating_data_high_cold', 'parameter': 'market_share_total', 'unit': '%'},
+    {'key': 'heating_lowmed_marine',  'name': 'heating_data_lowmed_marine','parameter': 'market_share_total','unit': '%'},
+    {'key': 'heating_high_marine',    'name': 'heating_data_high_marine','parameter': 'market_share_total','unit': '%'},
     {'key': 'cooling_share_data',     'name': 'cooling_share_data',     'parameter': 'service_request',    'unit': 'GJ/GJ'},
     {'key': 'wh_lowmed',              'name': 'wh_lowmed',              'parameter': 'service_request',    'unit': 'GJ/GJ'},
     {'key': 'wh_high',                'name': 'wh_high',                'parameter': 'service_request',    'unit': 'GJ/GJ'},
-    {'key': 'wh_tech_lowmed',         'name': 'wh_tech_lowmed',         'parameter': 'market_share_total', 'unit': '% of GJ of water heat'},
-    {'key': 'wh_tech_high',           'name': 'wh_tech_high',           'parameter': 'market_share_total', 'unit': '% of GJ of water heat'},
+    {'key': 'wh_tech_lowmed',         'name': 'wh_tech_lowmed',         'parameter': 'market_share_total', 'unit': '%'},
+    {'key': 'wh_tech_high',           'name': 'wh_tech_high',           'parameter': 'market_share_total', 'unit': '%'},
 ]
 
 
@@ -480,7 +480,7 @@ def extract_vintages(province: str, tables: dict,
     for bin_name, labels in bin_map_lowmed.items():
         s = sum(_weighted_avg(lbl) for lbl in labels)
         frames.append(_long(province, 'vintage_bins_lowmed', bin_name,
-                            'market_share_total', '% of m2', s))
+                            'market_share_total', '%', s))
 
     bin_map_high = {
         "<1960":     ["Before 1946", "1946–1960"],
@@ -492,7 +492,7 @@ def extract_vintages(province: str, tables: dict,
     for bin_name, labels in bin_map_high.items():
         s = sum(raw["Apartments"][lbl] for lbl in labels)
         frames.append(_long(province, 'vintage_bins_high', bin_name,
-                            'market_share_total', '% of m2', s))
+                            'market_share_total', '%', s))
 
     return frames
 
@@ -607,10 +607,10 @@ def extract_heating_technologies(province: str, tables: dict,
     frames = []
     for tech, s in lowmed_cold.items():
         frames.append(_long(province, 'heating_lowmed_cold', tech,
-                            'market_share_total', '% of GJ of heat', s))
+                            'market_share_total', '%', s))
     for tech, s in cold_high.items():
         frames.append(_long(province, 'heating_high_cold', tech,
-                            'market_share_total', '% of GJ of heat', s))
+                            'market_share_total', '%', s))
 
     # -- MARINE climate (BC only) ----------------------------------------------
     if is_bc:
@@ -642,10 +642,10 @@ def extract_heating_technologies(province: str, tables: dict,
 
         for tech, s in lowmed_marine.items():
             frames.append(_long(province, 'heating_lowmed_marine', tech,
-                                'market_share_total', '% of GJ of heat', s))
+                                'market_share_total', '%', s))
         for tech, s in marine_high.items():
             frames.append(_long(province, 'heating_high_marine', tech,
-                                'market_share_total', '% of GJ of heat', s))
+                                'market_share_total', '%', s))
 
     return frames
 
@@ -787,10 +787,10 @@ def extract_water_heating(province: str, tables: dict,
     ]
     for tech, s in wh_tech_lowmed.items():
         frames.append(_long(province, 'wh_tech_lowmed', tech,
-                            'market_share_total', '% of GJ of water heat', s))
+                            'market_share_total', '%', s))
     for tech, s in wh_tech_high.items():
         frames.append(_long(province, 'wh_tech_high', tech,
-                            'market_share_total', '% of GJ of water heat', s))
+                            'market_share_total', '%', s))
 
     return frames
 

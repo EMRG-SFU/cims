@@ -31,7 +31,7 @@ Total activity  (service_request at sector level)
 
 Manufacturing sub-service splits  (service_request rows at Manufacturing level)
     pipeline/source/activity/light_industrial.py  (called directly via main())
-    Variables (% of $M 2017 GDP, routed into Manufacturing sub-services):
+    Variables (%, routed into Manufacturing sub-services):
       'Light Industrial.Manufacturing.Food Tobacco and Beverage'
       'Light Industrial.Manufacturing.Rubber and Plastics'
       'Light Industrial.Manufacturing.Leather and Textiles'
@@ -222,7 +222,7 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
 def _build_mfg_split_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Manufacturing service level.
-    One block per sub-service; value = share (% of $M GDP) from light_industrial.
+    One block per sub-service; value = share (%) from light_industrial.
     Branch: CIMS.CAN.{region}.Light Industrial.Manufacturing
     Target: CIMS.CAN.{region}.Light Industrial.Manufacturing.{sub-service}
     """
@@ -247,7 +247,7 @@ def _build_mfg_split_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
             (pl.lit('CIMS.CAN.') + pl.col('Region')
              + pl.lit(f'.Light Industrial.Manufacturing.{node}')).alias('Target'),
             pl.col('Source'),
-            pl.lit('% of M$ GDP').alias('Unit'),
+            pl.lit('%').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
             pl.col('Value').cast(pl.String).alias('Value'),
         ]))
