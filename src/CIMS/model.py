@@ -256,16 +256,22 @@ class Model:
         graph.max_tree_index = [0]
 
         node_dfs, tech_dfs = self.node_dfs, self.tech_dfs
+        scenario_node_dfs = self.scenario_node_dfs
+        scenario_tech_dfs = self.scenario_tech_dfs
         if self.currency_converter is not None:
             print(f"  Converting costs to {self.target_dollar_year}_{self.target_currency}...")
             node_dfs, tech_dfs = apply_currency_conversion(
                 node_dfs, tech_dfs, self.currency_converter,
                 self.target_currency, self.target_dollar_year,
             )
+            scenario_node_dfs, scenario_tech_dfs = apply_currency_conversion(
+                scenario_node_dfs, scenario_tech_dfs, self.currency_converter,
+                self.target_currency, self.target_dollar_year,
+            )
 
         print("  Building base graph...")
         graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, self.node_dfs, self.tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         # Update metadata from base graph
@@ -292,10 +298,10 @@ class Model:
             print("  Applying scenario overlays...")
             self.graph.max_tree_index[0] = 0
             graph = node_utils.make_or_update_nodes(
-                self.graph, self.scenario_node_dfs, self.scenario_tech_dfs
+                self.graph, scenario_node_dfs, scenario_tech_dfs
             )
             graph = edge_utils.make_or_update_edges(
-                graph, self.scenario_node_dfs, self.scenario_tech_dfs
+                graph, scenario_node_dfs, scenario_tech_dfs
             )
             self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
             self.graph = graph
