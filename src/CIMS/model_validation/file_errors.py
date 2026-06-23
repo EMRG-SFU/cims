@@ -487,3 +487,48 @@ def no_structural_parent_node_exists(validator):
     total_children = sum(len(c) for c in missing_parents.values())
     concern_desc = f"parent node(s) are not defined — {total_children} child node(s) affected"
     return missing_parents, concern_desc
+
+
+def currency_table_coverage(validator):
+    """
+    Check that the deflator and exchange tables cover every monetary (year, currency)
+    pair present in the model data, as well as the configured target year/currency.
+
+    Skipped when no currency converter is configured on the validator.
+    """
+    converter = getattr(validator, "currency_converter", None)
+    if converter is None:
+        return [], ""
+
+    from ..unit_conversion import _MONETARY_PREFIX_RE
+
+    target_currency = validator.target_currency
+    target_year = validator.target_dollar_year
+
+    unit_col = validator.model_df[COL.unit].fillna("").astype(str)
+    extracted = unit_col.str.extract(_MONETARY_PREFIX_RE)
+    monetary_mask = extracted[0].notna()
+
+    if not monetary_mask.any():
+        return [], ""
+
+    source_pairs = set()
+    for year_str, currency_str in zip(extracted.loc[monetary_mask, 0], extracted.loc[monetary_mask, 1]):
+        try:
+            source_pairs.add((currency_str.upper(), int(year_str)))
+        except (ValueError, AttributeError):
+            pass
+
+    problems = []
+    seen = set()
+    for (source_currency, source_year) in sorted(source_pairs):
+        try:
+            converter.conversion_factor(source_currency, source_year, target_currency, target_year)
+        except ValueError as exc:
+            msg = str(exc)
+            if msg not in seen:
+                seen.add(msg)
+                problems.append(f"{source_currency} {source_year} → {target_currency} {target_year}: {exc}")
+
+    concern_desc = "currency table coverage gaps — year or currency missing from deflator/exchange tables"
+    return problems, concern_desc

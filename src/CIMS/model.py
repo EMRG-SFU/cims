@@ -166,6 +166,9 @@ class Model:
         if target_units is not None:
             print("  Configuring currency conversion...")
             self._configure_currency_conversion(target_units, deflator_path, exchange_path)
+            self.validator.currency_converter = self.currency_converter
+            self.validator.target_currency = self.target_currency
+            self.validator.target_dollar_year = self.target_dollar_year
 
         # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
@@ -232,6 +235,9 @@ class Model:
         return model
 
     def _configure_currency_conversion(self, target_units: dict, deflator_path: str, exchange_path: str):
+        if deflator_path is None or exchange_path is None:
+            missing = [name for name, val in [("deflator_path", deflator_path), ("exchange_path", exchange_path)] if val is None]
+            raise ValueError(f"{' and '.join(missing)} must be provided when target_units is set")
         self.target_currency = target_units["currency"]
         self.target_dollar_year = target_units["dollar_year"]
         self.currency_converter = CurrencyConverter(deflator_path, exchange_path)
