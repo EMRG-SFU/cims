@@ -44,28 +44,33 @@ C:\cims\data\
 │
 ├── pipeline/                   # All pipeline scripts (committed)
 │   ├── source/                 # Stage 1 — raw → processed_data
+│   │   ├── run_all.py          # Runs all Stage 1 scripts in dependency order
 │   │   ├── activity/           # Activity levels for all sectors (res/com/trans from ceud source)
 │   │   ├── eccc/nir/           # National Inventory Report processing
 │   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
 │   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
 │   │   └── nrcan/ceud/         # Comprehensive Energy Use Database extraction
 │   │       ├── residential/
-│   │       └── commercial/
-│   │       └── transport_passenger/
-│   │       └── transport_freight/
+│   │       ├── commercial/
+│   │       ├── transportation_passenger/
+│   │       └── transportation_freight/
 │   ├── sector/                 # Stage 2 — processed_data + fixed_data → model_inputs
+│   │   ├── run_all_model.py    # Runs all model_inputs.py scripts
+│   │   ├── run_all_calibration.py  # Runs all calibration.py scripts
 │   │   ├── agriculture/
 │   │   ├── biodiesel/
-│   │   ├── chemical_products/
+│   │   ├── chemical products/
 │   │   ├── commercial/
-│   │   └── residential/
+│   │   ├── residential/
+│   │   ├── transportation passenger/
+│   │   ├── transportation freight/
 │   │   └── .../
 │   └── utils/                  # Shared utility functions (committed)
 │       ├── extractors/         # Source-specific readers (Stats Can, CEUD, CER)
 │       ├── output_builder.py   # CIMS output row formatter
 │       ├── data_extensions.py  # CAGR projection and trend fitting
 │       ├── data_fill.py        # Interpolation and gap filling
-│       ├── flatten_fixed_data.py
+│       ├── flatten_fixed_data.py  # Wide fixed-data CSVs → annual long format
 │       ├── add_cims_totals.py
 │       ├── dict_ops.py
 │       └── controls_conversions.py
@@ -94,16 +99,23 @@ C:\cims\data\
 │   └── nrcan/ceud/
 │
 ├── model_inputs/               # Stage 2 outputs — gitignored, auto-generated
-│   └── model/
-│       ├── agriculture/
-│       ├── biodiesel/
-│       ├── chemical_products/
-│       ├── commercial/
-│       └── residential/
+│   ├── model/
+│   │   ├── agriculture/
+│   │   ├── commercial/
+│   │   ├── residential/
+│   │   ├── transportation passenger/
+│   │   ├── transportation freight/
+│   │   └── .../
+│   └── policies/
+│       ├── reference/          # Source policy CSVs (wide 5-year format)
+│       └── reference_annual/   # Flattened annual policy CSVs
 │
 └── calibration/                # Calibration outputs — gitignored, auto-generated
     ├── commercial/
-    └── residential/
+    ├── residential/
+    ├── transportation passenger/
+    ├── transportation freight/
+    └── .../
 ```
 
 ---
@@ -122,24 +134,27 @@ You can run scripts individually (useful when only one source has been updated) 
 
 ```powershell
 # Run the full pipeline in one go
-python pipeline/source/run_all.py   # all Stage 1 source processors
-python pipeline/sector/run_all.py   # all Stage 2 sector assemblers
+python pipeline/source/run_all.py            # all Stage 1 source processors
+python pipeline/sector/run_all_model.py      # all Stage 2 model input assemblers
+python pipeline/sector/run_all_calibration.py  # all Stage 2 calibration assemblers
 ```
 
-Or run stages selectively. Stage 1 source processors (order generally does not matter):
+Or run stages selectively. Stage 1 source processors (order generally does not matter, except `energy_prices.py` before `energy_price_multipliers.py`):
 
 ```powershell
-# Examples — run each script that corresponds to the data you have
 python pipeline/source/activity/emissions_drivers.py
+python pipeline/source/activity/electricity.py
 python pipeline/source/nrcan/ceud/residential/residential.py
 python pipeline/source/nrcan/ceud/commercial/commercial.py
+python pipeline/source/nrcan/ceud/transportation_passenger/transportation_passenger.py
+python pipeline/source/nrcan/ceud/transportation_freight/transportation_freight.py
 python pipeline/source/energy_prices/energy_prices.py
 python pipeline/source/energy_prices/energy_price_multipliers.py
 python pipeline/source/eccc/nir/nir_to_cims.py
 python pipeline/source/emission_factors/emission_factors.py
 ```
 
-Run Stage 2 sector assemblers (order of sector vs source assembler running does not matter):
+Run Stage 2 sector assemblers:
 
 ```powershell
 python pipeline/sector/agriculture/model_inputs.py
@@ -149,8 +164,7 @@ python pipeline/sector/commercial/calibration.py
 ...
 ```
 
-Model inputs outputs land in `model_inputs/model/{sector}/` — one CSV per province/territory (13 files per sector). Calibration outputs land in `calibration/{sector}/`
-
+Model inputs land in `model_inputs/model/{sector}/` — one CSV per province/territory (13 files per sector). Calibration outputs land in `calibration/{sector}/`.
 
 ---
 
@@ -225,7 +239,7 @@ Gap-filling utilities: linear interpolation between known values, forward-fill, 
 
 ### `flatten_fixed_data.py`
 
-Converts wide fixed-data CSVs (one row per parameter, year columns 2000–2050) into long format with annual rows. Applies linear interpolation across the 2000–2050 range and holds the 2050 value constant through 2100.
+Converts wide fixed-data CSVs (one row per parameter, year columns 2000–2050) into long format with annual rows. Applies linear interpolation across the 5-year breakpoints and holds the 2050 value constant through 2100.
 
 ### `add_cims_totals.py`
 
@@ -235,6 +249,7 @@ Rolls up leaf-node rows to parent aggregate rows in the CIMS branch hierarchy. F
 
 Loads and exposes the `CONTROLS` dict from `control.py` as module-level constants:
 
+- `BASE_PATH` — data root directory, derived automatically from this file's location (portable across machines)
 - `DATA_START` — first historical year (2000)
 - `PROJECTION_END` — last projected year (2100)
 - `LAST_DATA_YEAR` — dict of last available year per source
@@ -277,7 +292,7 @@ All sector model input files share a common long-format schema:
 | `Sub_Context` | Sub-context (often blank) | |
 | `Target` | Demand/supply node this row applies to | `CIMS.CAN.AB.Commercial.Buildings.Shell.Retail (Cold)` |
 | `Source` | Data provenance | `CEUD`, `CER`, `fixed_data` |
-| `Unit` | Value unit | `% of m2`, `PJ`, `2025$/GJ` |
+| `Unit` | Value unit | `%`, `PJ`, `2025$/GJ` |
 | `2000` … `2100` | One column per year, value for that year | `0.35` |
 
 Files are saved as CSV with the first 12 columns as metadata and years 2000–2100 as remaining columns.
@@ -368,7 +383,8 @@ Install with:
 pip install polars pandas numpy scipy openpyxl marimo
 ```
 
-**Path convention**: The base path is derived automatically from the location of controls_conversions.py in pipeline/utils/, so scripts work regardless of where the cims/data folder lives on disk. The internal directory layout under the data root (e.g. raw_data/, processed_data/, model_inputs/, mappings_conversions/) must be preserved as described above.
+**Path convention**: The base path is derived automatically from the location of `controls_conversions.py` in `pipeline/utils/`, so scripts work regardless of where the `cims/data` folder lives on disk. The internal directory layout under the data root (`raw_data/`, `processed_data/`, `model_inputs/`, `mappings_conversions/`) must be preserved as described above.
+
 ---
 
 ## What is and is not Committed
