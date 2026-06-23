@@ -93,6 +93,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         default, or previous_year}.
     """
     val = None
+    param_source = None
     is_exogenous = None
 
     # Get Parameter from Description
