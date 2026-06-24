@@ -79,6 +79,24 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<style>
+body::before {
+  content: "DRAFT";
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  font-size: 12vw;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: rgba(190, 0, 0, 0.06);
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  z-index: 9999;
+}
+</style>
 
 
 <link rel="stylesheet" href="style.css">
