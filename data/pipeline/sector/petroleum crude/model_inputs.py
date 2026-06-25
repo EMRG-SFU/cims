@@ -23,6 +23,13 @@ Fixed structural parameters
         │           └── Upgrading
         ├── Industrial Engines, Steam, Still Gas Steam,
         │   Hydrogen, CCS  (shared utility services)
+    
+    Decisions/notes:
+    1. Kept exploration in fixed data because not in activity script
+    2. Added heavy oil to NL and BC (copied from AB)
+    3. Removed onshore from NL
+    4. Removed offshore from regions without
+    5. Used MB as proxy for NT (revisit - likely more exploration in NT)
 
 Total production  (service_request at sector level)
     pipeline/source/activity/oil_production.py  (called directly via main())
