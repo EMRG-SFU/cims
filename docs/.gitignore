@@ -2,3 +2,13 @@
 /_book/
 
 **/*.quarto_ipynb
+
+*.tex
+*.log
+*.aux
+*.toc
+*.out
+*.fls
+*.bcf
+*.fdb_latexmk
+*_files/

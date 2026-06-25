@@ -1,0 +1,14 @@
+# Watermark profile — adds a DRAFT watermark to every page.
+#
+# Activate with:  quarto render --profile watermark
+#             or  quarto preview --profile watermark
+#
+# This only flips the `watermark` flag; watermark.lua (registered in
+# _quarto.yml) reads it and injects the format-appropriate watermark
+# (draftwatermark for PDF, a CSS overlay for HTML). Rendering without
+# the profile produces clean, unwatermarked output.
+#
+# NB: the key is `watermark`, not `draft` — `draft` is a reserved Quarto
+# metadata key (its own draft-page feature) and setting it breaks book
+# navigation.
+watermark: true

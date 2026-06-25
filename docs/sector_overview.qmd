@@ -59,3 +59,13 @@ Technology choice everywhere uses **behavioural** (revealed or empirical) discou
 Emissions accounting combines combustion CO₂ from the fuels each technology requests with **process emissions** released by chemical reactions independent of energy use — calcination in cement, for example — and, in a few sectors, fugitive methane, all expressed on a CO₂-equivalent basis so that high-warming gases enter at their full weight. Fuels reach the demand sectors as blends, so a rising renewable content in a blend lowers the lifecycle carbon of every technology that draws on it, and **carbon capture** is represented as a shared service that sectors can call on where it applies.
 
 Taken together, these shared structures are what let CIMS treat a landfill, a steel mill, and a passenger-vehicle fleet within one consistent framework: each is a flow model of competing technologies, driven by an activity forecast, discounted behaviourally, and accounted on a common emissions basis. The chapters that follow apply that framework, one sector at a time.
+
+```{=latex}
+% PDF only: show chapters but not sections in the TOC for the sector
+% chapters. tocdepth 0 = chapters only (KOMA scrbook). Reset to 1
+% (chapters + sections, matching the global toc-depth: 2) at the top of
+% the first chapter after the sector block (machine_drive.qmd). Written
+% via \addtocontents so it takes effect when the front-matter TOC is
+% typeset. (tocvsec2 is avoided here as it is incompatible with KOMA.)
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+```

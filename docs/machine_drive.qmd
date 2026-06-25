@@ -1,5 +1,12 @@
 # Industrial Machine Drive Systems {#sec-machine-drive}
 
+```{=latex}
+% Restore full TOC depth after the sector chapters: tocdepth 1 =
+% chapters + sections (matches the global toc-depth: 2). See the
+% paired \addtocontents in sector_overview.qmd.
+\addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
+```
+
 <mark>TODO: Describe how the model represents industrial machine drive systems and their contribution to industrial electricity demand across manufacturing and resource-processing sectors. The section should explain the treatment of end uses such as motors, pumps, compressors, fans, conveyors, and other mechanically driven equipment, including how energy consumption is allocated across industries consistent with sources such as the U.S. Energy Information Administration Manufacturing Energy Consumption Survey (MECS). It should document assumptions related to motor efficiency improvements, variable speed drive adoption, equipment turnover, process electrification, and production-output linkages. The section should also explain how machine drive demand responds to changes in industrial activity, efficiency policies, and technology adoption, as well as any interactions with waste heat recovery, onsite generation, or demand-side flexibility measures.</mark>
 
 Nodes shaded in green represent unique industry processes, while nodes shaded in other colors represent auxiliary systems. These are generic energy services that are supplied to the major process technologies and are shared by all CIMS industry sub-models. The auxiliary systems fall into four general categories: steam generation (boilers and cogenerators), lighting, heating, ventilation, and air conditioning (HVAC), and electric motor systems including pumps, fans, compressors, and conveyors. Figure 9 shows the energy flow diagrams for auxiliary systems not included in Figure 8. In some cases, the energy service meets the direct need for steam, pumping, or compression, while in other cases, it serves only to provide suitable conditions for production to continue, as in the case of lighting and HVAC systems.

@@ -16,6 +16,12 @@ execute:
 # the per-chapter \printbibliography is no-op'd via header-includes below.
 link-citations: true
 
+# Project-wide filters. watermark.lua injects a DRAFT watermark when the
+# `watermark` flag is set (via `quarto render --profile watermark`); it is a
+# no-op otherwise. Runs for all formats (LaTeX/PDF and HTML).
+filters:
+  - watermark.lua
+
 book:
   title: CIMS
   # author: Energy and Materials Research Group, Simon Fraser University
@@ -118,6 +124,7 @@ format:
   #   urlcolor: cimsblue
   #   citecolor: cimsblue
   #   toccolor: cimsink
+  #   toc-depth: 2
   #   # Heading/caption styling + accent palette.
   #   include-in-header:
   #     - cims-style.sty

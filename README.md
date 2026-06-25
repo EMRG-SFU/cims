@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/cims_logo_dark.svg">
+  <img src="docs/images/cims_logo_light.svg" alt="CIMS logo">
+</picture>
+
 # CIMS
 CIMS is a Python package providing the implementation of the [CIMS](https://emrg-sfu.github.io/cims/)
 energy-emissions-economy model. 
