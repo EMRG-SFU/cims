@@ -14,6 +14,9 @@ Fixed structural parameters
     Uncoated, Coated, Tissue, Prepared Pulp) have been removed from the
     fixed data and are sourced from the pipeline instead (see below).
 
+    Decisions/notes:
+    1. Using AB fixed data for MB and SK
+
 Total production  (service_request at sector level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Pulp and Paper'  (tonnes, per province, 2000–2100)
