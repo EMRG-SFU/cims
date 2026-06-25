@@ -45,6 +45,18 @@ section.footnotes,
   margin-left: auto;
 }
 
+/* Show the logo only. The sidebar header renders the book title as a
+   separate text link (`.sidebar-title > a`); the logo is its own sibling
+   link (`.sidebar-logo-link`) and the tool icons live inside
+   `.sidebar-tools-main`, so hiding this one anchor drops just the
+   redundant "CIMS" text and leaves the logo and GitHub/theme-toggle icons
+   intact. Use display:none, not font-size:0 — Bootstrap sets
+   `.sidebar-title > a { font-size: inherit }` at equal specificity and
+   loads after this file, so a font-size override loses the cascade. */
+.sidebar-title > a {
+  display: none;
+}
+
 /* Quarto's tippy footnote tooltip is appended inside the footnote
    marker's parent element, so when a footnote sits inside a <th> (e.g.
    on an aggregate region column header) the tooltip inherits the bold
@@ -117,6 +129,10 @@ img.img-fluid[src$=".png"] {
   padding: 1rem;
   border-radius: 0.25rem;
 }
+
+/* (Dark-mode logo swap is handled natively by _brand.yml's light/dark
+   logo pair — Quarto fills its own `.light-content`/`.dark-content` image
+   slots, so no CSS swap is needed here.) */
 
 /* Equation variable definitions. Pair a fenced div `.eq-vars` with a
    Pandoc definition list immediately after a display equation to label
