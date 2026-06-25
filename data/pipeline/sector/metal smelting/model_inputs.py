@@ -34,6 +34,15 @@ Fixed structural parameters
         ├── HVAC, Lighting, Ventilation  (building services)
         └── Compression, Conveyance, Direct Drive, Machine Drive,
             Pumping  (motor services)
+    
+    Decisions/notes:
+    1. Assuming thermal coal for heat related processes
+    2. Assuming coke for blast furnace, electrochemical furnace, vertical retort, sinter roast
+    3. Using AT lead rows for QC, ON, MB (BC's lead is too detailed)
+    4. Removed aluminium smelting from NL
+    5. Added magnesium to BC from MB (ON, MB, QC all the same)
+    6. Used ON as proxy for AB (QC/BC metal sector too big)
+    7. Titanium activity present in QC fixed data but not activity script
 
 Total production  (service_request at sector level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
