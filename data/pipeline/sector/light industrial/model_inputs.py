@@ -25,6 +25,10 @@ Fixed structural parameters
     rows (splits into each sub-service) have been removed from the fixed data
     and are sourced from the pipeline instead (see below).
 
+    Decisions/notes:
+    1. Copied in missing rubber parameters to AT/TR (used BC as proxy but all regions were the same)
+    2. Copied in missing FOM row to AB (used BC as proxy but all regions were the same)
+
 Total activity  (service_request at sector level)
     pipeline/source/activity/light_industrial.py  (called directly via main())
     Variable: 'Light Industrial'  ($M 2017 GDP, per province/territory, 2000–2100)
