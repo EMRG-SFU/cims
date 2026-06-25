@@ -36,6 +36,11 @@ Fixed structural parameters
               ├── Transmission (with Compression)
               └── Distribution
       Natural Gas.OG Diesel/Gasoline/Methane Blend  (utility services)
+    
+    Decisions/notes:
+    1. SK, AB, BC only because other regions so small and we take data from CER supply data
+    and they don't report in EF work.
+
 
     All service_provide rows in the fixed data have null values and are
     retained unchanged. Activity data is inserted as service_request rows.
