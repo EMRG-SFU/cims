@@ -35,6 +35,11 @@ Fixed structural parameters
     constants already present in the fixed data. No sub-product fractions
     are sourced from the pipeline for this sector.
 
+    Decisions/notes:
+    1. Deleted slabs and billets from SK and associated techs
+    2. Using SK as a proxy for missing BC, AB, MB
+    3. Remove COREX tech?
+
 Total production  (service_request at sector level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Iron and Steel'  (tonnes, per province, 2000–2100)
