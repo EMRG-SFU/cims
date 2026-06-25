@@ -14,6 +14,19 @@ Fixed structural parameters
     splits and potash split are NOT in the fixed data; they are built
     here from the activity pipeline and injected as service_request rows.
 
+    Decisions/notes:
+    1. Changed "sized reduced iron/non-iron product" to "iron/non-iron product"
+    2. Missing underground in our activity data - keeping JCIMS data. Consider adding to activity script?
+    3. Assuming coke for sintering processes
+    4. MB missing iron product - pulled from BC (better proxy than detailed QC)
+    5. SK missing open pit mining - pulled from BC
+    6. NB - using SK as a proxy because only other region with potash
+    7. NL - using QC as proxy because detailed mining sector like QC
+    8. NS - using BC as a proxy because smaller mining sector
+    9. NT/YT - using BC as proxy
+    10. NU - using BC as proxy but pulling in more detailed QC iron product nodes that are missing from BC file
+    11. AB - using BC as proxy
+
 Total mining production  (service_request at sector level)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Mining'  (tonnes, per province, 2000–2100)
