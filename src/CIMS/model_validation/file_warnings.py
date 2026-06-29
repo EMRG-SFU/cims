@@ -144,13 +144,21 @@ def cost_params_missing_currency_unit(validator):
 
     Without the year prefix, configure_unit_conversion() silently skips those rows
     and their values are not normalised to the target currency and dollar-year.
+
+    A secondary check flags rows whose parameter is in MONETARY_PARAMS but whose
+    unit does not match the YYYY_CCC pattern at all (e.g. 'fcc' with unit 'CAD'
+    rather than '2010_CAD'). This catches monetary parameters that lack a '$' symbol
+    and would otherwise be missed by the heuristic above.
     """
     data = validator.model_df
 
-    dollar_mask = data[COL.unit].fillna('').str.contains(r'\$', regex=True)
     monetary_prefix_mask = data[COL.unit].fillna('').str.match(_MONETARY_PREFIX_RE)
 
-    missing = data[dollar_mask & ~monetary_prefix_mask]
+    dollar_mask = data[COL.unit].fillna('').str.contains(r'\$', regex=True)
+    has_unit_mask = data[COL.unit].notna() & (data[COL.unit] != '')
+    monetary_param_mask = data[COL.parameter].isin(PARAM.MONETARY_PARAMS) & has_unit_mask
+
+    missing = data[(dollar_mask | monetary_param_mask) & ~monetary_prefix_mask]
 
     result = list(zip(
         missing.index,
@@ -159,7 +167,7 @@ def cost_params_missing_currency_unit(validator):
         missing[COL.unit],
     ))
 
-    concern_desc = "rows have a '$' unit missing a YYYY_CCC monetary prefix (e.g. '$/GJ' → '2010_CAD/GJ')"
+    concern_desc = "rows with a monetary parameter or '$' unit are missing a YYYY_CCC prefix (e.g. '$/GJ' → '2010_CAD/GJ')"
     return result, concern_desc
 
 
