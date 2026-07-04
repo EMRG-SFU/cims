@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/cims_logo_dark_screen.svg">
-  <img src="docs/images/cims_logo_light_screen.svg" alt="CIMS logo">
+  <img src="docs/images/cims_logo_light_screen.svg" alt="CIMS logo" width="50%">
 </picture>
 
 # 
