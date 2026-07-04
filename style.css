@@ -1,3 +1,15 @@
+/* Suppress the book-title block injected on the index/home page only.
+   Quarto marks home and chapter title blocks identically
+   (`quarto-title-block default`), so we can't discriminate on the header
+   itself. Instead we key off page content: only index.qmd's body holds the
+   `# Welcome` section (id="welcome"). `:has(> section#welcome)` scopes the
+   hide to the home page, leaving every chapter/appendix title block (with
+   its breadcrumb + chapter title) intact. HTML-only, so the PDF title page
+   is unaffected. */
+#quarto-document-content:has(> section#welcome) > header#title-block-header {
+  display: none;
+}
+
 a.footnote-ref.fn-adjacent > sup::before {
   content: ",";
 }
