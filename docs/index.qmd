@@ -1,4 +1,8 @@
 ---
+format:
+  html:
+    title-block-style: none
+    title-block-banner: false
 # This page hosts a hidden bibliography "sink" (see the bottom of the
 # file). Quarto collects nocite: @* book-wide and renders that full list
 # into the FIRST #refs div in book order. index.qmd is first, so the

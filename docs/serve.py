@@ -6,5 +6,9 @@ server = Server()
 server.watch('_book/')
 server.serve(root='_book/', port=5500)
 
-# To use, run:
+# To preview:
+# quarto render --profile watermark
 # uv run --with livereload python serve.py
+
+# To publish:
+# quarto publish gh-pages --no-render

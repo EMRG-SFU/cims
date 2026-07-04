@@ -1,0 +1,21 @@
+# Brand definitions shared across formats. Only the logo is defined here;
+# colors and typography are left to the per-format `theme:` settings in
+# _quarto.yml (cosmo/darkly).
+#
+# Providing both a light and dark logo lets Quarto populate its built-in
+# `light-content` / `dark-content` image slots with the correct file, so
+# the sidebar logo swaps automatically with the theme toggle — no custom
+# CSS needed. Quarto uses the brand logo for the book sidebar by default
+# (disable with `book: sidebar: logo: false`). Paths are relative to this
+# file. small/medium/large are all set so whichever size the sidebar
+# picks resolves to the right pair.
+logo:
+  small:
+    light: images/cims_logo_light_screen.svg
+    dark: images/cims_logo_dark_screen.svg
+  medium:
+    light: images/cims_logo_light_screen.svg
+    dark: images/cims_logo_dark_screen.svg
+  large:
+    light: images/cims_logo_light_screen.svg
+    dark: images/cims_logo_dark_screen.svg

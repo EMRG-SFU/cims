@@ -3,7 +3,16 @@ project:
   output-dir: _book
 
 execute: 
-  freeze: auto # turn off for actual render and publish
+  # freeze controls whether Quarto re-runs each document's code or reuses
+  # cached results stored under _freeze/:
+  #   false : always re-execute every code chunk on render (Quarto default)
+  #   auto  : re-execute a document only when its source changes; otherwise
+  #           reuse the frozen cache — fast for incremental local renders
+  #   true  : never re-execute; always use the frozen cache (must already exist)
+  # Day-to-day we use `auto` for speed. For a final, fully reproducible
+  # render/publish, set this to false so every chapter executes fresh
+  # rather than being served from cache.
+  freeze: auto
 
 # Bibliography: all chapters share ONE file, references.bib, but it is
 # declared per-document in each citing chapter's YAML frontmatter rather
@@ -24,12 +33,16 @@ filters:
 
 book:
   title: CIMS
+  favicon: images/cims_logo_favicon.svg
   # author: Energy and Materials Research Group, Simon Fraser University
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: quarto_docs
   repo-actions: [issue]
   sidebar:
     collapse-level: 1
+    # Logo comes from _brand.yml (light/dark pair). Don't set `logo:` here:
+    # an explicit sidebar logo overrides the brand logo and collapses it
+    # back to a single image, breaking the dark-mode swap.
   chapters:
     - index.qmd                 # Introduction
     - part: "About"
