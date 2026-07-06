@@ -289,7 +289,7 @@ All sector model input files share a common long-format schema:
 | `Parameter` | Model parameter | `market_share_total`, `service_request`, `multiplier_price, etc.` |
 | `Context` | Additional context (often blank) | |
 | `Sub_Context` | Sub-context (often blank) | |
-| `Target` | Demand/supply node this row applies to, often blank | ` ` |
+| `Target` | Demand/supply node this row applies to (often blank) | |
 | `Source` | Data provenance | `CEUD`, `CER`, `ECCC, etc.` |
 | `Unit` | Value unit | `%`, `PJ`, `2025$/GJ, etc.` |
 | `Year` | Year for each value | `2000 - 2100` |
