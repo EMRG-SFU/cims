@@ -280,21 +280,21 @@ All sector model input files share a common long-format schema:
 
 | Column | Description | Example |
 |--------|-------------|---------|
-| `Branch` | Full CIMS node path | `CIMS.CAN.AB.Commercial.Buildings.Shell` |
-| `Type` | Scope level | `Region`, `Sector`, `Service`, `Technology` |
+| `Branch` | Full CIMS node path | `CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.2001-2020 Bldg Code.Heating (Cold)` |
+| `Type` | Scope level | `Region`, `Sector`, `Service`, `Technology, etc.` |
 | `Region` | Province/territory code | `AB` |
-| `Sector` | Sector name | `Commercial` |
-| `Service` | Service name | `Shell` |
-| `Technology` | Technology name | `Retail (Cold)` |
-| `Parameter` | Model parameter | `market_share_total`, `service_request`, `multiplier_price` |
+| `Sector` | Sector name | `Residential` |
+| `Service` | Service name | `Heating(Cold)` |
+| `Technology` | Technology name | `Natural Gas_Furnace_High Efficiency` |
+| `Parameter` | Model parameter | `market_share_total`, `service_request`, `multiplier_price, etc.` |
 | `Context` | Additional context (often blank) | |
 | `Sub_Context` | Sub-context (often blank) | |
-| `Target` | Demand/supply node this row applies to | `CIMS.CAN.AB.Commercial.Buildings.Shell.Retail (Cold)` |
-| `Source` | Data provenance | `CEUD`, `CER`, `fixed_data` |
-| `Unit` | Value unit | `%`, `PJ`, `2025$/GJ` |
-| `2000` … `2100` | One column per year, value for that year | `0.35` |
+| `Target` | Demand/supply node this row applies to, often blank | ` ` |
+| `Source` | Data provenance | `CEUD`, `CER`, `ECCC, etc.` |
+| `Unit` | Value unit | `%`, `PJ`, `2025$/GJ, etc.` |
+| `Year` | Year for each value | `2000 - 2100` |
 
-Files are saved as CSV with the first 12 columns as metadata and years 2000–2100 as remaining columns.
+Files are saved as CSVs.
 
 ---
 
