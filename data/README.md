@@ -1,6 +1,6 @@
 # CIMS Data Processing
 
-This directory transforms energy data into model input files and calibration files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only pipeline scripts, mappings, and this documentation are tracked. Raw data is stored on the External-CIMS sharpoint. Model input files are used to build the model with information like sectors, activity levels, services, technologies, model parameters, and fuel prices. Calibration files include the historical demand, emissions, and technology shares publicly available. During the calibration step, the user will match the model from 2000-last historical year to the calibration data in order to determine intangible costs, trends, and a vetted starting point from which the projection begins. 
+The data processing step transforms data into **model input** files and **calibration** files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only scripts, mappings, and this documentation are tracked. Raw data is stored on the External-CIMS sharepoint. Model input files are used to build the model with information like sectors, activity levels, services, technologies, model parameters, and fuel prices. Calibration files include the historical demand, emissions, and technology shares publicly available. During the calibration step, the user will attempt to match market shares, energy demand, and emissions in the model from 2000-last historical year to the calibration data. This step will help determine intangible costs and trends, and will be a vetted starting point from which the projection begins. 
 
 ---
 
@@ -19,13 +19,12 @@ This directory transforms energy data into model input files and calibration fil
 ---
 
 ## Overview
+**Step 1 - Assemble Raw Data** (`data/raw_data/`):
+Raw data from various sources is gathered and placed in the External-CIMS sharepoint. Source data is documented in the source_detail.xlsx in `data/raw_data/`. The last historical year for the raw data is input into the control file `data/mappings_conversions/control.py`. This data is different by source and important to update as scripts will call on this year to begin projection assumptions in the following year. Any other important control information, such as which scenario to draw from the data, and currency country/years is also input into this control file. 
 
-Raw data from various sources is converted into CIMS-formatted CSVs covering Canada's 13 provinces and territories. It operates in two stages:
+**Step 2 — Source processing** (`data/pipeline/source/`): Each script takes in raw data, manipulates it, and writes a CSV to `data/processed_data/` for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly. 
 
-- **Stage 1 — Source processing** (`pipeline/source/`): Each script ingests data and writes a CSV to `processed_data/` for user vetting. The processed_data csvs are not used elsewhere in the pipeline.
-- **Stage 2 — Sector assembly** (`pipeline/sector/`): Each sector's model_inputs script combines fixed structural parameters (`raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
-
-All configuration (currency years, data years, scenarios) lives in a single file: `mappings_conversions/control.py`.
+**Step 3 — Sector assembly** (`data/pipeline/sector/`): Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
 
 ---
 
@@ -45,7 +44,7 @@ C:\cims\data\
 ├── pipeline/                   # All pipeline scripts (committed)
 │   ├── source/                 # Stage 1 — raw → processed_data
 │   │   ├── run_all.py          # Runs all Stage 1 scripts in dependency order
-│   │   ├── activity/           # Activity levels for all sectors (res/com/trans from ceud source)
+│   │   ├── activity/           # Activity for all sectors (res/com/trans from ceud source)
 │   │   ├── eccc/nir/           # National Inventory Report processing
 │   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
 │   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
@@ -126,7 +125,7 @@ C:\cims\data\
 
 1. Install Python dependencies (see [Dependencies](#dependencies)).
 2. Obtain raw data from the **External-CIMS SharePoint** and place it under `raw_data/` following the structure above.
-   - `raw_data/data_dictionary.xlsx` documents every source: what it contains, where to download it, and how often it is published.
+   - `raw_data/source_details.xlsx` documents every source.
 
 ### Running the pipeline
 
@@ -303,7 +302,7 @@ Files are saved as CSV with the first 12 columns as metadata and years 2000–21
 
 ### Source Script Structure
 
-Despite pulling from different government sources, all scripts in `pipeline/source/` share the same structure:
+Despite pulling from different sources, all scripts in `pipeline/source/` share the same structure:
 
 **1. Module-level docstring** — Every script opens with a prominent docstring (sometimes a `===` banner) that states what it does, its input files and output location, and its specific suppression-handling strategy. This is the first place to look when diagnosing unexpected output.
 
