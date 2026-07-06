@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>4&nbsp; Technology Competition – CIMS</title>
+<title>39&nbsp; Data Processing – CIMS</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -23,26 +23,42 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for citations */
-div.csl-bib-body { }
-div.csl-entry {
-  clear: both;
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
 }
-.hanging-indent div.csl-entry {
-  margin-left:2em;
-  text-indent:-2em;
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
-div.csl-left-margin {
-  min-width:2em;
-  float:left;
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-div.csl-right-inline {
-  margin-left:2em;
-  padding-left:1em;
-}
-div.csl-indent {
-  margin-left: 2em;
-}</style>
+</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -52,8 +68,8 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./energy_supply_demand.html" rel="next">
-<link href="./theory.html" rel="prev">
+<link href="./calibration.html" rel="next">
+<link href="./data_inputs.html" rel="prev">
 <link href="./images/cims_logo_favicon.svg" rel="icon" type="image/svg+xml">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -69,9 +85,6 @@ div.csl-indent {
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
 <link href="site_libs/bootstrap/bootstrap-dark-acff971833d9769290026d534105daaa.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
 <link href="site_libs/bootstrap/bootstrap-9e3e5b9121e68b3f077afb32f2c64d95.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
-<script src="site_libs/quarto-contrib/glightbox/glightbox.min.js"></script>
-<link href="site_libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
-<link href="site_libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -118,35 +131,6 @@ body::before {
 }
 </style>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="style.css">
 </head>
@@ -322,7 +306,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./technologies.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_inputs.html">Data and Calibration</a></li><li class="breadcrumb-item"><a href="./data_processing.html"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Data Processing</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -386,13 +370,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
  <span class="menu-text">Methodology</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./theory.html" class="sidebar-item-text sidebar-link">
@@ -401,7 +385,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./technologies.html" class="sidebar-item-text sidebar-link active">
+  <a href="./technologies.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span></a>
   </div>
 </li>
@@ -629,13 +613,13 @@ window.Quarto = {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Data and Calibration</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./data_inputs.html" class="sidebar-item-text sidebar-link">
@@ -644,7 +628,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./data_processing.html" class="sidebar-item-text sidebar-link">
+  <a href="./data_processing.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Data Processing</span></span></a>
   </div>
 </li>
@@ -771,24 +755,43 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#demand-assessment" id="toc-demand-assessment" class="nav-link active" data-scroll-target="#demand-assessment"><span class="header-section-number">4.1</span> Demand Assessment</a>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview"><span class="header-section-number">39.1</span> Overview</a></li>
+  <li><a href="#directory-structure" id="toc-directory-structure" class="nav-link" data-scroll-target="#directory-structure"><span class="header-section-number">39.2</span> Directory Structure</a></li>
+  <li><a href="#quick-start" id="toc-quick-start" class="nav-link" data-scroll-target="#quick-start"><span class="header-section-number">39.3</span> Quick Start</a>
   <ul class="collapse">
-  <li><a href="#request-provide-demand" id="toc-request-provide-demand" class="nav-link" data-scroll-target="#request-provide-demand"><span class="header-section-number">4.1.1</span> Request-Provide demand</a></li>
-  <li><a href="#distributed-supply" id="toc-distributed-supply" class="nav-link" data-scroll-target="#distributed-supply"><span class="header-section-number">4.1.2</span> Distributed supply</a></li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites"><span class="header-section-number">39.3.1</span> Prerequisites</a></li>
+  <li><a href="#running-the-pipeline" id="toc-running-the-pipeline" class="nav-link" data-scroll-target="#running-the-pipeline"><span class="header-section-number">39.3.2</span> Running the pipeline</a></li>
   </ul></li>
-  <li><a href="#capital-stock-retirement" id="toc-capital-stock-retirement" class="nav-link" data-scroll-target="#capital-stock-retirement"><span class="header-section-number">4.2</span> Capital Stock Retirement</a></li>
-  <li><a href="#retrofit-and-new-stock-competition" id="toc-retrofit-and-new-stock-competition" class="nav-link" data-scroll-target="#retrofit-and-new-stock-competition"><span class="header-section-number">4.3</span> Retrofit and New Stock Competition</a>
+  <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration"><span class="header-section-number">39.4</span> Configuration</a>
   <ul class="collapse">
-  <li><a href="#new-stock-competition" id="toc-new-stock-competition" class="nav-link" data-scroll-target="#new-stock-competition"><span class="header-section-number">4.3.1</span> New Stock Competition</a></li>
-  <li><a href="#retrofit" id="toc-retrofit" class="nav-link" data-scroll-target="#retrofit"><span class="header-section-number">4.3.2</span> Retrofit</a></li>
+  <li><a href="#updating-data" id="toc-updating-data" class="nav-link" data-scroll-target="#updating-data"><span class="header-section-number">39.4.1</span> Updating Data</a></li>
   </ul></li>
-  <li><a href="#modifications-to-the-technology-choice-equations" id="toc-modifications-to-the-technology-choice-equations" class="nav-link" data-scroll-target="#modifications-to-the-technology-choice-equations"><span class="header-section-number">4.4</span> Modifications to the technology choice equations</a>
+  <li><a href="#utility-library" id="toc-utility-library" class="nav-link" data-scroll-target="#utility-library"><span class="header-section-number">39.5</span> Utility Library</a>
   <ul class="collapse">
-  <li><a href="#declining-capital-cost" id="toc-declining-capital-cost" class="nav-link" data-scroll-target="#declining-capital-cost"><span class="header-section-number">4.4.1</span> Declining Capital Cost</a></li>
-  <li><a href="#declining-intangible-cost-function" id="toc-declining-intangible-cost-function" class="nav-link" data-scroll-target="#declining-intangible-cost-function"><span class="header-section-number">4.4.2</span> Declining Intangible Cost Function</a></li>
-  <li><a href="#forward-looking-behaviour" id="toc-forward-looking-behaviour" class="nav-link" data-scroll-target="#forward-looking-behaviour"><span class="header-section-number">4.4.3</span> Forward looking behaviour</a></li>
+  <li><a href="#output_builder.py" id="toc-output_builder.py" class="nav-link" data-scroll-target="#output_builder.py"><span class="header-section-number">39.5.1</span> output_builder.py</a></li>
+  <li><a href="#data_extensions.py" id="toc-data_extensions.py" class="nav-link" data-scroll-target="#data_extensions.py"><span class="header-section-number">39.5.2</span> data_extensions.py</a></li>
+  <li><a href="#data_fill.py" id="toc-data_fill.py" class="nav-link" data-scroll-target="#data_fill.py"><span class="header-section-number">39.5.3</span> data_fill.py</a></li>
+  <li><a href="#flatten_fixed_data.py" id="toc-flatten_fixed_data.py" class="nav-link" data-scroll-target="#flatten_fixed_data.py"><span class="header-section-number">39.5.4</span> flatten_fixed_data.py</a></li>
+  <li><a href="#add_cims_totals.py" id="toc-add_cims_totals.py" class="nav-link" data-scroll-target="#add_cims_totals.py"><span class="header-section-number">39.5.5</span> add_cims_totals.py</a></li>
+  <li><a href="#controls_conversions.py" id="toc-controls_conversions.py" class="nav-link" data-scroll-target="#controls_conversions.py"><span class="header-section-number">39.5.6</span> controls_conversions.py</a></li>
+  <li><a href="#extractorsstats_can.py" id="toc-extractorsstats_can.py" class="nav-link" data-scroll-target="#extractorsstats_can.py"><span class="header-section-number">39.5.7</span> extractors/stats_can.py</a></li>
+  <li><a href="#extractorsnrcan_ceud.py" id="toc-extractorsnrcan_ceud.py" class="nav-link" data-scroll-target="#extractorsnrcan_ceud.py"><span class="header-section-number">39.5.8</span> extractors/nrcan_ceud.py</a></li>
   </ul></li>
-  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  <li><a href="#output-format" id="toc-output-format" class="nav-link" data-scroll-target="#output-format"><span class="header-section-number">39.6</span> Output Format</a></li>
+  <li><a href="#common-patterns" id="toc-common-patterns" class="nav-link" data-scroll-target="#common-patterns"><span class="header-section-number">39.7</span> Common Patterns</a>
+  <ul class="collapse">
+  <li><a href="#source-script-structure" id="toc-source-script-structure" class="nav-link" data-scroll-target="#source-script-structure"><span class="header-section-number">39.7.1</span> Source Script Structure</a></li>
+  <li><a href="#suppression-handling" id="toc-suppression-handling" class="nav-link" data-scroll-target="#suppression-handling"><span class="header-section-number">39.7.2</span> Suppression Handling</a></li>
+  <li><a href="#projections" id="toc-projections" class="nav-link" data-scroll-target="#projections"><span class="header-section-number">39.7.3</span> Projections</a></li>
+  <li><a href="#wide-to-long-conversion" id="toc-wide-to-long-conversion" class="nav-link" data-scroll-target="#wide-to-long-conversion"><span class="header-section-number">39.7.4</span> Wide-to-Long Conversion</a></li>
+  <li><a href="#row-ordering-in-cims-outputs" id="toc-row-ordering-in-cims-outputs" class="nav-link" data-scroll-target="#row-ordering-in-cims-outputs"><span class="header-section-number">39.7.5</span> Row Ordering in CIMS Outputs</a></li>
+  </ul></li>
+  <li><a href="#dependencies" id="toc-dependencies" class="nav-link" data-scroll-target="#dependencies"><span class="header-section-number">39.8</span> Dependencies</a></li>
+  <li><a href="#what-is-and-is-not-committed" id="toc-what-is-and-is-not-committed" class="nav-link" data-scroll-target="#what-is-and-is-not-committed"><span class="header-section-number">39.9</span> What is and is not Committed</a>
+  <ul class="collapse">
+  <li><a href="#committed-tracked-in-git" id="toc-committed-tracked-in-git" class="nav-link" data-scroll-target="#committed-tracked-in-git"><span class="header-section-number">39.9.1</span> Committed (tracked in git)</a></li>
+  <li><a href="#not-committed-gitignored" id="toc-not-committed-gitignored" class="nav-link" data-scroll-target="#not-committed-gitignored"><span class="header-section-number">39.9.2</span> Not committed (gitignored)</a></li>
+  </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -796,9 +799,9 @@ window.Quarto = {
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./theory.html">Methodology</a></li><li class="breadcrumb-item"><a href="./technologies.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./data_inputs.html">Data and Calibration</a></li><li class="breadcrumb-item"><a href="./data_processing.html"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Data Processing</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-technology-competition" class="quarto-section-identifier"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Technology Competition</span></span></h1>
+<h1 class="title"><span id="sec-data-processing" class="quarto-section-identifier"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Data Processing</span></span></h1>
 </div>
 
 
@@ -815,444 +818,621 @@ window.Quarto = {
 </header>
 
 
-<p>Sub-model technology choice occurs according to the following order:</p>
-<ul>
-<li>Demand Assessment</li>
-<li>Retirement</li>
-<li>Assessment of capital stock availability</li>
-<li>Retrofit &amp; new capital stock competition to meet demand not supplied by existing capital stock</li>
-</ul>
-<section id="demand-assessment" class="level2" data-number="4.1">
-<h2 data-number="4.1" class="anchored" data-anchor-id="demand-assessment"><span class="header-section-number">4.1</span> Demand Assessment</h2>
-<p>All of the CIMS energy demand models (industry, transportation, commercial / institutional, and residential) start with an exogenously determined demand for physical goods and services in each run period. These demands are mostly taken from Natural Resources Canada forecasts. The energy supply models may either use exogenously determined forecasts or they can be run using energy demand calculated from the demand model plus net exports.</p>
-<section id="request-provide-demand" class="level3" data-number="4.1.1">
-<h3 data-number="4.1.1" class="anchored" data-anchor-id="request-provide-demand"><span class="header-section-number">4.1.1</span> Request-Provide demand</h3>
-</section>
-<section id="distributed-supply" class="level3" data-number="4.1.2">
-<h3 data-number="4.1.2" class="anchored" data-anchor-id="distributed-supply"><span class="header-section-number">4.1.2</span> Distributed supply</h3>
-</section>
-</section>
-<section id="capital-stock-retirement" class="level2" data-number="4.2">
-<h2 data-number="4.2" class="anchored" data-anchor-id="capital-stock-retirement"><span class="header-section-number">4.2</span> Capital Stock Retirement</h2>
-<p>CIMS begins each simulation with an existing base stock of technologies. <a href="#eq-stock_retirement_existing" class="quarto-xref">Equation&nbsp;<span>4.1</span></a> describes how the existing stock of unknown age already in use is retired. Each year a constant amount of the base stock is retired until there is no more base stock remaining (<a href="#fig-stock_retirement_existing" class="quarto-xref">Figure&nbsp;<span>4.1</span></a>).</p>
-<p><span id="eq-stock_retirement_existing"><span class="math display">\[
-{BS}_{t} = {BS}_{0}\left( 1 - \frac{T_{t} - T_{0}}{L} \right)
-\tag{4.1}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(BS_t\)</span></dt>
-<dd>
-base stock at time <span class="math inline">\(t\)</span>
-</dd>
-<dt><span class="math inline">\(BS_0\)</span></dt>
-<dd>
-initial base stock
-</dd>
-<dt><span class="math inline">\(T_t\)</span></dt>
-<dd>
-current simulated year
-</dd>
-<dt><span class="math inline">\(T_0\)</span></dt>
-<dd>
-initial year
-</dd>
-<dt><span class="math inline">\(L\)</span></dt>
-<dd>
-lifespan of the technology
-</dd>
-</dl>
-</div>
-<div id="fig-stock_retirement_existing" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-stock_retirement_existing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/stock_retirement_existing.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-1" title="Figure&nbsp;4.1: Existing Stock Retirement"><img src="images/stock_retirement_existing.svg" class="img-fluid figure-img" style="width:80.0%"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stock_retirement_existing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.1: Existing Stock Retirement
-</figcaption>
-</figure>
-</div>
-<p>Retirement of capital stock purchased during a CIMS simulation is calculated using a different methodology since the vintage of new stock is known and an explicit lifetime (and retirement schedule) can be applied to the stock purchase.</p>
-<p><span id="eq-stock_retirement_new"><span class="math display">\[
-{NS}_{t} = \frac{{NS}_{p}}{1 + e^{\frac{11.513}{L}\left( \left( T_{t} - T_{p} \right) - L \right)}}
-\tag{4.2}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(NS_t\)</span></dt>
-<dd>
-new stock not yet retired at time t
-</dd>
-<dt><span class="math inline">\(NS_p\)</span></dt>
-<dd>
-new stock acquired at purchase time p
-</dd>
-<dt><span class="math inline">\(T_t\)</span></dt>
-<dd>
-current simulated year
-</dd>
-<dt><span class="math inline">\(T_p\)</span></dt>
-<dd>
-year at purchase time p
-</dd>
-<dt><span class="math inline">\(L\)</span></dt>
-<dd>
-lifespan of the technology
-</dd>
-<dt><span class="math inline">\(11.513\)</span></dt>
-<dd>
-intercept value from ISTUM model for average technology retirement rates
-</dd>
-</dl>
-</div>
-<p>This function uses an s-shaped, logistic curve to simulate the retirement of technologies. <a href="#fig-stock_retirement_new" class="quarto-xref">Figure&nbsp;<span>4.2</span></a> shows examples of the retirement function for technologies with different lifespans. Half of the stock is retired before the average lifespan of the technology due to early replacement and failure and half is retired afterward to simulate technologies that last longer than the average. The default intercept value of 11.513, which comes from market research on product failure rates, is used in CIMS for many technologies that are purchased and installed. For other longer-lived technologies, like building shells, lower intercepts are used that flatten the logistic curve.</p>
-<div id="fig-stock_retirement_new" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-stock_retirement_new-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/stock_retirement_new.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-2" title="Figure&nbsp;4.2: New Stock Retirement"><img src="images/stock_retirement_new.svg" class="img-fluid figure-img" style="width:80.0%"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stock_retirement_new-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.2: New Stock Retirement
-</figcaption>
-</figure>
-</div>
-<p>The total stock of a technology in any given year <em>t</em> is the sum of the unretired base stock and the unretired new stock remaining from each previous year (<a href="#eq-stock_total" class="quarto-xref">Equation&nbsp;<span>4.3</span></a>).</p>
-<p><span id="eq-stock_total"><span class="math display">\[
-{Stock}_{t} = {BS}_{t} + \sum_{p = 0}^{t}{NS}_{t}
-\tag{4.3}\]</span></span></p>
-<div id="fig-stock_total" class="lightbox quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-stock_total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<a href="images/stock_total.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="Figure&nbsp;4.3: Total Stock"><img src="images/stock_total.svg" class="img-fluid figure-img" style="width:80.0%"></a>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-stock_total-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4.3: Total Stock
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="retrofit-and-new-stock-competition" class="level2" data-number="4.3">
-<h2 data-number="4.3" class="anchored" data-anchor-id="retrofit-and-new-stock-competition"><span class="header-section-number">4.3</span> Retrofit and New Stock Competition</h2>
-<p>While retrofitting occurs before new stock competition, the retrofitting equations are a subset of the new stock equations and are therefore presented after them. The market shares for individual technologies are determined using the equations below.</p>
-<section id="new-stock-competition" class="level3" data-number="4.3.1">
-<h3 data-number="4.3.1" class="anchored" data-anchor-id="new-stock-competition"><span class="header-section-number">4.3.1</span> New Stock Competition</h3>
-<p><a href="#eq-market_share_new" class="quarto-xref">Equation&nbsp;<span>4.4</span></a> is a normalized inverse-power function: the market share of each technology is proportional to its lifecycle cost raised to <span class="math inline">\(-v\)</span>, divided by the sum of that quantity over all competitors. It is the multinomial choice analogue of softmax, but with a power-law transform of cost instead of an exponential<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> — which means lifecycle-cost <em>ratios</em>, rather than differences, drive the share split. The variance parameter <span class="math inline">\(v\)</span> controls how sharply the competition responds to those ratios: a high value, such as <span class="math inline">\(v = 30\)</span>, makes the lowest-cost technology capture almost all new equipment stocks (approaching the winner-take-all rule of a linear program), while a low value, such as <span class="math inline">\(v = 1\)</span>, spreads new equipment shares almost evenly across competing technologies even when their lifecycle costs differ significantly. Equivalently, in log-cost space the equation has the form of a multinomial logit on <span class="math inline">\(\ln LCC\)</span>.</p>
-<p><span id="eq-market_share_new"><span class="math display">\[
-{MS}_{k} = \frac{{LCC}_{k}^{- v}}{\sum_{j = 1}^{J}{LCC}_{j}^{- v}}
-\tag{4.4}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(MS_k\)</span></dt>
-<dd>
-market share of technology <em>k</em> for new equipment stocks
-</dd>
-<dt><span class="math inline">\(LCC_k\)</span></dt>
-<dd>
-annual lifecycle cost of technology <em>k</em>
-</dd>
-<dt><span class="math inline">\(v\)</span></dt>
-<dd>
-variance parameter representing cost homogeneity
-</dd>
-</dl>
-</div>
-<p><span id="eq-lifecycle_cost"><span class="math display">\[
-{LCC}_{kt} = {CC}_{kt} + {OM}_{k} + {SC}_{kt}
-\tag{4.5}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(LCC_{kt}\)</span></dt>
-<dd>
-annual lifecycle cost of technology <em>k</em> at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(CC_{kt}\)</span></dt>
-<dd>
-capital cost of technology <em>k</em> at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(OM_k\)</span></dt>
-<dd>
-operating costs of technology <em>k</em>
-</dd>
-<dt><span class="math inline">\(SC_{kt}\)</span></dt>
-<dd>
-service cost of technology <em>k</em> at time <em>t</em>
-</dd>
-</dl>
-</div>
-<p>Note somewhere that technology capital costs should be included as CAPEX where possible to ensure apples-to-apples comparison across the competition. <span id="eq-capital_cost_annual"><span class="math display">\[
-{CC}_{t} = \max\left\{ {DCC}_{t},\, {CC}_{2000} \cdot {DCC}_{limit} \right\}
-\tag{4.6}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(CC_t\)</span></dt>
-<dd>
-annual capital cost of a technology at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(DCC_t\)</span></dt>
-<dd>
-declining capital cost at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(CC_{2000}\)</span></dt>
-<dd>
-capital cost of a technology in the year 2000 (before applying the declining capital cost function)
-</dd>
-<dt><span class="math inline">\(DCC_{limit}\)</span></dt>
-<dd>
-lowest value to which a technology’s capital cost can be reduced by the DCC function (as a percentage of the capital cost in year 2000)
-</dd>
-</dl>
-</div>
-<p>See the section below for the declining capital cost functions.</p>
-<p><span id="eq-capital_cost_2000"><span class="math display">\[
-{CC}_{2000} = \left( \frac{{CC}_{overnight} + FIC + {DIC}_{t}}{Output} \right) \cdot CRF
-\tag{4.7}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(CC_{2000}\)</span></dt>
-<dd>
-capital cost of a technology in the year 2000 (before applying the declining capital cost function)
-</dd>
-<dt><span class="math inline">\(CC_{overnight}\)</span></dt>
-<dd>
-overnight capital cost
-</dd>
-<dt><span class="math inline">\(FIC\)</span></dt>
-<dd>
-upfront fixed intangible cost, representing non-financial costs of investment
-</dd>
-<dt><span class="math inline">\(DIC_t\)</span></dt>
-<dd>
-upfront intangible cost that can decline over time
-</dd>
-<dt><span class="math inline">\(Output\)</span></dt>
-<dd>
-material output of a technology
-</dd>
-<dt><span class="math inline">\(CRF\)</span></dt>
-<dd>
-capital recovery factor
-</dd>
-</dl>
-</div>
-<p><span id="eq-capital_recovery_factor"><span class="math display">\[
-CRF = \frac{r}{1 - {(1 + r)}^{- N}}
-\tag{4.8}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(CRF\)</span></dt>
-<dd>
-capital recovery factor of a technology
-</dd>
-<dt><span class="math inline">\(r\)</span></dt>
-<dd>
-financial discount rate
-</dd>
-<dt><span class="math inline">\(N\)</span></dt>
-<dd>
-lifespan of the technology
-</dd>
-</dl>
-</div>
-<p><span id="eq-service_cost"><span class="math display">\[
-{SC}_{kt} = \sum_{j} P_{jt} \cdot R_{kjt}
-\tag{4.9}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(SC_{kt}\)</span></dt>
-<dd>
-service cost of technology <em>k</em> at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(P_{jt}\)</span></dt>
-<dd>
-price of service type <em>j</em> at time <em>t</em> (can be either an energy price or the weighted-average lifecycle cost of a service, based on the market shares of technologies competing to provide that service)
-</dd>
-<dt><span class="math inline">\(R_{kjt}\)</span></dt>
-<dd>
-amount of service type <em>j</em> requested by technology <em>k</em> at time <em>t</em>
-</dd>
-</dl>
-</div>
-<p>Note that market shares used to calculate the weighted-average LCC of a service are from the previous iteration of the demand-supply equilibrium process (i.e.&nbsp;the final market shares from the previous year if calculating the first iteration or the previous demand-supply iteration if equilibrium prices have not yet been found).</p>
-<p><mark><strong>Subsidies</strong></mark></p>
-</section>
-<section id="retrofit" class="level3" data-number="4.3.2">
-<h3 data-number="4.3.2" class="anchored" data-anchor-id="retrofit"><span class="header-section-number">4.3.2</span> Retrofit</h3>
-<p>The retrofit option allows functioning equipment to be converted to a different type of equipment before its retirement date. For example, a boiler could be retrofitted into a cogenerator before it’s lifetime-based retirement. After existing stock is retired, CIMS treats the initial purchasing price of the incumbent technology as a sunk cost and uses the operating and maintenance (O&amp;M), energy, service, and emissions costs as the only costs of the incumbent technology. The costs of the retrofit options are then calculated as the sum of O&amp;M, energy, service, and emissions costs plus the annualized retrofit capital cost less any tax or other credit. CIMS then determines, using a similar competition calculation to those already described, how many incumbent technologies will be retrofitted.</p>
-<p>The analyst can place some bounds on this retrofit option. A maximum (R-MAX) or minimum (R-MIN) market share can be established such that only a certain amount of the old stock could (maximum) or must (minimum) be retrofitted in any year. In an unconstrained market, maximum should be set to 1 and minimum to 0.</p>
-</section>
-</section>
-<section id="modifications-to-the-technology-choice-equations" class="level2" data-number="4.4">
-<h2 data-number="4.4" class="anchored" data-anchor-id="modifications-to-the-technology-choice-equations"><span class="header-section-number">4.4</span> Modifications to the technology choice equations</h2>
-<p>Several functions have been added to the competition process to reflect both real world conditions and policy concerns. These currently include functions to:</p>
-<ul>
-<li><p>Reduce capital costs as total production increases to reflect learning by doing and efficiencies of scale;</p></li>
-<li><p>Reduce intangible costs as new market share climbs to reflect reduced perceived risk (i.e.&nbsp;the neighbour effect); and</p></li>
-<li><p>Eliminate obsolete but still functioning technologies.</p></li>
-</ul>
-<section id="declining-capital-cost" class="level3" data-number="4.4.1">
-<h3 data-number="4.4.1" class="anchored" data-anchor-id="declining-capital-cost"><span class="header-section-number">4.4.1</span> Declining Capital Cost</h3>
-<p>The declining capital cost function allows the capital costs of technologies to decline as a result of learning by doing and improving economies of scale. In CIMS, capital costs decline as a result of the cumulative production of a technology across Canada and an exogenous rate of decline which represents production in other countries.</p>
-<p><mark><strong>Need to align this description and function below with Thomas’ update of DCC function</strong></mark></p>
-<p><span id="eq-declining_capital_cost"><span class="math display">\[
-{DCC}_{t} = {GCC}_{t} \cdot \left[ \left( \sum_{1}^{p} \frac{{CumulNS}_{2000,p} + \sum_{j = 2005}^{t - 5}{NS}_{jp}}{{CumulNS}_{2000,p}} \right)^{\log_{2}(PR)} \right]
-\tag{4.10}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(DCC_t\)</span></dt>
-<dd>
-declining capital cost of a technology at time <em>t</em>
-</dd>
-<dt><span class="math inline">\(GCC_t\)</span></dt>
-<dd>
-capital cost of a technology adjusted for cumulative stock in other countries
-</dd>
-<dt><span class="math inline">\(NS_{jp}\)</span></dt>
-<dd>
-new stock of a technology added from 2005 to the previous time period in each province <em>p</em>
-</dd>
-<dt><span class="math inline">\(CumulNS_{2000,p}\)</span></dt>
-<dd>
-cumulative new stock of a technology for all years up to and including the year 2000 in each province <em>p</em> (exogenous)
-</dd>
-<dt><span class="math inline">\(PR\)</span></dt>
-<dd>
-progress ratio
-</dd>
-</dl>
-</div>
-<p>Increased stock in other countries reduces the capital costs of a technology in CIMS. Therefore, even if there is no change in stock of a technology in Canada, its capital costs may still decline. The rate at which the capital costs decline as a result of global stock change is set exogenously.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
-<p><span id="eq-global_capital_cost"><span class="math display">\[
-{GCC}_{t} = {GCC}_{t - 5} \cdot (1 - AEEI)^{5}
-\tag{4.11}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(GCC_t\)</span></dt>
-<dd>
-capital cost of a technology after it has been adjusted for cumulative stock in other countries
-</dd>
-<dt><span class="math inline">\(AEEI\)</span></dt>
-<dd>
-exogenous rate of decline of a technology’s capital costs
-</dd>
-</dl>
-</div>
-<p>In order to prevent capital costs from declining indefinitely, an analyst may specify the percentage of the initial capital costs below which capital costs may not decline.</p>
-<p>Research has shown that investment in one technology (e.g., hybrid cars) can lower costs of another technology (e.g., battery cars). This can be achieved by setting technologies to the same DCC category so that the sum of all installed stock for technologies within that category is used when determining capital costs.</p>
-</section>
-<section id="declining-intangible-cost-function" class="level3" data-number="4.4.2">
-<h3 data-number="4.4.2" class="anchored" data-anchor-id="declining-intangible-cost-function"><span class="header-section-number">4.4.2</span> Declining Intangible Cost Function</h3>
-<p>The declining intangible cost function allows non-financial costs to fall as a result of reduced perceived risk as market exposure increases. The following general formula applies.</p>
-<p><span id="eq-declining_intangible_cost"><span class="math display">\[
-\text{(Equation 20 — placeholder for the declining intangible cost function)}
-\tag{4.12}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(I_t\)</span></dt>
-<dd>
-intangible cost in time <em>t</em>
-</dd>
-<dt><span class="math inline">\(I_0\)</span></dt>
-<dd>
-initial intangible cost (column N of the economic file for capital, column R for operating costs)
-</dd>
-<dt><span class="math inline">\(A\)</span></dt>
-<dd>
-constant in column O of the economic file for capital, column S for operating costs
-</dd>
-<dt><span class="math inline">\(K\)</span></dt>
-<dd>
-constant in column P of the economic file for capital, column T for operating costs
-</dd>
-<dt><span class="math inline">\(NMS\)</span></dt>
-<dd>
-new market share
-</dd>
-<dt><span class="math inline">\(NMS_{t-5}\)</span></dt>
-<dd>
-new market share from the previous run, expressed between 0 and 1 (i.e.&nbsp;between 0% and 100%, not 0 and 100). <span class="math inline">\(NMS\)</span> is the technology’s share among all other technologies that provide the same service.
-</dd>
-</dl>
-</div>
-</section>
-<section id="forward-looking-behaviour" class="level3" data-number="4.4.3">
-<h3 data-number="4.4.3" class="anchored" data-anchor-id="forward-looking-behaviour"><span class="header-section-number">4.4.3</span> Forward looking behaviour</h3>
-<p>The foresight functions simulate business and consumer behaviour for considering future costs. The functions calculate the expected emissions cost of technologies, considering different lifespans and discount rates.</p>
-<p>CIMS has three options for generating expectations: 1) myopic, where people do not have foresight into their future emissions costs; 2) foresight based on the average emissions costs of a technology; and 3) foresight based on the discounted value of emissions costs of a technology.</p>
-<p><strong>Myopic</strong></p>
-<p>The emissions charge used to calculate the lifecycle cost of technology is the current tax rate.</p>
-<p><span id="eq-emissions_myopic"><span class="math display">\[
-E(\text{EmissionsCharge})_{kt} = \text{EmissionsCharge}_t
-\tag{4.13}\]</span></span></p>
-<p><strong>Average Expectations</strong></p>
-<p>The second option generates expectations of future emissions costs based on the average emissions charge over the lifespan of a technology.</p>
-<p><span id="eq-emissions_average"><span class="math display">\[
-\text{(Equation 22 — placeholder for the average-expectations function)}
-\tag{4.14}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(\text{EmissionsCharge}_n\)</span></dt>
-<dd>
-emissions charge in year <em>n</em>, set in CIMS’s Simulation Creation Centre
-</dd>
-<dt><span class="math inline">\(base\)</span></dt>
-<dd>
-year in which technology <em>k</em> is purchased
-</dd>
-<dt><span class="math inline">\(N\)</span></dt>
-<dd>
-lifespan of technology <em>k</em>
-</dd>
-</dl>
-</div>
-<p><strong>Discounted Expectations</strong></p>
-<p>The third option generates expectations of future emissions costs based on the present value of emissions charges. After the present value of emissions charges has been calculated, it is annualized using the capital recovery factor.</p>
-<p><span id="eq-emissions_discounted"><span class="math display">\[
-\text{(Equation 23 — placeholder for the discounted-expectations function)}
-\tag{4.15}\]</span></span></p>
-<div class="eq-vars">
-<dl>
-<dt><span class="math inline">\(\text{EmissionsCharge}_n\)</span></dt>
-<dd>
-emissions charge in year <em>n</em>, set in CIMS’s Simulation Creation Centre
-</dd>
-<dt><span class="math inline">\(base\)</span></dt>
-<dd>
-year in which technology <em>k</em> is purchased
-</dd>
-<dt><span class="math inline">\(N\)</span></dt>
-<dd>
-lifespan of technology <em>k</em>
-</dd>
-<dt><span class="math inline">\(r_k\)</span></dt>
-<dd>
-revealed discount rate of technology <em>k</em>, set in the Techno Economic file
-</dd>
-</dl>
-</div>
-<div style="page-break-after: always;"></div>
-</section>
-</section>
-<section id="references" class="level2 unnumbered">
-<h2 class="unnumbered anchored" data-anchor-id="references">References</h2>
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
-<div id="ref-castillo-weibit" class="csl-entry" role="listitem">
-Castillo, Enrique, José María Menéndez, Pilar Jiménez, and Ana Rivas. 2008. <span>“Closed Form Expressions for Choice Probabilities in the <span>Weibull</span> Case.”</span> <em>Transportation Research Part B: Methodological</em> 42 (4): 373–80. <a href="https://doi.org/10.1016/j.trb.2007.08.002">https://doi.org/10.1016/j.trb.2007.08.002</a>.
-</div>
-<div id="ref-mcfadden" class="csl-entry" role="listitem">
-McFadden, Daniel. 1974. <span>“Conditional Logit Analysis of Qualitative Choice Behavior.”</span> In <em>Frontiers in Econometrics</em>, edited by Paul Zarembka. Academic Press.
-</div>
-<div id="ref-rivers-jaccard" class="csl-entry" role="listitem">
-Rivers, Nicholas, and Mark Jaccard. 2005. <span>“Combining Top-down and Bottom-up Approaches to Energy-Economy Modeling Using Discrete Choice Methods.”</span> <em>The Energy Journal</em> 26 (1): 83–106. <a href="https://doi.org/10.5547/ISSN0195-6574-EJ-Vol26-No1-4">https://doi.org/10.5547/ISSN0195-6574-EJ-Vol26-No1-4</a>.
-</div>
-</div>
-
-
-</section>
-<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<p>The data processing step transforms data into <strong>model input</strong> files and <strong>calibration</strong> files for the CIMS energy-economy model. Raw data is <strong>never committed</strong> to this repository — only scripts, mappings, and this documentation are tracked. Raw data is stored on the External-CIMS sharepoint. Model input files are used to build the model with information like sectors, activity levels, services, technologies, model parameters, and fuel prices. Calibration files include the historical demand, emissions, and technology shares publicly available. During the calibration step, the user will attempt to match market shares, energy demand, and emissions in the model from 2000-last historical year to the calibration data. This step will help determine intangible costs and trends, and will be a vetted starting point from which the projection begins.</p>
+<section id="overview" class="level2" data-number="39.1">
+<h2 data-number="39.1" class="anchored" data-anchor-id="overview"><span class="header-section-number">39.1</span> Overview</h2>
+<p><strong>Step 1 - Assemble Raw Data</strong> (<code>data/raw_data/</code>): Raw data from various sources is gathered and placed in the External-CIMS sharepoint. Source data is documented in the source_detail.xlsx in <code>data/raw_data/</code>. The last historical year for the raw data is input into the control file <code>data/mappings_conversions/control.py</code>. This data is different by source and important to update as scripts will call on this year to begin projection assumptions in the following year. Any other important control information, such as which scenario to draw from the data, and currency country/years is also input into this control file.</p>
+<p><strong>Step 2 — Source processing</strong> (<code>data/pipeline/source/</code>): Each script takes in raw data, manipulates it, and writes a CSV to <code>data/processed_data/</code> for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly.</p>
+<p><strong>Step 3 — Sector assembly</strong> (<code>data/pipeline/sector/</code>): Each sector’s model_inputs script combines fixed structural parameters (<code>data/raw_data/fixed_data/</code>) with one or more processed data frames and writes final CIMS model input files to <code>model_inputs/model/{sector}/</code>. Each sector’s calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to <code>calibration/{sector}/</code>.</p>
 <hr>
-<ol>
-<li id="fn1"><p>The CIMS choice rule belongs to the family of log-linear utility, multiplicative-error discrete choice models sometimes called the <strong>Weibit</strong> model. Standard multinomial logit <span class="citation" data-cites="mcfadden">(<a href="index.html#ref-mcfadden" role="doc-biblioref">McFadden 1974</a>)</span> assumes a Gumbel-distributed additive error term in utility and yields choice probabilities of the form <span class="math inline">\(e^{V_k} / \sum_j e^{V_j}\)</span>; the Weibit instead assumes a Weibull-distributed multiplicative error and yields the power-form expression used here <span class="citation" data-cites="castillo-weibit">(<a href="index.html#ref-castillo-weibit" role="doc-biblioref">Castillo et al. 2008</a>)</span>. The distinction occasionally matters when calibrating <span class="math inline">\(v\)</span> against empirical data, because the implied stochastic interpretation of the lifecycle cost differs. For background on how the logit-style framework is used in CIMS more broadly, see <span class="citation" data-cites="rivers-jaccard">Rivers and Jaccard (<a href="index.html#ref-rivers-jaccard" role="doc-biblioref">2005</a>)</span>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
-<li id="fn2"><p>This is equivalent to the autonomous energy efficiency index (AEEI).<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</section>
+<section id="directory-structure" class="level2" data-number="39.2">
+<h2 data-number="39.2" class="anchored" data-anchor-id="directory-structure"><span class="header-section-number">39.2</span> Directory Structure</h2>
+<pre><code>C:\cims\data\
+├── mappings_conversions/       # Master configuration
+│   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
+│   ├── energy_map.csv          # Map for energy types across sources
+│   ├── region_map.csv          # Map for regions across sources
+│   ├── sector_map.csv          # Map for sectors across sources 
+│   ├── energy_conversions.csv  # Unit conversions (GJ ↔ TJ, L ↔ tonnes, …)
+│   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
+│   └── README.md
+│
+├── pipeline/                   # All pipeline scripts (committed)
+│   ├── source/                 # Stage 1 — raw → processed_data
+│   │   ├── run_all.py          # Runs all Stage 1 scripts in dependency order
+│   │   ├── activity/           # Activity for all sectors (res/com/trans from ceud source)
+│   │   ├── eccc/nir/           # National Inventory Report processing
+│   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
+│   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
+│   │   └── nrcan/ceud/         # Comprehensive Energy Use Database extraction
+│   │       ├── residential/
+│   │       ├── commercial/
+│   │       ├── transportation_passenger/
+│   │       └── transportation_freight/
+│   ├── sector/                 # Stage 2 — processed_data + fixed_data → model_inputs
+│   │   ├── run_all_model.py    # Runs all model_inputs.py scripts
+│   │   ├── run_all_calibration.py  # Runs all calibration.py scripts
+│   │   ├── agriculture/
+│   │   ├── biodiesel/
+│   │   ├── chemical products/
+│   │   ├── commercial/
+│   │   ├── residential/
+│   │   ├── transportation passenger/
+│   │   ├── transportation freight/
+│   │   └── .../
+│   └── utils/                  # Shared utility functions (committed)
+│       ├── extractors/         # Source-specific readers (Stats Can, CEUD, CER)
+│       ├── output_builder.py   # CIMS output row formatter
+│       ├── data_extensions.py  # CAGR projection and trend fitting
+│       ├── data_fill.py        # Interpolation and gap filling
+│       ├── flatten_fixed_data.py  # Wide fixed-data CSVs → annual long format
+│       ├── add_cims_totals.py
+│       ├── dict_ops.py
+│       └── controls_conversions.py
+│
+├── raw_data/                   # Source files — gitignored, never committed
+│   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
+│   ├── fixed_data/             # Structural parameters per sector from the JCIMS model (wide-format CSVs; should be updated over time)
+│   │   ├── Agriculture/
+│   │   ├── Biodiesel/
+│   │   ├── Chemical Products/
+│   │   ├── Commercial/
+│   │   └── Residential/
+│   ├── eccc/nir/               # NIR data
+│   ├── cer/                    # CER data
+│   ├── nrcan/ceud/             # CEUD data
+│   ├── stats_can/              # Stats Can data
+│   ├── ceedc/                  # CEEDC data
+│   ├── ipcc/                   # IPCC data
+│   ├── ab_gov/                 # Alberta government data
+│   └── bc_gov/                 # BC government data
+│
+├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
+│   ├── activity/
+│   ├── eccc/
+│   ├── energy_prices/
+│   └── nrcan/ceud/
+│
+├── model_inputs/               # Stage 2 outputs — gitignored, auto-generated
+│   ├── model/
+│   │   ├── agriculture/
+│   │   ├── commercial/
+│   │   ├── residential/
+│   │   ├── transportation passenger/
+│   │   ├── transportation freight/
+│   │   └── .../
+│   └── policies/
+│       ├── reference/          # Source policy CSVs (wide 5-year format)
+│       └── reference_annual/   # Flattened annual policy CSVs
+│
+└── calibration/                # Calibration outputs — gitignored, auto-generated
+    ├── commercial/
+    ├── residential/
+    ├── transportation passenger/
+    ├── transportation freight/
+    └── .../</code></pre>
+<hr>
+</section>
+<section id="quick-start" class="level2" data-number="39.3">
+<h2 data-number="39.3" class="anchored" data-anchor-id="quick-start"><span class="header-section-number">39.3</span> Quick Start</h2>
+<section id="prerequisites" class="level3" data-number="39.3.1">
+<h3 data-number="39.3.1" class="anchored" data-anchor-id="prerequisites"><span class="header-section-number">39.3.1</span> Prerequisites</h3>
+<ol type="1">
+<li>Install Python dependencies (see <a href="#dependencies">Dependencies</a>).</li>
+<li>Obtain raw data from the <strong>External-CIMS SharePoint</strong> and place it under <code>raw_data/</code> following the structure above.
+<ul>
+<li><code>raw_data/source_details.xlsx</code> documents every source.</li>
+</ul></li>
 </ol>
+</section>
+<section id="running-the-pipeline" class="level3" data-number="39.3.2">
+<h3 data-number="39.3.2" class="anchored" data-anchor-id="running-the-pipeline"><span class="header-section-number">39.3.2</span> Running the pipeline</h3>
+<p>You can run scripts individually (useful when only one source has been updated) or run everything at once:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the full pipeline in one go</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>run_all<span class="op">.</span><span class="fu">py</span>            <span class="co"># all Stage 1 source processors</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>run_all_model<span class="op">.</span><span class="fu">py</span>      <span class="co"># all Stage 2 model input assemblers</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>run_all_calibration<span class="op">.</span><span class="fu">py</span>  <span class="co"># all Stage 2 calibration assemblers</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Or run stages selectively. Stage 1 source processors (order generally does not matter, except <code>energy_prices.py</code> before <code>energy_price_multipliers.py</code>):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>activity<span class="op">/</span>emissions_drivers<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>activity<span class="op">/</span>electricity<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>nrcan<span class="op">/</span>ceud<span class="op">/</span>residential<span class="op">/</span>residential<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>nrcan<span class="op">/</span>ceud<span class="op">/</span>commercial<span class="op">/</span>commercial<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>nrcan<span class="op">/</span>ceud<span class="op">/</span>transportation_passenger<span class="op">/</span>transportation_passenger<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>nrcan<span class="op">/</span>ceud<span class="op">/</span>transportation_freight<span class="op">/</span>transportation_freight<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>energy_prices<span class="op">/</span>energy_prices<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>energy_prices<span class="op">/</span>energy_price_multipliers<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>eccc<span class="op">/</span>nir<span class="op">/</span>nir_to_cims<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>source<span class="op">/</span>emission_factors<span class="op">/</span>emission_factors<span class="op">.</span><span class="fu">py</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run Stage 2 sector assemblers:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>agriculture<span class="op">/</span>model_inputs<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>agriculture<span class="op">/</span>calibration<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>commercial<span class="op">/</span>model_inputs<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>python pipeline<span class="op">/</span>sector<span class="op">/</span>commercial<span class="op">/</span>calibration<span class="op">.</span><span class="fu">py</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">...</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Model inputs land in <code>model_inputs/model/{sector}/</code> — one CSV per province/territory (13 files per sector). Calibration outputs land in <code>calibration/{sector}/</code>.</p>
+<hr>
+</section>
+</section>
+<section id="configuration" class="level2" data-number="39.4">
+<h2 data-number="39.4" class="anchored" data-anchor-id="configuration"><span class="header-section-number">39.4</span> Configuration</h2>
+<p>All pipeline-wide parameters are set in <strong><code>mappings_conversions/control.py</code></strong>. This file exports a <code>CONTROLS</code> dict that every script imports via <code>pipeline/utils/controls_conversions.py</code>.</p>
+<p>Key parameters:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 39%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>currency_year_cims</code></td>
+<td>Dollar-year for CIMS prices</td>
+<td><code>2025</code></td>
+</tr>
+<tr class="even">
+<td><code>currency_year_jcims</code></td>
+<td>Dollar-year for JCIMS prices</td>
+<td><code>2005</code></td>
+</tr>
+<tr class="odd">
+<td><code>currency_year_cer</code></td>
+<td>Dollar-year for CER prices</td>
+<td><code>2025</code></td>
+</tr>
+<tr class="even">
+<td><code>cer_scenario</code></td>
+<td>CER scenario to extract</td>
+<td><code>"Current Measures"</code></td>
+</tr>
+<tr class="odd">
+<td><code>data_start</code></td>
+<td>First historical year in outputs</td>
+<td><code>2000</code></td>
+</tr>
+<tr class="even">
+<td><code>projection_end</code></td>
+<td>Last projected year in outputs</td>
+<td><code>2100</code></td>
+</tr>
+<tr class="odd">
+<td><code>last_data_year_ceud</code></td>
+<td>Last year available in CEUD data</td>
+<td><code>2022</code></td>
+</tr>
+<tr class="even">
+<td><code>last_data_year_nir</code></td>
+<td>Last year available in NIR data</td>
+<td><code>2024</code></td>
+</tr>
+<tr class="odd">
+<td><code>last_data_year_cer</code></td>
+<td>Last year available in CER data</td>
+<td><code>2050</code></td>
+</tr>
+<tr class="even">
+<td><code>last_data_year_statscan_resd</code></td>
+<td>Last year of Stats Can RESD table</td>
+<td><code>2024</code></td>
+</tr>
+<tr class="odd">
+<td><code>last_data_year_statscan_pop</code></td>
+<td>Last year of Stats Can population table</td>
+<td><code>2026</code></td>
+</tr>
+</tbody>
+</table>
+<section id="updating-data" class="level3" data-number="39.4.1">
+<h3 data-number="39.4.1" class="anchored" data-anchor-id="updating-data"><span class="header-section-number">39.4.1</span> Updating Data</h3>
+<p>When a new data vintage arrives:</p>
+<ol type="1">
+<li><p>Download the file and replace it in its folder under <code>raw_data/</code>.</p></li>
+<li><p>Open the <code>control.py</code> Marimo notebook:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cd</span> C<span class="op">:</span>\cims\<span class="kw">data</span>\mappings_conversions</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>marimo edit control<span class="op">.</span><span class="fu">py</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>Update the relevant <code>last_data_year_*</code> value (and currency year or scenario name if needed). The pipeline uses the year <em>after</em> the last data year as the start of its projection assumptions, so keeping this current is important.</p></li>
+<li><p>Hit <strong>Save to control.py</strong> and exit the Marimo session.</p></li>
+<li><p>Re-run the affected source script(s) and sector script(s).</p></li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="utility-library" class="level2" data-number="39.5">
+<h2 data-number="39.5" class="anchored" data-anchor-id="utility-library"><span class="header-section-number">39.5</span> Utility Library</h2>
+<p>All utilities live in <code>pipeline/utils/</code>.</p>
+<section id="output_builder.py" class="level3" data-number="39.5.1">
+<h3 data-number="39.5.1" class="anchored" data-anchor-id="output_builder.py"><span class="header-section-number">39.5.1</span> output_builder.py</h3>
+<p>Core formatter for CIMS-compatible output rows.</p>
+<ul>
+<li><code>META_COLS</code> — ordered list of the 12 metadata column names every output row carries: <code>Branch</code>, <code>Type</code>, <code>Region</code>, <code>Sector</code>, <code>Service</code>, <code>Technology</code>, <code>Parameter</code>, <code>Context</code>, <code>Sub_Context</code>, <code>Target</code>, <code>Source</code>, <code>Unit</code></li>
+<li><code>make_row(meta, year_values, extend_fn=None)</code> — builds a single output row dict combining metadata with a <code>{year: value}</code> series. Optional <code>extend_fn</code> projects values past the last data year.</li>
+<li><code>pl_to_series(df, filters)</code> — extracts a <code>{year: value}</code> dict from a Polars long-format DataFrame given a set of column filters.</li>
+<li><code>pl_get_scalar(df, filters, col)</code> — extracts a single scalar value from a Polars DataFrame.</li>
+</ul>
+</section>
+<section id="data_extensions.py" class="level3" data-number="39.5.2">
+<h3 data-number="39.5.2" class="anchored" data-anchor-id="data_extensions.py"><span class="header-section-number">39.5.2</span> data_extensions.py</h3>
+<p>Functions for projecting historical time series to 2100.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>compute_cagr(series, start, end)</code></td>
+<td>Compound annual growth rate between two years</td>
+</tr>
+<tr class="even">
+<td><code>extend_constant(series, from_year, to_year)</code></td>
+<td>Hold the last value constant</td>
+</tr>
+<tr class="odd">
+<td><code>extend_series_linear(series, cagr, periods)</code></td>
+<td>Apply CAGR over defined periods</td>
+</tr>
+<tr class="even">
+<td><code>extend_cagr_periods(series, periods, dampeners)</code></td>
+<td>Multi-period CAGR with progressive dampening</td>
+</tr>
+<tr class="odd">
+<td><code>extend_series_trend_decline(series, ...)</code></td>
+<td>Fit linear trend to history then apply declining growth</td>
+</tr>
+<tr class="even">
+<td><code>extend_series_trend_dampener(series, ...)</code></td>
+<td>Fit trend then progressively dampen growth rate</td>
+</tr>
+</tbody>
+</table>
+<p>Dampening is commonly applied as: full CAGR through 2050, 50% through 2075, 20% through 2100.</p>
+</section>
+<section id="data_fill.py" class="level3" data-number="39.5.3">
+<h3 data-number="39.5.3" class="anchored" data-anchor-id="data_fill.py"><span class="header-section-number">39.5.3</span> data_fill.py</h3>
+<p>Gap-filling utilities: linear interpolation between known values, forward-fill, backward-fill. Used after suppression handling to produce complete 2000–last-data-year series before projection.</p>
+</section>
+<section id="flatten_fixed_data.py" class="level3" data-number="39.5.4">
+<h3 data-number="39.5.4" class="anchored" data-anchor-id="flatten_fixed_data.py"><span class="header-section-number">39.5.4</span> flatten_fixed_data.py</h3>
+<p>Converts wide fixed-data CSVs (one row per parameter, year columns 2000–2050) into long format with annual rows. Applies linear interpolation across the 5-year breakpoints and holds the 2050 value constant through 2100.</p>
+</section>
+<section id="add_cims_totals.py" class="level3" data-number="39.5.5">
+<h3 data-number="39.5.5" class="anchored" data-anchor-id="add_cims_totals.py"><span class="header-section-number">39.5.5</span> add_cims_totals.py</h3>
+<p>Rolls up leaf-node rows to parent aggregate rows in the CIMS branch hierarchy. For example, shell technology rows (Retail Cold, Retail Marine, Office Cold, …) are summed to produce a Shell total row.</p>
+</section>
+<section id="controls_conversions.py" class="level3" data-number="39.5.6">
+<h3 data-number="39.5.6" class="anchored" data-anchor-id="controls_conversions.py"><span class="header-section-number">39.5.6</span> controls_conversions.py</h3>
+<p>Loads and exposes the <code>CONTROLS</code> dict from <code>control.py</code> as module-level constants:</p>
+<ul>
+<li><code>BASE_PATH</code> — data root directory, derived automatically from this file’s location (portable across machines)</li>
+<li><code>DATA_START</code> — first historical year (2000)</li>
+<li><code>PROJECTION_END</code> — last projected year (2100)</li>
+<li><code>LAST_DATA_YEAR</code> — dict of last available year per source</li>
+<li><code>ARCHIVED_DATA</code> — dict of previously used data vintage years (for reference)</li>
+<li>Energy conversion factors loaded from <code>energy_conversions.csv</code></li>
+</ul>
+</section>
+<section id="extractorsstats_can.py" class="level3" data-number="39.5.7">
+<h3 data-number="39.5.7" class="anchored" data-anchor-id="extractorsstats_can.py"><span class="header-section-number">39.5.7</span> extractors/stats_can.py</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>read_statscan_csv(path)</code></td>
+<td>Loads a Stats Can CSV preserving suppression codes as strings</td>
+</tr>
+<tr class="even">
+<td><code>load_resd(path)</code></td>
+<td>Standardizes RESD table (25-10-0029-01) column names</td>
+</tr>
+<tr class="odd">
+<td><code>build_population_shares(path)</code></td>
+<td>Converts quarterly population data to annual regional shares (sum to 1.0 per year)</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="extractorsnrcan_ceud.py" class="level3" data-number="39.5.8">
+<h3 data-number="39.5.8" class="anchored" data-anchor-id="extractorsnrcan_ceud.py"><span class="header-section-number">39.5.8</span> extractors/nrcan_ceud.py</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 43%">
+<col style="width: 56%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>extract_year_cols(df)</code></td>
+<td>Finds columns whose headers are four-digit years</td>
+</tr>
+<tr class="even">
+<td><code>find_row_indices(df, label)</code></td>
+<td>Finds row positions matching a label string</td>
+</tr>
+<tr class="odd">
+<td><code>get_row_series(df, label)</code></td>
+<td>Extracts a <code>{year: value}</code> dict from a named row</td>
+</tr>
+<tr class="even">
+<td><code>_to_float(cell)</code></td>
+<td>Converts cell to float; returns <code>NaN</code> for ‘X’, None, or non-numeric</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</section>
+</section>
+<section id="output-format" class="level2" data-number="39.6">
+<h2 data-number="39.6" class="anchored" data-anchor-id="output-format"><span class="header-section-number">39.6</span> Output Format</h2>
+<p>All sector model input files share a common long-format schema:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 26%">
+<col style="width: 43%">
+<col style="width: 30%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Column</th>
+<th>Description</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>Branch</code></td>
+<td>Full CIMS node path</td>
+<td><code>CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.2001-2020 Bldg Code.Heating (Cold)</code></td>
+</tr>
+<tr class="even">
+<td><code>Type</code></td>
+<td>Scope level</td>
+<td><code>Region</code>, <code>Sector</code>, <code>Service</code>, <code>Technology, etc.</code></td>
+</tr>
+<tr class="odd">
+<td><code>Region</code></td>
+<td>Province/territory code</td>
+<td><code>AB</code></td>
+</tr>
+<tr class="even">
+<td><code>Sector</code></td>
+<td>Sector name</td>
+<td><code>Residential</code></td>
+</tr>
+<tr class="odd">
+<td><code>Service</code></td>
+<td>Service name</td>
+<td><code>Heating(Cold)</code></td>
+</tr>
+<tr class="even">
+<td><code>Technology</code></td>
+<td>Technology name</td>
+<td><code>Natural Gas_Furnace_High Efficiency</code></td>
+</tr>
+<tr class="odd">
+<td><code>Parameter</code></td>
+<td>Model parameter</td>
+<td><code>market_share_total</code>, <code>service_request</code>, <code>multiplier_price, etc.</code></td>
+</tr>
+<tr class="even">
+<td><code>Context</code></td>
+<td>Additional context (often blank)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>Sub_Context</code></td>
+<td>Sub-context (often blank)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>Target</code></td>
+<td>Demand/supply node this row applies to (often blank)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><code>Source</code></td>
+<td>Data provenance</td>
+<td><code>CEUD</code>, <code>CER</code>, <code>ECCC, etc.</code></td>
+</tr>
+<tr class="even">
+<td><code>Unit</code></td>
+<td>Value unit</td>
+<td><code>%</code>, <code>PJ</code>, <code>2025$/GJ, etc.</code></td>
+</tr>
+<tr class="odd">
+<td><code>Year</code></td>
+<td>Year for each value</td>
+<td><code>2000 - 2100</code></td>
+</tr>
+</tbody>
+</table>
+<p>Files are saved as CSVs.</p>
+<hr>
+</section>
+<section id="common-patterns" class="level2" data-number="39.7">
+<h2 data-number="39.7" class="anchored" data-anchor-id="common-patterns"><span class="header-section-number">39.7</span> Common Patterns</h2>
+<section id="source-script-structure" class="level3" data-number="39.7.1">
+<h3 data-number="39.7.1" class="anchored" data-anchor-id="source-script-structure"><span class="header-section-number">39.7.1</span> Source Script Structure</h3>
+<p>Despite pulling from different sources, all scripts in <code>pipeline/source/</code> share the same structure:</p>
+<p><strong>1. Module-level docstring</strong> — Every script opens with a prominent docstring (sometimes a <code>===</code> banner) that states what it does, its input files and output location, and its specific suppression-handling strategy. This is the first place to look when diagnosing unexpected output.</p>
+<p><strong>2. <code>sys.path</code> setup</strong> — Immediately after imports, every script locates the project root relative to <code>__file__</code> and inserts it into <code>sys.path</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>_current_file <span class="op">=</span> Path(<span class="va">__file__</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>_project_root <span class="op">=</span> _current_file.parent.parent.parent</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">str</span>(_project_root) <span class="kw">not</span> <span class="kw">in</span> sys.path:</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    sys.path.insert(<span class="dv">0</span>, <span class="bu">str</span>(_project_root))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>This lets the script be run from any working directory (<code>python pipeline/source/activity/emissions_drivers.py</code> from <code>C:\cims\data\</code>, or directly from its own folder) without import errors.</p>
+<p><strong>3. Configuration block</strong> — Input/output paths and key constants (e.g.&nbsp;<code>DATA_START</code>, <code>LAST_HIST_YEAR</code>, <code>REGIONS</code>) are declared at module level, loaded from <code>controls_conversions.py</code>. All paths are built with <code>BASE_PATH / '...'</code> so they resolve correctly regardless of working directory.</p>
+<p><strong>4. <code>main()</code> function + <code>__main__</code> guard</strong> — All processing is wrapped in a <code>main()</code> function that returns a DataFrame. The <code>if __name__ == '__main__': main()</code> guard at the bottom means: - Scripts can be run directly: <code>python emissions_drivers.py</code> - <code>run_all.py</code> can import and call each <code>main()</code> in-process without spawning subprocesses - Sector assemblers that need to chain outputs can import a source script’s <code>main()</code> directly</p>
+<p><strong>5. Console summary on completion</strong> — Every script prints a ✅ block at the end showing row count, regions/variables processed, years covered, and the output path. This gives quick confirmation that the data landed where expected without opening the output file.</p>
+<hr>
+</section>
+<section id="suppression-handling" class="level3" data-number="39.7.2">
+<h3 data-number="39.7.2" class="anchored" data-anchor-id="suppression-handling"><span class="header-section-number">39.7.2</span> Suppression Handling</h3>
+<p>Government data sources use various codes for confidential or unavailable cells:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 17%">
+<col style="width: 41%">
+<col style="width: 41%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Source</th>
+<th>Suppression codes</th>
+<th>Handling strategy</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stats Can CSVs</td>
+<td><code>'x'</code>, <code>'..'</code>, <code>'F'</code>, <code>'E'</code></td>
+<td>Read as string, detect, fill by interpolation or population proxy</td>
+</tr>
+<tr class="even">
+<td>CEUD Excel</td>
+<td><code>'X'</code></td>
+<td><code>_to_float()</code> converts <code>'X'</code> (and any non-numeric cell) to <code>NaN</code>; <code>pct_series()</code> additionally filters negatives to catch cases where Polars numerically coerces <code>'X'</code> to <code>-1.0</code> in percentage columns</td>
+</tr>
+<tr class="odd">
+<td>NIR inventory</td>
+<td><code>'x'</code></td>
+<td>Algebraic back-calculation from Canada total + known provinces</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="projections" class="level3" data-number="39.7.3">
+<h3 data-number="39.7.3" class="anchored" data-anchor-id="projections"><span class="header-section-number">39.7.3</span> Projections</h3>
+<p>Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the data_extensions.py util. A common one used across activity drivers is the CAGR function. It uses paramters defined C:_data_cagr_projections.csv to determine the CAGR calculation period, and determine the projection period splits and dampeners.</p>
+<p>CAGR Example</p>
+<pre><code>2014 → 2024       : Computed CAGR
+2025 → 2050       : 50%  of computed CAGR
+2036 → 2100       : 20%  of computed CAGR</code></pre>
+<p>Sector- and province-specific overrides are applied where the national historical CAGR is unrepresentative (e.g., Alberta Waste: 2%, 1%, 0.5% across the three periods).</p>
+</section>
+<section id="wide-to-long-conversion" class="level3" data-number="39.7.4">
+<h3 data-number="39.7.4" class="anchored" data-anchor-id="wide-to-long-conversion"><span class="header-section-number">39.7.4</span> Wide-to-Long Conversion</h3>
+<p>Fixed structural data is stored as wide CSVs (columns = years 2000, 2005, 2010, 2015, 2020, 2025, 2030, …, 2050). The pipeline: 1. Reads the wide file. 2. Linearly interpolates to fill every year between anchor columns. 3. Holds the 2050 value constant through 2100. 4. Writes rows in long format (one row per parameter per year).</p>
+</section>
+<section id="row-ordering-in-cims-outputs" class="level3" data-number="39.7.5">
+<h3 data-number="39.7.5" class="anchored" data-anchor-id="row-ordering-in-cims-outputs"><span class="header-section-number">39.7.5</span> Row Ordering in CIMS Outputs</h3>
+<p>Sector assemblers maintain an <code>_order</code> integer column during construction and sort by it before writing. This preserves the structural hierarchy CIMS expects (e.g., shell rows must precede HVAC rows, which must precede output rows for a given building type).</p>
+<hr>
+</section>
+</section>
+<section id="dependencies" class="level2" data-number="39.8">
+<h2 data-number="39.8" class="anchored" data-anchor-id="dependencies"><span class="header-section-number">39.8</span> Dependencies</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>polars</code></td>
+<td>Primary DataFrame library in all recent modules</td>
+</tr>
+<tr class="even">
+<td><code>pandas</code></td>
+<td>Legacy support and Excel reading</td>
+</tr>
+<tr class="odd">
+<td><code>numpy</code></td>
+<td>Numeric operations</td>
+</tr>
+<tr class="even">
+<td><code>scipy</code></td>
+<td>Linear regression for trend fitting (<code>data_extensions.py</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>openpyxl</code></td>
+<td>Reading <code>.xlsx</code> CEUD and NIR workbooks</td>
+</tr>
+<tr class="even">
+<td><code>marimo</code></td>
+<td>Optional — interactive UI for <code>control.py</code></td>
+</tr>
+</tbody>
+</table>
+<p>Install with:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode powershell code-with-copy"><code class="sourceCode powershell"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>pip install polars pandas numpy scipy openpyxl marimo</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Path convention</strong>: The base path is derived automatically from the location of <code>controls_conversions.py</code> in <code>pipeline/utils/</code>, so scripts work regardless of where the <code>cims/data</code> folder lives on disk. The internal directory layout under the data root (<code>raw_data/</code>, <code>processed_data/</code>, <code>model_inputs/</code>, <code>mappings_conversions/</code>) must be preserved as described above.</p>
+<hr>
+</section>
+<section id="what-is-and-is-not-committed" class="level2" data-number="39.9">
+<h2 data-number="39.9" class="anchored" data-anchor-id="what-is-and-is-not-committed"><span class="header-section-number">39.9</span> What is and is not Committed</h2>
+<section id="committed-tracked-in-git" class="level3" data-number="39.9.1">
+<h3 data-number="39.9.1" class="anchored" data-anchor-id="committed-tracked-in-git"><span class="header-section-number">39.9.1</span> Committed (tracked in git)</h3>
+<ul>
+<li>All Python scripts in <code>pipeline/</code></li>
+<li>Mapping and conversion files in <code>mappings_conversions/</code></li>
+<li><code>.gitkeep</code> files preserving empty output directory structure</li>
+<li>This README and sub-READMEs</li>
+</ul>
+</section>
+<section id="not-committed-gitignored" class="level3" data-number="39.9.2">
+<h3 data-number="39.9.2" class="anchored" data-anchor-id="not-committed-gitignored"><span class="header-section-number">39.9.2</span> Not committed (gitignored)</h3>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Directory</th>
+<th>Reason</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>raw_data/</code></td>
+<td>Large source files — obtain from SharePoint or FRDR</td>
+</tr>
+<tr class="even">
+<td><code>processed_data/</code></td>
+<td>Auto-generated by Stage 1 scripts</td>
+</tr>
+<tr class="odd">
+<td><code>calibration/</code></td>
+<td>Auto-generated by sector calibration scripts</td>
+</tr>
+<tr class="even">
+<td><code>model_inputs/</code></td>
+<td>Auto-generated by Stage 2 sector assemblers</td>
+</tr>
+<tr class="odd">
+<td><code>__pycache__/</code></td>
+<td>Python bytecode</td>
+</tr>
+</tbody>
+</table>
+
+
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -2204,51 +2384,19 @@ body.suppress-tippy-popovers [data-tippy-root] {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./theory.html" class="pagination-link" aria-label="Theory">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Theory</span></span>
+      <a href="./data_inputs.html" class="pagination-link" aria-label="Data Inputs">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Data Inputs</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./energy_supply_demand.html" class="pagination-link" aria-label="Energy Supply and Demand">
-        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Energy Supply and Demand</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./calibration.html" class="pagination-link" aria-label="Calibration">
+        <span class="nav-page-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Calibration</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
-<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer><script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
-(function() {
-  let previousOnload = window.onload;
-  window.onload = () => {
-    if (previousOnload) {
-      previousOnload();
-    }
-    lightboxQuarto.on('slide_before_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      const href = trigger.getAttribute('href');
-      if (href !== null) {
-        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
-        if (imgEl !== null) {
-          const srcAttr = imgEl.getAttribute("src");
-          if (srcAttr && srcAttr.startsWith("data:")) {
-            slideConfig.href = srcAttr;
-          }
-        }
-      } 
-    });
-  
-    lightboxQuarto.on('slide_after_load', (data) => {
-      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
-      if (window.Quarto?.typesetMath) {
-        window.Quarto.typesetMath(slideNode);
-      }
-    });
-  
-  };
-  
-})();
-          </script>
 
 
 
 
-</body></html>
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/EMRG-SFU/cims/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
