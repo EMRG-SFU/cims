@@ -9,6 +9,8 @@ context = "Context"
 sub_context = "Sub_Context"
 target = "Target"
 unit = "Unit"
+year = "Year"
+value = "Value"
 node = "Node"
 
 # ------------ Default Parameters CSVs ------------ #

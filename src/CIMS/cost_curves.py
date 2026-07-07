@@ -165,15 +165,12 @@ def build_cost_curve_function(node_df):
         An interpolator that inputs a quantity & outputs a price.
 
     """
-    years = [c for c in node_df.columns if parse.is_year(c)]
+    # Get quantities and prices sorted by year so they pair correctly
+    cc_quant_rows = node_df[node_df[COL.parameter] == PARAM.cost_curve_quantity].sort_values("Year")
+    cc_price_rows = node_df[node_df[COL.parameter] == PARAM.cost_curve_price].sort_values("Year")
 
-    # Get quantities
-    cc_quant_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_quantity]
-    cc_quants = [cc_quant_line[y].iloc[0] for y in years]
-
-    # Get prices
-    cc_price_line = node_df[node_df[COL.parameter] == PARAM.cost_curve_price]
-    cc_prices = [cc_price_line[y].iloc[0] for y in years]
+    cc_quants = [parse.infer_type(v) for v in cc_quant_rows["Value"]]
+    cc_prices = [parse.infer_type(v) for v in cc_price_rows["Value"]]
 
     # Create interpolator
     qp_pairs = list(set(zip(cc_quants, cc_prices)))
