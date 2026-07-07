@@ -6,6 +6,7 @@ raw_data/*
 processed_data/**/*.csv
 calibration/**/*.csv
 model_inputs/**/*.csv
+model_inputs/**/*.xlsx
 
 # Python cache
 __pycache__/
