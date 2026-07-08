@@ -7,7 +7,7 @@ Flattens fixed incremental cost (FIC) data into CIMS-formatted CSVs
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/FIC/FIC_{region}.csv
+    raw_data/fixed_data/fic/FIC_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
@@ -39,8 +39,8 @@ _spec.loader.exec_module(_flatten_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/FIC'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/FIC'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fic'
+OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/fic'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -58,9 +58,9 @@ FIXED_TEMPLATE: dict[str, str] = {
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
     """Flatten one FIC CSV and return as a long-format DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'FIC_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'fic_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'FIC_{region}.csv'
+        out_file = Path(tmp) / f'fic_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -96,7 +96,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Flattening fixed data...')
             output = _read_flattened_fixed(template).select(OUTPUT_COLS)
 
-            out_path = OUTPUT_DIR / f'FIC_{region}.csv'
+            out_path = OUTPUT_DIR / f'fic_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

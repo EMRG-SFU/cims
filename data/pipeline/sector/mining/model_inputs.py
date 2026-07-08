@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Mining/mining_{region}.csv
+    raw_data/fixed_data/mining/mining_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Contains the full Mining hierarchy including the structural 1.0
     service_request at the sector level. The iron/non-iron product
@@ -102,7 +102,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Mining'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/mining'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/mining'
 
 OUTPUT_COLS = [
@@ -345,7 +345,7 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'mining_{region}.csv'
+        out_path = OUTPUT_DIR / f'mining_{region.lower()}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

@@ -7,7 +7,7 @@ price multipliers into CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Electricity/electricity_{region}.csv
+    raw_data/fixed_data/electricity/electricity_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Province files (AB, BC, MB, NB, NL, NS, ON, PE, QC, SK) include
     Base Load / Shoulder Load / Peak Load sub-services.
@@ -77,7 +77,7 @@ _elec_spec.loader.exec_module(_elec_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Electricity'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/electricity'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/electricity'
 
 OUTPUT_COLS = [
@@ -109,9 +109,9 @@ _LOAD_VAR_TO_SERVICE: dict[str, str] = {
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
     """Flatten one Electricity fixed CSV and return a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'electricity_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'electricity_{region}.csv'
+        out_file = Path(tmp) / f'electricity_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -301,7 +301,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region in sorted(FIXED_TEMPLATE):
-        fixed_path = FIXED_INPUT_DIR / f'electricity_{region}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv'
         if not fixed_path.exists():
             print(f'\n⚠  Skipping {region} — fixed data not found')
             continue
@@ -318,7 +318,7 @@ def main() -> dict[str, pl.DataFrame]:
 
             output = _assemble_region(fixed, activity, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'electricity_{region}.csv'
+            out_path = OUTPUT_DIR / f'electricity_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

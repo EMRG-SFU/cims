@@ -4,7 +4,7 @@ Extract Agriculture model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Agriculture/*.csv
+    raw_data/fixed_data/agriculture/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
 
@@ -65,7 +65,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Agriculture'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/agriculture'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/agriculture'
 
 OUTPUT_COLS = [
@@ -282,7 +282,7 @@ def main() -> pl.DataFrame:
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'agriculture_{region}.csv'
+        out_path = OUTPUT_DIR / f'agriculture_{region.lower()}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

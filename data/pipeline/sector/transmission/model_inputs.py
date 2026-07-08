@@ -4,7 +4,7 @@ Flatten transmission fixed data to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Transmission/transmission_CIMS.csv
+    raw_data/fixed_data/transmission/transmission_CIMS.csv
     Flattened from wide (2000-2050 year columns) to long format via
     utils/flatten_fixed_data.
 
@@ -36,9 +36,9 @@ _spec.loader.exec_module(_flatten_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Transmission'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/transmission'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/transmission'
-OUTPUT_FILE     = OUTPUT_DIR / 'transmission_CIMS.csv'
+OUTPUT_FILE     = OUTPUT_DIR / 'transmission_cims.csv'
 
 OUTPUT_COLS = [
     'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
@@ -50,7 +50,7 @@ OUTPUT_COLS = [
 # ── helpers ───────────────────────────────────────────────────────────────────
 
 def _read_flattened_fixed_data() -> pl.DataFrame:
-    src = FIXED_INPUT_DIR / 'transmission_CIMS.csv'
+    src = FIXED_INPUT_DIR / 'transmission_cims.csv'
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
         out_file = tmp_path / src.name

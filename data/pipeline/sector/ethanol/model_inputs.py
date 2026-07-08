@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Ethanol/ethanol_{region}.csv
+    raw_data/fixed_data/ethanol/ethanol_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
@@ -50,7 +50,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Ethanol'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/ethanol'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/ethanol'
 
 OUTPUT_COLS = [
@@ -74,9 +74,9 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
     """Flatten one fixed Ethanol CSV and return as a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'ethanol_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'ethanol_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'ethanol_{region}.csv'
+        out_file = Path(tmp) / f'ethanol_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -182,7 +182,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'ethanol_{region}.csv'
+            out_path = OUTPUT_DIR / f'ethanol_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

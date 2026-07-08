@@ -7,7 +7,7 @@ to long format and writes one output CSV per input file.
 Sources
 -------
 Fixed DIC parameters
-    raw_data/fixed_data/DIC/DIC_{region}.csv
+    raw_data/fixed_data/dic/DIC_{region}.csv
     One file per Canadian province/territory.
 
 Output columns
@@ -39,14 +39,14 @@ _spec.loader.exec_module(_flatten_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/DIC'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/DIC'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/dic'
+OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/dic'
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    """Flatten all DIC fixed CSVs and write outputs to model_inputs/model/DIC."""
+    """Flatten all DIC fixed CSVs and write outputs to model_inputs/model/dic."""
     print('=' * 60)
     print('DIC MODEL INPUTS')
     print('=' * 60)

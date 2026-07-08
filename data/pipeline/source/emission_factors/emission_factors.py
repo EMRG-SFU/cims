@@ -1234,7 +1234,7 @@ def main() -> None:
     print(f"   Excluded (zero-EF):  {sorted(EXPECTED_ZERO_FUELS)}")
     print(f"   Saved to:            {output_path}")
 
-    cims_path = OUTPUT_DIR / "emission_factors_CIMS.csv"
+    cims_path = OUTPUT_DIR / "emission_factors_cims.csv"
     cims_df = build_cims_table(df_out)
     cims_df.write_csv(cims_path)
     print(f"\n✅ CIMS parameter table complete")

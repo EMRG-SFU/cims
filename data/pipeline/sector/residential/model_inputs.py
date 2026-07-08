@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Residential/residential_{region}.csv
+    raw_data/fixed_data/residential/residential_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     One file per region — no template substitution required.
 
@@ -87,7 +87,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Residential'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/residential'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/residential'
 
 REGIONS = [
@@ -127,9 +127,9 @@ CIMS_BUILDING_TO_DENSITY: dict[str, str] = {
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    fixed_path = FIXED_INPUT_DIR / f'residential_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'residential_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'residential_{region}.csv'
+        out_file = Path(tmp) / f'residential_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -698,7 +698,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region in sorted(REGIONS):
-        fixed_path = FIXED_INPUT_DIR / f'residential_{region}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'residential_{region.lower()}.csv'
         if not fixed_path.exists():
             print(f'  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue
@@ -714,7 +714,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, residential, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'residential_{region}.csv'
+            out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

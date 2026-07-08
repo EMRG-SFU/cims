@@ -287,7 +287,7 @@ def main() -> dict[str, pl.DataFrame]:
             df = _read_flattened(fixed_path)
             output = df.select(OUTPUT_COLS)
 
-            out_path = OUTPUT_DIR / f'fuels_{region}.csv'
+            out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
@@ -298,7 +298,7 @@ def main() -> dict[str, pl.DataFrame]:
             traceback.print_exc()
 
     # ── CIMS file: flatten + energy prices + emission factors ─────────────────
-    cims_path = FIXED_INPUT_DIR / 'fuels_CIMS.csv'
+    cims_path = FIXED_INPUT_DIR / 'fuels_cims.csv'
     if cims_path.exists():
         try:
             print('\nCIMS:')
@@ -308,7 +308,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling with energy prices and emission factors...')
             output = _assemble_cims(fixed, prices_df, ef_df)
 
-            out_path = OUTPUT_DIR / 'fuels_CIMS.csv'
+            out_path = OUTPUT_DIR / 'fuels_cims.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output
