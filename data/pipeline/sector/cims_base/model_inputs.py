@@ -105,11 +105,23 @@ def _flatten_fixed(stem: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
-    return df.filter(
+    df = df.filter(
         ~(
             (pl.col('Parameter') == 'attribute') &
             pl.col('Context').is_in(['Population', 'GDP'])
         )
+    )
+    _currency = pl.col('Parameter') == 'currency'
+    return df.with_columns(
+        pl.when(_currency)
+        .then(
+            pl.col('Value').cast(pl.Float64).cast(pl.Int64).cast(pl.String)
+            + pl.lit('_') + pl.col('Unit')
+        )
+        .otherwise(pl.col('Value'))
+        .alias('Value'),
+        pl.when(_currency).then(pl.lit('')).otherwise(pl.col('Unit')).alias('Unit'),
+        pl.when(pl.col('Source') == 'n/a').then(pl.lit('')).otherwise(pl.col('Source')).alias('Source'),
     )
 
 

@@ -119,7 +119,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
         emissions
         .filter(pl.col('Variable') == 'Construction')
         .select([
-            ('JCIMS.CAN.' + pl.col('Region')).alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region')).alias('Branch'),
             pl.lit('Region').alias('Type'),
             pl.col('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -128,7 +128,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
             pl.lit('service_request').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            ('JCIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
+            ('CIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
             pl.col('Source'),
             pl.lit('tCO2e').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
@@ -148,7 +148,7 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
         multipliers
         .filter(pl.col('Sector') == 'Construction')
         .select([
-            ('JCIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
             pl.lit('Sector').alias('Type'),
             pl.col('Region').alias('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -161,8 +161,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
                 'Electricity', 'Biodiesel', 'Renewable Diesel',
                 'Ethanol', 'Renewable Gasoline', 'Hydrogen',
             ]))
-            .then(pl.lit('JCIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('JCIMS.Generic Fuels.') + pl.col('Energy'))
+            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
+            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
             .alias('Target'),
             pl.col('Source').alias('Source'),
             pl.lit('').alias('Unit'),
