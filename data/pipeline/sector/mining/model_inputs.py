@@ -57,12 +57,11 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 Output order per region
 -----------------------
 1. service_request  — sector-level total tonnes (from heavy_industry)
-2. is_supply        — generated (TRUE)
-3. multiplier_price — from energy_price_multipliers
-4. service_request  — Metal Open Pit → Size Reduced Iron Product (from heavy_industry)
-5. service_request  — Metal Open Pit → Size Reduced Non Iron Product (from heavy_industry)
-6. service_request  — Final Product → Potash (from heavy_industry, SK and NB only)
-7. fixed data       — full fixed hierarchy unchanged (service_provide, competition,
+2. multiplier_price — from energy_price_multipliers
+3. service_request  — Metal Open Pit → Size Reduced Iron Product (from heavy_industry)
+4. service_request  — Metal Open Pit → Size Reduced Non Iron Product (from heavy_industry)
+5. service_request  — Final Product → Potash (from heavy_industry, SK and NB only)
+6. fixed data       — full fixed hierarchy unchanged (service_provide, competition,
                       structural 1.0 service_request, and all sub-service parameters)
 """
 
@@ -162,29 +161,6 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         pl.lit('tonne').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
-    ])
-
-
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Mining',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Mining',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
     ])
 
 
@@ -325,13 +301,11 @@ def main() -> pl.DataFrame:
     print('Combining...')
 
     regions = total_rows['Region'].unique().sort().to_list()
-    is_supply_rows = _build_is_supply_rows(regions)
 
     output = (
         pl.concat(
             [
                 total_rows,
-                is_supply_rows,
                 price_rows,
                 iron_rows,
                 potash_rows,

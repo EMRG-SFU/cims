@@ -34,10 +34,9 @@ Output order per region
 1. service_request  — region-level demand for Chemical Products (from heavy_industry)
 2. service_provide  — from fixed data
 3. competition      — from fixed data
-4. is_supply        — generated (TRUE)
-5. multiplier_price — from energy_price_multipliers
-6. service_request  — Chemical Product → each subproduct (from heavy_industry)
-7. rest of fixed data
+4. multiplier_price — from energy_price_multipliers
+5. service_request  — Chemical Product → each subproduct (from heavy_industry)
+6. rest of fixed data
 """
 
 import sys
@@ -148,29 +147,6 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
 
 
 
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Chemical Products',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Chemical Products',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
-    ])
-
-
 def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     """multiplier_price rows for the Chemical Products sector."""
     return (
@@ -279,12 +255,11 @@ def main() -> pl.DataFrame:
     )
 
     regions = total_rows['Region'].unique().sort().to_list()
-    is_supply_rows = _build_is_supply_rows(regions)
 
     output = (
         pl.concat(
             [total_rows, fixed_sector_service_provide, fixed_sector_competition,
-             is_supply_rows, price_rows, subprod_rows, fixed_rest],
+             price_rows, subprod_rows, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)

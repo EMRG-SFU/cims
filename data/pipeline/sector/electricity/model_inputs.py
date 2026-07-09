@@ -33,7 +33,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. Electricity sector service_provide + competition
+1. Fixed data — Electricity sector service_provide / competition / is_supply
 2. multiplier_price (Electricity sector level)
 3. Fixed data — Utility Generation service_provide / competition
 4. service_request (Utility Generation) — Base Load / Shoulder Load / Peak Load % MWh
@@ -122,6 +122,10 @@ def _read_flattened_fixed(region: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
@@ -148,21 +152,6 @@ def _find_max_order(df: pl.DataFrame, service: str, parameter: str,
 def _has_load_subservices(fixed: pl.DataFrame) -> bool:
     """True when fixed data contains Base / Shoulder / Peak Load sub-services."""
     return len(fixed.filter(pl.col('Service').fill_null('') == 'Base Load')) > 0
-
-
-def _build_sector_rows(region: str, start_order: float) -> pl.DataFrame:
-    """Electricity sector service_provide and competition rows (structural, no year values)."""
-    branch = f'CIMS.CAN.{region}.Electricity'
-    base = {'Branch': branch, 'Type': 'Sector', 'Region': region, 'Sector': 'Electricity',
-            'Service': '', 'Technology': '', 'Sub_Context': '', 'Target': '',
-            'Source': '', 'Unit': '', 'Year': '', 'Value': ''}
-    rows = [
-        {**base, 'Parameter': 'service_provide', 'Context': '', 'Source': 'JCIMS',
-         'Unit': 'GJ', '_order': start_order},
-        {**base, 'Parameter': 'competition', 'Context': 'Sector',
-         '_order': start_order + 1e-4},
-    ]
-    return pl.DataFrame(rows)
 
 
 def _build_price_rows(multipliers: pl.DataFrame, region: str,
@@ -260,11 +249,11 @@ def _assemble_region(
         _find_max_order(fixed, 'Utility Generation', 'competition', no_tech=True)
         or min_fixed
     )
+    is_supply_max = _find_max_order(fixed, '', 'is_supply') or min_fixed
 
     # Pipeline rows
-    sector_rows = _build_sector_rows(region, start_order=min_fixed - 1500.0)
     price_rows = _build_price_rows(
-        multipliers, region, start_order=min_fixed - 1000.0,
+        multipliers, region, start_order=is_supply_max + 0.5,
     )
     load_rows = (
         _build_load_fraction_rows(activity, region, start_order=ug_comp_max + 0.5)
@@ -272,7 +261,7 @@ def _assemble_region(
     )
 
     combined = pl.concat(
-        [f for f in [fixed.cast({'_order': pl.Float64}), sector_rows, price_rows, load_rows]
+        [f for f in [fixed.cast({'_order': pl.Float64}), price_rows, load_rows]
          if len(f) > 0],
         how='diagonal_relaxed',
     ).sort('_order')

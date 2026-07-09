@@ -52,10 +52,9 @@ Output order per region
 -----------------------
 1. service_request  — total production (from coal_mining)
 2. competition      — from fixed data (Sector level)
-3. is_supply        — generated (TRUE)
-4. multiplier_price — from energy_price_multipliers
-5. rest of fixed data (Coal branch + all sub-services)
-6. service_request  — Coal → Metallurgical Finishing (from coal_mining, AB and BC only)
+3. multiplier_price — from energy_price_multipliers
+4. rest of fixed data (Coal branch + all sub-services)
+5. service_request  — Coal → Metallurgical Finishing (from coal_mining, AB and BC only)
 """
 
 import sys
@@ -152,29 +151,6 @@ def _build_total_rows(coal: pl.DataFrame) -> pl.DataFrame:
         pl.lit('kt').alias('Unit'),
         pl.col('Year').cast(pl.String).alias('Year'),
         pl.col('Value').cast(pl.String).alias('Value'),
-    ])
-
-
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Coal Mining',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Coal Mining',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
     ])
 
 
@@ -282,11 +258,10 @@ def main() -> pl.DataFrame:
     )
 
     regions = total_rows['Region'].unique().sort().to_list()
-    is_supply_rows = _build_is_supply_rows(regions)
 
     output = (
         pl.concat(
-            [total_rows, fixed_sector_competition, is_supply_rows,
+            [total_rows, fixed_sector_competition,
              price_rows, fixed_rest, met_rows],
             how='diagonal_relaxed',
         )

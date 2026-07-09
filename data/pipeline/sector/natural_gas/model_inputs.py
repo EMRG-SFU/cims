@@ -76,11 +76,10 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 Output order — provincial files (AB, BC, SK)
 --------------------------------------------
 1. competition      — from fixed data (Sector level)
-2. is_supply        — generated (TRUE)
-3. multiplier_price — from energy_price_multipliers
-4. service_request  — Natural Gas (from gas_production)
-5. service_request  — extraction splits, Processing, LNG (from gas_production)
-6. rest of fixed data (service_provide null rows and drilling intensity rows retained)
+2. multiplier_price — from energy_price_multipliers
+3. service_request  — Natural Gas (from gas_production)
+4. service_request  — extraction splits, Processing, LNG (from gas_production)
+5. rest of fixed data (service_provide null rows and drilling intensity rows retained)
 
 Output order — CAN and RoW files
 ---------------------------------
@@ -168,29 +167,6 @@ def _read_flattened_fixed() -> pl.DataFrame:
             for f in sorted(tmp_path.rglob('*.csv'))
         ]
     return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
-
-
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Natural Gas',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Natural Gas',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
-    ])
 
 
 def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
@@ -387,7 +363,7 @@ def main() -> pl.DataFrame:
 
     fixed_provincial = fixed.filter(pl.col('Region').is_in(PROVINCIAL_REGIONS))
 
-    # competition at sector level — repositioned before is_supply
+    # competition at sector level — repositioned before multiplier_price
     fixed_sector_competition = fixed_provincial.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
@@ -398,11 +374,9 @@ def main() -> pl.DataFrame:
         ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
     )
 
-    is_supply_rows = _build_is_supply_rows(PROVINCIAL_REGIONS)
-
     provincial_output = (
         pl.concat(
-            [fixed_sector_competition, is_supply_rows, price_rows,
+            [fixed_sector_competition, price_rows,
              activity_rows, extraction_rows, processing_rows, lng_rows,
              fixed_provincial_rest],
             how='diagonal_relaxed',

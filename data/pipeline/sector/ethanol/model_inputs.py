@@ -87,6 +87,10 @@ def _read_flattened_fixed(region: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
