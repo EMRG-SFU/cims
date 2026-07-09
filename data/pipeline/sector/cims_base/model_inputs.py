@@ -115,7 +115,7 @@ def _flatten_fixed(stem: str) -> pl.DataFrame:
     return df.with_columns(
         pl.when(_currency)
         .then(
-            pl.col('Value').cast(pl.Float64).cast(pl.Int64).cast(pl.String)
+            pl.col('Value').cast(pl.Float64, strict=False).cast(pl.Int64).cast(pl.String)
             + pl.lit('_') + pl.col('Unit')
         )
         .otherwise(pl.col('Value'))

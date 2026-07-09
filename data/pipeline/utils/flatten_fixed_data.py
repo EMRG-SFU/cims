@@ -1,6 +1,7 @@
 import argparse
 import csv
 import sys
+from collections import Counter
 from pathlib import Path
 
 import pandas as pd
@@ -38,6 +39,12 @@ from utils.data_fill import interpolate_5year_to_annual, backfill_constant
 #    writes annual rows for each item between 2000 and 2100.
 # 6. Output CSV files are saved under the output folder in a matching subfolder.
 
+
+
+# Non-numeric tokens that mean "no value" rather than a real literal flag
+# (e.g. "-" placeholders for zero/blank cost cells), so they should still
+# collapse to a blank row instead of being carried forward like "FALSE"/"Myopic".
+BLANK_LITERAL_SENTINELS = {"-", "--", "n/a", "na"}
 
 
 def parse_year_columns(header, year_min=2000, year_max=2050):
@@ -159,19 +166,21 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                                 if market_share_2000_value is None:
                                     continue
 
-                        known_points = []
-
-                        # Extract value points from the defined year columns.
+                        # Collect every year column that actually has a value, keeping
+                        # numeric values as floats and everything else as a literal
+                        # string. Sentinel tokens like "-" mean "no value", not a literal.
+                        points: list[tuple[int, float | str]] = []
                         for year, idx in year_columns:
                             raw_value = row[idx] if idx < len(row) else ""
+                            raw_value = raw_value.strip()
+                            if raw_value == "" or raw_value.lower() in BLANK_LITERAL_SENTINELS:
+                                continue
                             parsed_value = safe_float(raw_value)
-                            if parsed_value is not None:
-                                known_points.append((year, parsed_value))
+                            points.append((year, parsed_value if parsed_value is not None else raw_value))
+                        points.sort(key=lambda p: p[0])
 
-                        known_points = sorted(known_points)
-
-                        # If there are no numeric values in the year columns, output one blank row.
-                        if not known_points:
+                        # Nothing specified anywhere in the year columns.
+                        if not points:
                             writer.writerow([row[idx] for idx in non_year_indexes] + ["", ""])
                             rows_written += 1
                             continue
@@ -181,42 +190,64 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                             rows_written += 1
                             continue
 
-                        if len(known_points) == 1:
-                            single_value = known_points[0][1]
+                        distinct_values = {value for _, value in points}
+
+                        # Constant across every year with data (numeric or literal,
+                        # including a single known point) -- one row, no Year needed.
+                        if len(distinct_values) == 1:
+                            writer.writerow([row[idx] for idx in non_year_indexes] + ["", points[0][1]])
+                            rows_written += 1
+                            continue
+
+                        has_literal = any(isinstance(value, str) for _, value in points)
+
+                        if not has_literal:
+                            # Genuine numeric time series -- interpolate/extend as before.
+                            known_points = points
+                            series = pd.Series({year: value for year, value in known_points}, dtype=float)
+                            annual_series = interpolate_5year_to_annual(series)
+
+                            if target_start < annual_series.index.min():
+                                annual_series = backfill_constant(annual_series, start_year=target_start)
+
+                            if target_end > annual_series.index.max():
+                                if 2045 in annual_series.index and 2050 in annual_series.index:
+                                    start_value = annual_series.loc[2045]
+                                    end_value = annual_series.loc[2050]
+                                    if start_value != end_value:
+                                        growth_rate = compute_cagr(float(start_value), float(end_value), 5)
+                                        annual_series = extend_series_linear(
+                                            annual_series,
+                                            base_year=2050,
+                                            periods=[(2051, target_end + 1, growth_rate)],
+                                        )
+                                    else:
+                                        annual_series = extend_constant(annual_series, end_year=target_end)
+                                else:
+                                    annual_series = extend_constant(annual_series, end_year=target_end)
+
+                            annual_series = annual_series.reindex(target_years)
                             for year in target_years:
-                                writer.writerow([row[idx] for idx in non_year_indexes] + [year, single_value])
+                                value = annual_series.loc[year]
+                                if pd.isna(value):
+                                    value = ""
+                                writer.writerow([row[idx] for idx in non_year_indexes] + [year, value])
                                 rows_written += 1
                             continue
 
-                        series = pd.Series({year: value for year, value in known_points}, dtype=float)
-                        annual_series = interpolate_5year_to_annual(series)
+                        # Non-numeric values that vary by year: write the most common
+                        # value as the default (blank Year), then an explicit override
+                        # row only for each year whose value differs from that default.
+                        counts = Counter(value for _, value in points)
+                        max_count = max(counts.values())
+                        default_value = next(value for _, value in points if counts[value] == max_count)
 
-                        if target_start < annual_series.index.min():
-                            annual_series = backfill_constant(annual_series, start_year=target_start)
-
-                        if target_end > annual_series.index.max():
-                            if 2045 in annual_series.index and 2050 in annual_series.index:
-                                start_value = annual_series.loc[2045]
-                                end_value = annual_series.loc[2050]
-                                if start_value != end_value:
-                                    growth_rate = compute_cagr(float(start_value), float(end_value), 5)
-                                    annual_series = extend_series_linear(
-                                        annual_series,
-                                        base_year=2050,
-                                        periods=[(2051, target_end + 1, growth_rate)],
-                                    )
-                                else:
-                                    annual_series = extend_constant(annual_series, end_year=target_end)
-                            else:
-                                annual_series = extend_constant(annual_series, end_year=target_end)
-
-                        annual_series = annual_series.reindex(target_years)
-                        for year in target_years:
-                            value = annual_series.loc[year]
-                            if pd.isna(value):
-                                value = ""
-                            writer.writerow([row[idx] for idx in non_year_indexes] + [year, value])
-                            rows_written += 1
+                        writer.writerow([row[idx] for idx in non_year_indexes] + ["", default_value])
+                        rows_written += 1
+                        for year, value in points:
+                            if value != default_value:
+                                writer.writerow([row[idx] for idx in non_year_indexes] + [year, value])
+                                rows_written += 1
 
                 return rows_written
         except UnicodeDecodeError as e:
