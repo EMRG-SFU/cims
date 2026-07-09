@@ -34,6 +34,7 @@ _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/market_share_limits'
@@ -86,6 +87,7 @@ def main() -> pl.DataFrame:
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'market_share_limits_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows -> {out_path.name}')
 

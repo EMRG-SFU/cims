@@ -34,6 +34,7 @@ _flatten_mod = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_flatten_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/transmission'
@@ -79,6 +80,7 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(output):,}')
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output = collapse_constant_years(output)
     output.write_csv(OUTPUT_FILE)
     print(f'  Wrote {len(output):,} rows -> {OUTPUT_FILE.name}')
 

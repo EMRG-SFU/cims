@@ -4,12 +4,22 @@ Natural Gas Pipeline — Model Inputs
 Combines fixed structural parameters with pipeline data into
 CIMS-formatted CSVs (one per region).
 
-There are two distinct file types produced:
+There are three distinct file types produced:
 
 1. Provincial files (AB, BC, SK) — full production hierarchy with dynamic
    service_request rows from gas_production.py.
 
-2. Market/pass-through files (CAN, RoW) — all rows come from fixed data
+2. Secondary region files (MB, ON, QC, NB, NS, PE, NL, YT, NT, NU) — same
+   fixed-data hierarchy/template as AB/BC/SK (technology economics etc.),
+   but with the region-unique service_request rows (Natural Gas total,
+   extraction splits, Processing, LNG Compression, drilling intensity,
+   fugitive factors) baked directly into each region's fixed CSV from
+   natural_gas_annual_data_jcims.csv instead of gas_production.py — since
+   gas_production.py's CER-based activity data only covers AB/BC/SK.
+   multiplier_price rows are still added dynamically here (below), since
+   energy_price_multipliers.py already computes them for all 13 regions.
+
+3. Market/pass-through files (CAN, RoW) — all rows come from fixed data
    only, passed through unchanged.
 
 Sources
@@ -66,7 +76,8 @@ Activity data  (from gas_production.py, Region/Variable/Unit/Source/Year/Value f
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
-    Applied to provincial files (AB, BC, SK) only.
+    Computed for all 13 provinces/territories; applied to provincial (AB, BC,
+    SK) and secondary region files alike. Not applicable to CAN/RoW.
 
 Output columns
 --------------
@@ -81,9 +92,11 @@ Output order — provincial files (AB, BC, SK)
 4. service_request  — extraction splits, Processing, LNG (from gas_production)
 5. rest of fixed data (service_provide null rows and drilling intensity rows retained)
 
-Output order — CAN and RoW files
----------------------------------
-1. fixed data pass-through only
+Output order — secondary region, CAN, and RoW files
+-----------------------------------------------------
+1. fixed data pass-through (secondary regions already include their
+   region-unique service_request rows, baked in from jcims)
+2. multiplier_price — from energy_price_multipliers (secondary regions only)
 """
 
 import sys
@@ -120,6 +133,7 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/natural_gas'
@@ -166,7 +180,11 @@ def _read_flattened_fixed() -> pl.DataFrame:
             pl.read_csv(f, infer_schema_length=0)
             for f in sorted(tmp_path.rglob('*.csv'))
         ]
-    return pl.concat(frames, how='diagonal_relaxed').cast(pl.String)
+    return (
+        pl.concat(frames, how='diagonal_relaxed')
+        .cast(pl.String)
+        .with_row_index('_order')
+    )
 
 
 def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
@@ -320,6 +338,37 @@ def _build_lng_rows(ng: pl.DataFrame) -> pl.DataFrame:
     ])
 
 
+def _region_anchor(fixed_provincial: pl.DataFrame, mask: pl.Expr) -> pl.DataFrame:
+    """One row per Region: the _order of the (single) fixed row matching mask."""
+    return (
+        fixed_provincial.filter(mask)
+        .group_by('Region')
+        .agg(pl.col('_order').first().alias('_anchor_order'))
+    )
+
+
+def _order_after_region_anchor(rows: pl.DataFrame, anchors: pl.DataFrame, offset: float) -> pl.DataFrame:
+    """
+    Attach an _order column to `rows` (which must have a Region column),
+    positioned just after each row's region-specific anchor _order,
+    preserving the rows' own relative order within each region.
+    """
+    if rows.is_empty():
+        return rows.with_columns(pl.lit(None, dtype=pl.Float64).alias('_order'))
+    rows = rows.with_row_index('_seq')
+    region_base = rows.group_by('Region').agg(pl.col('_seq').min().alias('_base'))
+    return (
+        rows
+        .join(region_base, on='Region', how='left')
+        .join(anchors, on='Region', how='left')
+        .with_columns(
+            (pl.col('_anchor_order') + offset + (pl.col('_seq') - pl.col('_base')) * 1e-6)
+            .alias('_order')
+        )
+        .drop(['_seq', '_base', '_anchor_order'])
+    )
+
+
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> pl.DataFrame:
@@ -359,34 +408,58 @@ def main() -> pl.DataFrame:
     print('Combining...')
 
     # ── provincial files (AB, BC, SK) ──────────────────────────────────────────
+    # Dynamic rows are absent from the fixed data entirely, so each block is
+    # anchored to the _order of the matching branch's own competition row
+    # (matching the reference CIMS model's branch-hierarchy row order):
+    #   - top-level activity: before everything (parent Region branch)
+    #   - multiplier_price: right after the Sector-level competition row
+    #   - extraction splits: right after the Extraction service's own competition row
+    #   - Processing / LNG Compression: right after the Supply service's own competition row
     _sector_branch = pl.col('Branch').str.ends_with('.Natural Gas')
+    _extraction_branch = pl.col('Branch').str.ends_with('.Extraction')
+    _supply_branch = pl.col('Branch').str.ends_with('.Supply')
+    _is_competition = pl.col('Parameter').fill_null('') == 'competition'
 
     fixed_provincial = fixed.filter(pl.col('Region').is_in(PROVINCIAL_REGIONS))
 
-    # competition at sector level — repositioned before multiplier_price
-    fixed_sector_competition = fixed_provincial.filter(
-        _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
+    sector_competition_anchor = _region_anchor(fixed_provincial, _sector_branch & _is_competition)
+    extraction_competition_anchor = _region_anchor(fixed_provincial, _extraction_branch & _is_competition)
+    supply_competition_anchor = _region_anchor(fixed_provincial, _supply_branch & _is_competition)
+    region_fixed_start = fixed_provincial.group_by('Region').agg(
+        pl.col('_order').min().alias('_anchor_order')
     )
 
-    # competition (repositioned). All other fixed rows pass through including
-    # sub-service null service_provide rows and drilling intensity rows.
-    fixed_provincial_rest = fixed_provincial.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
-    )
+    activity_rows_ordered = _order_after_region_anchor(activity_rows, region_fixed_start, offset=-1000.0)
+    price_rows_provincial = price_rows.filter(pl.col('Region').is_in(PROVINCIAL_REGIONS))
+    price_rows_ordered = _order_after_region_anchor(price_rows_provincial, sector_competition_anchor, offset=0.5)
+    extraction_rows_ordered = _order_after_region_anchor(extraction_rows, extraction_competition_anchor, offset=0.5)
+    processing_rows_ordered = _order_after_region_anchor(processing_rows, supply_competition_anchor, offset=0.5)
+    lng_rows_ordered = _order_after_region_anchor(lng_rows, supply_competition_anchor, offset=0.6)
 
     provincial_output = (
         pl.concat(
-            [fixed_sector_competition, price_rows,
-             activity_rows, extraction_rows, processing_rows, lng_rows,
-             fixed_provincial_rest],
+            [fixed_provincial,
+             activity_rows_ordered, price_rows_ordered,
+             extraction_rows_ordered, processing_rows_ordered, lng_rows_ordered],
             how='diagonal_relaxed',
         )
+        .sort('_order')
         .select(OUTPUT_COLS)
     )
 
-    # ── CAN and RoW files — pass-through only ──────────────────────────────────
-    passthrough_output = fixed.filter(
-        ~pl.col('Region').is_in(PROVINCIAL_REGIONS)
+    # ── secondary regions — fixed data pass-through, plus multiplier_price
+    #    rows for any secondary region present in the energy price
+    #    multipliers (mirrors the provincial treatment without touching it).
+    #    CAN and RoW are not real production regions and never appear in the
+    #    multipliers, but are excluded explicitly so those two files stay
+    #    pure fixed-data pass-through regardless ─────────────────────────────
+    NON_REGION_FILES = {'CAN', 'RoW'}
+    secondary_price_rows = price_rows.filter(
+        ~pl.col('Region').is_in(PROVINCIAL_REGIONS) & ~pl.col('Region').is_in(NON_REGION_FILES)
+    )
+    passthrough_output = pl.concat(
+        [fixed.filter(~pl.col('Region').is_in(PROVINCIAL_REGIONS)), secondary_price_rows],
+        how='diagonal_relaxed',
     ).select(OUTPUT_COLS)
 
     # ── write outputs ──────────────────────────────────────────────────────────
@@ -396,6 +469,7 @@ def main() -> pl.DataFrame:
     for region in PROVINCIAL_REGIONS:
         region_df = provincial_output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'natural_gas_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
         all_outputs.append(region_df)
@@ -403,6 +477,7 @@ def main() -> pl.DataFrame:
     for region in passthrough_output['Region'].drop_nulls().unique().sort().to_list():
         region_df = passthrough_output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'natural_gas_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
         all_outputs.append(region_df)

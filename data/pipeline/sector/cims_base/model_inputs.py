@@ -45,6 +45,7 @@ _pg_mod = importlib.util.module_from_spec(_pg_spec)
 _pg_spec.loader.exec_module(_pg_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ───────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/cims_base'
@@ -172,13 +173,15 @@ def main() -> None:
     for suffix in FLATTEN_ONLY:
         stem = f'cims_base_{suffix.lower()}'
         fixed = _flatten_fixed(stem)
-        fixed.select(OUTPUT_COLS).write_csv(OUTPUT_DIR / f'{stem}.csv')
-        print(f"  {stem}: {len(fixed)} rows")
+        fixed_out = collapse_constant_years(fixed.select(OUTPUT_COLS))
+        fixed_out.write_csv(OUTPUT_DIR / f'{stem}.csv')
+        print(f"  {stem}: {len(fixed_out)} rows")
 
     print("\nAssembling provincial files...")
     for region in PROVINCES:
         stem  = f'cims_base_{region.lower()}'
         df    = _assemble_region(region, pop_gdp)
+        df    = collapse_constant_years(df)
         n_attr = len(df.filter(pl.col('Parameter') == 'attribute'))
         df.write_csv(OUTPUT_DIR / f'{stem}.csv')
         print(f"  {stem}: {len(df)} rows  ({n_attr} attribute)")

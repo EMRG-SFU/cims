@@ -70,6 +70,7 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/commercial'
@@ -475,6 +476,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_region(fixed, commercial, multipliers, region, template)
 
             out_path = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

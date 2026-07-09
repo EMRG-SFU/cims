@@ -59,6 +59,7 @@ _ef_mod = importlib.util.module_from_spec(_ef_spec)
 _ef_spec.loader.exec_module(_ef_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fuels'
@@ -292,6 +293,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = df.select(OUTPUT_COLS)
 
             out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
@@ -313,6 +315,7 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_cims(fixed, prices_df, ef_df)
 
             out_path = OUTPUT_DIR / 'fuels_cims.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output
