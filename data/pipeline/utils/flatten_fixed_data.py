@@ -46,6 +46,13 @@ from utils.data_fill import interpolate_5year_to_annual, backfill_constant
 # collapse to a blank row instead of being carried forward like "FALSE"/"Myopic".
 BLANK_LITERAL_SENTINELS = {"-", "--", "n/a", "na"}
 
+# Parameters whose classification actually lives in the Context column in the
+# raw fixed-data CSVs (e.g. competition's "Sector"/"Fixed Ratio"/"Tech
+# Compete"). When such a row has no year-column value at all, move that
+# Context content into Value instead, so it lines up with every other
+# Parameter's convention of storing its content in Value.
+CONTEXT_TO_VALUE_PARAMETERS = {"competition", "market_share_class", "dcc_class", "dic_class"}
+
 
 def parse_year_columns(header, year_min=2000, year_max=2050):
     """Identify year columns in the CSV header.
@@ -130,6 +137,10 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                     (i for i, name in enumerate(normalized_header) if name == "comments"),
                     None,
                 )
+                context_index = next(
+                    (i for i, name in enumerate(normalized_header) if name == "context"),
+                    None,
+                )
 
                 # Preserve non-year columns for output, but drop the Comments column.
                 year_header_indexes = [idx for _, idx in year_columns]
@@ -140,6 +151,11 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                 ]
                 non_year_headers = [header[idx].strip() for idx in non_year_indexes]
                 output_headers = non_year_headers + ["Year", "Value"]
+                context_output_pos = (
+                    non_year_indexes.index(context_index)
+                    if context_index is not None and context_index in non_year_indexes
+                    else None
+                )
 
                 target_years = list(range(target_start, target_end + 1, target_step))
                 rows_written = 0
@@ -179,9 +195,22 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                             points.append((year, parsed_value if parsed_value is not None else raw_value))
                         points.sort(key=lambda p: p[0])
 
-                        # Nothing specified anywhere in the year columns.
+                        # Nothing specified anywhere in the year columns. For a
+                        # handful of Parameters, the real classification value
+                        # lives in Context instead -- move it into Value here.
                         if not points:
-                            writer.writerow([row[idx] for idx in non_year_indexes] + ["", ""])
+                            output_cells = [row[idx] for idx in non_year_indexes]
+                            value = ""
+                            if (
+                                context_output_pos is not None
+                                and parameter_index is not None
+                                and parameter_index < len(row)
+                                and row[parameter_index].strip().lower() in CONTEXT_TO_VALUE_PARAMETERS
+                                and output_cells[context_output_pos] != ""
+                            ):
+                                value = output_cells[context_output_pos]
+                                output_cells[context_output_pos] = ""
+                            writer.writerow(output_cells + ["", value])
                             rows_written += 1
                             continue
 
