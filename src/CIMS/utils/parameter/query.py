@@ -25,7 +25,8 @@ calculation_directory = {
 }
 
 def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,
-              return_source=False, do_calc=False, check_exist=False, dict_expected=False):
+              target=None, return_source=False, do_calc=False, check_exist=False,
+              dict_expected=False):
     """
     Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
     calculating the parameter's value if needed.
@@ -54,6 +55,12 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
         Must be used only if context is given. Analogous to the `subcontext` column in the model description
+    target : str, optional
+        A target node name used to differentiate values for the same parameter across multiple
+        service request lines (e.g. a node requesting services from several target nodes). Applied
+        as a dict key lookup after `context`/`sub_context`. Can be combined with `context` for
+        chained lookups, or used alone as an alternative to `context` when the dict keys are
+        target node names rather than model-description context values.
     return_source : bool, default=False
         Whether to return the method by which this value was originally obtained.
     do_calc : bool
@@ -102,7 +109,12 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                             val = None
                 except KeyError:
                     val = None
-            elif None in val:
+            if target and isinstance(val, dict):
+                try:
+                    val = val[target]
+                except KeyError:
+                    val = None
+            if not context and not target and isinstance(val, dict) and None in val:
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
@@ -120,6 +132,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                 \nYear: {year if year else ''}\
                 \nContext: {context if context else ''}\
                 \nSub-context: {sub_context if sub_context else ''}\
+                \nTarget: {target if target else ''}\
                 \nTech: {tech if tech else ''}"
 
         warnings.warn(warning_message)
@@ -158,7 +171,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         if tech:
             try:
                 val, source = model.get_param(param, node, year=year, context=context,
-                                              sub_context=sub_context, return_source=True)
+                                              sub_context=sub_context, target=target,
+                                              return_source=True)
                 assert (source in ['inheritance', 'model', 'default'])
                 assert (val is not None)
                 param_source = source
@@ -173,6 +187,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                     val = val[context]
                     if sub_context:
                         val = val[sub_context]
+                if target and isinstance(val, dict):
+                    val = val[target]
                 if val[PARAM.param_source] == 'inheritance':
                     param_source = 'inheritance'
             except KeyError:
@@ -197,6 +213,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                                       year=prev_year,
                                       context=context,
                                       sub_context=sub_context,
+                                      target=target,
                                       tech=tech,
                                       dict_expected=dict_expected)
                 param_source = 'previous_year'

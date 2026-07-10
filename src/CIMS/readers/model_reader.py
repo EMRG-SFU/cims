@@ -3,9 +3,7 @@ import pandas as pd
 import polars as pl
 
 from ..utils.model_description import column_list as COL
-from ..utils.model_description.query import get_node_cols
-from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import infer_type, is_year
+from ..utils.parameter.parse import infer_type
 
 
 class ModelReader:
@@ -33,33 +31,20 @@ class ModelReader:
         appended_data = []
         for csv_file in self.csv_files:
             try:
-                mixed_type_columns = [COL.context]
-
                 sheet_df = pl.read_csv(
                     csv_file,
-                    skip_rows=1,
                     use_pyarrow=False,
                     infer_schema_length=0,
-                    ).with_columns(pl.all().replace(
-                            {np.nan: None}
-                        )).to_pandas()
-
+                ).to_pandas().replace({np.nan: None, "": None})
                 appended_data.append(sheet_df)
-
             except ValueError:
                 print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
 
-        model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
-        model_df.index += 3  # Adjust index to correspond to Excel line numbers
-        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
-        model_df.columns = [str(c) for c in
-                            model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
-        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
-        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
-        all_cols = n_cols + y_cols
+        model_df = pd.concat(appended_data, ignore_index=True)
 
-        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        meta_cols = [c for c in model_df.columns if c not in ("Year", "Value") and c in self.col_list]
+        year_mask = model_df["Year"].isin(self.year_list) | model_df["Year"].isna()
+        mdf = model_df[year_mask][meta_cols + ["Year", "Value"]]
 
         return mdf
 
@@ -100,8 +85,7 @@ class ModelReader:
         return node_dfs, tech_dfs
 
     def get_years(self):
-        cols = [y for y in self.model_df.columns if is_year(y)]
-        return cols
+        return sorted(self.model_df["Year"].dropna().unique().tolist())
 
     def get_default_params(self):
         # Read model_description from excel

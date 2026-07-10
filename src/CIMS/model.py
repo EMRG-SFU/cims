@@ -1102,7 +1102,8 @@ class Model:
         return self.node_tech_defaults[parameter]
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
-                  return_source=False, do_calc=False, check_exist=False, dict_expected=False):
+                  target=None, return_source=False, do_calc=False, check_exist=False,
+                  dict_expected=False):
         """
         Gets a parameter's value from the model, given a specific context (node,
         year, tech, context, sub-context), calculating the parameter's value if
@@ -1127,17 +1128,21 @@ class Model:
             cannot change year to year (e.g. competition type).
         tech : str, optional
             The name of the technology you are interested in. `tech` is not
-            required for parameters that are specified at the node level. 
-            `tech` is required to get any parameter that is stored within a 
+            required for parameters that are specified at the node level.
+            `tech` is required to get any parameter that is stored within a
             technology.
         context : str, optional
-            Used when there is context available in the node. Analogous to the 
+            Used when there is context available in the node. Analogous to the
             `context` column in the model description
         sub_context : str, optional
-            Must be used only if context is given. Analogous to the 
+            Must be used only if context is given. Analogous to the
             `sub_context` column in the model description
+        target : str, optional
+            A target node name used to differentiate values for the same
+            parameter across multiple service request lines. Applied as a dict
+            key lookup after `context`/`sub_context`.
         return_source : bool, default=False
-            Whether or not to return the method by which this value was 
+            Whether or not to return the method by which this value was
             originally obtained.
         do_calc : bool, default=False
             If False, the function will only retrieve the value using the
@@ -1159,7 +1164,7 @@ class Model:
             `year` and `tech`.
         str :
             If return_source is `True`, returns a string indicating how the
-            parameter's value was originally obtained {model, initialization, 
+            parameter's value was originally obtained {model, initialization,
             inheritance, calculation, default, or previous_year}.
         """
 
@@ -1167,6 +1172,7 @@ class Model:
                                     tech=tech,
                                     context=context,
                                     sub_context=sub_context,
+                                    target=target,
                                     return_source=return_source,
                                     do_calc=do_calc,
                                     check_exist=check_exist,
