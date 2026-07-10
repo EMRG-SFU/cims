@@ -109,7 +109,7 @@ def _read_flattened_fixed_data() -> pl.DataFrame:
     return pl.concat(frames)
 
 
-def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
+def _build_emission_rows(emissions: pl.DataFrame, valid_regions: list[str]) -> pl.DataFrame:
     """
     Build the region-level service_request row from emissions_drivers.
 
@@ -117,12 +117,19 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
     passthrough (service_request value=1) is a fixed structural parameter
     already present in the fixed data, so it is not produced here.
 
+    Restricted to valid_regions (regions with Forestry fixed structural
+    data) so a service_request is never emitted pointing at a
+    CIMS.CAN.{Region}.Forestry node that doesn't otherwise exist.
+
     Returns a DataFrame with one row per (Region, Year) representing the
     region-level service_request pointing to the Forestry sector node.
     """
     return (
         emissions
-        .filter(pl.col('Variable') == 'Forestry')
+        .filter(
+            (pl.col('Variable') == 'Forestry') &
+            pl.col('Region').is_in(valid_regions)
+        )
         .select([
             ('CIMS.CAN.' + pl.col('Region')).alias('Branch'),
             pl.lit('Region').alias('Type'),
@@ -142,16 +149,25 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
+def _build_price_mult_rows(multipliers: pl.DataFrame, valid_regions: list[str]) -> pl.DataFrame:
     """
     Build price_mult rows from the energy price multipliers output.
 
     All Forestry energies flow through directly; the energy name is used
     as the Target so no manual fuel mapping is required.
+
+    energy_price_multipliers.py generates a Forestry multiplier for every
+    CIMS region (with a BC fallback for YT/NT/NU), regardless of whether
+    that region has a Forestry sector at all. Restricting to valid_regions
+    (regions with Forestry fixed structural data) avoids emitting a
+    multiplier_price row for an orphan branch like CIMS.CAN.NU.Forestry.
     """
     return (
         multipliers
-        .filter(pl.col('Sector') == 'Forestry')
+        .filter(
+            (pl.col('Sector') == 'Forestry') &
+            pl.col('Region').is_in(valid_regions)
+        )
         .select([
             ('CIMS.CAN.' + pl.col('Region') + '.Forestry').alias('Branch'),
             pl.lit('Sector').alias('Type'),
@@ -189,17 +205,20 @@ def main() -> pl.DataFrame:
     fixed = _read_flattened_fixed_data()
     print(f'  Rows: {len(fixed):,}')
 
+    valid_regions = fixed['Region'].drop_nulls().unique().to_list()
+    print(f'  Regions with Forestry fixed data: {sorted(valid_regions)}')
+
     print('Building emission rows...')
     emissions = (
         _emissions_mod.main()
         .filter(pl.col('Variable').str.starts_with('Forestry'))
     )
-    total_emissions = _build_emission_rows(emissions)
+    total_emissions = _build_emission_rows(emissions, valid_regions)
     print(f'  Rows: {len(total_emissions):,}')
 
     print('Building energy price multiplier rows...')
     multipliers = pl.from_pandas(_energy_price_mod.main())
-    price_rows = _build_price_mult_rows(multipliers)
+    price_rows = _build_price_mult_rows(multipliers, valid_regions)
     print(f'  Rows: {len(price_rows):,}')
 
     print('Combining...')
