@@ -816,7 +816,7 @@
 .Generic Fuels.Solid Biomass
 .Generic Fuels.Uranium
 .Generic Fuels.VOM
-.Generic Fuels.Waste Fuel
+.Generic Fuels.Waste
 .Transmission
 .Transmission.CCS TS AB
 .Transmission.CCS TS AT

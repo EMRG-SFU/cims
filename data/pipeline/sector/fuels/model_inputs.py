@@ -91,6 +91,14 @@ _USE_ON_AS_GENERIC: frozenset[str] = frozenset({
     'Renewable Gasoline',
 })
 
+# Fuels that must keep an explicit row for every year even though their
+# lcc_financial/emissions values are constant — collapse_constant_years is
+# skipped for these Services in the CIMS output.
+_KEEP_ALL_YEARS: frozenset[str] = frozenset({
+    'Refinery Fuel Gas',
+    'Black Liquor',
+})
+
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -256,7 +264,17 @@ def _assemble_cims(
         how='diagonal_relaxed',
     ).sort('_order')
 
-    return combined.select(OUTPUT_COLS)
+    keep_mask  = pl.col('Service').is_in(_KEEP_ALL_YEARS)
+    full_years = combined.filter(keep_mask)
+    rest       = combined.filter(~keep_mask)
+
+    collapsed = collapse_constant_years(rest.select(OUTPUT_COLS + ['_order']))
+
+    return (
+        pl.concat([collapsed, full_years.select(OUTPUT_COLS + ['_order'])], how='diagonal_relaxed')
+        .sort('_order')
+        .select(OUTPUT_COLS)
+    )
 
 
 # ── main ───────────────────────────────────────────────────────────────────────
@@ -315,7 +333,6 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_cims(fixed, prices_df, ef_df)
 
             out_path = OUTPUT_DIR / 'fuels_cims.csv'
-            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output
