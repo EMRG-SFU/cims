@@ -50,7 +50,9 @@ with app.setup(hide_code=True):
             "stat_can_crude_new": 2025,
             "stat_can_electricity": 2025,
             "aer_st98": 2025,
-            "afdc": 2025
+            "afdc": 2025,
+            "epa": 2024,
+            "stat_can_market_shares": 2025
         },
         "archived_data": {
             "stat_can_coal_archive": 2007,
@@ -102,6 +104,8 @@ def _():
         "stat_can_electricity":  mo.ui.text(value=str(ld["stat_can_electricity"]),  label="Electricity — 25-10-0015-01"),
         "aer_st98":              mo.ui.text(value=str(ld["aer_st98"]),              label="AER ST98 (Alberta coal)"),
         "afdc":                  mo.ui.text(value=str(ld["afdc"]),                  label="AFDC Biofuel Prices"),
+        "epa":                   mo.ui.text(value=str(ld["epa"]),                   label="EPA - table_export"),
+        "stat_can_market_shares":mo.ui.text(value=str(ld["stat_can_market_shares"]),label="Vehicle Market Share — 20-10-0025-01"),
     })
     params_archived = mo.ui.dictionary({
         "stat_can_coal_archive":   mo.ui.text(value=str(ar["stat_can_coal_archive"]),   label="Coal pre-2008 — 25-10-0048-01"),
@@ -151,6 +155,7 @@ def _():
                 params_ldy["aer_st98"],
                 mo.md("**US**"),
                 params_ldy["afdc"],
+                params_ldy["epa"],
             ]),
             mo.vstack([
                 mo.md("**Statistics Canada**"),
@@ -163,6 +168,7 @@ def _():
                 params_ldy["stat_can_prov_gdp"],
                 params_ldy["stat_can_coal"],
                 params_ldy["stat_can_crude_new"],
+                params_ldy["stat_can_market_shares"],
             ]),
         ], gap=4),
         mo.accordion({
@@ -229,6 +235,8 @@ def _(params_archived, params_currency, params_ldy, params_pipeline):
             "stat_can_electricity":  int(lv["stat_can_electricity"]),
             "aer_st98":              int(lv["aer_st98"]),
             "afdc":                  int(lv["afdc"]),
+            "epa":                   int(lv["epa"]),
+            "stat_can_market_shares":int(lv["stat_can_market_shares"]),
         },
         "archived_data": {
             "stat_can_coal_archive":   int(av["stat_can_coal_archive"]),
