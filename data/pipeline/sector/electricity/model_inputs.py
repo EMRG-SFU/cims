@@ -9,9 +9,12 @@ Sources
 Fixed structural parameters
     raw_data/fixed_data/electricity/electricity_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
-    Province files (AB, BC, MB, NB, NL, NS, ON, PE, QC, SK) include
-    Base Load / Shoulder Load / Peak Load sub-services.
-    Territory files (NT, NU, YT) use a flat Utility Generation structure.
+    All regions (provinces and territories NT, NU, YT alike) include
+    Base Load / Shoulder Load / Peak Load sub-services under Utility
+    Generation. Territory Shoulder/Peak Load technology sets and values
+    mirror a reference province (YT/NT ← BC, NU ← MB); their Base Load
+    fractions come from the nearest-neighbour match computed independently
+    in source/activity/electricity.py (YT ← ON, NT ← SK, NU ← AB).
 
 Electricity activity / load fractions
     processed_data/activity/electricity.csv
@@ -20,8 +23,8 @@ Electricity activity / load fractions
         Electricity.Utility Generation.Shoulder Load → % MWh → Utility Generation service_request
         Electricity.Utility Generation.Peak Load    → % MWh → Utility Generation service_request
 
-    Load-fraction service_requests are only emitted for regions whose fixed data
-    contains Base Load / Shoulder Load / Peak Load sub-services (provinces).
+    Load-fraction service_requests are emitted for any region whose fixed data
+    contains a Base Load sub-service (currently: all regions).
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py
@@ -37,7 +40,6 @@ Output order per region
 2. multiplier_price (Electricity sector level)
 3. Fixed data — Utility Generation service_provide / competition
 4. service_request (Utility Generation) — Base Load / Shoulder Load / Peak Load % MWh
-   (provinces only)
 5. Remainder of fixed data (technologies, Storage, Transmission, CCS)
 """
 
@@ -304,7 +306,7 @@ def main() -> dict[str, pl.DataFrame]:
             fixed = _read_flattened_fixed(region)
             has_load = _has_load_subservices(fixed)
             print(f'  Fixed rows: {len(fixed):,}  '
-                  f'load sub-services: {"yes" if has_load else "no (territory)"}')
+                  f'load sub-services: {"yes" if has_load else "no"}')
 
             output = _assemble_region(fixed, activity, multipliers, region)
 
