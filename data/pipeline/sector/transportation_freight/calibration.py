@@ -13,7 +13,7 @@ Emissions  (calibration_emissions_total_cumul_net)
 Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node
 
-Technology market shares  (market_share_total)
+Technology market shares  (calibration_market_share_total)
     transportation_freight.py     → CEUD-derived market shares (2000–last CEUD year):
                                       Light Medium service: fuel-based tech shares
                                       Heavy service: Trucks vs Rail shares
@@ -247,8 +247,8 @@ def _build_tf_tech_shares(
     cat_to_tech: dict[str, str] | None = None,
     year_max: int | None = None,
 ) -> pl.DataFrame:
-    """Extract market_share_total rows for one transportation freight service."""
-    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'market_share_total')
+    """Extract calibration_market_share_total rows for one transportation freight service."""
+    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'calibration_market_share_total')
     if year_max is not None:
         mask = mask & (pl.col('year') <= year_max)
     data = tf.filter(mask)
@@ -268,7 +268,7 @@ def _build_tf_tech_shares(
             'Sector':      'Transportation Freight',
             'Service':     service_name,
             'Technology':  tech,
-            'Parameter':   'market_share_total',
+            'Parameter':   'calibration_market_share_total',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
