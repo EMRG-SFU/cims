@@ -16,7 +16,7 @@ Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
 
-Hot water and HVAC technologies  (market_share_total)
+Hot water and HVAC technologies  (calibration_market_share_total)
     commercial.py                 → CEUD-derived market shares with projections;
                                     one DataFrame per region/province/territory;
                                     BC exports both Marine and Cold HVAC data
@@ -266,7 +266,7 @@ def _build_hot_water_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFram
                     'Sector':      'Commercial',
                     'Service':     'Hot Water',
                     'Technology':  tech,
-                    'Parameter':   'market_share_total',
+                    'Parameter':   'calibration_market_share_total',
                     'Context':     '',
                     'Sub_Context': '',
                     'Target':      '',
@@ -308,7 +308,7 @@ def _build_hvac_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                         'Sector':      'Commercial',
                         'Service':     'HVAC',
                         'Technology':  tech,
-                        'Parameter':   'market_share_total',
+                        'Parameter':   'calibration_market_share_total',
                         'Context':     '',
                         'Sub_Context': '',
                         'Target':      '',
