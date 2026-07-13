@@ -16,7 +16,7 @@ Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
 
-Heating and water heating technologies  (market_share_total)
+Heating and water heating technologies  (calibration_market_share_total)
     residential.py                → CEUD-derived market shares with projections;
                                     one DataFrame per province/territory
 
@@ -283,7 +283,7 @@ def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                             'Sector':      'Residential',
                             'Service':     'Heating',
                             'Technology':  tech,
-                            'Parameter':   'market_share_total',
+                            'Parameter':   'calibration_market_share_total',
                             'Context':     '',
                             'Sub_Context': '',
                             'Target':      '',
@@ -305,7 +305,7 @@ def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                             'Sector':      'Residential',
                             'Service':     'Heating',
                             'Technology':  tech,
-                            'Parameter':   'market_share_total',
+                            'Parameter':   'calibration_market_share_total',
                             'Context':     '',
                             'Sub_Context': '',
                             'Target':      '',
@@ -338,7 +338,7 @@ def _build_wh_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                         'Sector':      'Residential',
                         'Service':     density_label,
                         'Technology':  tech,
-                        'Parameter':   'market_share_total',
+                        'Parameter':   'calibration_market_share_total',
                         'Context':     '',
                         'Sub_Context': '',
                         'Target':      '',
