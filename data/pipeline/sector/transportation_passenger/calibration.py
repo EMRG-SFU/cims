@@ -16,7 +16,7 @@ Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
 
-Technology market shares  (market_share_total)
+Technology market shares  (calibration_market_share_new)
     transportation_passenger.py   → CEUD-derived market shares (2000–last CEUD year)
                                     for Urban, Intercity Land, Intercity Air modes;
                                     Passenger Vehicles, Passenger Vehicle Motors;
@@ -337,11 +337,11 @@ def _build_tp_tech_shares(
     cat_to_tech: dict[str, str] | None = None,
     year_max: int | None = None,
 ) -> pl.DataFrame:
-    """Extract market_share_total rows for one transportation passenger service.
+    """Extract calibration_market_share_new rows for one transportation passenger service.
 
     year_max=None outputs all historical years; year_max=N caps at year N inclusive.
     """
-    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'market_share_total')
+    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'calibration_market_share_new')
     if year_max is not None:
         mask = mask & (pl.col('year') <= year_max)
     data = tp.filter(mask)
@@ -361,7 +361,7 @@ def _build_tp_tech_shares(
             'Sector':      'Transportation Passenger',
             'Service':     service_name,
             'Technology':  tech,
-            'Parameter':   'market_share_total',
+            'Parameter':   'calibration_market_share_new',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
@@ -376,7 +376,7 @@ def _build_tp_tech_shares(
 
 
 def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
-    """Build Passenger Vehicle Motors market_share_total rows from StatCan/EPA data.
+    """Build Passenger Vehicle Motors calibration_market_share_new rows from StatCan/EPA data.
 
     The StatCan source provides vehicle registrations by fuel type; the EPA source
     provides gasoline/diesel standard vs. efficient splits. control.py provides the
@@ -430,7 +430,7 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
             'Sector':      'Transportation Passenger',
             'Service':     STATCAN_MARKET_SHARE_SERVICE,
             'Technology':  str(r['fuel_type']),
-            'Parameter':   'market_share_total',
+            'Parameter':   'calibration_market_share_new',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
@@ -497,7 +497,7 @@ def main() -> pl.DataFrame:
 
     # Replace overlapping CEUD Passenger Vehicle Motors rows from 2000 through
     # the latest StatCan market-share year with the more detailed StatCan/EPA
-    # split so the output does not contain duplicate market_share_total records
+    # split so the output does not contain duplicate calibration_market_share_new records
     # for the same branch/technology/year.
     tech_rows = tech_rows.filter(
         ~(
@@ -521,12 +521,12 @@ def main() -> pl.DataFrame:
     # Final output normalization:
     # - Remove any leading apostrophes that can make numeric-looking values
     #   appear as text markers in the generated calibration CSVs.
-    # - Force every market_share_total row to use Unit = '%', including rows
+    # - Force every calibration_market_share_new row to use Unit = '%', including rows
     #   that originate from upstream sources with Unit values like 'fraction'.
     output = output.with_columns(
         pl.col(pl.Utf8).str.replace(r"^'", "")
     ).with_columns(
-        pl.when(pl.col('Parameter') == 'market_share_total')
+        pl.when(pl.col('Parameter') == 'calibration_market_share_new')
         .then(pl.lit('%'))
         .otherwise(pl.col('Unit'))
         .alias('Unit')
