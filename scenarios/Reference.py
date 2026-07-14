@@ -158,7 +158,7 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'coal_mining'
+        'coal_mining',
         'natural_gas', # Must run all regions due to Natural Gas Market
         'petroleum_crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'petroleum_refining',
