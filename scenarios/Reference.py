@@ -31,7 +31,7 @@ def _():
     # Model files should be located at: data/model_inputs/
 
     ### Base model to start initialisation
-    base_model = 'cims_base'
+    base_model = 'CIMS_base'
 
     ### Default values and parameter list files
     default_path = 'data/model_inputs/defaults/defaults_Parameters.csv'
@@ -43,26 +43,26 @@ def _():
     sector_req = [
         'fuels',
         'transmission',
-        'coal_mining',
-        'natural_gas',
-        'petroleum_crude',
-        'petroleum_refining',
+        'coal mining',
+        'natural gas',
+        'petroleum crude',
+        'petroleum refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial_minerals',
-        'iron_and_steel',
-        'metal_smelting',
-        'chemical_products',
-        'pulp_and_paper',
-        'light_industrial',
+        'industrial minerals',
+        'iron and steel',
+        'metal smelting',
+        'chemical products',
+        'pulp and paper',
+        'light industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation_passenger',
-        'transportation_freight',
+        'transportation personal',
+        'transportation freight',
         'waste',
         'agriculture',
         'forestry',
@@ -75,10 +75,10 @@ def _():
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
-        'dcc', # declining capital cost
-        'dic', # declining intangible cost (neighbour effect)
-        'fic', # fixed intangible cost; primarily used for calibration
-        'market_share_limits', # use of limits should be minimised
+        # 'DCC', # declining capital cost
+        # 'DIC', # declining intangible cost (neighbour effect)
+        # 'FIC', # fixed intangible cost; primarily used for calibration
+        # 'market share limits', # use of limits should be minimised
         ]
     if model_req:
         if model_path not in update_files:
@@ -109,29 +109,49 @@ def _(model_path, update_files):
         'ON',
         'QC',
         'NB',
+        'NL',
         'NS',
         'PE',
-        'NL',
-        'YT',
         'NT',
         'NU',
+        'YT'
     ]
 
     # Only uncommented years below will be run in the simulation
     year_list = [
         ### Historical ###
         2000,
+        2001,
+        2002,
+        2003,
+        2004,
         2005,
+        2006,
+        2007,
+        2008,
+        2009,
         2010,
+        2011,
+        2012,
+        2013,
+        2014,
         2015,
+        2016,
+        2017,
+        2018,
+        2019,
         2020,
+        2021,
+        2022,
+        2023,
+        2024,
         ### Forecast ###
-        2025,
-        2030,
-        2035,
-        2040,
-        2045,
-        2050,
+        # 2025,
+        # 2030,
+        # 2035,
+        # 2040,
+        # 2045,
+        # 2050,
     ]
 
     # Only uncommented sectors below will be run in the simulation
@@ -167,7 +187,7 @@ def _(model_path, update_files):
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
         'exogenous_prices',  # needed for correct calibration of historical years
-        'exogenous_demand',  # use this file when calibrating endogenous supply sectors
+        # 'exogenous_demand',  # use this file when calibrating endogenous supply sectors
         ]
     if model_optional:
         if model_path not in update_files:
@@ -181,7 +201,7 @@ def _(model_path, update_files):
         # 'coal mining',   # <-- add this
     ### Economy
         'ref_carbon_tax',
-        'ref_obps_Fed',
+        'ref_obps_fed',
     ### Coal Mining
     ### Natural Gas Production
     ### Petroleum Crude
@@ -256,7 +276,7 @@ def _(model_path, update_files):
 
 
     ### Optional scenario update files
-    scenario_path = 'data/model_inputs/policies/net_zero'    # Change this path as necessary based on current scenario
+    scenario_path = 'data/model_inputs/policies/net zero'    # Change this path as necessary based on current scenario
     scenario_policies = [
     ### Economy
         # 'NZ_carbon tax',
