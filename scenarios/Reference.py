@@ -43,26 +43,26 @@ def _():
     sector_req = [
         'fuels',
         'transmission',
-        'coal mining',
-        'natural gas',
-        'petroleum crude',
-        'petroleum refining',
+        'coal_mining',
+        'natural_gas',
+        'petroleum_crude',
+        'petroleum_refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial minerals',
-        'iron and steel',
-        'metal smelting',
-        'chemical products',
-        'pulp and paper',
-        'light industrial',
+        'industrial_minerals',
+        'iron_and_steel',
+        'metal_smelting',
+        'chemical_products',
+        'pulp_and_paper',
+        'light_industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation personal',
-        'transportation freight',
+        'transportation_passenger',
+        'transportation_freight',
         'waste',
         'agriculture',
         'forestry',
@@ -114,7 +114,7 @@ def _(model_path, update_files):
         'PE',
         'NT',
         'NU',
-        'YT'
+        'YT',
     ]
 
     # Only uncommented years below will be run in the simulation
@@ -158,29 +158,29 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'coal_mining',
-        'natural_gas', # Must run all regions due to Natural Gas Market
-        'petroleum_crude', # Must also run 'Natural Gas' sector since shared fuel blending
-        'petroleum_refining',
-        'electricity',
-        'biodiesel',
-        'ethanol',
-        'hydrogen',
-        'mining',
-        'industrial_minerals',
-        'iron_and_steel',
-        'metal_smelting',
-        'chemical_products',
-        'pulp_and_paper',
-        'light_industrial',
-        'construction',
-        'residential',
-        'commercial',
-        'transportation_passenger',
-        'transportation_freight',
-        'waste',
-        'agriculture',
-        'forestry',
+        # 'Coal Mining',
+        # 'Natural Gas', # Must run all regions due to Natural Gas Market
+        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        # 'Petroleum Refining',
+        # 'Electricity',
+         'Biodiesel',
+         'Ethanol',
+         'Hydrogen',
+        # 'Mining',
+        # 'Industrial Minerals',
+        # 'Iron and Steel',
+        # 'Metal Smelting',
+        # 'Chemical Products',
+        # 'Pulp and Paper',
+        # 'Light Industrial',
+         'Construction',
+         'Residential',
+         'Commercial',
+        # 'Transportation Passenger',
+        # 'Transportation Freight',
+         'Waste',
+         'Agriculture',
+         'Forestry',
     ]
 
 
@@ -361,7 +361,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['inconsistent_tech_refs']
+    model.validator.warnings['undefined_nodes']
     return
 
 
