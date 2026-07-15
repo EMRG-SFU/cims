@@ -63,7 +63,7 @@ Output order per region
 1. service_request  — total activity (from light_industrial)
 2. competition      — from fixed data (Sector level)
 3. multiplier_price — from energy_price_multipliers
-4. fixed_mfg_header — Manufacturing branch competition
+4. fixed_mfg_header — Manufacturing branch competition + service_provide
 5. service_request  — Manufacturing → each sub-service (from light_industrial)
 6. rest of fixed data
 """
@@ -281,15 +281,18 @@ def main() -> pl.DataFrame:
     _mfg_branch = pl.col('Branch').str.ends_with('.Light Industrial.Manufacturing')
 
     # Keep only competition from fixed data at sector level;
-    # service_provide rows remain null (fixed data); activity data inserted as service_request.
+    # activity data inserted as service_request.
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Keep competition from fixed at Manufacturing level;
+    # Keep competition and service_provide from fixed at Manufacturing level;
     # service_request splits come from the pipeline as mfg_split_rows.
+    # This preserves rows like:
+    # CIMS.CAN.AB.Light Industrial.Manufacturing / service_provide
     fixed_mfg_header = fixed.filter(
-        _mfg_branch & pl.col('Parameter').fill_null('').is_in(['competition'])
+        _mfg_branch
+        & pl.col('Parameter').fill_null('').is_in(['competition', 'service_provide'])
     )
 
     # Everything else: all Manufacturing sub-services, Water Heating,
