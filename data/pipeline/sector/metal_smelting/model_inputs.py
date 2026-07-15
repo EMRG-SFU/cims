@@ -53,6 +53,9 @@ Subproduct shares  (service_request rows at Primary Metals service level)
     Variables: 'Metal Smelting.{subproduct}'  (%)
     Subproducts: Aluminum, Copper, Lead, Magnesium, Nickel, Zinc
     Target format: CIMS.CAN.{region}.Metal Smelting.Primary Metals.{subproduct}
+    Regions where a subproduct's share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — e.g. regions
+    with no Magnesium production get no Magnesium service_request.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -106,6 +109,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/metal_smelting'
@@ -214,6 +218,7 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for sub in SUBPRODUCTS:
         df = heavy_ind.filter(pl.col('Variable') == f'Metal Smelting.{sub}')
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([

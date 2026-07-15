@@ -43,6 +43,11 @@ Manufacturing sub-service splits  (service_request rows at Manufacturing level)
       'Light Industrial.Manufacturing.Furniture Printing and Machinery'
       'Light Industrial.Manufacturing.Transportation Equipment'
       'Light Industrial.Manufacturing.Electronics and Other'
+    Regions where a sub-service's share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — e.g. a
+    region with no wood products manufacturing gets no service_request for
+    that sub-service. The sector-level 'Light Industrial' total is not
+    filtered this way.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -98,6 +103,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/light_industrial'
@@ -212,6 +218,7 @@ def _build_mfg_split_rows(light_ind: pl.DataFrame) -> pl.DataFrame:
         df = light_ind.filter(
             pl.col('Variable') == f'Light Industrial.Manufacturing.{node}'
         )
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([

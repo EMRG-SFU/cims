@@ -158,10 +158,10 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        # 'Coal Mining',
-        # 'Natural Gas', # Must run all regions due to Natural Gas Market
-        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
-        # 'Petroleum Refining',
+         'Coal Mining',
+         'Natural Gas', # Must run all regions due to Natural Gas Market
+         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+         'Petroleum Refining',
         # 'Electricity',
          'Biodiesel',
          'Ethanol',
@@ -198,7 +198,7 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-        # 'coal mining',   # <-- add this
+       'coal mining',   # <-- add this
     ### Economy
         'ref_carbon_tax',
         'ref_obps_fed',
@@ -233,7 +233,7 @@ def _(model_path, update_files):
     ### Transportation Freight
     ### Waste
         'ref_waste_methane_large_sites',
-    ### Agriculture
+    # Agriculture
         ]
     if ref_policies:
         if ref_path not in update_files:

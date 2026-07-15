@@ -53,8 +53,10 @@ Output order per region
 1. service_request  — total production (from coal_mining)
 2. competition      — from fixed data (Sector level)
 3. multiplier_price — from energy_price_multipliers
-4. rest of fixed data (Coal branch + all sub-services)
-5. service_request  — Coal → Metallurgical Finishing (from coal_mining, AB and BC only)
+4. fixed data up through the Coal branch's service_request → Size Reduced Product row
+5. service_request  — Coal → Metallurgical Finishing (from coal_mining, AB and BC only),
+   inserted immediately after the Size Reduced Product row above
+6. remaining fixed data (HVAC/Lighting requests, and all sub-service trees)
 """
 
 import sys
@@ -92,6 +94,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/coal_mining'
@@ -182,6 +185,35 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def _split_at_size_reduced_product(fixed_rest: pl.DataFrame) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """
+    Split fixed_rest (per region) right after the Coal branch's service_request
+    row that targets '...Coal.Size Reduced Product', so the Metallurgical
+    Finishing service_request (from activity data, AB/BC only) can be inserted
+    there instead of at the very end of the file.
+
+    Regions with no such row (NB, NS have no Size Reduced Product branch) fall
+    entirely into the 'after' half — harmless since met_rows has no data for them.
+    """
+    is_split_row = (
+        pl.col('Branch').str.ends_with('.Coal Mining.Coal')
+        & (pl.col('Parameter') == 'service_request')
+        & pl.col('Target').str.ends_with('.Coal.Size Reduced Product')
+    )
+    indexed = fixed_rest.with_row_index('_idx')
+    split_idx_per_region = (
+        indexed.filter(is_split_row)
+        .group_by('Region')
+        .agg(pl.col('_idx').min().alias('_split_idx'))
+    )
+    indexed = indexed.join(split_idx_per_region, on='Region', how='left').with_columns(
+        pl.col('_split_idx').fill_null(-1)
+    )
+    before = indexed.filter(pl.col('_idx') <= pl.col('_split_idx')).drop(['_idx', '_split_idx'])
+    after = indexed.filter(pl.col('_idx') > pl.col('_split_idx')).drop(['_idx', '_split_idx'])
+    return before, after
+
+
 def _build_met_finishing_rows(coal: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Coal branch level pointing to Metallurgical Finishing.
@@ -192,6 +224,13 @@ def _build_met_finishing_rows(coal: pl.DataFrame) -> pl.DataFrame:
     df = coal.filter(pl.col('Variable') == 'Coal Mining.Coal.Metallurgical Finishing')
     if df.is_empty():
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
+
+    # Drop regions where the met share is zero for the entire 2000–2100 series
+    # (e.g. SK, NB, NS have no met coal production) — nothing to request there.
+    df = drop_zero_activity_regions(df)
+    if df.is_empty():
+        return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
+
     return df.select([
         (pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.Coal Mining.Coal')).alias('Branch'),
         pl.lit('Service').alias('Type'),
@@ -260,10 +299,12 @@ def main() -> pl.DataFrame:
 
     regions = total_rows['Region'].unique().sort().to_list()
 
+    fixed_before_met, fixed_after_met = _split_at_size_reduced_product(fixed_rest)
+
     output = (
         pl.concat(
-            [total_rows, fixed_sector_competition,
-             price_rows, fixed_rest, met_rows],
+            [total_rows, fixed_sector_competition, price_rows,
+             fixed_before_met, met_rows, fixed_after_met],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)

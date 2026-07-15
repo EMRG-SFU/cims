@@ -39,16 +39,24 @@ Production sub-type splits  (service_request rows at Production service level)
     pipeline/source/activity/oil_production.py  (called directly via main())
     Variables: 'Bitumen', 'Light Medium', 'Heavy'  (%)
     Targets: CIMS.CAN.{region}.Petroleum Crude.Production.{subtype}
+    Regions where a subtype is 0% for the entire 2000–2100 series are
+    dropped (drop_zero_activity_regions) — e.g. MB/ON/NT have no Bitumen or
+    Heavy production, so no service_request is written for those branches.
 
 Bitumen sub-splits  (service_request rows at Bitumen service level — AB only)
     pipeline/source/activity/oil_production.py  (called directly via main())
     Variables: 'Bitumen.In-Situ', 'Bitumen.Mining', 'Bitumen.Upgrading'  (m3 ratios)
     Targets: CIMS.CAN.{region}.Petroleum Crude.Production.Bitumen.{subtype}
+    Same zero-region drop as above — non-AB regions have no Bitumen branch
+    in the fixed hierarchy, so their all-zero rows are dropped rather than
+    written as orphan service_requests.
 
 Light Medium sub-splits  (service_request rows at Light Medium service level)
     pipeline/source/activity/oil_production.py  (called directly via main())
     Variables: 'Light Medium.Onshore', 'Light Medium.Offshore'  (%)
     Targets: CIMS.CAN.{region}.Petroleum Crude.Production.Light Medium.{subtype}
+    Same zero-region drop — e.g. NL is 0% Onshore, all other regions are
+    0% Offshore.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -104,6 +112,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/petroleum_crude'
@@ -212,6 +221,7 @@ def _build_production_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for sub in PRODUCTION_SUBTYPES:
         df = oil.filter(pl.col('Variable') == sub)
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([
@@ -248,6 +258,7 @@ def _build_bitumen_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for sub in BITUMEN_SUBTYPES:
         df = oil.filter(pl.col('Variable') == sub)
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         subtype = sub.split('.', 1)[1]   # e.g. 'In-Situ'
@@ -284,6 +295,7 @@ def _build_light_medium_split_rows(oil: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for sub in LIGHT_MEDIUM_SUBTYPES:
         df = oil.filter(pl.col('Variable') == sub)
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         subtype = sub.split('.', 1)[1]   # e.g. 'Onshore'

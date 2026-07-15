@@ -40,11 +40,16 @@ Sub-product splits at Metal Open Pit level
     Target format:
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product
+    Regions where a sub-product's share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — no orphan
+    service_request is written for those branches.
 
 Potash split at Final Product level  (SK and NB only)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Mining.Potash'  (%)
     Target format: CIMS.CAN.{region}.Mining.Final Product.Potash
+    Same zero-region drop as above — regions with a 0%/blank Potash share
+    across the whole series get no Potash service_request.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -100,6 +105,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/mining'
@@ -208,6 +214,7 @@ def _build_iron_product_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         ('Size Reduced Non Iron Product', 'Size Reduced Non Iron Product'),
     ]:
         df = heavy_ind.filter(pl.col('Variable') == f'Mining.{var_suffix}')
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([
@@ -244,6 +251,7 @@ def _build_potash_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     Value:  %
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Mining.Potash')
+    df = drop_zero_activity_regions(df)
     if df.is_empty():
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
 

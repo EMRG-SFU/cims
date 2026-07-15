@@ -24,7 +24,11 @@ Electricity activity / load fractions
         Electricity.Utility Generation.Peak Load    → % MWh → Utility Generation service_request
 
     Load-fraction service_requests are emitted for any region whose fixed data
-    contains a Base Load sub-service (currently: all regions).
+    contains a Base Load sub-service (currently: all regions). Within a region,
+    an individual load type's series is dropped entirely if its value is 0%
+    (or blank) across the whole 2000–2100 range (drop_zero_activity_regions)
+    — e.g. a region with no Peak Load capacity gets no Peak Load
+    service_request.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py
@@ -78,6 +82,7 @@ _elec_spec.loader.exec_module(_elec_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/electricity'
@@ -213,6 +218,7 @@ def _build_load_fraction_rows(activity: pl.DataFrame, region: str,
             )
             .sort('Year')
         )
+        var_data = drop_zero_activity_regions(var_data)
         for r in var_data.iter_rows(named=True):
             rows.append({
                 'Branch':      f'CIMS.CAN.{region}.Electricity.Utility Generation',

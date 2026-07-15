@@ -1,0 +1,24 @@
+Sector,Regions
+Coal Mining,BC;AB;SK;NB;NS
+Natural Gas,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Petroleum Crude,BC;AB;SK;MB;ON;NL;NT
+Petroleum Refining,BC;AB;SK;ON;QC;NB;NL
+Electricity,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Ethanol,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Biodiesel,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Hydrogen,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Mining,BC;AB;SK;MB;ON;QC;NB;NS;NL;YT;NT;NU
+Industrial Minerals,BC;AB;SK;ON;QC;NS;NL
+Chemical Products,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL
+Pulp and Paper,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL
+Metal Smelting,BC;AB;MB;ON;QC;NB;NL
+Iron and Steel,BC;AB;SK;MB;ON;QC
+Light Industrial,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Residential,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Commercial,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Transportation Passenger,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Transportation Freight,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Waste,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Agriculture,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Construction,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT;NU
+Forestry,BC;AB;SK;MB;ON;QC;NB;NS;PE;NL;YT;NT

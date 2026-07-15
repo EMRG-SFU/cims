@@ -17,6 +17,10 @@ Activity demand  (service_provide levels)
       'Agriculture.Process.Soils'                            → fraction of total
       'Agriculture.Process.Enteric Fermentation and Manure Management'
                                                              → fraction of total
+    Regions where the Heat, Soils, or Enteric share is 0% (or blank) for the
+    entire 2000–2100 series are dropped (drop_zero_activity_regions) for that
+    sub-share — e.g. a region with no livestock gets no Enteric
+    service_request.
 
 Energy price multipliers  (price_mult rows)
     processed_data/energy_prices/energy_price_multipliers.csv
@@ -64,6 +68,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/agriculture'
@@ -150,7 +155,8 @@ def _build_emission_rows(emissions: pl.DataFrame) -> tuple[pl.DataFrame, pl.Data
         target_suffix: str,
         value_col: str,
     ) -> pl.DataFrame:
-        return wide.select([
+        df = drop_zero_activity_regions(wide, value_col=value_col)
+        return df.select([
             ('CIMS.CAN.' + pl.col('Region') + '.' + pl.lit(branch_suffix)).alias('Branch'),
             pl.lit('Service').alias('Type'),
             pl.col('Region'),

@@ -24,6 +24,9 @@ Activity demand  (service_provide levels)
       'Industrial Minerals'        → total tonnes (region-level service_request)
       'Industrial Minerals.Cement' → fraction of total (%)
       'Industrial Minerals.Lime'   → fraction of total (%)
+    Regions where a Cement/Lime share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — regions
+    with no production of a given product get no service_request for it.
 
 Energy price multipliers  (price_mult rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -69,6 +72,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/industrial_minerals'
@@ -148,9 +152,9 @@ def _build_emission_rows(
     )
 
     def _product_rows(variable: str, target_suffix: str) -> pl.DataFrame:
+        df = drop_zero_activity_regions(activity.filter(pl.col('Variable') == variable))
         return (
-            activity
-            .filter(pl.col('Variable') == variable)
+            df
             .select([
                 ('CIMS.CAN.' + pl.col('Region') + '.Industrial Minerals.Products').alias('Branch'),
                 pl.lit('Service').alias('Type'),
@@ -274,7 +278,11 @@ def main() -> pl.DataFrame:
     )
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
+    # Restrict to regions with actual fixed structural data — price_rows carries
+    # a multiplier_price row for every CIMS region (Industrial Minerals is
+    # classified as Industrial for all 13 in sector_map.csv), which would
+    # otherwise leak extra region files with no structural data behind them.
+    regions = fixed_str['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'industrial_minerals_{region.lower()}.csv'

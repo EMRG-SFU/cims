@@ -73,6 +73,11 @@ Activity data  (from gas_production.py, Region/Variable/Unit/Source/Year/Value f
       'Processing'               → service_request at Supply → Processing (1000m3/1000m3)
       'LNG Compression'          → service_request at Supply → LNG Compression (%, BC only)
     ('Natural Gas.Extraction' is not used in model inputs)
+    Extraction split, Processing, and LNG Compression rows are dropped per
+    region when 0 for the entire 2000–2100 series (drop_zero_activity_regions)
+    — e.g. LNG Compression is BC-only, so other provincial regions get no
+    orphan service_request for it. The sector-level 'Natural Gas' total is
+    not filtered this way.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -134,6 +139,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/natural_gas'
@@ -253,6 +259,7 @@ def _build_extraction_split_rows(ng: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for variable, subtype in EXTRACTION_SPLITS.items():
         df = ng.filter(pl.col('Variable') == variable)
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([
@@ -286,6 +293,7 @@ def _build_processing_rows(ng: pl.DataFrame) -> pl.DataFrame:
     Target: CIMS.CAN.{region}.Natural Gas.Production.Supply.Processing
     """
     df = ng.filter(pl.col('Variable') == 'Processing')
+    df = drop_zero_activity_regions(df)
     if df.is_empty():
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
     return df.select([
@@ -316,6 +324,7 @@ def _build_lng_rows(ng: pl.DataFrame) -> pl.DataFrame:
     Target: CIMS.CAN.BC.Natural Gas.Production.Supply.LNG Compression
     """
     df = ng.filter(pl.col('Variable') == 'LNG Compression')
+    df = drop_zero_activity_regions(df)
     if df.is_empty():
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
     return df.select([

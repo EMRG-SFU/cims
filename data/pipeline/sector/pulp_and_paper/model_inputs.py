@@ -30,6 +30,9 @@ Sub-product splits  (service_request rows at Paper service level)
       'Pulp and Paper.Coated'      → Paper.Coated
       'Pulp and Paper.Tissue'      → Paper.Tissue
       'Pulp and Paper.Pulp'        → Paper.Prepared Pulp
+    Regions where a sub-product's share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — regions
+    with no production of a given sub-product get no service_request for it.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -83,6 +86,7 @@ _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/pulp_and_paper'
@@ -193,6 +197,7 @@ def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     parts = []
     for var_suffix, cims_service in SUBPRODUCT_MAP.items():
         df = heavy_ind.filter(pl.col('Variable') == f'Pulp and Paper.{var_suffix}')
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([
