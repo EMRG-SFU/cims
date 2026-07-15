@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Transportation Personal/transportation passenger_{region}.csv
+    raw_data/fixed_data/transportation_passenger/transportation_passenger_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Every region has its own fixed-data file.
 
@@ -721,7 +721,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region, template in sorted(FIXED_TEMPLATE.items()):
-        fixed_path = FIXED_INPUT_DIR / f'transportation passenger_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'transportation_passenger_{template}.csv'
         if not fixed_path.exists():
             print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue
