@@ -162,7 +162,7 @@ def _(model_path, update_files):
          'Natural Gas', # Must run all regions due to Natural Gas Market
          'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
          'Petroleum Refining',
-        # 'Electricity',
+         'Electricity',
          'Biodiesel',
          'Ethanol',
          'Hydrogen',
@@ -198,42 +198,42 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-       'coal mining',   # <-- add this
-    ### Economy
-        'ref_carbon_tax',
-        'ref_obps_fed',
-    ### Coal Mining
-    ### Natural Gas Production
-    ### Petroleum Crude
-    ### Mining
-    ### Electricity
-        'ref_coal_phase_out',
-        'ref_nuclear_ban',
-        'ref_nuclear_decommission',
-        'ref_clean_electricity',
-        'ref_cer',
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
-        'ref_incandescent_phase_out',
-    ### Commercial
-    ### Transportation Personal
-        'ref_ldv_zev_federal', #include before Prov version
-        'ref_ldv_zev_Prov',
-        'ref_renewable_fuel_content_fed', #include before Prov version
-        'ref_renewable_fuel_content_prov',
-    ### Transportation Freight
-    ### Waste
-        'ref_waste_methane_large_sites',
-    # Agriculture
+    #   'coal mining',   # <-- add this
+    # ### Economy
+    #     'ref_carbon_tax',
+    #     'ref_obps_fed',
+    # ### Coal Mining
+    # ### Natural Gas Production
+    # ### Petroleum Crude
+    # ### Mining
+    # ### Electricity
+    #     'ref_coal_phase_out',
+    #     'ref_nuclear_ban',
+    #     'ref_nuclear_decommission',
+    #     'ref_clean_electricity',
+    #     'ref_cer',
+    # ### Biodiesel
+    # ### Ethanol
+    # ### Hydrogen
+    # ### Petroleum Refining
+    # ### Industrial Minerals
+    # ### Iron and Steel
+    # ### Metal Smelting
+    # ### Chemical Products
+    # ### Pulp and Paper
+    # ### Light Industrial
+    # ### Residential
+    #     'ref_incandescent_phase_out',
+    # ### Commercial
+    # ### Transportation Personal
+    #     'ref_ldv_zev_federal', #include before Prov version
+    #     'ref_ldv_zev_Prov',
+    #     'ref_renewable_fuel_content_fed', #include before Prov version
+    #     'ref_renewable_fuel_content_prov',
+    # ### Transportation Freight
+    # ### Waste
+    #     'ref_waste_methane_large_sites',
+    # # Agriculture
         ]
     if ref_policies:
         if ref_path not in update_files:
@@ -361,7 +361,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['undefined_nodes']
+    model.validator.warnings['inconsistent_tech_refs']
     return
 
 

@@ -143,3 +143,5 @@ models/*/*.xlsb
 
 # Marimo cache
 __marimo__/
+results/Reference/results_general.csv
+results/Reference/results_tech.csv
