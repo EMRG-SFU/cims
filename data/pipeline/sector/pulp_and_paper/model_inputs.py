@@ -47,8 +47,9 @@ Output order per region
 1. service_request  — total production (from heavy_industry)
 2. competition      — from fixed data (Sector level)
 3. multiplier_price — from energy_price_multipliers
-4. service_request  — Paper → each sub-product (from heavy_industry)
-5. rest of fixed data
+4. service_provide — generated Paper service header for every region
+5. service_request  — Paper → each sub-product (from heavy_industry)
+6. rest of fixed data
 """
 
 import sys
@@ -187,6 +188,30 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def _build_paper_service_provide_rows(regions: list[str]) -> pl.DataFrame:
+    """
+    Structural service_provide rows for the Paper service node.
+    Adds one row per region so branches like
+    CIMS.CAN.AB.Pulp and Paper.Paper provide service to
+    CIMS.CAN.AB.Pulp and Paper.
+    """
+    return pl.DataFrame({
+        'Branch': [f'CIMS.CAN.{region}.Pulp and Paper.Paper' for region in regions],
+        'Type': ['Service'] * len(regions),
+        'Region': regions,
+        'Sector': ['Pulp and Paper'] * len(regions),
+        'Service': ['Paper'] * len(regions),
+        'Technology': [''] * len(regions),
+        'Parameter': ['service_provide'] * len(regions),
+        'Context': [''] * len(regions),
+        'Sub_Context': [''] * len(regions),
+        'Target': [f'CIMS.CAN.{region}.Pulp and Paper' for region in regions],
+        'Source': ['fixed structural data / generated Paper service header'] * len(regions),
+        'Unit': [''] * len(regions),
+        'Year': [''] * len(regions),
+        'Value': [''] * len(regions),
+    }).cast(pl.String)
+
 def _build_subproduct_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     """
     service_request rows at the Paper service level.
@@ -265,9 +290,8 @@ def main() -> pl.DataFrame:
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
 
-    # Keep competition and service_request from fixed at Paper level
-    # (service_provide null row stays as structural header; service_request splits
-    # come from the pipeline instead and are injected as subprod_rows).
+    # Keep competition from fixed at Paper level.
+    # service_request splits come from the pipeline instead and are injected as subprod_rows.
     fixed_paper_header = fixed.filter(
         _paper_branch & pl.col('Parameter').fill_null('').is_in(['competition'])
     )
@@ -281,10 +305,14 @@ def main() -> pl.DataFrame:
 
     regions = total_rows['Region'].unique().sort().to_list()
 
+    # Generate Paper service_provide for every region.
+    # This does not depend on the fixed CSV already having those rows.
+    paper_service_provide = _build_paper_service_provide_rows(regions)
+
     output = (
         pl.concat(
             [total_rows, fixed_sector_competition,
-             price_rows, fixed_paper_header, subprod_rows, fixed_rest],
+             price_rows, fixed_paper_header, paper_service_provide, subprod_rows, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)
