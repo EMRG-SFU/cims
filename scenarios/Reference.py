@@ -75,10 +75,10 @@ def _():
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
-        # 'DCC', # declining capital cost
-        # 'DIC', # declining intangible cost (neighbour effect)
-        # 'FIC', # fixed intangible cost; primarily used for calibration
-        # 'market share limits', # use of limits should be minimised
+         'dcc', # declining capital cost
+         'dic', # declining intangible cost (neighbour effect)
+         'fic', # fixed intangible cost; primarily used for calibration
+         'market_share_limits', # use of limits should be minimised
         ]
     if model_req:
         if model_path not in update_files:
@@ -166,18 +166,18 @@ def _(model_path, update_files):
          'Biodiesel',
          'Ethanol',
          'Hydrogen',
-        # 'Mining',
-        # 'Industrial Minerals',
-        # 'Iron and Steel',
-        # 'Metal Smelting',
-        # 'Chemical Products',
-        # 'Pulp and Paper',
-        # 'Light Industrial',
+         'Mining',
+         'Industrial Minerals',
+         'Iron and Steel',
+         'Metal Smelting',
+         'Chemical Products',
+         'Pulp and Paper',
+         'Light Industrial',
          'Construction',
          'Residential',
          'Commercial',
-        # 'Transportation Passenger',
-        # 'Transportation Freight',
+         'Transportation Passenger',
+         'Transportation Freight',
          'Waste',
          'Agriculture',
          'Forestry',
@@ -187,7 +187,7 @@ def _(model_path, update_files):
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
         'exogenous_prices',  # needed for correct calibration of historical years
-        # 'exogenous_demand',  # use this file when calibrating endogenous supply sectors
+        'exogenous_demand',  # use this file when calibrating endogenous supply sectors
         ]
     if model_optional:
         if model_path not in update_files:
@@ -198,7 +198,6 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-    #   'coal mining',   # <-- add this
      ### Economy
          'ref_carbon_tax',
          'ref_obps_fed',
@@ -233,7 +232,7 @@ def _(model_path, update_files):
      ### Transportation Freight
      ### Waste
          'ref_waste_methane_large_sites',
-     # Agriculture
+     ### Agriculture
         ]
     if ref_policies:
         if ref_path not in update_files:
