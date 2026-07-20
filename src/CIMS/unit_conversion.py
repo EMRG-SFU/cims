@@ -202,13 +202,25 @@ def _exchange_factor(exchange: dict, source_currency: str, target_currency: str,
     key = (f"{target_currency}_per_{source_currency}", year)
     if key not in exchange:
         if year not in {k[1] for k in exchange}:
-            raise ValueError(f"Year {year} not found in exchange rate table.")
-        raise ValueError(f"{target_currency}_per_{source_currency} not found in exchange rate table.")
+            raise ValueError(
+                f"Year {year} not found in exchange rate table. "
+                "Please review the exchange rate table for missing or out-of-range years."
+            )
+        raise ValueError(
+            f"{target_currency}_per_{source_currency} not found in exchange rate table. "
+            "Please review the exchange rate table for missing currencies."
+        )
     return exchange[key]
 
 
 def _check_deflator_key(table: dict, key: tuple, currency: str, year: int) -> None:
     if key not in table:
         if year not in {k[1] for k in table}:
-            raise ValueError(f"Year {year} not found in deflator table.")
-        raise ValueError(f"Currency {currency} not found in deflator table.")
+            raise ValueError(
+                f"Year {year} not found in deflator table. "
+                "Please review the deflator table for missing or out-of-range years."
+            )
+        raise ValueError(
+            f"Currency {currency} not found in deflator table. "
+            "Please review the deflator table for missing currencies."
+        )
