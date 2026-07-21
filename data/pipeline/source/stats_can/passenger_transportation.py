@@ -6,7 +6,7 @@ from typing import Dict, Optional
 import numpy as np
 import pandas as pd
 
-DEFAULT_STATCAN_FILE = Path(r"C:\cims\data\raw_data\stats_can\market shares\2010002501-eng.csv")
+DEFAULT_STATCAN_FILE = Path(r"C:\cims\data\raw_data\stats_can\market_shares\2010002501-eng.csv")
 DEFAULT_EPA_FILE = Path(r"C:\cims\data\raw_data\epa\table_export.csv")
 DEFAULT_OUTPUT_FILE = Path("passenger_transportation_market_shares.csv")
 HISTORICAL_START_YEAR = 2000

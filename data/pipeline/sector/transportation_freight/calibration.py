@@ -3,7 +3,7 @@ Extract Transportation Freight calibration data and save to CIMS-formatted CSV f
 
 Sources
 -------
-Emissions  (calibration_emissions_total_cumul_net)
+Emissions  (calibration_emissions_total from crosswalk; calibration_emissions_by_type from nir_to_cims)
     nir_crosswalk_tables_cims.py  → total tCO2e per transportation freight CIMS branch
                                     5-year intervals (2000–2020)
     nir_to_cims.py                → per-gas kt per transportation freight CIMS branch,
@@ -188,7 +188,7 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
             'Sector':      meta['Sector'],
             'Service':     meta['Service'],
             'Technology':  '',
-            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Parameter':   'calibration_emissions_total',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
@@ -225,7 +225,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
             'Sector':      meta['Sector'],
             'Service':     meta['Service'],
             'Technology':  '',
-            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Parameter':   'calibration_emissions_by_type',
             'Context':     str(row['Variable']),
             'Sub_Context': '',
             'Target':      '',
