@@ -73,7 +73,7 @@ class Model:
         start_init = time.time()
 
         print("  Building column list...")
-        col_list = build_col_list(list_csv_path, year_list)
+        col_list = build_col_list(list_csv_path)
 
         print("  Collecting Base & Update CSV paths...")
         base_paths, update_paths = collect_all_paths(
