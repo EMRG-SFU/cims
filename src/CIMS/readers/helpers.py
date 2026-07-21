@@ -3,6 +3,12 @@ from pathlib import Path
 from typing import Iterable, Mapping, List, Tuple
 from tabulate import tabulate
 
+import numpy as np
+import pandas as pd
+import polars as pl
+
+from ..utils.model_description import column_list as COL
+
 COL_NAME = "File Name"
 COL_LOADED_TOTAL = ""
 COL_LOADED = "Loaded"
@@ -122,3 +128,51 @@ def collect_all_paths(
 
     _print_combined_summary(base_rows + update_rows)
     return base_found, update_found
+
+
+def _scannable(path: str) -> bool:
+    """Check a CSV has the columns filter_model_data requires, without fully reading it."""
+    try:
+        cols = pl.scan_csv(path, infer_schema_length=0).collect_schema().names()
+        return COL.sector in cols and COL.year in cols and COL.value in cols
+    except Exception:
+        return False
+
+
+def filter_model_data(
+    paths: Iterable[str],
+    sector_list: Iterable,
+    year_list: Iterable,
+    col_list: Iterable[str],
+) -> pd.DataFrame:
+    """Read, concatenate, and filter model input CSVs by sector and year in one lazy pass.
+
+    Rows with a null Sector or null Year are always kept (constants / non-sector-specific
+    rows). An empty/falsy sector_list applies no sector filtering.
+    """
+    year_strs = [str(y) for y in year_list]
+    sectors = list(sector_list) if sector_list else None
+
+    lazy_frames = []
+    for path in paths:
+        if not _scannable(path):
+            print(f"Warning: Unable to parse csv_path at {path}. Skipping.")
+            continue
+        lf = pl.scan_csv(path, infer_schema_length=0)
+        if sectors:
+            lf = lf.filter(pl.col(COL.sector).is_in(sectors) | pl.col(COL.sector).is_null())
+        lf = lf.filter(pl.col(COL.year).is_in(year_strs) | pl.col(COL.year).is_null())
+        lazy_frames.append(lf)
+
+    if not lazy_frames:
+        return pd.DataFrame(columns=list(col_list) + [COL.year, COL.value])
+
+    df = (
+        pl.concat(lazy_frames, how="diagonal_relaxed")
+        .collect()
+        .to_pandas()
+        .replace({np.nan: None, "": None})
+    )
+
+    meta_cols = [c for c in df.columns if c not in (COL.year, COL.value) and c in col_list]
+    return df[meta_cols + [COL.year, COL.value]]

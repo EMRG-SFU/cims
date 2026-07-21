@@ -6,6 +6,7 @@ from typing import List
 import time 
 
 from .validation_utils import get_providers, get_requested
+from ..readers.helpers import filter_model_data
 from ..utils.model_description import column_list as COL
 
 from .registry import REGISTRY, resolve_kwargs, Phase, Severity
@@ -53,31 +54,7 @@ class ModelValidator:
             for file in self.scenario_files:
                 files_to_read.append(file)
 
-        appended_data = []
-        for csv_file in files_to_read:
-            try:
-                sheet_df = pl.read_csv(
-                    csv_file,
-                    use_pyarrow=False,
-                    infer_schema_length=0,
-                ).to_pandas().replace({np.nan: None, "": None})
-                appended_data.append(sheet_df)
-
-            except ValueError:
-                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
-
-        model_df = pd.concat(appended_data,
-                             ignore_index=True)  # Add province sheets together and re-index
-        
-        # Filter sectors (if applicable)
-        if self.sector_list:
-            if None not in self.sector_list:
-                self.sector_list.append(None)
-            model_df = model_df[model_df[COL.sector].isin(self.sector_list)]
-
-        meta_cols = [c for c in model_df.columns if c not in ("Year", "Value") and c in self.col_list]
-        year_mask = model_df["Year"].isin(self.year_list) | model_df["Year"].isna()
-        mdf = model_df[year_mask][meta_cols + ["Year", "Value"]]
+        mdf = filter_model_data(files_to_read, self.sector_list, self.year_list, self.col_list)
         mdf[COL.parameter] = mdf[COL.parameter].str.lower()
 
         return mdf
