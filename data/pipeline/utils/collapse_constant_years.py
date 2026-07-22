@@ -131,9 +131,23 @@ def collapse_constant_years(
                 [pl.first(c).alias(c) for c in schema_cols if c not in id_cols]
                 + [pl.first("_grp_pos").alias(_POS_COL)]
             )
-            .with_columns(pl.lit("").alias(year_col))
-            .select(schema_cols + [_POS_COL])
         )
+
+        # market_share_total always carries an explicit Year (2000), even
+        # when its group collapses to a single value -- unlike every other
+        # Parameter, a blank Year here would be read as "constant across
+        # all years" rather than "an initial condition at year 2000".
+        if "Parameter" in schema_cols:
+            collapsed = collapsed.with_columns(
+                pl.when(pl.col("Parameter") == "market_share_total")
+                .then(pl.col(year_col))
+                .otherwise(pl.lit(""))
+                .alias(year_col)
+            )
+        else:
+            collapsed = collapsed.with_columns(pl.lit("").alias(year_col))
+
+        collapsed = collapsed.select(schema_cols + [_POS_COL])
 
         # If Source is part of the grouping key, a series that's constant at
         # the SAME value across a Source change (e.g. historical "CER/Stats
