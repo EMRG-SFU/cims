@@ -21,7 +21,6 @@ from . import cost_curves
 from . import aggregation
 from . import visualize
 
-from .readers.scenario_reader import ScenarioReader
 from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
@@ -112,7 +111,7 @@ class Model:
             list_csv_path=list_csv_path,
         )
 
-        self._scenario_reader = ScenarioReader(model_df=update_df)
+        self._scenario_reader = ModelReader(model_df=update_df)
 
         print("  Initializing model metadata and defaults...")
         self.root = self._model_reader.root
@@ -192,7 +191,7 @@ class Model:
 
         _, update_paths = collect_update_paths(update_files, self._region_list)
         update_df = filter_model_data(update_paths, self._sector_list, self._year_list, self._col_list)
-        scenario_reader = ScenarioReader(model_df=update_df)
+        scenario_reader = ModelReader(model_df=update_df)
 
         # Make a copy, so we don't alter self
         model = copy.deepcopy(self)
@@ -260,11 +259,6 @@ class Model:
         print("  Base graph constructed")
 
         # --- Apply scenario overlays (if any) --------------------------------
-        if not isinstance(self._scenario_reader, ScenarioReader):
-            raise ValueError(
-                "You are attempting to update a model with something other than a ScenarioReader object."
-            )
-
         # Only do work if there is scenario content
         if self.scenario_node_dfs or self.scenario_tech_dfs:
             self.graph.max_tree_index[0] = 0
