@@ -189,7 +189,7 @@ class Model:
                              already been run. To prevent inconsistencies, \
                              this update has not been done.")
 
-        _, update_paths = collect_update_paths(update_files, self._region_list)
+        update_paths, _, _ = collect_update_paths(update_files, self._region_list)
         update_df = filter_model_data(update_paths, self._sector_list, self._year_list, self._col_list)
         scenario_reader = ModelReader(model_df=update_df)
 
