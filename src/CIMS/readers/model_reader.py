@@ -1,13 +1,12 @@
 import numpy as np
 import polars as pl
 
-from .helpers import filter_model_data
 from ..utils.model_description import column_list as COL
 from ..utils.parameter.parse import infer_type
 
 
 class ModelReader:
-    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
+    def __init__(self, model_df,
                  default_values_csv_path=None, node_col=COL.branch, root_node="CIMS", list_csv_path=None):
 
         if default_values_csv_path:
@@ -15,20 +14,13 @@ class ModelReader:
         if list_csv_path:
             self.list_csv = list_csv_path
 
-        self.csv_files = csv_file_paths
         self.node_col = node_col
-        self.col_list = col_list
-        self.year_list = [str(x) for x in year_list]
-        self.sector_list = sector_list
 
-        self.model_df = self._get_model_df()
+        self.model_df = model_df.copy()
         self.root = root_node
 
         self.node_dfs = {}
         self.tech_dfs = {}
-
-    def _get_model_df(self):
-        return filter_model_data(self.csv_files, self.sector_list, self.year_list, self.col_list)
 
     def get_model_description(self, inplace=False):
         # ------------------------
