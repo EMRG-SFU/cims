@@ -103,18 +103,18 @@ def _(model_path, update_files):
         'RoW', # Required
         'CAN', # Required
         'BC',
-        'AB',
-        'SK',
-        'MB',
-        'ON',
-        'QC',
-        'NB',
-        'NL',
-        'NS',
-        'PE',
-        'NT',
-        'NU',
-        'YT',
+        # 'AB',
+        # 'SK',
+        # 'MB',
+        # 'ON',
+        # 'QC',
+        # 'NB',
+        # 'NL',
+        # 'NS',
+        # 'PE',
+        # 'NT',
+        # 'NU',
+        # 'YT',
     ]
 
     # Only uncommented years below will be run in the simulation
@@ -158,29 +158,29 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-         'Coal Mining',
-         'Natural Gas', # Must run all regions due to Natural Gas Market
-         'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
-         'Petroleum Refining',
-         'Electricity',
-         'Biodiesel',
-         'Ethanol',
-         'Hydrogen',
-         'Mining',
-         'Industrial Minerals',
-         'Iron and Steel',
-         'Metal Smelting',
-         'Chemical Products',
-         'Pulp and Paper',
-         'Light Industrial',
-         'Construction',
-         'Residential',
-         'Commercial',
-         'Transportation Passenger',
-         'Transportation Freight',
-         'Waste',
-         'Agriculture',
-         'Forestry',
+        'Coal Mining',
+        # 'Natural Gas', # Must run all regions due to Natural Gas Market
+        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        'Petroleum Refining',
+        'Electricity',
+        'Biodiesel',
+        'Ethanol',
+        'Hydrogen',
+        'Mining',
+        'Industrial Minerals',
+        'Iron and Steel',
+        'Metal Smelting',
+        'Chemical Products',
+        'Pulp and Paper',
+        'Light Industrial',
+        'Construction',
+        'Residential',
+        'Commercial',
+        'Transportation Passenger',
+        'Transportation Freight',
+        'Waste',
+        'Agriculture',
+        'Forestry',
     ]
 
 
@@ -360,7 +360,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['inconsistent_tech_refs']
+    model.validator.warnings['undefined_nodes']
     return
 
 

@@ -15,7 +15,7 @@ LAST_OBSERVED_YEAR = 2025
 TOTAL_FUEL = "All fuel types"
 PROXY_REGIONS: Dict[str, str] = {"Alberta":"Saskatchewan","Newfoundland and Labrador":"Nova Scotia","Nunavut":"Northwest Territories"}
 EXCLUDE_REGIONS = {"Canada"}
-TECHNOLOGIES = ["Gasoline Existing","Gasoline Standard","Gasoline Efficient","Diesel Existing","Diesel Standard","Diesel Efficient","Hybrid","Plug-in Hybrid","BEV500","BEV800","Other Fuel Types"]
+TECHNOLOGIES = ["Gasoline Existing","Gasoline Standard","Gasoline Efficient","Diesel Existing","Diesel Standard","Diesel Efficient","Hybrid","Plug-in Hybrid","BEV 500","BEV 800"]
 EFFICIENT_PACKAGES = {"GDPI, Fixed Valve Timing, Multi-Valve","GDPI, Variable Valve Timing, Multi-Valve","GDI, Fixed Valve Timing, Multi-Valve","GDI, Variable Valve Timing, Multi-Valve","GDI, Variable Valve Timing, Two-Valve"}
 STANDARD_PACKAGES = {"Port, Variable Valve Timing, Multi-Valve","Carb, Fixed Valve Timing, Two-Valve","Carb, Fixed Valve Timing, Multi-Valve","TBI, Fixed Valve Timing, Two-Valve","TBI, Fixed Valve Timing, Multi-Valve","Port, Fixed Valve Timing, Two-Valve","Port, Fixed Valve Timing, Multi-Valve","Port, Variable Valve Timing, Two-Valve"}
 FUEL_NAME_MAP = {"Other fuel types 4":"Other fuel types","Newfoundland and Labrador 2":"Newfoundland and Labrador","Alberta 2":"Alberta"}
@@ -139,16 +139,16 @@ def expand_vehicle_technologies(fuel_df, shares_df):
         if fuel in {TOTAL_FUEL,'All zero-emission vehicles'}: continue
         if fuel == 'Gasoline': splits=[('Gasoline Existing',1.0),('Gasoline Standard',0.0),('Gasoline Efficient',0.0)] if y==2000 else [('Gasoline Existing',0.0),('Gasoline Standard',lookup_share(shares,y)['standard_share']),('Gasoline Efficient',lookup_share(shares,y)['efficient_share'])]
         elif fuel == 'Diesel': splits=[('Diesel Existing',1.0),('Diesel Standard',0.0),('Diesel Efficient',0.0)] if y==2000 else [('Diesel Existing',0.0),('Diesel Standard',lookup_share(shares,y)['standard_share']),('Diesel Efficient',lookup_share(shares,y)['efficient_share'])]
-        elif fuel == 'Battery electric': splits=[('BEV500',1.0),('BEV800',0.0)]
+        elif fuel == 'Battery electric': splits=[('BEV 500',1.0),('BEV 800',0.0)]
         elif fuel == 'Plug-in hybrid electric': splits=[('Plug-in Hybrid',1.0)]
         elif fuel == 'Hybrid electric': splits=[('Hybrid',1.0)]
-        elif fuel == 'Other fuel types': splits=[('Other Fuel Types',1.0)]
+        elif fuel == 'Other fuel types': splits=[('Gasoline Standard',1.0)]
         else: continue
         for tech,sh in splits: rows.append({**base,'fuel_type':tech,'annual_sales':sales*sh})
     tech_df=pd.DataFrame(rows)
-    region_years=tech_df[['region','source_region','is_proxy','year']].drop_duplicates(); existing=tech_df[tech_df['fuel_type']=='BEV800'][['region','year']].drop_duplicates(); add=[]
+    region_years=tech_df[['region','source_region','is_proxy','year']].drop_duplicates(); existing=tech_df[tech_df['fuel_type']=='BEV 800'][['region','year']].drop_duplicates(); add=[]
     for _,r in region_years.iterrows():
-        if not ((existing['region']==r['region']) & (existing['year']==r['year'])).any(): add.append({**r.to_dict(),'fuel_type':'BEV800','annual_sales':0.0})
+        if not ((existing['region']==r['region']) & (existing['year']==r['year'])).any(): add.append({**r.to_dict(),'fuel_type':'BEV 800','annual_sales':0.0})
     return pd.concat([tech_df,pd.DataFrame(add)], ignore_index=True) if add else tech_df
 
 def calculate_market_shares(tech_df):
