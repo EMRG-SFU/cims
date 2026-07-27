@@ -59,6 +59,7 @@ _ef_mod = importlib.util.module_from_spec(_ef_spec)
 _ef_spec.loader.exec_module(_ef_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/fuels'
@@ -90,6 +91,14 @@ _USE_ON_AS_GENERIC: frozenset[str] = frozenset({
     'Renewable Gasoline',
 })
 
+# Fuels that must keep an explicit row for every year even though their
+# lcc_financial/emissions values are constant — collapse_constant_years is
+# skipped for these Services in the CIMS output.
+_KEEP_ALL_YEARS: frozenset[str] = frozenset({
+    'Refinery Fuel Gas',
+    'Black Liquor',
+})
+
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -107,6 +116,10 @@ def _read_flattened(fixed_path: Path) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
@@ -251,7 +264,17 @@ def _assemble_cims(
         how='diagonal_relaxed',
     ).sort('_order')
 
-    return combined.select(OUTPUT_COLS)
+    keep_mask  = pl.col('Service').is_in(_KEEP_ALL_YEARS)
+    full_years = combined.filter(keep_mask)
+    rest       = combined.filter(~keep_mask)
+
+    collapsed = collapse_constant_years(rest.select(OUTPUT_COLS + ['_order']))
+
+    return (
+        pl.concat([collapsed, full_years.select(OUTPUT_COLS + ['_order'])], how='diagonal_relaxed')
+        .sort('_order')
+        .select(OUTPUT_COLS)
+    )
 
 
 # ── main ───────────────────────────────────────────────────────────────────────
@@ -287,7 +310,8 @@ def main() -> dict[str, pl.DataFrame]:
             df = _read_flattened(fixed_path)
             output = df.select(OUTPUT_COLS)
 
-            out_path = OUTPUT_DIR / f'fuels_{region}.csv'
+            out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
@@ -298,7 +322,7 @@ def main() -> dict[str, pl.DataFrame]:
             traceback.print_exc()
 
     # ── CIMS file: flatten + energy prices + emission factors ─────────────────
-    cims_path = FIXED_INPUT_DIR / 'fuels_CIMS.csv'
+    cims_path = FIXED_INPUT_DIR / 'fuels_cims.csv'
     if cims_path.exists():
         try:
             print('\nCIMS:')
@@ -308,7 +332,7 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling with energy prices and emission factors...')
             output = _assemble_cims(fixed, prices_df, ef_df)
 
-            out_path = OUTPUT_DIR / 'fuels_CIMS.csv'
+            out_path = OUTPUT_DIR / 'fuels_cims.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output

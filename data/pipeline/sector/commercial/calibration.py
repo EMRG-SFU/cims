@@ -3,7 +3,7 @@ Extract commercial calibration data and save to CIMS-formatted CSV files.
 
 Sources
 -------
-Emissions  (calibration_emissions_total_cumul_net)
+Emissions  (calibration_emissions_total from crosswalk; calibration_emissions_by_type from nir_to_cims)
     nir_crosswalk_tables_cims.py  → total tCO2e per commercial CIMS branch
                                     5-year intervals (2000–2020);
                                     abbreviation regions (AB, BC, …)
@@ -16,7 +16,7 @@ Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
 
-Hot water and HVAC technologies  (market_share_total)
+Hot water and HVAC technologies  (calibration_market_share_total)
     commercial.py                 → CEUD-derived market shares with projections;
                                     one DataFrame per region/province/territory;
                                     BC exports both Marine and Cold HVAC data
@@ -61,7 +61,7 @@ _cer_mod = _load_module(
 )
 
 from source.nrcan.ceud.commercial.commercial import main as _ceud_main
-from utils.controls_conversions import BASE_PATH
+from utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/commercial'
@@ -71,6 +71,8 @@ OUTPUT_COLS = [
     'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
     'Year', 'Value',
 ]
+
+SECTOR_NAME = 'Commercial'
 
 # NIR full province name → CIMS abbreviation (excludes Canada)
 _REGION_MAP: dict[str, str] = {
@@ -199,7 +201,7 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
             'Sector':      meta['Sector'],
             'Service':     meta['Service'],
             'Technology':  '',
-            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Parameter':   'calibration_emissions_total',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
@@ -236,7 +238,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
             'Sector':      meta['Sector'],
             'Service':     meta['Service'],
             'Technology':  '',
-            'Parameter':   'calibration_emissions_total_cumul_net',
+            'Parameter':   'calibration_emissions_by_type',
             'Context':     str(row['Variable']),
             'Sub_Context': '',
             'Target':      '',
@@ -266,7 +268,7 @@ def _build_hot_water_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFram
                     'Sector':      'Commercial',
                     'Service':     'Hot Water',
                     'Technology':  tech,
-                    'Parameter':   'market_share_total',
+                    'Parameter':   'calibration_market_share_total',
                     'Context':     '',
                     'Sub_Context': '',
                     'Target':      '',
@@ -308,7 +310,7 @@ def _build_hvac_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
                         'Sector':      'Commercial',
                         'Service':     'HVAC',
                         'Technology':  tech,
-                        'Parameter':   'market_share_total',
+                        'Parameter':   'calibration_market_share_total',
                         'Context':     '',
                         'Sub_Context': '',
                         'Target':      '',
@@ -370,13 +372,24 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
+    print('Filtering to regions with Commercial (see sector_region_map.csv)...')
+    allowed_regions = load_sector_regions().get(SECTOR_NAME)
+    if allowed_regions:
+        before_count = len(output)
+        output = output.filter(pl.col('Region').is_in(list(allowed_regions)))
+        dropped_count = before_count - len(output)
+        if dropped_count:
+            print(f'  Dropped {dropped_count:,} rows for regions without Commercial')
+
+    output = filter_excluded_branches(output)
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
         if not (region_df['Value'].cast(pl.Float64, strict=False).fill_null(0) != 0).any():
             continue
-        out_path  = OUTPUT_DIR / f'commercial_{region}.csv'
+        out_path  = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

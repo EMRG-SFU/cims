@@ -14,7 +14,7 @@ Other Non-Energy Products,,,Other Non-Energy Products
 Renewable Natural Gas,Biogas,,Renewable Natural Gas
 Black Liquor,Black Liquor,,Biomass
 Thermal Coal,Coal,,Coal
-Metallurgical Coal,Coal,,Coal
+Metallurgical Coal,Metallurgical Coal,,Coal
 Coke,Coke,,Coke
 Jet Fuel,Jet Fuel,,Jet Fuel
 Jet Fuel,Jet Fuel,,Aviation Gasoline
@@ -23,7 +23,7 @@ LPG,LPG,,LPG
 Propane,Propane,,Propane
 Butane,,,Butane
 Ethane,,,Ethane
-Refinery Fuel Gas,Refinergy Fuel Gas,,Still Gas
+Refinery Fuel Gas,Refinery Fuel Gas,,Still Gas
 Solid Biomass,Solid Biomass,,Biomass
 Uranium,Uranium,,
 Waste,Waste Fuel,,Waste

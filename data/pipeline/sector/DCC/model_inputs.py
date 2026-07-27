@@ -7,7 +7,7 @@ to long format and writes one output CSV per input file.
 Sources
 -------
 Fixed DCC parameters
-    raw_data/fixed_data/DCC/DCC_{region}.csv
+    raw_data/fixed_data/dcc/DCC_{region}.csv
     One file per Canadian province/territory.
 
 Output columns
@@ -40,14 +40,14 @@ _spec.loader.exec_module(_flatten_mod)
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/DCC'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/DCC'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/dcc'
+OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/dcc'
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> None:
-    """Flatten all DCC fixed CSVs and write outputs to model_inputs/model/DCC."""
+    """Flatten all DCC fixed CSVs and write outputs to model_inputs/model/dcc."""
     print('=' * 60)
     print('DCC MODEL INPUTS')
     print('=' * 60)

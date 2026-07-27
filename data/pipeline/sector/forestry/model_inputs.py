@@ -1,10 +1,10 @@
 """
-Extract Forestry model input data and save to JCIMS-formatted CSV.
+Extract Forestry model input data and save to CIMS-formatted CSV.
 
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Forestry/*.csv
+    raw_data/fixed_data/forestry/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Includes: service_provide, competition, technology, market_share_total,
@@ -64,9 +64,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Forestry'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/forestry'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/forestry'
 
 OUTPUT_COLS = [
@@ -108,7 +109,7 @@ def _read_flattened_fixed_data() -> pl.DataFrame:
     return pl.concat(frames)
 
 
-def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
+def _build_emission_rows(emissions: pl.DataFrame, valid_regions: list[str]) -> pl.DataFrame:
     """
     Build the region-level service_request row from emissions_drivers.
 
@@ -116,14 +117,21 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
     passthrough (service_request value=1) is a fixed structural parameter
     already present in the fixed data, so it is not produced here.
 
+    Restricted to valid_regions (regions with Forestry fixed structural
+    data) so a service_request is never emitted pointing at a
+    CIMS.CAN.{Region}.Forestry node that doesn't otherwise exist.
+
     Returns a DataFrame with one row per (Region, Year) representing the
     region-level service_request pointing to the Forestry sector node.
     """
     return (
         emissions
-        .filter(pl.col('Variable') == 'Forestry')
+        .filter(
+            (pl.col('Variable') == 'Forestry') &
+            pl.col('Region').is_in(valid_regions)
+        )
         .select([
-            ('JCIMS.CAN.' + pl.col('Region')).alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region')).alias('Branch'),
             pl.lit('Region').alias('Type'),
             pl.col('Region'),
             pl.lit('Forestry').alias('Sector'),
@@ -132,7 +140,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
             pl.lit('service_request').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            ('JCIMS.CAN.' + pl.col('Region') + pl.lit('.Forestry')).alias('Target'),
+            ('CIMS.CAN.' + pl.col('Region') + pl.lit('.Forestry')).alias('Target'),
             pl.col('Source'),
             pl.lit('tCO2e').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
@@ -141,18 +149,27 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
     )
 
 
-def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
+def _build_price_mult_rows(multipliers: pl.DataFrame, valid_regions: list[str]) -> pl.DataFrame:
     """
     Build price_mult rows from the energy price multipliers output.
 
     All Forestry energies flow through directly; the energy name is used
     as the Target so no manual fuel mapping is required.
+
+    energy_price_multipliers.py generates a Forestry multiplier for every
+    CIMS region (with a BC fallback for YT/NT/NU), regardless of whether
+    that region has a Forestry sector at all. Restricting to valid_regions
+    (regions with Forestry fixed structural data) avoids emitting a
+    multiplier_price row for an orphan branch like CIMS.CAN.NU.Forestry.
     """
     return (
         multipliers
-        .filter(pl.col('Sector') == 'Forestry')
+        .filter(
+            (pl.col('Sector') == 'Forestry') &
+            pl.col('Region').is_in(valid_regions)
+        )
         .select([
-            ('JCIMS.CAN.' + pl.col('Region') + '.Forestry').alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region') + '.Forestry').alias('Branch'),
             pl.lit('Sector').alias('Type'),
             pl.col('Region').alias('Region'),
             pl.lit('Forestry').alias('Sector'),
@@ -165,8 +182,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
                 'Electricity', 'Biodiesel', 'Renewable Diesel',
                 'Ethanol', 'Renewable Gasoline', 'Hydrogen',
             ]))
-            .then(pl.lit('JCIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('JCIMS.Generic Fuels.') + pl.col('Energy'))
+            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
+            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
             .alias('Target'),
             pl.col('Source').alias('Source'),
             pl.lit('').alias('Unit'),
@@ -188,17 +205,20 @@ def main() -> pl.DataFrame:
     fixed = _read_flattened_fixed_data()
     print(f'  Rows: {len(fixed):,}')
 
+    valid_regions = fixed['Region'].drop_nulls().unique().to_list()
+    print(f'  Regions with Forestry fixed data: {sorted(valid_regions)}')
+
     print('Building emission rows...')
     emissions = (
         _emissions_mod.main()
         .filter(pl.col('Variable').str.starts_with('Forestry'))
     )
-    total_emissions = _build_emission_rows(emissions)
+    total_emissions = _build_emission_rows(emissions, valid_regions)
     print(f'  Rows: {len(total_emissions):,}')
 
     print('Building energy price multiplier rows...')
     multipliers = pl.from_pandas(_energy_price_mod.main())
-    price_rows = _build_price_mult_rows(multipliers)
+    price_rows = _build_price_mult_rows(multipliers, valid_regions)
     print(f'  Rows: {len(price_rows):,}')
 
     print('Combining...')
@@ -226,7 +246,8 @@ def main() -> pl.DataFrame:
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'forestry_{region}.csv'
+        out_path = OUTPUT_DIR / f'forestry_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

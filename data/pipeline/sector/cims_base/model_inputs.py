@@ -8,11 +8,11 @@ pipeline) to each provincial/territorial file.
 CIMS, CAN, and RoW files are flattened only — no attribute rows added.
 
 Inputs:
-    raw_data/fixed_data/CIMS_base/CIMS_base_{suffix}.csv
+    raw_data/fixed_data/cims_base/CIMS_base_{suffix}.csv
     processed_data/stats_can/pop_gdp.csv  (via pop_gdp.main())
 
 Output:
-    model_inputs/model/CIMS_base/CIMS_base_{suffix}.csv
+    model_inputs/model/cims_base/CIMS_base_{suffix}.csv
     Columns: Branch, Type, Region, Sector, Service, Technology,
              Parameter, Context, Sub_Context, Target, Source, Unit,
              Year, Value
@@ -45,10 +45,11 @@ _pg_mod = importlib.util.module_from_spec(_pg_spec)
 _pg_spec.loader.exec_module(_pg_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ───────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/CIMS_base'
-OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/CIMS_base'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/cims_base'
+OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/cims_base'
 
 PROVINCES    = ['AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU', 'ON', 'PE', 'QC', 'SK', 'YT']
 FLATTEN_ONLY = ['CIMS', 'CAN', 'RoW']
@@ -105,11 +106,23 @@ def _flatten_fixed(stem: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
-    return df.filter(
+    df = df.filter(
         ~(
             (pl.col('Parameter') == 'attribute') &
             pl.col('Context').is_in(['Population', 'GDP'])
         )
+    )
+    _currency = pl.col('Parameter') == 'currency'
+    return df.with_columns(
+        pl.when(_currency)
+        .then(
+            pl.col('Value').cast(pl.Float64, strict=False).cast(pl.Int64).cast(pl.String)
+            + pl.lit('_') + pl.col('Unit')
+        )
+        .otherwise(pl.col('Value'))
+        .alias('Value'),
+        pl.when(_currency).then(pl.lit('')).otherwise(pl.col('Unit')).alias('Unit'),
+        pl.when(pl.col('Source') == 'n/a').then(pl.lit('')).otherwise(pl.col('Source')).alias('Source'),
     )
 
 
@@ -143,7 +156,7 @@ def _build_attribute_rows(pop_gdp: pl.DataFrame, region: str) -> pl.DataFrame:
 
 def _assemble_region(region: str, pop_gdp: pl.DataFrame) -> pl.DataFrame:
     """Flatten fixed data and append population/GDP attribute rows."""
-    fixed = _flatten_fixed(f'CIMS_base_{region}')
+    fixed = _flatten_fixed(f'cims_base_{region.lower()}')
     attrs = _build_attribute_rows(pop_gdp, region)
     return pl.concat([fixed.select(OUTPUT_COLS), attrs], how='diagonal_relaxed')
 
@@ -158,15 +171,17 @@ def main() -> None:
 
     print("\nFlattening CIMS / CAN / RoW files...")
     for suffix in FLATTEN_ONLY:
-        stem = f'CIMS_base_{suffix}'
+        stem = f'cims_base_{suffix.lower()}'
         fixed = _flatten_fixed(stem)
-        fixed.select(OUTPUT_COLS).write_csv(OUTPUT_DIR / f'{stem}.csv')
-        print(f"  {stem}: {len(fixed)} rows")
+        fixed_out = collapse_constant_years(fixed.select(OUTPUT_COLS))
+        fixed_out.write_csv(OUTPUT_DIR / f'{stem}.csv')
+        print(f"  {stem}: {len(fixed_out)} rows")
 
     print("\nAssembling provincial files...")
     for region in PROVINCES:
-        stem  = f'CIMS_base_{region}'
+        stem  = f'cims_base_{region.lower()}'
         df    = _assemble_region(region, pop_gdp)
+        df    = collapse_constant_years(df)
         n_attr = len(df.filter(pl.col('Parameter') == 'attribute'))
         df.write_csv(OUTPUT_DIR / f'{stem}.csv')
         print(f"  {stem}: {len(df)} rows  ({n_attr} attribute)")

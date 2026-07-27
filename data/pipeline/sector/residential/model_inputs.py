@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Residential/residential_{region}.csv
+    raw_data/fixed_data/residential/residential_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     One file per region — no template substitution required.
 
@@ -85,9 +85,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Residential'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/residential'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/residential'
 
 REGIONS = [
@@ -127,9 +128,9 @@ CIMS_BUILDING_TO_DENSITY: dict[str, str] = {
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    fixed_path = FIXED_INPUT_DIR / f'residential_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'residential_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'residential_{region}.csv'
+        out_file = Path(tmp) / f'residential_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -531,6 +532,12 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
 
     Filters Branch to 'Water Heating' to avoid matching Building Type density
     services that share the same Service name.
+
+    Shares are renormalized to sum to 1 within each branch: CEUD's raw shares
+    can include minor fuels (e.g. kerosene, LPG, solid biomass) that have no
+    corresponding fixed_data technology to land on, which would otherwise
+    leave the defined technologies' total short of 1 (e.g. NS/PE LowMed
+    Density summing to ~0.9948 instead of 1).
     """
     data = residential.filter(
         (pl.col('province') == region) &
@@ -559,8 +566,15 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
         if key not in branch_tech_max or o > branch_tech_max[key]:
             branch_tech_max[key] = o
 
+    branch_totals: dict[str, float] = {}
+    for branch, tech in branch_tech_max:
+        branch_totals[branch] = branch_totals.get(branch, 0.0) + pipe_vals.get(tech, 0.0)
+
     rows: list[dict] = []
     for (branch, tech), max_order in branch_tech_max.items():
+        total = branch_totals.get(branch, 0.0)
+        raw_value = pipe_vals.get(tech, 0.0)
+        value = raw_value / total if total > 0 else raw_value
         rows.append({
             'Branch': branch, 'Type': 'Service', 'Region': region,
             'Sector': 'Residential', 'Service': wh_service,
@@ -569,7 +583,7 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
             'Context': '', 'Sub_Context': '', 'Target': '',
             'Source': pipe_sources.get(tech, 'CEUD'),
             'Unit': pipe_unit, 'Year': '2000',
-            'Value': str(pipe_vals.get(tech, 0.0)),
+            'Value': str(value),
             '_order': max_order + 0.5,
         })
 
@@ -698,7 +712,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region in sorted(REGIONS):
-        fixed_path = FIXED_INPUT_DIR / f'residential_{region}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'residential_{region.lower()}.csv'
         if not fixed_path.exists():
             print(f'  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue
@@ -713,8 +727,9 @@ def main() -> dict[str, pl.DataFrame]:
 
             print('  Assembling...')
             output = _assemble_region(fixed, residential, multipliers, region)
+            output = collapse_constant_years(output)
 
-            out_path = OUTPUT_DIR / f'residential_{region}.csv'
+            out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Hydrogen/hydrogen_{region}.csv
+    raw_data/fixed_data/hydrogen/hydrogen_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
@@ -48,9 +48,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Hydrogen'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/hydrogen'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/hydrogen'
 
 OUTPUT_COLS = [
@@ -74,9 +75,9 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
     """Flatten one fixed Hydrogen CSV and return as a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'hydrogen_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'hydrogen_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'hydrogen_{region}.csv'
+        out_file = Path(tmp) / f'hydrogen_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -87,6 +88,10 @@ def _read_flattened_fixed(region: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
@@ -182,7 +187,8 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'hydrogen_{region}.csv'
+            out_path = OUTPUT_DIR / f'hydrogen_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

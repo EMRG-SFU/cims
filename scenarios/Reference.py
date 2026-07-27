@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.2"
+__generated_with = "0.23.1"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -43,26 +43,26 @@ def _():
     sector_req = [
         'fuels',
         'transmission',
-        'coal mining',
-        'natural gas',
-        'petroleum crude',
-        'petroleum refining',
+        'coal_mining',
+        'natural_gas',
+        'petroleum_crude',
+        'petroleum_refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial minerals',
-        'iron and steel',
-        'metal smelting',
-        'chemical products',
-        'pulp and paper',
-        'light industrial',
+        'industrial_minerals',
+        'iron_and_steel',
+        'metal_smelting',
+        'chemical_products',
+        'pulp_and_paper',
+        'light_industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation personal',
-        'transportation freight',
+        'transportation_passenger',
+        'transportation_freight',
         'waste',
         'agriculture',
         'forestry',
@@ -75,10 +75,10 @@ def _():
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
-        'DCC', # declining capital cost
-        'DIC', # declining intangible cost (neighbour effect)
-        'FIC', # fixed intangible cost; primarily used for calibration
-        'market share limits', # use of limits should be minimised
+         'dcc', # declining capital cost
+         'dic', # declining intangible cost (neighbour effect)
+         'fic', # fixed intangible cost; primarily used for calibration
+         'market_share_limits', # use of limits should be minimised
         ]
     if model_req:
         if model_path not in update_files:
@@ -108,17 +108,43 @@ def _(model_path, update_files):
         # 'MB',
         # 'ON',
         # 'QC',
-        # 'AT',
+        # 'NB',
+        # 'NL',
+        # 'NS',
+        # 'PE',
+        # 'NT',
+        # 'NU',
+        # 'YT',
     ]
 
     # Only uncommented years below will be run in the simulation
     year_list = [
         ### Historical ###
         2000,
+        2001,
+        2002,
+        2003,
+        2004,
         2005,
+        2006,
+        2007,
+        2008,
+        2009,
         2010,
+        2011,
+        2012,
+        2013,
+        2014,
         2015,
+        2016,
+        2017,
+        2018,
+        2019,
         2020,
+        2021,
+        2022,
+        2023,
+        2024,
         ### Forecast ###
         # 2025,
         # 2030,
@@ -132,7 +158,7 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'Coal Mining'
+        'Coal Mining',
         # 'Natural Gas', # Must run all regions due to Natural Gas Market
         # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
@@ -150,7 +176,7 @@ def _(model_path, update_files):
         'Construction',
         'Residential',
         'Commercial',
-        'Transportation Personal',
+        'Transportation Passenger',
         'Transportation Freight',
         'Waste',
         'Agriculture',
@@ -160,8 +186,8 @@ def _(model_path, update_files):
 
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
-        'exogenous prices',  # needed for correct calibration of historical years
-        # 'exogenous demand',  # use this file when calibrating endogenous supply sectors
+        'exogenous_prices',  # needed for correct calibration of historical years
+        'exogenous_demand',  # use this file when calibrating endogenous supply sectors
         ]
     if model_optional:
         if model_path not in update_files:
@@ -172,42 +198,41 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-        # 'coal mining',   # <-- add this
-    ### Economy
-        'Ref_carbon tax',
-        'Ref_OBPS_Fed',
-    ### Coal Mining
-    ### Natural Gas Production
-    ### Petroleum Crude
-    ### Mining
-    ### Electricity
-        'Ref_coal phase out',
-        'Ref_nuclear ban',
-        'Ref_nuclear decommission',
-        'Ref_clean electricity',
-        'Ref_CER',
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
-        'Ref_incandescent phase out',
-    ### Commercial
-    ### Transportation Personal
-        'Ref_LDV ZEV_Federal', #include before Prov version
-        'Ref_LDV ZEV_Prov',
-        'Ref_renewable fuel content_Fed', #include before Prov version
-        'Ref_renewable fuel content_Prov',
-    ### Transportation Freight
-    ### Waste
-        'Ref_waste methane large sites',
-    ### Agriculture
+     ### Economy
+         'ref_carbon_tax',
+         'ref_obps_fed',
+     ### Coal Mining
+     ### Natural Gas Production
+     ### Petroleum Crude
+     ### Mining
+     ### Electricity
+         'ref_coal_phase_out',
+         'ref_nuclear_ban',
+         'ref_nuclear_decommission',
+         'ref_clean_electricity',
+         'ref_cer',
+     ### Biodiesel
+     ### Ethanol
+     ### Hydrogen
+     ### Petroleum Refining
+     ### Industrial Minerals
+     ### Iron and Steel
+     ### Metal Smelting
+     ### Chemical Products
+     ### Pulp and Paper
+     ### Light Industrial
+     ### Residential
+         'ref_incandescent_phase_out',
+     ### Commercial
+     ### Transportation Personal
+         'ref_ldv_zev_federal', #include before Prov version
+         'ref_ldv_zev_Prov',
+         'ref_renewable_fuel_content_fed', #include before Prov version
+         'ref_renewable_fuel_content_prov',
+     ### Transportation Freight
+     ### Waste
+         'ref_waste_methane_large_sites',
+     ### Agriculture
         ]
     if ref_policies:
         if ref_path not in update_files:
@@ -335,7 +360,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['unrequested_nodes']
+    model.validator.warnings['undefined_nodes']
     return
 
 

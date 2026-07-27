@@ -42,6 +42,7 @@ CONTROL_FILE     = MAPPINGS_PATH / 'control.py'
 ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
+SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
 CER_DIR             = BASE_PATH / 'raw_data/cer'
 MACRO_FILE          = find_cer_file(CER_DIR, 'macro-indicators')
 END_USE_PRICES_FILE = find_cer_file(CER_DIR, 'end-use-prices')
@@ -67,6 +68,7 @@ def load_control_data() -> Dict:
     sectors_df = pd.read_csv(SECTOR_MAP_FILE)
     regions_df = pd.read_csv(REGION_MAP_FILE)
     energy_df  = pd.read_csv(ENERGY_MAP_FILE)
+    sector_region_df = pd.read_csv(SECTOR_REGION_MAP_FILE)
 
     cims_sectors = sectors_df['CIMS'].unique().tolist()
     cims_regions = [r for r in regions_df['CIMS'].unique().tolist() if r != 'CAN']
@@ -80,6 +82,16 @@ def load_control_data() -> Dict:
         if pd.notna(row.get('JCIMS')) and pd.notna(row['CIMS']):
             jcims_to_cims_region[row['JCIMS']] = row['CIMS']
 
+    # Sector -> set of CIMS regions that sector actually has fixed structural
+    # data in. Used to drop sector/region combinations (e.g. Coal Mining in
+    # PE/NL) that would otherwise leak into every sector's output because the
+    # multiplier calculators build a full sector x region cross product.
+    sector_regions: Dict[str, set] = {
+        row['Sector']: set(row['Regions'].split(';'))
+        for _, row in sector_region_df.iterrows()
+        if pd.notna(row.get('Regions'))
+    }
+
     return {
         'sectors_df': sectors_df,
         'regions_df': regions_df,
@@ -89,6 +101,7 @@ def load_control_data() -> Dict:
         'cims_energies': cims_energies,
         'cer_to_cims_region': cer_to_cims_region,
         'jcims_to_cims_region': jcims_to_cims_region,
+        'sector_regions': sector_regions,
     }
 
 
@@ -867,6 +880,20 @@ def main() -> pd.DataFrame:
         .sort_values(['Energy', 'Region', 'Sector', 'Year'])
         .reset_index(drop=True)
     )
+
+    # Drop sector/region combinations that sector has no fixed structural data
+    # for (see sector_regions in load_control_data / sector_region_map.csv).
+    # Sectors not listed there are left unrestricted (all cims_regions apply).
+    sector_regions = control_data['sector_regions']
+    if sector_regions:
+        drop_mask = pd.Series(False, index=output_df.index)
+        for sector, allowed in sector_regions.items():
+            drop_mask |= (output_df['Sector'] == sector) & (~output_df['Region'].isin(allowed))
+        dropped = int(drop_mask.sum())
+        if dropped:
+            output_df = output_df[~drop_mask].reset_index(drop=True)
+            print(f"   Dropped {dropped:,} rows for sector/region combinations "
+                  f"with no fixed data (see sector_region_map.csv)")
 
     print(f"\n✅ Multipliers complete")
     print(f"   Total rows:  {len(output_df):,}")

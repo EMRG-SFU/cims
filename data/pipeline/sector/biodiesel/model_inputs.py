@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Biodiesel/biodiesel_{region}.csv
+    raw_data/fixed_data/biodiesel/biodiesel_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     AT is used as template for NL/PE/NS/NB; BC is used for YT/NT/NU.
 
@@ -48,9 +48,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Biodiesel'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/biodiesel'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/biodiesel'
 
 OUTPUT_COLS = [
@@ -96,6 +97,10 @@ def _read_flattened_fixed(template_region: str, output_region: str) -> pl.DataFr
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
 
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
@@ -211,7 +216,8 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'biodiesel_{region}.csv'
+            out_path = OUTPUT_DIR / f'biodiesel_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

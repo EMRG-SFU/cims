@@ -213,6 +213,12 @@ def main() -> pd.DataFrame:
     if len(unmatched_areas):
         print(f"  Warning: unmapped areas: {sorted(unmatched_areas)}")
 
+    # cer_to_cims_map.csv maps each Space Heating activity to both a "(Marine)"
+    # and a "(Cold)" node with no region qualifier. Marine is BC's coastal
+    # climate zone only — drop Marine rows for every other region.
+    is_marine = merged["cims_node"].str.contains(r"\(Marine\)", regex=True)
+    merged = merged[~is_marine | (merged["Region"] == "BC")]
+
     print("Aggregating by region, cims_node, fuel, year...")
     agg = (
         merged

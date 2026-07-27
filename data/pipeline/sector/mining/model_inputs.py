@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Mining/mining_{region}.csv
+    raw_data/fixed_data/mining/mining_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Contains the full Mining hierarchy including the structural 1.0
     service_request at the sector level. The iron/non-iron product
@@ -40,11 +40,16 @@ Sub-product splits at Metal Open Pit level
     Target format:
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Iron Product
         CIMS.CAN.{region}.Mining.Final Product.Metal Open Pit.Size Reduced Non Iron Product
+    Regions where a sub-product's share is 0% (or blank) for the entire
+    2000–2100 series are dropped (drop_zero_activity_regions) — no orphan
+    service_request is written for those branches.
 
 Potash split at Final Product level  (SK and NB only)
     pipeline/source/activity/heavy_industry.py  (called directly via main())
     Variable: 'Mining.Potash'  (%)
     Target format: CIMS.CAN.{region}.Mining.Final Product.Potash
+    Same zero-region drop as above — regions with a 0%/blank Potash share
+    across the whole series get no Potash service_request.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py  (called directly via main())
@@ -57,12 +62,11 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 Output order per region
 -----------------------
 1. service_request  — sector-level total tonnes (from heavy_industry)
-2. is_supply        — generated (TRUE)
-3. multiplier_price — from energy_price_multipliers
-4. service_request  — Metal Open Pit → Size Reduced Iron Product (from heavy_industry)
-5. service_request  — Metal Open Pit → Size Reduced Non Iron Product (from heavy_industry)
-6. service_request  — Final Product → Potash (from heavy_industry, SK and NB only)
-7. fixed data       — full fixed hierarchy unchanged (service_provide, competition,
+2. multiplier_price — from energy_price_multipliers
+3. service_request  — Metal Open Pit → Size Reduced Iron Product (from heavy_industry)
+4. service_request  — Metal Open Pit → Size Reduced Non Iron Product (from heavy_industry)
+5. service_request  — Final Product → Potash (from heavy_industry, SK and NB only)
+6. fixed data       — full fixed hierarchy unchanged (service_provide, competition,
                       structural 1.0 service_request, and all sub-service parameters)
 """
 
@@ -100,9 +104,11 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Mining'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/mining'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/mining'
 
 OUTPUT_COLS = [
@@ -165,29 +171,6 @@ def _build_total_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     ])
 
 
-def _build_is_supply_rows(regions: list[str]) -> pl.DataFrame:
-    """Generate a single is_supply=TRUE row per region for the sector header."""
-    return pl.DataFrame([
-        {
-            'Branch':      f'CIMS.CAN.{r}.Mining',
-            'Type':        'Sector',
-            'Region':      r,
-            'Sector':      'Mining',
-            'Service':     '',
-            'Technology':  '',
-            'Parameter':   'is_supply',
-            'Context':     'TRUE',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      '',
-            'Unit':        '',
-            'Year':        '',
-            'Value':       '',
-        }
-        for r in regions
-    ])
-
-
 def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     """multiplier_price rows for the Mining sector."""
     return (
@@ -231,6 +214,7 @@ def _build_iron_product_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
         ('Size Reduced Non Iron Product', 'Size Reduced Non Iron Product'),
     ]:
         df = heavy_ind.filter(pl.col('Variable') == f'Mining.{var_suffix}')
+        df = drop_zero_activity_regions(df)
         if df.is_empty():
             continue
         parts.append(df.select([
@@ -267,6 +251,7 @@ def _build_potash_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
     Value:  %
     """
     df = heavy_ind.filter(pl.col('Variable') == 'Mining.Potash')
+    df = drop_zero_activity_regions(df)
     if df.is_empty():
         return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS})
 
@@ -325,13 +310,11 @@ def main() -> pl.DataFrame:
     print('Combining...')
 
     regions = total_rows['Region'].unique().sort().to_list()
-    is_supply_rows = _build_is_supply_rows(regions)
 
     output = (
         pl.concat(
             [
                 total_rows,
-                is_supply_rows,
                 price_rows,
                 iron_rows,
                 potash_rows,
@@ -345,7 +328,8 @@ def main() -> pl.DataFrame:
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'mining_{region}.csv'
+        out_path = OUTPUT_DIR / f'mining_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 

@@ -1,0 +1,14 @@
+Branch,Active,Notes
+CIMS.CAN.AB.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.BC.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.MB.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.NB.Coal Mining.Coal.Raw Product.Transportation,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.NL.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.NS.Coal Mining.Coal.Raw Product.Transportation,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.NT.Petroleum Crude.Production.Light Medium.Offshore,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.NT.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.ON.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.SK.Petroleum Crude.Production.Bitumen,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.SK.Petroleum Crude.Production.Bitumen.In-Situ,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.SK.Petroleum Crude.Production.Bitumen.Upgrading,TRUE,Excluded from demand/emissions calibration output 2026-07-26
+CIMS.CAN.SK.Petroleum Crude.Transmission,TRUE,Excluded from demand/emissions calibration output 2026-07-26

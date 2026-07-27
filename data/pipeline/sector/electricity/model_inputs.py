@@ -7,11 +7,14 @@ price multipliers into CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Electricity/electricity_{region}.csv
+    raw_data/fixed_data/electricity/electricity_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
-    Province files (AB, BC, MB, NB, NL, NS, ON, PE, QC, SK) include
-    Base Load / Shoulder Load / Peak Load sub-services.
-    Territory files (NT, NU, YT) use a flat Utility Generation structure.
+    All regions (provinces and territories NT, NU, YT alike) include
+    Base Load / Shoulder Load / Peak Load sub-services under Utility
+    Generation. Territory Shoulder/Peak Load technology sets and values
+    mirror a reference province (YT/NT ← BC, NU ← MB); their Base Load
+    fractions come from the nearest-neighbour match computed independently
+    in source/activity/electricity.py (YT ← ON, NT ← SK, NU ← AB).
 
 Electricity activity / load fractions
     processed_data/activity/electricity.csv
@@ -20,8 +23,12 @@ Electricity activity / load fractions
         Electricity.Utility Generation.Shoulder Load → % MWh → Utility Generation service_request
         Electricity.Utility Generation.Peak Load    → % MWh → Utility Generation service_request
 
-    Load-fraction service_requests are only emitted for regions whose fixed data
-    contains Base Load / Shoulder Load / Peak Load sub-services (provinces).
+    Load-fraction service_requests are emitted for any region whose fixed data
+    contains a Base Load sub-service (currently: all regions). Within a region,
+    an individual load type's series is dropped entirely if its value is 0%
+    (or blank) across the whole 2000–2100 range (drop_zero_activity_regions)
+    — e.g. a region with no Peak Load capacity gets no Peak Load
+    service_request.
 
 Energy price multipliers  (multiplier_price rows)
     pipeline/source/energy_prices/energy_price_multipliers.py
@@ -33,11 +40,10 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 Output order per region
 -----------------------
-1. Electricity sector service_provide + competition
+1. Fixed data — Electricity sector service_provide / competition / is_supply
 2. multiplier_price (Electricity sector level)
 3. Fixed data — Utility Generation service_provide / competition
 4. service_request (Utility Generation) — Base Load / Shoulder Load / Peak Load % MWh
-   (provinces only)
 5. Remainder of fixed data (technologies, Storage, Transmission, CCS)
 """
 
@@ -74,10 +80,15 @@ _elec_spec = importlib.util.spec_from_file_location(
 _elec_mod = importlib.util.module_from_spec(_elec_spec)
 _elec_spec.loader.exec_module(_elec_mod)
 
-from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.controls_conversions import (
+    BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR,
+    force_single_technology_market_share,
+)
+from utils.collapse_constant_years import collapse_constant_years
+from utils.drop_zero_activity import drop_zero_activity_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Electricity'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/electricity'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/electricity'
 
 OUTPUT_COLS = [
@@ -109,9 +120,9 @@ _LOAD_VAR_TO_SERVICE: dict[str, str] = {
 
 def _read_flattened_fixed(region: str) -> pl.DataFrame:
     """Flatten one Electricity fixed CSV and return a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'electricity_{region}.csv'
+    fixed_path = FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv'
     with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'electricity_{region}.csv'
+        out_file = Path(tmp) / f'electricity_{region.lower()}.csv'
         _flatten_mod.process_file(
             input_path=fixed_path,
             output_path=out_file,
@@ -122,6 +133,10 @@ def _read_flattened_fixed(region: str) -> pl.DataFrame:
             target_step=1,
         )
         df = pl.read_csv(out_file, infer_schema_length=0)
+    df = df.with_columns(
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
+        pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
+    )
     return df.with_row_index('_order')
 
 
@@ -148,21 +163,6 @@ def _find_max_order(df: pl.DataFrame, service: str, parameter: str,
 def _has_load_subservices(fixed: pl.DataFrame) -> bool:
     """True when fixed data contains Base / Shoulder / Peak Load sub-services."""
     return len(fixed.filter(pl.col('Service').fill_null('') == 'Base Load')) > 0
-
-
-def _build_sector_rows(region: str, start_order: float) -> pl.DataFrame:
-    """Electricity sector service_provide and competition rows (structural, no year values)."""
-    branch = f'CIMS.CAN.{region}.Electricity'
-    base = {'Branch': branch, 'Type': 'Sector', 'Region': region, 'Sector': 'Electricity',
-            'Service': '', 'Technology': '', 'Sub_Context': '', 'Target': '',
-            'Source': '', 'Unit': '', 'Year': '', 'Value': ''}
-    rows = [
-        {**base, 'Parameter': 'service_provide', 'Context': '', 'Source': 'JCIMS',
-         'Unit': 'GJ', '_order': start_order},
-        {**base, 'Parameter': 'competition', 'Context': 'Sector',
-         '_order': start_order + 1e-4},
-    ]
-    return pl.DataFrame(rows)
 
 
 def _build_price_rows(multipliers: pl.DataFrame, region: str,
@@ -221,6 +221,7 @@ def _build_load_fraction_rows(activity: pl.DataFrame, region: str,
             )
             .sort('Year')
         )
+        var_data = drop_zero_activity_regions(var_data)
         for r in var_data.iter_rows(named=True):
             rows.append({
                 'Branch':      f'CIMS.CAN.{region}.Electricity.Utility Generation',
@@ -260,11 +261,11 @@ def _assemble_region(
         _find_max_order(fixed, 'Utility Generation', 'competition', no_tech=True)
         or min_fixed
     )
+    is_supply_max = _find_max_order(fixed, '', 'is_supply') or min_fixed
 
     # Pipeline rows
-    sector_rows = _build_sector_rows(region, start_order=min_fixed - 1500.0)
     price_rows = _build_price_rows(
-        multipliers, region, start_order=min_fixed - 1000.0,
+        multipliers, region, start_order=is_supply_max + 0.5,
     )
     load_rows = (
         _build_load_fraction_rows(activity, region, start_order=ug_comp_max + 0.5)
@@ -272,7 +273,7 @@ def _assemble_region(
     )
 
     combined = pl.concat(
-        [f for f in [fixed.cast({'_order': pl.Float64}), sector_rows, price_rows, load_rows]
+        [f for f in [fixed.cast({'_order': pl.Float64}), price_rows, load_rows]
          if len(f) > 0],
         how='diagonal_relaxed',
     ).sort('_order')
@@ -301,7 +302,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region in sorted(FIXED_TEMPLATE):
-        fixed_path = FIXED_INPUT_DIR / f'electricity_{region}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'electricity_{region.lower()}.csv'
         if not fixed_path.exists():
             print(f'\n⚠  Skipping {region} — fixed data not found')
             continue
@@ -312,13 +313,15 @@ def main() -> dict[str, pl.DataFrame]:
         print(f'\n{region}:')
         try:
             fixed = _read_flattened_fixed(region)
+            fixed = force_single_technology_market_share(fixed)
             has_load = _has_load_subservices(fixed)
             print(f'  Fixed rows: {len(fixed):,}  '
-                  f'load sub-services: {"yes" if has_load else "no (territory)"}')
+                  f'load sub-services: {"yes" if has_load else "no"}')
 
             output = _assemble_region(fixed, activity, multipliers, region)
 
-            out_path = OUTPUT_DIR / f'electricity_{region}.csv'
+            out_path = OUTPUT_DIR / f'electricity_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

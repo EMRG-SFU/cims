@@ -7,7 +7,7 @@ CIMS-formatted CSVs (one per region).
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Commercial/commercial_{region}.csv
+    raw_data/fixed_data/commercial/commercial_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     AT is used as template for NL/PE/NS/NB; BC is used for YT/NT/NU.
 
@@ -70,9 +70,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Commercial'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/commercial'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/commercial'
 
 OUTPUT_COLS = [
@@ -474,7 +475,8 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, commercial, multipliers, region, template)
 
-            out_path = OUTPUT_DIR / f'commercial_{region}.csv'
+            out_path = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
+            output = collapse_constant_years(output)
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output

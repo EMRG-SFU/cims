@@ -4,7 +4,7 @@ Extract Construction model input data and save to CIMS-formatted CSV.
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/Construction/*.csv
+    raw_data/fixed_data/construction/*.csv
     Flattened from wide (2000–2050 year columns) to long format via
     utils/flatten_fixed_data.
     Includes: service_provide, competition, technology, market_share_total,
@@ -60,9 +60,10 @@ _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ─────────────────────────────────────────────────────────────
-FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/Construction'
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/construction'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/construction'
 
 OUTPUT_COLS = [
@@ -119,7 +120,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
         emissions
         .filter(pl.col('Variable') == 'Construction')
         .select([
-            ('JCIMS.CAN.' + pl.col('Region')).alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region')).alias('Branch'),
             pl.lit('Region').alias('Type'),
             pl.col('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -128,7 +129,7 @@ def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
             pl.lit('service_request').alias('Parameter'),
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
-            ('JCIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
+            ('CIMS.CAN.' + pl.col('Region') + pl.lit('.Construction')).alias('Target'),
             pl.col('Source'),
             pl.lit('tCO2e').alias('Unit'),
             pl.col('Year').cast(pl.String).alias('Year'),
@@ -148,7 +149,7 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
         multipliers
         .filter(pl.col('Sector') == 'Construction')
         .select([
-            ('JCIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
+            ('CIMS.CAN.' + pl.col('Region') + '.Construction').alias('Branch'),
             pl.lit('Sector').alias('Type'),
             pl.col('Region').alias('Region'),
             pl.lit('Construction').alias('Sector'),
@@ -161,8 +162,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
                 'Electricity', 'Biodiesel', 'Renewable Diesel',
                 'Ethanol', 'Renewable Gasoline', 'Hydrogen',
             ]))
-            .then(pl.lit('JCIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
-            .otherwise(pl.lit('JCIMS.Generic Fuels.') + pl.col('Energy'))
+            .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
+            .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))
             .alias('Target'),
             pl.col('Source').alias('Source'),
             pl.lit('').alias('Unit'),
@@ -222,7 +223,8 @@ def main() -> pl.DataFrame:
     regions = output['Region'].drop_nulls().unique().sort().to_list()
     for region in regions:
         region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'construction_{region}.csv'
+        out_path = OUTPUT_DIR / f'construction_{region.lower()}.csv'
+        region_df = collapse_constant_years(region_df)
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
 
