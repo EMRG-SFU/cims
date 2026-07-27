@@ -1,0 +1,192 @@
+technology: "Natural Gas SC"
+branch: ".electricity.product.base_load"
+unit: "MWh"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2000
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "%"
+        by_year: false
+        by_region: true
+        source: "natural_gas_sc.csv"
+        note: "Updated annually - not up-to-date"
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 91980
+        unit: "MWh"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 153198150
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2235870
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Generic Fuels.VOM"
+        value_type: "fixed"
+        value: 6.14
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Generic Fuels.Natural Gas"
+        value_type: "fixed"
+        value: 11.16964899
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "CEEDC"
+        note: "Fuel use / generation"
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity.service.transmission"
+        value_type: "fixed"
+        value: 1
+        unit: "unit"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

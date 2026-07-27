@@ -1,0 +1,170 @@
+technology: "Electrochemical synthesis"
+branch: ".industrial_minerals.product.lime.kilns"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2025
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 620000
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 50000000
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note: "Sublime systems claims LCC equal to plant with CCS at current 40,000 ton/year plant also Claim LCC on par with market for at scale plant with 1,000,000 ton/year plant. Assume starting LCC to match conventional plus CCS cost. IEA says Cement CCS at $60-120 /tco2 = $26.45 to $52.91 /tcement. This is an total LCC for this tech $189.00 CAD.  DCC data to be sourced."
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 3805964.558
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Sublime"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity"
+        value_type: "fixed"
+        value: 6.15
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "Sublime & Ellis, L. D., Badel, A. F., Chiang, M. L., Park, R. J. Y., & Chiang, Y. M. (2020)"
+        note: "5.2 to 7.1 MJ of electricity per kg of cement through electrolyzer. 6.15gj per tonne is the mean.  Little to no supplemental heat required. Source: Ellis, L. D., Badel, A. F., Chiang, M. L., Park, R. J. Y., & Chiang, Y. M. (2020). Toward electrochemical synthesis of cement�An electrolyzer-based process for decarbonating CaCO3 while producing useful gas streams. Proceedings of the National Academy of Sciences, 117(23), 12584-12591."
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

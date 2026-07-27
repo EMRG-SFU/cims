@@ -1,0 +1,11 @@
+parameter,context,sub_context,target,unit,region,year,value
+market_share_total,,,,%,ab,2000,0.0
+market_share_total,,,,%,bc,2000,0.019
+market_share_total,,,,%,mb,2000,0.0
+market_share_total,,,,%,nb,2000,0.0
+market_share_total,,,,%,nl,2000,0.0
+market_share_total,,,,%,ns,2000,0.0
+market_share_total,,,,%,on,2000,0.02
+market_share_total,,,,%,pe,2000,0.0
+market_share_total,,,,%,qc,2000,0.0
+market_share_total,,,,%,sk,2000,0.0

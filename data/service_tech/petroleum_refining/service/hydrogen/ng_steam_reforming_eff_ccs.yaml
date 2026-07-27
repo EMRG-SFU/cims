@@ -1,0 +1,236 @@
+technology: "NG steam reforming Eff CCS"
+branch: ".petroleum_refining.service.hydrogen"
+unit: "GJ"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2015
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 25
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 343000
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 39230605.05
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 5884590.758
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".petroleum_refining.service.ccs"
+        value_type: "fixed"
+        value: 0.054357275
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Generic Fuels.Natural Gas"
+        value_type: "fixed"
+        value: 1.11
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".petroleum_refining.ventilation"
+        value_type: "csv"
+        value:
+        unit: "GJ"
+        by_year: true
+        by_region: true
+        source: "ng_steam_reforming_eff_ccs.csv"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".petroleum_refining.compression"
+        value_type: "csv"
+        value:
+        unit: "GJ"
+        by_year: true
+        by_region: true
+        source: "ng_steam_reforming_eff_ccs.csv"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".petroleum_refining.service.direct_heat"
+        value_type: "fixed"
+        value: 0.00725249
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".petroleum_refining.pumping"
+        value_type: "csv"
+        value:
+        unit: "GJ"
+        by_year: true
+        by_region: true
+        source: "ng_steam_reforming_eff_ccs.csv"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".steam"
+        value_type: "fixed"
+        value: 0.001416608
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

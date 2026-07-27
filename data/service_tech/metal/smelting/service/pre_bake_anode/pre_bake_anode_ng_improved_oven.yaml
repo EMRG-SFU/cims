@@ -1,0 +1,181 @@
+technology: "Pre bake anode NG improved oven"
+branch: ".metal.smelting.service.pre_bake_anode"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1950
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 150000
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 367059560.7
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 28895499.24
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity"
+        value_type: "fixed"
+        value: 0.13
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal.smelting.service.methane_blend"
+        value_type: "fixed"
+        value: 7.986254869
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

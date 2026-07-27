@@ -1,0 +1,170 @@
+technology: "Eff rotary pump variable speed"
+branch: ".industrial_minerals.pumping.slurry_stock.small"
+unit: "GJ"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1940
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0.1
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 10
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 940.655808
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 146783.6064
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 625.6874809
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "BC, AB, QC, AT MS copied from ON"
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.machine_drive"
+        value_type: "fixed"
+        value: 1.905491436
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

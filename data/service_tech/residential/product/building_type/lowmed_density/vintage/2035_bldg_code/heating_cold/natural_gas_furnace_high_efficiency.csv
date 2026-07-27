@@ -1,0 +1,14 @@
+parameter,context,sub_context,target,unit,region,year,value
+market_share_total,,,,%,ab,2000,0.048139068312737045
+market_share_total,,,,%,bc,2000,0.09974319540710676
+market_share_total,,,,%,mb,2000,0.1290851941655155
+market_share_total,,,,%,nb,2000,0.0013683992685401328
+market_share_total,,,,%,nl,2000,0.0
+market_share_total,,,,%,ns,2000,0.0
+market_share_total,,,,%,nt,2000,2.342860560752672e-05
+market_share_total,,,,%,nu,2000,9.887007433966866e-05
+market_share_total,,,,%,on,2000,0.15458090178100492
+market_share_total,,,,%,pe,2000,0.0
+market_share_total,,,,%,qc,2000,0.00738546496113778
+market_share_total,,,,%,sk,2000,0.16021574419842852
+market_share_total,,,,%,yt,2000,0.00018310093303899248

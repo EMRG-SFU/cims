@@ -1,0 +1,170 @@
+technology: "High bleed"
+branch: ".natural_gas.product.supply.controls"
+unit: "1000 m3"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2000
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 1
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 50
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 161
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 16
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".natural_gas.product.supply.venting.point_venting"
+        value_type: "fixed"
+        value: 0.00025
+        unit: "tCH4"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

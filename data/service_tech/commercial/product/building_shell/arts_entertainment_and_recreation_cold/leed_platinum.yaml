@@ -1,0 +1,170 @@
+technology: "LEED Platinum"
+branch: ".commercial.product.building_shell.arts_entertainment_and_recreation_cold"
+unit: "m2"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2015
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 33
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 0.568226514
+        unit: "m2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 152.7273417
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 25
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 0.03
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.service.hvac_cold"
+        value_type: "fixed"
+        value: 0.623903555
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

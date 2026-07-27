@@ -1,0 +1,192 @@
+technology: "Increased clinker substitution"
+branch: ".industrial_minerals.product.cement"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2020
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "%"
+        by_year: true
+        by_region: false
+        source: "increased_clinker_substitution.csv"
+        note: "Requires market share max of  30% by 2020, 33% by 2030, 37% by 2040 and 40% by 2050"
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 620000
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 6204097.37
+        unit: "$"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 311937.8566
+        unit: "$"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.product.cement.portland_cement"
+        value_type: "fixed"
+        value: 0.88
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "UED 2013 Database"
+        note: "Assumes 15% clinker cost savings: Cement llc 196.14  in year 2000;   Clinker llc * 1.15 * 0.85 = 139.08 * 1.15=159.94  or 81.5% of cost. 12.225% in cost savings."
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.hvac"
+        value_type: "fixed"
+        value: 0.005
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.lighting"
+        value_type: "fixed"
+        value: 0.005
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

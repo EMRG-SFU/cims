@@ -1,0 +1,192 @@
+technology: "Carbon curing"
+branch: ".industrial_minerals.product.cement"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2020
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 0
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 23.7
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note: "Carboncure states a breakeven to 1-2% upcharge including material savings cost; 8% ortland cement savings with 196.14 LLC = 0.08 * 196.14=15.6912. and 1.5% of 196.14 = $2.94 end product devided by a 38% COP to represent energy increase. $7.74.31 increase. total Levelized cost increase of $23.70"
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.product.cement.portland_cement"
+        value_type: "fixed"
+        value: 0.92
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "Carboncure"
+        note: "up to 8% cement savings - Hanifa, M., Agarwal, R., Sharma, U., Thapliyal, P. C., & Singh, L. P. (2023). A review on CO2 capture and sequestration in the construction industry: Emerging approaches and commercialised technologies. Journal of CO2 Utilization, 67, 102292."
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.hvac"
+        value_type: "fixed"
+        value: 0.005
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.lighting"
+        value_type: "fixed"
+        value: 0.005
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context: "CO2"
+        sub_context: "Process"
+        target:
+        value_type: "fixed"
+        value: -0.10416
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "Carboncure & Hanifa, M., Agarwal, R., Sharma, U., Thapliyal, P. C., & Singh, L. P. (2023)"
+        note: "150kg of CO2 sequester per cubed meter of cement  (1.440 tonnes) = -0.10416 : Hanifa, M., Agarwal, R., Sharma, U., Thapliyal, P. C., & Singh, L. P. (2023). A review on CO2 capture and sequestration in the construction industry: Emerging approaches and commercialised technologies. Journal of CO2 Utilization, 67, 102292."
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

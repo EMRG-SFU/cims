@@ -1,0 +1,170 @@
+technology: "Infrastructure"
+branch: ".hydrogen.service.infrastructure"
+unit: "kg"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2025
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Transition Accelerator, 2021"
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Transition Accelerator, 2021"
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 1
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "n/a"
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 50
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Transition Accelerator, 2021"
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1405581858
+        unit: "kg"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Transition Accelerator, 2021"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "$"
+        by_year: false
+        by_region: true
+        source: "infrastructure.csv"
+        note: "Transition Accelerator, 2021"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Pipeline lifetime = 50 years, Compressors = 15 years -> Use 30 years for correct payback period"
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "$"
+        by_year: false
+        by_region: true
+        source: "infrastructure.csv"
+        note: "Transition Accelerator, 2021"
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity"
+        value_type: "fixed"
+        value: 0.005508
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Transition Accelerator, 2021"
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

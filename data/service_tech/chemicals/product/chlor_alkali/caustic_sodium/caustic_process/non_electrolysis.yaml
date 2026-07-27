@@ -1,0 +1,577 @@
+technology: "Non electrolysis"
+branch: ".chemicals.product.chlor_alkali.caustic_sodium.caustic_process"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1950
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 82000
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "$"
+        by_year: false
+        by_region: true
+        source: "non_electrolysis.csv"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "$"
+        by_year: false
+        by_region: true
+        source: "non_electrolysis.csv"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity"
+        value_type: "fixed"
+        value: 8.37
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".methane_blend"
+        value_type: "fixed"
+        value: -3.9
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.BC.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".steam"
+        value_type: "fixed"
+        value: 6.3057433
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.BC.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.BC.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.BC.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.BC.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.MB.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.MB.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.MB.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.MB.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.MB.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NL.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NL.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NL.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NL.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NL.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NS.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NS.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NS.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NS.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.NS.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.ON.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.ON.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.ON.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.ON.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.ON.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.QC.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.QC.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.QC.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.QC.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.QC.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.SK.Chemical Products.Compression"
+        value_type: "fixed"
+        value: 0.077
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.SK.Chemical Products.Ventilation"
+        value_type: "fixed"
+        value: 0.011
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.SK.Chemical Products.Conveyance"
+        value_type: "fixed"
+        value: 0.017
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.SK.Chemical Products.Pumping"
+        value_type: "fixed"
+        value: 0.393
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.CAN.SK.Chemical Products.Direct Drive"
+        value_type: "fixed"
+        value: 0.345
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

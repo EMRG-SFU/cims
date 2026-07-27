@@ -1,0 +1,25 @@
+parameter,context,sub_context,target,unit,region,year,value
+market_share_total,,,,%,ab,2000,1.0
+market_share_total,,,,%,bc,2000,1.0
+market_share_total,,,,%,mb,2000,1.0
+market_share_total,,,,%,nb,2000,1.0
+market_share_total,,,,%,nl,2000,1.0
+market_share_total,,,,%,ns,2000,1.0
+market_share_total,,,,%,nt,2000,0.0
+market_share_total,,,,%,nu,2000,0.0
+market_share_total,,,,%,on,2000,1.0
+market_share_total,,,,%,pe,2000,1.0
+market_share_total,,,,%,qc,2000,1.0
+market_share_total,,,,%,sk,2000,1.0
+market_share_total,,,,%,yt,2000,0.0
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2000,1.17
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2005,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2010,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2015,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2020,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2025,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2030,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2035,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2040,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2045,1.168982909
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2050,1.168982909

@@ -1,0 +1,170 @@
+technology: "Natural Gas_Boiler_Low Efficiency"
+branch: ".residential.service.water_heating.high_density"
+unit: "GJ"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1990
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2001
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "%"
+        by_year: false
+        by_region: true
+        source: "natural_gas_boiler_low_efficiency.csv"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 13
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 642.4
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 7088.7
+        unit: "$"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".residential.service.methane_blend"
+        value_type: "fixed"
+        value: 0.320235427
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "EIA, 2023"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

@@ -1,0 +1,170 @@
+technology: "Wind Offshore"
+branch: ".electricity.product.base_load"
+unit: "MWh"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2025
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1541760
+        unit: "MWh"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1962044000
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 57491200
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NREL 2020 ATB"
+        note: "Updated annually - not up-to-date"
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity.service.transmission"
+        value_type: "fixed"
+        value: 1
+        unit: "unit"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

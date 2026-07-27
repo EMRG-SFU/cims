@@ -1,0 +1,335 @@
+technology: "CCS"
+branch: ".electricity.service.ccs.ccs_natural_gas"
+unit: "tCO2"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2020
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NETL,DOE,USA 2022 Cost of Capturing CO2 from Industrial Sources"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "NETL,DOE,USA 2022 Cost of Capturing CO2 from Industrial Sources"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "%"
+        by_year: false
+        by_region: true
+        source: "ccs.csv"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "NETL,DOE,USA 2022 Cost of Capturing CO2 from Industrial Sources"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2216703
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "NETL,DOE,USA 2022 Cost of Capturing CO2 from Industrial Sources"
+        note: "Output = tCO2 avoided:  2463003 tCO2 plant - 246300 tCO2  90% CCS plant"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 1033595877
+        unit: "$"
+        by_year:
+        by_region:
+        source: "NETL,DOE,USA 2022 Cost of Capturing CO2 from Industrial Sources"
+        note: "FCC = ($1710262000 90% CCS plant - $962719000 plant) *1.03068015 (2020 CPI/2018CPI)*1.3415 CAD/USD"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "csv"
+        value:
+        unit: "$"
+        by_year: true
+        by_region: true
+        source: "ccs.csv"
+        note: "FOM = ($44989268 90% CCS plant - $26045818 plant) *1.03068015 (2020 CPI/2018CPI)*1.3415 CAD/USD"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Generic Fuels.VOM"
+        value_type: "fixed"
+        value: 7.881659957
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "(($25122509 90% CCS plant - $12486480 plant )/tCO2 output) *1.03068015 (2020 CPI/2018CPI)*1.3415 CAD/USD"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Generic Fuels.Natural Gas"
+        value_type: "fixed"
+        value: 2.354437378
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "((18000kWe CO2 Capt Aux + 23810kWe CO2 Compression + 20153 kWe CCS 90% Balance of Plant -16923 kWe Balance of Plant +324000 kWe steam plant - 260000 kWe steam 90% CCS Plant)*(6486 GJ/hr Nat Gas input /3633 GJ/hr Power output)  *8760 hours *  0.85 capacity factor) * 0.0036  GJ/kWh /tCO2 output"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS AB"
+        value_type: "csv"
+        value:
+        unit: "tCO2"
+        by_year: true
+        by_region: false
+        source: "ccs.csv"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS BC"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS MB"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS NB"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS NL"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS NS"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS NT"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS NU"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS ON"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS PE"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS QC"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS SK"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    service_request:
+        context:
+        sub_context:
+        target: "CIMS.Transmission.CCS TS YT"
+        value_type: "fixed"
+        value: 1.003768217
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "1 tCO2 * 0.9 + GJ Nat Gas*0.0489705183934989 tCO2/GJ Nat Gas *0.90 Capture rate"
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context: "CO2"
+        sub_context: "Combustion"
+        target:
+        value_type: "fixed"
+        value: 0.9
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions_removal:
+        context: "CO2"
+        sub_context: "Process"
+        target:
+        value_type: "fixed"
+        value: 0.9
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:

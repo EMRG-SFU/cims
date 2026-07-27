@@ -1,0 +1,12 @@
+parameter,context,sub_context,target,unit,region,year,value
+emissions,CH4,Process,,tCH4,ab,2000,0.001
+emissions,CH4,Process,,tCH4,ab,2005,0.001
+emissions,CH4,Process,,tCH4,ab,2010,0.001
+emissions,CH4,Process,,tCH4,ab,2015,0.001
+emissions,CH4,Process,,tCH4,ab,2020,0.00033
+emissions,CH4,Process,,tCH4,ab,2025,0.00033
+emissions,CH4,Process,,tCH4,ab,2030,0.00033
+emissions,CH4,Process,,tCH4,ab,2035,0.00033
+emissions,CH4,Process,,tCH4,ab,2040,0.00033
+emissions,CH4,Process,,tCH4,ab,2045,0.00033
+emissions,CH4,Process,,tCH4,ab,2050,0.00033

@@ -1,0 +1,155 @@
+technology: "urban_passenger_vehicle_hov"
+branch: ".transportation_passenger.product.urban"
+unit: "k_pkm"
+note: 
+parameter: 
+    available: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: "fixed"
+        value: 1950
+        by_year: 
+        by_region: 
+        source: "JCIMS"
+        note: 
+    unavailable: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    market_share_total: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: "csv"
+        value: 
+        by_year: true
+        by_region: true
+        source: "nrcan ceud"
+        note: 
+    market_share_new_max: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    market_share_new_min: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    lifetime: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: "fixed"
+        value: 10
+        by_year: 
+        by_region: 
+        source: "JCIMS"
+        note: "lifetime is longer for vehicles (vs. walk or transit) to have some stickiness in decision to use a personal vehicle"
+    output: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: "fixed"
+        value: 20683
+        by_year: 
+        by_region: 
+        source: "JCIMS"
+        note: 
+    currency: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: "2015_CAD"
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    fcc: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: "motor costs are included at .transportation_passenger.passenger_vehicles"
+    capital_recovery: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    fom: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    service_request: 
+        context: 
+        sub_context: 
+        target: ".transportation_passenger.passenger_vehicles"
+        value_type: "calculation"
+        value: 0.2
+        by_year: 
+        by_region: 
+        source: "data/assumptions/transportation_passenger/occupancy.py"
+        note: "passenger_vehicles service_provide unit is k_vkm"
+    emissions: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    emissions_biomass: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 
+    emissions_removal: 
+        context: 
+        sub_context: 
+        target: 
+        value_type: 
+        value: 
+        by_year: 
+        by_region: 
+        source: 
+        note: 

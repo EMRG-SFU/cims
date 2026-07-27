@@ -1,0 +1,586 @@
+parameter,context,sub_context,target,unit,region,year,value
+available,,,,Year,ab,2000,2000.0
+available,,,,Year,bc,2000,1950.0
+available,,,,Year,mb,2000,1950.0
+available,,,,Year,nb,2000,1950.0
+available,,,,Year,nl,2000,1950.0
+available,,,,Year,ns,2000,1950.0
+available,,,,Year,nt,2000,1950.0
+available,,,,Year,nu,2000,1950.0
+available,,,,Year,on,2000,1950.0
+available,,,,Year,pe,2000,1950.0
+available,,,,Year,qc,2000,1950.0
+available,,,,Year,sk,2000,1950.0
+available,,,,Year,yt,2000,1950.0
+available,,,,Year,ab,2005,2000.0
+available,,,,Year,bc,2005,1950.0
+available,,,,Year,mb,2005,1950.0
+available,,,,Year,nb,2005,1950.0
+available,,,,Year,nl,2005,1950.0
+available,,,,Year,ns,2005,1950.0
+available,,,,Year,nt,2005,1950.0
+available,,,,Year,nu,2005,1950.0
+available,,,,Year,on,2005,1950.0
+available,,,,Year,pe,2005,1950.0
+available,,,,Year,qc,2005,1950.0
+available,,,,Year,sk,2005,1950.0
+available,,,,Year,yt,2005,1950.0
+available,,,,Year,ab,2010,2000.0
+available,,,,Year,bc,2010,1950.0
+available,,,,Year,mb,2010,1950.0
+available,,,,Year,nb,2010,1950.0
+available,,,,Year,nl,2010,1950.0
+available,,,,Year,ns,2010,1950.0
+available,,,,Year,nt,2010,1950.0
+available,,,,Year,nu,2010,1950.0
+available,,,,Year,on,2010,1950.0
+available,,,,Year,pe,2010,1950.0
+available,,,,Year,qc,2010,1950.0
+available,,,,Year,sk,2010,1950.0
+available,,,,Year,yt,2010,1950.0
+available,,,,Year,ab,2015,2000.0
+available,,,,Year,bc,2015,1950.0
+available,,,,Year,mb,2015,1950.0
+available,,,,Year,nb,2015,1950.0
+available,,,,Year,nl,2015,1950.0
+available,,,,Year,ns,2015,1950.0
+available,,,,Year,nt,2015,1950.0
+available,,,,Year,nu,2015,1950.0
+available,,,,Year,on,2015,1950.0
+available,,,,Year,pe,2015,1950.0
+available,,,,Year,qc,2015,1950.0
+available,,,,Year,sk,2015,1950.0
+available,,,,Year,yt,2015,1950.0
+available,,,,Year,ab,2020,2000.0
+available,,,,Year,bc,2020,1950.0
+available,,,,Year,mb,2020,1950.0
+available,,,,Year,nb,2020,1950.0
+available,,,,Year,nl,2020,1950.0
+available,,,,Year,ns,2020,1950.0
+available,,,,Year,nt,2020,1950.0
+available,,,,Year,nu,2020,1950.0
+available,,,,Year,on,2020,1950.0
+available,,,,Year,pe,2020,1950.0
+available,,,,Year,qc,2020,1950.0
+available,,,,Year,sk,2020,1950.0
+available,,,,Year,yt,2020,1950.0
+available,,,,Year,ab,2025,2000.0
+available,,,,Year,bc,2025,1950.0
+available,,,,Year,mb,2025,1950.0
+available,,,,Year,nb,2025,1950.0
+available,,,,Year,nl,2025,1950.0
+available,,,,Year,ns,2025,1950.0
+available,,,,Year,nt,2025,1950.0
+available,,,,Year,nu,2025,1950.0
+available,,,,Year,on,2025,1950.0
+available,,,,Year,pe,2025,1950.0
+available,,,,Year,qc,2025,1950.0
+available,,,,Year,sk,2025,1950.0
+available,,,,Year,yt,2025,1950.0
+available,,,,Year,ab,2030,2000.0
+available,,,,Year,bc,2030,1950.0
+available,,,,Year,mb,2030,1950.0
+available,,,,Year,nb,2030,1950.0
+available,,,,Year,nl,2030,1950.0
+available,,,,Year,ns,2030,1950.0
+available,,,,Year,nt,2030,1950.0
+available,,,,Year,nu,2030,1950.0
+available,,,,Year,on,2030,1950.0
+available,,,,Year,pe,2030,1950.0
+available,,,,Year,qc,2030,1950.0
+available,,,,Year,sk,2030,1950.0
+available,,,,Year,yt,2030,1950.0
+available,,,,Year,ab,2035,2000.0
+available,,,,Year,bc,2035,1950.0
+available,,,,Year,mb,2035,1950.0
+available,,,,Year,nb,2035,1950.0
+available,,,,Year,nl,2035,1950.0
+available,,,,Year,ns,2035,1950.0
+available,,,,Year,nt,2035,1950.0
+available,,,,Year,nu,2035,1950.0
+available,,,,Year,on,2035,1950.0
+available,,,,Year,pe,2035,1950.0
+available,,,,Year,qc,2035,1950.0
+available,,,,Year,sk,2035,1950.0
+available,,,,Year,yt,2035,1950.0
+available,,,,Year,ab,2040,2000.0
+available,,,,Year,bc,2040,1950.0
+available,,,,Year,mb,2040,1950.0
+available,,,,Year,nb,2040,1950.0
+available,,,,Year,nl,2040,1950.0
+available,,,,Year,ns,2040,1950.0
+available,,,,Year,nt,2040,1950.0
+available,,,,Year,nu,2040,1950.0
+available,,,,Year,on,2040,1950.0
+available,,,,Year,pe,2040,1950.0
+available,,,,Year,qc,2040,1950.0
+available,,,,Year,sk,2040,1950.0
+available,,,,Year,yt,2040,1950.0
+available,,,,Year,ab,2045,2000.0
+available,,,,Year,bc,2045,1950.0
+available,,,,Year,mb,2045,1950.0
+available,,,,Year,nb,2045,1950.0
+available,,,,Year,nl,2045,1950.0
+available,,,,Year,ns,2045,1950.0
+available,,,,Year,nt,2045,1950.0
+available,,,,Year,nu,2045,1950.0
+available,,,,Year,on,2045,1950.0
+available,,,,Year,pe,2045,1950.0
+available,,,,Year,qc,2045,1950.0
+available,,,,Year,sk,2045,1950.0
+available,,,,Year,yt,2045,1950.0
+available,,,,Year,ab,2050,2000.0
+available,,,,Year,bc,2050,1950.0
+available,,,,Year,mb,2050,1950.0
+available,,,,Year,nb,2050,1950.0
+available,,,,Year,nl,2050,1950.0
+available,,,,Year,ns,2050,1950.0
+available,,,,Year,nt,2050,1950.0
+available,,,,Year,nu,2050,1950.0
+available,,,,Year,on,2050,1950.0
+available,,,,Year,pe,2050,1950.0
+available,,,,Year,qc,2050,1950.0
+available,,,,Year,sk,2050,1950.0
+available,,,,Year,yt,2050,1950.0
+unavailable,,,,Year,ab,2000,2101.0
+unavailable,,,,Year,bc,2000,2021.0
+unavailable,,,,Year,mb,2000,2021.0
+unavailable,,,,Year,nb,2000,2021.0
+unavailable,,,,Year,nl,2000,2021.0
+unavailable,,,,Year,ns,2000,2021.0
+unavailable,,,,Year,nt,2000,2021.0
+unavailable,,,,Year,nu,2000,2021.0
+unavailable,,,,Year,on,2000,2021.0
+unavailable,,,,Year,pe,2000,2021.0
+unavailable,,,,Year,qc,2000,2021.0
+unavailable,,,,Year,sk,2000,2021.0
+unavailable,,,,Year,yt,2000,2021.0
+unavailable,,,,Year,ab,2005,2101.0
+unavailable,,,,Year,bc,2005,2021.0
+unavailable,,,,Year,mb,2005,2021.0
+unavailable,,,,Year,nb,2005,2021.0
+unavailable,,,,Year,nl,2005,2021.0
+unavailable,,,,Year,ns,2005,2021.0
+unavailable,,,,Year,nt,2005,2021.0
+unavailable,,,,Year,nu,2005,2021.0
+unavailable,,,,Year,on,2005,2021.0
+unavailable,,,,Year,pe,2005,2021.0
+unavailable,,,,Year,qc,2005,2021.0
+unavailable,,,,Year,sk,2005,2021.0
+unavailable,,,,Year,yt,2005,2021.0
+unavailable,,,,Year,ab,2010,2101.0
+unavailable,,,,Year,bc,2010,2021.0
+unavailable,,,,Year,mb,2010,2021.0
+unavailable,,,,Year,nb,2010,2021.0
+unavailable,,,,Year,nl,2010,2021.0
+unavailable,,,,Year,ns,2010,2021.0
+unavailable,,,,Year,nt,2010,2021.0
+unavailable,,,,Year,nu,2010,2021.0
+unavailable,,,,Year,on,2010,2021.0
+unavailable,,,,Year,pe,2010,2021.0
+unavailable,,,,Year,qc,2010,2021.0
+unavailable,,,,Year,sk,2010,2021.0
+unavailable,,,,Year,yt,2010,2021.0
+unavailable,,,,Year,ab,2015,2101.0
+unavailable,,,,Year,bc,2015,2021.0
+unavailable,,,,Year,mb,2015,2021.0
+unavailable,,,,Year,nb,2015,2021.0
+unavailable,,,,Year,nl,2015,2021.0
+unavailable,,,,Year,ns,2015,2021.0
+unavailable,,,,Year,nt,2015,2021.0
+unavailable,,,,Year,nu,2015,2021.0
+unavailable,,,,Year,on,2015,2021.0
+unavailable,,,,Year,pe,2015,2021.0
+unavailable,,,,Year,qc,2015,2021.0
+unavailable,,,,Year,sk,2015,2021.0
+unavailable,,,,Year,yt,2015,2021.0
+unavailable,,,,Year,ab,2020,2101.0
+unavailable,,,,Year,bc,2020,2021.0
+unavailable,,,,Year,mb,2020,2021.0
+unavailable,,,,Year,nb,2020,2021.0
+unavailable,,,,Year,nl,2020,2021.0
+unavailable,,,,Year,ns,2020,2021.0
+unavailable,,,,Year,nt,2020,2021.0
+unavailable,,,,Year,nu,2020,2021.0
+unavailable,,,,Year,on,2020,2021.0
+unavailable,,,,Year,pe,2020,2021.0
+unavailable,,,,Year,qc,2020,2021.0
+unavailable,,,,Year,sk,2020,2021.0
+unavailable,,,,Year,yt,2020,2021.0
+unavailable,,,,Year,ab,2025,2101.0
+unavailable,,,,Year,bc,2025,2021.0
+unavailable,,,,Year,mb,2025,2021.0
+unavailable,,,,Year,nb,2025,2021.0
+unavailable,,,,Year,nl,2025,2021.0
+unavailable,,,,Year,ns,2025,2021.0
+unavailable,,,,Year,nt,2025,2021.0
+unavailable,,,,Year,nu,2025,2021.0
+unavailable,,,,Year,on,2025,2021.0
+unavailable,,,,Year,pe,2025,2021.0
+unavailable,,,,Year,qc,2025,2021.0
+unavailable,,,,Year,sk,2025,2021.0
+unavailable,,,,Year,yt,2025,2021.0
+unavailable,,,,Year,ab,2030,2101.0
+unavailable,,,,Year,bc,2030,2021.0
+unavailable,,,,Year,mb,2030,2021.0
+unavailable,,,,Year,nb,2030,2021.0
+unavailable,,,,Year,nl,2030,2021.0
+unavailable,,,,Year,ns,2030,2021.0
+unavailable,,,,Year,nt,2030,2021.0
+unavailable,,,,Year,nu,2030,2021.0
+unavailable,,,,Year,on,2030,2021.0
+unavailable,,,,Year,pe,2030,2021.0
+unavailable,,,,Year,qc,2030,2021.0
+unavailable,,,,Year,sk,2030,2021.0
+unavailable,,,,Year,yt,2030,2021.0
+unavailable,,,,Year,ab,2035,2101.0
+unavailable,,,,Year,bc,2035,2021.0
+unavailable,,,,Year,mb,2035,2021.0
+unavailable,,,,Year,nb,2035,2021.0
+unavailable,,,,Year,nl,2035,2021.0
+unavailable,,,,Year,ns,2035,2021.0
+unavailable,,,,Year,nt,2035,2021.0
+unavailable,,,,Year,nu,2035,2021.0
+unavailable,,,,Year,on,2035,2021.0
+unavailable,,,,Year,pe,2035,2021.0
+unavailable,,,,Year,qc,2035,2021.0
+unavailable,,,,Year,sk,2035,2021.0
+unavailable,,,,Year,yt,2035,2021.0
+unavailable,,,,Year,ab,2040,2101.0
+unavailable,,,,Year,bc,2040,2021.0
+unavailable,,,,Year,mb,2040,2021.0
+unavailable,,,,Year,nb,2040,2021.0
+unavailable,,,,Year,nl,2040,2021.0
+unavailable,,,,Year,ns,2040,2021.0
+unavailable,,,,Year,nt,2040,2021.0
+unavailable,,,,Year,nu,2040,2021.0
+unavailable,,,,Year,on,2040,2021.0
+unavailable,,,,Year,pe,2040,2021.0
+unavailable,,,,Year,qc,2040,2021.0
+unavailable,,,,Year,sk,2040,2021.0
+unavailable,,,,Year,yt,2040,2021.0
+unavailable,,,,Year,ab,2045,2101.0
+unavailable,,,,Year,bc,2045,2021.0
+unavailable,,,,Year,mb,2045,2021.0
+unavailable,,,,Year,nb,2045,2021.0
+unavailable,,,,Year,nl,2045,2021.0
+unavailable,,,,Year,ns,2045,2021.0
+unavailable,,,,Year,nt,2045,2021.0
+unavailable,,,,Year,nu,2045,2021.0
+unavailable,,,,Year,on,2045,2021.0
+unavailable,,,,Year,pe,2045,2021.0
+unavailable,,,,Year,qc,2045,2021.0
+unavailable,,,,Year,sk,2045,2021.0
+unavailable,,,,Year,yt,2045,2021.0
+unavailable,,,,Year,ab,2050,2101.0
+unavailable,,,,Year,bc,2050,2021.0
+unavailable,,,,Year,mb,2050,2021.0
+unavailable,,,,Year,nb,2050,2021.0
+unavailable,,,,Year,nl,2050,2021.0
+unavailable,,,,Year,ns,2050,2021.0
+unavailable,,,,Year,nt,2050,2021.0
+unavailable,,,,Year,nu,2050,2021.0
+unavailable,,,,Year,on,2050,2021.0
+unavailable,,,,Year,pe,2050,2021.0
+unavailable,,,,Year,qc,2050,2021.0
+unavailable,,,,Year,sk,2050,2021.0
+unavailable,,,,Year,yt,2050,2021.0
+market_share_total,,,,%,ab,2000,0.0013764399999999998
+market_share_total,,,,%,bc,2000,0.01659134
+market_share_total,,,,%,mb,2000,0.00766724
+market_share_total,,,,%,nb,2000,0.11306944
+market_share_total,,,,%,nl,2000,0.16649840000000002
+market_share_total,,,,%,ns,2000,0.27487794
+market_share_total,,,,%,nt,2000,0.3780472717857845
+market_share_total,,,,%,nu,2000,0.39980890074201075
+market_share_total,,,,%,on,2000,0.05032982
+market_share_total,,,,%,pe,2000,0.36241065
+market_share_total,,,,%,qc,2000,0.10429443
+market_share_total,,,,%,sk,2000,0.02132598
+market_share_total,,,,%,yt,2000,0.35095080101482196
+fcc,,,,$,ab,2000,9541.510477
+fcc,,,,$,bc,2000,6444.430027
+fcc,,,,$,mb,2000,6444.430027
+fcc,,,,$,nb,2000,6444.430027
+fcc,,,,$,nl,2000,6444.430027
+fcc,,,,$,ns,2000,6444.430027
+fcc,,,,$,nt,2000,6444.430027
+fcc,,,,$,nu,2000,6444.430027
+fcc,,,,$,on,2000,6444.430027
+fcc,,,,$,pe,2000,6444.430027
+fcc,,,,$,qc,2000,6444.430027
+fcc,,,,$,sk,2000,6444.430027
+fcc,,,,$,yt,2000,6444.430027
+fcc,,,,$,ab,2005,9541.510477
+fcc,,,,$,bc,2005,6444.430027
+fcc,,,,$,mb,2005,6444.430027
+fcc,,,,$,nb,2005,6444.430027
+fcc,,,,$,nl,2005,6444.430027
+fcc,,,,$,ns,2005,6444.430027
+fcc,,,,$,nt,2005,6444.430027
+fcc,,,,$,nu,2005,6444.430027
+fcc,,,,$,on,2005,6444.430027
+fcc,,,,$,pe,2005,6444.430027
+fcc,,,,$,qc,2005,6444.430027
+fcc,,,,$,sk,2005,6444.430027
+fcc,,,,$,yt,2005,6444.430027
+fcc,,,,$,ab,2010,9541.510477
+fcc,,,,$,bc,2010,6444.430027
+fcc,,,,$,mb,2010,6444.430027
+fcc,,,,$,nb,2010,6444.430027
+fcc,,,,$,nl,2010,6444.430027
+fcc,,,,$,ns,2010,6444.430027
+fcc,,,,$,nt,2010,6444.430027
+fcc,,,,$,nu,2010,6444.430027
+fcc,,,,$,on,2010,6444.430027
+fcc,,,,$,pe,2010,6444.430027
+fcc,,,,$,qc,2010,6444.430027
+fcc,,,,$,sk,2010,6444.430027
+fcc,,,,$,yt,2010,6444.430027
+fcc,,,,$,ab,2015,9541.510477
+fcc,,,,$,bc,2015,6444.430027
+fcc,,,,$,mb,2015,6444.430027
+fcc,,,,$,nb,2015,6444.430027
+fcc,,,,$,nl,2015,6444.430027
+fcc,,,,$,ns,2015,6444.430027
+fcc,,,,$,nt,2015,6444.430027
+fcc,,,,$,nu,2015,6444.430027
+fcc,,,,$,on,2015,6444.430027
+fcc,,,,$,pe,2015,6444.430027
+fcc,,,,$,qc,2015,6444.430027
+fcc,,,,$,sk,2015,6444.430027
+fcc,,,,$,yt,2015,6444.430027
+fcc,,,,$,ab,2020,9541.510477
+fcc,,,,$,bc,2020,6444.430027
+fcc,,,,$,mb,2020,6444.430027
+fcc,,,,$,nb,2020,6444.430027
+fcc,,,,$,nl,2020,6444.430027
+fcc,,,,$,ns,2020,6444.430027
+fcc,,,,$,nt,2020,6444.430027
+fcc,,,,$,nu,2020,6444.430027
+fcc,,,,$,on,2020,6444.430027
+fcc,,,,$,pe,2020,6444.430027
+fcc,,,,$,qc,2020,6444.430027
+fcc,,,,$,sk,2020,6444.430027
+fcc,,,,$,yt,2020,6444.430027
+fcc,,,,$,ab,2025,9541.510477
+fcc,,,,$,bc,2025,6444.430027
+fcc,,,,$,mb,2025,6444.430027
+fcc,,,,$,nb,2025,6444.430027
+fcc,,,,$,nl,2025,6444.430027
+fcc,,,,$,ns,2025,6444.430027
+fcc,,,,$,nt,2025,6444.430027
+fcc,,,,$,nu,2025,6444.430027
+fcc,,,,$,on,2025,6444.430027
+fcc,,,,$,pe,2025,6444.430027
+fcc,,,,$,qc,2025,6444.430027
+fcc,,,,$,sk,2025,6444.430027
+fcc,,,,$,yt,2025,6444.430027
+fcc,,,,$,ab,2030,9541.510477
+fcc,,,,$,bc,2030,6444.430027
+fcc,,,,$,mb,2030,6444.430027
+fcc,,,,$,nb,2030,6444.430027
+fcc,,,,$,nl,2030,6444.430027
+fcc,,,,$,ns,2030,6444.430027
+fcc,,,,$,nt,2030,6444.430027
+fcc,,,,$,nu,2030,6444.430027
+fcc,,,,$,on,2030,6444.430027
+fcc,,,,$,pe,2030,6444.430027
+fcc,,,,$,qc,2030,6444.430027
+fcc,,,,$,sk,2030,6444.430027
+fcc,,,,$,yt,2030,6444.430027
+fcc,,,,$,ab,2035,9541.510477
+fcc,,,,$,bc,2035,6444.430027
+fcc,,,,$,mb,2035,6444.430027
+fcc,,,,$,nb,2035,6444.430027
+fcc,,,,$,nl,2035,6444.430027
+fcc,,,,$,ns,2035,6444.430027
+fcc,,,,$,nt,2035,6444.430027
+fcc,,,,$,nu,2035,6444.430027
+fcc,,,,$,on,2035,6444.430027
+fcc,,,,$,pe,2035,6444.430027
+fcc,,,,$,qc,2035,6444.430027
+fcc,,,,$,sk,2035,6444.430027
+fcc,,,,$,yt,2035,6444.430027
+fcc,,,,$,ab,2040,9541.510477
+fcc,,,,$,bc,2040,6444.430027
+fcc,,,,$,mb,2040,6444.430027
+fcc,,,,$,nb,2040,6444.430027
+fcc,,,,$,nl,2040,6444.430027
+fcc,,,,$,ns,2040,6444.430027
+fcc,,,,$,nt,2040,6444.430027
+fcc,,,,$,nu,2040,6444.430027
+fcc,,,,$,on,2040,6444.430027
+fcc,,,,$,pe,2040,6444.430027
+fcc,,,,$,qc,2040,6444.430027
+fcc,,,,$,sk,2040,6444.430027
+fcc,,,,$,yt,2040,6444.430027
+fcc,,,,$,ab,2045,9541.510477
+fcc,,,,$,bc,2045,6444.430027
+fcc,,,,$,mb,2045,6444.430027
+fcc,,,,$,nb,2045,6444.430027
+fcc,,,,$,nl,2045,6444.430027
+fcc,,,,$,ns,2045,6444.430027
+fcc,,,,$,nt,2045,6444.430027
+fcc,,,,$,nu,2045,6444.430027
+fcc,,,,$,on,2045,6444.430027
+fcc,,,,$,pe,2045,6444.430027
+fcc,,,,$,qc,2045,6444.430027
+fcc,,,,$,sk,2045,6444.430027
+fcc,,,,$,yt,2045,6444.430027
+fcc,,,,$,ab,2050,9541.510477
+fcc,,,,$,bc,2050,6444.430027
+fcc,,,,$,mb,2050,6444.430027
+fcc,,,,$,nb,2050,6444.430027
+fcc,,,,$,nl,2050,6444.430027
+fcc,,,,$,ns,2050,6444.430027
+fcc,,,,$,nt,2050,6444.430027
+fcc,,,,$,nu,2050,6444.430027
+fcc,,,,$,on,2050,6444.430027
+fcc,,,,$,pe,2050,6444.430027
+fcc,,,,$,qc,2050,6444.430027
+fcc,,,,$,sk,2050,6444.430027
+fcc,,,,$,yt,2050,6444.430027
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2000,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2000,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2005,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2005,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2010,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2010,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2015,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2015,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2020,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2020,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2025,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2025,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2030,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2030,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2035,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2035,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2040,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2040,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2045,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2045,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ab,2050,1.285
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,bc,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,mb,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nb,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nl,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,ns,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nt,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,nu,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,on,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,pe,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,qc,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,sk,2050,1.282051282
+service_request,,,CIMS.Generic Fuels.Light Fuel Oil,GJ,yt,2050,1.282051282

@@ -1,0 +1,192 @@
+technology: "Std process with calcium minerals"
+branch: ".industrial_minerals.product.lime.kilns"
+unit: "tonne"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2025
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note:
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note:
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note:
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 30
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note:
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 620000
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note:
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 450000000
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note: "Brimestone claims cost parity at scale. Anecdotal evidence suggests a current $250-$290 USD cost per ton vs $150 USD per ton market price according to cleantechnica article. Assume starting LCC to match $300 CAD for this tech."
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 3805964.558
+        unit: "$"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note: "New preheat and precalcining Eff tech used as reference for FOM and services requested"
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.service.heat"
+        value_type: "fixed"
+        value: 2.637
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.ventilation"
+        value_type: "fixed"
+        value: 0.005
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".industrial_minerals.direct_drive"
+        value_type: "fixed"
+        value: 0.10114569
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note:
+    emissions:
+        context: "CO2"
+        sub_context: "Process"
+        target:
+        value_type: "fixed"
+        value: 0
+        unit: "tCO2"
+        by_year:
+        by_region:
+        source: "Brimstone"
+        note: "Brimstone Claims 1 ton of CO2 sequested per ton of cement"
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

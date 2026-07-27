@@ -1,0 +1,181 @@
+technology: "Electrolysis_centralised"
+branch: ".hydrogen.product"
+unit: "kg"
+note:
+parameter:
+    available:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2025
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Assumption"
+    unavailable:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 2101
+        unit: "Year"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Assumption"
+    market_share_total:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: 0
+        unit: "%"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "Assumption"
+    market_share_new_max:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    market_share_new_min:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    lifetime:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 40
+        unit: "Years"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    output:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 20003825
+        unit: "kg"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    currency:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fcc:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 97205653.0453103
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    capital_recovery:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    fom:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: 6088792.58166946
+        unit: "$"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    service_request:
+        context:
+        sub_context:
+        target: ".electricity"
+        value_type: "fixed"
+        value: 0.1998
+        unit: "GJ"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    service_request:
+        context:
+        sub_context:
+        target: ".hydrogen.service.infrastructure"
+        value_type: "fixed"
+        value: 1
+        unit: "kg"
+        by_year:
+        by_region:
+        source: "JCIMS"
+        note: "NREL H2A model 2018"
+    emissions:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_biomass:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    emissions_removal:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:

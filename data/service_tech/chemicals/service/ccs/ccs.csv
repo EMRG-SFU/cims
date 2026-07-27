@@ -1,0 +1,496 @@
+parameter,context,sub_context,target,unit,region,year,value
+fcc,,,,$,ab,2000,63031204.0
+fcc,,,,$,bc,2000,63031203.86
+fcc,,,,$,mb,2000,63031203.86
+fcc,,,,$,nb,2000,63031203.86
+fcc,,,,$,nl,2000,63031203.86
+fcc,,,,$,ns,2000,63031203.86
+fcc,,,,$,on,2000,63031203.86
+fcc,,,,$,pe,2000,63031203.86
+fcc,,,,$,qc,2000,63031203.86
+fcc,,,,$,sk,2000,63031203.86
+fcc,,,,$,ab,2005,63031204.0
+fcc,,,,$,bc,2005,63031203.86
+fcc,,,,$,mb,2005,63031203.86
+fcc,,,,$,nb,2005,63031203.86
+fcc,,,,$,nl,2005,63031203.86
+fcc,,,,$,ns,2005,63031203.86
+fcc,,,,$,on,2005,63031203.86
+fcc,,,,$,pe,2005,63031203.86
+fcc,,,,$,qc,2005,63031203.86
+fcc,,,,$,sk,2005,63031203.86
+fcc,,,,$,ab,2010,63031204.0
+fcc,,,,$,bc,2010,63031203.86
+fcc,,,,$,mb,2010,63031203.86
+fcc,,,,$,nb,2010,63031203.86
+fcc,,,,$,nl,2010,63031203.86
+fcc,,,,$,ns,2010,63031203.86
+fcc,,,,$,on,2010,63031203.86
+fcc,,,,$,pe,2010,63031203.86
+fcc,,,,$,qc,2010,63031203.86
+fcc,,,,$,sk,2010,63031203.86
+fcc,,,,$,ab,2015,63031204.0
+fcc,,,,$,bc,2015,63031203.86
+fcc,,,,$,mb,2015,63031203.86
+fcc,,,,$,nb,2015,63031203.86
+fcc,,,,$,nl,2015,63031203.86
+fcc,,,,$,ns,2015,63031203.86
+fcc,,,,$,on,2015,63031203.86
+fcc,,,,$,pe,2015,63031203.86
+fcc,,,,$,qc,2015,63031203.86
+fcc,,,,$,sk,2015,63031203.86
+fcc,,,,$,ab,2020,63031204.0
+fcc,,,,$,bc,2020,63031203.86
+fcc,,,,$,mb,2020,63031203.86
+fcc,,,,$,nb,2020,63031203.86
+fcc,,,,$,nl,2020,63031203.86
+fcc,,,,$,ns,2020,63031203.86
+fcc,,,,$,on,2020,63031203.86
+fcc,,,,$,pe,2020,63031203.86
+fcc,,,,$,qc,2020,63031203.86
+fcc,,,,$,sk,2020,63031203.86
+fcc,,,,$,ab,2025,63031204.0
+fcc,,,,$,bc,2025,63031203.86
+fcc,,,,$,mb,2025,63031203.86
+fcc,,,,$,nb,2025,63031203.86
+fcc,,,,$,nl,2025,63031203.86
+fcc,,,,$,ns,2025,63031203.86
+fcc,,,,$,on,2025,63031203.86
+fcc,,,,$,pe,2025,63031203.86
+fcc,,,,$,qc,2025,63031203.86
+fcc,,,,$,sk,2025,63031203.86
+fcc,,,,$,ab,2030,63031204.0
+fcc,,,,$,bc,2030,63031203.86
+fcc,,,,$,mb,2030,63031203.86
+fcc,,,,$,nb,2030,63031203.86
+fcc,,,,$,nl,2030,63031203.86
+fcc,,,,$,ns,2030,63031203.86
+fcc,,,,$,on,2030,63031203.86
+fcc,,,,$,pe,2030,63031203.86
+fcc,,,,$,qc,2030,63031203.86
+fcc,,,,$,sk,2030,63031203.86
+fcc,,,,$,ab,2035,63031204.0
+fcc,,,,$,bc,2035,63031203.86
+fcc,,,,$,mb,2035,63031203.86
+fcc,,,,$,nb,2035,63031203.86
+fcc,,,,$,nl,2035,63031203.86
+fcc,,,,$,ns,2035,63031203.86
+fcc,,,,$,on,2035,63031203.86
+fcc,,,,$,pe,2035,63031203.86
+fcc,,,,$,qc,2035,63031203.86
+fcc,,,,$,sk,2035,63031203.86
+fcc,,,,$,ab,2040,63031204.0
+fcc,,,,$,bc,2040,63031203.86
+fcc,,,,$,mb,2040,63031203.86
+fcc,,,,$,nb,2040,63031203.86
+fcc,,,,$,nl,2040,63031203.86
+fcc,,,,$,ns,2040,63031203.86
+fcc,,,,$,on,2040,63031203.86
+fcc,,,,$,pe,2040,63031203.86
+fcc,,,,$,qc,2040,63031203.86
+fcc,,,,$,sk,2040,63031203.86
+fcc,,,,$,ab,2045,63031204.0
+fcc,,,,$,bc,2045,63031203.86
+fcc,,,,$,mb,2045,63031203.86
+fcc,,,,$,nb,2045,63031203.86
+fcc,,,,$,nl,2045,63031203.86
+fcc,,,,$,ns,2045,63031203.86
+fcc,,,,$,on,2045,63031203.86
+fcc,,,,$,pe,2045,63031203.86
+fcc,,,,$,qc,2045,63031203.86
+fcc,,,,$,sk,2045,63031203.86
+fcc,,,,$,ab,2050,63031204.0
+fcc,,,,$,bc,2050,63031203.86
+fcc,,,,$,mb,2050,63031203.86
+fcc,,,,$,nb,2050,63031203.86
+fcc,,,,$,nl,2050,63031203.86
+fcc,,,,$,ns,2050,63031203.86
+fcc,,,,$,on,2050,63031203.86
+fcc,,,,$,pe,2050,63031203.86
+fcc,,,,$,qc,2050,63031203.86
+fcc,,,,$,sk,2050,63031203.86
+fom,,,,$,ab,2000,2203631.0
+fom,,,,$,bc,2000,2203631.005
+fom,,,,$,mb,2000,2203631.005
+fom,,,,$,nb,2000,2203631.005
+fom,,,,$,nl,2000,2203631.005
+fom,,,,$,ns,2000,2203631.005
+fom,,,,$,on,2000,2203631.005
+fom,,,,$,pe,2000,2203631.005
+fom,,,,$,qc,2000,2203631.0
+fom,,,,$,sk,2000,2203631.0
+fom,,,,$,ab,2005,2203631.0
+fom,,,,$,bc,2005,2203631.005
+fom,,,,$,mb,2005,2203631.005
+fom,,,,$,nb,2005,2203631.005
+fom,,,,$,nl,2005,2203631.005
+fom,,,,$,ns,2005,2203631.005
+fom,,,,$,on,2005,2203631.005
+fom,,,,$,pe,2005,2203631.005
+fom,,,,$,qc,2005,2203631.005
+fom,,,,$,sk,2005,2203631.005
+fom,,,,$,ab,2010,2203631.0
+fom,,,,$,bc,2010,2203631.005
+fom,,,,$,mb,2010,2203631.005
+fom,,,,$,nb,2010,2203631.005
+fom,,,,$,nl,2010,2203631.005
+fom,,,,$,ns,2010,2203631.005
+fom,,,,$,on,2010,2203631.005
+fom,,,,$,pe,2010,2203631.005
+fom,,,,$,qc,2010,2203631.005
+fom,,,,$,sk,2010,2203631.005
+fom,,,,$,ab,2015,2203631.0
+fom,,,,$,bc,2015,2203631.005
+fom,,,,$,mb,2015,2203631.005
+fom,,,,$,nb,2015,2203631.005
+fom,,,,$,nl,2015,2203631.005
+fom,,,,$,ns,2015,2203631.005
+fom,,,,$,on,2015,2203631.005
+fom,,,,$,pe,2015,2203631.005
+fom,,,,$,qc,2015,2203631.005
+fom,,,,$,sk,2015,2203631.005
+fom,,,,$,ab,2020,2203631.0
+fom,,,,$,bc,2020,2203631.005
+fom,,,,$,mb,2020,2203631.005
+fom,,,,$,nb,2020,2203631.005
+fom,,,,$,nl,2020,2203631.005
+fom,,,,$,ns,2020,2203631.005
+fom,,,,$,on,2020,2203631.005
+fom,,,,$,pe,2020,2203631.005
+fom,,,,$,qc,2020,2203631.005
+fom,,,,$,sk,2020,2203631.005
+fom,,,,$,ab,2025,2203631.0
+fom,,,,$,bc,2025,2203631.005
+fom,,,,$,mb,2025,2203631.005
+fom,,,,$,nb,2025,2203631.005
+fom,,,,$,nl,2025,2203631.005
+fom,,,,$,ns,2025,2203631.005
+fom,,,,$,on,2025,2203631.005
+fom,,,,$,pe,2025,2203631.005
+fom,,,,$,qc,2025,2203631.005
+fom,,,,$,sk,2025,2203631.005
+fom,,,,$,ab,2030,2203631.0
+fom,,,,$,bc,2030,2203631.005
+fom,,,,$,mb,2030,2203631.005
+fom,,,,$,nb,2030,2203631.005
+fom,,,,$,nl,2030,2203631.005
+fom,,,,$,ns,2030,2203631.005
+fom,,,,$,on,2030,2203631.005
+fom,,,,$,pe,2030,2203631.005
+fom,,,,$,qc,2030,2203631.005
+fom,,,,$,sk,2030,2203631.005
+fom,,,,$,ab,2035,2203631.0
+fom,,,,$,bc,2035,2203631.005
+fom,,,,$,mb,2035,2203631.005
+fom,,,,$,nb,2035,2203631.005
+fom,,,,$,nl,2035,2203631.005
+fom,,,,$,ns,2035,2203631.005
+fom,,,,$,on,2035,2203631.005
+fom,,,,$,pe,2035,2203631.005
+fom,,,,$,qc,2035,2203631.005
+fom,,,,$,sk,2035,2203631.005
+fom,,,,$,ab,2040,2203631.0
+fom,,,,$,bc,2040,2203631.005
+fom,,,,$,mb,2040,2203631.005
+fom,,,,$,nb,2040,2203631.005
+fom,,,,$,nl,2040,2203631.005
+fom,,,,$,ns,2040,2203631.005
+fom,,,,$,on,2040,2203631.005
+fom,,,,$,pe,2040,2203631.005
+fom,,,,$,qc,2040,2203631.005
+fom,,,,$,sk,2040,2203631.005
+fom,,,,$,ab,2045,2203631.0
+fom,,,,$,bc,2045,2203631.005
+fom,,,,$,mb,2045,2203631.005
+fom,,,,$,nb,2045,2203631.005
+fom,,,,$,nl,2045,2203631.005
+fom,,,,$,ns,2045,2203631.005
+fom,,,,$,on,2045,2203631.005
+fom,,,,$,pe,2045,2203631.005
+fom,,,,$,qc,2045,2203631.005
+fom,,,,$,sk,2045,2203631.005
+fom,,,,$,ab,2050,2203631.0
+fom,,,,$,bc,2050,2203631.005
+fom,,,,$,mb,2050,2203631.005
+fom,,,,$,nb,2050,2203631.005
+fom,,,,$,nl,2050,2203631.005
+fom,,,,$,ns,2050,2203631.005
+fom,,,,$,on,2050,2203631.005
+fom,,,,$,pe,2050,2203631.005
+fom,,,,$,qc,2050,2203631.005
+fom,,,,$,sk,2050,2203631.005
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2000,3.6917
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2000,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2000,3.69
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2000,3.69169531
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2005,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2010,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2015,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2020,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2025,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2030,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2035,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2040,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2045,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ab,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,bc,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,mb,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nb,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,nl,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,ns,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,on,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,pe,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,qc,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.VOM,$,sk,2050,3.691695315
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2000,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2000,1.0
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2000,1.00065497
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2005,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2010,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2015,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2020,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2025,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2030,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2035,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2040,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2045,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ab,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,bc,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,mb,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nb,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,nl,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,ns,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,on,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,pe,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,qc,2050,1.000654971
+service_request,,,CIMS.Generic Fuels.Natural Gas,GJ,sk,2050,1.000654971
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2000,1.0441
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2005,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2010,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2015,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2020,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2025,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2030,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2035,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2040,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2045,1.044102333
+service_request,,,CIMS.Transmission.CCS TS AB,tCO2,ab,2050,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2000,1.04
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2000,1.04
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2005,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2005,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2010,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2010,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2015,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2015,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2020,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2020,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2025,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2025,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2030,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2030,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2035,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2035,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2040,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2040,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2045,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2045,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,bc,2050,1.044102333
+service_request,,,CIMS.Transmission.CCS TS BC,tCO2,mb,2050,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2000,1.04
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2005,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2010,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2015,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2020,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2025,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2030,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2035,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2040,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2045,1.044102333
+service_request,,,CIMS.Transmission.CCS TS QC,tCO2,qc,2050,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2000,1.04410233
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2005,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2010,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2015,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2020,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2025,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2030,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2035,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2040,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2045,1.044102333
+service_request,,,CIMS.Transmission.CCS TS SK,tCO2,sk,2050,1.044102333

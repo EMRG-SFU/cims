@@ -1,0 +1,12 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2000,0.1
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2005,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2010,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2015,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2020,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2025,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2030,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2035,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2040,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2045,0.097925714
+service_request,,,.petroleum_refining.service.ccs,tCO2,ab,2050,0.097925714
