@@ -47,7 +47,11 @@ uv sync --extra notebooks
 
 This will automatically select a compatible Python version, create a virtual environment, and install all dependencies. You only need to do this once, or again when dependencies are updated.
 
-### 3. Launch Marimo
+### 3. Download Data Files
+
+Download `cims_model_data.zip` from our temporary [google drive folder](https://drive.google.com/file/d/1WpoAi4er6AE7cOk8zUBDyu63UgLEAkKG/view?usp=sharing). Extract the zip file contents into the corresponding folders under `cims/`.
+
+### 4. Launch Marimo
 
 ```bash
 uv run marimo edit
