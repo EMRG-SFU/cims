@@ -49,7 +49,7 @@ This will automatically select a compatible Python version, create a virtual env
 
 ### 3. Download Data Files
 
-Download `cims_model_data.zip` from our temporary [google drive folder](https://drive.google.com/file/d/1WpoAi4er6AE7cOk8zUBDyu63UgLEAkKG/view?usp=sharing). Extract the zip file contents into the corresponding folders under `cims/`.
+Download [cims_model_data.zip](https://drive.google.com/uc?export=download&id=1WpoAi4er6AE7cOk8zUBDyu63UgLEAkKG). Extract the zip file contents into the corresponding folders under `cims/`.
 
 ### 4. Launch Marimo
 
