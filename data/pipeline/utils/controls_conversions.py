@@ -26,6 +26,18 @@ ENERGY_MAP_FILE  = MAPPINGS_PATH / 'energy_map.csv'
 REGION_MAP_FILE  = MAPPINGS_PATH / 'region_map.csv'
 SECTOR_MAP_FILE  = MAPPINGS_PATH / 'sector_map.csv'
 CONVERSIONS_FILE = MAPPINGS_PATH / 'energy_conversions.csv'
+SECTOR_REGION_MAP_FILE = MAPPINGS_PATH / 'sector_region_map.csv'
+EXCLUDED_BRANCHES_FILE = MAPPINGS_PATH / 'excluded_branches.csv'
+
+# calibration.py Parameter values considered "demand" or "emissions" data.
+# Used to scope excluded_branches.csv so it can't accidentally drop
+# technology/market-share rows for a branch that's only bad for demand
+# or emissions purposes.
+DEMAND_EMISSIONS_PARAMS = {
+    'calibration_quantity_requested',
+    'calibration_emissions_total',
+    'calibration_emissions_by_type',
+}
 
 def load_control_config() -> Dict:
     """
@@ -267,6 +279,122 @@ def load_region_mapping() -> pd.DataFrame:
         DataFrame with columns: CIMS, JCIMS, CER Prices.
     """
     return pd.read_csv(REGION_MAP_FILE)
+
+def load_sector_regions() -> Dict[str, set]:
+    """
+    Load allowed regions per sector from sector_region_map.csv.
+
+    Sectors not present in the map are unrestricted (assumed present in
+    every region). Used by sector calibration.py scripts to drop
+    demand/emissions rows for region/sector combinations that don't
+    actually exist (e.g. Coal Mining in PE).
+
+    Returns
+    -------
+    dict
+        {sector_name: {region_abbr, ...}}.
+    """
+    df = pd.read_csv(SECTOR_REGION_MAP_FILE)
+    return {
+        row['Sector']: set(row['Regions'].split(';'))
+        for _, row in df.iterrows()
+        if pd.notna(row.get('Regions'))
+    }
+
+
+def load_excluded_branches() -> set:
+    """
+    Load CIMS branches to exclude from demand/emissions calibration output.
+
+    Rows are flagged Active TRUE/FALSE in excluded_branches.csv rather than
+    deleted, so re-including a branch later is a one-cell edit that keeps
+    the row's Notes (why it was excluded) instead of relying on git history.
+
+    Returns
+    -------
+    set
+        Full CIMS branch strings (e.g. 'CIMS.CAN.AB.Petroleum Crude.Transmission')
+        currently flagged Active=TRUE.
+    """
+    df = pd.read_csv(EXCLUDED_BRANCHES_FILE)
+    active = df[df['Active'].astype(str).str.strip().str.upper() == 'TRUE']
+    return set(active['Branch'].str.strip())
+
+
+def filter_excluded_branches(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Drop demand/emissions calibration rows for branches flagged Active in
+    excluded_branches.csv. Rows for other Parameter types (e.g. technology
+    market shares) are left untouched.
+
+    Parameters
+    ----------
+    df : pl.DataFrame
+        A calibration.py `output` DataFrame with 'Branch' and 'Parameter' columns.
+
+    Returns
+    -------
+    pl.DataFrame
+        Same DataFrame with excluded branch/parameter rows removed.
+    """
+    excluded = load_excluded_branches()
+    if not excluded:
+        return df
+    drop_mask = (
+        pl.col('Branch').is_in(list(excluded))
+        & pl.col('Parameter').is_in(list(DEMAND_EMISSIONS_PARAMS))
+    )
+    return df.filter(~drop_mask)
+
+def force_single_technology_market_share(df: pl.DataFrame) -> pl.DataFrame:
+    """
+    Force market_share_total to 1 for any Branch whose competition has
+    exactly one technology but was recorded as 0 in fixed_data.
+
+    A competition with exactly one technology option must award it 100% of
+    that service's demand. fixed_data is consistent about this everywhere
+    except a handful of region/branch combinations (e.g. NT/NU/YT Electricity
+    Storage/CCS/Transmission) that were left at 0 -- compare AB's
+    CIMS.CAN.AB.Electricity.Storage.Battery (market_share_total=1) against
+    NT's identical node (market_share_total=0), both with the same
+    available=2025.
+
+    Parameters
+    ----------
+    df : pl.DataFrame
+        A flattened fixed_data DataFrame (or model_inputs `fixed`/`output`)
+        with 'Branch', 'Parameter', 'Technology', 'Value' columns.
+
+    Returns
+    -------
+    pl.DataFrame
+        Same DataFrame with single-technology branches' market_share_total
+        corrected to '1' where they were '0'.
+    """
+    tech_counts = (
+        df.filter(
+            (pl.col('Parameter') == 'technology')
+            & pl.col('Technology').is_not_null()
+            & (pl.col('Technology') != '')
+        )
+        .group_by('Branch')
+        .agg(pl.col('Technology').n_unique().alias('n_tech'))
+    )
+    single_tech_branches = set(
+        tech_counts.filter(pl.col('n_tech') == 1)['Branch'].to_list()
+    )
+    if not single_tech_branches:
+        return df
+
+    is_target = (
+        pl.col('Branch').is_in(list(single_tech_branches))
+        & (pl.col('Parameter') == 'market_share_total')
+        & (pl.col('Value').cast(pl.Float64, strict=False).fill_null(0.0) == 0.0)
+    )
+    return df.with_columns(
+        pl.when(is_target).then(pl.lit('1')).otherwise(pl.col('Value')).alias('Value')
+    )
+
 
 def load_macro_indicators(filepath: str, scenario: str) -> pl.DataFrame:
     """Load macro indicators (deflators and exchange rates)."""

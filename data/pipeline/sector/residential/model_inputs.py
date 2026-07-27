@@ -532,6 +532,12 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
 
     Filters Branch to 'Water Heating' to avoid matching Building Type density
     services that share the same Service name.
+
+    Shares are renormalized to sum to 1 within each branch: CEUD's raw shares
+    can include minor fuels (e.g. kerosene, LPG, solid biomass) that have no
+    corresponding fixed_data technology to land on, which would otherwise
+    leave the defined technologies' total short of 1 (e.g. NS/PE LowMed
+    Density summing to ~0.9948 instead of 1).
     """
     data = residential.filter(
         (pl.col('province') == region) &
@@ -560,8 +566,15 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
         if key not in branch_tech_max or o > branch_tech_max[key]:
             branch_tech_max[key] = o
 
+    branch_totals: dict[str, float] = {}
+    for branch, tech in branch_tech_max:
+        branch_totals[branch] = branch_totals.get(branch, 0.0) + pipe_vals.get(tech, 0.0)
+
     rows: list[dict] = []
     for (branch, tech), max_order in branch_tech_max.items():
+        total = branch_totals.get(branch, 0.0)
+        raw_value = pipe_vals.get(tech, 0.0)
+        value = raw_value / total if total > 0 else raw_value
         rows.append({
             'Branch': branch, 'Type': 'Service', 'Region': region,
             'Sector': 'Residential', 'Service': wh_service,
@@ -570,7 +583,7 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
             'Context': '', 'Sub_Context': '', 'Target': '',
             'Source': pipe_sources.get(tech, 'CEUD'),
             'Unit': pipe_unit, 'Year': '2000',
-            'Value': str(pipe_vals.get(tech, 0.0)),
+            'Value': str(value),
             '_order': max_order + 0.5,
         })
 

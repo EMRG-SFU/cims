@@ -55,7 +55,7 @@ _cer_mod = _load_module(
     _PIPELINE_ROOT / 'source/cer/cer_resd_demand.py',
 )
 
-from utils.controls_conversions import BASE_PATH
+from utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/mining'
@@ -65,6 +65,8 @@ OUTPUT_COLS = [
     'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
     'Year', 'Value',
 ]
+
+SECTOR_NAME = 'Mining'
 
 # NIR full province name → CIMS abbreviation (excludes Canada)
 _REGION_MAP: dict[str, str] = {
@@ -252,6 +254,17 @@ def main() -> pl.DataFrame:
         pl.concat([cer_rows, crosswalk_rows, nir_rows], how='diagonal_relaxed')
         .select(OUTPUT_COLS)
     )
+
+    print('Filtering to regions with Mining (see sector_region_map.csv)...')
+    allowed_regions = load_sector_regions().get(SECTOR_NAME)
+    if allowed_regions:
+        before_count = len(output)
+        output = output.filter(pl.col('Region').is_in(list(allowed_regions)))
+        dropped_count = before_count - len(output)
+        if dropped_count:
+            print(f'  Dropped {dropped_count:,} rows for regions without Mining')
+
+    output = filter_excluded_branches(output)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     regions = output['Region'].drop_nulls().unique().sort().to_list()

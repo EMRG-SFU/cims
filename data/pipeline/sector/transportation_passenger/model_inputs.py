@@ -434,6 +434,7 @@ def _build_mst_rows(
     service_name: str,
     branch: str,
     cat_to_tech: dict[str, str] | None = None,
+    default_technology: str | None = None,
 ) -> pl.DataFrame:
     """
     market_share_total rows (year 2000 only) for every technology in service_name.
@@ -441,10 +442,31 @@ def _build_mst_rows(
     Each row is assigned _order = that technology's lifetime max + 0.5 so it
     lands immediately after lifetime and before any subsequent fixed-data rows.
     Technologies absent from the pipeline data receive value 0.
+
+    default_technology : if the pipeline reports zero activity for every
+        technology in this competition (e.g. no Transit.Public Bus or
+        Intercity Rail data for a territory), that's a missing-data gap, not
+        a real 0-share competition -- some technology must hold the base-year
+        share. `default_technology` names which one falls back to 1 in that
+        case (the conventional/incumbent option, e.g. diesel).
+
+    Technologies that already have their own market_share_total row directly
+    in fixed_data (e.g. NT/NU/YT/SK's Rail Intercity Diesel, sourced JCIMS)
+    are skipped here entirely, rather than getting a second CEUD-sourced row
+    alongside the fixed_data one for the same Branch/Technology/Year.
     """
     tech_lifetime_max = _tech_lifetime_orders(fixed, service_name)
     if not tech_lifetime_max:
         return _empty_frame()
+
+    fixed_mst_techs = set(
+        fixed.filter(
+            (pl.col('Service') == service_name) &
+            (pl.col('Parameter') == 'market_share_total') &
+            pl.col('Technology').is_not_null() &
+            (pl.col('Technology') != '')
+        )['Technology'].to_list()
+    )
 
     # Invert cat_to_tech so we can look up pipeline category by tech name.
     tech_to_cat: dict[str, str] = (
@@ -468,6 +490,8 @@ def _build_mst_rows(
 
     rows: list[dict] = []
     for tech, lifetime_max in tech_lifetime_max.items():
+        if tech in fixed_mst_techs:
+            continue
         # Map tech → pipeline category.
         cat = tech_to_cat.get(tech, tech)
         entry = pipeline_by_cat.get(cat, (0.0, 'CEUD', default_unit))
@@ -489,6 +513,23 @@ def _build_mst_rows(
             'Value':       str(val),
             '_order':      lifetime_max + 0.5,
         })
+
+    if default_technology and rows and all(float(r['Value']) == 0.0 for r in rows):
+        for r in rows:
+            if r['Technology'] == default_technology:
+                r['Value'] = '1'
+                break
+
+    # Renormalize to sum to 1: the pipeline source can report a real share
+    # for a technology (e.g. Ferry Urban under Transit.Public Bus) that has
+    # no fixed_data lifetime row and so never enters `rows` at all, leaving
+    # the technologies that *are* defined short of 1 (e.g. NT/NU/YT Public
+    # Bus summing to ~0.9928 instead of 1).
+    total = sum(float(r['Value']) for r in rows)
+    if total > 0 and abs(total - 1.0) > 1e-9:
+        for r in rows:
+            r['Value'] = str(float(r['Value']) / total)
+
     return pl.DataFrame(rows) if rows else _empty_frame()
 
 
@@ -704,6 +745,7 @@ def _assemble_region(
     pb_mst = _build_mst_rows(
         tp, fixed, region,
         variable='Transit.Public Bus', service_name='Public Bus', branch=b_pb,
+        default_technology='Bus Urban Diesel',
     )
     pb_out = _build_output_rows(
         tp, fixed, region,
@@ -726,6 +768,7 @@ def _assemble_region(
     ir_mst = _build_mst_rows(
         tp, fixed, region,
         variable='Intercity Rail', service_name='Intercity Rail', branch=b_ir,
+        default_technology='Rail Intercity Diesel',
     )
 
     # ── combine and sort ───────────────────────────────────────────────────────

@@ -80,7 +80,10 @@ _elec_spec = importlib.util.spec_from_file_location(
 _elec_mod = importlib.util.module_from_spec(_elec_spec)
 _elec_spec.loader.exec_module(_elec_mod)
 
-from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from utils.controls_conversions import (
+    BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR,
+    force_single_technology_market_share,
+)
 from utils.collapse_constant_years import collapse_constant_years
 from utils.drop_zero_activity import drop_zero_activity_regions
 
@@ -310,6 +313,7 @@ def main() -> dict[str, pl.DataFrame]:
         print(f'\n{region}:')
         try:
             fixed = _read_flattened_fixed(region)
+            fixed = force_single_technology_market_share(fixed)
             has_load = _has_load_subservices(fixed)
             print(f'  Fixed rows: {len(fixed):,}  '
                   f'load sub-services: {"yes" if has_load else "no"}')

@@ -73,7 +73,7 @@ _statcan_tp_mod = _load_module(
     _PIPELINE_ROOT / 'source/stats_can/passenger_transportation.py',
 )
 
-from utils.controls_conversions import BASE_PATH
+from utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/transportation_passenger'
@@ -83,6 +83,8 @@ OUTPUT_COLS = [
     'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
     'Year', 'Value',
 ]
+
+SECTOR_NAME = 'Transportation Passenger'
 
 STATCAN_MARKET_SHARE_START_YEAR = 2000
 STATCAN_MARKET_SHARE_SERVICE = 'Passenger Vehicle Motors'
@@ -517,6 +519,17 @@ def main() -> pl.DataFrame:
         pl.concat([cer_rows, crosswalk_rows, nir_rows, tech_rows], how='diagonal_relaxed')
         .select(OUTPUT_COLS)
     )
+
+    print('Filtering to regions with Transportation Passenger (see sector_region_map.csv)...')
+    allowed_regions = load_sector_regions().get(SECTOR_NAME)
+    if allowed_regions:
+        before_count = len(output)
+        output = output.filter(pl.col('Region').is_in(list(allowed_regions)))
+        dropped_count = before_count - len(output)
+        if dropped_count:
+            print(f'  Dropped {dropped_count:,} rows for regions without Transportation Passenger')
+
+    output = filter_excluded_branches(output)
 
     # Final output normalization:
     # - Remove any leading apostrophes that can make numeric-looking values
