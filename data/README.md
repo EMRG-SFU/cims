@@ -28,38 +28,22 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 
 ---
 
-## Directory Structure
+## Directory Structure - NEW
 
 ```
 C:\cims\data\
-├── mappings_conversions/       # Master configuration
-│   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
-│   ├── energy_map.csv          # Map for energy types across sources
-│   ├── region_map.csv          # Map for regions across sources
-│   ├── sector_map.csv          # Map for sectors across sources 
-│   ├── energy_conversions.csv  # Unit conversions (GJ ↔ TJ, L ↔ tonnes, …)
-│   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
-│   └── README.md
-│
 ├── pipeline/                   # All pipeline scripts (committed)
-│   ├── source/                 # Stage 1 — raw → processed_data
-│   │   ├── run_all.py          # Runs all Stage 1 scripts in dependency order
-│   │   ├── activity/           # Activity for all sectors (res/com/trans from ceud source)
-│   │   ├── eccc/nir/           # National Inventory Report processing
-│   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
+│   ├── type/                   # Stage 1 — raw → processed_data
+│   │   ├── activity/           # Activity for all sectors 
+│   │   ├── emissions/          # National Inventory Report processing
+│   │   ├── market_shares/      # Fuel-level emission factors (NIR Annex 6, CEEDC)
 │   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
-│   │   └── nrcan/ceud/         # Comprehensive Energy Use Database extraction
-│   │       ├── residential/
-│   │       ├── commercial/
-│   │       ├── transportation_passenger/
-│   │       └── transportation_freight/
+│   │   └── energy_demand/      # Energy prices and their multipliers (various sources)
 │   ├── sector/                 # Stage 2 — processed_data + fixed_data → model_inputs
-│   │   ├── run_all_model.py    # Runs all model_inputs.py scripts
-│   │   ├── run_all_calibration.py  # Runs all calibration.py scripts
-│   │   ├── agriculture/
-│   │   ├── biodiesel/
-│   │   ├── chemical products/
-│   │   ├── commercial/
+│   |   ├── agriculture/
+│   |   ├── biodiesel/
+│   |   ├── chemical products/
+│   |   ├── commercial/
 │   │   ├── residential/
 │   │   ├── transportation passenger/
 │   │   ├── transportation freight/
@@ -76,12 +60,6 @@ C:\cims\data\
 │
 ├── raw_data/                   # Source files — gitignored, never committed
 │   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
-│   ├── fixed_data/             # Structural parameters per sector from the JCIMS model (wide-format CSVs; should be updated over time)
-│   │   ├── Agriculture/
-│   │   ├── Biodiesel/
-│   │   ├── Chemical Products/
-│   │   ├── Commercial/
-│   │   └── Residential/
 │   ├── eccc/nir/               # NIR data
 │   ├── cer/                    # CER data
 │   ├── nrcan/ceud/             # CEUD data
@@ -93,10 +71,11 @@ C:\cims\data\
 │
 ├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
 │   ├── activity/
-│   ├── eccc/
+│   ├── emissions/
+│   ├── market_shares/
 │   ├── energy_prices/
-│   └── nrcan/ceud/
-│
+│   └── energy demand
+|
 ├── model_inputs/               # Stage 2 outputs — gitignored, auto-generated
 │   ├── model/
 │   │   ├── agriculture/
@@ -106,15 +85,21 @@ C:\cims\data\
 │   │   ├── transportation freight/
 │   │   └── .../
 │   └── policies/
-│       ├── reference/          # Source policy CSVs (wide 5-year format)
-│       └── reference_annual/   # Flattened annual policy CSVs
+│       ├── reference/          # Reference Policies
+│       └── net_zero/           # Net-zero Policies 
 │
-└── calibration/                # Calibration outputs — gitignored, auto-generated
-    ├── commercial/
-    ├── residential/
-    ├── transportation passenger/
-    ├── transportation freight/
-    └── .../
+├── calibration/                # Stage 2 outputs (calibrtion) — gitignored, auto-generated
+|   ├── commercial/
+|   ├── residential/
+|   ├── transportation passenger/
+|   ├── transportation freight/
+|   └── .../
+├── mappings_conversions/       # Master configuration
+│   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
+│   ├── energy_map.csv          # Map for energy types across sources
+│   ├── region_map.csv          # Map for regions across sources
+│   └── sector_map.csv          # Map for sectors across sources
+|
 ```
 
 ---
