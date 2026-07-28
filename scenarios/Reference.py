@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.1"
+__generated_with = "0.23.15"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -44,25 +44,25 @@ def _():
         'fuels',
         'transmission',
         'coal mining',
-        'natural gas',
-        'petroleum crude',
-        'petroleum refining',
+        'natural_gas',
+        'petroleum_crude',
+        'petroleum_refining',
         'electricity',
         'biodiesel',
         'ethanol',
         'hydrogen',
         'mining',
-        'industrial minerals',
-        'iron and steel',
-        'metal smelting',
-        'chemical products',
-        'pulp and paper',
-        'light industrial',
+        'industrial_minerals',
+        'iron_and_steel',
+        'metal_smelting',
+        'chemical_products',
+        'pulp_and_paper',
+        'light_industrial',
         'construction',
         'residential',
         'commercial',
-        'transportation personal',
-        'transportation freight',
+        'transportation_passenger',
+        'transportation_freight',
         'waste',
         'agriculture',
         'forestry',
@@ -78,7 +78,7 @@ def _():
         'DCC', # declining capital cost
         'DIC', # declining intangible cost (neighbour effect)
         'FIC', # fixed intangible cost; primarily used for calibration
-        'market share limits', # use of limits should be minimised
+        'market_share_limits', # use of limits should be minimised
         ]
     if model_req:
         if model_path not in update_files:
@@ -120,12 +120,12 @@ def _(model_path, update_files):
         2015,
         2020,
         ### Forecast ###
-        # 2025,
-        # 2030,
-        # 2035,
-        # 2040,
-        # 2045,
-        # 2050,
+        2025,
+        2030,
+        2035,
+        2040,
+        2045,
+        2050,
     ]
 
     # Only uncommented sectors below will be run in the simulation
@@ -150,7 +150,7 @@ def _(model_path, update_files):
         'Construction',
         'Residential',
         'Commercial',
-        'Transportation Personal',
+        'Transportation Passenger',
         'Transportation Freight',
         'Waste',
         'Agriculture',
@@ -160,8 +160,8 @@ def _(model_path, update_files):
 
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
-        'exogenous prices',  # needed for correct calibration of historical years
-        # 'exogenous demand',  # use this file when calibrating endogenous supply sectors
+        'exogenous_prices',  # needed for correct calibration of historical years
+        # 'exogenous_demand',  # use this file when calibrating endogenous supply sectors
         ]
     if model_optional:
         if model_path not in update_files:
@@ -172,20 +172,19 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-        # 'coal mining',   # <-- add this
     ### Economy
-        'Ref_carbon tax',
-        'Ref_OBPS_Fed',
+        'ref_carbon_tax',
+        'ref_obps_fed',
     ### Coal Mining
     ### Natural Gas Production
     ### Petroleum Crude
     ### Mining
     ### Electricity
-        'Ref_coal phase out',
-        'Ref_nuclear ban',
-        'Ref_nuclear decommission',
-        'Ref_clean electricity',
-        'Ref_CER',
+        'ref_coal_phase_out',
+        'ref_nuclear_ban',
+        'ref_nuclear_decommission',
+        'ref_clean_electricity',
+        'ref_cer',
     ### Biodiesel
     ### Ethanol
     ### Hydrogen
@@ -197,16 +196,16 @@ def _(model_path, update_files):
     ### Pulp and Paper
     ### Light Industrial
     ### Residential
-        'Ref_incandescent phase out',
+        'ref_incandescent_phase_out',
     ### Commercial
     ### Transportation Personal
-        'Ref_LDV ZEV_Federal', #include before Prov version
-        'Ref_LDV ZEV_Prov',
-        'Ref_renewable fuel content_Fed', #include before Prov version
-        'Ref_renewable fuel content_Prov',
+        'ref_ldv_zev_federal', #include before Prov version
+        'ref_ldv_zev_prov',
+        'ref_renewable_fuel_content_fed', #include before Prov version
+        'ref_renewable_fuel_content_prov',
     ### Transportation Freight
     ### Waste
-        'Ref_waste methane large sites',
+        'ref_waste_methane_large_sites',
     ### Agriculture
         ]
     if ref_policies:
@@ -314,14 +313,14 @@ def _(
     # Once currency_deflator.csv and currency_exchange.csv are available in
     # data/model_inputs/, uncomment target_units/deflator_path/exchange_path below
     # to normalize cost inputs to a single currency and dollar-year.
+    # breakpoint()
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
         region_list=region_list,
         update_files=update_files,
         year_list=year_list,
-        sector_list=sector_list,
-        default_values_csv_path=default_path,
+        sector_list=sector_list,    default_values_csv_path=default_path,
         list_csv_path=list_path,
         # target_units={"currency": "CAD", "dollar_year": 2020},
         # deflator_path="data/model_inputs/currency_deflator.csv",
@@ -341,7 +340,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['unrequested_nodes']
+    model.validator.warnings['inconsistent_tech_refs']
     return
 
 
