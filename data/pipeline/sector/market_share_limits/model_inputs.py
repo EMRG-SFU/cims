@@ -88,6 +88,7 @@ def main() -> pl.DataFrame:
         region_df = output.filter(pl.col('Region') == region)
         out_path = OUTPUT_DIR / f'market_share_limits_{region.lower()}.csv'
         region_df = collapse_constant_years(region_df)
+        region_df = region_df.filter(pl.col('Parameter') != 'technology')
         region_df.write_csv(out_path)
         print(f'  Wrote {len(region_df):,} rows -> {out_path.name}')
 
