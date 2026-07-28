@@ -32,6 +32,27 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 
 ```
 C:\cims\data\
+├── raw_data/                   # Source files — gitignored, never committed
+│   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
+│   ├── eccc/nir/               # NIR data
+│   ├── cer/                    # CER data
+│   ├── nrcan/ceud/             # CEUD data
+│   ├── stats_can/              # Stats Can data
+│   ├── ceedc/                  # CEEDC data
+│   ├── ipcc/                   # IPCC data
+│   ├── ab_gov/                 # Alberta government data
+│   └── bc_gov/                 # BC government data
+│
+├── service_tech/               # service and technology data in yaml files with folders mirroring branch structure
+│   ├── agriculture/
+│   |   ├── product/
+|   |   |  ├── enteric_fermentation_and_manure_management
+|   |   |  └── soils   
+│   |   └── service/
+|   |       ├── heat
+|   |       └── tractors       
+|   └── ...
+|
 ├── pipeline/                   # All pipeline scripts (committed)
 │   ├── type/                   # Stage 1 — raw → processed_data
 │   │   ├── activity/           # Activity for all sectors 
@@ -57,18 +78,7 @@ C:\cims\data\
 │       ├── add_cims_totals.py
 │       ├── dict_ops.py
 │       └── controls_conversions.py
-│
-├── raw_data/                   # Source files — gitignored, never committed
-│   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
-│   ├── eccc/nir/               # NIR data
-│   ├── cer/                    # CER data
-│   ├── nrcan/ceud/             # CEUD data
-│   ├── stats_can/              # Stats Can data
-│   ├── ceedc/                  # CEEDC data
-│   ├── ipcc/                   # IPCC data
-│   ├── ab_gov/                 # Alberta government data
-│   └── bc_gov/                 # BC government data
-│
+|
 ├── processed_data/             # Stage 1 outputs — gitignored, auto-generated, for quick visualization of processed data
 │   ├── activity/
 │   ├── emissions/
@@ -99,7 +109,6 @@ C:\cims\data\
 │   ├── energy_map.csv          # Map for energy types across sources
 │   ├── region_map.csv          # Map for regions across sources
 │   └── sector_map.csv          # Map for sectors across sources
-|
 ```
 
 ---
