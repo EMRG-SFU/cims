@@ -81,6 +81,7 @@ def main() -> pl.DataFrame:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     output = collapse_constant_years(output)
+    output = output.filter(pl.col('Parameter') != 'technology')
     output.write_csv(OUTPUT_FILE)
     print(f'  Wrote {len(output):,} rows -> {OUTPUT_FILE.name}')
 

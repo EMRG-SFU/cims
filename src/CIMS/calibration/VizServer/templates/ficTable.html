@@ -1,0 +1,22 @@
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="42" class="tableNodeName">Node: {{context['nodeName']}}</th>
+        </tr>
+        <tr>
+            {% for th in context['colNames'] %}
+            <th>{{th}}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for rr in context['rows'] %}
+        <tr>
+            {% for val in rr %}
+            <td contenteditable="true">{{val}}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
