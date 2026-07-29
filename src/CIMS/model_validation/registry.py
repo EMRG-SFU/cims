@@ -369,22 +369,6 @@ REGISTRY.register("base_year_market_share_not_one", CheckSpec(
         "base year is inferred as the minimum Year value in the data."
     ),
 ))
-REGISTRY.register("nodes_missing_service_provide", CheckSpec(
-    fn=file_errors.nodes_missing_service_provide,
-    phase=Phase.FILE,
-    severity=Severity.ERROR,
-    argmap={},
-    short_desc="nodes are missing a Service Provide parameter",
-    help_text=(
-        "Output: [(row_index, node)]\n"
-        "  Each entry is a node with no Parameter='service_provide' row;\n"
-        "  row_index is a representative row for that node in model_df.\n\n"
-        "Reading: every node must declare what service it provides. Either add\n"
-        "a service_provide row, or check whether the node name in the Branch\n"
-        "column is misspelled (which would prevent the service_provide row from\n"
-        "being matched to this node)."
-    ),
-))
 REGISTRY.register("nodes_missing_competition", CheckSpec(
     fn=file_errors.nodes_missing_competition,
     phase=Phase.FILE,

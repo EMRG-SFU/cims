@@ -1,7 +1,7 @@
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
 def get_providers(df, node_col):
-    providers = df[df[COL.parameter] == PARAM.service_provide][node_col]
+    providers = df[df[COL.parameter] == PARAM.competition_type][node_col]
     return providers
 
 
