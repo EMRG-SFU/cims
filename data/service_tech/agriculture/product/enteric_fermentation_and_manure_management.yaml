@@ -1,0 +1,50 @@
+service: "enteric_fermentation_and_manure_management"
+branch: ".agriculture.product.enteric_fermentation_and_manure_management"  #to be deleted
+unit: "tco2e"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "tech_compete"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    discount_rate_behavioural:
+        context:
+        sub_context:
+        target:
+        value_type: 
+        value: 30
+        unit: "%"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+    discount_rate_retrofit:
+        context:
+        sub_context:
+        target:
+        value_type: 
+        value: 30
+        unit: "%"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:    
+    heterogeneity:
+        context:
+        sub_context:
+        target: 
+        value_type: 
+        value: 10
+        unit: 
+        by_year:
+        by_region:
+        source: "jcims"
+        note:    
+           

@@ -1,0 +1,50 @@
+service: "heat"
+branch: ".agriculture.service.tractors"  #to be deleted
+unit: "gj"
+note:
+parameter:
+    competition:
+        context: "tech_compete"
+        sub_context:
+        target:
+        value_type: 
+        value:
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    discount_rate_behavioural:
+        context:
+        sub_context:
+        target:
+        value_type: 
+        value: 30
+        unit: "%"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+    discount_rate_retrofit:
+        context:
+        sub_context:
+        target:
+        value_type: 
+        value: 30
+        unit: "%"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+    heterogeneity:
+        context:
+        sub_context:
+        target: 
+        value_type: 
+        value: 15
+        unit: 
+        by_year:
+        by_region:
+        source: "jcims"
+        note:    
+           

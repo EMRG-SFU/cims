@@ -1,0 +1,26 @@
+service: "agriculture"
+unit: "tco2e"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "sector"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".agriculture.product"
+        value_type:
+        value: 1
+        unit: "tco2e"
+        by_year: 
+        by_region:
+        source: 
+        note:

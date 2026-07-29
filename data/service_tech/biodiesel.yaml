@@ -1,0 +1,81 @@
+service: "biodiesel"
+unit: "gj"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: "sector"
+        unit:
+        by_year: 
+        by_region:
+        source: 
+        note:
+    is_supply:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: "true"
+        unit:
+        by_year: 
+        by_region:
+        source: 
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".biodiesel.product"
+        value_type:
+        value: 1
+        unit: "gj"
+        by_year: 
+        by_region:
+        source: 
+        note:        
+    emissions_biomass:
+        context: "co2"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: "processed_data/emissions/emissions_factors_cims.csv" 
+        unit: "tco2"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note:                
+    emissions:
+        context: "co2"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: "processed_data/emissions/emissions_factors_cims.csv"
+        unit: "tco2"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note: 
+    emissions:
+        context: "ch4"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: "processed_data/emissions/emissions_factors_cims.csv"
+        unit: "tch4"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note: 
+    emissions:
+        context: "n2o"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: "processed_data/emissions/emissions_factors_cims.csv"
+        unit: "tn2o"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note:                    

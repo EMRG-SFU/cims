@@ -8,11 +8,10 @@
 .agriculture.service.tractors,data/service_tech/agriculture/service/tractors
 .biodiesel,data/service_tech/biodiesel
 .biodiesel.product,data/service_tech/biodiesel/product
-.biodiesel.product.transesterification,data/service_tech/biodiesel/product/transesterification
 .biodiesel.service,data/service_tech/biodiesel/service
 .biodiesel.service.agricultural input,data/service_tech/biodiesel/service/agricultural_input
 .biodiesel.service.ccs,data/service_tech/biodiesel/service/ccs
-.biodiesel.service.methane fuel,data/service_tech/biodiesel/service/methane_fuel
+.biodiesel.service.methane blend,data/service_tech/biodiesel/service/methane_fuel
 .biodiesel.service.steam,data/service_tech/general_services/steam
 .chemicals,data/service_tech/chemicals
 .chemicals.product,data/service_tech/chemicals/product
@@ -137,7 +136,7 @@
 .ethanol.service,data/service_tech/ethanol/service
 .ethanol.service.agricultural input,data/service_tech/ethanol/service/agricultural_input
 .ethanol.service.ccs,data/service_tech/ethanol/service/ccs
-.ethanol.service.methane fuel,data/service_tech/ethanol/service/methane_fuel
+.ethanol.service.methane blend,data/service_tech/ethanol/service/methane_fuel
 .ethanol.service.steam,data/service_tech/general_services/steam
 .forestry,data/service_tech/forestry
 .forestry.product,data/service_tech/forestry/product
