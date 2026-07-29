@@ -132,7 +132,6 @@ def main() -> dict[str, pl.DataFrame]:
 
         out_path = OUTPUT_DIR / f'exogenous_demand_{region.lower()}.csv'
         output = collapse_constant_years(output)
-        output = output.filter(pl.col('Parameter') != 'technology')
         output.write_csv(str(out_path))
         print(f'  Wrote {len(output):,} rows -> {out_path.name}')
         results[region] = output

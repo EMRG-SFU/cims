@@ -17,6 +17,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
 import importlib.util
+import shutil
 import sys
 import tempfile
 
@@ -70,9 +71,8 @@ def main() -> None:
         for f in output_files:
             dest = OUTPUT_DIR / f.name
             df = pl.read_csv(f, infer_schema_length=0)
-            df = df.filter(pl.col('Parameter') != 'technology')
             total_rows += len(df)
-            df.write_csv(dest)
+            shutil.copy(f, dest)
             print(f'  Wrote {len(df):,} rows -> {dest.name}')
 
     print(f'\nDCC model inputs complete')

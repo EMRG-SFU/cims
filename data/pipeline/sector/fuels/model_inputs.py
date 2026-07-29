@@ -312,7 +312,6 @@ def main() -> dict[str, pl.DataFrame]:
 
             out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
             output = collapse_constant_years(output)
-            output = output.filter(pl.col('Parameter') != 'technology')
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results[region] = output
@@ -334,7 +333,6 @@ def main() -> dict[str, pl.DataFrame]:
             output = _assemble_cims(fixed, prices_df, ef_df)
 
             out_path = OUTPUT_DIR / 'fuels_cims.csv'
-            output = output.filter(pl.col('Parameter') != 'technology')
             output.write_csv(str(out_path))
             print(f'  Wrote {len(output):,} rows → {out_path.name}')
             results['CIMS'] = output

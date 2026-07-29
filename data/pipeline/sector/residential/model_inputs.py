@@ -728,7 +728,6 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Assembling...')
             output = _assemble_region(fixed, residential, multipliers, region)
             output = collapse_constant_years(output)
-            output = output.filter(pl.col('Parameter') != 'technology')
 
             out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
             output.write_csv(str(out_path))
