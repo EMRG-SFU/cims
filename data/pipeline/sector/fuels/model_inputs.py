@@ -91,15 +91,6 @@ _USE_ON_AS_GENERIC: frozenset[str] = frozenset({
     'Renewable Gasoline',
 })
 
-# Fuels that must keep an explicit row for every year even though their
-# lcc_financial/emissions values are constant — collapse_constant_years is
-# skipped for these Services in the CIMS output.
-_KEEP_ALL_YEARS: frozenset[str] = frozenset({
-    'Refinery Fuel Gas',
-    'Black Liquor',
-})
-
-
 # ── helpers ────────────────────────────────────────────────────────────────────
 
 def _read_flattened(fixed_path: Path) -> pl.DataFrame:
@@ -264,7 +255,10 @@ def _assemble_cims(
         how='diagonal_relaxed',
     ).sort('_order')
 
-    keep_mask  = pl.col('Service').is_in(_KEEP_ALL_YEARS)
+    # lcc_financial rows must keep an explicit row for every year even when
+    # the value is constant across the whole projection — collapse_constant_years
+    # is skipped for just this Parameter in the CIMS output.
+    keep_mask  = pl.col('Parameter') == 'lcc_financial'
     full_years = combined.filter(keep_mask)
     rest       = combined.filter(~keep_mask)
 
