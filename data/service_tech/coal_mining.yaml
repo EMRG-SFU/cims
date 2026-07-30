@@ -1,0 +1,26 @@
+service: "coal_mining"
+unit: "kt"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "sector"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".coal_mining.product"
+        value_type:
+        value: 1
+        unit: "kt"
+        by_year: 
+        by_region:
+        source: 
+        note:

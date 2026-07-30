@@ -1,0 +1,17 @@
+parameter,context,sub_context,target,unit,sector,year,value
+service_request,,,.general_services.hvac.space_heating,gj,chemical_products,,0.95
+service_request,,,.general_services.hvac.space_cooling,gj,chemical_products,,0.05
+service_request,,,.general_services.hvac.space_heating,gj,coal_mining,,0.95
+service_request,,,.general_services.hvac.space_cooling,gj,coal_mining,,0.05
+service_request,,,.general_services.hvac.space_heating,gj,industrial_minerals,,0.9
+service_request,,,.general_services.hvac.space_cooling,gj,industrial_minerals,,0.1
+service_request,,,.general_services.hvac.space_heating,gj,iron_and_steel,,0.91
+service_request,,,.general_services.hvac.space_cooling,gj,iron_and_steel,,0.09
+service_request,,,.general_services.hvac.space_heating,gj,metal_smelting,,0.9
+service_request,,,.general_services.hvac.space_cooling,gj,metal_smelting,,0.1
+service_request,,,.general_services.hvac.space_heating,gj,mining,,0.9
+service_request,,,.general_services.hvac.space_cooling,gj,mining,,0.1
+service_request,,,.general_services.hvac.space_heating,gj,petroleum_refining,,0.95
+service_request,,,.general_services.hvac.space_cooling,gj,petroleum_refining,,0.05
+service_request,,,.general_services.hvac.space_heating,gj,pulp_and_paper,,0.9
+service_request,,,.general_services.hvac.space_cooling,gj,pulp_and_paper,,0.1

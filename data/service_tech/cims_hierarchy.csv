@@ -38,18 +38,12 @@
 .chemicals.product.sodium chlorate.process,data/service_tech/chemicals/product/sodium_chlorate/process
 .chemicals.service,data/service_tech/chemicals/service
 .chemicals.service.ccs,data/service_tech/chemicals/service/ccs
-.chemicals.service.hvac,data/service_tech/chemicals/service/hvac
-.chemicals.service.hvac.space cooling,data/service_tech/chemicals/service/hvac/space_cooling
-.chemicals.service.hvac.space heating,data/service_tech/chemicals/service/hvac/space_heating
-.chemicals.service.lighting,data/service_tech/chemicals/service/lighting
 .chemicals.service.machine drive,data/service_tech/general_services/machine_drive
 .chemicals.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .chemicals.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .chemicals.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .chemicals.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .chemicals.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.chemicals.service.methane blend,data/service_tech/chemicals/service/methane_blend
-.chemicals.service.steam,data/service_tech/general_services/steam
 .coal mining,data/service_tech/coal_mining
 .coal mining.product,data/service_tech/coal_mining/product
 .coal mining.product.metallurgical finishing,data/service_tech/coal_mining/product/metallurgical_finishing
@@ -67,17 +61,12 @@
 .coal mining.product.size reduced product.primary milling,data/service_tech/coal_mining/product/size_reduced_product/primary_milling
 .coal mining.product.size reduced product.secondary milling,data/service_tech/coal_mining/product/size_reduced_product/secondary_milling
 .coal mining.service,data/service_tech/coal_mining/service
-.coal mining.service.hvac,data/service_tech/coal_mining/service/hvac
-.coal mining.service.hvac.space cooling,data/service_tech/coal_mining/service/hvac/space_cooling
-.coal mining.service.hvac.space heating,data/service_tech/coal_mining/service/hvac/space_heating
-.coal mining.service.lighting,data/service_tech/coal_mining/service/lighting
 .coal mining.service.machine drive,data/service_tech/general_services/machine_drive
 .coal mining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .coal mining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .coal mining.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .coal mining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .coal mining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.coal mining.service.methane blend,data/service_tech/coal_mining/service/methane_blend
 .commercial,data/service_tech/commercial
 .commercial.product,data/service_tech/commercial/product
 .commercial.product.building shell,data/service_tech/commercial/product/building_shell
@@ -141,6 +130,13 @@
 .forestry,data/service_tech/forestry
 .forestry.product,data/service_tech/forestry/product
 .forestry.product.transport,data/service_tech/forestry/product/transport
+.general_services,data/service_tech/general_services
+.general_services.hvac,data/service_tech/general_services/hvac
+.general_services.hvac.space_heating,data/service_tech/general_services/hvac/space_heating
+.general_services.hvac.space_cooling,data/service_tech/general_services/hvac/space_cooling
+.general_services.lighting,data/service_tech/general_services/lighting
+.general_services.methane_blend,data/service_tech/general_services/methane_blend
+.general_services.steam,data/service_tech/general_services/steam
 .hydrogen,data/service_tech/hydrogen
 .hydrogen.product,data/service_tech/hydrogen/product
 .hydrogen.product.process,data/service_tech/hydrogen/product/process
@@ -182,17 +178,12 @@
 .industrial minerals.service,data/service_tech/industrial_minerals/service
 .industrial minerals.service.ccs,data/service_tech/industrial_minerals/service/ccs
 .industrial minerals.service.heat,data/service_tech/industrial_minerals/service/heat
-.industrial minerals.service.hvac,data/service_tech/industrial_minerals/service/hvac
-.industrial minerals.service.hvac.space cooling,data/service_tech/industrial_minerals/service/hvac/space_cooling
-.industrial minerals.service.hvac.space heating,data/service_tech/industrial_minerals/service/hvac/space_heating
-.industrial minerals.service.lighting,data/service_tech/industrial_minerals/service/lighting
 .industrial minerals.service.machine drive,data/service_tech/general_services/machine_drive
 .industrial minerals.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .industrial minerals.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .industrial minerals.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .industrial minerals.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .industrial minerals.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.industrial minerals.service.methane blend,data/service_tech/industrial_minerals/service/methane_blend
 .iron and steel,data/service_tech/iron_and_steel
 .iron and steel.product,data/service_tech/iron_and_steel/product
 .iron and steel.product.continuous cast,data/service_tech/iron_and_steel/product/continuous_cast
@@ -230,25 +221,19 @@
 .iron and steel.service,data/service_tech/iron_and_steel/service
 .iron and steel.service.agglomeration,data/service_tech/iron_and_steel/service/agglomeration
 .iron and steel.service.ccs,data/service_tech/iron_and_steel/service/ccs
-.iron and steel.service.hvac,data/service_tech/iron_and_steel/service/hvac
-.iron and steel.service.hvac.space cooling,data/service_tech/iron_and_steel/service/hvac/space_cooling
-.iron and steel.service.hvac.space heating,data/service_tech/iron_and_steel/service/hvac/space_heating
 .iron and steel.service.iron process gas,data/service_tech/iron_and_steel/service/iron_process_gas
 .iron and steel.service.iron process gas.reheating,data/service_tech/iron_and_steel/service/iron_process_gas/reheating
 .iron and steel.service.iron process gas.steam,data/service_tech/general_services/steam
-.iron and steel.service.lighting,data/service_tech/iron_and_steel/service/lighting
 .iron and steel.service.machine drive,data/service_tech/general_services/machine_drive
 .iron and steel.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .iron and steel.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .iron and steel.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .iron and steel.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .iron and steel.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.iron and steel.service.methane blend,data/service_tech/iron_and_steel/service/methane_blend
 .iron and steel.service.oxygen,data/service_tech/iron_and_steel/service/oxygen
 .iron and steel.service.oxygen.cryogenics,data/service_tech/iron_and_steel/service/oxygen/cryogenics
 .iron and steel.service.reheating,data/service_tech/iron_and_steel/service/reheating
 .iron and steel.service.reheating.reheators,data/service_tech/iron_and_steel/service/reheating/reheators
-.iron and steel.service.steam,data/service_tech/general_services/steam
 .light industrial,data/service_tech/light_industrial
 .light industrial.product,data/service_tech/light_industrial/product
 .light industrial.product.electronics and other,data/service_tech/light_industrial/product/electronics_and_other
@@ -264,7 +249,6 @@
 .light industrial.service.heat.indirect,data/service_tech/light_industrial/service/heat/indirect
 .light industrial.service.hvac,data/service_tech/light_industrial/service/hvac
 .light industrial.service.lighting,data/service_tech/light_industrial/service/lighting
-.light industrial.service.methane blend,data/service_tech/light_industrial/service/methane_blend
 .light industrial.service.machine drive,data/service_tech/general_services/machine_drive
 .light industrial.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .light industrial.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
@@ -345,22 +329,16 @@
 .metal.smelting.product.zinc.metallurgy.pyro.process.conventional.roast,data/service_tech/metal/smelting/product/zinc/metallurgy/pyro/process/conventional/roast
 .metal.smelting.product.zinc.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/zinc/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.service,data/service_tech/metal/smelting/service
-.metal.smelting.service.hvac,data/service_tech/metal/smelting/service/hvac
-.metal.smelting.service.hvac.space cooling,data/service_tech/metal/smelting/service/hvac/space_cooling
-.metal.smelting.service.hvac.space heating,data/service_tech/metal/smelting/service/hvac/space_heating
-.metal.smelting.service.lighting,data/service_tech/metal/smelting/service/lighting
 .metal.smelting.service.machine drive,data/service_tech/general_services/machine_drive
 .metal.smelting.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .metal.smelting.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .metal.smelting.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .metal.smelting.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .metal.smelting.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.metal.smelting.service.methane blend,data/service_tech/metal/smelting/service/methane_blend
 .metal.smelting.service.oxygen,data/service_tech/metal/smelting/service/oxygen
 .metal.smelting.service.oxygen.cryogenics,data/service_tech/metal/smelting/service/oxygen/cryogenics
 .metal.smelting.service.pre-bake anode,data/service_tech/metal/smelting/service/pre-bake_anode
 .metal.smelting.service.soderberg anode,data/service_tech/metal/smelting/service/soderberg_anode
-.metal.smelting.service.steam,data/service_tech/general_services/steam
 .mining,data/service_tech/mining
 .mining.product,data/service_tech/mining/product
 .mining.product.metal,data/service_tech/mining/product/metal
@@ -412,18 +390,12 @@
 .mining.product.potash.processing.raw product.solution mining.transportation,data/service_tech/mining/product/potash/processing/raw_product/solution_mining/transportation
 .mining.product.potash.tailings disposal,data/service_tech/mining/product/potash/tailings_disposal
 .mining.service,data/service_tech/mining/service
-.mining.service.hvac,data/service_tech/mining/service/hvac
-.mining.service.hvac.space cooling,data/service_tech/mining/service/hvac/space_cooling
-.mining.service.hvac.space heating,data/service_tech/mining/service/hvac/space_heating
-.mining.service.lighting,data/service_tech/mining/service/lighting
 .mining.service.machine drive,data/service_tech/general_services/machine_drive
 .mining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .mining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .mining.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .mining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .mining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.mining.service.methane blend,data/service_tech/mining/service/methane_blend
-.mining.service.steam,data/service_tech/general_services/steam
 .natural gas,data/service_tech/natural_gas
 .natural gas.product,data/service_tech/natural_gas/product
 .natural gas.product.distribution,data/service_tech/natural_gas/product/distribution
@@ -481,7 +453,6 @@
 .petroleum crude.service.ccs,data/service_tech/petroleum_crude/service/ccs
 .petroleum crude.service.hydrogen,data/service_tech/petroleum_crude/service/hydrogen
 .petroleum crude.service.industrial engines,data/service_tech/petroleum_crude/service/industrial_engines
-.petroleum crude.service.steam,data/service_tech/general_services/steam
 .petroleum crude.service.still gas steam,data/service_tech/general_services/steam
 .petroleum refining,data/service_tech/petroleum_refining
 .petroleum refining.product,data/service_tech/petroleum_refining/product
@@ -509,11 +480,7 @@
 .petroleum refining.service,data/service_tech/petroleum_refining/service
 .petroleum refining.service.ccs,data/service_tech/petroleum_refining/service/ccs
 .petroleum refining.service.direct heat,data/service_tech/petroleum_refining/service/direct_heat
-.petroleum refining.service.hvac,data/service_tech/petroleum_refining/service/hvac
-.petroleum refining.service.hvac.space cooling,data/service_tech/petroleum_refining/service/hvac/space_cooling
-.petroleum refining.service.hvac.space heating,data/service_tech/petroleum_refining/service/hvac/space_heating
 .petroleum refining.service.hydrogen,data/service_tech/petroleum_refining/service/hydrogen
-.petroleum refining.service.lighting,data/service_tech/petroleum_refining/service/lighting
 .petroleum refining.service.machine drive,data/service_tech/general_services/machine_drive
 .petroleum refining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .petroleum refining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
@@ -521,7 +488,6 @@
 .petroleum refining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .petroleum refining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
 .petroleum refining.service.methane blend,data/service_tech/petroleum_refining/service/methane_blend
-.petroleum refining.service.steam,data/service_tech/general_services/steam
 .petroleum refining.service.still gas,data/service_tech/petroleum_refining/service/still_gas
 .petroleum refining.service.still gas.heater,data/service_tech/petroleum_refining/service/still_gas/heater
 .petroleum refining.service.still gas.steam,data/service_tech/general_services/steam
@@ -569,18 +535,12 @@
 .pulp and paper.service.black liquor.concentrated black liquor.lime kiln,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/lime_kiln
 .pulp and paper.service.black liquor.concentrated black liquor.recovery furnace,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/recovery_furnace
 .pulp and paper.service.black liquor.evaporator,data/service_tech/pulp_and_paper/service/black_liquor/evaporator
-.pulp and paper.service.hvac,data/service_tech/pulp_and_paper/service/hvac
-.pulp and paper.service.hvac.space cooling,data/service_tech/pulp_and_paper/service/hvac/space_cooling
-.pulp and paper.service.hvac.space heating,data/service_tech/pulp_and_paper/service/hvac/space_heating
-.pulp and paper.service.lighting,data/service_tech/pulp_and_paper/service/lighting
 .pulp and paper.service.machine drive,data/service_tech/general_services/machine_drive
 .pulp and paper.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
 .pulp and paper.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
 .pulp and paper.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
 .pulp and paper.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
 .pulp and paper.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.pulp and paper.service.methane blend,data/service_tech/pulp_and_paper/service/methane_blend
-.pulp and paper.service.steam,data/service_tech/general_services/steam
 .residential,data/service_tech/residential
 .residential.product,data/service_tech/residential/product
 .residential.product.building type,data/service_tech/residential/product/building_type
