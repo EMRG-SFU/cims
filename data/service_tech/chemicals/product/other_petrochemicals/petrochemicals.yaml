@@ -1,0 +1,48 @@
+service: "petrochemicals"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target: 
+        value_type: 
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".chemicals.product.other_petrochemicals.petrochemicals.intermediate_production"
+        value_type: 
+        value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".chemicals.product.other_petrochemicals.petrochemicals.btx_reforming"
+        value_type: 
+        value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:  
+    service_request:
+        context: 
+        sub_context:
+        target: ".chemicals.product.other_petrochemicals.petrochemicals.all_polymerization"
+        value_type: 
+        value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:  

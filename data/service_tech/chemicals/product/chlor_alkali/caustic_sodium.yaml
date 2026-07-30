@@ -1,0 +1,37 @@
+service: "caustic_sodium"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target: 
+        value_type: 
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".chemicals.product.caustic_sodium.chlor_alkali_evaporation"
+        value_type: 
+        value: 1
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".chemicals.product.caustic_sodium.caustic_process"
+        value_type: 
+        value: 0
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:  

@@ -1,0 +1,81 @@
+service: "product"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.adipic_acid"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.ammonia_methanol"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note: 
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.chlor_alkali"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note: 
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.hydrogen_peroxide"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note: 
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.other_petrochemicals"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note: 
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product.sodium_chlorate"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:         

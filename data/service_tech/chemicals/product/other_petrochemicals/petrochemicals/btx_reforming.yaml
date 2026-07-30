@@ -1,0 +1,37 @@
+service: "btx_reforming"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "tech_compete"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    discount_rate_behavioural:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: 35
+        unit: "%"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    heterogeneity:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: 10
+        unit:
+        by_year:
+        by_region:
+        source: "jcims"
+        note:  

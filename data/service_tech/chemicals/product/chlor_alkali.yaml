@@ -1,0 +1,60 @@
+service: "chlor_alkali"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "chemicals.product.chlorine_electrolysis"
+        value_type: 
+        value: 0.5
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "chemicals.product.caustic_sodium"
+        value_type: 
+        value: 0.5
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:        
+    service_request:
+        context:
+        sub_context:
+        target: "chemicals.service.hvac"
+        value_type: 
+        value: 0.02
+        unit: "gj"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: "chemicals.service.lighting"
+        value_type: 
+        value: 0.05
+        unit: "gj"
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+           

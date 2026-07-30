@@ -1,0 +1,26 @@
+service: "chemicals"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "sector"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".chemicals.product"
+        value_type:
+        value: 1
+        unit: "tonne"
+        by_year: 
+        by_region:
+        source: 
+        note:
