@@ -93,12 +93,12 @@ parameter:
     fcc:
         context:
         sub_context:
-        target
-        value_type: "csv"
-        value: "data/service_tech/chemicals/product/ammonia_methanol/ammonia_synthesis/adv_reforming_reactors_ccs.yaml"
+        target:
+        value_type: "fixed"
+        value: 533732470
         unit: "$"
-        by_year: false
-        by_region: true
+        by_year: 
+        by_region:
         source: "JCIMS"
         note:
     capital_recovery:
@@ -116,11 +116,11 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value: "data/service_tech/chemicals/product/ammonia_methanol/ammonia_synthesis/adv_reforming_reactors_ccs.yaml"
+        value_type: "fixed"
+        value: 18680636
         unit: "$"
-        by_year: false
-        by_region: true
+        by_year:
+        by_region:
         source: "JCIMS"
         note:
     service_request:
