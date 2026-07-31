@@ -1,0 +1,10 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.coal_mining.product.size_reduced_product.primary_crushing,kt,ab,,1.09
+service_request,,,.coal_mining.product.size_reduced_product.primary_crushing,kt,bc,,1.51
+service_request,,,.coal_mining.product.size_reduced_product.primary_crushing,kt,sk,,1
+service_request,,,.coal_mining.product.size_reduced_product.primary_milling,kt,ab,,1.09
+service_request,,,.coal_mining.product.size_reduced_product.primary_milling,kt,bc,,1.51
+service_request,,,.coal_mining.product.size_reduced_product.primary_milling,kt,sk,,1
+service_request,,,.coal_mining.product.size_reduced_product.secondary_milling,kt,ab,,1.09
+service_request,,,.coal_mining.product.raw_product.transportation,kt,bc,,1.51
+service_request,,,.coal_mining.product.raw_product.transportation,kt,sk,,1

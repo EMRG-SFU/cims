@@ -1,0 +1,11 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.coal_mining.product.simplified_extraction,kt,ab,,0
+service_request,,,.coal_mining.product.simplified_extraction,kt,bc,,0
+service_request,,,.coal_mining.product.simplified_extraction,kt,sk,,0
+service_request,,,.coal_mining.product.simplified_extraction,kt,nb,,1
+service_request,,,.coal_mining.product.simplified_extraction,kt,ns,,1
+service_request,,,.coal_mining.product.simplified_production,kt,ab,,0
+service_request,,,.coal_mining.product.simplified_production,kt,bc,,0
+service_request,,,.coal_mining.product.simplified_production,kt,sk,,0
+service_request,,,.coal_mining.product.simplified_production,kt,nb,,1
+service_request,,,.coal_mining.product.simplified_production,kt,ns,,1

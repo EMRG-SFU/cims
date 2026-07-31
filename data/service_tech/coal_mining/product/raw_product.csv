@@ -1,0 +1,10 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.coal_mining.product.raw_product.extraction,kt,ab,,1.12921654
+service_request,,,.coal_mining.product.raw_product.extraction,kt,bc,,1.452392603
+service_request,,,.coal_mining.product.raw_product.extraction,kt,sk,,1.0
+service_request,,,.coal_mining.product.raw_product.mine_ventilation,kt,ab,,0.000110928
+service_request,,,.coal_mining.product.raw_product.mine_ventilation,kt,bc,,0.002497541
+service_request,,,.coal_mining.product.raw_product.mine_ventilation,kt,sk,,0.0
+service_request,,,.coal_mining.product.raw_product.transportation,kt,ab,,1.467981503
+service_request,,,.coal_mining.product.raw_product.transportation,kt,bc,,1.452392603
+service_request,,,.coal_mining.product.raw_product.transportation,kt,sk,,1.0

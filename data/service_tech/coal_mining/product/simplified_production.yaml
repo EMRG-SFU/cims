@@ -1,0 +1,15 @@
+technology: "simplified_production"
+unit: "kt"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: "tech_compete"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
