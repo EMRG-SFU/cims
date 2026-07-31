@@ -1,5 +1,4 @@
 technology: "Evaporators II all"
-branch: ".chemicals.product.chlor_alkali.caustic_sodium.chlor_alkali_evaporation"
 unit: "tonne"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/chemicals/product/chlor_alkali/caustic_sodium/chlor_alkali_evaporation/evaporators_ii_all.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "evaporators_ii_all.csv"
+        source: "JCIMS"
         note:
     market_share_new_max:
         context:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 105000
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -95,12 +94,12 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 2635842
         unit: "$"
-        by_year: false
-        by_region: true
-        source: "evaporators_ii_all.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note:
     capital_recovery:
         context:
@@ -117,17 +116,17 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 3697977
         unit: "$"
-        by_year: false
-        by_region: true
-        source: "evaporators_ii_all.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note:
     service_request:
         context:
         sub_context:
-        target: ".steam"
+        target: ".general_services.steam"
         value_type: "fixed"
         value: 4.339835423
         unit: "GJ"
@@ -138,73 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.CAN.BC.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.MB.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.NL.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.NS.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.ON.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.QC.Chemical Products.Pumping"
-        value_type: "fixed"
-        value: 0.01809
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "CIMS.CAN.SK.Chemical Products.Pumping"
+        target: ".chemicals.service.pumping"
         value_type: "fixed"
         value: 0.01809
         unit: "GJ"

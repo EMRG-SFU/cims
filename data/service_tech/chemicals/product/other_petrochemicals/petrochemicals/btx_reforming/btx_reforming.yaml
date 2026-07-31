@@ -1,4 +1,4 @@
-technology: "Caustic membrane cell"
+technology: "prod of Intermediate chemicals"
 unit: "tonne"
 note:
 parameter:
@@ -7,7 +7,7 @@ parameter:
         sub_context:
         target:
         value_type: "fixed"
-        value: 1950
+        value: 1976
         unit: "Year"
         by_year:
         by_region:
@@ -29,10 +29,10 @@ parameter:
         sub_context:
         target:
         value_type:
-        value: 0.45
+        value: 1
         unit: "%"
-        by_year: 
-        by_region: 
+        by_year:
+        by_region:
         source: "JCIMS"
         note:
     market_share_new_max:
@@ -62,7 +62,7 @@ parameter:
         sub_context:
         target:
         value_type: "fixed"
-        value: 30
+        value: 20
         unit: "Years"
         by_year:
         by_region:
@@ -73,7 +73,7 @@ parameter:
         sub_context:
         target:
         value_type: "fixed"
-        value: 82000
+        value: 612500
         unit: "node unit"
         by_year:
         by_region:
@@ -95,7 +95,7 @@ parameter:
         sub_context:
         target:
         value_type: "fixed"
-        value: 111725760
+        value: 575602670
         unit: "$"
         by_year: 
         by_region: 
@@ -117,7 +117,7 @@ parameter:
         sub_context:
         target:
         value_type: "fixed"
-        value: 4837678
+        value: 19544913
         unit: "$"
         by_year: 
         by_region: 
@@ -126,9 +126,9 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".electricity"
+        target: ".general_services.steam"
         value_type: "fixed"
-        value: 8.262865913
+        value: 2.538918816
         unit: "GJ"
         by_year:
         by_region:
@@ -137,9 +137,9 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "general_services.methane_blend"
+        target: ".chemicals.service.compression"
         value_type: "fixed"
-        value: -3.9
+        value: 0.008893336
         unit: "GJ"
         by_year:
         by_region:
@@ -148,64 +148,9 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.compression"
+        target: ".chemicals.service.pumping"
         value_type: "fixed"
-        value: 0.077
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: ".steam"
-        value_type: "fixed"
-        value: 7.892349679
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "chemicals.service.ventilation"
-        value_type: "fixed"
-        value: 0.011
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "chemicals.service.conveyance"
-        value_type: "fixed"
-        value: 0.017
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "chemicals.service.pumping"
-        value_type: "fixed"
-        value: 0.393
-        unit: "GJ"
-        by_year:
-        by_region:
-        source: "JCIMS"
-        note:
-    service_request:
-        context:
-        sub_context:
-        target: "chemicals.service.direct_drive"
-        value_type: "fixed"
-        value: 0.345
+        value: 0.050925536
         unit: "GJ"
         by_year:
         by_region:

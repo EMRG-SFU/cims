@@ -137,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.ventilation"
+        target: ".chemicals.service.ventilation"
         value_type: "fixed"
         value: 0.013892105
         unit: "GJ"
@@ -148,7 +148,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.compression"
+        target: ".chemicals.service.compression"
         value_type: "fixed"
         value: 0.111136837
         unit: "GJ"
@@ -159,7 +159,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.pumping"
+        target: ".chemicals.service.pumping"
         value_type: "fixed"
         value: 0.050937717
         unit: "GJ"

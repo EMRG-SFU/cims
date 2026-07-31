@@ -17,7 +17,7 @@ parameter:
         context: 
         sub_context:
         target: ".chemicals.product.other_petrochemicals.petrochemicals.intermediate_production"
-        value_type: 
+        value_type: "csv"
         value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
         unit: "tonne"
         by_year: true
@@ -28,7 +28,7 @@ parameter:
         context: 
         sub_context:
         target: ".chemicals.product.other_petrochemicals.petrochemicals.btx_reforming"
-        value_type: 
+        value_type: "csv"
         value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
         unit: "tonne"
         by_year: true
@@ -39,7 +39,7 @@ parameter:
         context: 
         sub_context:
         target: ".chemicals.product.other_petrochemicals.petrochemicals.all_polymerization"
-        value_type: 
+        value_type: "csv"
         value: "data/service_tech/chemicals/product/other_petrochemicals/petrochemicals.csv"
         unit: "tonne"
         by_year: true

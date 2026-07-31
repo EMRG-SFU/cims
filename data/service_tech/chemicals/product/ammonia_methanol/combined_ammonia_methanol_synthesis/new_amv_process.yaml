@@ -28,7 +28,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "fixed"
+        value_type: "csv"
         value: "data/service_tech/chemicals/product/ammonia_methanol/combined_ammonia_methanol_synthesis/new_amv_process.csv"
         unit: "%"
         by_year: false
@@ -126,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "common_energy.natural_gas_feedstock"
+        target: ".common_energy.natural_gas_feedstock"
         value_type: "fixed"
         value: 19.64
         unit: "GJ"
@@ -137,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "general_services.steam"
+        target: ".general_services.steam"
         value_type: "fixed"
         value: 1.006027038
         unit: "GJ"
@@ -148,7 +148,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.ventilation"
+        target: ".chemicals.service.ventilation"
         value_type: "fixed"
         value: 0.012
         unit: "GJ"
@@ -159,7 +159,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.compression"
+        target: ".chemicals.service.compression"
         value_type: "fixed"
         value: 0.096
         unit: "GJ"
@@ -170,7 +170,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.pumping"
+        target: ".chemicals.service.pumping"
         value_type: "fixed"
         value: 0.044
         unit: "GJ"

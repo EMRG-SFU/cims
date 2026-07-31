@@ -27,7 +27,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.hvac"
+        target: ".general_services.hvac"
         value_type: 
         value: 0.02
         unit: "gj"
@@ -38,9 +38,9 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "chemicals.service.lighting"
+        target: ".general_services.lighting"
         value_type: 
-        value: 0.05
+        value: 0.02
         unit: "gj"
         by_year:
         by_region: 
