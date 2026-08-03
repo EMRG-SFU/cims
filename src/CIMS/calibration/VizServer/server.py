@@ -10,6 +10,7 @@ from flask import request
 from flask import make_response
 from flask import jsonify
 
+import time
 import pickle
 import json
 import sys
@@ -437,7 +438,13 @@ def getVizPage():
     base_url = request.host_url
     return( flask.render_template('index_tree.html', base_url=base_url))
 
+@app.route('/getNodeCalFitIdea/', methods=['GET'])
+def getNodeCalFitIdea():
+    return( flask.render_template('index_nodeCalFitIdea.html'))
 
+@app.route('/getNodeCalFitIdea_2/', methods=['GET'])
+def getNodeCalFitIdea_2():
+    return( flask.render_template('index_nodeCalFitIdea_2.html'))
 ##############################################################################################
 ##############################################################################################
 ##############################################################################################
@@ -470,11 +477,12 @@ def decrList():
 ##############################################################################################
 ##############################################################################################
 
-def run_server(pickle_path, PORT=None):
+def run_server(pickle_path, vizVars, PORT=None):
     """
     `pickle_path` is a filepath pointing to a pickled CIMS model object that this flask
         server instance is going to serve.
     """
+    start = time.perf_counter()
     with open(pickle_path, 'rb') as f:
         wholeModel = pickle.load(f)
         modelGraph = wholeModel.graph
@@ -483,10 +491,18 @@ def run_server(pickle_path, PORT=None):
         current_app.wholeModel = wholeModel
         current_app.testList = []
 
+        # This is usually supplied by the Marimo notebook, but we don't have one of those here,
+        # so just kind of approximate it for now.
+        current_app.vizVars = vizVars
+
+    end = time.perf_counter()
+
+    print(f"Loading model took {end - start:.4f} sec.")
+
     if PORT is not None:
-        app.run(debug=True, use_reloader=True, port=PORT)
+        app.run(debug=True, use_reloader=False, port=PORT)
     else:
-        app.run(debug=True, use_reloader=True)
+        app.run(debug=True, use_reloader=False)
 
 def run_server_modelObject(model_object, 
                            cims_funcs,

@@ -1,4 +1,5 @@
 
+import VizServer.utility_functions as UF
 import networkx as nx
 
 def addTech(g_in):
@@ -23,7 +24,23 @@ def addTech(g_in):
     return((g, edgeCount, outList))
 
 
+def get_calData_info(G, nodeName):
+    """
+    `G` is graph and `nodeName` is for node dict needed. Search here for calibration data -- this will be
+    `calibration_quantity_requested` and `calibration_emissions_by_type` which will be node params
+    (under the year keys), and `calibration_market_share_total` within the all the techs at each year. 
+    """
 
+    hasCalQuant    = any(['calibration_quantity_requested' in a for a in list(UF.listYearNodeParams_intersect(G, nodeName))])
+    hasCalEmission = any(['calibration_emissions_by_type' in a for a in list(UF.listYearNodeParams_intersect(G, nodeName))])
+    hasCalMS       = any(['calibration_market_share_total' in a for a in list(UF.list_yearly_techParams_intersect(G, nodeName))])
+    return(
+            {
+                'hasCalQuant': hasCalQuant,
+                'hasCalEmission': hasCalEmission,
+                'hasCalMS': hasCalMS
+            }
+    )
 
 def custom_tree_data(G, root, ident="id", children="children"):
     """ 
@@ -60,6 +77,7 @@ def custom_tree_data(G, root, ident="id", children="children"):
             # this node, and then add them to the `d` dict below.
             nodeInfo = G.nodes()[child]
             d = {ident: child, 'isTechNode': 'tech' in edgeType, 'isReqProv': 'request_provide' in edgeType}
+            d.update(get_calData_info(G, child))
             c = add_children(child, G)
             if c:
                 d[children] = c

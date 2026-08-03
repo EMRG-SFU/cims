@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>D3 Collapsible Tree - Exploding Arc Widget Demo</title>
+    <!-- Load D3.js v7 Core Library -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .legend {
+            display: inline-flex;
+            gap: 20px;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+        }
+
+        #tree-container {
+            width: 100%;
+            height: 650px;
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .node circle {
+            fill: #fff;
+            stroke: #94a3b8;
+            stroke-width: 2px;
+            cursor: pointer;
+        }
+
+        .node text {
+            font-size: 12px;
+            fill: #334155;
+            pointer-events: none;
+        }
+
+        .link {
+            fill: none;
+            stroke: #cbd5e1;
+            stroke-width: 1.5px;
+        }
+        
+        .fit-segment {
+            cursor: pointer;
+            transition: stroke-width 0.2s;
+        }
+        
+        .fit-segment:hover {
+            stroke: #0f172a !important;
+            stroke-width: 1.5px !important;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Visual Calibration Data + Counterfactual Fit</h1>
+
+    <!-- Legend explaining the visual anomalies -->
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background: #e2e8f0; border: 1px solid #cbd5e1;"></div>
+            <span>Decent Fit</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ef4444;"></div>
+            <span>Too High Generally</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #3b82f6;"></div>
+            <span>Too Low Generally</span>
+        </div>
+        <div class="legend-item">
+            <span style="color: #94a3b8; font-style: italic;">Missing Segment = Data Type Not Present</span>
+        </div>
+    </div>
+
+    <!-- Tree SVG Target -->
+    <div id="tree-container"></div>
+
+<script>
+/**
+ * 1. Synthetic Demo Data Structure
+ * Each node can contain typeA, typeB, and typeC (boolean presence).
+ * Fit indicators scale from -1.0 (Critical Low) through 0.0 (Perfect) to +1.0 (Critical High).
+ */
+const treeData = {
+    name: "Region",
+    typeA: true, typeAFit: 0.0,
+    typeB: true, typeBFit: 0.0,
+    typeC: true, typeCFit: 0.0,
+    children: [
+        {
+            name: "Sector 1",
+            typeA: true, typeAFit: 0.1,  // Near perfect
+            typeB: true, typeBFit: 0.9,  // EXPLODING HIGH (Critical)
+            typeC: false, typeCFit: 0.0, // Not present
+            children: [
+                { name: "Service 1", typeA: true, typeAFit: 0.0, typeB: false, typeC: true, typeCFit: -0.2 },
+                { name: "Service 2", typeA: true, typeAFit: -0.8, typeB: true, typeBFit: 0.0, typeC: false } // SHRINKING LOW (Critical)
+            ]
+        },
+        {
+            name: "Sector 2",
+            typeA: false, typeAFit: 0.0,
+            typeB: true, typeBFit: -0.1,
+            typeC: true, typeCFit: 0.1,
+            children: [
+                { name: "Service 1", typeA: true, typeAFit: 0.0, typeB: true, typeBFit: 0.0, typeC: true, typeCFit: 0.0 },
+                { name: "Service 2", typeA: true, typeAFit: 1.0, typeB: true, typeBFit: -1.0, typeC: true, typeCFit: 0.0 } // Double Critical anomalies
+            ]
+        },
+        {
+            name: "Sector 3",
+            typeA: true, typeAFit: -0.9, // SHRINKING LOW (Critical)
+            typeB: false, typeBFit: 0.0,
+            typeC: true, typeCFit: 0.8,  // EXPLODING HIGH (Critical)
+            children: [
+                { name: "Service someOtherThing", typeA: false, typeB: false, typeC: true, typeCFit: 0.0 }
+            ]
+        }
+    ]
+};
+
+// 2. Set Up Canvas Dimensions
+const container = d3.select("#tree-container");
+const width = container.node().getBoundingClientRect().width;
+const height = 650;
+const margin = { top: 20, right: 120, bottom: 20, left: 100 };
+
+const svg = container.append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+// 3. Declare D3 Layout Configurations
+let i = 0;
+const duration = 600;
+let root;
+
+const treemap = d3.tree().size([height - margin.top - margin.bottom, width - margin.left - margin.right]);
+
+// Initialize Root Node State
+root = d3.hierarchy(treeData, d => d.children);
+root.x0 = height / 2;
+root.y0 = 0;
+
+// Collapse some children by default to demonstrate collapsible nature
+root.children.forEach(collapse);
+
+
+function collapse(d) {
+    if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+    }
+}
+
+// 4. Configure the Custom Arc Generators
+const dynamicArc = d3.arc()
+    .innerRadius(d => {
+        if (!d.present) return 0;
+        // Deviation < 0 (Too Low) structurally implodes/flattens tightly to the center
+        return d.deviation < 0 ? 7 : 12;
+    })
+    .outerRadius(d => {
+        if (!d.present) return 0;
+        if (d.deviation === 0) return 15; // Baseline thickness for "Just Right"
+        // Scale expansion multiplier out by absolute error value
+        return 15 + Math.abs(d.deviation) * 14;
+    })
+    .padAngle(0.08);
+
+// Interpolate colors smoothly based on value state
+function getFitColor(d) {
+    if (!d.present) return "none";
+    if (d.deviation === 0) return "#e2e8f0"; // Calm Grey
+    
+    if (d.deviation > 0) {
+        // Linearly map Positive Deviations up to pure Warning Crimson Red
+        return d3.interpolateReds(0.2 + Math.abs(d.deviation) * 0.8);
+    } else {
+        // Linearly map Negative Deviations down to pure Electric Blue
+        return d3.interpolateBlues(0.2 + Math.abs(d.deviation) * 0.8);
+    }
+}
+
+// 5. Main Render Loop
+function update(source) {
+    const treeDataLayout = treemap(root);
+    const nodes = treeDataLayout.descendants();
+    const links = treeDataLayout.links();
+
+    // Standardize branch depth spacing
+    nodes.forEach(d => { d.y = d.depth * 220; });
+
+    // --- NODE PROCESSING ---
+    const node = svg.selectAll('g.node')
+        .data(nodes, d => d.id || (d.id = ++i));
+
+    // Instantiation Selection (Node entry)
+    const nodeEnter = node.enter().append('g')
+        .attr('class', 'node')
+        .attr('transform', d => `translate(${source.y0},${source.x0})`)
+        .on('click', (event, d) => {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            update(d);
+        });
+
+    // Central anchor circle for context matching
+    nodeEnter.append('circle')
+        .attr('r', 8)
+        .style("fill", d => d._children ? "#94a3b8" : "#fff");
+
+    // Dynamic Arc Widget Binding
+    // Splits the node circle into 3 uniform 120-degree spatial domains
+    const segmentConfigs = [
+        { key: 'typeA', fitKey: 'typeAFit', start: 0, end: (2 * Math.PI) / 3 },
+        { key: 'typeB', fitKey: 'typeBFit', start: (2 * Math.PI) / 3, end: (4 * Math.PI) / 3 },
+        { key: 'typeC', fitKey: 'typeCFit', start: (4 * Math.PI) / 3, end: 2 * Math.PI }
+    ];
+
+    segmentConfigs.forEach(config => {
+        nodeEnter.append('path')
+            .attr('class', `fit-segment-${config.key}`)
+            .datum(d => ({
+                present: !!d.data[config.key],
+                deviation: d.data[config.fitKey] || 0,
+                startAngle: config.start,
+                endAngle: config.end
+            }))
+            .attr('d', dynamicArc)
+            .attr('fill', d => getFitColor(d))
+            .attr('stroke', d => d.deviation !== 0 && d.present ? '#451a03' : 'none')
+            .attr('stroke-width', d => Math.abs(d.deviation) > 0.6 ? 0.7 : 0);
+    });
+
+    // Add labels text
+    nodeEnter.append('text')
+        .attr('dy', '.35em')
+        .attr('x', d => d.children || d._children ? -18 : 26)
+        .attr('text-anchor', d => d.children || d._children ? 'end' : 'start')
+        .text(d => d.data.name);
+
+    // Merge Selection (Animate Nodes to updated target locations)
+    const nodeUpdate = nodeEnter.merge(node);
+
+    nodeUpdate.transition()
+        .duration(duration)
+        .attr('transform', d => `translate(${d.y},${d.x})`);
+
+    nodeUpdate.select('circle')
+        .style("fill", d => d._children ? "#475569" : "#fff");
+
+    // Re-bind segment datum values on update cycles if data ranges mutation happens
+    segmentConfigs.forEach(config => {
+
+	nodeUpdate.select(`.fit-segment-${config.key}`)
+		.datum(d => ({
+			present: !!d.data[config.key],
+			deviation: d.data[config.fitKey] || 0,
+			startAngle: config.start,
+			endAngle: config.end}))
+		.transition()
+		.duration(duration)
+		.attr('d', dynamicArc)
+		.attr('fill', d => getFitColor(d));
+	});
+
+
+// Exit Selection (Collapse nodes smoothly into parents)
+const nodeExit = node.exit().transition()
+.duration(duration)
+.attr('transform', d => `translate(${source.y},${source.x})`)
+.remove();
+
+nodeExit.select('circle').attr('r', 1e-6);
+nodeExit.select('text').style('fill-opacity', 1e-6);
+
+// --- LINK/PATH PROCESSING ---
+const link = svg.selectAll('path.link')
+.data(links, d => d.target.id);
+
+// Instantiation configuration for lines
+const linkEnter = link.enter().insert('path', 'g')
+.attr('class', 'link')
+.attr('d', d => {
+	const o = { x: source.x0, y: source.y0 };
+	return diagonal(o, o);
+});
+
+// Update lines during animation state mutations
+const linkUpdate = linkEnter.merge(link);
+linkUpdate.transition()
+.duration(duration)
+.attr('d', d => diagonal(d.source, d.target));
+
+// Collapse lines back down to source parent
+link.exit().transition()
+.duration(duration)
+.attr('d', d => {
+	const o = { x: source.x, y: source.y };
+	return diagonal(o, o);
+}).remove();
+
+// Cache historical layout positions for seamless entry transitions
+nodes.forEach(d => {
+	d.x0 = d.x;
+	d.y0 = d.y;
+});
+
+// Custom Cubic Bezier calculation for smooth horizontal link lines
+function diagonal(s, t) {
+	return `M ${s.y} ${s.x} C ${(s.y + t.y) / 2} ${s.x}, ${(s.y + t.y) / 2} ${t.x}, ${t.y} ${t.x}`;
+}}
+
+update(root);
+
+// ### Key Elements of This Snippet 
+
+// * **Pre-attentive Visual Weight:** Look at `Storage Node Beta -> San Volume 2`. 
+// It has two competing deviations. One arcs outwards aggressively (high red spike) 
+// and the other crashes deeply into the node core (deep low blue arc), while its 
+// third type configuration is completely hidden. It stands out instantly against the muted grey normal nodes.
+
+// * **Datum Mapping Mutation:** D3 breaks individual objects down into
+// specific structures via `.datum()`. Inside the configuration loop, it maps the
+// global tree structure down into standalone data maps required to feed the
+// layout arguments safely directly into `dynamicArc`.  // // Would you like to
+// explore adding **interactive tooltips** to these exploding arcs so users can
+// see the exact numerical deviation on hover?
+
+</script>
+</body>
+</html>

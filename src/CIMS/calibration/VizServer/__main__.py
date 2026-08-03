@@ -11,8 +11,10 @@ if __name__ == '__main__':
 
     print(f"Supplied pickle_path is: {ppath}")
 
+    vizVars = {}
+
     if portArg is None:
-        run_server(ppath)
+        run_server(ppath, vizVars=vizVars)
     else:
-        run_server(ppath, PORT=portArg)
+        run_server(ppath, vizVars=vizVars,  PORT=portArg)
 
