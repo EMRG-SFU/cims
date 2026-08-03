@@ -132,19 +132,47 @@ def list_yearly_nodeParams(gr, nodeName):
 ## Yearly Tech Params
 
 # The union across all years of a given tech's parameters, at a given node
-def list_yearly_techParams_union(gr, nodeName, techName):
+# If `techName` is None, this will *additionally* intergrate across all the found technologies; if the
+# `techSetOp` param is 'union' we return the parameters that aren't necessarily found in every technology,
+# or every year, randomly for both. If `techSetOp` is 'intersect', then the only parameter
+# names this will return is those that are found in ALL technologies, but not necessarily for every year in each (and missingness pattern may vary).
+def list_yearly_techParams_union(gr, nodeName, techName=None, techSetOp='union'):
     n = gr.nodes()[nodeName]
     yVals = list_years(gr, nodeName)
-    tp = [list(n[yv]['technologies'][techName]) for yv in yVals]
-    return(union_of_sublists(tp))
+    if techName is not None:
+        tp = [list(n[yv]['technologies'][techName]) for yv in yVals]
+        return(union_of_sublists(tp))
+    else:
+        allTechs = list_techs(gr, nodeName)
+        if techSetOp == 'union':
+            return(union_of_sublists([union_of_sublists([list(n[yv]['technologies'][tn]) for yv in yVals]) for tn in allTechs]))
+        elif techSetOp == 'intersect':
+            return(intersect_sublists([union_of_sublists([list(n[yv]['technologies'][tn]) for yv in yVals]) for tn in allTechs]))
+        else:
+            raise RuntimeError("techSetOp param must be 'union' or 'intersect'")
+
+
 
 
 # The intersection across all years of a given tech's parameters, at a given node (most useful)
-def list_yearly_techParams_intersect(gr, nodeName, techName):
+# If `techName` is None, this will *additionally* intergrate across all the found technologies; if the
+# `techSetOp` param is 'union' we return the parameters that aren't necessarily found in every technology,
+# but when they are they are found in all the years. If `techSetOp` is 'intersect', then the only parameter
+# names this will return is those that are found in ALL technologies, for ALL years found in each tech.
+def list_yearly_techParams_intersect(gr, nodeName, techName=None, techSetOp='union'):
     n = gr.nodes()[nodeName]
     yVals = list_years(gr, nodeName)
-    tp = [list(n[yv]['technologies'][techName]) for yv in yVals]
-    return(intersect_sublists(tp))
+    if techName is not None:
+        tp = [list(n[yv]['technologies'][techName]) for yv in yVals]
+        return(intersect_sublists(tp))
+    else:
+        allTechs = list_techs(gr, nodeName)
+        if techSetOp == 'union':
+            return(union_of_sublists([intersect_sublists([list(n[yv]['technologies'][tn]) for yv in yVals]) for tn in allTechs]))
+        elif techSetOp == 'intersect':
+            return(intersect_sublists([intersect_sublists([list(n[yv]['technologies'][tn]) for yv in yVals]) for tn in allTechs]))
+        else:
+            raise RuntimeError("techSetOp param must be 'union' or 'intersect'")
 
 # The set of a given tech's parameters, at a given node, IFF this set is the same at each year.
 # Otherwise we throw a runtime error.
