@@ -1,5 +1,4 @@
 technology: "Extraction"
-branch: ".coal_mining.product.raw_product.extraction"
 unit: "kt"
 note:
 parameter:

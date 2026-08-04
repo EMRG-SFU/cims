@@ -1,5 +1,4 @@
 technology: "Diesel"
-branch: ".coal_mining.product.raw_product.extraction"
 unit: "kt"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/coal_mining/product/raw_product/extraction/diesel.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "diesel.csv"
+        source: "JCIMS"
         note:
     market_share_new_max:
         context:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -100,7 +99,7 @@ parameter:
         unit: "$"
         by_year:
         by_region:
-        source:
+        source: "JCIMS"
         note:
     capital_recovery:
         context:
@@ -140,11 +139,11 @@ parameter:
         sub_context: "Process"
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/coal_mining/product/raw_product/extraction/diesel.csv"
         unit: "tCH4"
         by_year: false
         by_region: true
-        source: "diesel.csv"
+        source: "JCIMS"
         note:
     emissions_biomass:
         context:
