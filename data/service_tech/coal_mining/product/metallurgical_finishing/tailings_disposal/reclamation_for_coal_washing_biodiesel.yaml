@@ -1,5 +1,4 @@
 technology: "Reclamation for Coal Washing Biodiesel"
-branch: ".coal_mining.product.metallurgical_finishing.tailings_disposal"
 unit: "kt"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

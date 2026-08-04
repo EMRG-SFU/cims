@@ -1,5 +1,4 @@
 technology: "Spray Drying Coal"
-branch: ".coal_mining.product.metallurgical_finishing.cleaning"
 unit: "kt"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/coal_mining/product/metallurgical_finishing/cleaning/spray_drying_coal.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "spray_drying_coal.csv"
+        source: "JCIMS"
         note:
     market_share_new_max:
         context:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
+        target: "common_energy.thermal_coal"
         value_type: "fixed"
         value: 141.9615481
         unit: "GJ"
