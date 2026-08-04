@@ -126,8 +126,8 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".generic_fuels.coal"
-        value_type:
+        target: ".generic_fuels.thermal_coal"
+        value_type: "fixed"
         value: 48
         unit: "gj"
         by_year:
@@ -138,7 +138,7 @@ parameter:
         context:
         sub_context:
         target: ".electricity"
-        value_type:
+        value_type: "fixed"
         value: 187
         unit: "gj"
         by_year:

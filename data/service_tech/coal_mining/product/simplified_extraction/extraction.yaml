@@ -127,7 +127,7 @@ parameter:
         context:
         sub_context:
         target: ".fuel_blends.diesel_industrial"
-        value_type:
+        value_type: "fixed"
         value: 260
         unit: "gj"
         by_year:
@@ -138,7 +138,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: 16.75
         unit: "tch4"
         by_year:
