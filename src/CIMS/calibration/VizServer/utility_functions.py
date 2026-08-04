@@ -2,7 +2,7 @@
 
 # Small trivial change to test the git diff-ing.
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping, Sequence, Iterable
 
 def collect_dict_keys(structure):
     """
