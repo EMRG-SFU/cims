@@ -1,5 +1,4 @@
 technology: "Biodiesel"
-branch: ".coal_mining.product.raw_product.extraction"
 unit: "kt"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -140,11 +139,11 @@ parameter:
         sub_context: "Process"
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/coal_mining/product/raw_product/extraction/biodiesel.csv"
         unit: "tCH4"
         by_year: false
         by_region: true
-        source: "biodiesel.csv"
+        source: "JCIMS"
         note:
     emissions_biomass:
         context:

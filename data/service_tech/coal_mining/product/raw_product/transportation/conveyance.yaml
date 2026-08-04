@@ -1,5 +1,4 @@
 technology: "Conveyance"
-branch: ".coal_mining.product.raw_product.transportation"
 unit: "kt"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -128,12 +127,12 @@ parameter:
         context:
         sub_context:
         target: ".coal_mining.conveyance"
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 0.0001
         unit: "GJ"
-        by_year: true
-        by_region: true
-        source: "conveyance.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note:
     emissions:
         context:
