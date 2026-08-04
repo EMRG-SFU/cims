@@ -1,0 +1,224 @@
+service: "building_shell"
+unit: "m2"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    intercept_retirement:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: -2.619
+        unit:
+        by_year:
+        by_region: 
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.wholesale_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.wholesale_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.retail_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.retail_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true   
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.transportation_and_warehousing_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.transportation_and_warehousing_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.information_and_cultural_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.information_and_cultural_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true  
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.offices_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.offices_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.educational_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.educational_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.healthcare_and_social_assistance_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.healthcare_and_social_assistance_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.arts_entertainment_and_recreation_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.arts_entertainment_and_recreation_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.other_services_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.other_services_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:

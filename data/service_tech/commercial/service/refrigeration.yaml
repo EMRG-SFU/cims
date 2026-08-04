@@ -1,5 +1,5 @@
-service: "metallurgical_finishing"
-unit: "kt"
+﻿service: "refrigeration"
+unit: "unit"
 note:
 parameter:
     competition:
@@ -7,41 +7,41 @@ parameter:
         sub_context:
         target:
         value_type:
-        value: "fixed_ratio"
+        value: "tech_compete"
         unit:
         by_year:
         by_region:
         source:
         note:
-    service_request:
+    discount_rate_behavioural:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.washing"
+        target:
         value_type:
-        value: 0.99
-        unit: "kt"
+        value: 40
+        unit: "%"
         by_year:
         by_region:
         source: "jcims"
         note:
-    service_request:
+    discount_rate_retrofit:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.cleaning"
+        target:
         value_type:
-        value: 0.99
-        unit: "kt"
+        value: 40
+        unit: "%"
         by_year:
         by_region:
         source: "jcims"
         note:
-    service_request:
+    heterogeneity:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.tailings_disposal"
+        target:
         value_type:
-        value: 0.48
-        unit: "kt"
+        value: 10
+        unit: 
         by_year:
         by_region:
         source: "jcims"

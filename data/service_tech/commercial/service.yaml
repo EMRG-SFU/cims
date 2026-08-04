@@ -1,13 +1,13 @@
-service: "simplified_production"
-unit: "kt"
+service: "service"
+unit: "m2"
 note:
 parameter:
     competition:
-        context:
+        context: 
         sub_context:
         target:
-        value_type:
-        value: "tech_compete"
+        value_type: 
+        value: "fixed_ratio"
         unit:
         by_year:
         by_region:

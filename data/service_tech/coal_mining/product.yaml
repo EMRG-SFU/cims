@@ -49,6 +49,28 @@ parameter:
     service_request:
         context:
         sub_context:
+        target: ".coal_mining.product.simplified_extraction"
+        value_type: "csv"
+        value: "data/service_tech/coal_mining/product.csv"
+        unit: "kt"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".coal_mining.product.simplified_production"
+        value_type: "csv"
+        value: "data/service_tech/coal_mining/product.csv"
+        unit: "kt"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:  
+    service_request:
+        context:
+        sub_context:
         target: ".general_services.hvac"
         value_type: "csv"
         value: 1.4

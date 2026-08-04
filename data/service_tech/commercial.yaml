@@ -1,0 +1,26 @@
+service: "commercial"
+unit: "m2"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "sector"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product"
+        value_type:
+        value: 1
+        unit: "m2"
+        by_year: 
+        by_region:
+        source: 
+        note:

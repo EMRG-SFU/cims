@@ -1,5 +1,5 @@
-service: "metallurgical_finishing"
-unit: "kt"
+﻿service: "lighting"
+unit: "m2"
 note:
 parameter:
     competition:
@@ -16,10 +16,10 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.washing"
+        target: ".commercial.service_request.lighting.general_area"
         value_type:
-        value: 0.99
-        unit: "kt"
+        value: 0.75
+        unit: "m2"
         by_year:
         by_region:
         source: "jcims"
@@ -27,10 +27,10 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.cleaning"
+        target: ".commercial.service_request.lighting.service_lighting"
         value_type:
-        value: 0.99
-        unit: "kt"
+        value: 0.21
+        unit: "m2"
         by_year:
         by_region:
         source: "jcims"
@@ -38,10 +38,10 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".coal_mining.product.metallurgical_finishing.tailings_disposal"
+        target: ".commercial.service_request.lighting.high_bay"
         value_type:
-        value: 0.48
-        unit: "kt"
+        value: 0.04
+        unit: "m2"
         by_year:
         by_region:
         source: "jcims"
