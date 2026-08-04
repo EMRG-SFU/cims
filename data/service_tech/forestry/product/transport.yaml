@@ -1,0 +1,15 @@
+service: "transport"
+unit: "tco2e"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: 
+        value: "tech_compete"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:       

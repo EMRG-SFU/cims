@@ -1,0 +1,70 @@
+service: "hydrogen"
+unit: "gj"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: "sector"
+        unit:
+        by_year: 
+        by_region:
+        source: 
+        note:
+    is_supply:
+        context:
+        sub_context:
+        target:
+        value_type:
+        value: "true"
+        unit:
+        by_year: 
+        by_region:
+        source: 
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".hydrogen.product"
+        value_type:
+        value: 8.32
+        unit: "kg"
+        by_year: 
+        by_region:
+        source: 
+        note:                    
+    emissions:
+        context: "co2"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: 0
+        unit: "tco2"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note: 
+    emissions:
+        context: "ch4"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: 0
+        unit: "tch4"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note: 
+    emissions:
+        context: "n2o"
+        sub_context: "combustion"
+        target:
+        value_type:
+        value: 0
+        unit: "tn2o"
+        by_year: 
+        by_region:
+        source: "eccc_nir"
+        note:                    
