@@ -1,7 +1,7 @@
 ﻿branch,data_filepath
 .agriculture,data/service_tech/agriculture
 .agriculture.product,data/service_tech/agriculture/product
-.agriculture.product.enteric fermentation and manure management,data/service_tech/agriculture/product/enteric_fermentation_and_manure_management
+.agriculture.product.enteric_fermentation_and_manure_management,data/service_tech/agriculture/product/enteric_fermentation_and_manure_management
 .agriculture.product.soils,data/service_tech/agriculture/product/soils
 .agriculture.service,data/service_tech/agriculture/service
 .agriculture.service.heat,data/service_tech/agriculture/service/heat
@@ -9,111 +9,111 @@
 .biodiesel,data/service_tech/biodiesel
 .biodiesel.product,data/service_tech/biodiesel/product
 .biodiesel.service,data/service_tech/biodiesel/service
-.biodiesel.service.agricultural input,data/service_tech/biodiesel/service/agricultural_input
+.biodiesel.service.agricultural_input,data/service_tech/biodiesel/service/agricultural_input
 .biodiesel.service.ccs,data/service_tech/biodiesel/service/ccs
-.biodiesel.service.methane blend,data/service_tech/biodiesel/service/methane_fuel
+.biodiesel.service.methane_blend,data/service_tech/biodiesel/service/methane_fuel
 .biodiesel.service.steam,data/service_tech/general_services/steam
 .chemicals,data/service_tech/chemicals
 .chemicals.product,data/service_tech/chemicals/product
-.chemicals.product.adipic acid,data/service_tech/chemicals/product/adipic_acid
-.chemicals.product.adipic acid.process,data/service_tech/chemicals/product/adipic_acid/process
-.chemicals.product.ammonia methanol,data/service_tech/chemicals/product/ammonia_methanol
-.chemicals.product.ammonia methanol.ammonia synthesis,data/service_tech/chemicals/product/ammonia_methanol/ammonia_synthesis
-.chemicals.product.ammonia methanol.combined ammonia methanol synthesis,data/service_tech/chemicals/product/ammonia_methanol/combined_ammonia_methanol_synthesis
-.chemicals.product.ammonia methanol.methanol synthesis,data/service_tech/chemicals/product/ammonia_methanol/methanol_synthesis
-.chemicals.product.chlor alkali,data/service_tech/chemicals/product/chlor_alkali
-.chemicals.product.chlor alkali.caustic sodium,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium
-.chemicals.product.chlor alkali.caustic sodium.caustic process,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium/caustic_process
-.chemicals.product.chlor alkali.caustic sodium.chlor alkali evaporation,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium/chlor_alkali_evaporation
-.chemicals.product.chlor alkali.chlorine electrolysis,data/service_tech/chemicals/product/chlor_alkali/chlorine_electrolysis
-.chemicals.product.hydrogen peroxide,data/service_tech/chemicals/product/hydrogen_peroxide
-.chemicals.product.hydrogen peroxide.process,data/service_tech/chemicals/product/hydrogen_peroxide/process
-.chemicals.product.other petrochemicals,data/service_tech/chemicals/product/other_petrochemicals
-.chemicals.product.other petrochemicals.petrochemicals,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals
-.chemicals.product.other petrochemicals.petrochemicals.all polymerization,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/all_polymerization
-.chemicals.product.other petrochemicals.petrochemicals.btx reforming,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/btx_reforming
-.chemicals.product.other petrochemicals.petrochemicals.intermediate production,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/intermediate_production
-.chemicals.product.other petrochemicals.pyrolysis,data/service_tech/chemicals/product/other_petrochemicals/pyrolysis
-.chemicals.product.sodium chlorate,data/service_tech/chemicals/product/sodium_chlorate
-.chemicals.product.sodium chlorate.process,data/service_tech/chemicals/product/sodium_chlorate/process
+.chemicals.product.adipic_acid,data/service_tech/chemicals/product/adipic_acid
+.chemicals.product.adipic_acid.process,data/service_tech/chemicals/product/adipic_acid/process
+.chemicals.product.ammonia_methanol,data/service_tech/chemicals/product/ammonia_methanol
+.chemicals.product.ammonia_methanol.ammonia_synthesis,data/service_tech/chemicals/product/ammonia_methanol/ammonia_synthesis
+.chemicals.product.ammonia_methanol.combined_ammonia_methanol_synthesis,data/service_tech/chemicals/product/ammonia_methanol/combined_ammonia_methanol_synthesis
+.chemicals.product.ammonia_methanol.methanol_synthesis,data/service_tech/chemicals/product/ammonia_methanol/methanol_synthesis
+.chemicals.product.chlor_alkali,data/service_tech/chemicals/product/chlor_alkali
+.chemicals.product.chlor_alkali.caustic_sodium,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium
+.chemicals.product.chlor_alkali.caustic_sodium.caustic_process,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium/caustic_process
+.chemicals.product.chlor_alkali.caustic_sodium.chlor_alkali_evaporation,data/service_tech/chemicals/product/chlor_alkali/caustic_sodium/chlor_alkali_evaporation
+.chemicals.product.chlor_alkali.chlorine_electrolysis,data/service_tech/chemicals/product/chlor_alkali/chlorine_electrolysis
+.chemicals.product.hydrogen_peroxide,data/service_tech/chemicals/product/hydrogen_peroxide
+.chemicals.product.hydrogen_peroxide.process,data/service_tech/chemicals/product/hydrogen_peroxide/process
+.chemicals.product.other_petrochemicals,data/service_tech/chemicals/product/other_petrochemicals
+.chemicals.product.other_petrochemicals.petrochemicals,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals
+.chemicals.product.other_petrochemicals.petrochemicals.all_polymerization,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/all_polymerization
+.chemicals.product.other_petrochemicals.petrochemicals.btx_reforming,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/btx_reforming
+.chemicals.product.other_petrochemicals.petrochemicals.intermediate_production,data/service_tech/chemicals/product/other_petrochemicals/petrochemicals/intermediate_production
+.chemicals.product.other_petrochemicals.pyrolysis,data/service_tech/chemicals/product/other_petrochemicals/pyrolysis
+.chemicals.product.sodium_chlorate,data/service_tech/chemicals/product/sodium_chlorate
+.chemicals.product.sodium_chlorate.process,data/service_tech/chemicals/product/sodium_chlorate/process
 .chemicals.service,data/service_tech/chemicals/service
 .chemicals.service.ccs,data/service_tech/chemicals/service/ccs
-.chemicals.service.machine drive,data/service_tech/general_services/machine_drive
-.chemicals.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.chemicals.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.chemicals.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.chemicals.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.chemicals.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.coal mining,data/service_tech/coal_mining
-.coal mining.product,data/service_tech/coal_mining/product
-.coal mining.product.metallurgical finishing,data/service_tech/coal_mining/product/metallurgical_finishing
-.coal mining.product.metallurgical finishing.cleaning,data/service_tech/coal_mining/product/metallurgical_finishing/cleaning
-.coal mining.product.metallurgical finishing.tailings disposal,data/service_tech/coal_mining/product/metallurgical_finishing/tailings_disposal
-.coal mining.product.metallurgical finishing.washing,data/service_tech/coal_mining/product/metallurgical_finishing/washing
-.coal mining.product.raw product,data/service_tech/coal_mining/product/raw_product
-.coal mining.product.raw product.extraction,data/service_tech/coal_mining/product/raw_product/extraction
-.coal mining.product.raw product.mine ventilation,data/service_tech/coal_mining/product/raw_product/mine_ventilation
-.coal mining.product.raw product.transportation,data/service_tech/coal_mining/product/raw_product/transportation
-.coal mining.product.simplified extraction,data/service_tech/coal_mining/product/simplified_extraction
-.coal mining.product.simplified production,data/service_tech/coal_mining/product/simplified_production
-.coal mining.product.size reduced product,data/service_tech/coal_mining/product/size_reduced_product
-.coal mining.product.size reduced product.primary crushing,data/service_tech/coal_mining/product/size_reduced_product/primary_crushing
-.coal mining.product.size reduced product.primary milling,data/service_tech/coal_mining/product/size_reduced_product/primary_milling
-.coal mining.product.size reduced product.secondary milling,data/service_tech/coal_mining/product/size_reduced_product/secondary_milling
-.coal mining.service,data/service_tech/coal_mining/service
-.coal mining.service.machine drive,data/service_tech/general_services/machine_drive
-.coal mining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.coal mining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.coal mining.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.coal mining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.coal mining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.chemicals.service.machine_drive,data/service_tech/general_services/machine_drive
+.chemicals.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.chemicals.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.chemicals.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.chemicals.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.chemicals.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.coal_mining,data/service_tech/coal_mining
+.coal_mining.product,data/service_tech/coal_mining/product
+.coal_mining.product.metallurgical_finishing,data/service_tech/coal_mining/product/metallurgical_finishing
+.coal_mining.product.metallurgical_finishing.cleaning,data/service_tech/coal_mining/product/metallurgical_finishing/cleaning
+.coal_mining.product.metallurgical_finishing.tailings_disposal,data/service_tech/coal_mining/product/metallurgical_finishing/tailings_disposal
+.coal_mining.product.metallurgical_finishing.washing,data/service_tech/coal_mining/product/metallurgical_finishing/washing
+.coal_mining.product.raw_product,data/service_tech/coal_mining/product/raw_product
+.coal_mining.product.raw_product.extraction,data/service_tech/coal_mining/product/raw_product/extraction
+.coal_mining.product.raw_product.mine_ventilation,data/service_tech/coal_mining/product/raw_product/mine_ventilation
+.coal_mining.product.raw_product.transportation,data/service_tech/coal_mining/product/raw_product/transportation
+.coal_mining.product.simplified_extraction,data/service_tech/coal_mining/product/simplified_extraction
+.coal_mining.product.simplified_production,data/service_tech/coal_mining/product/simplified_production
+.coal_mining.product.size_reduced_product,data/service_tech/coal_mining/product/size_reduced_product
+.coal_mining.product.size_reduced_product.primary_crushing,data/service_tech/coal_mining/product/size_reduced_product/primary_crushing
+.coal_mining.product.size_reduced_product.primary_milling,data/service_tech/coal_mining/product/size_reduced_product/primary_milling
+.coal_mining.product.size_reduced_product.secondary_milling,data/service_tech/coal_mining/product/size_reduced_product/secondary_milling
+.coal_mining.service,data/service_tech/coal_mining/service
+.coal_mining.service.machine_drive,data/service_tech/general_services/machine_drive
+.coal_mining.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.coal_mining.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.coal_mining.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.coal_mining.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.coal_mining.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
 .commercial,data/service_tech/commercial
 .commercial.product,data/service_tech/commercial/product
-.commercial.product.building shell,data/service_tech/commercial/product/building_shell
-.commercial.product.building shell.accommodation and food services (cold),data/service_tech/commercial/product/building_shell/accommodation_and_food_services_(cold)
-.commercial.product.building shell.accommodation and food services (marine),data/service_tech/commercial/product/building_shell/accommodation_and_food_services_(marine)
-.commercial.product.building shell.arts entertainment and recreation (cold),data/service_tech/commercial/product/building_shell/arts_entertainment_and_recreation_(cold)
-.commercial.product.building shell.arts entertainment and recreation (marine),data/service_tech/commercial/product/building_shell/arts_entertainment_and_recreation_(marine)
-.commercial.product.building shell.educational (cold),data/service_tech/commercial/product/building_shell/educational_(cold)
-.commercial.product.building shell.educational (marine),data/service_tech/commercial/product/building_shell/educational_(marine)
-.commercial.product.building shell.healthcare and social assistance (cold),data/service_tech/commercial/product/building_shell/healthcare_and_social_assistance_(cold)
-.commercial.product.building shell.healthcare and social assistance (marine),data/service_tech/commercial/product/building_shell/healthcare_and_social_assistance_(marine)
-.commercial.product.building shell.information and cultural (cold),data/service_tech/commercial/product/building_shell/information_and_cultural_(cold)
-.commercial.product.building shell.information and cultural (marine),data/service_tech/commercial/product/building_shell/information_and_cultural_(marine)
-.commercial.product.building shell.offices (cold),data/service_tech/commercial/product/building_shell/offices_(cold)
-.commercial.product.building shell.offices (marine),data/service_tech/commercial/product/building_shell/offices_(marine)
-.commercial.product.building shell.other services (cold),data/service_tech/commercial/product/building_shell/other_services_(cold)
-.commercial.product.building shell.other services (marine),data/service_tech/commercial/product/building_shell/other_services_(marine)
-.commercial.product.building shell.retail (cold),data/service_tech/commercial/product/building_shell/retail_(cold)
-.commercial.product.building shell.retail (marine),data/service_tech/commercial/product/building_shell/retail_(marine)
-.commercial.product.building shell.transportation and warehousing (cold),data/service_tech/commercial/product/building_shell/transportation_and_warehousing_(cold)
-.commercial.product.building shell.transportation and warehousing (marine),data/service_tech/commercial/product/building_shell/transportation_and_warehousing_(marine)
-.commercial.product.building shell.wholesale (cold),data/service_tech/commercial/product/building_shell/wholesale_(cold)
-.commercial.product.building shell.wholesale (marine),data/service_tech/commercial/product/building_shell/wholesale_(marine)
+.commercial.product.building_shell,data/service_tech/commercial/product/building_shell
+.commercial.product.building_shell.accommodation_and_food_services_(cold),data/service_tech/commercial/product/building_shell/accommodation_and_food_services_(cold)
+.commercial.product.building_shell.accommodation_and_food_services_(marine),data/service_tech/commercial/product/building_shell/accommodation_and_food_services_(marine)
+.commercial.product.building_shell.arts_entertainment_and_recreation_(cold),data/service_tech/commercial/product/building_shell/arts_entertainment_and_recreation_(cold)
+.commercial.product.building_shell.arts_entertainment_and_recreation_(marine),data/service_tech/commercial/product/building_shell/arts_entertainment_and_recreation_(marine)
+.commercial.product.building_shell.educational_(cold),data/service_tech/commercial/product/building_shell/educational_(cold)
+.commercial.product.building_shell.educational_(marine),data/service_tech/commercial/product/building_shell/educational_(marine)
+.commercial.product.building_shell.healthcare_and_social_assistance_(cold),data/service_tech/commercial/product/building_shell/healthcare_and_social_assistance_(cold)
+.commercial.product.building_shell.healthcare_and_social_assistance_(marine),data/service_tech/commercial/product/building_shell/healthcare_and_social_assistance_(marine)
+.commercial.product.building_shell.information_and_cultural_(cold),data/service_tech/commercial/product/building_shell/information_and_cultural_(cold)
+.commercial.product.building_shell.information_and_cultural_(marine),data/service_tech/commercial/product/building_shell/information_and_cultural_(marine)
+.commercial.product.building_shell.offices_(cold),data/service_tech/commercial/product/building_shell/offices_(cold)
+.commercial.product.building_shell.offices_(marine),data/service_tech/commercial/product/building_shell/offices_(marine)
+.commercial.product.building_shell.other_services_(cold),data/service_tech/commercial/product/building_shell/other_services_(cold)
+.commercial.product.building_shell.other_services_(marine),data/service_tech/commercial/product/building_shell/other_services_(marine)
+.commercial.product.building_shell.retail_(cold),data/service_tech/commercial/product/building_shell/retail_(cold)
+.commercial.product.building_shell.retail_(marine),data/service_tech/commercial/product/building_shell/retail_(marine)
+.commercial.product.building_shell.transportation_and_warehousing_(cold),data/service_tech/commercial/product/building_shell/transportation_and_warehousing_(cold)
+.commercial.product.building_shell.transportation_and_warehousing_(marine),data/service_tech/commercial/product/building_shell/transportation_and_warehousing_(marine)
+.commercial.product.building_shell.wholesale_(cold),data/service_tech/commercial/product/building_shell/wholesale_(cold)
+.commercial.product.building_shell.wholesale_(marine),data/service_tech/commercial/product/building_shell/wholesale_(marine)
 .commercial.service,data/service_tech/commercial/service
 .commercial.service.cooking,data/service_tech/commercial/service/cooking
 .commercial.service.cooling,data/service_tech/commercial/service/cooling
-.commercial.service.hot water,data/service_tech/commercial/service/hot_water
-.commercial.service.hvac (cold),data/service_tech/commercial/service/hvac_(cold)
-.commercial.service.hvac (marine),data/service_tech/commercial/service/hvac_(marine)
+.commercial.service.hot_water,data/service_tech/commercial/service/hot_water
+.commercial.service.hvac_(cold),data/service_tech/commercial/service/hvac_(cold)
+.commercial.service.hvac_(marine),data/service_tech/commercial/service/hvac_(marine)
 .commercial.service.lighting,data/service_tech/commercial/service/lighting
-.commercial.service.machine drive,data/service_tech/general_services/machine_drive
-.commercial.service.methane blend,data/service_tech/commercial/service/methane_blend
-.commercial.service.plug load,data/service_tech/commercial/service/plug_load
+.commercial.service.machine_drive,data/service_tech/general_services/machine_drive
+.commercial.service.methane_blend,data/service_tech/commercial/service/methane_blend
+.commercial.service.plug_load,data/service_tech/commercial/service/plug_load
 .commercial.service.refrigeration,data/service_tech/commercial/service/refrigeration
 .construction,data/service_tech/construction
 .construction.product,data/service_tech/construction/product
 .construction.product.transport,data/service_tech/construction/product/transport
 .electricity,data/service_tech/electricity
 .electricity.product,data/service_tech/electricity/product
-.electricity.product.base load,data/service_tech/electricity/product/base_load
-.electricity.product.peak load,data/service_tech/electricity/product/peak_load
-.electricity.product.shoulder load,data/service_tech/electricity/product/shoulder_load
+.electricity.product.base_load,data/service_tech/electricity/product/base_load
+.electricity.product.peak_load,data/service_tech/electricity/product/peak_load
+.electricity.product.shoulder_load,data/service_tech/electricity/product/shoulder_load
 .electricity.service,data/service_tech/electricity/service
 .electricity.service.ccs,data/service_tech/electricity/service/ccs
 .electricity.service.ccs.ccs_biomass,data/service_tech/electricity/service/ccs/ccs_biomass
 .electricity.service.ccs.ccs_coal,data/service_tech/electricity/service/ccs/ccs_coal
-.electricity.service.ccs.ccs_natural gas,data/service_tech/electricity/service/ccs/ccs_natural_gas
+.electricity.service.ccs.ccs_natural_gas,data/service_tech/electricity/service/ccs/ccs_natural_gas
 .electricity.service.storage,data/service_tech/electricity/service/storage
 .electricity.service.storage.battery,data/service_tech/electricity/service/storage/battery
 .electricity.service.storage.seasonal,data/service_tech/electricity/service/storage/seasonal
@@ -123,9 +123,9 @@
 .ethanol.product.cellulosic,data/service_tech/ethanol/product/cellulosic
 .ethanol.product.corn,data/service_tech/ethanol/product/corn
 .ethanol.service,data/service_tech/ethanol/service
-.ethanol.service.agricultural input,data/service_tech/ethanol/service/agricultural_input
+.ethanol.service.agricultural_input,data/service_tech/ethanol/service/agricultural_input
 .ethanol.service.ccs,data/service_tech/ethanol/service/ccs
-.ethanol.service.methane blend,data/service_tech/ethanol/service/methane_fuel
+.ethanol.service.methane_blend,data/service_tech/ethanol/service/methane_fuel
 .ethanol.service.steam,data/service_tech/general_services/steam
 .forestry,data/service_tech/forestry
 .forestry.product,data/service_tech/forestry/product
@@ -142,130 +142,130 @@
 .hydrogen.product.process,data/service_tech/hydrogen/product/process
 .hydrogen.service.ccs,data/service_tech/hydrogen/service/ccs
 .hydrogen.service.infrastructure,data/service_tech/hydrogen/service/infrastructure
-.industrial minerals,data/service_tech/industrial_minerals
-.industrial minerals.product,data/service_tech/industrial_minerals/product
-.industrial minerals.product.bricks,data/service_tech/industrial_minerals/product/bricks
-.industrial minerals.product.bricks.process,data/service_tech/industrial_minerals/product/bricks/process
-.industrial minerals.product.cement,data/service_tech/industrial_minerals/product/cement
-.industrial minerals.product.cement.portland cement,data/service_tech/industrial_minerals/product/cement/portland_cement
-.industrial minerals.product.cement.portland cement.clinker,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker
-.industrial minerals.product.cement.portland cement.clinker.dry process rotary kiln,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker/dry_process_rotary_kiln
-.industrial minerals.product.cement.portland cement.clinker.fluidized bed,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker/fluidized_bed
-.industrial minerals.product.cement.portland cement.dry ground cement,data/service_tech/industrial_minerals/product/cement/portland_cement/dry_ground_cement
-.industrial minerals.product.cement.portland cement.finish grinding,data/service_tech/industrial_minerals/product/cement/portland_cement/finish_grinding
-.industrial minerals.product.glass,data/service_tech/industrial_minerals/product/glass
-.industrial minerals.product.glass.blown pressed,data/service_tech/industrial_minerals/product/glass/blown_pressed
-.industrial minerals.product.glass.blown pressed.fire polish,data/service_tech/industrial_minerals/product/glass/blown_pressed/fire_polish
-.industrial minerals.product.glass.blown pressed.form and finish,data/service_tech/industrial_minerals/product/glass/blown_pressed/form_and_finish
-.industrial minerals.product.glass.blown pressed.furnaces,data/service_tech/industrial_minerals/product/glass/blown_pressed/furnaces
-.industrial minerals.product.glass.blown pressed.preparation,data/service_tech/industrial_minerals/product/glass/blown_pressed/preparation
-.industrial minerals.product.glass.containers,data/service_tech/industrial_minerals/product/glass/containers
-.industrial minerals.product.glass.containers.form and finish,data/service_tech/industrial_minerals/product/glass/containers/form_and_finish
-.industrial minerals.product.glass.containers.furnaces,data/service_tech/industrial_minerals/product/glass/containers/furnaces
-.industrial minerals.product.glass.containers.preparation,data/service_tech/industrial_minerals/product/glass/containers/preparation
-.industrial minerals.product.glass.fibreglass,data/service_tech/industrial_minerals/product/glass/fibreglass
-.industrial minerals.product.glass.fibreglass.form and finish,data/service_tech/industrial_minerals/product/glass/fibreglass/form_and_finish
-.industrial minerals.product.glass.fibreglass.furnaces,data/service_tech/industrial_minerals/product/glass/fibreglass/furnaces
-.industrial minerals.product.glass.fibreglass.preparation,data/service_tech/industrial_minerals/product/glass/fibreglass/preparation
-.industrial minerals.product.glass.flat,data/service_tech/industrial_minerals/product/glass/flat
-.industrial minerals.product.glass.flat.form and finish,data/service_tech/industrial_minerals/product/glass/flat/form_and_finish
-.industrial minerals.product.glass.flat.furnaces,data/service_tech/industrial_minerals/product/glass/flat/furnaces
-.industrial minerals.product.glass.flat.preparation,data/service_tech/industrial_minerals/product/glass/flat/preparation
-.industrial minerals.product.glass.flat.temper,data/service_tech/industrial_minerals/product/glass/flat/temper
-.industrial minerals.product.lime,data/service_tech/industrial_minerals/product/lime
-.industrial minerals.product.lime.dolomitic,data/service_tech/industrial_minerals/product/lime/dolomitic
-.industrial minerals.product.lime.kilns,data/service_tech/industrial_minerals/product/lime/kilns
-.industrial minerals.service,data/service_tech/industrial_minerals/service
-.industrial minerals.service.ccs,data/service_tech/industrial_minerals/service/ccs
-.industrial minerals.service.heat,data/service_tech/industrial_minerals/service/heat
-.industrial minerals.service.machine drive,data/service_tech/general_services/machine_drive
-.industrial minerals.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.industrial minerals.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.industrial minerals.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.industrial minerals.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.industrial minerals.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.iron and steel,data/service_tech/iron_and_steel
-.iron and steel.product,data/service_tech/iron_and_steel/product
-.iron and steel.product.continuous cast,data/service_tech/iron_and_steel/product/continuous_cast
-.iron and steel.product.continuous cast.billets,data/service_tech/iron_and_steel/product/continuous_cast/billets
-.iron and steel.product.continuous cast.billets.bar,data/service_tech/iron_and_steel/product/continuous_cast/billets/bar
-.iron and steel.product.continuous cast.billets.billet casting,data/service_tech/iron_and_steel/product/continuous_cast/billets/billet_casting
-.iron and steel.product.continuous cast.billets.light structural shapes,data/service_tech/iron_and_steel/product/continuous_cast/billets/light_structural_shapes
-.iron and steel.product.continuous cast.billets.rod,data/service_tech/iron_and_steel/product/continuous_cast/billets/rod
-.iron and steel.product.continuous cast.blooms,data/service_tech/iron_and_steel/product/continuous_cast/blooms
-.iron and steel.product.continuous cast.blooms.bloom casting,data/service_tech/iron_and_steel/product/continuous_cast/blooms/bloom_casting
-.iron and steel.product.continuous cast.blooms.heavy structural shapes,data/service_tech/iron_and_steel/product/continuous_cast/blooms/heavy_structural_shapes
-.iron and steel.product.continuous cast.blooms.tubes,data/service_tech/iron_and_steel/product/continuous_cast/blooms/tubes
-.iron and steel.product.continuous cast.ladle preheat,data/service_tech/iron_and_steel/product/continuous_cast/ladle_preheat
-.iron and steel.product.continuous cast.ladle refining,data/service_tech/iron_and_steel/product/continuous_cast/ladle_refining
-.iron and steel.product.continuous cast.slabs,data/service_tech/iron_and_steel/product/continuous_cast/slabs
-.iron and steel.product.continuous cast.slabs.casting,data/service_tech/iron_and_steel/product/continuous_cast/slabs/casting
-.iron and steel.product.continuous cast.slabs.cold rolled,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled
-.iron and steel.product.continuous cast.slabs.cold rolled.cold roll,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/cold_roll
-.iron and steel.product.continuous cast.slabs.cold rolled.electroclean,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean
-.iron and steel.product.continuous cast.slabs.cold rolled.electroclean.anneal temper,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/anneal_temper
-.iron and steel.product.continuous cast.slabs.cold rolled.electroclean.electric steel,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/electric_steel
-.iron and steel.product.continuous cast.slabs.cold rolled.electroclean.electrocleancomp,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/electrocleancomp
-.iron and steel.product.continuous cast.slabs.cold rolled.electroclean.tin plate,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/tin_plate
-.iron and steel.product.continuous cast.slabs.cold rolled.galvanize,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/galvanize
-.iron and steel.product.continuous cast.slabs.pickled slabs,data/service_tech/iron_and_steel/product/continuous_cast/slabs/pickled_slabs
-.iron and steel.product.continuous cast.slabs.skin pass,data/service_tech/iron_and_steel/product/continuous_cast/slabs/skin_pass
-.iron and steel.product.continuous cast.slabs.slab finishing,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_finishing
-.iron and steel.product.continuous cast.slabs.slab finishing.finishing mills,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_finishing/finishing_mills
-.iron and steel.product.continuous cast.slabs.slab roughing,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_roughing
-.iron and steel.product.continuous cast.slabs.slab roughing.roughing mills,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_roughing/roughing_mills
-.iron and steel.product.foundry,data/service_tech/iron_and_steel/product/foundry
-.iron and steel.product.molten steel,data/service_tech/iron_and_steel/product/molten_steel
-.iron and steel.product.molten steel.integrated,data/service_tech/iron_and_steel/product/molten_steel/integrated
-.iron and steel.product.molten steel.recycled,data/service_tech/iron_and_steel/product/molten_steel/recycled
-.iron and steel.service,data/service_tech/iron_and_steel/service
-.iron and steel.service.agglomeration,data/service_tech/iron_and_steel/service/agglomeration
-.iron and steel.service.ccs,data/service_tech/iron_and_steel/service/ccs
-.iron and steel.service.iron process gas,data/service_tech/iron_and_steel/service/iron_process_gas
-.iron and steel.service.iron process gas.reheating,data/service_tech/iron_and_steel/service/iron_process_gas/reheating
-.iron and steel.service.iron process gas.steam,data/service_tech/general_services/steam
-.iron and steel.service.machine drive,data/service_tech/general_services/machine_drive
-.iron and steel.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.iron and steel.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.iron and steel.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.iron and steel.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.iron and steel.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.iron and steel.service.oxygen,data/service_tech/iron_and_steel/service/oxygen
-.iron and steel.service.oxygen.cryogenics,data/service_tech/iron_and_steel/service/oxygen/cryogenics
-.iron and steel.service.reheating,data/service_tech/iron_and_steel/service/reheating
-.iron and steel.service.reheating.reheators,data/service_tech/iron_and_steel/service/reheating/reheators
-.light industrial,data/service_tech/light_industrial
-.light industrial.product,data/service_tech/light_industrial/product
-.light industrial.product.electronics and other,data/service_tech/light_industrial/product/electronics_and_other
-.light industrial.product.food tobacco and beverage,data/service_tech/light_industrial/product/food_tobacco_and_beverage
-.light industrial.product.furniture printing and machinery,data/service_tech/light_industrial/product/furniture_printing_and_machinery
-.light industrial.product.leather and textiles,data/service_tech/light_industrial/product/leather_and_textiles
-.light industrial.product.rubber and plastics,data/service_tech/light_industrial/product/rubber_and_plastics
-.light industrial.product.transportation equipment,data/service_tech/light_industrial/product/transportation_equipment
-.light industrial.product.wood products,data/service_tech/light_industrial/product/wood_products
-.light industrial.service,data/service_tech/light_industrial/service
-.light industrial.service.heat,data/service_tech/light_industrial/service/heat
-.light industrial.service.heat.direct,data/service_tech/light_industrial/service/heat/direct
-.light industrial.service.heat.indirect,data/service_tech/light_industrial/service/heat/indirect
-.light industrial.service.hvac,data/service_tech/light_industrial/service/hvac
-.light industrial.service.lighting,data/service_tech/light_industrial/service/lighting
-.light industrial.service.machine drive,data/service_tech/general_services/machine_drive
-.light industrial.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.light industrial.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.light industrial.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.light industrial.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.light industrial.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.light industrial.service.steam,data/service_tech/general_services/steam
-.light industrial.service.water heating,data/service_tech/light_industrial/service/water_heating
+.industrial_minerals,data/service_tech/industrial_minerals
+.industrial_minerals.product,data/service_tech/industrial_minerals/product
+.industrial_minerals.product.bricks,data/service_tech/industrial_minerals/product/bricks
+.industrial_minerals.product.bricks.process,data/service_tech/industrial_minerals/product/bricks/process
+.industrial_minerals.product.cement,data/service_tech/industrial_minerals/product/cement
+.industrial_minerals.product.cement.portland_cement,data/service_tech/industrial_minerals/product/cement/portland_cement
+.industrial_minerals.product.cement.portland_cement.clinker,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker
+.industrial_minerals.product.cement.portland_cement.clinker.dry_process_rotary_kiln,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker/dry_process_rotary_kiln
+.industrial_minerals.product.cement.portland_cement.clinker.fluidized_bed,data/service_tech/industrial_minerals/product/cement/portland_cement/clinker/fluidized_bed
+.industrial_minerals.product.cement.portland_cement.dry_ground_cement,data/service_tech/industrial_minerals/product/cement/portland_cement/dry_ground_cement
+.industrial_minerals.product.cement.portland_cement.finish_grinding,data/service_tech/industrial_minerals/product/cement/portland_cement/finish_grinding
+.industrial_minerals.product.glass,data/service_tech/industrial_minerals/product/glass
+.industrial_minerals.product.glass.blown_pressed,data/service_tech/industrial_minerals/product/glass/blown_pressed
+.industrial_minerals.product.glass.blown_pressed.fire_polish,data/service_tech/industrial_minerals/product/glass/blown_pressed/fire_polish
+.industrial_minerals.product.glass.blown_pressed.form_and_finish,data/service_tech/industrial_minerals/product/glass/blown_pressed/form_and_finish
+.industrial_minerals.product.glass.blown_pressed.furnaces,data/service_tech/industrial_minerals/product/glass/blown_pressed/furnaces
+.industrial_minerals.product.glass.blown_pressed.preparation,data/service_tech/industrial_minerals/product/glass/blown_pressed/preparation
+.industrial_minerals.product.glass.containers,data/service_tech/industrial_minerals/product/glass/containers
+.industrial_minerals.product.glass.containers.form_and_finish,data/service_tech/industrial_minerals/product/glass/containers/form_and_finish
+.industrial_minerals.product.glass.containers.furnaces,data/service_tech/industrial_minerals/product/glass/containers/furnaces
+.industrial_minerals.product.glass.containers.preparation,data/service_tech/industrial_minerals/product/glass/containers/preparation
+.industrial_minerals.product.glass.fibreglass,data/service_tech/industrial_minerals/product/glass/fibreglass
+.industrial_minerals.product.glass.fibreglass.form_and_finish,data/service_tech/industrial_minerals/product/glass/fibreglass/form_and_finish
+.industrial_minerals.product.glass.fibreglass.furnaces,data/service_tech/industrial_minerals/product/glass/fibreglass/furnaces
+.industrial_minerals.product.glass.fibreglass.preparation,data/service_tech/industrial_minerals/product/glass/fibreglass/preparation
+.industrial_minerals.product.glass.flat,data/service_tech/industrial_minerals/product/glass/flat
+.industrial_minerals.product.glass.flat.form_and_finish,data/service_tech/industrial_minerals/product/glass/flat/form_and_finish
+.industrial_minerals.product.glass.flat.furnaces,data/service_tech/industrial_minerals/product/glass/flat/furnaces
+.industrial_minerals.product.glass.flat.preparation,data/service_tech/industrial_minerals/product/glass/flat/preparation
+.industrial_minerals.product.glass.flat.temper,data/service_tech/industrial_minerals/product/glass/flat/temper
+.industrial_minerals.product.lime,data/service_tech/industrial_minerals/product/lime
+.industrial_minerals.product.lime.dolomitic,data/service_tech/industrial_minerals/product/lime/dolomitic
+.industrial_minerals.product.lime.kilns,data/service_tech/industrial_minerals/product/lime/kilns
+.industrial_minerals.service,data/service_tech/industrial_minerals/service
+.industrial_minerals.service.ccs,data/service_tech/industrial_minerals/service/ccs
+.industrial_minerals.service.heat,data/service_tech/industrial_minerals/service/heat
+.industrial_minerals.service.machine_drive,data/service_tech/general_services/machine_drive
+.industrial_minerals.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.industrial_minerals.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.industrial_minerals.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.industrial_minerals.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.industrial_minerals.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.iron_and_steel,data/service_tech/iron_and_steel
+.iron_and_steel.product,data/service_tech/iron_and_steel/product
+.iron_and_steel.product.continuous_cast,data/service_tech/iron_and_steel/product/continuous_cast
+.iron_and_steel.product.continuous_cast.billets,data/service_tech/iron_and_steel/product/continuous_cast/billets
+.iron_and_steel.product.continuous_cast.billets.bar,data/service_tech/iron_and_steel/product/continuous_cast/billets/bar
+.iron_and_steel.product.continuous_cast.billets.billet_casting,data/service_tech/iron_and_steel/product/continuous_cast/billets/billet_casting
+.iron_and_steel.product.continuous_cast.billets.light_structural_shapes,data/service_tech/iron_and_steel/product/continuous_cast/billets/light_structural_shapes
+.iron_and_steel.product.continuous_cast.billets.rod,data/service_tech/iron_and_steel/product/continuous_cast/billets/rod
+.iron_and_steel.product.continuous_cast.blooms,data/service_tech/iron_and_steel/product/continuous_cast/blooms
+.iron_and_steel.product.continuous_cast.blooms.bloom_casting,data/service_tech/iron_and_steel/product/continuous_cast/blooms/bloom_casting
+.iron_and_steel.product.continuous_cast.blooms.heavy_structural_shapes,data/service_tech/iron_and_steel/product/continuous_cast/blooms/heavy_structural_shapes
+.iron_and_steel.product.continuous_cast.blooms.tubes,data/service_tech/iron_and_steel/product/continuous_cast/blooms/tubes
+.iron_and_steel.product.continuous_cast.ladle_preheat,data/service_tech/iron_and_steel/product/continuous_cast/ladle_preheat
+.iron_and_steel.product.continuous_cast.ladle_refining,data/service_tech/iron_and_steel/product/continuous_cast/ladle_refining
+.iron_and_steel.product.continuous_cast.slabs,data/service_tech/iron_and_steel/product/continuous_cast/slabs
+.iron_and_steel.product.continuous_cast.slabs.casting,data/service_tech/iron_and_steel/product/continuous_cast/slabs/casting
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.cold_roll,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/cold_roll
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean.anneal_temper,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/anneal_temper
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean.electric_steel,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/electric_steel
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean.electrocleancomp,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/electrocleancomp
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean.tin_plate,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/electroclean/tin_plate
+.iron_and_steel.product.continuous_cast.slabs.cold_rolled.galvanize,data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled/galvanize
+.iron_and_steel.product.continuous_cast.slabs.pickled_slabs,data/service_tech/iron_and_steel/product/continuous_cast/slabs/pickled_slabs
+.iron_and_steel.product.continuous_cast.slabs.skin_pass,data/service_tech/iron_and_steel/product/continuous_cast/slabs/skin_pass
+.iron_and_steel.product.continuous_cast.slabs.slab_finishing,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_finishing
+.iron_and_steel.product.continuous_cast.slabs.slab_finishing.finishing_mills,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_finishing/finishing_mills
+.iron_and_steel.product.continuous_cast.slabs.slab_roughing,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_roughing
+.iron_and_steel.product.continuous_cast.slabs.slab_roughing.roughing_mills,data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_roughing/roughing_mills
+.iron_and_steel.product.foundry,data/service_tech/iron_and_steel/product/foundry
+.iron_and_steel.product.molten_steel,data/service_tech/iron_and_steel/product/molten_steel
+.iron_and_steel.product.molten_steel.integrated,data/service_tech/iron_and_steel/product/molten_steel/integrated
+.iron_and_steel.product.molten_steel.recycled,data/service_tech/iron_and_steel/product/molten_steel/recycled
+.iron_and_steel.service,data/service_tech/iron_and_steel/service
+.iron_and_steel.service.agglomeration,data/service_tech/iron_and_steel/service/agglomeration
+.iron_and_steel.service.ccs,data/service_tech/iron_and_steel/service/ccs
+.iron_and_steel.service.iron_process_gas,data/service_tech/iron_and_steel/service/iron_process_gas
+.iron_and_steel.service.iron_process_gas.reheating,data/service_tech/iron_and_steel/service/iron_process_gas/reheating
+.iron_and_steel.service.iron_process_gas.steam,data/service_tech/general_services/steam
+.iron_and_steel.service.machine_drive,data/service_tech/general_services/machine_drive
+.iron_and_steel.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.iron_and_steel.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.iron_and_steel.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.iron_and_steel.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.iron_and_steel.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.iron_and_steel.service.oxygen,data/service_tech/iron_and_steel/service/oxygen
+.iron_and_steel.service.oxygen.cryogenics,data/service_tech/iron_and_steel/service/oxygen/cryogenics
+.iron_and_steel.service.reheating,data/service_tech/iron_and_steel/service/reheating
+.iron_and_steel.service.reheating.reheators,data/service_tech/iron_and_steel/service/reheating/reheators
+.light_industrial,data/service_tech/light_industrial
+.light_industrial.product,data/service_tech/light_industrial/product
+.light_industrial.product.electronics_and_other,data/service_tech/light_industrial/product/electronics_and_other
+.light_industrial.product.food_tobacco_and_beverage,data/service_tech/light_industrial/product/food_tobacco_and_beverage
+.light_industrial.product.furniture_printing_and_machinery,data/service_tech/light_industrial/product/furniture_printing_and_machinery
+.light_industrial.product.leather_and_textiles,data/service_tech/light_industrial/product/leather_and_textiles
+.light_industrial.product.rubber_and_plastics,data/service_tech/light_industrial/product/rubber_and_plastics
+.light_industrial.product.transportation_equipment,data/service_tech/light_industrial/product/transportation_equipment
+.light_industrial.product.wood_products,data/service_tech/light_industrial/product/wood_products
+.light_industrial.service,data/service_tech/light_industrial/service
+.light_industrial.service.heat,data/service_tech/light_industrial/service/heat
+.light_industrial.service.heat.direct,data/service_tech/light_industrial/service/heat/direct
+.light_industrial.service.heat.indirect,data/service_tech/light_industrial/service/heat/indirect
+.light_industrial.service.hvac,data/service_tech/light_industrial/service/hvac
+.light_industrial.service.lighting,data/service_tech/light_industrial/service/lighting
+.light_industrial.service.machine_drive,data/service_tech/general_services/machine_drive
+.light_industrial.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.light_industrial.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.light_industrial.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.light_industrial.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.light_industrial.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.light_industrial.service.steam,data/service_tech/general_services/steam
+.light_industrial.service.water_heating,data/service_tech/light_industrial/service/water_heating
 .metal.smelting,data/service_tech/metal/smelting
 .metal.smelting.product,data/service_tech/metal/smelting/product
 .metal.smelting.product.aluminum,data/service_tech/metal/smelting/product/aluminum
-.metal.smelting.product.aluminum.primary aluminum,data/service_tech/metal/smelting/product/aluminum/primary_aluminum
-.metal.smelting.product.aluminum.primary aluminum.alumina,data/service_tech/metal/smelting/product/aluminum/primary_aluminum/alumina
-.metal.smelting.product.aluminum.primary aluminum.electrolysis,data/service_tech/metal/smelting/product/aluminum/primary_aluminum/electrolysis
+.metal.smelting.product.aluminum.primary_aluminum,data/service_tech/metal/smelting/product/aluminum/primary_aluminum
+.metal.smelting.product.aluminum.primary_aluminum.alumina,data/service_tech/metal/smelting/product/aluminum/primary_aluminum/alumina
+.metal.smelting.product.aluminum.primary_aluminum.electrolysis,data/service_tech/metal/smelting/product/aluminum/primary_aluminum/electrolysis
 .metal.smelting.product.aluminum.recycle,data/service_tech/metal/smelting/product/aluminum/recycle
 .metal.smelting.product.copper,data/service_tech/metal/smelting/product/copper
-.metal.smelting.product.copper.melt cast,data/service_tech/metal/smelting/product/copper/melt_cast
+.metal.smelting.product.copper.melt_cast,data/service_tech/metal/smelting/product/copper/melt_cast
 .metal.smelting.product.copper.metallurgy,data/service_tech/metal/smelting/product/copper/metallurgy
 .metal.smelting.product.copper.metallurgy.hydro,data/service_tech/metal/smelting/product/copper/metallurgy/hydro
 .metal.smelting.product.copper.metallurgy.pyro,data/service_tech/metal/smelting/product/copper/metallurgy/pyro
@@ -276,7 +276,7 @@
 .metal.smelting.product.copper.metallurgy.pyro.process.conventional.convert,data/service_tech/metal/smelting/product/copper/metallurgy/pyro/process/conventional/convert
 .metal.smelting.product.copper.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/copper/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.product.lead,data/service_tech/metal/smelting/product/lead
-.metal.smelting.product.lead.melt cast,data/service_tech/metal/smelting/product/lead/melt_cast
+.metal.smelting.product.lead.melt_cast,data/service_tech/metal/smelting/product/lead/melt_cast
 .metal.smelting.product.lead.metallurgy,data/service_tech/metal/smelting/product/lead/metallurgy
 .metal.smelting.product.lead.metallurgy.hydro,data/service_tech/metal/smelting/product/lead/metallurgy/hydro
 .metal.smelting.product.lead.metallurgy.pyro,data/service_tech/metal/smelting/product/lead/metallurgy/pyro
@@ -287,7 +287,7 @@
 .metal.smelting.product.lead.metallurgy.pyro.process.conventional.roast,data/service_tech/metal/smelting/product/lead/metallurgy/pyro/process/conventional/roast
 .metal.smelting.product.lead.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/lead/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.product.magnesium,data/service_tech/metal/smelting/product/magnesium
-.metal.smelting.product.magnesium.melt cast,data/service_tech/metal/smelting/product/magnesium/melt_cast
+.metal.smelting.product.magnesium.melt_cast,data/service_tech/metal/smelting/product/magnesium/melt_cast
 .metal.smelting.product.magnesium.metallurgy,data/service_tech/metal/smelting/product/magnesium/metallurgy
 .metal.smelting.product.magnesium.metallurgy.hydro,data/service_tech/metal/smelting/product/magnesium/metallurgy/hydro
 .metal.smelting.product.magnesium.metallurgy.pyro,data/service_tech/metal/smelting/product/magnesium/metallurgy/pyro
@@ -297,7 +297,7 @@
 .metal.smelting.product.magnesium.metallurgy.pyro.process.conventional.roast,data/service_tech/metal/smelting/product/magnesium/metallurgy/pyro/process/conventional/roast
 .metal.smelting.product.magnesium.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/magnesium/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.product.nickel,data/service_tech/metal/smelting/product/nickel
-.metal.smelting.product.nickel.melt cast,data/service_tech/metal/smelting/product/nickel/melt_cast
+.metal.smelting.product.nickel.melt_cast,data/service_tech/metal/smelting/product/nickel/melt_cast
 .metal.smelting.product.nickel.metallurgy,data/service_tech/metal/smelting/product/nickel/metallurgy
 .metal.smelting.product.nickel.metallurgy.hydro,data/service_tech/metal/smelting/product/nickel/metallurgy/hydro
 .metal.smelting.product.nickel.metallurgy.pyro,data/service_tech/metal/smelting/product/nickel/metallurgy/pyro
@@ -308,7 +308,7 @@
 .metal.smelting.product.nickel.metallurgy.pyro.process.conventional.convert,data/service_tech/metal/smelting/product/nickel/metallurgy/pyro/process/conventional/convert
 .metal.smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/nickel/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.product.titanium,data/service_tech/metal/smelting/product/titanium
-.metal.smelting.product.titanium.melt cast,data/service_tech/metal/smelting/product/titanium/melt_cast
+.metal.smelting.product.titanium.melt_cast,data/service_tech/metal/smelting/product/titanium/melt_cast
 .metal.smelting.product.titanium.metallurgy,data/service_tech/metal/smelting/product/titanium/metallurgy
 .metal.smelting.product.titanium.metallurgy.hydro,data/service_tech/metal/smelting/product/titanium/metallurgy/hydro
 .metal.smelting.product.titanium.metallurgy.pyro,data/service_tech/metal/smelting/product/titanium/metallurgy/pyro
@@ -318,7 +318,7 @@
 .metal.smelting.product.titanium.metallurgy.pyro.process.conventional,data/service_tech/metal/smelting/product/titanium/metallurgy/pyro/process/conventional
 .metal.smelting.product.titanium.metallurgy.pyro.process.conventional.roast,data/service_tech/metal/smelting/product/titanium/metallurgy/pyro/process/conventional/roast
 .metal.smelting.product.zinc,data/service_tech/metal/smelting/product/zinc
-.metal.smelting.product.zinc.melt cast,data/service_tech/metal/smelting/product/zinc/melt_cast
+.metal.smelting.product.zinc.melt_cast,data/service_tech/metal/smelting/product/zinc/melt_cast
 .metal.smelting.product.zinc.metallurgy,data/service_tech/metal/smelting/product/zinc/metallurgy
 .metal.smelting.product.zinc.metallurgy.hydro,data/service_tech/metal/smelting/product/zinc/metallurgy/hydro
 .metal.smelting.product.zinc.metallurgy.pyro,data/service_tech/metal/smelting/product/zinc/metallurgy/pyro
@@ -329,354 +329,364 @@
 .metal.smelting.product.zinc.metallurgy.pyro.process.conventional.roast,data/service_tech/metal/smelting/product/zinc/metallurgy/pyro/process/conventional/roast
 .metal.smelting.product.zinc.metallurgy.pyro.process.conventional.smelt,data/service_tech/metal/smelting/product/zinc/metallurgy/pyro/process/conventional/smelt
 .metal.smelting.service,data/service_tech/metal/smelting/service
-.metal.smelting.service.machine drive,data/service_tech/general_services/machine_drive
-.metal.smelting.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.metal.smelting.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.metal.smelting.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.metal.smelting.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.metal.smelting.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.metal.smelting.service.machine_drive,data/service_tech/general_services/machine_drive
+.metal.smelting.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.metal.smelting.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.metal.smelting.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.metal.smelting.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.metal.smelting.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
 .metal.smelting.service.oxygen,data/service_tech/metal/smelting/service/oxygen
 .metal.smelting.service.oxygen.cryogenics,data/service_tech/metal/smelting/service/oxygen/cryogenics
-.metal.smelting.service.pre-bake anode,data/service_tech/metal/smelting/service/pre-bake_anode
-.metal.smelting.service.soderberg anode,data/service_tech/metal/smelting/service/soderberg_anode
+.metal.smelting.service.pre-bake_anode,data/service_tech/metal/smelting/service/pre-bake_anode
+.metal.smelting.service.soderberg_anode,data/service_tech/metal/smelting/service/soderberg_anode
 .mining,data/service_tech/mining
 .mining.product,data/service_tech/mining/product
 .mining.product.metal,data/service_tech/mining/product/metal
-.mining.product.metal.open pit,data/service_tech/mining/product/metal/open_pit
-.mining.product.metal.open pit.cleaning,data/service_tech/mining/product/metal/open_pit/cleaning
-.mining.product.metal.open pit.mineral separation,data/service_tech/mining/product/metal/open_pit/mineral_separation
-.mining.product.metal.open pit.iron,data/service_tech/mining/product/metal/open_pit/iron
-.mining.product.metal.open pit.iron.agglomeration,data/service_tech/mining/product/metal/open_pit/iron/agglomeration
-.mining.product.metal.open pit.iron.primary crushing,data/service_tech/mining/product/metal/open_pit/iron/primary_crushing
-.mining.product.metal.open pit.iron.raw product,data/service_tech/mining/product/metal/open_pit/iron/raw_product
-.mining.product.metal.open pit.iron.raw product.extraction,data/service_tech/mining/product/metal/open_pit/iron/raw_product/extraction
-.mining.product.metal.open pit.iron.raw product.transportation,data/service_tech/mining/product/metal/open_pit/iron/raw_product/transportation
-.mining.product.metal.open pit.iron.secondary crushing,data/service_tech/mining/product/metal/open_pit/iron/secondary_crushing
-.mining.product.metal.open pit.non iron,data/service_tech/mining/product/metal/open_pit/non_iron
-.mining.product.metal.open pit.non iron.primary crushing,data/service_tech/mining/product/metal/open_pit/non_iron/primary_crushing
-.mining.product.metal.open pit.non iron.primary milling,data/service_tech/mining/product/metal/open_pit/non_iron/primary_milling
-.mining.product.metal.open pit.non iron.raw product,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product
-.mining.product.metal.open pit.non iron.raw product.extraction,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product/extraction
-.mining.product.metal.open pit.non iron.raw product.transportation,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product/transportation
-.mining.product.metal.open pit.non iron.secondary crushing,data/service_tech/mining/product/metal/open_pit/non_iron/secondary_crushing
-.mining.product.metal.open pit.tailing disposal,data/service_tech/mining/product/metal/open_pit/tailing_disposal
-.mining.product.metal.open pit.unassigned energy,data/service_tech/mining/product/metal/open_pit/unassigned_energy
+.mining.product.metal.open_pit,data/service_tech/mining/product/metal/open_pit
+.mining.product.metal.open_pit.cleaning,data/service_tech/mining/product/metal/open_pit/cleaning
+.mining.product.metal.open_pit.mineral_separation,data/service_tech/mining/product/metal/open_pit/mineral_separation
+.mining.product.metal.open_pit.iron,data/service_tech/mining/product/metal/open_pit/iron
+.mining.product.metal.open_pit.iron.agglomeration,data/service_tech/mining/product/metal/open_pit/iron/agglomeration
+.mining.product.metal.open_pit.iron.primary_crushing,data/service_tech/mining/product/metal/open_pit/iron/primary_crushing
+.mining.product.metal.open_pit.iron.raw_product,data/service_tech/mining/product/metal/open_pit/iron/raw_product
+.mining.product.metal.open_pit.iron.raw_product.extraction,data/service_tech/mining/product/metal/open_pit/iron/raw_product/extraction
+.mining.product.metal.open_pit.iron.raw_product.transportation,data/service_tech/mining/product/metal/open_pit/iron/raw_product/transportation
+.mining.product.metal.open_pit.iron.secondary_crushing,data/service_tech/mining/product/metal/open_pit/iron/secondary_crushing
+.mining.product.metal.open_pit.non_iron,data/service_tech/mining/product/metal/open_pit/non_iron
+.mining.product.metal.open_pit.non_iron.primary_crushing,data/service_tech/mining/product/metal/open_pit/non_iron/primary_crushing
+.mining.product.metal.open_pit.non_iron.primary_milling,data/service_tech/mining/product/metal/open_pit/non_iron/primary_milling
+.mining.product.metal.open_pit.non_iron.raw_product,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product
+.mining.product.metal.open_pit.non_iron.raw_product.extraction,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product/extraction
+.mining.product.metal.open_pit.non_iron.raw_product.transportation,data/service_tech/mining/product/metal/open_pit/non_iron/raw_product/transportation
+.mining.product.metal.open_pit.non_iron.secondary_crushing,data/service_tech/mining/product/metal/open_pit/non_iron/secondary_crushing
+.mining.product.metal.open_pit.tailing_disposal,data/service_tech/mining/product/metal/open_pit/tailing_disposal
+.mining.product.metal.open_pit.unassigned_energy,data/service_tech/mining/product/metal/open_pit/unassigned_energy
 .mining.product.metal.underground,data/service_tech/mining/product/metal/underground
 .mining.product.metal.underground.cleaning,data/service_tech/mining/product/metal/underground/cleaning
-.mining.product.metal.underground.mineral separation,data/service_tech/mining/product/metal/underground/mineral_separation
+.mining.product.metal.underground.mineral_separation,data/service_tech/mining/product/metal/underground/mineral_separation
 .mining.product.metal.underground.processing,data/service_tech/mining/product/metal/underground/processing
-.mining.product.metal.underground.processing.primary crushing,data/service_tech/mining/product/metal/underground/processing/primary_crushing
-.mining.product.metal.underground.processing.primary milling,data/service_tech/mining/product/metal/underground/processing/primary_milling
-.mining.product.metal.underground.processing.raw product,data/service_tech/mining/product/metal/underground/processing/raw_product
-.mining.product.metal.underground.processing.raw product.extraction,data/service_tech/mining/product/metal/underground/processing/raw_product/extraction
-.mining.product.metal.underground.processing.raw product.transportation,data/service_tech/mining/product/metal/underground/processing/raw_product/transportation
-.mining.product.metal.underground.processing.secondary crushing,data/service_tech/mining/product/metal/underground/processing/secondary_crushing
-.mining.product.metal.underground.tailing disposal,data/service_tech/mining/product/metal/underground/tailing_disposal
-.mining.product.metal.underground.unassigned energy,data/service_tech/mining/product/metal/underground/unassigned_energy
+.mining.product.metal.underground.processing.primary_crushing,data/service_tech/mining/product/metal/underground/processing/primary_crushing
+.mining.product.metal.underground.processing.primary_milling,data/service_tech/mining/product/metal/underground/processing/primary_milling
+.mining.product.metal.underground.processing.raw_product,data/service_tech/mining/product/metal/underground/processing/raw_product
+.mining.product.metal.underground.processing.raw_product.extraction,data/service_tech/mining/product/metal/underground/processing/raw_product/extraction
+.mining.product.metal.underground.processing.raw_product.transportation,data/service_tech/mining/product/metal/underground/processing/raw_product/transportation
+.mining.product.metal.underground.processing.secondary_crushing,data/service_tech/mining/product/metal/underground/processing/secondary_crushing
+.mining.product.metal.underground.tailing_disposal,data/service_tech/mining/product/metal/underground/tailing_disposal
+.mining.product.metal.underground.unassigned_energy,data/service_tech/mining/product/metal/underground/unassigned_energy
 .mining.product.potash,data/service_tech/mining/product/potash
 .mining.product.potash.compaction,data/service_tech/mining/product/potash/compaction
 .mining.product.potash.drying,data/service_tech/mining/product/potash/drying
 .mining.product.potash.processing,data/service_tech/mining/product/potash/processing
 .mining.product.potash.processing.crystalization,data/service_tech/mining/product/potash/processing/crystalization
 .mining.product.potash.processing.flotation,data/service_tech/mining/product/potash/processing/flotation
-.mining.product.potash.processing.raw product,data/service_tech/mining/product/potash/processing/raw_product
-.mining.product.potash.processing.raw product.conventional mining,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining
-.mining.product.potash.processing.raw product.conventional mining.crush and screen,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/crush_and_screen
-.mining.product.potash.processing.raw product.conventional mining.dissolution,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/dissolution
-.mining.product.potash.processing.raw product.conventional mining.extraction,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/extraction
-.mining.product.potash.processing.raw product.conventional mining.transportation,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/transportation
-.mining.product.potash.processing.raw product.solution mining,data/service_tech/mining/product/potash/processing/raw_product/solution_mining
-.mining.product.potash.processing.raw product.solution mining.extraction,data/service_tech/mining/product/potash/processing/raw_product/solution_mining/extraction
-.mining.product.potash.processing.raw product.solution mining.transportation,data/service_tech/mining/product/potash/processing/raw_product/solution_mining/transportation
-.mining.product.potash.tailings disposal,data/service_tech/mining/product/potash/tailings_disposal
+.mining.product.potash.processing.raw_product,data/service_tech/mining/product/potash/processing/raw_product
+.mining.product.potash.processing.raw_product.conventional_mining,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining
+.mining.product.potash.processing.raw_product.conventional_mining.crush_and_screen,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/crush_and_screen
+.mining.product.potash.processing.raw_product.conventional_mining.dissolution,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/dissolution
+.mining.product.potash.processing.raw_product.conventional_mining.extraction,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/extraction
+.mining.product.potash.processing.raw_product.conventional_mining.transportation,data/service_tech/mining/product/potash/processing/raw_product/conventional_mining/transportation
+.mining.product.potash.processing.raw_product.solution_mining,data/service_tech/mining/product/potash/processing/raw_product/solution_mining
+.mining.product.potash.processing.raw_product.solution_mining.extraction,data/service_tech/mining/product/potash/processing/raw_product/solution_mining/extraction
+.mining.product.potash.processing.raw_product.solution_mining.transportation,data/service_tech/mining/product/potash/processing/raw_product/solution_mining/transportation
+.mining.product.potash.tailings_disposal,data/service_tech/mining/product/potash/tailings_disposal
 .mining.service,data/service_tech/mining/service
-.mining.service.machine drive,data/service_tech/general_services/machine_drive
-.mining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.mining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.mining.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.mining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.mining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.natural gas,data/service_tech/natural_gas
-.natural gas.product,data/service_tech/natural_gas/product
-.natural gas.product.distribution,data/service_tech/natural_gas/product/distribution
-.natural gas.product.supply,data/service_tech/natural_gas/product/supply
-.natural gas.product.supply.ccs,data/service_tech/natural_gas/product/supply/ccs
-.natural gas.product.supply.controls,data/service_tech/natural_gas/product/supply/controls
-.natural gas.product.supply.direct drive large,data/service_tech/natural_gas/product/supply/direct_drive_large
-.natural gas.product.supply.direct drive small,data/service_tech/natural_gas/product/supply/direct_drive_small
-.natural gas.product.supply.direct heat,data/service_tech/natural_gas/product/supply/direct_heat
-.natural gas.product.supply.extraction,data/service_tech/natural_gas/product/supply/extraction
-.natural gas.product.supply.extraction.coalbed methane,data/service_tech/natural_gas/product/supply/extraction/coalbed_methane
-.natural gas.product.supply.extraction.compression,data/service_tech/natural_gas/product/supply/extraction/compression
-.natural gas.product.supply.extraction.conventional,data/service_tech/natural_gas/product/supply/extraction/conventional
-.natural gas.product.supply.extraction.drilling,data/service_tech/natural_gas/product/supply/extraction/drilling
-.natural gas.product.supply.extraction.off road transport,data/service_tech/natural_gas/product/supply/extraction/off_road_transport
-.natural gas.product.supply.extraction.shale,data/service_tech/natural_gas/product/supply/extraction/shale
-.natural gas.product.supply.extraction.tight,data/service_tech/natural_gas/product/supply/extraction/tight
-.natural gas.product.supply.flaring,data/service_tech/natural_gas/product/supply/flaring
-.natural gas.product.supply.formation co2,data/service_tech/natural_gas/product/supply/formation_co2
-.natural gas.product.supply.fugitive,data/service_tech/natural_gas/product/supply/fugitive
-.natural gas.product.supply.lng compression,data/service_tech/natural_gas/product/supply/lng_compression
-.natural gas.product.supply.processing,data/service_tech/natural_gas/product/supply/processing
-.natural gas.product.supply.processing.compression,data/service_tech/natural_gas/product/supply/processing/compression
-.natural gas.product.supply.pumping,data/service_tech/natural_gas/product/supply/pumping
-.natural gas.product.supply.testing and maintenance,data/service_tech/natural_gas/product/supply/testing_and_maintenance
-.natural gas.product.supply.testing and maintenance.blowdowns,data/service_tech/natural_gas/product/supply/testing_and_maintenance/blowdowns
-.natural gas.product.supply.testing and maintenance.liquid unloading,data/service_tech/natural_gas/product/supply/testing_and_maintenance/liquid_unloading
-.natural gas.product.supply.testing and maintenance.well tests,data/service_tech/natural_gas/product/supply/testing_and_maintenance/well_tests
-.natural gas.product.supply.venting,data/service_tech/natural_gas/product/supply/venting
-.natural gas.product.supply.venting.diffuse venting,data/service_tech/natural_gas/product/supply/venting/diffuse_venting
-.natural gas.product.supply.venting.point venting,data/service_tech/natural_gas/product/supply/venting/point_venting
-.natural gas.product.transmission,data/service_tech/natural_gas/product/transmission
-.natural gas.product.transmission.compression,data/service_tech/natural_gas/product/transmission/compression
-.natural gas.service,data/service_tech/natural_gas/service
-.natural gas.service.og diesel blend,data/service_tech/natural_gas/service/og_diesel_blend
-.natural gas.service.og gasoline blend,data/service_tech/natural_gas/service/og_gasoline_blend
-.natural gas.service.og methane blend,data/service_tech/natural_gas/service/og_methane_blend
-.natural gas market,data/service_tech/natural_gas_market
-.natural gas market.product,data/service_tech/natural_gas_market/product
-.natural gas market.product.distribution,data/service_tech/natural_gas_market/product/distribution
-.natural gas market.product.supply,data/service_tech/natural_gas_market/product/supply
-.natural gas market.product.transmission,data/service_tech/natural_gas_market/product/transmission
-.petroleum crude,data/service_tech/petroleum_crude
-.petroleum crude.product,data/service_tech/petroleum_crude/product
-.petroleum crude.product.bitumen,data/service_tech/petroleum_crude/product/bitumen
-.petroleum crude.product.bitumen.in-situ,data/service_tech/petroleum_crude/product/bitumen/in-situ
-.petroleum crude.product.bitumen.mining,data/service_tech/petroleum_crude/product/bitumen/mining
-.petroleum crude.product.bitumen.upgrading,data/service_tech/petroleum_crude/product/bitumen/upgrading
-.petroleum crude.product.exploration,data/service_tech/petroleum_crude/product/exploration
-.petroleum crude.product.heavy,data/service_tech/petroleum_crude/product/heavy
-.petroleum crude.product.light medium,data/service_tech/petroleum_crude/product/light_medium
-.petroleum crude.product.light medium.offshore,data/service_tech/petroleum_crude/product/light_medium/offshore
-.petroleum crude.product.light medium.onshore,data/service_tech/petroleum_crude/product/light_medium/onshore
-.petroleum crude.service,data/service_tech/petroleum_crude/service
-.petroleum crude.service.ccs,data/service_tech/petroleum_crude/service/ccs
-.petroleum crude.service.hydrogen,data/service_tech/petroleum_crude/service/hydrogen
-.petroleum crude.service.industrial engines,data/service_tech/petroleum_crude/service/industrial_engines
-.petroleum crude.service.still gas steam,data/service_tech/general_services/steam
-.petroleum refining,data/service_tech/petroleum_refining
-.petroleum refining.product,data/service_tech/petroleum_refining/product
-.petroleum refining.product.alkylates,data/service_tech/petroleum_refining/product/alkylates
-.petroleum refining.product.alkylates.alkylation,data/service_tech/petroleum_refining/product/alkylates/alkylation
-.petroleum refining.product.alkylates.isoparaffins,data/service_tech/petroleum_refining/product/alkylates/isoparaffins
-.petroleum refining.product.alkylates.isoparaffins.isomerization,data/service_tech/petroleum_refining/product/alkylates/isoparaffins/isomerization
-.petroleum refining.product.petroleum fractions,data/service_tech/petroleum_refining/product/petroleum_fractions
-.petroleum refining.product.petroleum fractions.asphalt,data/service_tech/petroleum_refining/product/petroleum_fractions/asphalt
-.petroleum refining.product.petroleum fractions.cracked gas oil,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil
-.petroleum refining.product.petroleum fractions.cracked gas oil.coking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/coking
-.petroleum refining.product.petroleum fractions.cracked gas oil.hydrocracking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking
-.petroleum refining.product.petroleum fractions.cracked gas oil.hydrocracking.cracking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/cracking
-.petroleum refining.product.petroleum fractions.cracked gas oil.hydrocracking.high,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/high
-.petroleum refining.product.petroleum fractions.cracked gas oil.hydrocracking.low,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/low
-.petroleum refining.product.petroleum fractions.cracked gas oil.hydrocracking.medium,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/medium
-.petroleum refining.product.petroleum fractions.distillation,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation
-.petroleum refining.product.petroleum fractions.distillation.atmospheric,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation/atmospheric
-.petroleum refining.product.petroleum fractions.distillation.vacuum,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation/vacuum
-.petroleum refining.product.petroleum fractions.hydrotreating,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating
-.petroleum refining.product.petroleum fractions.hydrotreating.desulphurization,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating/desulphurization
-.petroleum refining.product.petroleum fractions.hydrotreating.sulphur recovery,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating/sulphur_recovery
-.petroleum refining.product.petroleum fractions.lubes,data/service_tech/petroleum_refining/product/petroleum_fractions/lubes
-.petroleum refining.product.reforming,data/service_tech/petroleum_refining/product/reforming
-.petroleum refining.service,data/service_tech/petroleum_refining/service
-.petroleum refining.service.ccs,data/service_tech/petroleum_refining/service/ccs
-.petroleum refining.service.direct heat,data/service_tech/petroleum_refining/service/direct_heat
-.petroleum refining.service.hydrogen,data/service_tech/petroleum_refining/service/hydrogen
-.petroleum refining.service.machine drive,data/service_tech/general_services/machine_drive
-.petroleum refining.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.petroleum refining.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.petroleum refining.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.petroleum refining.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.petroleum refining.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
-.petroleum refining.service.methane blend,data/service_tech/petroleum_refining/service/methane_blend
-.petroleum refining.service.still gas,data/service_tech/petroleum_refining/service/still_gas
-.petroleum refining.service.still gas.heater,data/service_tech/petroleum_refining/service/still_gas/heater
-.petroleum refining.service.still gas.steam,data/service_tech/general_services/steam
-.pulp and paper,data/service_tech/pulp_and_paper
-.pulp and paper.product,data/service_tech/pulp_and_paper/product
-.pulp and paper.product.paper,data/service_tech/pulp_and_paper/product/paper
-.pulp and paper.product.paper.coated,data/service_tech/pulp_and_paper/product/paper/coated
-.pulp and paper.product.paper.coated.coated drying,data/service_tech/pulp_and_paper/product/paper/coated/coated_drying
-.pulp and paper.product.paper.coated.coated forming pressing finishing,data/service_tech/pulp_and_paper/product/paper/coated/coated_forming_pressing_finishing
-.pulp and paper.product.paper.coated.coated stock prep,data/service_tech/pulp_and_paper/product/paper/coated/coated_stock_prep
-.pulp and paper.product.paper.linerboard,data/service_tech/pulp_and_paper/product/paper/linerboard
-.pulp and paper.product.paper.linerboard.linerboard drying,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_drying
-.pulp and paper.product.paper.linerboard.linerboard forming pressing finishing,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_forming_pressing_finishing
-.pulp and paper.product.paper.linerboard.linerboard stock prep,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_stock_prep
-.pulp and paper.product.paper.newsprint,data/service_tech/pulp_and_paper/product/paper/newsprint
-.pulp and paper.product.paper.newsprint.newsprint drying,data/service_tech/pulp_and_paper/product/paper/newsprint/newsprint_drying
-.pulp and paper.product.paper.newsprint.newsprint prep form press finish,data/service_tech/pulp_and_paper/product/paper/newsprint/newsprint_prep_form_press_finish
-.pulp and paper.product.paper.tissue,data/service_tech/pulp_and_paper/product/paper/tissue
-.pulp and paper.product.paper.tissue.tissue drying,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_drying
-.pulp and paper.product.paper.tissue.tissue forming pressing finishing,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_forming_pressing_finishing
-.pulp and paper.product.paper.tissue.tissue stock prep,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_stock_prep
-.pulp and paper.product.paper.uncoated,data/service_tech/pulp_and_paper/product/paper/uncoated
-.pulp and paper.product.paper.uncoated.uncoated drying,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_drying
-.pulp and paper.product.paper.uncoated.uncoated forming pressing finishing,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_forming_pressing_finishing
-.pulp and paper.product.paper.uncoated.uncoated stock prep,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_stock_prep
-.pulp and paper.product.pulp,data/service_tech/pulp_and_paper/product/pulp
-.pulp and paper.product.pulp.bleached,data/service_tech/pulp_and_paper/product/pulp/bleached
-.pulp and paper.product.pulp.bleached.bleaching,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching
-.pulp and paper.product.pulp.bleached.bleaching.fully,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching/fully
-.pulp and paper.product.pulp.bleached.bleaching.semi,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching/semi
-.pulp and paper.product.pulp.bleached.washing,data/service_tech/pulp_and_paper/product/pulp/bleached/washing
-.pulp and paper.product.pulp.bleached.washing.washer,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/washer
-.pulp and paper.product.pulp.bleached.washing.raw,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw
-.pulp and paper.product.pulp.bleached.washing.raw.log preparation,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation
-.pulp and paper.product.pulp.bleached.washing.raw.log preparation.cut and chip,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation/cut_and_chip
-.pulp and paper.product.pulp.bleached.washing.raw.log preparation.debark,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation/debark
-.pulp and paper.product.pulp.bleached.washing.raw.pulping chemical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_chemical
-.pulp and paper.product.pulp.bleached.washing.raw.pulping mechanical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_mechanical
-.pulp and paper.product.pulp.bleached.washing.raw.pulping recycled,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_recycled
-.pulp and paper.product.pulp.bleached.washing.raw.pulping semi chemical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_semi_chemical
-.pulp and paper.product.pulp.drying,data/service_tech/pulp_and_paper/product/pulp/drying
-.pulp and paper.service,data/service_tech/pulp_and_paper/service
-.pulp and paper.service.black liquor,data/service_tech/pulp_and_paper/service/black_liquor
-.pulp and paper.service.black liquor.concentrated black liquor,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor
-.pulp and paper.service.black liquor.concentrated black liquor.lime kiln,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/lime_kiln
-.pulp and paper.service.black liquor.concentrated black liquor.recovery furnace,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/recovery_furnace
-.pulp and paper.service.black liquor.evaporator,data/service_tech/pulp_and_paper/service/black_liquor/evaporator
-.pulp and paper.service.machine drive,data/service_tech/general_services/machine_drive
-.pulp and paper.service.machine drive.compressed air,data/service_tech/general_services/machine_drive/compressed_air
-.pulp and paper.service.machine drive.fans,data/service_tech/general_services/machine_drive/fans
-.pulp and paper.service.machine drive.materials handling,data/service_tech/general_services/machine_drive/materials_handling
-.pulp and paper.service.machine drive.materials processing,data/service_tech/general_services/machine_drive/materials_processing
-.pulp and paper.service.machine drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.mining.service.machine_drive,data/service_tech/general_services/machine_drive
+.mining.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.mining.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.mining.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.mining.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.mining.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.natural_gas,data/service_tech/natural_gas
+.natural_gas.product,data/service_tech/natural_gas/product
+.natural_gas.product.distribution,data/service_tech/natural_gas/product/distribution
+.natural_gas.product.supply,data/service_tech/natural_gas/product/supply
+.natural_gas.product.supply.ccs,data/service_tech/natural_gas/product/supply/ccs
+.natural_gas.product.supply.controls,data/service_tech/natural_gas/product/supply/controls
+.natural_gas.product.supply.direct_drive_large,data/service_tech/natural_gas/product/supply/direct_drive_large
+.natural_gas.product.supply.direct_drive_small,data/service_tech/natural_gas/product/supply/direct_drive_small
+.natural_gas.product.supply.direct_heat,data/service_tech/natural_gas/product/supply/direct_heat
+.natural_gas.product.supply.extraction,data/service_tech/natural_gas/product/supply/extraction
+.natural_gas.product.supply.extraction.coalbed_methane,data/service_tech/natural_gas/product/supply/extraction/coalbed_methane
+.natural_gas.product.supply.extraction.compression,data/service_tech/natural_gas/product/supply/extraction/compression
+.natural_gas.product.supply.extraction.conventional,data/service_tech/natural_gas/product/supply/extraction/conventional
+.natural_gas.product.supply.extraction.drilling,data/service_tech/natural_gas/product/supply/extraction/drilling
+.natural_gas.product.supply.extraction.off_road_transport,data/service_tech/natural_gas/product/supply/extraction/off_road_transport
+.natural_gas.product.supply.extraction.shale,data/service_tech/natural_gas/product/supply/extraction/shale
+.natural_gas.product.supply.extraction.tight,data/service_tech/natural_gas/product/supply/extraction/tight
+.natural_gas.product.supply.flaring,data/service_tech/natural_gas/product/supply/flaring
+.natural_gas.product.supply.formation_co2,data/service_tech/natural_gas/product/supply/formation_co2
+.natural_gas.product.supply.fugitive,data/service_tech/natural_gas/product/supply/fugitive
+.natural_gas.product.supply.lng_compression,data/service_tech/natural_gas/product/supply/lng_compression
+.natural_gas.product.supply.processing,data/service_tech/natural_gas/product/supply/processing
+.natural_gas.product.supply.processing.compression,data/service_tech/natural_gas/product/supply/processing/compression
+.natural_gas.product.supply.pumping,data/service_tech/natural_gas/product/supply/pumping
+.natural_gas.product.supply.testing_and_maintenance,data/service_tech/natural_gas/product/supply/testing_and_maintenance
+.natural_gas.product.supply.testing_and_maintenance.blowdowns,data/service_tech/natural_gas/product/supply/testing_and_maintenance/blowdowns
+.natural_gas.product.supply.testing_and_maintenance.liquid_unloading,data/service_tech/natural_gas/product/supply/testing_and_maintenance/liquid_unloading
+.natural_gas.product.supply.testing_and_maintenance.well_tests,data/service_tech/natural_gas/product/supply/testing_and_maintenance/well_tests
+.natural_gas.product.supply.venting,data/service_tech/natural_gas/product/supply/venting
+.natural_gas.product.supply.venting.diffuse_venting,data/service_tech/natural_gas/product/supply/venting/diffuse_venting
+.natural_gas.product.supply.venting.point_venting,data/service_tech/natural_gas/product/supply/venting/point_venting
+.natural_gas.product.transmission,data/service_tech/natural_gas/product/transmission
+.natural_gas.product.transmission.compression,data/service_tech/natural_gas/product/transmission/compression
+.natural_gas.service,data/service_tech/natural_gas/service
+.natural_gas.service.og_diesel_blend,data/service_tech/natural_gas/service/og_diesel_blend
+.natural_gas.service.og_gasoline_blend,data/service_tech/natural_gas/service/og_gasoline_blend
+.natural_gas.service.og_methane_blend,data/service_tech/natural_gas/service/og_methane_blend
+.natural_gas_market,data/service_tech/natural_gas_market
+.natural_gas_market.product,data/service_tech/natural_gas_market/product
+.natural_gas_market.product.distribution,data/service_tech/natural_gas_market/product/distribution
+.natural_gas_market.product.supply,data/service_tech/natural_gas_market/product/supply
+.natural_gas_market.product.transmission,data/service_tech/natural_gas_market/product/transmission
+.petroleum_crude,data/service_tech/petroleum_crude
+.petroleum_crude.product,data/service_tech/petroleum_crude/product
+.petroleum_crude.product.bitumen,data/service_tech/petroleum_crude/product/bitumen
+.petroleum_crude.product.bitumen.in-situ,data/service_tech/petroleum_crude/product/bitumen/in-situ
+.petroleum_crude.product.bitumen.mining,data/service_tech/petroleum_crude/product/bitumen/mining
+.petroleum_crude.product.bitumen.upgrading,data/service_tech/petroleum_crude/product/bitumen/upgrading
+.petroleum_crude.product.exploration,data/service_tech/petroleum_crude/product/exploration
+.petroleum_crude.product.heavy,data/service_tech/petroleum_crude/product/heavy
+.petroleum_crude.product.light_medium,data/service_tech/petroleum_crude/product/light_medium
+.petroleum_crude.product.light_medium.offshore,data/service_tech/petroleum_crude/product/light_medium/offshore
+.petroleum_crude.product.light_medium.onshore,data/service_tech/petroleum_crude/product/light_medium/onshore
+.petroleum_crude.service,data/service_tech/petroleum_crude/service
+.petroleum_crude.service.ccs,data/service_tech/petroleum_crude/service/ccs
+.petroleum_crude.service.hydrogen,data/service_tech/petroleum_crude/service/hydrogen
+.petroleum_crude.service.industrial_engines,data/service_tech/petroleum_crude/service/industrial_engines
+.petroleum_crude.service.still_gas_steam,data/service_tech/general_services/steam
+.petroleum_refining,data/service_tech/petroleum_refining
+.petroleum_refining.product,data/service_tech/petroleum_refining/product
+.petroleum_refining.product.alkylates,data/service_tech/petroleum_refining/product/alkylates
+.petroleum_refining.product.alkylates.alkylation,data/service_tech/petroleum_refining/product/alkylates/alkylation
+.petroleum_refining.product.alkylates.isoparaffins,data/service_tech/petroleum_refining/product/alkylates/isoparaffins
+.petroleum_refining.product.alkylates.isoparaffins.isomerization,data/service_tech/petroleum_refining/product/alkylates/isoparaffins/isomerization
+.petroleum_refining.product.petroleum_fractions,data/service_tech/petroleum_refining/product/petroleum_fractions
+.petroleum_refining.product.petroleum_fractions.asphalt,data/service_tech/petroleum_refining/product/petroleum_fractions/asphalt
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.coking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/coking
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.hydrocracking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.hydrocracking.cracking,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/cracking
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.hydrocracking.high,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/high
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.hydrocracking.low,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/low
+.petroleum_refining.product.petroleum_fractions.cracked_gas_oil.hydrocracking.medium,data/service_tech/petroleum_refining/product/petroleum_fractions/cracked_gas_oil/hydrocracking/medium
+.petroleum_refining.product.petroleum_fractions.distillation,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation
+.petroleum_refining.product.petroleum_fractions.distillation.atmospheric,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation/atmospheric
+.petroleum_refining.product.petroleum_fractions.distillation.vacuum,data/service_tech/petroleum_refining/product/petroleum_fractions/distillation/vacuum
+.petroleum_refining.product.petroleum_fractions.hydrotreating,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating
+.petroleum_refining.product.petroleum_fractions.hydrotreating.desulphurization,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating/desulphurization
+.petroleum_refining.product.petroleum_fractions.hydrotreating.sulphur_recovery,data/service_tech/petroleum_refining/product/petroleum_fractions/hydrotreating/sulphur_recovery
+.petroleum_refining.product.petroleum_fractions.lubes,data/service_tech/petroleum_refining/product/petroleum_fractions/lubes
+.petroleum_refining.product.reforming,data/service_tech/petroleum_refining/product/reforming
+.petroleum_refining.service,data/service_tech/petroleum_refining/service
+.petroleum_refining.service.ccs,data/service_tech/petroleum_refining/service/ccs
+.petroleum_refining.service.direct_heat,data/service_tech/petroleum_refining/service/direct_heat
+.petroleum_refining.service.hydrogen,data/service_tech/petroleum_refining/service/hydrogen
+.petroleum_refining.service.machine_drive,data/service_tech/general_services/machine_drive
+.petroleum_refining.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.petroleum_refining.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.petroleum_refining.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.petroleum_refining.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.petroleum_refining.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
+.petroleum_refining.service.methane_blend,data/service_tech/petroleum_refining/service/methane_blend
+.petroleum_refining.service.still_gas,data/service_tech/petroleum_refining/service/still_gas
+.petroleum_refining.service.still_gas.heater,data/service_tech/petroleum_refining/service/still_gas/heater
+.petroleum_refining.service.still_gas.steam,data/service_tech/general_services/steam
+.pulp_and_paper,data/service_tech/pulp_and_paper
+.pulp_and_paper.product,data/service_tech/pulp_and_paper/product
+.pulp_and_paper.product.paper,data/service_tech/pulp_and_paper/product/paper
+.pulp_and_paper.product.paper.coated,data/service_tech/pulp_and_paper/product/paper/coated
+.pulp_and_paper.product.paper.coated.coated_drying,data/service_tech/pulp_and_paper/product/paper/coated/coated_drying
+.pulp_and_paper.product.paper.coated.coated_forming_pressing_finishing,data/service_tech/pulp_and_paper/product/paper/coated/coated_forming_pressing_finishing
+.pulp_and_paper.product.paper.coated.coated_stock_prep,data/service_tech/pulp_and_paper/product/paper/coated/coated_stock_prep
+.pulp_and_paper.product.paper.linerboard,data/service_tech/pulp_and_paper/product/paper/linerboard
+.pulp_and_paper.product.paper.linerboard.linerboard_drying,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_drying
+.pulp_and_paper.product.paper.linerboard.linerboard_forming_pressing_finishing,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_forming_pressing_finishing
+.pulp_and_paper.product.paper.linerboard.linerboard_stock_prep,data/service_tech/pulp_and_paper/product/paper/linerboard/linerboard_stock_prep
+.pulp_and_paper.product.paper.newsprint,data/service_tech/pulp_and_paper/product/paper/newsprint
+.pulp_and_paper.product.paper.newsprint.newsprint_drying,data/service_tech/pulp_and_paper/product/paper/newsprint/newsprint_drying
+.pulp_and_paper.product.paper.newsprint.newsprint_prep_form_press_finish,data/service_tech/pulp_and_paper/product/paper/newsprint/newsprint_prep_form_press_finish
+.pulp_and_paper.product.paper.tissue,data/service_tech/pulp_and_paper/product/paper/tissue
+.pulp_and_paper.product.paper.tissue.tissue_drying,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_drying
+.pulp_and_paper.product.paper.tissue.tissue_forming_pressing_finishing,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_forming_pressing_finishing
+.pulp_and_paper.product.paper.tissue.tissue_stock_prep,data/service_tech/pulp_and_paper/product/paper/tissue/tissue_stock_prep
+.pulp_and_paper.product.paper.uncoated,data/service_tech/pulp_and_paper/product/paper/uncoated
+.pulp_and_paper.product.paper.uncoated.uncoated_drying,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_drying
+.pulp_and_paper.product.paper.uncoated.uncoated_forming_pressing_finishing,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_forming_pressing_finishing
+.pulp_and_paper.product.paper.uncoated.uncoated_stock_prep,data/service_tech/pulp_and_paper/product/paper/uncoated/uncoated_stock_prep
+.pulp_and_paper.product.pulp,data/service_tech/pulp_and_paper/product/pulp
+.pulp_and_paper.product.pulp.bleached,data/service_tech/pulp_and_paper/product/pulp/bleached
+.pulp_and_paper.product.pulp.bleached.bleaching,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching
+.pulp_and_paper.product.pulp.bleached.bleaching.fully,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching/fully
+.pulp_and_paper.product.pulp.bleached.bleaching.semi,data/service_tech/pulp_and_paper/product/pulp/bleached/bleaching/semi
+.pulp_and_paper.product.pulp.bleached.washing,data/service_tech/pulp_and_paper/product/pulp/bleached/washing
+.pulp_and_paper.product.pulp.bleached.washing.washer,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/washer
+.pulp_and_paper.product.pulp.bleached.washing.raw,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw
+.pulp_and_paper.product.pulp.bleached.washing.raw.log_preparation,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation
+.pulp_and_paper.product.pulp.bleached.washing.raw.log_preparation.cut_and_chip,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation/cut_and_chip
+.pulp_and_paper.product.pulp.bleached.washing.raw.log_preparation.debark,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/log_preparation/debark
+.pulp_and_paper.product.pulp.bleached.washing.raw.pulping_chemical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_chemical
+.pulp_and_paper.product.pulp.bleached.washing.raw.pulping_mechanical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_mechanical
+.pulp_and_paper.product.pulp.bleached.washing.raw.pulping_recycled,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_recycled
+.pulp_and_paper.product.pulp.bleached.washing.raw.pulping_semi_chemical,data/service_tech/pulp_and_paper/product/pulp/bleached/washing/raw/pulping_semi_chemical
+.pulp_and_paper.product.pulp.drying,data/service_tech/pulp_and_paper/product/pulp/drying
+.pulp_and_paper.service,data/service_tech/pulp_and_paper/service
+.pulp_and_paper.service.black_liquor,data/service_tech/pulp_and_paper/service/black_liquor
+.pulp_and_paper.service.black_liquor.concentrated_black_liquor,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor
+.pulp_and_paper.service.black_liquor.concentrated_black_liquor.lime_kiln,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/lime_kiln
+.pulp_and_paper.service.black_liquor.concentrated_black_liquor.recovery_furnace,data/service_tech/pulp_and_paper/service/black_liquor/concentrated_black_liquor/recovery_furnace
+.pulp_and_paper.service.black_liquor.evaporator,data/service_tech/pulp_and_paper/service/black_liquor/evaporator
+.pulp_and_paper.service.machine_drive,data/service_tech/general_services/machine_drive
+.pulp_and_paper.service.machine_drive.compressed_air,data/service_tech/general_services/machine_drive/compressed_air
+.pulp_and_paper.service.machine_drive.fans,data/service_tech/general_services/machine_drive/fans
+.pulp_and_paper.service.machine_drive.materials_handling,data/service_tech/general_services/machine_drive/materials_handling
+.pulp_and_paper.service.machine_drive.materials_processing,data/service_tech/general_services/machine_drive/materials_processing
+.pulp_and_paper.service.machine_drive.pumps,data/service_tech/general_services/machine_drive/pumps
 .residential,data/service_tech/residential
 .residential.product,data/service_tech/residential/product
-.residential.product.building type,data/service_tech/residential/product/building_type
-.residential.product.building type.high density,data/service_tech/residential/product/building_type/high_density
-.residential.product.building type.high density.cooling,data/service_tech/residential/product/building_type/high_density/cooling
-.residential.product.building type.high density.cooling.central,data/service_tech/residential/product/building_type/high_density/cooling/central
-.residential.product.building type.high density.cooling.room,data/service_tech/residential/product/building_type/high_density/cooling/room
-.residential.product.building type.high density.vintage,data/service_tech/residential/product/building_type/high_density/vintage
-.residential.product.building type.high density.vintage.<1960 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code
-.residential.product.building type.high density.vintage.<1960 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.<1960 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code/heating_(marine)
-.residential.product.building type.high density.vintage.>2035 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code
-.residential.product.building type.high density.vintage.>2035 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.>2035 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code/heating_(marine)
-.residential.product.building type.high density.vintage.1961-1980 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code
-.residential.product.building type.high density.vintage.1961-1980 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.1961-1980 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code/heating_(marine)
-.residential.product.building type.high density.vintage.1981-2000 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code
-.residential.product.building type.high density.vintage.1981-2000 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.1981-2000 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code/heating_(marine)
-.residential.product.building type.high density.vintage.2001-2020 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code
-.residential.product.building type.high density.vintage.2001-2020 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.2001-2020 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code/heating_(marine)
-.residential.product.building type.high density.vintage.2021-2035 bldg code,data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code
-.residential.product.building type.high density.vintage.2021-2035 bldg code.heating (cold),data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code/heating_(cold)
-.residential.product.building type.high density.vintage.2021-2035 bldg code.heating (marine),data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density,data/service_tech/residential/product/building_type/lowmed_density
-.residential.product.building type.lowmed density.cooling,data/service_tech/residential/product/building_type/lowmed_density/cooling
-.residential.product.building type.lowmed density.cooling.central,data/service_tech/residential/product/building_type/lowmed_density/cooling/central
-.residential.product.building type.lowmed density.cooling.room,data/service_tech/residential/product/building_type/lowmed_density/cooling/room
-.residential.product.building type.lowmed density.vintage,data/service_tech/residential/product/building_type/lowmed_density/vintage
-.residential.product.building type.lowmed density.vintage.<1960 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code
-.residential.product.building type.lowmed density.vintage.<1960 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.<1960 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density.vintage.>2035 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code
-.residential.product.building type.lowmed density.vintage.>2035 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.>2035 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density.vintage.1961-1980 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code
-.residential.product.building type.lowmed density.vintage.1961-1980 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.1961-1980 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density.vintage.1981-2000 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code
-.residential.product.building type.lowmed density.vintage.1981-2000 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.1981-2000 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density.vintage.2001-2020 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code
-.residential.product.building type.lowmed density.vintage.2001-2020 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.2001-2020 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code/heating_(marine)
-.residential.product.building type.lowmed density.vintage.2021-2035 bldg code,data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code
-.residential.product.building type.lowmed density.vintage.2021-2035 bldg code.heating (cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code/heating_(cold)
-.residential.product.building type.lowmed density.vintage.2021-2035 bldg code.heating (marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code/heating_(marine)
+.residential.product.building_type,data/service_tech/residential/product/building_type
+.residential.product.building_type.high_density,data/service_tech/residential/product/building_type/high_density
+.residential.product.building_type.high_density.cooling,data/service_tech/residential/product/building_type/high_density/cooling
+.residential.product.building_type.high_density.cooling.central,data/service_tech/residential/product/building_type/high_density/cooling/central
+.residential.product.building_type.high_density.cooling.room,data/service_tech/residential/product/building_type/high_density/cooling/room
+.residential.product.building_type.high_density.vintage,data/service_tech/residential/product/building_type/high_density/vintage
+.residential.product.building_type.high_density.vintage.<1960_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code
+.residential.product.building_type.high_density.vintage.<1960_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.<1960_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/<1960_bldg_code/heating_(marine)
+.residential.product.building_type.high_density.vintage.>2035_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code
+.residential.product.building_type.high_density.vintage.>2035_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.>2035_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/>2035_bldg_code/heating_(marine)
+.residential.product.building_type.high_density.vintage.1961-1980_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code
+.residential.product.building_type.high_density.vintage.1961-1980_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.1961-1980_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/1961-1980_bldg_code/heating_(marine)
+.residential.product.building_type.high_density.vintage.1981-2000_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code
+.residential.product.building_type.high_density.vintage.1981-2000_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.1981-2000_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/1981-2000_bldg_code/heating_(marine)
+.residential.product.building_type.high_density.vintage.2001-2020_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code
+.residential.product.building_type.high_density.vintage.2001-2020_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.2001-2020_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/2001-2020_bldg_code/heating_(marine)
+.residential.product.building_type.high_density.vintage.2021-2035_bldg_code,data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code
+.residential.product.building_type.high_density.vintage.2021-2035_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code/heating_(cold)
+.residential.product.building_type.high_density.vintage.2021-2035_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/high_density/vintage/2021-2035_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density,data/service_tech/residential/product/building_type/lowmed_density
+.residential.product.building_type.lowmed_density.cooling,data/service_tech/residential/product/building_type/lowmed_density/cooling
+.residential.product.building_type.lowmed_density.cooling.central,data/service_tech/residential/product/building_type/lowmed_density/cooling/central
+.residential.product.building_type.lowmed_density.cooling.room,data/service_tech/residential/product/building_type/lowmed_density/cooling/room
+.residential.product.building_type.lowmed_density.vintage,data/service_tech/residential/product/building_type/lowmed_density/vintage
+.residential.product.building_type.lowmed_density.vintage.<1960_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code
+.residential.product.building_type.lowmed_density.vintage.<1960_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.<1960_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/<1960_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density.vintage.>2035_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code
+.residential.product.building_type.lowmed_density.vintage.>2035_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.>2035_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/>2035_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density.vintage.1961-1980_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code
+.residential.product.building_type.lowmed_density.vintage.1961-1980_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.1961-1980_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/1961-1980_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density.vintage.1981-2000_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code
+.residential.product.building_type.lowmed_density.vintage.1981-2000_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.1981-2000_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/1981-2000_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density.vintage.2001-2020_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code
+.residential.product.building_type.lowmed_density.vintage.2001-2020_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.2001-2020_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/2001-2020_bldg_code/heating_(marine)
+.residential.product.building_type.lowmed_density.vintage.2021-2035_bldg_code,data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code
+.residential.product.building_type.lowmed_density.vintage.2021-2035_bldg_code.heating_(cold),data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code/heating_(cold)
+.residential.product.building_type.lowmed_density.vintage.2021-2035_bldg_code.heating_(marine),data/service_tech/residential/product/building_type/lowmed_density/vintage/2021-2035_bldg_code/heating_(marine)
 .residential.service,data/service_tech/residential/service
-.residential.service.clothes drying,data/service_tech/residential/service/clothes_drying
-.residential.service.clothes drying.air dry,data/service_tech/residential/service/clothes_drying/air_dry
-.residential.service.clothes drying.machine,data/service_tech/residential/service/clothes_drying/machine
-.residential.service.clothes washing,data/service_tech/residential/service/clothes_washing
+.residential.service.clothes_drying,data/service_tech/residential/service/clothes_drying
+.residential.service.clothes_drying.air_dry,data/service_tech/residential/service/clothes_drying/air_dry
+.residential.service.clothes_drying.machine,data/service_tech/residential/service/clothes_drying/machine
+.residential.service.clothes_washing,data/service_tech/residential/service/clothes_washing
 .residential.service.dishwashing,data/service_tech/residential/service/dishwashing
 .residential.service.dishwashing.machine,data/service_tech/residential/service/dishwashing/machine
 .residential.service.dishwashing.non-machine,data/service_tech/residential/service/dishwashing/non-machine
 .residential.service.freezers,data/service_tech/residential/service/freezers
 .residential.service.lighting,data/service_tech/residential/service/lighting
-.residential.service.methane blend,data/service_tech/residential/service/methane_blend
-.residential.service.minor appliances,data/service_tech/residential/service/minor_appliances
-.residential.service.non-appliance hot water,data/service_tech/residential/service/non-appliance_hot_water
+.residential.service.methane_blend,data/service_tech/residential/service/methane_blend
+.residential.service.minor_appliances,data/service_tech/residential/service/minor_appliances
+.residential.service.non-appliance_hot_water,data/service_tech/residential/service/non-appliance_hot_water
 .residential.service.ranges,data/service_tech/residential/service/ranges
 .residential.service.refrigerators,data/service_tech/residential/service/refrigerators
-.residential.service.solar pv,data/service_tech/residential/service/solar_pv
-.residential.service.water heating,data/service_tech/residential/service/water_heating
-.residential.service.water heating.high density,data/service_tech/residential/service/water_heating/high_density
-.residential.service.water heating.lowmed density,data/service_tech/residential/service/water_heating/lowmed_density
-.transportation freight,data/service_tech/transportation_freight
-.transportation freight.product,data/service_tech/transportation_freight/product
-.transportation freight.product.air,data/service_tech/transportation_freight/product/air
-.transportation freight.product.land,data/service_tech/transportation_freight/product/land
-.transportation freight.product.land.heavy,data/service_tech/transportation_freight/product/land/heavy
-.transportation freight.product.land.heavy.rail,data/service_tech/transportation_freight/product/land/heavy/rail
-.transportation freight.product.land.heavy.trucks,data/service_tech/transportation_freight/product/land/heavy/trucks
-.transportation freight.product.land.light medium,data/service_tech/transportation_freight/product/land/light_medium
-.transportation freight.product.marine,data/service_tech/transportation_freight/product/marine
-.transportation freight.product.off road,data/service_tech/transportation_freight/product/off_road
-.transportation freight.service,data/service_tech/transportation_freight/service
-.transportation freight.service.catenary infrastructure,data/service_tech/transportation_freight/service/catenary_infrastructure
-.transportation freight.service.ev infrastructure,data/service_tech/transportation_freight/service/ev_infrastructure
-.transportation freight.service.ev infrastructure.depot stations,data/service_tech/transportation_freight/service/ev_infrastructure/depot_stations
-.transportation freight.service.ev infrastructure.rapid charging stations,data/service_tech/transportation_freight/service/ev_infrastructure/rapid_charging_stations
-.transportation freight.service.fcev infrastructure,data/service_tech/transportation_freight/service/fcev_infrastructure
-.transportation passenger,data/service_tech/transportation_passenger
-.transportation passenger.product,data/service_tech/transportation_passenger/product
-.transportation passenger.product.intercity air,data/service_tech/transportation_passenger/product/intercity_air
-.transportation passenger.product.intercity land,data/service_tech/transportation_passenger/product/intercity_land
-.transportation passenger.product.urban,data/service_tech/transportation_passenger/product/urban
-.transportation passenger.service,data/service_tech/transportation_passenger/service
-.transportation passenger.service.intercity bus,data/service_tech/transportation_passenger/service/intercity_bus
-.transportation passenger.service.intercity rail,data/service_tech/transportation_passenger/service/intercity_rail
-.transportation passenger.service.passenger vehicle motors,data/service_tech/transportation_passenger/service/passenger_vehicle_motors
-.transportation passenger.service.passenger vehicles,data/service_tech/transportation_passenger/service/passenger_vehicles
-.transportation passenger.service.transit,data/service_tech/transportation_passenger/service/transit
-.transportation passenger.service.transit.public bus,data/service_tech/transportation_passenger/service/transit/public_bus
-.transportation passenger.service.transit.rapid transit,data/service_tech/transportation_passenger/service/transit/rapid_transit
+.residential.service.solar_pv,data/service_tech/residential/service/solar_pv
+.residential.service.water_heating,data/service_tech/residential/service/water_heating
+.residential.service.water_heating.high_density,data/service_tech/residential/service/water_heating/high_density
+.residential.service.water_heating.lowmed_density,data/service_tech/residential/service/water_heating/lowmed_density
+.transportation_freight,data/service_tech/transportation_freight
+.transportation_freight.product,data/service_tech/transportation_freight/product
+.transportation_freight.product.air,data/service_tech/transportation_freight/product/air
+.transportation_freight.product.land,data/service_tech/transportation_freight/product/land
+.transportation_freight.product.land.heavy,data/service_tech/transportation_freight/product/land/heavy
+.transportation_freight.product.land.heavy.rail,data/service_tech/transportation_freight/product/land/heavy/rail
+.transportation_freight.product.land.heavy.trucks,data/service_tech/transportation_freight/product/land/heavy/trucks
+.transportation_freight.product.land.light_medium,data/service_tech/transportation_freight/product/land/light_medium
+.transportation_freight.product.marine,data/service_tech/transportation_freight/product/marine
+.transportation_freight.product.off_road,data/service_tech/transportation_freight/product/off_road
+.transportation_freight.service,data/service_tech/transportation_freight/service
+.transportation_freight.service.catenary_infrastructure,data/service_tech/transportation_freight/service/catenary_infrastructure
+.transportation_freight.service.ev_infrastructure,data/service_tech/transportation_freight/service/ev_infrastructure
+.transportation_freight.service.ev_infrastructure.depot_stations,data/service_tech/transportation_freight/service/ev_infrastructure/depot_stations
+.transportation_freight.service.ev_infrastructure.rapid_charging_stations,data/service_tech/transportation_freight/service/ev_infrastructure/rapid_charging_stations
+.transportation_freight.service.fcev_infrastructure,data/service_tech/transportation_freight/service/fcev_infrastructure
+.transportation_passenger,data/service_tech/transportation_passenger
+.transportation_passenger.product,data/service_tech/transportation_passenger/product
+.transportation_passenger.product.intercity_air,data/service_tech/transportation_passenger/product/intercity_air
+.transportation_passenger.product.intercity_land,data/service_tech/transportation_passenger/product/intercity_land
+.transportation_passenger.product.urban,data/service_tech/transportation_passenger/product/urban
+.transportation_passenger.service,data/service_tech/transportation_passenger/service
+.transportation_passenger.service.intercity_bus,data/service_tech/transportation_passenger/service/intercity_bus
+.transportation_passenger.service.intercity_rail,data/service_tech/transportation_passenger/service/intercity_rail
+.transportation_passenger.service.passenger_vehicle_motors,data/service_tech/transportation_passenger/service/passenger_vehicle_motors
+.transportation_passenger.service.passenger_vehicles,data/service_tech/transportation_passenger/service/passenger_vehicles
+.transportation_passenger.service.transit,data/service_tech/transportation_passenger/service/transit
+.transportation_passenger.service.transit.public_bus,data/service_tech/transportation_passenger/service/transit/public_bus
+.transportation_passenger.service.transit.rapid_transit,data/service_tech/transportation_passenger/service/transit/rapid_transit
 .waste,data/service_tech/waste
 .waste.product,data/service_tech/waste/product
-.waste.product.large sites,data/service_tech/waste/product/large_sites
-.waste.product.medium sites,data/service_tech/waste/product/medium_sites
-.waste.product.small sites,data/service_tech/waste/product/small_sites
-.fuel blends,data/service_tech/fuel_blends
-.fuel blends.diesel_industrial,data/service_tech/fuel_blends/diesel_industrial
-.fuel blends.diesel_transportation,data/service_tech/fuel_blends/diesel_transportation
-.fuel blends.gasoline_transportation,data/service_tech/fuel_blends/gasoline_transportation
-.fuel blends.methane_agriculture,data/service_tech/fuel_blends/methane_agriculture
-.fuel blends.methane_buildings,data/service_tech/fuel_blends/methane_buildings
-.common energy,data/service_tech/common_energy
-.common energy.biogas,data/service_tech/common_energy/biogas
-.common energy.black liquor,data/service_tech/common_energy/black_liquor
-.common energy.coal,data/service_tech/common_energy/coal
-.common energy.coke,data/service_tech/common_energy/coke
-.common energy.diesel,data/service_tech/common_energy/diesel
-.common energy.fuel oil,data/service_tech/common_energy/fuel_oil
-.common energy.gasoline,data/service_tech/common_energy/gasoline
-.common energy.jet fuel,data/service_tech/common_energy/jet_fuel
-.common energy.lpg,data/service_tech/common_energy/lpg
-.common energy.metallurgical coal,data/service_tech/common_energy/metallurgical_coal
-.common energy.natural gas,data/service_tech/common_energy/natural_gas
-.common energy.natural gas feedstock,data/service_tech/common_energy/natural_gas_feedstock
-.common energy.petroleum coke,data/service_tech/common_energy/petroleum_coke
-.common energy.propane,data/service_tech/common_energy/propane
-.common energy.refinery fuel gas,data/service_tech/common_energy/refinery_fuel_gas
-.common energy.renewable diesel,data/service_tech/common_energy/renewable_diesel
-.common energy.renewable gasoline,data/service_tech/common_energy/renewable_gasoline
-.common energy.solid biomass,data/service_tech/common_energy/solid_biomass
-.common energy.uranium,data/service_tech/common_energy/uranium
-.common energy.vom,data/service_tech/common_energy/vom
-.common energy.waste fuel,data/service_tech/common_energy/waste_fuel
+.waste.product.large_sites,data/service_tech/waste/product/large_sites
+.waste.product.medium_sites,data/service_tech/waste/product/medium_sites
+.waste.product.small_sites,data/service_tech/waste/product/small_sites
+.fuel_blends,data/service_tech/fuel_blends
+.fuel_blends.diesel_industrial,data/service_tech/fuel_blends/diesel_industrial
+.fuel_blends.diesel_transportation,data/service_tech/fuel_blends/diesel_transportation
+.fuel_blends.gasoline_transportation,data/service_tech/fuel_blends/gasoline_transportation
+.fuel_blends.methane_agriculture,data/service_tech/fuel_blends/methane_agriculture
+.fuel_blends.methane_buildings,data/service_tech/fuel_blends/methane_buildings
+.common_energy,data/service_tech/common_energy
+.common_energy.renewable_natural_gas,data/service_tech/common_energy/renewable_natural_gas
+.common_energy.black_liquor,data/service_tech/common_energy/black_liquor
+.common_energy.thermal_coal,data/service_tech/common_energy/thermal_coal
+.common_energy.metallurgical_coal,data/service_tech/common_energy/metallurgical_coal
+.common_energy.coke,data/service_tech/common_energy/coke
+.common_energy.diesel,data/service_tech/common_energy/diesel
+.common_energy.kerosene,data/service_tech/common_energy/kerosene
+.common_energy.light_fuel_oil,data/service_tech/common_energy/light_fuel_oil
+.common_energy.heavy_fuel_oil,data/service_tech/common_energy/heavy_fuel_oil
+.common_energy.gasoline,data/service_tech/common_energy/gasoline
+.common_energy.jet_fuel,data/service_tech/common_energy/jet_fuel
+.common_energy.saf,data/service_tech/common_energy/saf
+.common_energy.lpg,data/service_tech/common_energy/lpg
+.common_energy.natural_gas,data/service_tech/common_energy/natural_gas
+.common_energy.natural_gas_feedstock,data/service_tech/common_energy/natural_gas_feedstock
+.common_energy.petroleum_coke,data/service_tech/common_energy/petroleum_coke
+.common_energy.propane,data/service_tech/common_energy/propane
+.common_energy.ethane,data/service_tech/common_energy/ethane
+.common_energy.butane,data/service_tech/common_energy/butane
+.common_energy.refinery_fuel_gas,data/service_tech/common_energy/refinery_fuel_gas
+.common_energy.renewable_diesel,data/service_tech/common_energy/renewable_diesel
+.common_energy.renewable_gasoline,data/service_tech/common_energy/renewable_gasoline
+.common_energy.solid_biomass,data/service_tech/common_energy/solid_biomass
+.common_energy.uranium,data/service_tech/common_energy/uranium
+.common_energy.vom,data/service_tech/common_energy/vom
+.common_energy.waste,data/service_tech/common_energy/waste
+.common_energy.petrochemical_feedstock,data/service_tech/common_energy/petrochemical_feedstock
+.common_energy.asphalt,data/service_tech/common_energy/asphalt
+.common_energy.lubricants,data/service_tech/common_energy/lubricants
+.common_energy.other_non-energy_products,data/service_tech/common_energy/other_non-energy_products
+.common_energy.naphtha_specialties,data/service_tech/common_energy/naphtha_specialties
 .transmission,data/service_tech/transmission
-.transmission.co2 pipeline and storage,data/service_tech/transmission/co2_pipeline_and_storage
-.transmission.co2 pipeline and storage.ab to ab,data/service_tech/transmission/co2_pipeline_and_storage/ab_to_ab
-.transmission.co2 pipeline and storage.at to usa,data/service_tech/transmission/co2_pipeline_and_storage/at_to_usa
-.transmission.co2 pipeline and storage.bc to ab,data/service_tech/transmission/co2_pipeline_and_storage/bc_to_ab
-.transmission.co2 pipeline and storage.mb to sk,data/service_tech/transmission/co2_pipeline_and_storage/mb_to_sk
-.transmission.co2 pipeline and storage.on to usa,data/service_tech/transmission/co2_pipeline_and_storage/on_to_usa
-.transmission.co2 pipeline and storage.qc to usa,data/service_tech/transmission/co2_pipeline_and_storage/qc_to_usa
-.transmission.co2 pipeline and storage.sk to sk,data/service_tech/transmission/co2_pipeline_and_storage/sk_to_sk
+.transmission.co2_pipeline_and_storage,data/service_tech/transmission/co2_pipeline_and_storage
+.transmission.co2_pipeline_and_storage.ab_to_ab,data/service_tech/transmission/co2_pipeline_and_storage/ab_to_ab
+.transmission.co2_pipeline_and_storage.at_to_usa,data/service_tech/transmission/co2_pipeline_and_storage/at_to_usa
+.transmission.co2_pipeline_and_storage.bc_to_ab,data/service_tech/transmission/co2_pipeline_and_storage/bc_to_ab
+.transmission.co2_pipeline_and_storage.mb_to_sk,data/service_tech/transmission/co2_pipeline_and_storage/mb_to_sk
+.transmission.co2_pipeline_and_storage.on_to_usa,data/service_tech/transmission/co2_pipeline_and_storage/on_to_usa
+.transmission.co2_pipeline_and_storage.qc_to_usa,data/service_tech/transmission/co2_pipeline_and_storage/qc_to_usa
+.transmission.co2_pipeline_and_storage.sk_to_sk,data/service_tech/transmission/co2_pipeline_and_storage/sk_to_sk
