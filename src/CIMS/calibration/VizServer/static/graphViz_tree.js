@@ -188,7 +188,7 @@ function loadData(rootNodeName) {
 
 // Turning this back on for manual calibration debugging purposes. Am always having to navigate to this subtree, so
 // let's just do it on load.
-loadData("CIMS.CAN.BC.Residential.Dwellings");
+loadData("CIMS.CAN.AB.Residential");
 
 // Playing now with a bunch of subgraphs, and the above BC residential node isn't in the graph anymore, so this
 // fails here and crashes everything.
@@ -329,6 +329,7 @@ function initializeDisplay() {
         .attr("stroke-width", 3.0);
 
     gNode = svg.append("g")
+        .attr("id", "nodesContainer")
         .attr("cursor", "pointer")
         .attr("pointer-events", "all");
 
@@ -492,7 +493,12 @@ function update(event, source) {
 
                     }else{
 
+                        // Reset the "is selected" attribute in all nodes.
+                        //const nodes = nodesPre.forEach( node => { node.data.is_selected = false; });
+                        nodes.forEach( node => { node.data.is_selected = false; });
                         setNodeSelection(d.data.id);
+                        d.data.is_selected = true;
+                        update(event,d);
                         //fetchNodeData(d.data.id);
                         //fetchEmissionsData(d.data.id);
                         //fetchRequestedQuantitiesData(d.data.id);
@@ -528,14 +534,20 @@ function update(event, source) {
 
     // ::TODO:: I think this is where the little bar graphs or pie charts should be shown.
     nodeEnter.append("circle")
-        .attr("r", 2.5)
-        .attr("fill", d => d._children ? "#555" : "#999")
+        .attr("r", d => d.data.isTechNode ? 3.0 : 9.0)
+        .attr("fill", d => {
+            if(d.data.is_selected){
+                return("#900");
+            }else{
+                return( d._children ? "#555" : "#999" );
+            }
+        })
         .attr("stroke-width", 10);
 
     nodeEnter.append("text")
         .attr("dy", "0.31em")
         //.attr("x", d => d._children ? -6 : 6)
-        .attr("x", d => 6)
+        .attr("x", d => 24)
         //.attr("text-anchor", d => d._children ? "end" : "start")
         .attr("text-anchor", d => "start")
         .text(d => d.data.id.split(".").reverse()[0])
@@ -543,13 +555,41 @@ function update(event, source) {
         .attr("stroke-linejoin", "round")
         .attr("stroke-width", 10)
         .attr("stroke", "white")
-        .attr("fill", d => d.data.isTechNode ? "blue" : "black")
+        .attr("fill", d => {
+            if(d.data.is_selected){
+                console.log("setting red"); 
+                return("red");
+            }else{
+                console.log("setting not red"); 
+                return(d.data.isTechNode ? "blue" : "black")
+            }
+        })
         .attr("paint-order", "stroke");
 
     const nodeUpdate = node.merge(nodeEnter).transition(transition)
         .attr("transform", d => `translate(${d.y},${d.x})`)
         .attr("fill-opacity", 1)
         .attr("stroke-opacity", 1);
+
+    nodeUpdate.select("text")
+        .attr("fill", d => {
+            if(d.data.is_selected){
+                console.log("setting red"); 
+                return("red");
+            }else{
+                console.log("setting not red"); 
+                return(d.data.isTechNode ? "blue" : "black")
+            }
+        });
+
+    nodeUpdate.select("circle")
+        .attr("fill", d => {
+            if(d.data.is_selected){
+                return("#900");
+            }else{
+                return( d._children ? "#555" : "#999" );
+            }
+        });
 
     const nodeExit = node.exit().transition(transition).remove()
         .attr("transform", d => `translate(${source.y},${source.x})`)
@@ -572,8 +612,8 @@ function update(event, source) {
     //    .attr("stroke-width", 5);
 
     missingNodesEnter.append("text")
-        .attr("dy", "0.31em")
-        .attr("x", d => 6)
+        .attr("dy", "0.0em")
+        .attr("x", d => 0)
         .attr("text-anchor", d => "start")
         .text(d => d.id)
         .attr("stroke-linejoin", "round")
@@ -603,9 +643,11 @@ function update(event, source) {
             if(d.target.data.isTechNode){
                 return(null);
             }else if(d.target.data.isReqProv){
-                return("url(#arrowhead_rp)");
+                //return("url(#arrowhead_rp)");
+                return(null);
             }else{
-                return("url(#arrowhead)");
+                //return("url(#arrowhead)");
+                return(null);
             }
         })
         .attr("d", d => {
