@@ -45,11 +45,12 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 Output order per region
 -----------------------
 1. service_request  — total production (from heavy_industry)
-2. competition      — from fixed data (Sector level)
-3. multiplier_price — from energy_price_multipliers
-4. service_provide — generated Paper service header for every region
-5. service_request  — Paper → each sub-product (from heavy_industry)
-6. rest of fixed data
+2. service_provide  — Sector header (from fixed data)
+3. competition      — from fixed data (Sector level)
+4. multiplier_price — from energy_price_multipliers
+5. service_provide — generated Paper service header for every region
+6. service_request  — Paper → each sub-product (from heavy_industry)
+7. rest of fixed data
 """
 
 import sys
@@ -205,9 +206,9 @@ def _build_paper_service_provide_rows(regions: list[str]) -> pl.DataFrame:
         'Parameter': ['service_provide'] * len(regions),
         'Context': [''] * len(regions),
         'Sub_Context': [''] * len(regions),
-        'Target': [f'CIMS.CAN.{region}.Pulp and Paper' for region in regions],
-        'Source': ['fixed structural data / generated Paper service header'] * len(regions),
-        'Unit': [''] * len(regions),
+        'Target': [''] * len(regions),
+        'Source': ['JCIMS'] * len(regions),
+        'Unit': ['tonne'] * len(regions),
         'Year': [''] * len(regions),
         'Value': [''] * len(regions),
     }).cast(pl.String)
@@ -284,8 +285,15 @@ def main() -> pl.DataFrame:
     # Paper service branch: ends with '.Pulp and Paper.Paper' exactly
     _paper_branch = pl.col('Branch').str.ends_with('.Pulp and Paper.Paper')
 
+    # Sector-level service_provide header (e.g. "CIMS.CAN.AB.Pulp and Paper"
+    # provides service) — pulled out separately so it stays with the rest of
+    # the sector-header block instead of falling into fixed_rest.
+    fixed_sector_provide = fixed.filter(
+        _sector_branch & (pl.col('Parameter').fill_null('') == 'service_provide')
+    )
+
     # Keep only competition from fixed data at sector level;
-    # service_provide rows remain null (fixed data); activity data inserted as service_request.
+    # service_provide is handled above; activity data inserted as service_request.
     fixed_sector_competition = fixed.filter(
         _sector_branch & (pl.col('Parameter').fill_null('') == 'competition')
     )
@@ -299,7 +307,7 @@ def main() -> pl.DataFrame:
     # Everything else from fixed: all sub-services below Paper, plus
     # Black Liquor Service, Steam, HVAC, Lighting, etc.
     fixed_rest = fixed.filter(
-        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition']))
+        ~(_sector_branch & pl.col('Parameter').fill_null('').is_in(['competition', 'service_provide']))
         & ~_paper_branch
     )
 
@@ -311,7 +319,7 @@ def main() -> pl.DataFrame:
 
     output = (
         pl.concat(
-            [total_rows, fixed_sector_competition,
+            [total_rows, fixed_sector_provide, fixed_sector_competition,
              price_rows, fixed_paper_header, paper_service_provide, subprod_rows, fixed_rest],
             how='diagonal_relaxed',
         )

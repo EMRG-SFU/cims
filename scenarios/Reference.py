@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.1"
+__generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -103,18 +103,18 @@ def _(model_path, update_files):
         'RoW', # Required
         'CAN', # Required
         'BC',
-        # 'AB',
-        # 'SK',
-        # 'MB',
-        # 'ON',
-        # 'QC',
-        # 'NB',
-        # 'NL',
-        # 'NS',
-        # 'PE',
-        # 'NT',
-        # 'NU',
-        # 'YT',
+        'AB',
+        'SK',
+        'MB',
+        'ON',
+        'QC',
+        'NB',
+        'NL',
+        'NS',
+        'PE',
+        'NT',
+        'NU',
+        'YT',
     ]
 
     # Only uncommented years below will be run in the simulation
@@ -159,8 +159,8 @@ def _(model_path, update_files):
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
         'Coal Mining',
-        # 'Natural Gas', # Must run all regions due to Natural Gas Market
-        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        'Natural Gas', # Must run all regions due to Natural Gas Market
+        'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
         'Biodiesel',
@@ -360,7 +360,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['undefined_nodes']
+    model.validator.warnings['supply_without_lcc_or_price']
     return
 
 

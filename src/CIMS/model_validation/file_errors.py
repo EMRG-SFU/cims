@@ -419,30 +419,6 @@ def base_year_market_share_not_one(validator):
 
     return nodes_with_bad_shares, concern_desc
 
-def nodes_missing_service_provide(validator):
-    """
-    Identify nodes missing a Service Provide parameter.
-    """
-    data = validator.model_df
-
-    # Only node-level rows (exclude tech-level rows)
-    node_rows = data[data[COL.technology].isna()]
-
-    # All nodes defined in the model
-    nodes = set(data[validator.node_col].dropna().unique())
-
-    # Nodes with Service Provide
-    service_rows = node_rows[node_rows[COL.parameter] == PARAM.service_provide]
-    nodes_with_service = set(service_rows[validator.node_col].dropna().unique())
-
-    missing = []
-    for node in sorted(nodes):
-        if node not in nodes_with_service:
-            missing.append((validator.branch2node_index_map[node], node))
-
-    concern_desc = "nodes are missing a Service Provide parameter"
-    return missing, concern_desc
-
 def nodes_missing_competition(validator):
     """
     Identify nodes missing a Competition parameter row.

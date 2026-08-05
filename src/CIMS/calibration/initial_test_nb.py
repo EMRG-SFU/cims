@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.14"
+__generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -8,6 +8,7 @@ with app.setup:
     import os, os.path
     import sys
     import pickle
+    import gzip
     from pathlib import Path
     import pandas as pd
     import polars as pl
@@ -82,8 +83,7 @@ def _():
     # model_pickle_path = "/path/to/your/model/here.pkl"
     # or "C:\path\to\your\model.pkl"
 
-    model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/model_3regions_withCalibration_abres.pickle"
-    #model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/modelPost_3regions_withCalibrationQuantFix.pickle"
+    model_pickle_path = "C:/cims/results/Reference/model.pkl"
     return (model_pickle_path,)
 
 
@@ -101,7 +101,7 @@ def _():
 
 @app.cell
 def _(model_pickle_path):
-    with open(model_pickle_path, 'rb') as _f:
+    with gzip.open(model_pickle_path, 'rb') as _f:
         model = pickle.load(_f)
     return (model,)
 

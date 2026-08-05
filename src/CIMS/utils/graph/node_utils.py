@@ -206,9 +206,11 @@ def _standardize_param_value(val):
 
 def _add_node_constant(graph, node_df, node, parameter, required=False):
     parameter_list = list(node_df[node_df[COL.parameter] == parameter][COL.value])
+    unit_val = None
 
     if len(set(parameter_list)) == 1:
         parameter_val = infer_type(_standardize_param_value(parameter_list[0]))
+        unit_val = node_df.loc[node_df[COL.parameter] == parameter, COL.unit].iloc[0] or None
     elif len(set(parameter_list)) > 1:
         raise ValueError(f"{parameter} has too many values at {node}.")
     elif parameter in graph.nodes[node]:
@@ -220,6 +222,8 @@ def _add_node_constant(graph, node_df, node, parameter, required=False):
 
     # Add constant to graph
     graph.nodes[node][parameter] = parameter_val
+    if unit_val:
+        graph.nodes[node][PARAM.unit] = unit_val
 
     return graph
 

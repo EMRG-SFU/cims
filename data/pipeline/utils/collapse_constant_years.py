@@ -8,10 +8,12 @@ polars DataFrame (Branch/.../Year/Value), so it can be applied to rows
 sourced from processed_data / pipeline-derived data as well, at the point
 where each sector's model_inputs.py builds its final output frame.
 
-Groups with genuinely varying numeric values are left untouched (they're a
-real time series). Groups with varying non-numeric literals collapse to one
+Groups with varying values (numeric or non-numeric literal) collapse to one
 default row (the most common value, blank Year) plus explicit override rows
-only for the years whose value differs from that default.
+only for the years whose value differs from that default -- e.g. a ramp that
+plateaus for most of the projection keeps explicit rows for the ramp years
+and collapses the plateau to a single blank-Year row. market_share_total is
+exempted (see below) and always keeps every row's explicit Year.
 
 The input row order is preserved: a collapsed group is placed at the
 position of its first original row, and untouched rows keep their original
@@ -51,6 +53,57 @@ def _collapse_literal_varying(
 
         for row, value in zip(sub.iter_rows(named=True), values):
             if value != default_value:
+                out_rows.append({c: row[c] for c in out_cols})
+
+    if not out_rows:
+        return df.select(out_cols).clear()
+    return pl.DataFrame(out_rows)
+
+
+def _collapse_numeric_varying(
+    df: pl.DataFrame,
+    id_cols: list[str],
+    year_col: str,
+    value_col: str,
+    schema_cols: list[str],
+) -> pl.DataFrame:
+    """
+    Collapse a numeric-varying group down to a blank-Year default row (the
+    most common value) plus explicit override rows only for the years whose
+    value differs from that default.
+
+    Mirrors _collapse_literal_varying, but for numeric series that repeat a
+    dominant value (e.g. a ramp that plateaus for most of the projection)
+    rather than varying on every row. Equality is judged on the "_cmp"
+    column so numerically-equal values (e.g. "30" vs "30.0") count as the
+    same value, consistent with how the constant/varying split itself was
+    computed.
+    """
+    df = df.sort(_POS_COL)
+    out_cols = schema_cols + [_POS_COL]
+
+    out_rows: list[dict] = []
+    for _key, sub in df.group_by(id_cols, maintain_order=True):
+        # market_share_total's blank Year already means something else
+        # (see the note below in collapse_constant_years) — never blank it.
+        if "Parameter" in schema_cols and sub["Parameter"][0] == "market_share_total":
+            for row in sub.iter_rows(named=True):
+                out_rows.append({c: row[c] for c in out_cols})
+            continue
+
+        cmp_values = sub["_cmp"].to_list()
+        counts = Counter(cmp_values)
+        max_count = max(counts.values())
+        default_cmp = next(v for v in cmp_values if counts[v] == max_count)
+        default_idx = cmp_values.index(default_cmp)
+
+        base_row = dict(sub.row(0, named=True))
+        base_row[year_col] = ""
+        base_row[value_col] = sub.row(default_idx, named=True)[value_col]
+        out_rows.append({c: base_row[c] for c in out_cols})
+
+        for row, cmp_v in zip(sub.iter_rows(named=True), cmp_values):
+            if cmp_v != default_cmp:
                 out_rows.append({c: row[c] for c in out_cols})
 
     if not out_rows:
@@ -186,11 +239,13 @@ def collapse_constant_years(
         )
         varying = varying.join(bad_counts, on=id_cols, how="left", nulls_equal=True)
 
-        numeric_varying = varying.filter(pl.col("_n_bad") == 0).select(schema_cols + [_POS_COL])
+        numeric_varying = varying.filter(pl.col("_n_bad") == 0).select(schema_cols + [_POS_COL, "_cmp"])
         literal_varying = varying.filter(pl.col("_n_bad") > 0).select(schema_cols + [_POS_COL])
 
         if numeric_varying.height > 0:
-            frames.append(numeric_varying)
+            frames.append(
+                _collapse_numeric_varying(numeric_varying, id_cols, year_col, value_col, schema_cols)
+            )
         if literal_varying.height > 0:
             frames.append(
                 _collapse_literal_varying(literal_varying, id_cols, year_col, value_col, schema_cols)
