@@ -18,43 +18,10 @@ import Calibration.Data.node_info as node_info
 
 # EMISSIONS
 
-def get_emissions(model, nodeName, emissions_key="emissions_total_cumul_net"):
-    """
-    This function retrieves and deals with the emissions objecst found at 
-    """
-    nodeDict = model.graph.nodes().get(nodeName)
-    yearHeaders = node_info.list_years(model.graph, nodeName)
-
-    # Here we're just interested in the `emissions_key` rowName (and this extra structure is the reason that Emissions (and Quantities)
-    # always showed up as an error in the 
-    allEmDict = {yy:nodeDict[yy][emissions_key]["year_value"].emissions for yy in yearHeaders}
-
-    nodeYearEmissions_pre = [{'year':yk, 'fuel':k, 'gas':kk, 'type':kkk, 'value':numFormat(vvv['year_value'])} 
-     for yk,emDict in allEmDict.items() 
-     for k,v in emDict.items()
-     for kk,vv in v.items()
-     for kkk,vvv in vv.items()]
-
-    nodeYearEmissions = pl.DataFrame(nodeYearEmissions_pre)
-    #print(nodeYearEmissions)
-    nodeYearEmissions_pivot = nodeYearEmissions.pivot(on="year", values="value")
-    return nodeYearEmissions_pivot
 
 
 # QUANTITIES
 
-def get_quantities(model, nodeName, rqKey = "quantity_requested"):
-
-    nodeDict = model.graph.nodes().get(nodeName)
-    yearHeaders = node_info.list_years(model.graph, nodeName)
-
-    allQDict = {yy:nodeDict[yy][rqKey]["year_value"].requested_quantities for yy in yearHeaders}
-
-    nodeYearQuantities_pre = [{'year':yk, 'fuel':k, 'service':kk, 'value': numFormat(vv)} for yk,qDict in allQDict.items() for k,v in qDict.items() for kk,vv in v.items()]
-    nodeYearQuantities = pl.DataFrame(nodeYearQuantities_pre)
-    nodeYearQuantities_pivot = nodeYearQuantities.pivot(on="year", values="value")
-
-    return nodeYearQuantities_pivot
 
 
 ## GENERAL NODE PARAMS (i.e. all the other things in node yearDicts besides "technologies"). These are treated here as things that

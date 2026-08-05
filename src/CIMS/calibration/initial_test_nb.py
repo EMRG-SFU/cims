@@ -35,10 +35,18 @@ with app.setup:
 
     from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
 
-    from Calibration.Optimization import optimize_years_sequential
+    from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
     #from Calibration.Optimization_objectiveFunctions import make_objective_localNode
+
     import Calibration.Data.node_info as node_info
     import Calibration.Data.parameter_values as parameter_values
+    import Calibration.Data.emissions as emissions
+    import Calibration.Data.quantities as requestedQuantities
+    import Calibration.Data.market_share as market_share
+    import Calibration.Data.FICs as FICs
+
+    from Calibration.Plotting.plot_ms_for_node import plot_ms
+    from Calibration.Plotting.plot_ms_for_node_line import plot_ms_line
 
 
     from Calibration.paramLoc import ParamLoc
@@ -73,7 +81,8 @@ def _():
     # model_pickle_path = "/path/to/your/model/here.pkl"
     # or "C:\path\to\your\model.pkl"
 
-    model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/modelPost_3regions_withCalibration.pickle"
+    model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/model_3regions_withCalibration_abres.pickle"
+    #model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/modelPost_3regions_withCalibrationQuantFix.pickle"
     return (model_pickle_path,)
 
 
@@ -288,9 +297,7 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Get Node Emissions
-
-    <span style="color:red;">TBD</span>
+    # Emissions
     """)
     return
 
@@ -298,10 +305,101 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Get Node Quantities
+    ## Find Nodes With Emissions Calibration Data
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    sorted(list(set([a['node'] for a in node_info.searchForParam_anyYears(model.graph, "calibration_emissions_by_type")])))
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Get Node Emissions
 
     <span style="color:red;">TBD</span>
     """)
+    return
+
+
+@app.cell
+def _(model):
+    emissions.get_emissions(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    emissions.get_emissions_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    # Requested Quantities
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Find Nodes With Requested Quantities Calibration Data
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    sorted(list(set([a['node'] for a in node_info.searchForParam_anyYears(model.graph, "calibration_quantity_requested")])))
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Get Node Requested Quantities
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    requestedQuantities.get_quantityRequested(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    requestedQuantities.get_quantityRequested_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    # Market Share
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Find Nodes With Total Market Share Calibration Data
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    mao(node_info.searchForParam_anyYears(model.graph, "calibration_market_share_total"))
+    mao(sorted(list(set([a['node'] for a in node_info.searchForParam_anyYears(model.graph, "calibration_market_share_total")]))))
     return
 
 
@@ -312,6 +410,89 @@ def _():
 
     <span style="color:red;">TBD</span>
     """)
+    return
+
+
+@app.cell
+def _(model):
+    market_share.get_marketShareTotal(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    market_share.get_marketShareTotal_calibration(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    plot_ms(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    plot_ms_line(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    # FICs
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Find Nodes With FIC Values Defined in Technologies
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    mao(node_info.searchForParam_anyYears(model.graph, "fic"))
+    mao(sorted(list(set([a['node'] for a in node_info.searchForParam_anyYears(model.graph, "fic")]))))
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Get Node FICs For Technologies
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    FICs.get_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    # Optimization
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Optimize FICs To Fit Market Share
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    res = optimize_ms_via_fics(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
     return
 
 
