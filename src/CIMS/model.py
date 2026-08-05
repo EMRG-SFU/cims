@@ -12,7 +12,7 @@ from .utils.model_description import column_list as COL
 from .utils.parameter import construction, list as PARAM, setters, query as param_query
 from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
 from .utils.model_description.columns_builder import build_col_list
-from .readers.helpers import collect_base_paths, collect_update_paths, collect_all_paths, filter_model_data
+from .readers.helpers import collect_base_files, collect_update_files, collect_files, filter_model_data, print_file_health
 
 from . import lcc_calculation
 from . import stock_allocation
@@ -81,16 +81,17 @@ class Model:
         self._col_list = col_list
 
         print("  Collecting Base & Update CSV paths...")
-        base_paths, update_paths = collect_all_paths(
+        base_paths, update_paths, self._file_health_rows = collect_files(
             model_path=model_path,
             base_model=base_model,
             region_list=region_list,
+            sector_list=sector_list,
             update_files=update_files,
         )
 
         print("  Reading & filtering model CSVs...")
-        base_df = filter_model_data(base_paths, sector_list, year_list, col_list)
-        update_df = filter_model_data(update_paths, sector_list, year_list, col_list)
+        base_df = filter_model_data(base_paths, region_list, sector_list, year_list, col_list)
+        update_df = filter_model_data(update_paths, region_list, sector_list, year_list, col_list)
 
         print("  Instantiating ModelValidator...")
         self.validator = ModelValidator(
@@ -160,8 +161,12 @@ class Model:
 
         print(f"=== Model instantiation complete (completed in {time.time() - start_init:.2f}s) ===")
 
-    def validate_files(self):            
+    def validate_files(self):
         self.validator.validate()
+
+    def print_file_health(self, verbose: bool = True):
+        """Reprint the file health report from instantiation; verbose=True for the full per-entry table."""
+        print_file_health(self._file_health_rows, verbose=verbose)
         
     def validate_graph(self):
         self.validator.validate_graph()
@@ -189,8 +194,10 @@ class Model:
                              already been run. To prevent inconsistencies, \
                              this update has not been done.")
 
-        update_paths, _, _ = collect_update_paths(update_files, self._region_list)
-        update_df = filter_model_data(update_paths, self._sector_list, self._year_list, self._col_list)
+        update_paths, _ = collect_update_files(update_files)
+        update_df = filter_model_data(
+            update_paths, self._region_list, self._sector_list, self._year_list, self._col_list
+        )
         scenario_reader = ModelReader(model_df=update_df)
 
         # Make a copy, so we don't alter self
