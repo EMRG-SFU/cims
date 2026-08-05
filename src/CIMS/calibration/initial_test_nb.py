@@ -31,12 +31,14 @@ with app.setup:
 
     from Calibration import bind_data
 
-    from Calibration.cal_model import Cal_Model, find_calibration_nodes
+    #from Calibration.cal_model import Cal_Model, find_calibration_nodes
 
     from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
 
     from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
     #from Calibration.Optimization_objectiveFunctions import make_objective_localNode
+
+    from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
     import Calibration.Data.node_info as node_info
     import Calibration.Data.parameter_values as parameter_values
@@ -56,7 +58,6 @@ with app.setup:
 
     import Calibration.utility_functions as UF
 
-    from Calibration.CIMS_Functions import aggregation_traversal
     import Calibration.CIMS_Functions as CIMS_Functions
 
 
@@ -376,6 +377,12 @@ def _(model):
 
 @app.cell
 def _(model):
+    requestedQuantities.get_quantityRequested(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
     requestedQuantities.get_quantityRequested_calibration(model, nodeName="CIMS.CAN.AB.Residential")
     return
 
@@ -493,6 +500,12 @@ def _():
 @app.cell
 def _(model):
     res = optimize_ms_via_fics(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    aggregation_traversal(model)
     return
 
 
