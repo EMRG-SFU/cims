@@ -278,6 +278,18 @@ def searchForParam_anyYears(gr, paramRE, returnDict=True, *args, **kwargs):
     return( outList )
 
 
+def find_nodes_with_parameter(model, paramRE):
+    return(
+        sorted(
+            list(
+                set(
+                    [a['node'] for a in searchForParam_anyYears(model.graph, paramRE)]
+                    )
+                )
+            )
+        )
+
+
 ##################################
 ##################################
 #  Parameter Access
