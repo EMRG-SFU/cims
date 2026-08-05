@@ -41,6 +41,14 @@ def get_marketShareTotal_calibration(model, nodeName, key="calibration_market_sh
     yearTechCalMS_pivot = yearTechCalMS.pivot(on="year", values="value")
     return yearTechCalMS_pivot
 
+
+def set_marketShareTotal_calibration_withDataFrame(model, nodeName, dataFrame, key="calibration_market_share_total"):
+    """
+
+    """
+    pass 
+
+
 def get_marketShareTotal(model, nodeName, key="market_share_total"):
 
     nodeDict = model.graph.nodes().get(nodeName)

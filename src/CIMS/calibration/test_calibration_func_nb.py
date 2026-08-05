@@ -364,6 +364,12 @@ def _(model):
     return
 
 
+@app.cell
+def _(model):
+    FICs.tweak_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
