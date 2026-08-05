@@ -1,5 +1,4 @@
 technology: "Std"
-branch: ".commercial.product.building_shell.educational_marine"
 unit: "m2"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1.265168078
-        unit: "m2"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

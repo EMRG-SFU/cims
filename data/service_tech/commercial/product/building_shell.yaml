@@ -222,3 +222,25 @@ parameter:
         by_region: true
         source: "nrcan_ceud"
         note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.accommodation_and_food_services_cold"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".commercial.product.building_shell.accommodation_and_food_services_marine"
+        value_type: "csv"
+        value: "data/processed_data/activity_data/commercial.csv"
+        unit: "m2"
+        by_year: true
+        by_region: true
+        source: "nrcan_ceud"
+        note:

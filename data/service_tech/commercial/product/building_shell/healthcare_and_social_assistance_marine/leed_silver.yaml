@@ -1,5 +1,4 @@
 technology: "LEED Silver"
-branch: ".commercial.product.building_shell.healthcare_and_social_assistance_marine"
 unit: "m2"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 0.568226514
-        unit: "m2"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
