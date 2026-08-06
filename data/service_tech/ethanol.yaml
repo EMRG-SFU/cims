@@ -6,7 +6,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: "sector"
         unit:
         by_year: 
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: "true"
         unit:
         by_year: 
@@ -28,7 +28,7 @@ parameter:
         context:
         sub_context:
         target: ".ethanol.product"
-        value_type:
+        value_type: "fixed"
         value: 1
         unit: "gj"
         by_year: 
@@ -39,7 +39,7 @@ parameter:
         context: "co2"
         sub_context: "combustion"
         target:
-        value_type:
+        value_type: "fixed"
         value: "processed_data/emissions/emissions_factors_cims.csv" 
         unit: "tco2"
         by_year: 
@@ -50,7 +50,7 @@ parameter:
         context: "co2"
         sub_context: "combustion"
         target:
-        value_type:
+        value_type: "fixed"
         value: "processed_data/emissions/emissions_factors_cims.csv"
         unit: "tco2"
         by_year: 
@@ -61,7 +61,7 @@ parameter:
         context: "ch4"
         sub_context: "combustion"
         target:
-        value_type:
+        value_type: "fixed"
         value: "processed_data/emissions/emissions_factors_cims.csv"
         unit: "tch4"
         by_year: 
@@ -72,7 +72,7 @@ parameter:
         context: "n2o"
         sub_context: "combustion"
         target:
-        value_type:
+        value_type: "fixed"
         value: "processed_data/emissions/emissions_factors_cims.csv"
         unit: "tn2o"
         by_year: 

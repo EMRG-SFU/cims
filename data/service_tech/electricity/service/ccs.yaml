@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: "fixed_ratio"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target: ".electricity.service.ccs.ccs_coal"
-        value_type: 
+        value_type: "fixed"
         value: 1
         unit: "tco2"
         by_year:
@@ -28,7 +28,7 @@ parameter:
         context:
         sub_context:
         target: ".electricity.service.ccs.ccs_natural_gas"
-        value_type: 
+        value_type: "fixed"
         value: 1
         unit: "tco2"
         by_year:
@@ -39,7 +39,7 @@ parameter:
         context:
         sub_context:
         target: ".electricity.service.ccs.ccs_biomass"
-        value_type: 
+        value_type: "fixed"
         value: 1
         unit: "tco2"
         by_year:

@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: "fixed_ratio"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target: ".forestry.product.transport"
-        value_type:
+        value_type: "fixed"
         value: 1
         unit: "tco2e"
         by_year:

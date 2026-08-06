@@ -1,4 +1,4 @@
-﻿service: "methane_blend"
+service: "methane_blend"
 unit: "gj"
 note:
 parameter:
@@ -6,7 +6,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: "tech_compete"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: 15
         unit: 
         by_year:

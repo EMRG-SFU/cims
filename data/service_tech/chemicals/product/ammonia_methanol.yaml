@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: "fixed_ratio"
         unit:
         by_year:
@@ -50,7 +50,7 @@ parameter:
         context:
         sub_context:
         target: ".general_services.hvac"
-        value_type: 
+        value_type: "fixed"
         value: 0.02
         unit: "gj"
         by_year:
@@ -61,7 +61,7 @@ parameter:
         context:
         sub_context:
         target: ".general_services.lighting"
-        value_type: 
+        value_type: "fixed"
         value: 0.05
         unit: "gj"
         by_year:

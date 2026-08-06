@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: "sector"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target: ".chemicals.product"
-        value_type:
+        value_type: "fixed"
         value: 1
         unit: "tonne"
         by_year: 

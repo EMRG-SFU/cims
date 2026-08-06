@@ -1,0 +1,8 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,ab,,0.94
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,bc,,0.98
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,nl,,1
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,ns,,1
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,on,,0.860003004
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,qc,,0.999966
+service_request,,,.industrial_minerals.product.cement.portland_cement.finish_grinding,tonne,sk,,0.999966

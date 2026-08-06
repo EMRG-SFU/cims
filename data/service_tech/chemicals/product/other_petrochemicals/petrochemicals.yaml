@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target: 
-        value_type: 
+        value_type: "fixed"
         value: "fixed_ratio"
         unit:
         by_year:

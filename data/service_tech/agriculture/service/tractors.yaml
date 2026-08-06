@@ -7,7 +7,7 @@ parameter:
         context: "tech_compete"
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value:
         unit:
         by_year:
@@ -18,7 +18,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: 30
         unit: "%"
         by_year:
@@ -29,7 +29,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: 30
         unit: "%"
         by_year:
@@ -40,7 +40,7 @@ parameter:
         context:
         sub_context:
         target: 
-        value_type: 
+        value_type: "fixed"
         value: 15
         unit: 
         by_year:

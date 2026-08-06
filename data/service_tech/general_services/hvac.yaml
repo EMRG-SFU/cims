@@ -6,7 +6,7 @@ parameter:
         context: 
         sub_context:
         target:
-        value_type: 
+        value_type: "fixed"
         value: "fixed_ratio"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context: 
         sub_context:
         target: ".general_services.hvac.space_cooling"
-        value_type: 
+        value_type: "fixed"
         value: "data/service_tech/general_services/hvac.csv"
         unit: "gj"
         by_year:
@@ -29,7 +29,7 @@ parameter:
         context: 
         sub_context:
         target: ".general_services.hvac.space_heating"
-        value_type: 
+        value_type: "fixed"
         value: "data/service_tech/general_services/hvac.csv"
         unit: "gj"
         by_year:

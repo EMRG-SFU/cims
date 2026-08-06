@@ -1,4 +1,4 @@
-﻿service: "educational_cold"
+service: "educational_cold"
 unit: "m2"
 note:
 parameter:
@@ -6,7 +6,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: "tech_compete"
         unit:
         by_year:
@@ -17,7 +17,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: 40
         unit: "%"
         by_year:
@@ -28,7 +28,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: 40
         unit: "%"
         by_year:
@@ -39,7 +39,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type:
+        value_type: "fixed"
         value: 10
         unit: 
         by_year:
