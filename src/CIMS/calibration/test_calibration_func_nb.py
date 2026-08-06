@@ -316,6 +316,32 @@ def _(model):
     return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Tweak Node Calibration Market Share Data
+
+    Manually tweak the `calibration_market_share_total`. Update will fail unless the market shares sum to 1.0 within a given year.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    market_share.tweak_marketShareTotal_calibration(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", doNumFormat=False)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Plot Node Market Shares
+
+    Model Data and Calibration Counterfactual
+    """)
+    return
+
+
 @app.cell
 def _(model):
     plot_ms(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
