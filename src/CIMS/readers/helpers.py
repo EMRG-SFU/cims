@@ -8,10 +8,12 @@ import pandas as pd
 import polars as pl
 
 from ..utils.model_description import column_list as COL
+from ..utils.parameter import list as PARAM
 
 COL_NAME = "File Name"
 COL_FOUND = "Files Found"
 COL_UNREADABLE = "Unreadable"
+REGION_COMPETITION_TYPE = "Region"
 
 
 def _glob_csvs(directory: Path) -> List[Path]:
@@ -254,6 +256,33 @@ def collect_files(
     return base_found, update_found, health_rows
 
 
+def _excluded_region_branches(paths: Iterable[str], regions: List[str]) -> set:
+    """Find branches that represent an excluded administrative region (e.g. a province
+    not in region_list), so its structural parent's unconditional request to it can be
+    dropped along with everything else about that region (see filter_model_data).
+
+    A branch is a region node if it has a competition row with Value == "Region"; its
+    own Region column value is the region it represents.
+    """
+    region_of_branch = {}
+    for path in paths:
+        if not _scannable(path):
+            continue
+        try:
+            df = (
+                pl.scan_csv(path, infer_schema_length=0)
+                .filter(pl.col(COL.parameter) == PARAM.competition_type)
+                .select(COL.branch, COL.region, COL.value)
+                .collect()
+            )
+        except Exception:
+            continue
+        region_rows = df.filter(pl.col(COL.value) == REGION_COMPETITION_TYPE)
+        region_of_branch.update(zip(region_rows[COL.branch].to_list(), region_rows[COL.region].to_list()))
+
+    return {branch for branch, region in region_of_branch.items() if region not in regions}
+
+
 def filter_model_data(
     paths: Iterable[str],
     region_list: Iterable,
@@ -265,19 +294,20 @@ def filter_model_data(
 
     Region, Sector, and Year are filtered independently: a row is dropped only if one of
     its own values is non-null and not in the requested list. A null value in a column
-    always passes that column's filter, but doesn't exempt the row from the others.
-    An empty/falsy region_list or sector_list applies no filtering for that column.
-
-    Region files on disk carry some duplicated rows by design (e.g. national-level
-    defaults inlined into every per-region file), so exact-duplicate rows are dropped
-    after filtering.
-
-    Unreadable files are silently skipped here — they're already reported by
+    always passes that column's filter, but doesn't exempt the row from the others. An
+    empty/falsy region_list or sector_list applies no filtering for that column. Exact
+    duplicate rows (e.g. national defaults inlined into every per-region file) are dropped
+    after filtering. Unreadable files are silently skipped — already reported by
     print_file_health/collect_files at collection time.
+
+    See _excluded_region_branches for the one exception to per-column independence: a
+    structural parent's unconditional request to an excluded region node is also dropped.
     """
     year_strs = [str(y) for y in year_list]
     sectors = list(sector_list) if sector_list else None
     regions = list(region_list) if region_list else None
+
+    excluded_region_branches = list(_excluded_region_branches(paths, regions)) if regions else []
 
     lazy_frames = []
     for path in paths:
@@ -289,6 +319,13 @@ def filter_model_data(
         if sectors:
             lf = lf.filter(pl.col(COL.sector).is_in(sectors) | pl.col(COL.sector).is_null())
         lf = lf.filter(pl.col(COL.year).is_in(year_strs) | pl.col(COL.year).is_null())
+        if excluded_region_branches:
+            is_structural_request_to_excluded_region = (
+                (pl.col(COL.parameter) == PARAM.service_request)
+                & pl.col(COL.target).is_in(excluded_region_branches)
+                & (pl.col(COL.branch) == pl.col(COL.target).str.replace(r"\.[^.]+$", ""))
+            )
+            lf = lf.filter(~is_structural_request_to_excluded_region)
         lazy_frames.append(lf)
 
     if not lazy_frames:
