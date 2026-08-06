@@ -1,5 +1,4 @@
 technology: "Primary Crushing"
-branch: ".coal_mining.product.size_reduced_product.primary_crushing"
 unit: "kt"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 70000
-        unit: "kt"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
