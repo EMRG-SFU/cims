@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.1"
+__generated_with = "0.21.1"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -67,11 +67,6 @@ def _():
         'agriculture',
         'forestry',
         ]
-    if sector_req:
-        if model_path not in update_files:
-            update_files[model_path] = []
-        update_files[model_path].extend(sector_req)
-
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
@@ -80,10 +75,15 @@ def _():
         'FIC', # fixed intangible cost; primarily used for calibration
         'market share limits', # use of limits should be minimised
         ]
-    if model_req:
-        if model_path not in update_files:
-            update_files[model_path] = []
-        update_files[model_path].extend(model_req)
+
+    # Each entry below is (folder, [file/subfolder names]); merging just means
+    # appending the list onto update_files[folder], creating it if needed.
+    for _path, _files in [
+        (model_path, sector_req),
+        (model_path, model_req),
+    ]:
+        if _files:
+            update_files.setdefault(_path, []).extend(_files)
     return base_model, default_path, list_path, model_path, update_files
 
 
@@ -95,8 +95,16 @@ def _():
     return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Region, year, and sector selection
+    """)
+    return
+
+
 @app.cell
-def _(model_path, update_files):
+def _():
     # Only uncommented regions below will be run in the simulation
     region_list = [
         'CIMS', # Required
@@ -132,7 +140,7 @@ def _(model_path, update_files):
     # Uncomment individual sectors to calibrate one at a time
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
-        'Coal Mining'
+        'Coal Mining',
         # 'Natural Gas', # Must run all regions due to Natural Gas Market
         # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
@@ -156,140 +164,156 @@ def _(model_path, update_files):
         'Agriculture',
         'Forestry',
     ]
+    return region_list, sector_list, year_list
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Update file specifications
+    """)
+    return
+
+
+@app.cell
+def _(model_path, update_files):
     ### Optional model folder files (included in data/model_inputs/model/)
     model_optional = [
         'exogenous prices',  # needed for correct calibration of historical years
         # 'exogenous demand',  # use this file when calibrating endogenous supply sectors
         ]
-    if model_optional:
-        if model_path not in update_files:
-            update_files[model_path] = []
-        update_files[model_path].extend(model_optional)
 
 
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
         # 'coal mining',   # <-- add this
-    ### Economy
+        ### Economy
         'Ref_carbon tax',
         'Ref_OBPS_Fed',
-    ### Coal Mining
-    ### Natural Gas Production
-    ### Petroleum Crude
-    ### Mining
-    ### Electricity
+        ### Coal Mining
+        ### Natural Gas Production
+        ### Petroleum Crude
+        ### Mining
+        ### Electricity
         'Ref_coal phase out',
         'Ref_nuclear ban',
         'Ref_nuclear decommission',
         'Ref_clean electricity',
         'Ref_CER',
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
+        ### Biodiesel
+        ### Ethanol
+        ### Hydrogen
+        ### Petroleum Refining
+        ### Industrial Minerals
+        ### Iron and Steel
+        ### Metal Smelting
+        ### Chemical Products
+        ### Pulp and Paper
+        ### Light Industrial
+        ### Residential
         'Ref_incandescent phase out',
-    ### Commercial
-    ### Transportation Personal
+        ### Commercial
+        ### Transportation Personal
         'Ref_LDV ZEV_Federal', #include before Prov version
         'Ref_LDV ZEV_Prov',
         'Ref_renewable fuel content_Fed', #include before Prov version
         'Ref_renewable fuel content_Prov',
-    ### Transportation Freight
-    ### Waste
+        ### Transportation Freight
+        ### Waste
         'Ref_waste methane large sites',
-    ### Agriculture
+        ### Agriculture
         ]
-    if ref_policies:
-        if ref_path not in update_files:
-            update_files[ref_path] = []
-        update_files[ref_path].extend(ref_policies)
 
 
     # These files turn off existing Reference policies starting in the first model year
     # Off files must be updated annually to reflect the last common year between a set of scenarios
     turn_off_path = 'data/model_inputs/policies/turn off'
     turn_off_policies = [
-    ### Economy
+        ### Economy
         # 'Off_OBPS_Fed',
-    ### Coal Mining
-    ### Natural Gas Production
-    ### Petroleum Crude
-    ### Mining
-    ### Electricity
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
-    ### Commercial
-    ### Transportation Personal
-    ### Transportation Freight
-    ### Waste
-    ### Agriculture
+        ### Coal Mining
+        ### Natural Gas Production
+        ### Petroleum Crude
+        ### Mining
+        ### Electricity
+        ### Biodiesel
+        ### Ethanol
+        ### Hydrogen
+        ### Petroleum Refining
+        ### Industrial Minerals
+        ### Iron and Steel
+        ### Metal Smelting
+        ### Chemical Products
+        ### Pulp and Paper
+        ### Light Industrial
+        ### Residential
+        ### Commercial
+        ### Transportation Personal
+        ### Transportation Freight
+        ### Waste
+        ### Agriculture
         ]
-    if turn_off_policies:
-        if turn_off_path not in update_files:
-            update_files[turn_off_path] = []
-        update_files[turn_off_path].extend(turn_off_policies)
 
 
     ### Optional scenario update files
     scenario_path = 'data/model_inputs/policies/net zero'    # Change this path as necessary based on current scenario
     scenario_policies = [
-    ### Economy
+        ### Economy
         # 'NZ_carbon tax',
-    ### Coal Mining
-    ### Natural Gas Production
+        ### Coal Mining
+        ### Natural Gas Production
         # 'NZ_natural gas',
-    ### Petroleum Crude
+        ### Petroleum Crude
         # 'NZ_petroleum crude',
-    ### Mining
-    ### Electricity
+        ### Mining
+        ### Electricity
         # 'NZ_electricity',
-    ### Biodiesel
-    ### Ethanol
-    ### Hydrogen
-    ### Petroleum Refining
-    ### Industrial Minerals
-    ### Iron and Steel
-    ### Metal Smelting
-    ### Chemical Products
-    ### Pulp and Paper
-    ### Light Industrial
-    ### Residential
-    ### Commercial
-    ### Transportation Personal
-    ### Transportation Freight
-    ### Waste
-    ### Agriculture
+        ### Biodiesel
+        ### Ethanol
+        ### Hydrogen
+        ### Petroleum Refining
+        ### Industrial Minerals
+        ### Iron and Steel
+        ### Metal Smelting
+        ### Chemical Products
+        ### Pulp and Paper
+        ### Light Industrial
+        ### Residential
+        ### Commercial
+        ### Transportation Personal
+        ### Transportation Freight
+        ### Waste
+        ### Agriculture
         ]
-    if scenario_policies:
-        if scenario_path not in update_files:
-            update_files[scenario_path] = []
-        update_files[scenario_path].extend(scenario_policies)
+
+    # Each entry below is (folder, [file/subfolder names]); merging just means
+    # appending the list onto update_files[folder], creating it if needed.
+    for _path, _files in [
+        (model_path, model_optional),
+        (ref_path, ref_policies),
+        (turn_off_path, turn_off_policies),
+        (scenario_path, scenario_policies),
+    ]:
+        if _files:
+            update_files.setdefault(_path, []).extend(_files)
+    return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Scenario name
+    """)
+    return
 
+
+@app.cell
+def _():
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
     scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
-    return region_list, scenario_name, sector_list, year_list
+    return (scenario_name,)
 
 
 @app.cell(hide_code=True)
@@ -335,7 +359,8 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['unrequested_nodes']
+    model.validator.warnings['undefined_nodes']
+    # list(model.validator.warnings['undefined_nodes'].keys())
     return
 
 
@@ -374,10 +399,10 @@ def _(model, scenario_name):
 def _(model, results_path):
     #################### Output Results ###########################
     results_df = CIMS.log_model(
-       model=model, 
+       model=model,
        output_file = f"{results_path}/results_general.csv",
        parameter_file="results/results_general.txt",
-       ensure_dir=True   
+       ensure_dir=True
     )
     return
 
@@ -386,7 +411,7 @@ def _(model, results_path):
 def _(model, results_path):
     #################### Export Tech Results ####################
     tech_results_df = CIMS.log_model(
-       model=model, 
+       model=model,
        output_file=f'{results_path}/results_tech.csv',
        parameter_file = "results/results_tech.txt",
        ensure_dir=True
