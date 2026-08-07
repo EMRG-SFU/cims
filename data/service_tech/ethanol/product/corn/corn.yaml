@@ -1,5 +1,4 @@
 technology: "Corn"
-branch: ".ethanol.product.corn"
 unit: "GJ"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 5617551
-        unit: "GJ"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".steam"
+        target: "ethanol.service.steam"
         value_type: "fixed"
         value: 0.503174103
         unit: "GJ"
