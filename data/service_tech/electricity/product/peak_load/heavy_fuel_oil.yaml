@@ -1,5 +1,4 @@
 technology: "Heavy Fuel Oil"
-branch: ".electricity.product.peak_load"
 unit: "MWh"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/electricity/product/peak_load/heavy_fuel_oil.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "heavy_fuel_oil.csv"
+        source: "NREL 2020 ATB"
         note: "Updated annually - not up-to-date"
     market_share_new_max:
         context:
@@ -73,12 +72,12 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 6956
         unit: "MWh"
-        by_year: true
-        by_region: true
-        source: "heavy_fuel_oil.csv"
+        by_year: 
+        by_region: 
+        source: "NREL 2020 ATB"
         note: "Updated annually - not up-to-date"
     currency:
         context:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 7.44
         unit: "$"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Heavy Fuel Oil"
+        target: ".common_energy.heavy_fuel_oil"
         value_type: "fixed"
         value: 8.7569648
         unit: "GJ"
@@ -155,7 +154,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:

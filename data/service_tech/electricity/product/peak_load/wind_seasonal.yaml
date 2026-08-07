@@ -1,5 +1,4 @@
 technology: "Wind + Seasonal"
-branch: ".electricity.product.peak_load"
 unit: "MWh"
 note:
 parameter:
@@ -73,12 +72,12 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 64927
         unit: "MWh"
-        by_year: true
-        by_region: true
-        source: "wind_seasonal.csv"
+        by_year: 
+        by_region: 
+        source: "NREL 2020 ATB"
         note: "Updated annually - not up-to-date"
     currency:
         context:
@@ -144,7 +143,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:
