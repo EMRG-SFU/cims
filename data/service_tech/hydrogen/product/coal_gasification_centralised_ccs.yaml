@@ -1,5 +1,4 @@
 technology: "Coal gasification_centralised_CCS"
-branch: ".hydrogen.product"
 unit: "kg"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 203320476
-        unit: "kg"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -95,12 +94,12 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 1656243074.66196
         unit: "$"
-        by_year: false
-        by_region: true
-        source: "coal_gasification_centralised_ccs.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note: "NREL H2A model 2018"
     capital_recovery:
         context:
@@ -117,17 +116,17 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 122829400.428146
         unit: "$"
-        by_year: false
-        by_region: true
-        source: "coal_gasification_centralised_ccs.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note: "NREL H2A model 2018"
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
+        target: ".common_energy.thermal_coal"
         value_type: "fixed"
         value: 0.22046482848085
         unit: "GJ"

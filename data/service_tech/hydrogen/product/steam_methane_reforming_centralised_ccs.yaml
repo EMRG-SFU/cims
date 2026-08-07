@@ -1,5 +1,4 @@
 technology: "Steam methane reforming_centralised_CCS"
-branch: ".hydrogen.product"
 unit: "kg"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 124628629.5
-        unit: "kg"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -95,12 +94,12 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "csv"
-        value:
+        value_type: "fixed"
+        value: 278551885.886208
         unit: "$"
-        by_year: false
-        by_region: true
-        source: "steam_methane_reforming_centralised_ccs.csv"
+        by_year: 
+        by_region: 
+        source: "JCIMS"
         note: "NREL H2A model 2018"
     capital_recovery:
         context:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Natural Gas"
+        target: ".common_energy.natural_gas"
         value_type: "fixed"
         value: 0.164369
         unit: "GJ"
