@@ -309,6 +309,39 @@ def _(model_path, update_files):
             update_files[scenario_path] = []
         update_files[scenario_path].extend(scenario_policies)
 
+    ### Calibration Counterfactual Files
+    calibration_path = 'data/calibration'
+    calibration_data = [
+        'agriculture',
+        'biodiesel',
+        'chemical_products',
+        'coal_mining',
+        'commercial',
+        'construction',
+        'electricity',
+        'ethanol',
+        'forestry',
+        'hydrogen',
+        'industrial_minerals',
+        'iron_and_steel',
+        'light_industrial',
+        'metal_smelting',
+        'mining',
+        'natural_gas',
+        'petroleum_crude',
+        'petroleum_refining',
+        'pulp_and_paper',
+        'residential',
+        'transportation_freight',
+        'transportation_passenger',
+        'waste'
+    ]
+    if calibration_data:
+        if calibration_path not in update_files:
+            update_files[calibration_path] = []
+        update_files[calibration_path].extend(calibration_data)
+
+
 
 
     ### Scenario Name
