@@ -1,5 +1,4 @@
 technology: "Solar PV"
-branch: ".electricity.product.base_load"
 unit: "MWh"
 note:
 parameter:

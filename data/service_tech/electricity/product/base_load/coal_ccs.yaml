@@ -1,5 +1,4 @@
 technology: "Coal CCS"
-branch: ".electricity.product.base_load"
 unit: "MWh"
 note:
 parameter:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 5.88
         unit: "$"
@@ -138,13 +137,13 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
+        target: ".common_energy.thermal_coal"
         value_type: "csv"
-        value:
+        value: "data/service_tech/electricity/product/base_load/coal_ccs.csv"
         unit: "GJ"
         by_year: true
         by_region: true
-        source: "coal_ccs.csv"
+        source: "CEEDC"
         note: "Fuel use/generation"
     service_request:
         context:
@@ -166,7 +165,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:

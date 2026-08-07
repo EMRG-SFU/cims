@@ -1,5 +1,4 @@
 technology: "Nuclear SMR"
-branch: ".electricity.product.base_load"
 unit: "MWh"
 note:
 parameter:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 3.93
         unit: "$"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Uranium"
+        target: ".common_energy.uranium"
         value_type: "fixed"
         value: 11.03588576
         unit: "GJ"
@@ -155,7 +154,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:

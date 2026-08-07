@@ -1,5 +1,4 @@
 technology: "Wind Onshore"
-branch: ".electricity.product.base_load"
 unit: "MWh"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/electricity/product/base_load/wind_onshore.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "wind_onshore.csv"
+        source: "NREL 2020 ATB"
         note: "Updated annually - not up-to-date"
     market_share_new_max:
         context:

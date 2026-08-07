@@ -1,5 +1,4 @@
 technology: "Biomass CCS"
-branch: ".electricity.product.base_load"
 unit: "MWh"
 note:
 parameter:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 6.31
         unit: "$"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Solid Biomass"
+        target: ".common_energy.solid_biomass"
         value_type: "fixed"
         value: 14.243256
         unit: "GJ"
@@ -166,7 +165,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:
