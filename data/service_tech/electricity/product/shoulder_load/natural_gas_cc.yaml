@@ -1,5 +1,4 @@
 technology: "Natural Gas CC"
-branch: ".electricity.product.shoulder_load"
 unit: "MWh"
 note:
 parameter:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 2.44
         unit: "$"
@@ -138,13 +137,13 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Natural Gas"
+        target: ".common_energy.ccs_natural_gas"
         value_type: "fixed"
         value: 8.935719194
         unit: "GJ"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     service_request:
         context:
@@ -155,7 +154,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:

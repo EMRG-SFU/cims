@@ -1,5 +1,4 @@
 technology: "Thermal Coal"
-branch: ".electricity.product.shoulder_load"
 unit: "MWh"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/electricity/product/shoulder_load/thermal_coal.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "thermal_coal.csv"
+        source: "NREL 2020 ATB"
         note: "Updated annually - not up-to-date"
     market_share_new_max:
         context:
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.VOM"
+        target: ".common_energy.vom"
         value_type: "fixed"
         value: 5.88
         unit: "$"
@@ -138,13 +137,13 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
-        value_type: "csv"
-        value:
+        target: ".common_energy.thermal_coal"
+        value_type: "fixed"
+        value: 11.46
         unit: "GJ"
-        by_year: true
-        by_region: true
-        source: "thermal_coal.csv"
+        by_year: 
+        by_region: 
+        source: "NREL 2020 ATB"
         note: "Fuel use/generation"
     service_request:
         context:
@@ -155,7 +154,7 @@ parameter:
         unit: "unit"
         by_year:
         by_region:
-        source: "JCIMS"
+        source: "NREL 2020 ATB"
         note:
     emissions:
         context:
