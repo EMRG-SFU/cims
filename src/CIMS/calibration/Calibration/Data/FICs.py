@@ -23,7 +23,21 @@ def get_FICs(model, nodeName, key="fic"):
     )
     return pl.DataFrame(retDict)
 
-def set_FICs_withDataframe(model, nodeName, dataFrame, key="fic"):
+def get_FICs_transpose(model, nodeName, key="fic"):
+
+    allYears = node_info.list_years(model.graph, nodeName)
+    allTechs = node_info.list_techs(model.graph, nodeName)
+    retDict = {"year": allYears}
+    retDict.update(
+            {tv:[model.get_param(key, nodeName, year=yv, tech=tv) for yv in allYears] for tv in allTechs}
+    )
+    return pl.DataFrame(retDict)
+
+###################
+###################
+###################
+
+def set_FICs_withDataframe(model, nodeName, dataFrame, key="fic", transpose=False):
     """
     Here we expect `dataFrame` to have a technology column named "tech", and the remaining columns should
     have year headers (as strings). The table should be full of numerical values. We get the service node
@@ -34,7 +48,10 @@ def set_FICs_withDataframe(model, nodeName, dataFrame, key="fic"):
     below.
     """
 
-    dfu = dataFrame.unpivot(index="tech", variable_name="year", value_name="value")
+    if transpose:
+        dfu = dataFrame.unpivot(index="year", variable_name="tech", value_name="value")
+    else:
+        dfu = dataFrame.unpivot(index="tech", variable_name="year", value_name="value")
 
     # Redirect the rather copious output that `set_param_calibration` produces to dev/null, just in this
     # case. It really clutters up the calibration Marimo notebooks.
@@ -47,10 +64,14 @@ def set_FICs_withDataframe(model, nodeName, dataFrame, key="fic"):
     return True
 
 
-def tweak_FICs(model, nodeName, key='fic'):
+def tweak_FICs(model, nodeName, key='fic', transpose=False):
     
-    ficFrame = get_FICs(model, nodeName, key)
+    if transpose:
+        ficFrame = get_FICs_transpose(model, nodeName, key)
+    else:
+        ficFrame = get_FICs(model, nodeName, key)
+
     return(
-        mo.ui.data_editor(ficFrame).form(on_change = lambda df: set_FICs_withDataframe(model, nodeName, df))
+        mo.ui.data_editor(ficFrame).form(on_change = lambda df: set_FICs_withDataframe(model, nodeName, df, transpose = transpose))
     )
 
