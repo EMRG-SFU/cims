@@ -1,5 +1,4 @@
 technology: "Rotary Coal with CCS"
-branch: ".industrial_minerals.product.lime.kilns"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 340000
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -127,7 +126,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
+        target: ".common_energy.thermal_coal"
         value_type: "fixed"
         value: 5.94
         unit: "GJ"
