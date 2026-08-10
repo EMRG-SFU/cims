@@ -101,7 +101,9 @@ def _update_year_dict(existing_year_dict, update_data):
         if not update_ok:
             continue
 
-        if param == PARAM.service_request:
+        if param == "calibration_quantity_requested":
+            year_dict[param].update({target: value_dict})
+        elif param == PARAM.service_request:
             year_dict[param].update({target: value_dict})
         elif param == PARAM.multiplier_price:
             year_dict[param].update({target: value_dict})
