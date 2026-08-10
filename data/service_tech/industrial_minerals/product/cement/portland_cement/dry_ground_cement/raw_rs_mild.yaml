@@ -1,5 +1,4 @@
 technology: "Raw RS Mild"
-branch: ".industrial_minerals.product.cement.portland_cement.dry_ground_cement"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 750000
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

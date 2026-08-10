@@ -1,5 +1,4 @@
 technology: "New preheat and precalcining"
-branch: ".industrial_minerals.product.cement.portland_cement.clinker.dry_process_rotary_kiln"
 unit: "tonne"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value: "data/service_tech/industrial_minerals/product/cement/portland_cement/clinker/dry_process_rotary_kiln/new_preheat_and_precalcining.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "new_preheat_and_precalcining.csv"
+        source: "JCIMS"
         note:
     market_share_new_max:
         context:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 620000
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

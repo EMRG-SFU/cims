@@ -1,5 +1,4 @@
 technology: "Fluidized bed low sulphur coal"
-branch: ".industrial_minerals.product.cement.portland_cement.clinker.fluidized_bed"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 620000
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: "CIMS.Generic Fuels.Thermal Coal"
+        target: ".common_energy.thermal_coal"
         value_type: "fixed"
         value: 4.76
         unit: "GJ"
