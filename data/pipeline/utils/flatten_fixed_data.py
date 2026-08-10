@@ -269,6 +269,17 @@ def process_file(input_path, output_path, year_min, year_max, target_start, targ
                         # row only for each year whose value differs from that default.
                         counts = Counter(value for _, value in points)
                         max_count = max(counts.values())
+
+                        # No value repeats -- there's no real "default" to collapse
+                        # to (every year's value is distinct), so keep every row
+                        # with its explicit Year instead of arbitrarily blanking
+                        # the earliest one.
+                        if max_count == 1:
+                            for year, value in points:
+                                writer.writerow([row[idx] for idx in non_year_indexes] + [year, value])
+                                rows_written += 1
+                            continue
+
                         default_value = next(value for _, value in points if counts[value] == max_count)
 
                         writer.writerow([row[idx] for idx in non_year_indexes] + ["", default_value])

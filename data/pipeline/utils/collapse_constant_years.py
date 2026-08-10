@@ -43,6 +43,14 @@ def _collapse_literal_varying(
         values = sub[value_col].to_list()
         counts = Counter(values)
         max_count = max(counts.values())
+
+        # No value repeats -- there's no real "default" to collapse to, so
+        # keep every row with its explicit Year (see the numeric case above).
+        if max_count == 1:
+            for row in sub.iter_rows(named=True):
+                out_rows.append({c: row[c] for c in out_cols})
+            continue
+
         default_value = next(v for v in values if counts[v] == max_count)
 
         base_row = sub.row(0, named=True)  # smallest _collapse_pos in the group
@@ -94,6 +102,15 @@ def _collapse_numeric_varying(
         cmp_values = sub["_cmp"].to_list()
         counts = Counter(cmp_values)
         max_count = max(counts.values())
+
+        # No value repeats -- there's no real "default" to collapse to (every
+        # year's value is distinct and meaningful), so keep every row with
+        # its explicit Year rather than arbitrarily blanking the first one.
+        if max_count == 1:
+            for row in sub.iter_rows(named=True):
+                out_rows.append({c: row[c] for c in out_cols})
+            continue
+
         default_cmp = next(v for v in cmp_values if counts[v] == max_count)
         default_idx = cmp_values.index(default_cmp)
 
