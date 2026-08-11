@@ -1,0 +1,92 @@
+service: "product"
+unit: "m$_gdp"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.electronics_and_other"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.food_tobacco_and_beverage"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.furniture_printing_and_machinery"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.leather_and_textiles"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.rubber_and_plastics"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.transportation_equipment"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".light_industrial.product.wood_products"
+        value_type: "csv"
+        value: "/data/processed_data/activity_data/light_industrial.csv"
+        unit: "m$_gdp"
+        by_year: true
+        by_region: true
+        source: "statscan"
+        note:

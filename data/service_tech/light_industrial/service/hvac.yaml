@@ -1,0 +1,26 @@
+service: "hvac"
+unit: "gj"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".light_industrial.service.hvac.ventilation_ac"
+        value_type: "fixed"
+        value: 1.0
+        unit: "gj"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
