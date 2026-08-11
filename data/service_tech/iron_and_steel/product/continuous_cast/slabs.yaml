@@ -1,0 +1,92 @@
+service: "slabs"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.casting"
+        value_type: "fixed"
+        value: 1.02
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.cold_rolled"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.pickled_slabs"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.skin_pass"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.molten_steel"
+        value_type: "fixed"
+        value: 1.0
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.service.hvac"
+        value_type: "fixed"
+        value: 0.01
+        unit: "gj"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.service.lighting"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs.csv"
+        unit: "gj"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:

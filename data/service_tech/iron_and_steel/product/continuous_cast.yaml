@@ -1,0 +1,48 @@
+service: "continuous_cast"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.billets"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast.csv"
+        unit: "tonne"
+        by_year: 
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.blooms"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:

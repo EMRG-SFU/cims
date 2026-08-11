@@ -1,0 +1,5 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean,tonne,on,,0.614
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean,tonne,qc,,1.0
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled.galvanize,tonne,on,,0.386183166
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled.galvanize,tonne,qc,,0.0

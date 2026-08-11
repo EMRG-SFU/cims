@@ -1,0 +1,6 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.iron_and_steel.product.continuous_cast.blooms.tubes,tonne,ab,,1
+service_request,,,.iron_and_steel.product.continuous_cast.blooms.tubes,tonne,bc,,1
+service_request,,,.iron_and_steel.product.continuous_cast.blooms.tubes,tonne,mb,,1
+service_request,,,.iron_and_steel.product.continuous_cast.blooms.tubes,tonne,on,,0.417
+service_request,,,.iron_and_steel.product.continuous_cast.blooms.tubes,tonne,sk,,1

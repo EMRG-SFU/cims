@@ -1,0 +1,7 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.iron_and_steel.product.continuous_cast.billets.bar,tonne,on,,0.572
+service_request,,,.iron_and_steel.product.continuous_cast.billets.bar,tonne,qc,,0.430041152
+service_request,,,.iron_and_steel.product.continuous_cast.billets.light_structural_shapes,tonne,on,,0.096
+service_request,,,.iron_and_steel.product.continuous_cast.billets.light_structural_shapes,tonne,qc,,0.076131687
+service_request,,,.iron_and_steel.product.continuous_cast.billets.rod,tonne,on,,0.332
+service_request,,,.iron_and_steel.product.continuous_cast.billets.rod,tonne,qc,,0.49382716

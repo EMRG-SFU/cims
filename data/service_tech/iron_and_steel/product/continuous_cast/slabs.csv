@@ -1,0 +1,9 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled,tonne,on,,0.477
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.cold_rolled,tonne,qc,,0.615553924
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.pickled_slabs,tonne,on,,0.882943144
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.pickled_slabs,tonne,qc,,0.615553924
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.skin_pass,tonne,on,,0.117056856
+service_request,,,.iron_and_steel.product.continuous_cast.slabs.skin_pass,tonne,qc,,0.384446076
+service_request,,,.iron_and_steel.service.lighting,gj,on,,0.0033
+service_request,,,.iron_and_steel.service.lighting,gj,qc,,0.007

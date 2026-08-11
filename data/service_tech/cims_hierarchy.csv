@@ -152,7 +152,6 @@
 .industrial_minerals.product.cement.portland_cement.dry_ground_cement,data/service_tech/industrial_minerals/product/cement/portland_cement/dry_ground_cement
 .industrial_minerals.product.cement.portland_cement.finish_grinding,data/service_tech/industrial_minerals/product/cement/portland_cement/finish_grinding
 .industrial_minerals.product.lime,data/service_tech/industrial_minerals/product/lime
-.industrial_minerals.product.lime.dolomitic,data/service_tech/industrial_minerals/product/lime/dolomitic
 .industrial_minerals.product.lime.kilns,data/service_tech/industrial_minerals/product/lime/kilns
 .industrial_minerals.service,data/service_tech/industrial_minerals/service
 .industrial_minerals.service.ccs,data/service_tech/industrial_minerals/service/ccs

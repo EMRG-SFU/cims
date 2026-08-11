@@ -1,0 +1,26 @@
+service: "oxygen"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context: 
+        sub_context:
+        target: ".iron_and_steel.service.oxygen.cryogenics"
+        value_type: "fixed"
+        value: 1
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:

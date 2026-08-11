@@ -1,0 +1,59 @@
+service: "molten_steel"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.molten_steel.integrated"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/molten_steel.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.molten_steel.recycled"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/molten_steel.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.molten_steel.ladle_preheat"
+        value_type: "fixed"
+        value: 1
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.molten_steel.ladle_refining"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/molten_steel.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:

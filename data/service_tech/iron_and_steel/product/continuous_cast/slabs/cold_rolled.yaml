@@ -1,0 +1,48 @@
+service: "cold_rolled"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.cold_rolled.cold_roll"
+        value_type: "fixed"
+        value: 1.0
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".iron_and_steel.product.continuous_cast.slabs.cold_rolled.galvanize"
+        value_type: "csv"
+        value: "data/service_tech/iron_and_steel/product/continuous_cast/slabs/cold_rolled.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:
