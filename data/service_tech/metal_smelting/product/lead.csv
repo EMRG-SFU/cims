@@ -1,0 +1,8 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.metal_smelting.service.lighting,gj,ab,,0.01
+service_request,,,.metal_smelting.service.lighting,gj,bc,,0.025
+service_request,,,.metal_smelting.service.lighting,gj,mb,,0.01
+service_request,,,.metal_smelting.service.lighting,gj,nb,,0.01
+service_request,,,.metal_smelting.service.lighting,gj,nl,,0.01
+service_request,,,.metal_smelting.service.lighting,gj,on,,0.01
+service_request,,,.metal_smelting.service.lighting,gj,qc,,0.01

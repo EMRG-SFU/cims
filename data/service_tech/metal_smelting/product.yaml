@@ -1,0 +1,92 @@
+service: "product"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.aluminum"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.copper"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.lead"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.magnesium"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.nickel"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.titanium"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.zinc"
+        value_type: "csv"
+        value: "/data/processed_data/activity/data/heavy_industry.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "ceedc/statscan"
+        note:

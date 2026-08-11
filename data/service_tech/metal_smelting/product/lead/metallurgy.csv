@@ -1,0 +1,8 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,ab,,0.0
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,bc,,0.15
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,mb,,0.0
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,on,,0.0
+service_request,,,.metal_smelting.product.lead.metallurgy.hydro,tonne,qc,,0.0

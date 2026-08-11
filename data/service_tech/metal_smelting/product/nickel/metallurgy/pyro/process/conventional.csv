@@ -1,0 +1,15 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,ab,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,bc,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,mb,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,on,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.convert,tonne,qc,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,ab,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,bc,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,mb,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,on,,1.0
+service_request,,,.metal_smelting.product.nickel.metallurgy.pyro.process.conventional.smelt,tonne,qc,,1.0

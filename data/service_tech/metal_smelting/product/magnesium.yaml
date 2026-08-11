@@ -1,0 +1,59 @@
+service: "magnesium"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.magnesium.metallurgy"
+        value_type: "csv"
+        value: "/data/service_tech/metal_smelting/product/magnesium.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.magnesium.melt_cast"
+        value_type: "csv"
+        value: "/data/service_tech/metal_smelting/product/magnesium.csv"
+        unit: "tonne"
+        by_year: true
+        by_region: true
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.service.hvac"
+        value_type: "fixed"
+        value: 0.025
+        unit: "gj"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.service.lighting"
+        value_type: "csv"
+        value: "/data/service_tech/metal_smelting/product/magnesium.csv"
+        unit: "gj"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:

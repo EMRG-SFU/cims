@@ -1,0 +1,37 @@
+service: "conventional"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.magnesium.metallurgy.pyro.process.conventional.roast"
+        value_type: "fixed"
+        value: 1.0
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.magnesium.metallurgy.pyro.process.conventional.smelt"
+        value_type: "csv"
+        value: "/data/service_tech/metal_smelting/product/magnesium/metallurgy/pyro/process/conventional.csv"
+        unit: "tonne"
+        by_year:
+        by_region: true
+        source: "jcims"
+        note:

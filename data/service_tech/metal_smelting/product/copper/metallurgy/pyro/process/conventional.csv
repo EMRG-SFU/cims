@@ -1,0 +1,8 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,ab,,0.558303887
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,bc,,0.0
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,mb,,1.0
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,on,,0.558303887
+service_request,,,.metal_smelting.product.copper.metallurgy.pyro.process.conventional.smelt,tonne,qc,,0.402985075

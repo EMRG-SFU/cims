@@ -1,0 +1,26 @@
+service: "metal"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context: 
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "sector"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product"
+        value_type: "fixed"
+        value: 1
+        unit: "tonne"
+        by_year: 
+        by_region:
+        source: 
+        note:

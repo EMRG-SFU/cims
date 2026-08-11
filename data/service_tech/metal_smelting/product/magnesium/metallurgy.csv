@@ -1,0 +1,15 @@
+parameter,context,sub_context,target,unit,region,year,value
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,ab,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,bc,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,mb,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,on,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.hydro,tonne,qc,,1.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,ab,,1.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,bc,,1.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,mb,,1.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,nb,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,nl,,0.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,on,,1.0
+service_request,,,.metal_smelting.product.magnesium.metallurgy.pyro,tonne,qc,,1.0

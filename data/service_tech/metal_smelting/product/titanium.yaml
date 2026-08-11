@@ -1,0 +1,59 @@
+service: "titanium"
+unit: "tonne"
+note:
+parameter:
+    competition:
+        context:
+        sub_context:
+        target:
+        value_type: "fixed"
+        value: "fixed_ratio"
+        unit:
+        by_year:
+        by_region:
+        source:
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.titanium.metallurgy"
+        value_type: "fixed"
+        value: 1.0
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.product.titanium.melt_cast"
+        value_type: "fixed"
+        value: 0.0
+        unit: "tonne"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.service.hvac"
+        value_type: "fixed"
+        value: 0.025
+        unit: "gj"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
+    service_request:
+        context:
+        sub_context:
+        target: ".metal_smelting.service.lighting"
+        value_type: "fixed"
+        value: 0.01
+        unit: "gj"
+        by_year:
+        by_region:
+        source: "jcims"
+        note:
