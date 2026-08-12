@@ -1,5 +1,4 @@
 technology: "High power EAF + O2"
-branch: ".iron_and_steel.product.molten_steel.recycled"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1312500
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -138,7 +137,7 @@ parameter:
     service_request:
         context:
         sub_context:
-        target: ".methane_blend"
+        target: ".general_services.methane_blend"
         value_type: "fixed"
         value: 0.116
         unit: "GJ"
