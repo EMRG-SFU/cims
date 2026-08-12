@@ -1,5 +1,4 @@
 technology: "Electrolytic cleaning"
-branch: ".iron_and_steel.product.continuous_cast.slabs.cold_rolled.electroclean.electrocleancomp"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 437500
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

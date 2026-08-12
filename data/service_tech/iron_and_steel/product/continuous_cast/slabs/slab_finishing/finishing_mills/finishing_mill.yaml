@@ -1,5 +1,4 @@
 technology: "Finishing mill"
-branch: ".iron_and_steel.product.continuous_cast.slabs.slab_finishing.finishing_mills"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1312500
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

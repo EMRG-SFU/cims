@@ -1,5 +1,4 @@
 technology: "Sulphuring acid treatment of steel"
-branch: ".iron_and_steel.product.continuous_cast.slabs.pickled_slabs"
 unit: "tonne"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1312500
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"

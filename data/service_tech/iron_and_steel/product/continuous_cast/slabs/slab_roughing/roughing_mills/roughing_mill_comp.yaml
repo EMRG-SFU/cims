@@ -1,5 +1,4 @@
 technology: "Roughing mill comp"
-branch: ".iron_and_steel.product.continuous_cast.slabs.slab_roughing.roughing_mills"
 unit: "tonne"
 note:
 parameter:
@@ -30,11 +29,11 @@ parameter:
         sub_context:
         target:
         value_type: "csv"
-        value:
+        value:  "data/service_tech/iron_and_steel/product/continuous_cast/slabs/slab_roughing/roughing_mills/roughing_mill_comp.csv"
         unit: "%"
         by_year: false
         by_region: true
-        source: "roughing_mill_comp.csv"
+        source: "JCIMS"
         note:
     market_share_new_max:
         context:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1312500
-        unit: "tonne"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
