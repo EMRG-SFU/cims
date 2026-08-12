@@ -1,5 +1,4 @@
 technology: "furniture printing and machinery"
-branch: ".light_industrial.product.furniture_printing_and_machinery"
 unit: "M$ GDP"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1
-        unit: "M$ GDP"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
@@ -117,7 +116,7 @@ parameter:
         context:
         sub_context:
         target:
-        value_type: "fixed"
+        value_type: 
         value: 0.189285695
         unit: "$"
         by_year:

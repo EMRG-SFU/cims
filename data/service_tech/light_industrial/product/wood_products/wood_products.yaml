@@ -1,5 +1,4 @@
 technology: "wood products"
-branch: ".light_industrial.product.wood_products"
 unit: "M$ GDP"
 note:
 parameter:
@@ -75,7 +74,7 @@ parameter:
         target:
         value_type: "fixed"
         value: 1
-        unit: "M$ GDP"
+        unit: "node unit"
         by_year:
         by_region:
         source: "JCIMS"
