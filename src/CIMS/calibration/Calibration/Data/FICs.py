@@ -12,6 +12,7 @@ from contextlib import redirect_stdout, redirect_stderr
 
 import Calibration.Data.node_info as node_info
 from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
+from Calibration.CIMS_Functions.update_market_shares import update_market_shares
 
 def get_FICs(model, nodeName, key="fic"):
 
@@ -61,6 +62,9 @@ def set_FICs_withDataframe(model, nodeName, dataFrame, key="fic", transpose=Fals
                 set_param_calibration(model, r['value'], key, nodeName, year=r['year'], tech=r['tech'], save=False)
     
     print(f"Values saved to FICS of {nodeName}.")
+    update_market_shares(model, nodeName)
+    print(f"Market shares recalculated at {nodeName}.")
+
     return True
 
 
