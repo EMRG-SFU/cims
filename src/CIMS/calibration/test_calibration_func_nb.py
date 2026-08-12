@@ -15,6 +15,7 @@ with app.setup:
     import networkx as nx
     import importlib
     import copy
+    import re
 
     # For using Flask in a cell without blocking
     import threading
@@ -32,7 +33,6 @@ with app.setup:
 
     from Calibration import bind_data
 
-    from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
 
     from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
 
@@ -47,8 +47,12 @@ with app.setup:
     import Calibration.Data.market_share as market_share
     import Calibration.Data.FICs as FICs
 
-    from Calibration.Plotting.plot_ms_for_node import plot_ms
-    from Calibration.Plotting.plot_ms_for_node_line import plot_ms_line
+    from Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
+    from Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
+
+    import Calibration.Plotting.plot_ms_for_node as plotMS
+    import Calibration.Plotting.plot_emissions_for_node as plotEmissions
+    import Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
 
 
 @app.cell(hide_code=True)
@@ -222,13 +226,52 @@ def _():
 
 @app.cell
 def _(model):
-    emissions.get_emissions(model, nodeName="CIMS.CAN.AB.Residential")
+    edf = emissions.get_emissions(model, nodeName="CIMS.CAN.AB.Residential")
+    edf
     return
 
 
 @app.cell
 def _(model):
     emissions.get_emissions_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Plot Node Emissions
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_line(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_line(model, nodeName="CIMS.CAN.AB.Residential", patterns=['CH4','N2O'])
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_heatmap(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_diffLine(model, nodeName="CIMS.CAN.AB.Residential")
     return
 
 
@@ -264,13 +307,47 @@ def _():
 
 @app.cell
 def _(model):
-    requestedQuantities.get_quantityRequested(model, nodeName="CIMS.CAN.AB.Residential")
+    cimsRq = requestedQuantities.get_quantityRequested(model, nodeName="CIMS.CAN.AB.Residential")
+    cimsRq
     return
 
 
 @app.cell
 def _(model):
-    requestedQuantities.get_quantityRequested_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+    calRq = requestedQuantities.get_quantityRequested_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+    calRq
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Plot Node Requested Quantities
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities_line(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities_heatmap(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities_diffLine(model, nodeName="CIMS.CAN.AB.Residential")
     return
 
 
@@ -316,6 +393,12 @@ def _(model):
     return
 
 
+@app.cell
+def _(model):
+    market_share.get_marketShare_diff_frame(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", doNumFormat=True)
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -344,13 +427,25 @@ def _():
 
 @app.cell
 def _(model):
-    plot_ms(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    plotMS.plot_ms(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
     return
 
 
 @app.cell
 def _(model):
-    plot_ms_line(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    plotMS.plot_ms_line(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    plotMS.plot_ms_heatmap(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    plotMS.plot_ms_diffLine(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
     return
 
 
@@ -387,6 +482,12 @@ def _():
 @app.cell
 def _(model):
     FICs.get_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell
+def _(model):
+    FICs.tweak_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", transpose = True)
     return
 
 

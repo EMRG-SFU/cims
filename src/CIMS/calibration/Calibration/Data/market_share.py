@@ -116,6 +116,22 @@ def tweak_marketShareTotal_calibration(model, nodeName, key="calibration_market_
     )
 
 
+def toCSV_marketShareTotal_calibration(model, nodeName, key="calibration_market_share_total", recursive=True):
+    """
+    """
+    # Get set of all structural descendents of nodeName in model.graph
+    allNodes = [nodeName] + list(getDescendants(model, nodeName))
+
+    def addNodeName(df, nName):
+        df['nodeName'] = nName
+        return df
+
+    allCalFrame = pl.concat([addNodeName(get_marketShareTotal_calibration(model, n), n) for n in allNodes])
+    return allCalFrame
+    
+
+
+
 def get_marketShareTotal(model, nodeName, key="market_share_total", doNumFormat=True):
     """
     Mostly for purpose of displaying dataframe in Marimo cell. For data to process further, like for optimization objective functions,
@@ -205,15 +221,28 @@ def get_marketShare_diff_frame(model,
         else:
             return numFormat(nCims - nCal, doNumFormat)
 
-    out_pre = [{'year': yk, 
-                'tech': tn, 
-                'value': makeDiff(vv['cims'], 
-                                  vv['cal'], doNumFormat
-                                  )} 
-               for yk,techDict in msDict.items() 
-               for tn, vv in techDict.items()]
+    #out_pre = [{'year': yk, 
+    #            'tech': tn, 
+    #            'value': makeDiff(vv['cims'], 
+    #                              vv['cal'], doNumFormat
+    #                              )} 
+    #           for yk,techDict in msDict.items() 
+    #           for tn, vv in techDict.items()]
+    out_pre = [{'year': yk,
+                'tech': tn,
+                'cims_value': vv['cims'],
+                'cal_value': vv['cal']}
+               for yk,techDict in msDict.items()
+               for tn,vv in techDict.items()]
 
     out = pl.DataFrame(out_pre)
-    out_pivot = out.pivot(on="year", values="value")
-    return out_pivot
+    out = out.with_columns(
+        (pl.col('cims_value') - pl.col('cal_value')).alias("diff")
+    )
+    out = out.with_columns(
+        (pl.col('diff') / pl.col('cims_value')).alias("pctDiff_cims"),
+        (pl.col('diff') / pl.col('cal_value')).alias("pctDiff_cal")
+    )
+    #out_pivot = out.pivot(on="year", values="value")
+    return out
 

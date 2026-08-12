@@ -8,8 +8,13 @@ import pandas as pd
 import re
 
 import Calibration.Data.node_info as node_info
+from Calibration.Data.market_share import get_marketShare_diff_frame
 from Calibration.Plotting.plot_general import plotOverTime_stack
+from Calibration.Plotting.plot_general import plotOverTime_line_df
+from Calibration.Plotting.plot_general import plotHeatmap
 
+# Import (for re-exporting) the stuff in _plot_ms_for_node_line
+from Calibration.Plotting._plot_ms_for_node_line import plot_ms_line
 
 
 
@@ -72,3 +77,57 @@ def plot_ms(model,
         fig.add_trace(trace, row=1, col=2)
 
     fig.show()
+
+
+
+
+def plot_ms_heatmap(model,
+                    nodeName,
+                    msKey="market_share_total",
+                    calMsKey="calibration_market_share_total",
+                    fixedColor=None):
+    """
+    """
+    df = get_marketShare_diff_frame(
+            model,
+            nodeName,
+            key_cims=msKey,
+            key_cal=calMsKey
+    )
+   
+    fig = plotHeatmap(df, 
+                valName="diff",
+                dim1Name="tech",
+                dim2Name="year",
+                nodeName=nodeName,
+                fixedColor=fixedColor
+
+    )
+    fig.show()
+
+
+def plot_ms_diffLine(model,
+                    nodeName,
+                    msKey="market_share_total",
+                    calMsKey="calibration_market_share_total"):
+    """
+    """
+    df = get_marketShare_diff_frame(
+            model,
+            nodeName,
+            key_cims=msKey,
+            key_cal=calMsKey
+    )
+   
+    fig = plotOverTime_line_df(df, 
+                valCol="diff",
+                colorCol="tech",
+                yearCol="year",
+                fixedY=0.0
+
+    )
+    fig.show()
+
+
+
+
