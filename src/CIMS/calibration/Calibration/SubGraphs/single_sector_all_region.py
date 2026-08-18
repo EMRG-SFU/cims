@@ -54,7 +54,7 @@ def get_single_sector_all_region(model, sectorName, graphTrueRoot = "CIMS"):
     """
 
     allNodeNames = list(model.graph.nodes())
-    allSectorRoots = [a for a in allNodeNames if re.match(f".*?\\.{sectorName}$", a, flags=re.IGNORECASE)]
+    allSectorRoots = [a for a in allNodeNames if re.match(f"^CIMS.CAN.[A-Za-z]{2}\\.{sectorName}$", a, flags=re.IGNORECASE)]
     allSectorSubgraphs = [nx.DiGraph(getSubgraph(model, a)['s1']) for a in allSectorRoots]
 
     rootGraph = nx.DiGraph()
