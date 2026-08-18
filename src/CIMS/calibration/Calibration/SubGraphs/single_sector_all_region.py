@@ -12,6 +12,7 @@ import json
 import re
 import pickle
 import gzip
+import copy
 
 from Calibration.SubGraphs.graphFunctions import getSubgraph
 
@@ -69,7 +70,7 @@ def get_single_sector_all_region(model, sectorName, graphTrueRoot = "CIMS"):
         rootGraph.add_nodes_from(rootConnSubgraph.nodes(data=True))
         rootGraph.add_edges_from(rootConnSubgraph.edges(data=True))
 
-    model_out = model
+    model_out = copy.copy(model)
     model_out.graph = rootGraph
     model_out.dcc_classes = model_out._dcc_classes()
     return model_out

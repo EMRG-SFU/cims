@@ -4,12 +4,14 @@ import numpy as np
 import pickle
 import json
 import gzip
+import copy
 
 from Calibration.SubGraphs.graphFunctions import getSubgraph
 
 def get_subGraph_model(model, nodeName):
 
-    model_out = model
+    model_out = copy.copy(model)
+
     subGraph = getSubgraph(model, nodeName)['s1']
 
     model_out.graph = nx.DiGraph(subGraph)
