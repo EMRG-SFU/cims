@@ -225,15 +225,19 @@ def _add_node_constant(graph, node_df, node, parameter, required=False):
 
 
 def _set_node_constants(graph, current_node_df, current_node):
-    # 3.1 is supply
+    # 3.1 service_provide
+    graph = _add_node_constant(graph, current_node_df, current_node, PARAM.service_provide, required=True)
+    current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.service_provide]
+
+    # 3.2 is supply
     graph = _add_node_constant(graph, current_node_df, current_node, PARAM.is_supply)
     current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.is_supply]
 
-    # 3.2 structural aggregation
+    # 3.3 structural aggregation
     graph = _add_node_constant(graph, current_node_df, current_node, PARAM.aggregate_structural)
     current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.aggregate_structural]
 
-    # 3.3 competition type
+    # 3.4 competition type
     graph = _add_node_constant(graph, current_node_df, current_node, PARAM.competition_type, required=True)
     current_node_df = current_node_df[current_node_df[COL.parameter] != PARAM.competition_type]
 
