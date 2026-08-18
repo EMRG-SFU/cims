@@ -1,7 +1,9 @@
 
 import networkx as nx
 import numpy as np
+import pickle
 import json
+import gzip
 
 from Calibration.SubGraphs.graphFunctions import getSubgraph
 
@@ -16,7 +18,7 @@ def get_subGraph_model(model, nodeName):
 
 
 def write_subGraph_pickle(model, nodeName, output_filepath = "subGraphModel.pkl"):    
-        with open(output_filepath, 'wb') as _f:
+        with gzip.open(output_filepath, 'wb') as _f:
             pickle.dump(get_subGraph_model(model, nodeName), _f)
 
         print(f"Subgraph-containing model written to: {output_filepath}")

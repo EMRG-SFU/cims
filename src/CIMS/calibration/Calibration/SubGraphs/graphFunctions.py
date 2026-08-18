@@ -29,6 +29,19 @@ def is_thing_only(edge, typeName):
         return(False)
 
 
+def getDescendants( model, nodeName ):
+
+    def getEdge( edgeName ):
+        try:
+            return model.graph.edges().get(edgeName)['edge']
+        except Exception as ee:
+            print(f"Failing edge extraction for {edgeName}.")
+            print(f"Failing edge info dict looks like: {model.graph.edges().get(edgeName)}")
+            raise
+
+    structEdges = [e for e in model.graph.edges() if is_anything_in(getEdge(e), ['structural'])]
+    descNodes = nx.descendants(model.graph.edge_subgraph(structEdges), nodeName)
+    return descNodes
 
 def getSubgraph( model, rootName ):
     """
