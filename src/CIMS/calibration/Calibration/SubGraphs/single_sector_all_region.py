@@ -55,7 +55,9 @@ def get_single_sector_all_region(model, sectorName, graphTrueRoot = "CIMS"):
     """
 
     allNodeNames = list(model.graph.nodes())
-    allSectorRoots = [a for a in allNodeNames if re.match(f"^CIMS.CAN.[A-Za-z]{2}\\.{sectorName}$", a, flags=re.IGNORECASE)]
+    # ::NOTE:: because the regex string down there requires the {2} to match twice exactly, this conflicts with the f" " python string
+    # formatting. I don't know specifically what {2} was placing into the string, but it wasn't matching as it was supposed to regardless.
+    allSectorRoots = [a for a in allNodeNames if re.match("^CIMS.CAN.[A-Za-z]{2}\\." + sectorName + "$", a, flags=re.IGNORECASE)]
     allSectorSubgraphs = [nx.DiGraph(getSubgraph(model, a)['s1']) for a in allSectorRoots]
 
     rootGraph = nx.DiGraph()
@@ -73,6 +75,7 @@ def get_single_sector_all_region(model, sectorName, graphTrueRoot = "CIMS"):
     model_out = copy.copy(model)
     model_out.graph = rootGraph
     model_out.dcc_classes = model_out._dcc_classes()
+
     return model_out
 
 def write_single_sector_all_region_pickle(model, sectorName, output_filepath = None, graphTrueRoot = "CIMS"):
