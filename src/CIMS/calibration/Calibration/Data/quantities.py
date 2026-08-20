@@ -79,6 +79,7 @@ def get_quantityRequested_diff_frame(model,
                                      nodeName,
                                      key_cims = "quantity_requested",
                                      key_cal = "calibration_quantity_requested",
+                                     join_type = "inner",
                                      missingValFunc = None):
     """
 
@@ -90,7 +91,13 @@ def get_quantityRequested_diff_frame(model,
                                                                          missingValFunc))
     cims = cims.rename({'value': 'cims_value'})
     cal = cal.rename({'value': 'cal_value'})
-    both_frame = cims.join(cal, on=['year','fuel'], how='inner')
+    if join_type == "inner":
+        both_frame = cims.join(cal, on=['year','fuel'], how='inner')
+    elif join_type == "outer":
+        both_frame = cims.join(cal, on=['year','fuel'], how='outer')
+    else:
+        raise NotImplemented(f"join type {join_type} not accepted here.")
+
     out_frame = both_frame.with_columns(
         (pl.col('cims_value') - pl.col('cal_value')).alias('diff')
     )

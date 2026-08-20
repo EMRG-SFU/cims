@@ -16,12 +16,17 @@ from Calibration.Plotting.plot_general import plotHeatmap
 
 def plot_requestedQuantities(model,
                              nodeName,
-                             patterns=[]):
+                             all_fuels=False,
+                             patterns=[],
+                             **kwargs):
     """
     `filters` are matched to names of fuels, for plotting only a subset of the fuels.
     """
 
-    diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName)
+    if all_fuels or ('gimme_all_fuels_please' in kwargs.keys() and kwargs['gimme_all_fuels_please'] == True):
+        diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName, join_type="outer")
+    else:
+        diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName)
 
     if len(patterns) > 0:
         diffFrame = diffFrame_pre.filter(
@@ -29,6 +34,9 @@ def plot_requestedQuantities(model,
         )
     else:
         diffFrame = diffFrame_pre
+
+    diffFrame = diffFrame.with_columns(pl.col("year").cast(pl.Float64))
+    diffFrame = diffFrame.sort("year")
 
     ret_base = plotOverTime_stack_df(diffFrame, colorCol='fuel', valCol='cims_value', showlegend=False)
     ret_calib = plotOverTime_stack_df(diffFrame, colorCol='fuel', valCol='cal_value', showlegend=True)
@@ -48,11 +56,16 @@ def plot_requestedQuantities(model,
 
 def plot_requestedQuantities_line(model,
                                   nodeName,
-                                  patterns=[]):
+                                  all_fuels=False,
+                                  patterns=[],
+                                  **kwargs):
     """
     """
 
-    diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName)
+    if all_fuels or ('gimme_all_fuels_please' in kwargs.keys() and kwargs['gimme_all_fuels_please'] == True):
+        diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName, join_type="outer")
+    else:
+        diffFrame_pre = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName)
 
     if len(patterns) > 0:
         diffFrame = diffFrame_pre.filter(
@@ -60,7 +73,9 @@ def plot_requestedQuantities_line(model,
         )
     else:
         diffFrame = diffFrame_pre
-    
+   
+    diffFrame = diffFrame.with_columns(pl.col("year").cast(pl.Float64))
+    diffFrame = diffFrame.sort("year")
 
     ret_base = plotOverTime_line_df(diffFrame, colorCol='fuel', valCol='cims_value', showlegend=False)
     ret_calib = plotOverTime_line_df(diffFrame, colorCol='fuel', valCol='cal_value', showlegend=True)
@@ -100,6 +115,11 @@ def plot_requestedQuantities_heatmap(model,
     """
     df = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName)
 
+    # ::TODO:: Why does this not work here, causing "selCols" on the heatmap plotting side
+    # to claim things are duplicated?
+    #df = df.with_columns(pl.col("year").cast(pl.Float64))
+    #df = df.sort("year")
+
     fig = plotHeatmap(df,
                       valName="diff",
                       dim1Name="fuel",
@@ -111,7 +131,7 @@ def plot_requestedQuantities_heatmap(model,
 
 
 def plot_requestedQuantities_diffLine(model,
-                    nodeName):
+                                      nodeName):
     """
     """
     df = requestedQuantities.get_quantityRequested_diff_frame(
@@ -119,6 +139,9 @@ def plot_requestedQuantities_diffLine(model,
             nodeName
     )
    
+    df = df.with_columns(pl.col("year").cast(pl.Float64))
+    df = df.sort("year")
+
     fig = plotOverTime_line_df(df, 
                 valCol="diff",
                 colorCol="fuel",
