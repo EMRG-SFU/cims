@@ -237,6 +237,12 @@ def _(model):
     return
 
 
+@app.cell
+def _(model):
+    emissions.get_emissions_diff_frame(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -251,9 +257,37 @@ def _(model):
     return
 
 
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Adding a `_cims` at the end of the previous function gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_cims(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
 @app.cell
 def _(model):
     plotEmissions.plot_emissions_line(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    As with the stacked plots above, adding a `_cims` at the end of the previous function gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    plotEmissions.plot_emissions_line_cims(model, nodeName="CIMS.CAN.AB.Residential")
     return
 
 
@@ -319,6 +353,13 @@ def _(model):
     return
 
 
+@app.cell
+def _(model):
+    bla = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName="CIMS.CAN.AB.Residential", join_type="outer")
+    bla
+    return (bla,)
+
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -329,13 +370,41 @@ def _():
 
 @app.cell
 def _(model):
-    plotRequestedQuantities.plot_requestedQuantities(model, nodeName="CIMS.CAN.AB.Residential")
+    plotRequestedQuantities.plot_requestedQuantities(model, nodeName="CIMS.CAN.AB.Residential", gimme_all_fuels_please=True)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Adding a `_cims` at the end of the previous function, and getting rid of the "all_fuels" argument above, gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
+    """)
     return
 
 
 @app.cell
 def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_line(model, nodeName="CIMS.CAN.AB.Residential")
+    plotRequestedQuantities.plot_requestedQuantities_cims(model, nodeName="CIMS.CAN.AB.Residential")
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities_line(model, nodeName="CIMS.CAN.AB.Residential", gimme_all_fuels_please=True)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    As above with the stacked plots, adding a `_cims` at the end of the previous function, and getting rid of the "all_fuels" argument above, gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    plotRequestedQuantities.plot_requestedQuantities_line_cims(model, nodeName="CIMS.CAN.AB.Residential")
     return
 
 

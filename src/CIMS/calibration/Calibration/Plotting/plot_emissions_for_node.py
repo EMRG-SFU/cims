@@ -46,6 +46,14 @@ def plot_emissions(model,
 
     fig.show()
 
+def plot_emissions_cims(model, nodeName, patterns=[]):
+    df = pl.DataFrame(emissions.get_emissions(model, nodeName, getDict=True))
+    df = df.with_columns(pl.col("value").cast(pl.Float64))
+    df = df.group_by(["year","gas"]).agg(pl.col(["value"]).sum()).sort("year")
+    fig = plotOverTime_stack_df(df, colorCol="gas", valCol="value", showlegend=True)
+    fig.update_layout(title=f"Node: {nodeName}")
+    fig.show()
+
 def plot_emissions_line(model,
                         nodeName,
                         patterns=[]):
@@ -90,6 +98,14 @@ def plot_emissions_line(model,
 
     fig.show()
 
+
+def plot_emissions_line_cims(model, nodeName, patterns=[]):
+    df = pl.DataFrame(emissions.get_emissions(model, nodeName, getDict=True))
+    df = df.with_columns(pl.col("value").cast(pl.Float64))
+    df = df.group_by(["year","gas"]).agg(pl.col(["value"]).sum()).sort("year")
+    fig = plotOverTime_line_df(df, colorCol="gas", valCol="value", showlegend=True)
+    fig.update_layout(title=f"Node: {nodeName}")
+    fig.show()
 
 def plot_emissions_heatmap(model,
                            nodeName,

@@ -54,6 +54,22 @@ def plot_requestedQuantities(model,
 
     fig.show()
 
+
+def plot_requestedQuantities_cims(model,
+                                  nodeName,
+                                  patterns=[]):
+    """
+    This one only plots the cims values, not the calibration counterfactual
+    """
+
+    df = pl.DataFrame(requestedQuantities.get_quantityRequested(model, nodeName, getDict=True))
+    df = df.with_columns(pl.col("value").cast(pl.Float64))
+    df = df.group_by(["year","fuel"]).agg(pl.col("value").sum()).sort("year")
+    fig = plotOverTime_stack_df(df, colorCol='fuel', valCol='value', showlegend=True)
+    fig.update_layout(title=f"Node: {nodeName}")
+    fig.show()
+
+
 def plot_requestedQuantities_line(model,
                                   nodeName,
                                   all_fuels=False,
@@ -107,6 +123,19 @@ def plot_requestedQuantities_line(model,
 
     fig.show()
 
+def plot_requestedQuantities_line_cims(model,
+                                  nodeName,
+                                  patterns=[]):
+    """
+    This one only plots the cims values, not the calibration counterfactual
+    """
+
+    df = pl.DataFrame(requestedQuantities.get_quantityRequested(model, nodeName, getDict=True))
+    df = df.with_columns(pl.col("value").cast(pl.Float64))
+    df = df.group_by(["year","fuel"]).agg(pl.col("value").sum()).sort("year")
+    fig = plotOverTime_line_df(df, colorCol='fuel', valCol='value', showlegend=True)
+    fig.update_layout(title=f"Node: {nodeName}")
+    fig.show()
 
 def plot_requestedQuantities_heatmap(model,
                            nodeName,
