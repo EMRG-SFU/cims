@@ -12,6 +12,7 @@ from flask import jsonify
 
 import time
 import pickle
+import gzip
 import json
 import sys
 import networkx as nx
@@ -157,9 +158,6 @@ def subGraphRootedAt( modelGraph, rootName ):
 
 
 
-@app.route('/')
-def hello():
-    return("Flask is running inside Jupyter")
 
 @app.route('/graphTest/')
 def graphTest():
@@ -169,7 +167,7 @@ def graphTest():
 @app.route('/getAllNodeNames/')
 def getAllNodeNames():
     with app.app_context():
-        nodeNameList = [a for a in current_app.modelGraph.nodes()]
+        nodeNameList = sorted([a for a in current_app.modelGraph.nodes()])
         response = flask.jsonify({'nodeList': nodeNameList})
         response.headers.add('Access-Control-Allow-Origin', '*')
     return(response)
@@ -433,7 +431,7 @@ def ms_plotting_line(node_name):
 
 
 # Here it is! This is the main function that serves up the page that contains the d3 viz.
-@app.route('/getVizPage/', methods=['GET'])
+@app.route('/', methods=['GET'])
 def getVizPage():
     base_url = request.host_url
     return( flask.render_template('index_tree.html', base_url=base_url))
@@ -483,9 +481,29 @@ def run_server(pickle_path, vizVars, PORT=None):
         server instance is going to serve.
     """
     start = time.perf_counter()
+
     with open(pickle_path, 'rb') as f:
-        wholeModel = pickle.load(f)
-        modelGraph = wholeModel.graph
+        first_two = f.read(2)
+
+    # Try reading in as a gzipped file, falling back to normal pickle if this "magic byte" isn't set,
+    # of if it is but the attempt throws an exception.
+    if first_two == b'\x1f\x8b':
+        try:
+            with gzip.open(pickle_path, 'rb') as f:
+                wholeModel = pickle.load(f)
+                modelGraph = wholeModel.graph
+
+        except (OSError, gzip.BadGzipFile, EOFError):
+            with open(pickle_path, 'rb') as f:
+                wholeModel = pickle.load(f)
+                modelGraph = wholeModel.graph
+
+    else:
+        
+        with open(pickle_path, 'rb') as f:
+            wholeModel = pickle.load(f)
+            modelGraph = wholeModel.graph
+        
     with app.app_context():
         current_app.modelGraph = modelGraph
         current_app.wholeModel = wholeModel
