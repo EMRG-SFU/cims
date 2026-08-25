@@ -112,8 +112,8 @@ CAT_TO_MARINE_SVC: dict[str, str] = {
 
 # Energies whose price target is region-specific (CIMS.CAN.{region}.{energy})
 REGION_SPECIFIC_ENERGIES: set[str] = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 # Parameter ordering within HVAC / Hot Water technology blocks

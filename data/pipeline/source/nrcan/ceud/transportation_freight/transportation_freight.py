@@ -159,11 +159,13 @@ CAN_T29_MARINE_TKM = 29
 # ==============================================================================
 
 # Table 35 (Freight Light Truck energy + activity)
-T35_LT_TKM_ROW = 21     # Freight Light Truck Tonne-kilometres (M·tkm)
+T35_LT_TKM_ROW       = 21     # Freight Light Truck Tonne-kilometres (M·tkm)
+T35_LT_INTENSITY_ROW = 22     # Freight Light Truck Energy Intensity (MJ/Tkm)
 
 # Table 36 (Medium and Heavy Truck energy + activity)
-T36_MT_TKM_ROW = 18     # Medium Truck Tonne-kilometres (M·tkm)
-T36_HT_TKM_ROW = 35     # Heavy Truck Tonne-kilometres (M·tkm)
+T36_MT_TKM_ROW       = 18     # Medium Truck Tonne-kilometres (M·tkm)
+T36_MT_INTENSITY_ROW = 19     # Medium Truck Energy Intensity (MJ/Tkm)
+T36_HT_TKM_ROW       = 35     # Heavy Truck Tonne-kilometres (M·tkm)
 
 # Table 37 (Truck explanatory variables) — used for output calculation
 # Row indices verified for tran_ab_e.xls and tran_bct_e.xls (0-indexed)
@@ -184,6 +186,29 @@ T18_RAIL_PJ_ROW = 5     # Freight Rail Transportation Energy Use (PJ)
 
 # Table 15 (Freight Air — activity not available by region, allocate from CAN)
 T15_AIR_PJ_ROW  = 5     # Freight Air Transportation Energy Use (PJ)
+
+# Light Medium: fuels blended into the Gasoline/Diesel pool, not separate
+# vehicle technologies.
+LM_BLEND_FUEL_MAP = {'Ethanol': 'Gasoline', 'Biodiesel': 'Diesel'}
+
+# Light Medium Diesel/Gasoline vintage service_request values (GJ), from
+# raw_data/fixed_data/transportation_freight — identical across regions and
+# fuels. Used to solve the historical Existing -> Standard vintage split
+# from the CEUD intensity trend (see _lm_intensity_index).
+LM_VINTAGE_GJ_EXISTING = 8.018489459
+LM_VINTAGE_GJ_STANDARD = 6.184018154
+
+# Diesel/Gasoline Efficient becomes available in fixed data starting this
+# year. The CEUD intensity trend alone can't separate Standard vs Efficient
+# once both are available (one signal, two unknowns), so Efficient's TOTAL
+# market share (fraction of the whole Light Medium fleet, pulled out of the
+# Standard+Efficient pool) is ramped linearly from 0% at
+# LM_EFFICIENT_AVAILABLE_YEAR to LM_EFFICIENT_RAMP_TARGET at LAST_HIST_YEAR.
+# Held at 0 pending real adoption data — Efficient rows are still emitted
+# (all zero) rather than removed, keeping the technology defined for when
+# a real target is set.
+LM_EFFICIENT_AVAILABLE_YEAR = 2020
+LM_EFFICIENT_RAMP_TARGET    = 0.0
 
 
 # ==============================================================================
@@ -840,12 +865,61 @@ def extract_lm_fuel_shares(province: str, tables: dict) -> list[pl.DataFrame]:
     return frames
 
 
+def _lm_intensity_index(tables: dict) -> pd.Series:
+    """
+    Blended Light+Medium truck energy-intensity index (MJ/Tkm, tkm-weighted
+    across the two truck classes), normalized to 1.0 in the first available
+    year. Declines as the fleet's average fuel use per tonne-km improves.
+
+    Drives the historical Existing -> Standard vintage split for Light
+    Medium Diesel/Gasoline technologies. Empty where Table 35/36 aren't
+    available for a province (e.g. YT/NT/NU, split from the combined BC
+    file) — callers should fall back to an unsplit fuel-category share.
+    """
+    t35 = tables.get(f'Table {TABLE_FREIGHT_LT}')
+    t36 = tables.get(f'Table {TABLE_FREIGHT_MHVT}')
+    if t35 is None or t36 is None:
+        return pd.Series(dtype=float)
+
+    lt_intensity = _read_row(t35, T35_LT_INTENSITY_ROW).dropna()
+    mt_intensity = _read_row(t36, T36_MT_INTENSITY_ROW).dropna()
+    lt_tkm       = _read_row(t35, T35_LT_TKM_ROW).dropna()
+    mt_tkm       = _read_row(t36, T36_MT_TKM_ROW).dropna()
+
+    years = sorted(
+        set(lt_intensity.index) & set(mt_intensity.index)
+        & set(lt_tkm.index) & set(mt_tkm.index)
+    )
+    if not years:
+        return pd.Series(dtype=float)
+
+    lt_energy = lt_intensity.reindex(years) * lt_tkm.reindex(years)
+    mt_energy = mt_intensity.reindex(years) * mt_tkm.reindex(years)
+    total_tkm = (lt_tkm.reindex(years) + mt_tkm.reindex(years)).replace(0, np.nan)
+    blended   = ((lt_energy + mt_energy) / total_tkm).dropna().sort_index()
+    if blended.empty:
+        return pd.Series(dtype=float)
+
+    # Smooth over a 3-year centered window to damp single-year CEUD data
+    # discontinuities (e.g. Canadian Vehicle Survey coverage/methodology
+    # revisions — seen as a step change across every province around
+    # 2005→2006) that would otherwise read as a sudden vintage-share shift
+    # rather than gradual fleet turnover.
+    smoothed = blended.rolling(window=3, center=True, min_periods=1).mean()
+
+    baseline = smoothed.iloc[0]
+    if not baseline or np.isnan(baseline):
+        return pd.Series(dtype=float)
+
+    return smoothed / baseline
+
+
 # ==============================================================================
 # PROJECTION + DERIVED COMPUTATION
 # ==============================================================================
 
 
-def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFrame:
+def apply_extensions(df: pl.DataFrame, province: str, params: dict, tables: dict | None = None) -> pl.DataFrame:
     """
     Project all freight mode M·tkm series to 2100 via CAGR, then compute:
       - total_ktkm (k*tkm, to 2100)
@@ -1005,16 +1079,71 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
     ht_per_veh = _safe_div(full['ht_ktkm'], ht_stock_s.replace(0, np.nan))  # k*tkm/vehicle
 
     # --- Light Medium fuel tech market shares (historical → flat to 2100) ---
+    # Ethanol/Biodiesel are blended into the Gasoline/Diesel fuel pool (not
+    # separate vehicle technologies) — fold their share into the blend fuel
+    # before computing per-fuel totals.
+    fuel_hist: dict[str, pd.Series] = {}
     for fuel_label in ['Diesel', 'Gasoline', 'Natural Gas', 'Ethanol', 'Biodiesel', 'Propane']:
         var_name = f"lm_fuel_{fuel_label.lower().replace(' ', '_')}"
-        fuel_share_hist = _series_from_df(df, var_name).reindex(hist_years).dropna()
-        if fuel_share_hist.empty:
-            continue
+        s = _series_from_df(df, var_name).reindex(hist_years).dropna()
+        if not s.empty:
+            fuel_hist[fuel_label] = s
 
-        # Market share (historical → flat to 2100)
-        share_ext = _extend_flat(fuel_share_hist, proj_start, PROJ_HORIZON)
-        frames.append(_long(province, 'Light Medium', fuel_label,
-                            'market_share_total', '%', share_ext, source_tag))
+    for blend_fuel, target_fuel in LM_BLEND_FUEL_MAP.items():
+        if blend_fuel not in fuel_hist:
+            continue
+        blend_s = fuel_hist.pop(blend_fuel)
+        if target_fuel in fuel_hist:
+            fuel_hist[target_fuel] = fuel_hist[target_fuel].add(blend_s, fill_value=0)
+        else:
+            fuel_hist[target_fuel] = blend_s
+
+    # Diesel/Gasoline further split into Existing/Standard vintages using the
+    # CEUD Light+Medium truck intensity trend as a proxy for fleet turnover:
+    # weighted_intensity(year) = share_Existing*GJ_E + share_Standard*GJ_S,
+    # solved for share_Standard given the observed intensity index.
+    intensity_idx = _lm_intensity_index(tables) if tables else pd.Series(dtype=float)
+    intensity_idx = intensity_idx.reindex(hist_years)
+    gj_spread = LM_VINTAGE_GJ_EXISTING - LM_VINTAGE_GJ_STANDARD
+
+    for fuel_label, fuel_share_hist in fuel_hist.items():
+        if fuel_label in ('Diesel', 'Gasoline') and not intensity_idx.dropna().empty:
+            idx = intensity_idx.reindex(fuel_share_hist.index)
+            # Combined non-Existing (Standard + Efficient) pool, from the
+            # intensity-implied fleet turnover.
+            share_pool = (
+                (LM_VINTAGE_GJ_EXISTING * (1 - idx)) / gj_spread
+            ).clip(lower=0.0, upper=1.0).fillna(0.0)
+
+            # Split the pool between Standard and Efficient once Efficient is
+            # available. Efficient's TOTAL market share (fraction of the
+            # whole Light Medium fleet, not just the pool) ramps linearly
+            # from 0% at LM_EFFICIENT_AVAILABLE_YEAR to LM_EFFICIENT_RAMP_TARGET
+            # at LAST_HIST_YEAR, capped at whatever the pool can supply.
+            pool_s = fuel_share_hist * share_pool
+            ramp_span = LAST_HIST_YEAR - LM_EFFICIENT_AVAILABLE_YEAR
+            years_s = pd.Series(pool_s.index, index=pool_s.index, dtype=float)
+            efficient_target = (
+                (years_s - LM_EFFICIENT_AVAILABLE_YEAR) / ramp_span * LM_EFFICIENT_RAMP_TARGET
+            ).clip(lower=0.0, upper=LM_EFFICIENT_RAMP_TARGET) if ramp_span > 0 else pd.Series(0.0, index=pool_s.index)
+
+            efficient_s = pd.concat([efficient_target, pool_s], axis=1).min(axis=1).dropna()
+            standard_s  = (pool_s - efficient_s).dropna()
+            existing_s  = (fuel_share_hist * (1 - share_pool)).dropna()
+            for vintage_label, vintage_s in [
+                ('Low Efficiency', existing_s), ('Medium Efficiency', standard_s), ('High Efficiency', efficient_s),
+            ]:
+                if vintage_s.empty:
+                    continue
+                share_ext = _extend_flat(vintage_s, proj_start, PROJ_HORIZON)
+                frames.append(_long(province, 'Light Medium', f'{fuel_label}_{vintage_label}',
+                                    'market_share_total', '%', share_ext, source_tag))
+        else:
+            # No intensity data for this province (e.g. YT/NT/NU) — keep the
+            # unsplit fuel category; calibration maps it to the Low Efficiency vintage.
+            share_ext = _extend_flat(fuel_share_hist, proj_start, PROJ_HORIZON)
+            frames.append(_long(province, 'Light Medium', fuel_label,
+                                'market_share_total', '%', share_ext, source_tag))
 
 
     # --- Light Medium total output (k*tkm/vehicle, all years to 2100) ---
@@ -1085,7 +1214,7 @@ def extract_all_data(
         raise RuntimeError(f"No freight data extracted for {province}.")
 
     df = pl.concat(frames, how='diagonal_relaxed')
-    df = apply_extensions(df, province, projection_params)
+    df = apply_extensions(df, province, projection_params, tables)
 
     # Strip intermediate variables from final output
     df = df.filter(pl.col('parameter') != 'intermediate')

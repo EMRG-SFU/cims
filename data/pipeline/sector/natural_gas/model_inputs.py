@@ -154,8 +154,8 @@ OUTPUT_COLS = [
 PROVINCIAL_REGIONS = ['AB', 'BC', 'SK']
 
 REGION_SPECIFIC_ENERGIES = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 # Extraction split variables from gas_production.py and their target sub-service names
