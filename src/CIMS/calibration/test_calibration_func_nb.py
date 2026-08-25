@@ -50,6 +50,8 @@ with app.setup:
     from Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
     from Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
 
+    from Calibration.Utility.write_fics import write_fics
+
     import Calibration.Plotting.plot_ms_for_node as plotMS
     import Calibration.Plotting.plot_emissions_for_node as plotEmissions
     import Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
@@ -563,6 +565,53 @@ def _(model):
 @app.cell
 def _(model):
     FICs.tweak_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ## Export FIC Values to CSV Files
+
+    These functions write CSV files that have the same structure and format as the model input CSV files. After changing/tweaking FIC values, either manually or using the automated optimizers, these functions can persist these changes. They may then by layered on top of future CIMS runs, allowing those runs to operate with the calibrated/optimized FICs.
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Export FICs of Given Node
+
+    This function exports only the FICs of technologies found at the service node supplied -- in this case the `Heating (Cold)` node of this specific vintage of High Density buildings in `AB.Residential.Dwellings`.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    write_fics(model, 
+               nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)",
+               outputFile="your_filename_here__singleNode.csv")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    ### Export FICs of Subtree Rooted At Given Node
+
+    This function exports the FICs of technologies found at the node supplied, and all other nodes below it in the structural CIMS graph. In this case, the FICs of all technologies found under `High Density` in `AB.Residential.Dwellings`.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    write_fics(model, 
+               nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density",
+               outputFile="your_filename_here__subtree.csv",
+               include_subtree=True)
     return
 
 

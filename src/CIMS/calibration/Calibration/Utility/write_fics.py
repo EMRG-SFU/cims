@@ -69,8 +69,6 @@ def write_fics(model, nodeName, outputFile, include_subtree = False):
     else:
         nodes_to_process = [nodeName]
 
-    print(nodes_to_process)
-
     with open(outputFile, 'w') as _f:
         _f.write("Branch, Type, Region, Sector, Service, Technology, Parameter, Context, Sub_Context, Target, Source, Unit, Year, Value\n")
         for node in nodes_to_process:
