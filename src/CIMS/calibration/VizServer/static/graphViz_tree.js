@@ -172,6 +172,8 @@ function loadData(rootNodeName) {
 
         update(null, root);
 
+        foldAll();
+
         //initializeSimulation();
     })
     .catch(error => {
@@ -188,7 +190,7 @@ function loadData(rootNodeName) {
 
 // Turning this back on for manual calibration debugging purposes. Am always having to navigate to this subtree, so
 // let's just do it on load.
-loadData("CIMS.CAN.AB.Residential");
+loadData("CIMS.CAN");
 
 // Playing now with a bunch of subgraphs, and the above BC residential node isn't in the graph anymore, so this
 // fails here and crashes everything.
@@ -307,7 +309,7 @@ function initializeDisplay() {
             //console.log("Firing SVG click event");
             //window.wtfEvent = event;
             //window.wtfD = d;
-            console.log("Position: " + wtfTransform.invert(d3.pointer(event)));
+            //console.log("Position: " + wtfTransform.invert(d3.pointer(event)));
         });
 
     gLink = svg.append("g")
@@ -485,7 +487,7 @@ function update(event, source) {
                 }else{
                     // If ctrl isn't down as well, we do what we did before which is just to display all the information that's
                     // available at that particular point.
-                    console.log("Shift-Clicked on Node/Tech (d.data.id): " + d.data.id);
+                    //console.log("Shift-Clicked on Node/Tech (d.data.id): " + d.data.id);
                     if(d.data.isTechNode){
 
                         console.log("Tech data JSON: " + JSON.stringify(d.data));
@@ -493,12 +495,27 @@ function update(event, source) {
 
                     }else{
 
+                        // ::NOTE:: This is an interesting and weird case,
+                        // because we're in the `enter` method of node here,
+                        // and that means that the value of `nodes` is a
+                        // CLOSURE, the way it should be, to the benefit of
+                        // everyone in the long term, but this means that what
+                        // `nodes` is is frozen in time at the moment that this
+                        // node came into being. What you really want to do
+                        // here is to go back and access the whole tree, so the
+                        // calls to root.descendants() does that, so this
+                        // function is CREATED when the node comes into being,
+                        // but it can use behaviour that accesses the state as
+                        // it exists at the moment it's called.
+
                         // Reset the "is selected" attribute in all nodes.
-                        //const nodes = nodesPre.forEach( node => { node.data.is_selected = false; });
-                        nodes.forEach( node => { node.data.is_selected = false; });
+                        root.descendants().reverse().forEach( node => { node.data.is_selected = false; });
                         setNodeSelection(d.data.id);
                         d.data.is_selected = true;
                         update(event,d);
+
+                        // Other things we might want to do here...
+
                         //fetchNodeData(d.data.id);
                         //fetchEmissionsData(d.data.id);
                         //fetchRequestedQuantitiesData(d.data.id);
@@ -557,10 +574,10 @@ function update(event, source) {
         .attr("stroke", "white")
         .attr("fill", d => {
             if(d.data.is_selected){
-                console.log("setting red"); 
+                //console.log("setting red"); 
                 return("red");
             }else{
-                console.log("setting not red"); 
+                //console.log("setting not red"); 
                 return(d.data.isTechNode ? "blue" : "black")
             }
         })
@@ -574,10 +591,10 @@ function update(event, source) {
     nodeUpdate.select("text")
         .attr("fill", d => {
             if(d.data.is_selected){
-                console.log("setting red"); 
+                //console.log("setting red"); 
                 return("red");
             }else{
-                console.log("setting not red"); 
+                //console.log("setting not red"); 
                 return(d.data.isTechNode ? "blue" : "black")
             }
         });
@@ -793,5 +810,7 @@ function update(event, source) {
     });
 }
 window.update = update;
+
+
 
 

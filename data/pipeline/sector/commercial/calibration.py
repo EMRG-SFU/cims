@@ -93,8 +93,8 @@ _REGION_MAP: dict[str, str] = {
 
 # Fuels that have region-specific CIMS branches
 _REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 

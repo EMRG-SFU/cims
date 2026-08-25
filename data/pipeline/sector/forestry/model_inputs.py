@@ -179,8 +179,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, valid_regions: list[str]) 
             pl.lit('').alias('Context'),
             pl.lit('').alias('Sub_Context'),
             pl.when(pl.col('Energy').is_in([
-                'Electricity', 'Biodiesel', 'Renewable Diesel',
-                'Ethanol', 'Renewable Gasoline', 'Hydrogen',
+                'Electricity', 'Biodiesel',
+                'Ethanol', 'Hydrogen',
             ]))
             .then(pl.lit('CIMS.CAN.') + pl.col('Region') + pl.lit('.') + pl.col('Energy'))
             .otherwise(pl.lit('CIMS.Generic Fuels.') + pl.col('Energy'))

@@ -123,15 +123,15 @@ function fetchCalibrationInfoForNode(nodeName){
 // which this is (or can be) embedded has access.
 function setNodeSelection(nodeName){
 
-    console.log("Setting selection to node: " + nodeName);
+    //console.log("Setting selection to node: " + nodeName);
     let queryURL = new URL(SERVER_BASE_URL + 'setNodeSelection/'+nodeName);
     d3.json(queryURL)
         .then(html => {
             //d3.select("#nodeInfo").html(null);
             //d3.select("#nodeInfo").html(html.body.innerHTML);
             //d3.select("#nodeInfo").append().html('<button onclick="closeNodeData();">Clear</button>');
-            console.log("Selection set");
-            console.log(JSON.stringify(html));
+            //console.log("Selection set");
+            //console.log(JSON.stringify(html));
         })
         .catch(error => {
             console.error(error);

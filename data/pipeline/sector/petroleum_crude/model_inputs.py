@@ -134,8 +134,8 @@ BITUMEN_SUBTYPES = ['Bitumen.In-Situ', 'Bitumen.Mining', 'Bitumen.Upgrading']
 LIGHT_MEDIUM_SUBTYPES = ['Light Medium.Onshore', 'Light Medium.Offshore']
 
 REGION_SPECIFIC_ENERGIES = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 
