@@ -128,9 +128,9 @@ INTERCITY_LAND_CAT_TO_TECH: dict[str, str] = {
 
 # Gasoline Passenger Vehicle Motors technology → its diesel equivalent.
 DIESEL_EQUIVALENTS: dict[str, str] = {
-    'Gasoline Existing':  'Diesel Existing',
-    'Gasoline Standard':  'Diesel Standard',
-    'Gasoline Efficient': 'Diesel Efficient',
+    'Gasoline_Low Efficiency':  'Diesel_Low Efficiency',
+    'Gasoline_Medium Efficiency':  'Diesel_Medium Efficiency',
+    'Gasoline_High Efficiency': 'Diesel_High Efficiency',
 }
 
 
@@ -201,9 +201,9 @@ def _techs_with_existing_output(fixed: pl.DataFrame, service_name: str) -> set[s
 
 def _add_diesel_equivalents(fixed: pl.DataFrame, region: str) -> pl.DataFrame:
     """
-    Insert Diesel Existing/Standard/Efficient technology blocks into the
+    Insert Diesel Low/Medium/High technology blocks into the
     Passenger Vehicle Motors service, each immediately after its Gasoline
-    counterpart (Gasoline Existing → Diesel Existing, etc.).
+    counterpart (Gasoline_Low Efficiency → Diesel_Low Efficiency, etc.).
 
     Every row of the Gasoline block is copied verbatim except the
     service_request Target, which is repointed from
@@ -667,7 +667,7 @@ def _assemble_region(
         )
     )
 
-    # Insert Diesel Existing/Standard/Efficient right after their Gasoline
+    # Insert Diesel Low/Medium/High right after their Gasoline
     # counterparts in Passenger Vehicle Motors.
     fixed = _add_diesel_equivalents(fixed, region)
 
