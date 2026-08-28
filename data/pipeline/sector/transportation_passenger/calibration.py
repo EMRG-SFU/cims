@@ -22,8 +22,17 @@ Technology market shares  (calibration_market_share_new)
                                     Passenger Vehicles, Passenger Vehicle Motors;
                                     Transit Public Bus, Intercity Bus, Intercity Rail
     stats_can/passenger_transportation.py
-                                  → StatCan/EPA-derived Passenger Vehicle Motors
-                                    market shares for 2000–latest StatCan market share year
+                                  → Build Passenger Vehicle Motors calibration_market_share_new 
+                                  rows from StatCan vehicle sales and EPA engine-package data.
+                                  → StatCan vehicle sales provides total annual vehicle sales by fuel type.
+                                  → EPA table_export.csv provides U.S. production data
+                                    used to calculate Low, Medium, and High efficiency market shares
+                                    for gasoline vehicles. Efficiency shares are calculated by:
+                                    1. Mapping engine packages to Low, Medium, and High efficiency classes.
+                                    2. Calculating annual market shares for the three efficiency classes.
+                                    4. Applying a centered 3-year moving average smoothing method.
+                                    Given lack of data, gasoline shares as used as a proxy for diesel shares.
+                                    More detail on method can be found in Renate's "Gasoline Market Shares" workbook
 
 Output columns
 --------------
@@ -90,6 +99,32 @@ STATCAN_MARKET_SHARE_START_YEAR = 2000
 STATCAN_MARKET_SHARE_SERVICE = 'Passenger Vehicle Motors'
 STATCAN_MARKET_SHARE_BRANCH_SUFFIX = '.Passenger Vehicle Motors'
 STATCAN_MARKET_SHARE_SOURCE = 'StatCan/EPA'
+
+EPA_FILE = Path (
+r"C:\cims\data\raw_data\epa\table_export.csv"
+)
+
+
+# EPA engine-package mapping used to split gasoline into efficiency classes.
+# Diesel is assigned the same Low / Medium / High shares as gasoline.
+EPA_ENGINE_PACKAGE_TO_EFFICIENCY = {
+    'Carb, Fixed Valve Timing, Two-Valve': 'Low',
+    'Carb, Fixed Valve Timing, Multi-Valve': 'Low',
+    'TBI, Fixed Valve Timing, Two-Valve': 'Low',
+    'TBI, Fixed Valve Timing, Multi-Valve': 'Low',
+    'Port, Fixed Valve Timing, Two-Valve': 'Low',
+    'Port, Fixed Valve Timing, Multi-Valve': 'Low',
+    'GDPI, Fixed Valve Timing, Multi-Valve': 'Medium',
+    'GDPI, Variable Valve Timing, Multi-Valve': 'Medium',
+    'GDI, Fixed Valve Timing, Multi-Valve': 'Medium',
+    'Port, Variable Valve Timing, Multi-Valve': 'Medium',
+    'Port, Variable Valve Timing, Two-Valve': 'Medium',
+    'GDI, Variable Valve Timing, Multi-Valve': 'High',
+    'GDI, Variable Valve Timing, Two-Valve': 'High',
+}
+
+EPA_EXCLUDED_ENGINE_PACKAGES = {'PHEV', 'All', 'Diesel', 'BEV'}
+EFFICIENCY_LEVELS = ('Low', 'Medium', 'High')
 
 # NIR full province name → CIMS abbreviation (excludes Canada)
 _REGION_MAP: dict[str, str] = {
@@ -377,13 +412,170 @@ def _build_tp_tech_shares(
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
-def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
-    """Build Passenger Vehicle Motors calibration_market_share_new rows from StatCan/EPA data.
+def _find_column(df: pd.DataFrame, candidates: tuple[str, ...], label: str) -> str:
+    """Return the first matching column, ignoring case and surrounding spaces."""
+    lookup = {str(c).strip().lower(): c for c in df.columns}
+    for candidate in candidates:
+        if candidate.lower() in lookup:
+            return lookup[candidate.lower()]
+    raise ValueError(
+        f'Could not find {label} column. Expected one of {candidates}; '
+        f'available columns are {list(df.columns)}.'
+    )
 
-    The StatCan source provides vehicle registrations by fuel type; the EPA source
-    provides gasoline/diesel standard vs. efficient splits. control.py provides the
-    latest data years through last_data_year['stat_can_market_shares'] and
-    last_data_year['epa'].
+
+def _load_efficiency_shares(epa_file: Path | str, epa_last_year: int) -> pd.DataFrame:
+    """Calculate smoothed Low/Medium/High gasoline shares from EPA engine packages.
+
+    The method mirrors the workbook Shares tab:
+      1. sum production by year and efficiency class;
+      2. divide each class by total mapped gasoline production;
+      3. keep the first year unsmoothed;
+      4. use a centred three-year average for interior years; and
+      5. average the previous/current values for the final year.
+
+    Diesel later receives the same smoothed efficiency shares.
+    """
+    epa_file = Path(epa_file)
+    if epa_file.suffix.lower() in {'.xlsx', '.xlsm', '.xls'}:
+        try:
+            epa = pd.read_excel(epa_file, sheet_name='EPA data')
+        except ValueError:
+            epa = pd.read_excel(epa_file)
+    else:
+        epa = pd.read_csv(epa_file)
+
+    engine_col = _find_column(
+        epa,
+        ('Engine Package', 'engine_package', 'engine package'),
+        'EPA engine package',
+    )
+    year_col = _find_column(
+        epa,
+        ('Model Year', 'year', 'model_year', 'model year'),
+        'EPA model year',
+    )
+    production_col = _find_column(
+        epa,
+        ('Production (000)', 'production', 'production_000', 'Production Share'),
+        'EPA production',
+    )
+
+    epa = epa[[engine_col, year_col, production_col]].copy()
+    epa['engine_package'] = epa[engine_col].astype(str).str.strip()
+    epa['year'] = pd.to_numeric(epa[year_col], errors='coerce')
+    epa['production'] = pd.to_numeric(
+        epa[production_col].replace({'-': None, '—': None, '': None}),
+        errors='coerce',
+    )
+    epa['efficiency'] = epa['engine_package'].map(EPA_ENGINE_PACKAGE_TO_EFFICIENCY)
+
+    unknown = sorted(
+        set(epa.loc[epa['efficiency'].isna(), 'engine_package'].dropna())
+        - EPA_EXCLUDED_ENGINE_PACKAGES
+        - {'nan', 'None'}
+    )
+    if unknown:
+        print(
+            '  Warning: excluding unmapped EPA engine packages: '
+            + ', '.join(unknown)
+        )
+
+    mapped = epa[
+        epa['efficiency'].notna()
+        & epa['year'].notna()
+        & epa['production'].notna()
+        & (epa['year'] <= epa_last_year)
+    ].copy()
+    if mapped.empty:
+        raise ValueError('No mapped gasoline EPA production data were found.')
+
+    production = (
+        mapped.groupby(['year', 'efficiency'], as_index=False)['production'].sum()
+        .pivot(index='year', columns='efficiency', values='production')
+        .reindex(columns=EFFICIENCY_LEVELS, fill_value=0.0)
+        .sort_index()
+        .fillna(0.0)
+    )
+    totals = production.sum(axis=1)
+    if (totals <= 0).any():
+        bad_years = production.index[totals <= 0].astype(int).tolist()
+        raise ValueError(f'EPA mapped gasoline production is zero for years {bad_years}.')
+
+    raw_shares = production.div(totals, axis=0)
+    smoothed = raw_shares.rolling(window=3, center=True, min_periods=1).mean()
+    smoothed.iloc[0] = raw_shares.iloc[0]  # Shares tab leaves the first year unchanged.
+    smoothed = smoothed.div(smoothed.sum(axis=1), axis=0)
+
+    return (
+        smoothed.rename_axis(index='year', columns='efficiency')
+        .reset_index()
+        .assign(year=lambda x: x['year'].astype(int))
+    )
+
+
+def _expand_efficiency_technologies(
+    annual: pd.DataFrame,
+    efficiency_shares: pd.DataFrame,
+) -> pd.DataFrame:
+    """Split gasoline and diesel rows into Low/Medium/High technologies."""
+    year_col = _find_column(annual, ('year', 'Year'), 'StatCan year')
+    fuel_col = _find_column(
+        annual,
+        ('fuel_type', 'fuel type', 'Fuel Type', 'fuel'),
+        'StatCan fuel type',
+    )
+
+    shares_long = efficiency_shares.melt(
+        id_vars='year',
+        value_vars=list(EFFICIENCY_LEVELS),
+        var_name='efficiency',
+        value_name='_efficiency_share',
+    )
+    out = annual.copy()
+    out[year_col] = pd.to_numeric(out[year_col], errors='coerce').astype('Int64')
+    out['_base_fuel'] = out[fuel_col].astype(str).str.strip().str.lower()
+
+    split_mask = out['_base_fuel'].isin({'gasoline', 'diesel'})
+    split = out.loc[split_mask].merge(
+        shares_long,
+        left_on=year_col,
+        right_on='year',
+        how='inner',
+        suffixes=('', '_share'),
+    )
+    unsplit = out.loc[~split_mask].copy()
+
+    # Detect the additive sales/registration field used by calculate_market_shares().
+    measure_candidates = (
+        'annual_sales', 'sales', 'registrations', 'registration',
+        'vehicles', 'count', 'value',
+    )
+    measure_col = _find_column(out, measure_candidates, 'StatCan sales/registration')
+    split[measure_col] = (
+        pd.to_numeric(split[measure_col], errors='coerce')
+        * split['_efficiency_share']
+    )
+    split[fuel_col] = (
+        split['_base_fuel'].str.title()
+        + '_'
+        + split['efficiency']
+        + ' Efficiency'
+    )
+
+    helper_cols = ['_base_fuel', '_efficiency_share', 'efficiency', 'year_share']
+    split = split.drop(columns=[c for c in helper_cols if c in split.columns])
+    unsplit = unsplit.drop(columns=['_base_fuel'])
+    split = split.reindex(columns=unsplit.columns)
+    return pd.concat([unsplit, split], ignore_index=True)
+
+
+def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
+    """Build Passenger Vehicle Motors market shares from StatCan and EPA data.
+
+    EPA engine packages determine gasoline Low/Medium/High efficiency shares.
+    The gasoline shares are smoothed using the Shares-tab method and then applied
+    identically to diesel. Other StatCan fuel technologies remain unchanged.
     """
     statcan_last_year = _last_data_year(
         'stat_can_market_shares',
@@ -394,10 +586,7 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
         getattr(_statcan_tp_mod, 'LAST_OBSERVED_YEAR', 2025),
     )
 
-    # The source module uses LAST_OBSERVED_YEAR inside add_backcast_history(), so
-    # set it from control.py before generating historical/backcast rows.
     _statcan_tp_mod.LAST_OBSERVED_YEAR = statcan_last_year
-
     annual = _statcan_tp_mod.read_statscan_vehicle_sales(
         _statcan_tp_mod.DEFAULT_STATCAN_FILE,
         first_observed_year=_statcan_tp_mod.FIRST_OBSERVED_YEAR,
@@ -406,14 +595,13 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
     annual = _statcan_tp_mod.apply_region_proxies(annual, _statcan_tp_mod.PROXY_REGIONS)
     annual = _statcan_tp_mod.add_backcast_history(annual)
 
-    gas_diesel_shares = _statcan_tp_mod.load_gasoline_technology_shares(
-        _statcan_tp_mod.DEFAULT_EPA_FILE
-    )
-    gas_diesel_shares = gas_diesel_shares[gas_diesel_shares['year'] <= epa_last_year]
-    if gas_diesel_shares.empty:
-        raise ValueError('No EPA gasoline/diesel technology shares available after applying control.py last_data_year["epa"].')
+    EPA_FILE = r"C:\cims\data\raw_data\epa\table_export.csv"
 
-    tech_sales = _statcan_tp_mod.expand_vehicle_technologies(annual, gas_diesel_shares)
+    efficiency_shares = _load_efficiency_shares(
+        EPA_FILE,
+        epa_last_year,
+    )
+    tech_sales = _expand_efficiency_technologies(annual, efficiency_shares)
     market_shares = _statcan_tp_mod.calculate_market_shares(tech_sales)
     market_shares = market_shares[
         market_shares['year'].between(STATCAN_MARKET_SHARE_START_YEAR, statcan_last_year)
