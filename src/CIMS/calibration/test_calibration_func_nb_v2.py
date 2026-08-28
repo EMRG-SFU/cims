@@ -1,7 +1,7 @@
 import marimo
 
-__generated_with = "0.23.14"
-app = marimo.App(width="medium")
+__generated_with = "0.24.0"
+app = marimo.App(width="columns")
 
 with app.setup:
     import marimo as mo
@@ -35,6 +35,8 @@ with app.setup:
 
 
     from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
+    from Calibration.Optimization.optimize_ms_v2 import optimize_ms_via_fics_v2
+    from Calibration.Optimization.optimize_ms_v2 import optimize_ms_via_fics_and_lifetimes
 
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
@@ -50,11 +52,18 @@ with app.setup:
     from Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
     from Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
 
-    from Calibration.Utility.write_fics import write_fics
-
     import Calibration.Plotting.plot_ms_for_node as plotMS
     import Calibration.Plotting.plot_emissions_for_node as plotEmissions
     import Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
+
+
+@app.cell
+def _():
+    nodeName="CIMS.CAN.AB.Commercial.Buildings.Hot Water"
+    # nodeName="CIMS.CAN.AB.Commercial.HVAC (Cold)"
+    # nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.LowMed Density.Vintage.1981-2000 Bldg Code.Heating (Cold)"
+    # nodeName="CIMS.CAN.AB.Residential.Water Heating.LowMed Density"
+    return (nodeName,)
 
 
 @app.cell(hide_code=True)
@@ -77,8 +86,8 @@ def _():
 def _():
     # model_pickle_path = "/path/to/your/model/here.pkl"
     # or "C:\path\to\your\model.pkl"
-    model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/model_3regions_withCalibration_abres.pickle"
-    #model_pickle_path = "C:/cims/results/Reference/model.pkl"
+    model_pickle_path = "C:/_dev/data_processing_calibration/cims/results/commercial/model.pkl"
+    # model_pickle_path = "C:/_dev/data_processing_calibration/cims/results/residential/model.pkl"
     return (model_pickle_path,)
 
 
@@ -96,7 +105,7 @@ def _():
 
 @app.cell
 def _(model_pickle_path):
-    with open(model_pickle_path, 'rb') as _f:
+    with gzip.open(model_pickle_path, 'rb') as _f:
         model = pickle.load(_f)
     return (model,)
 
@@ -227,21 +236,21 @@ def _():
 
 
 @app.cell
-def _(model):
-    edf = emissions.get_emissions(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    edf = emissions.get_emissions(model, nodeName)
     edf
     return
 
 
 @app.cell
-def _(model):
-    emissions.get_emissions_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    emissions.get_emissions_calibration(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    emissions.get_emissions_diff_frame(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    emissions.get_emissions_calibration(model, nodeName)
     return
 
 
@@ -254,60 +263,32 @@ def _():
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions(model, nodeName="CIMS.CAN.AB.Residential")
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    Adding a `_cims` at the end of the previous function gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
-    """)
+def _(model, nodeName):
+    plotEmissions.plot_emissions(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions_cims(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    plotEmissions.plot_emissions_line(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions_line(model, nodeName="CIMS.CAN.AB.Residential")
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    As with the stacked plots above, adding a `_cims` at the end of the previous function gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
-    """)
+def _(model, nodeName):
+    plotEmissions.plot_emissions_line(model, nodeName, patterns=['CH4','N2O'])
     return
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions_line_cims(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    plotEmissions.plot_emissions_heatmap(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotEmissions.plot_emissions_line(model, nodeName="CIMS.CAN.AB.Residential", patterns=['CH4','N2O'])
-    return
-
-
-@app.cell
-def _(model):
-    plotEmissions.plot_emissions_heatmap(model, nodeName="CIMS.CAN.AB.Residential")
-    return
-
-
-@app.cell
-def _(model):
-    plotEmissions.plot_emissions_diffLine(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    plotEmissions.plot_emissions_diffLine(model, nodeName)
     return
 
 
@@ -342,24 +323,24 @@ def _():
 
 
 @app.cell
-def _(model):
-    cimsRq = requestedQuantities.get_quantityRequested(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    cimsRq = requestedQuantities.get_quantityRequested(model, nodeName)
     cimsRq
     return
 
 
 @app.cell
-def _(model):
-    calRq = requestedQuantities.get_quantityRequested_calibration(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    calRq = requestedQuantities.get_quantityRequested_calibration(model, nodeName)
     calRq
     return
 
 
 @app.cell
-def _(model):
-    bla = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName="CIMS.CAN.AB.Residential", join_type="outer")
+def _(model, nodeName):
+    bla = requestedQuantities.get_quantityRequested_diff_frame(model, nodeName, join_type="outer")
     bla
-    return (bla,)
+    return
 
 
 @app.cell(hide_code=True)
@@ -371,54 +352,26 @@ def _():
 
 
 @app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities(model, nodeName="CIMS.CAN.AB.Residential", gimme_all_fuels_please=True)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    Adding a `_cims` at the end of the previous function, and getting rid of the "all_fuels" argument above, gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
-    """)
+def _(model, nodeName):
+    plotRequestedQuantities.plot_requestedQuantities(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_cims(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    plotRequestedQuantities.plot_requestedQuantities_line(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_line(model, nodeName="CIMS.CAN.AB.Residential", gimme_all_fuels_please=True)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    As above with the stacked plots, adding a `_cims` at the end of the previous function, and getting rid of the "all_fuels" argument above, gives this version, which only plots the cims model values, and not the calibration counterfactual. This is useful in situations where the former exists, but not the latter.
-    """)
+def _(model, nodeName):
+    plotRequestedQuantities.plot_requestedQuantities_heatmap(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_line_cims(model, nodeName="CIMS.CAN.AB.Residential")
-    return
-
-
-@app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_heatmap(model, nodeName="CIMS.CAN.AB.Residential")
-    return
-
-
-@app.cell
-def _(model):
-    plotRequestedQuantities.plot_requestedQuantities_diffLine(model, nodeName="CIMS.CAN.AB.Residential")
+def _(model, nodeName):
+    plotRequestedQuantities.plot_requestedQuantities_diffLine(model, nodeName)
     return
 
 
@@ -453,20 +406,20 @@ def _():
 
 
 @app.cell
-def _(model):
-    market_share.get_marketShareTotal(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    market_share.get_marketShareTotal(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    market_share.get_marketShareTotal_calibration(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    market_share.get_marketShareTotal_calibration(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    market_share.get_marketShare_diff_frame(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", doNumFormat=True)
+def _(model, nodeName):
+    market_share.get_marketShare_diff_frame(model, nodeName, doNumFormat=True)
     return
 
 
@@ -481,8 +434,8 @@ def _():
 
 
 @app.cell
-def _(model):
-    market_share.tweak_marketShareTotal_calibration(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", doNumFormat=False)
+def _(model, nodeName):
+    market_share.tweak_marketShareTotal_calibration(model, nodeName, doNumFormat=False)
     return
 
 
@@ -497,26 +450,26 @@ def _():
 
 
 @app.cell
-def _(model):
-    plotMS.plot_ms(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    plotMS.plot_ms(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotMS.plot_ms_line(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    plotMS.plot_ms_line(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotMS.plot_ms_heatmap(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    plotMS.plot_ms_heatmap(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    plotMS.plot_ms_diffLine(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    plotMS.plot_ms_diffLine(model, nodeName)
     return
 
 
@@ -551,67 +504,20 @@ def _():
 
 
 @app.cell
-def _(model):
-    FICs.get_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    FICs.get_FICs(model, nodeName)
     return
 
 
 @app.cell
-def _(model):
-    FICs.tweak_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)", transpose = True)
+def _(model, nodeName):
+    FICs.tweak_FICs(model, nodeName, transpose = True)
     return
 
 
 @app.cell
-def _(model):
-    FICs.tweak_FICs(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ## Export FIC Values to CSV Files
-
-    These functions write CSV files that have the same structure and format as the model input CSV files. After changing/tweaking FIC values, either manually or using the automated optimizers, these functions can persist these changes. They may then by layered on top of future CIMS runs, allowing those runs to operate with the calibrated/optimized FICs.
-    """)
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ### Export FICs of Given Node
-
-    This function exports only the FICs of technologies found at the service node supplied -- in this case the `Heating (Cold)` node of this specific vintage of High Density buildings in `AB.Residential.Dwellings`.
-    """)
-    return
-
-
-@app.cell
-def _(model):
-    write_fics(model, 
-               nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)",
-               outputFile="your_filename_here__singleNode.csv")
-    return
-
-
-@app.cell(hide_code=True)
-def _():
-    mo.md(r"""
-    ### Export FICs of Subtree Rooted At Given Node
-
-    This function exports the FICs of technologies found at the node supplied, and all other nodes below it in the structural CIMS graph. In this case, the FICs of all technologies found under `High Density` in `AB.Residential.Dwellings`.
-    """)
-    return
-
-
-@app.cell
-def _(model):
-    write_fics(model, 
-               nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density",
-               outputFile="your_filename_here__subtree.csv",
-               include_subtree=True)
+def _(model, nodeName):
+    FICs.tweak_FICs(model, nodeName)
     return
 
 
@@ -626,20 +532,26 @@ def _():
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
-    ## Optimize FICs To Fit Market Share
+    ### Optimize FICs To Fit Market Share (v2)
+
+    See `optimize_ms_v2.py` for documentation
     """)
     return
 
 
 @app.cell
-def _(model):
-    res = optimize_ms_via_fics(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+def _(model, nodeName):
+    ### Use this function to adjust lifetimes and FICs
+
+    fit_techs = optimize_ms_via_fics_and_lifetimes(model, nodeName, plot=True)
     return
 
 
 @app.cell
-def _(model):
-    aggregation_traversal(model)
+def _():
+    ### Use this function to adjust FICs only
+
+    # fit_techs = optimize_ms_via_fics_v2(model, nodeName)
     return
 
 

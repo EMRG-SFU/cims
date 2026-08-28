@@ -104,8 +104,8 @@ FIXED_TEMPLATE: dict[str, str] = {
 }
 
 REGION_SPECIFIC_ENERGIES: set[str] = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 # Activity variable → load sub-service name used in the Target branch path

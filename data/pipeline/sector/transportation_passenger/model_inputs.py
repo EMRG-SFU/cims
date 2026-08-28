@@ -107,8 +107,8 @@ FIXED_TEMPLATE: dict[str, str] = {
 
 # Energies whose price target is region-specific (CIMS.CAN.{region}.{energy})
 REGION_SPECIFIC_ENERGIES: set[str] = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 # Pipeline category → fixed-data Technology name for the Urban service.

@@ -100,8 +100,8 @@ SUBPRODUCTS = [
 ]
 
 REGION_SPECIFIC_ENERGIES = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 

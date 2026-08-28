@@ -91,14 +91,19 @@ _REGION_MAP: dict[str, str] = {
 }
 
 _REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
-# Pipeline fuel category → Light Medium technology name for the calibration year
+# Pipeline fuel category → Light Medium technology name, for provinces where
+# the source pipeline can't compute the Low/Medium/High Efficiency vintage
+# split (no Table 35/36 intensity data) and falls back to an unsplit fuel
+# category. Ethanol/Biodiesel are folded into Gasoline/Diesel upstream
+# (they're blended fuel volumes, not separate vehicle technologies) and
+# never appear here.
 LM_CAT_TO_TECH: dict[str, str] = {
-    'Diesel':   'Diesel Existing',
-    'Gasoline': 'Gasoline Existing',
+    'Diesel':   'Diesel_Low Efficiency',
+    'Gasoline': 'Gasoline_Low Efficiency',
     'Propane':  'Propane',
 }
 
@@ -250,7 +255,7 @@ def _build_tf_tech_shares(
     year_max: int | None = None,
 ) -> pl.DataFrame:
     """Extract calibration_market_share_total rows for one transportation freight service."""
-    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'calibration_market_share_total')
+    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'market_share_total')
     if year_max is not None:
         mask = mask & (pl.col('year') <= year_max)
     data = tf.filter(mask)

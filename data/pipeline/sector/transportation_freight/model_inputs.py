@@ -109,15 +109,15 @@ FIXED_TEMPLATE: dict[str, str] = {
 }
 
 REGION_SPECIFIC_ENERGIES: set[str] = {
-    'Electricity', 'Biodiesel', 'Renewable Diesel',
-    'Ethanol', 'Renewable Gasoline', 'Hydrogen', 'Renewable Natural Gas',
+    'Electricity', 'Biodiesel',
+    'Ethanol', 'Hydrogen',
 }
 
 # Pipeline fuel category → LM technology representing the 2000 installed base.
 # Technologies absent from this map receive market_share_total = 0.
 LM_CAT_TO_TECH: dict[str, str] = {
-    'Diesel':   'Diesel Existing',
-    'Gasoline': 'Gasoline Existing',
+    'Diesel':   'Diesel_Low Efficiency',
+    'Gasoline': 'Gasoline_Low Efficiency',
     'Propane':  'Propane',
 }
 
@@ -435,7 +435,11 @@ def _build_lm_mst_rows(
 
     rows: list[dict] = []
     for tech, lifetime_max in tech_lifetime_max.items():
-        cat = tech_to_cat.get(tech, tech)
+        # Prefer an exact match against what the pipeline actually emitted —
+        # e.g. 'Diesel Existing' when the vintage split succeeded — and only
+        # fall back to the raw-fuel-category mapping (LM_CAT_TO_TECH inverse)
+        # for provinces where the pipeline emits an unsplit fuel category.
+        cat = tech if tech in pipeline_by_cat else tech_to_cat.get(tech, tech)
         entry = pipeline_by_cat.get(cat, (0.0, 'CEUD', default_unit))
         val, src, unit = entry
         rows.append({
