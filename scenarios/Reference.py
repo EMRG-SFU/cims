@@ -24,8 +24,8 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
-def _():
+@app.function
+def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
     # Model files should be located at: data/model_inputs/
@@ -84,7 +84,8 @@ def _():
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-    return base_model, default_path, list_path, model_path, update_files
+
+    return model_path, base_model, default_path, list_path, update_files
 
 
 @app.cell(hide_code=True)
@@ -96,7 +97,10 @@ def _():
 
 
 @app.cell
-def _(model_path, update_files):
+def _():
+    # Make sure list of model files is reset even if notebook kernel is not restarted
+    model_path, base_model, default_path, list_path, update_files = reset_model_files()
+
     # Only uncommented regions below will be run in the simulation
     region_list = [
         'CIMS', # Required
@@ -287,8 +291,18 @@ def _(model_path, update_files):
 
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
-    scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
-    return region_list, scenario_name, sector_list, year_list
+    scenario_name = 'commercial'  # Set this to current scenario (e.g., "Reference", "Net Zero")
+    return (
+        base_model,
+        default_path,
+        list_path,
+        model_path,
+        region_list,
+        scenario_name,
+        sector_list,
+        update_files,
+        year_list,
+    )
 
 
 @app.cell(hide_code=True)
@@ -300,24 +314,16 @@ def _():
 
 
 @app.cell
-def _(
-    base_model,
-    default_path,
-    list_path,
-    model_path,
-    region_list,
-    sector_list,
-    update_files,
-    year_list,
-):
-    # breakpoint()
+def _(base_model, default_path, list_path, model_path, region_list, sector_list, year_list, 
+      update_files, ):
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
         region_list=region_list,
         update_files=update_files,
         year_list=year_list,
-        sector_list=sector_list,    default_values_csv_path=default_path,
+        sector_list=sector_list,    
+        default_values_csv_path=default_path,
         list_csv_path=list_path,
     )
     return (model,)
@@ -405,9 +411,6 @@ def _(model, results_path):
 
 @app.cell
 def _():
-    # import pickle
-    # import gzip
-
     # with gzip.open(f"{results_path}/model.pkl", "rb") as f:
     #     model = pickle.load(f)
     return
