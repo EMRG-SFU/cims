@@ -42,6 +42,11 @@ class Model:
     sector_list : Sectors to include/filter.
     default_values_csv_path : Path to defaults values CSV (parameter defaults).
     list_csv_path : Path to defaults_Lists.csv
+    sector_folders : Update-file entries that define sectors (e.g., the notebook's sector_req).
+        Only files collected from these folders count toward the Region x Sector coverage
+        matrix; cross-cutting entries (DCC/DIC/FIC, market share limits, policies) feed the
+        "(no sector)" row instead. None treats every collected path as sector-defining.
+    verbose : Print the full per-entry file health table instead of the per-folder rollup.
 
     Attributes
     ----------
@@ -67,6 +72,8 @@ class Model:
         sector_list: Iterable[str],
         default_values_csv_path: str,
         list_csv_path: str,
+        sector_folders: Iterable[str] = None,
+        verbose: bool = False,
         ):
         print("\n=== Instantiating Model ===")
         start_init = time.time()
@@ -87,6 +94,8 @@ class Model:
             region_list=region_list,
             sector_list=sector_list,
             update_files=update_files,
+            sector_folders=sector_folders,
+            verbose=verbose,
         )
 
         print("  Reading & filtering model CSVs...")

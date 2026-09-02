@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.15"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -43,7 +43,7 @@ def _():
     sector_req = [
         'fuels',
         'transmission',
-        'coal mining',
+        'coal_mining',
         'natural_gas',
         'petroleum_crude',
         'petroleum_refining',
@@ -84,7 +84,14 @@ def _():
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)
-    return base_model, default_path, list_path, model_path, update_files
+    return (
+        base_model,
+        default_path,
+        list_path,
+        model_path,
+        sector_req,
+        update_files,
+    )
 
 
 @app.cell(hide_code=True)
@@ -331,18 +338,21 @@ def _(
     model_path,
     region_list,
     sector_list,
+    sector_req,
     update_files,
     year_list,
 ):
-    # breakpoint()
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
         region_list=region_list,
         update_files=update_files,
         year_list=year_list,
-        sector_list=sector_list,    default_values_csv_path=default_path,
+        sector_list=sector_list,    
+        default_values_csv_path=default_path,
         list_csv_path=list_path,
+        sector_folders=sector_req,
+        verbose=False,
     )
     return (model,)
 
