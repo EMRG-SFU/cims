@@ -30,6 +30,20 @@ HVAC Cold / Marine and Hot Water market_share_total  (year 2000 only)
     Spliced between the 'lifetime' and 'output' parameter blocks for each
     technology within those service sections.
 
+HVAC and Cooling service_request  (see _build_hvac_service_request_rows)
+    processed_data/nrcan/ceud/commercial.csv  →  variables hvac_service_request /
+    hvac_cooling_service_request / buildings_hvac_service_request /
+    buildings_cooling_service_request
+    Two demand sources per target, covering mutually exclusive year ranges:
+    Buildings -> HVAC (Cold)/(Marine) and Buildings -> Cooling carry exact
+    CEUD-derived historical demand (through commercial.py's
+    BUILDINGS_HVAC_HISTORICAL_CUTOFF); Shell.<Activity> -> HVAC (per shell
+    technology) and HVAC -> Cooling (per HVAC technology) are zero through
+    that same cutoff and take over from SHELL_HVAC_COMPETITION_START_YEAR
+    onward, once Shell's own Std/LEED Silver/LEED Platinum competition
+    becomes live. See commercial.py's compute_hvac_service_requests for the
+    full rationale.
+
 Output columns
 --------------
 Branch, Type, Region, Sector, Service, Technology, Parameter,
@@ -220,6 +234,68 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
     ])
 
 
+
+# Buildings -> sub-service targets whose fixed-data service_request rows are
+# now computed from CEUD (see commercial.py:compute_enduse_service_requests)
+# rather than hardcoded. Maps the pipeline variable name to the CIMS
+# sub-service branch name.
+ENDUSE_VARIABLE_TARGETS: dict[str, str] = {
+    'lighting_service_request':      'Lighting',
+    'refrigeration_service_request': 'Refrigeration',
+    'cooking_service_request':       'Cooking',
+    'hot_water_service_request':     'Hot Water',
+    'plug_load_service_request':     'Plug Load',
+}
+
+
+def _build_enduse_service_request_rows(commercial: pl.DataFrame, region: str,
+                                        start_order: float) -> pl.DataFrame:
+    """
+    Buildings -> {Lighting, Refrigeration, Cooking, Hot Water, Plug Load}
+    service_request rows (all years), computed from CEUD end-use energy in
+    commercial.py's compute_enduse_service_requests(). Replaces the
+    hand-fixed constants _assemble_region() strips out of `fixed` for these
+    five sub-services.
+
+    _order values are packed into a narrow band just above start_order (the
+    surviving Buildings -> Shell row) so they land in the same spot the
+    stripped fixed-data rows used to occupy, in the same Lighting /
+    Refrigeration / Cooking / Hot Water / Plug Load order.
+    """
+    branch = f'CIMS.CAN.{region}.Commercial.Buildings'
+    frames = []
+
+    for var_idx, (variable, suffix) in enumerate(ENDUSE_VARIABLE_TARGETS.items()):
+        data = (
+            commercial
+            .filter((pl.col('region') == region) & (pl.col('variable') == variable))
+            .sort('year')
+        )
+        n = len(data)
+        if n == 0:
+            continue
+        frames.append(data.select([
+            pl.lit(branch).alias('Branch'),
+            pl.lit('Service').alias('Type'),
+            pl.lit(region).alias('Region'),
+            pl.lit('Commercial').alias('Sector'),
+            pl.lit('Buildings').alias('Service'),
+            pl.lit('').alias('Technology'),
+            pl.lit('service_request').alias('Parameter'),
+            pl.lit('').alias('Context'),
+            pl.lit('').alias('Sub_Context'),
+            pl.lit(f'{branch}.{suffix}').alias('Target'),
+            pl.col('source').alias('Source'),
+            pl.col('unit').alias('Unit'),
+            pl.col('year').cast(pl.String).alias('Year'),
+            pl.col('value').cast(pl.String).alias('Value'),
+            pl.Series('_order', [start_order + var_idx * 0.01 + j * 1e-4 for j in range(n)],
+                      dtype=pl.Float64).alias('_order'),
+        ]))
+
+    return pl.concat(frames, how='diagonal_relaxed') if frames else _empty_frame()
+
+
 def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
                              insert_order: float) -> pl.DataFrame:
     """
@@ -322,6 +398,14 @@ def _build_tech_mst_rows(
     # using 0 for any technology absent from the pipeline.
     for tech, lifetime_max in tech_lifetime_max.items():
         val = pipeline_vals.get(tech, 0.0)
+        # A technology can be PRESENT in the pipeline with an undefined (NaN)
+        # share -- e.g. a fuel with zero measured demand across the whole
+        # disaggregation group for that year -- and .get()'s default only
+        # covers a technology missing entirely. Treat NaN the same as
+        # missing rather than writing a literal "nan" into the model_inputs
+        # CSV, which silently drops out of any downstream sum.
+        if val is None or val != val:
+            val = 0.0
         rows.append({
             'Branch': branch, 'Type': 'Service', 'Region': region,
             'Sector': 'Commercial', 'Service': service_name,
@@ -345,6 +429,183 @@ def _find_max_order(df: pl.DataFrame, service: str, parameter: str,
     if len(subset) == 0:
         return None
     return float(subset['_order'].max())
+
+
+def _find_tech_param_max_order(df: pl.DataFrame, service: str, technology: str,
+                               parameter: str) -> float | None:
+    """Return the max _order value for rows matching service + technology + parameter."""
+    subset = df.filter(
+        (pl.col('Service') == service) & (pl.col('Technology') == technology) &
+        (pl.col('Parameter') == parameter)
+    )
+    if len(subset) == 0:
+        return None
+    return float(subset['_order'].max())
+
+
+def _build_hvac_service_request_rows(commercial: pl.DataFrame, fixed: pl.DataFrame,
+                                      region: str) -> pl.DataFrame:
+    """
+    Builds four sets of rows, all computed from CEUD Space Heating/Cooling
+    energy in commercial.py's compute_hvac_service_requests(), replacing the
+    hand-fixed constants _assemble_region() strips out of `fixed` for these
+    targets:
+      - Buildings.Shell.<Activity> -> HVAC (Cold/Marine) service_request
+        (all years, all shell technologies -- zero before commercial.py's
+        SHELL_HVAC_COMPETITION_START_YEAR)
+      - HVAC (Cold/Marine) technologies' own service_request to Cooling
+        (same zero-before-competition-start pattern)
+      - Buildings -> HVAC (Cold/Marine) direct historical service_request
+        (years through BUILDINGS_HVAC_HISTORICAL_CUTOFF only)
+      - Buildings -> Cooling direct historical service_request (same cutoff)
+
+    Each new row is anchored to sit immediately after its technology's
+    surviving 'fom' row (or, for the two Buildings -> ... direct requests,
+    the surviving Buildings -> Shell row) -- the same slot the stripped
+    fixed-data service_request row used to occupy.
+    """
+    frames = []
+
+    hvac_data = commercial.filter(
+        (pl.col('region') == region) & (pl.col('variable') == 'hvac_service_request')
+    )
+    for category in hvac_data['category'].unique().to_list():
+        activity, climate, tech = category.split('|')
+        shell_svc = (CAT_TO_COLD_SVC if climate == 'Cold' else CAT_TO_MARINE_SVC).get(activity)
+        if shell_svc is None:
+            continue
+
+        anchor = _find_tech_param_max_order(fixed, shell_svc, tech, 'fom')
+        if anchor is None:
+            continue
+
+        data = hvac_data.filter(pl.col('category') == category).sort('year')
+        n = len(data)
+        if n == 0:
+            continue
+
+        branch = f'CIMS.CAN.{region}.Commercial.Buildings.Shell.{shell_svc}'
+        target = f'CIMS.CAN.{region}.Commercial.HVAC ({climate})'
+        frames.append(data.select([
+            pl.lit(branch).alias('Branch'),
+            pl.lit('Service').alias('Type'),
+            pl.lit(region).alias('Region'),
+            pl.lit('Commercial').alias('Sector'),
+            pl.lit(shell_svc).alias('Service'),
+            pl.lit(tech).alias('Technology'),
+            pl.lit('service_request').alias('Parameter'),
+            pl.lit('').alias('Context'),
+            pl.lit('').alias('Sub_Context'),
+            pl.lit(target).alias('Target'),
+            pl.col('source').alias('Source'),
+            pl.col('unit').alias('Unit'),
+            pl.col('year').cast(pl.String).alias('Year'),
+            pl.col('value').cast(pl.String).alias('Value'),
+            pl.Series('_order', [anchor + 0.5 + j * 1e-4 for j in range(n)],
+                      dtype=pl.Float64).alias('_order'),
+        ]))
+
+    buildings_hvac_data = commercial.filter(
+        (pl.col('region') == region) & (pl.col('variable') == 'buildings_hvac_service_request')
+    )
+    buildings_hvac_anchor = _find_max_order(fixed, 'Buildings', 'service_request', require_tech=False)
+    for climate_idx, climate in enumerate(buildings_hvac_data['category'].unique().to_list()):
+        if buildings_hvac_anchor is None:
+            break
+        data = buildings_hvac_data.filter(pl.col('category') == climate).sort('year')
+        n = len(data)
+        if n == 0:
+            continue
+        branch = f'CIMS.CAN.{region}.Commercial.Buildings'
+        target = f'CIMS.CAN.{region}.Commercial.HVAC ({climate})'
+        frames.append(data.select([
+            pl.lit(branch).alias('Branch'),
+            pl.lit('Service').alias('Type'),
+            pl.lit(region).alias('Region'),
+            pl.lit('Commercial').alias('Sector'),
+            pl.lit('Buildings').alias('Service'),
+            pl.lit('').alias('Technology'),
+            pl.lit('service_request').alias('Parameter'),
+            pl.lit('').alias('Context'),
+            pl.lit('').alias('Sub_Context'),
+            pl.lit(target).alias('Target'),
+            pl.col('source').alias('Source'),
+            pl.col('unit').alias('Unit'),
+            pl.col('year').cast(pl.String).alias('Year'),
+            pl.col('value').cast(pl.String).alias('Value'),
+            pl.Series('_order', [buildings_hvac_anchor + 0.6 + climate_idx * 0.01 + j * 1e-4
+                                 for j in range(n)], dtype=pl.Float64).alias('_order'),
+        ]))
+
+    buildings_cooling_data = commercial.filter(
+        (pl.col('region') == region) & (pl.col('variable') == 'buildings_cooling_service_request')
+    )
+    for climate_idx, climate in enumerate(buildings_cooling_data['category'].unique().to_list()):
+        if buildings_hvac_anchor is None:
+            break
+        data = buildings_cooling_data.filter(pl.col('category') == climate).sort('year')
+        n = len(data)
+        if n == 0:
+            continue
+        branch = f'CIMS.CAN.{region}.Commercial.Buildings'
+        target = f'CIMS.CAN.{region}.Commercial.Cooling'
+        frames.append(data.select([
+            pl.lit(branch).alias('Branch'),
+            pl.lit('Service').alias('Type'),
+            pl.lit(region).alias('Region'),
+            pl.lit('Commercial').alias('Sector'),
+            pl.lit('Buildings').alias('Service'),
+            pl.lit('').alias('Technology'),
+            pl.lit('service_request').alias('Parameter'),
+            pl.lit('').alias('Context'),
+            pl.lit('').alias('Sub_Context'),
+            pl.lit(target).alias('Target'),
+            pl.col('source').alias('Source'),
+            pl.col('unit').alias('Unit'),
+            pl.col('year').cast(pl.String).alias('Year'),
+            pl.col('value').cast(pl.String).alias('Value'),
+            pl.Series('_order', [buildings_hvac_anchor + 0.7 + climate_idx * 0.01 + j * 1e-4
+                                 for j in range(n)], dtype=pl.Float64).alias('_order'),
+        ]))
+
+    hvac_cooling_data = commercial.filter(
+        (pl.col('region') == region) & (pl.col('variable') == 'hvac_cooling_service_request')
+    )
+    for category in hvac_cooling_data['category'].unique().to_list():
+        climate, tech = category.split('|')
+        service = f'HVAC ({climate})'
+
+        anchor = _find_tech_param_max_order(fixed, service, tech, 'fom')
+        if anchor is None:
+            continue
+
+        data = hvac_cooling_data.filter(pl.col('category') == category).sort('year')
+        n = len(data)
+        if n == 0:
+            continue
+
+        branch = f'CIMS.CAN.{region}.Commercial.{service}'
+        target = f'CIMS.CAN.{region}.Commercial.Cooling'
+        frames.append(data.select([
+            pl.lit(branch).alias('Branch'),
+            pl.lit('Service').alias('Type'),
+            pl.lit(region).alias('Region'),
+            pl.lit('Commercial').alias('Sector'),
+            pl.lit(service).alias('Service'),
+            pl.lit(tech).alias('Technology'),
+            pl.lit('service_request').alias('Parameter'),
+            pl.lit('').alias('Context'),
+            pl.lit('').alias('Sub_Context'),
+            pl.lit(target).alias('Target'),
+            pl.col('source').alias('Source'),
+            pl.col('unit').alias('Unit'),
+            pl.col('year').cast(pl.String).alias('Year'),
+            pl.col('value').cast(pl.String).alias('Value'),
+            pl.Series('_order', [anchor + 0.5 + j * 1e-4 for j in range(n)],
+                      dtype=pl.Float64).alias('_order'),
+        ]))
+
+    return pl.concat(frames, how='diagonal_relaxed') if frames else _empty_frame()
 
 
 def _assemble_region(
@@ -376,11 +637,68 @@ def _assemble_region(
     # 3–5. Per-technology lifetime maxima are resolved inside _build_tech_mst_rows
     is_bc_full = (region == 'BC')
 
+    # Strip the fixed-data Buildings -> {Lighting, Refrigeration, Cooking,
+    # Hot Water, Plug Load} service_request rows: these five are now computed
+    # from CEUD (see ENDUSE_VARIABLE_TARGETS / _build_enduse_service_request_rows)
+    # instead of being hand-fixed constants. Buildings -> Shell is untouched.
+    enduse_suffixes = list(ENDUSE_VARIABLE_TARGETS.values())
+    is_stripped_enduse_row = (
+        (pl.col('Service') == 'Buildings') &
+        (pl.col('Parameter') == 'service_request') &
+        pl.any_horizontal([pl.col('Target').str.ends_with(f'.{s}') for s in enduse_suffixes])
+    )
+    fixed = fixed.filter(~is_stripped_enduse_row)
+
+    # Strip the fixed-data Shell.<Activity> -> HVAC (Cold/Marine)
+    # service_request rows (per shell technology): these are now computed
+    # from CEUD (see compute_hvac_service_requests / _build_hvac_service_request_rows)
+    # instead of being hand-fixed constants. HVAC's own fuel-technology
+    # service_request rows (-> Methane Blend / Electricity / Motive Power)
+    # are untouched.
+    #
+    # NOTE: the Cooling NODE's own Std -> Electricity rate is intentionally
+    # LEFT AS THE ORIGINAL fixed_data constant here (not stripped) -- that's
+    # Cooling's own efficiency conversion, a separate concern from how much
+    # Cooling gets requested in the first place.
+    #
+    # HVAC (Cold/Marine) technologies' own service_request to Cooling *is*
+    # stripped: this used to be a flat "1" for every technology (Cooling
+    # tracking heat 1:1), now replaced by the CEUD-derived cooling/heat ratio
+    # (zero before SHELL_HVAC_COMPETITION_START_YEAR, since the Buildings ->
+    # Cooling direct request carries historical demand instead -- see
+    # compute_hvac_service_requests / _hvac_cooling_to_heat_ratio).
+    is_stripped_hvac_row = (
+        (pl.col('Parameter') == 'service_request') &
+        (pl.col('Target').str.ends_with('.HVAC (Cold)') |
+         pl.col('Target').str.ends_with('.HVAC (Marine)') |
+         ((pl.col('Branch').str.ends_with('.HVAC (Cold)') |
+           pl.col('Branch').str.ends_with('.HVAC (Marine)')) &
+          pl.col('Target').str.ends_with('.Cooling')))
+    )
+    fixed = fixed.filter(~is_stripped_hvac_row)
+
+    # Anchor for the new end-use rows: right after the surviving Buildings ->
+    # Shell row (where the stripped rows used to sit).
+    buildings_shell_max = _find_max_order(fixed, 'Buildings', 'service_request',
+                                          require_tech=False)
+    if buildings_shell_max is None:
+        buildings_shell_max = comm_header_max  # fallback
+
     # ── build pipeline rows with fractional _order values ─────────────────────
     # Floorspace: before everything (negative orders)
     floorspace_rows = _build_floorspace_rows(
         commercial, region, start_order=float(fixed['_order'].min()) - 1000.0
     )
+
+    # Buildings end-use service_request rows: just after Buildings -> Shell
+    enduse_rows = _build_enduse_service_request_rows(
+        commercial, region, start_order=buildings_shell_max + 0.5
+    )
+
+    # Shell -> HVAC and Cooling -> Electricity service_request rows: each
+    # anchored to its own surviving technology's 'fom' row (see
+    # _build_hvac_service_request_rows).
+    hvac_rows = _build_hvac_service_request_rows(commercial, fixed, region)
 
     # Price multipliers: just after Commercial header
     price_rows = _build_price_mult_rows(
@@ -417,6 +735,8 @@ def _assemble_region(
     all_frames = [
         fixed.cast({'_order': pl.Float64}),
         floorspace_rows,
+        enduse_rows,
+        hvac_rows,
         price_rows,
         shell_share_rows,
         hw_mst,

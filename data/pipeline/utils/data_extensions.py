@@ -392,6 +392,7 @@ def extend_cagr_periods(
     raw_cagr: float,
     periods: list[tuple[int, int, float]],
     override: tuple[float, ...] | None = None,
+    anchor_year: int | None = None,
 ) -> pd.Series:
     """
     Extend a value forward through multiple periods using a dampened CAGR.
@@ -410,6 +411,19 @@ def extend_cagr_periods(
     override : tuple of float, optional
         Explicit per-period annual rates, one entry per period. When
         provided, bypasses raw_cagr × dampener entirely.
+    anchor_year : int, optional
+        The series' OWN last historical year, when it differs from the
+        sector-wide year that `periods` was written against (e.g. a region
+        whose source data lags a year behind the rest). When given, only the
+        first period's start year is replaced with `anchor_year + 1`, so the
+        projection begins immediately after this series' actual history
+        rather than leaving a gap (if this series is behind) or double
+        counting years it already has (if it is ahead) — periods entirely
+        in the past relative to `anchor_year` are dropped, and a period
+        straddling it is trimmed from the front. Later periods' calendar
+        boundaries (e.g. a dampener change at 2050) are left exactly as
+        given, since those represent fixed modelling regime changes, not a
+        per-series offset. Default None leaves `periods` untouched.
 
     Returns
     -------
@@ -417,6 +431,24 @@ def extend_cagr_periods(
         Year-indexed series from periods[0][0] through periods[-1][1],
         floored at 0.
     """
+    if anchor_year is not None:
+        new_start = anchor_year + 1
+        kept = [(i, (p_start, p_end, dampener))
+                for i, (p_start, p_end, dampener) in enumerate(periods)
+                if p_end >= new_start]
+        periods = [p for _, p in kept]
+        # Keep each surviving period's own override value, not the override
+        # at its new position — a dropped leading period would otherwise
+        # shift every later period onto the wrong override entry.
+        if override is not None:
+            override = [override[i] for i, _ in kept]
+        # Only the first surviving period's start moves to new_start — later
+        # periods' calendar boundaries (e.g. a dampener change at 2050) are
+        # fixed regime changes, not something to shift.
+        if periods:
+            p_start, p_end, dampener = periods[0]
+            periods[0] = (new_start, p_end, dampener)
+
     val = base_val
     years: list[int]    = []
     values: list[float] = []

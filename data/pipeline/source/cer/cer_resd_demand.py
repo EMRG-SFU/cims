@@ -84,6 +84,8 @@ def map_fuel_names(df: pd.DataFrame, energy_map: pd.DataFrame) -> pd.DataFrame:
               → Thermal Coal       (all other nodes)
       Natural Gas → Natural Gas Feedstock (feedstock rows: cer_enduse == "")
                   → Natural Gas           (all other rows)
+      LPG     → Propane (Commercial and Residential nodes only)
+              → LPG     (all other nodes)
     """
     lookup = build_fuel_lookup(energy_map)
     df = df.copy()
@@ -115,6 +117,12 @@ def map_fuel_names(df: pd.DataFrame, energy_map: pd.DataFrame) -> pd.DataFrame:
         is_feedstock = df["cer_enduse"] == ""
         df.loc[mask & is_feedstock,  "Fuel"] = "Natural Gas Feedstock"
         df.loc[mask & ~is_feedstock, "Fuel"] = "Natural Gas"
+
+    # LPG → Propane for Commercial and Residential nodes only
+    mask = df["_fuel_norm"] == "lpg"
+    if mask.any():
+        is_comm_resd = df["cims_node"].str.startswith((".Commercial", ".Residential"))
+        df.loc[mask & is_comm_resd, "Fuel"] = "Propane"
 
     df.drop(columns="_fuel_norm", inplace=True)
     return df

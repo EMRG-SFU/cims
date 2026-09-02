@@ -268,5 +268,43 @@ def collapse_constant_years(
                 _collapse_literal_varying(literal_varying, id_cols, year_col, value_col, schema_cols)
             )
 
-    result = pl.concat(frames, how="vertical_relaxed")
+    result = pl.concat(frames, how="vertical_relaxed").sort(_POS_COL).select(schema_cols + [_POS_COL])
+
+    # A Source-column split (e.g. historical "CEUD" years vs extrapolated
+    # "Assumptions" years) that ALSO carries a genuine value change can leave
+    # two blank-Year rows for the same underlying series -- one per Source,
+    # each with its own value -- regardless of which branch above produced
+    # each one (the "constant" dedup path just above only catches this within
+    # its own branch; the "varying" -> _collapse_numeric_varying path has no
+    # equivalent check, and the two can also collide with each other). A
+    # blank Year means "the value for any year not otherwise given an
+    # explicit row," so two for the same series is ambiguous: the model
+    # reader resolves it with a last-row-wins dict overwrite, silently
+    # discarding whichever value appears earlier in the file. Rather than
+    # depend on that resolution order, do a final check across the fully
+    # assembled result: any id_cols-minus-Source key with more than one
+    # blank-Year row gets ALL of its rows (blank and explicit alike) replaced
+    # with the original, fully explicit per-year rows instead, so there's no
+    # blank-Year ambiguity left for the reader to resolve.
+    if "Source" in id_cols:
+        dedup_cols = [c for c in id_cols if c != "Source"]
+        is_blank = pl.col(year_col).is_null() | (pl.col(year_col) == "")
+        blank_counts = (
+            result.filter(is_blank)
+            .group_by(dedup_cols)
+            .agg(pl.len().alias("_n_blank"))
+        )
+        colliding_keys = blank_counts.filter(pl.col("_n_blank") > 1).select(dedup_cols)
+        if colliding_keys.height > 0:
+            colliding_ids = (
+                result.join(colliding_keys, on=dedup_cols, how="inner")
+                .select(id_cols).unique()
+            )
+            result = result.join(colliding_ids, on=id_cols, how="anti")
+            colliding_explicit = (
+                data_rows.join(colliding_ids, on=id_cols, how="inner")
+                .select(schema_cols + [_POS_COL])
+            )
+            result = pl.concat([result, colliding_explicit], how="vertical_relaxed")
+
     return result.sort(_POS_COL).select(schema_cols)
