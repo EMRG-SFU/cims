@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.15"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -24,8 +24,8 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
-def _():
+@app.function(hide_code=True)
+def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
     # Model files should be located at: data/model_inputs/
@@ -43,7 +43,7 @@ def _():
     sector_req = [
         'fuels',
         'transmission',
-        'coal mining',
+        'coal_mining',
         'natural_gas',
         'petroleum_crude',
         'petroleum_refining',
@@ -84,7 +84,8 @@ def _():
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-    return base_model, default_path, list_path, model_path, update_files
+
+    return model_path, base_model, default_path, list_path, update_files
 
 
 @app.cell(hide_code=True)
@@ -96,7 +97,10 @@ def _():
 
 
 @app.cell
-def _(model_path, update_files):
+def _():
+    # Make sure list of model files is reset even if notebook kernel is not restarted
+    model_path, base_model, default_path, list_path, update_files = reset_model_files()
+
     # Only uncommented regions below will be run in the simulation
     region_list = [
         'CIMS', # Required
@@ -288,7 +292,17 @@ def _(model_path, update_files):
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
     scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
-    return region_list, scenario_name, sector_list, year_list
+    return (
+        base_model,
+        default_path,
+        list_path,
+        model_path,
+        region_list,
+        scenario_name,
+        sector_list,
+        update_files,
+        year_list,
+    )
 
 
 @app.cell(hide_code=True)
@@ -310,14 +324,14 @@ def _(
     update_files,
     year_list,
 ):
-    # breakpoint()
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
         region_list=region_list,
         update_files=update_files,
         year_list=year_list,
-        sector_list=sector_list,    default_values_csv_path=default_path,
+        sector_list=sector_list,    
+        default_values_csv_path=default_path,
         list_csv_path=list_path,
     )
     return (model,)
