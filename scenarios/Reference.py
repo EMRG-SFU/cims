@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.15"
+__generated_with = "0.24.0"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -24,7 +24,7 @@ def _():
     return
 
 
-@app.function
+@app.function(hide_code=True)
 def reset_model_files():
     ### Base model and standard files below are required for the model to run
     model_path = 'data/model_inputs/model'
@@ -43,7 +43,7 @@ def reset_model_files():
     sector_req = [
         'fuels',
         'transmission',
-        'coal mining',
+        'coal_mining',
         'natural_gas',
         'petroleum_crude',
         'petroleum_refining',
@@ -291,7 +291,7 @@ def _():
 
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
-    scenario_name = 'commercial'  # Set this to current scenario (e.g., "Reference", "Net Zero")
+    scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
     return (
         base_model,
         default_path,
@@ -314,8 +314,16 @@ def _():
 
 
 @app.cell
-def _(base_model, default_path, list_path, model_path, region_list, sector_list, year_list, 
-      update_files, ):
+def _(
+    base_model,
+    default_path,
+    list_path,
+    model_path,
+    region_list,
+    sector_list,
+    update_files,
+    year_list,
+):
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
@@ -411,6 +419,9 @@ def _(model, results_path):
 
 @app.cell
 def _():
+    # import pickle
+    # import gzip
+
     # with gzip.open(f"{results_path}/model.pkl", "rb") as f:
     #     model = pickle.load(f)
     return
