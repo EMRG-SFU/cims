@@ -1081,10 +1081,21 @@ def compute_buildings_hvac_direct_request(df: pl.DataFrame, region: str) -> pl.D
         for y in years if float(floorspace[y])
     }
 
+    if is_bc:
+        # heat/floorspace above reconstructs BC's WHOLE-region CEUD total --
+        # floorspace and heat are never split by climate zone (CEUD can't
+        # distinguish them). Cold and Marine must partition that single
+        # total between them rather than each independently reproducing all
+        # of it, so the raw rate is divided by (1 + MARINE_TO_COLD_RATIO)
+        # before the Marine split is taken, keeping Cold + Marine equal to
+        # the original (correct) total instead of 1 + MARINE_TO_COLD_RATIO
+        # times it.
+        vals_cold = {y: v / (1.0 + MARINE_TO_COLD_RATIO) for y, v in vals_cold.items()}
+        vals_marine = {y: v * MARINE_TO_COLD_RATIO for y, v in vals_cold.items()}
+
     frames = [_long(region, 'buildings_hvac_service_request', 'Cold',
                     'service_request', 'GJ', pd.Series(vals_cold))]
     if is_bc:
-        vals_marine = {y: v * MARINE_TO_COLD_RATIO for y, v in vals_cold.items()}
         frames.append(_long(region, 'buildings_hvac_service_request', 'Marine',
                             'service_request', 'GJ', pd.Series(vals_marine)))
     return pl.concat(frames, how='diagonal_relaxed')
@@ -1418,9 +1429,15 @@ def compute_hvac_service_requests(df: pl.DataFrame, region: str) -> pl.DataFrame
             vals_cold, vals_marine = {}, {}
             for y in scale.index:
                 cold_rate = fixed_rate * float(scale[y])
-                vals_cold[y] = cold_rate
                 if is_bc:
+                    # Same whole-region-vs-split issue as the historical
+                    # bypass (see compute_buildings_hvac_direct_request):
+                    # cold_rate here reconstructs demand against BC's
+                    # UNDIVIDED floorspace, so Cold and Marine must
+                    # partition it rather than each claiming it in full.
+                    cold_rate = cold_rate / (1.0 + MARINE_TO_COLD_RATIO)
                     vals_marine[y] = cold_rate * MARINE_TO_COLD_RATIO
+                vals_cold[y] = cold_rate
 
             if vals_cold:
                 frames.append(_long(region, 'hvac_service_request', f'{activity}|Cold|{tech}',

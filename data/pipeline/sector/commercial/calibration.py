@@ -14,7 +14,11 @@ Emissions  (calibration_emissions_total from crosswalk; calibration_emissions_by
 
 Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
-                                    abbreviation regions
+                                    abbreviation regions; BC's (Cold)/(Marine)
+                                    node pairs are split 80/20 (see
+                                    BC_COLD_FRACTION) since CER's own Space
+                                    Heating data carries no climate-zone
+                                    split and duplicates into both
 
 Hot water and HVAC technologies  (calibration_market_share_total)
     commercial.py                 → CEUD-derived market shares with projections;
@@ -97,6 +101,18 @@ _REGIONAL_FUELS = {
     'Ethanol', 'Hydrogen',
 }
 
+# cer_to_cims_map.csv maps every commercial Space Heating CER row to BOTH a
+# "(Marine)" and a "(Cold)" node variant (see e.g. .Commercial.HVAC (Cold) /
+# .Commercial.HVAC (Marine), and .Commercial.Buildings.Shell.<Activity>
+# (Cold) / (Marine)) since CER's own data carries no climate-zone split.
+# cer_resd_demand.py drops the Marine rows for every region except BC, but
+# for BC both variants survive carrying the SAME undivided total. Apply the
+# same 80/20 Cold/Marine floorspace split model_inputs.py already uses
+# (BC_COLD_FRACTION / BC_MARINE_FRACTION there) so the two calibration
+# targets don't each claim the full historical total.
+BC_COLD_FRACTION   = 0.80
+BC_MARINE_FRACTION = 0.20
+
 
 # ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -123,6 +139,17 @@ def _fuel_target(region: str, fuel: str) -> str:
     if fuel in _REGIONAL_FUELS:
         return f'CIMS.CAN.{region}.{fuel}'
     return f'CIMS.Generic Fuels.{fuel}'
+
+
+def _bc_climate_fraction(region: str, node: str) -> float:
+    """Cold/Marine split fraction for BC's duplicated Space-Heating nodes (see BC_COLD_FRACTION)."""
+    if region != 'BC':
+        return 1.0
+    if node.endswith('(Cold)'):
+        return BC_COLD_FRACTION
+    if node.endswith('(Marine)'):
+        return BC_MARINE_FRACTION
+    return 1.0
 
 
 def _empty_df() -> pl.DataFrame:
@@ -163,6 +190,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
         fuel   = str(row['Variable'])
         branch = f'CIMS.CAN.{region}{node}'
         meta   = _branch_meta(branch)
+        value  = float(row['Value']) * _bc_climate_fraction(region, node)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -177,7 +205,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
             'Source':      str(row.get('Source', 'CER')),
             'Unit':        str(row.get('Unit', 'GJ')),
             'Year':        str(int(row['Year'])),
-            'Value':       str(row['Value']),
+            'Value':       str(value),
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 

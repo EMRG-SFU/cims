@@ -805,9 +805,12 @@
 .Generic Fuels.Gasoline
 .Generic Fuels.Jet Fuel
 .Generic Fuels.LPG
+.Generic Fuels.Lubricants
 .Generic Fuels.Metallurgical Coal
+.Generic Fuels.Naphtha Specialties
 .Generic Fuels.Natural Gas
 .Generic Fuels.Natural Gas Feedstock
+.Generic Fuels.Other Non-Energy Products
 .Generic Fuels.Petroleum Coke
 .Generic Fuels.Propane
 .Generic Fuels.Refinery Fuel Gas
