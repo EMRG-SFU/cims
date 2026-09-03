@@ -36,7 +36,7 @@ Vehicle size shares (fraction, to LAST_HIST_YEAR):
   Car_small, Car_large, Light truck_small, Light truck_large
 
 Motor tech shares (fraction, to LAST_HIST_YEAR):
-  Gasoline Existing, Gasoline Standard, Hybrid, Plug-in Hybrid,
+  Gasoline_Low Efficiency, Gasoline_Medium Efficiency, Gasoline_High Efficiency, Hybrid, Plug-in Hybrid,
   BEV 500, BEV 800, Fuel Cell 650
 
 Transit decomposition (fraction/ratio, to LAST_HIST_YEAR):
@@ -193,9 +193,9 @@ FERRY_URBAN_BC_ANCHORS: dict[int, float] = {
 
 # Technology market share defaults (fraction 0-1, historical base year).
 MOTOR_TECH_DEFAULTS: dict[str, float] = {
-    'Gasoline Existing':  1.0,
-    'Gasoline Standard':  0.0,
-    'Gasoline Efficient': 0.0,
+    'Gasoline_Low Efficiency':  1.0,
+    'Gasoline_Medium Efficiency':  0.0,
+    'Gasoline_High Efficiency': 0.0,
     'Hybrid':             0.0,
     'Plug-in Hybrid':     0.0,
     'BEV 500':            0.0,
