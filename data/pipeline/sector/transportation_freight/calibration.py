@@ -102,11 +102,16 @@ LM_CAT_TO_TECH: dict[str, str] = {
     'Propane':  'Propane',
 }
 
-# (pipeline variable, service_name, branch suffix after sector, cat_to_tech, year_max)
+# Ethanol/Biodiesel are blended into the Gasoline/Diesel fuel streams (already
+# reflected in those categories' volumes), not separate Light Medium vehicle
+# technologies — exclude them from calibration_market_share_total.
+LM_BLENDED_FUEL_CATEGORIES = {'Ethanol', 'Biodiesel'}
+
+# (pipeline variable, service_name, branch suffix after sector, cat_to_tech, year_max, exclude_categories)
 # year_max=None → all historical years
-_TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | None]] = [
-    ('Light Medium',       'Light Medium', '.Freight.Land.Light Medium', LM_CAT_TO_TECH, None),
-    ('Freight.Land.Heavy', 'Heavy',        '.Freight.Land.Heavy',        None,           None),
+_TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | None, set[str] | None]] = [
+    ('Light Medium',       'Light Medium', '.Freight.Land.Light Medium', LM_CAT_TO_TECH, None, LM_BLENDED_FUEL_CATEGORIES),
+    ('Freight.Land.Heavy', 'Heavy',        '.Freight.Land.Heavy',        None,           None, None),
 ]
 
 
@@ -248,11 +253,14 @@ def _build_tf_tech_shares(
     branch_suffix: str,
     cat_to_tech: dict[str, str] | None = None,
     year_max: int | None = None,
+    exclude_categories: set[str] | None = None,
 ) -> pl.DataFrame:
     """Extract calibration_market_share_total rows for one transportation freight service."""
-    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'calibration_market_share_total')
+    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'market_share_total')
     if year_max is not None:
         mask = mask & (pl.col('year') <= year_max)
+    if exclude_categories:
+        mask = mask & ~pl.col('category').is_in(exclude_categories)
     data = tf.filter(mask)
     if data.is_empty():
         return _empty_df()
@@ -322,8 +330,8 @@ def main() -> pl.DataFrame:
 
     print('Building technology market share rows...')
     tech_frames: list[pl.DataFrame] = []
-    for variable, service_name, branch_suffix, cat_to_tech, year_max in _TECH_SHARE_SERVICES:
-        frame = _build_tf_tech_shares(tf, variable, service_name, branch_suffix, cat_to_tech, year_max)
+    for variable, service_name, branch_suffix, cat_to_tech, year_max, exclude_categories in _TECH_SHARE_SERVICES:
+        frame = _build_tf_tech_shares(tf, variable, service_name, branch_suffix, cat_to_tech, year_max, exclude_categories)
         tech_frames.append(frame)
         print(f'  {service_name}: {len(frame):,} rows')
     tech_rows = pl.concat(tech_frames, how='diagonal_relaxed') if tech_frames else _empty_df()

@@ -27,9 +27,14 @@ from collections import defaultdict
 from pathlib import Path
 
 import polars as pl
-sys.path.append(r"C:\cims\data\pipeline\utils")
-from add_cims_totals import add_totals
-from controls_conversions import load_control_config, BASE_PATH
+
+_current_file = Path(__file__)
+_project_root = _current_file.parent.parent.parent.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+from pipeline.utils.add_cims_totals import add_totals
+from pipeline.utils.controls_conversions import load_control_config, BASE_PATH
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # CONFIG — Input and output files
