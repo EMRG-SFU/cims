@@ -79,6 +79,13 @@ _tp_spec = importlib.util.spec_from_file_location(
 _tp_mod = importlib.util.module_from_spec(_tp_spec)
 _tp_spec.loader.exec_module(_tp_mod)
 
+_calibration_spec = importlib.util.spec_from_file_location(
+    'transportation_passenger_calibration',
+    Path(__file__).with_name('calibration.py'),
+)
+_calibration_mod = importlib.util.module_from_spec(_calibration_spec)
+_calibration_spec.loader.exec_module(_calibration_mod)
+
 _ep_spec = importlib.util.spec_from_file_location(
     'energy_price_multipliers',
     _PIPELINE_ROOT / 'source' / 'energy_prices' / 'energy_price_multipliers.py',
@@ -141,6 +148,7 @@ DIESEL_EQUIVALENTS: dict[str, str] = {
     'Gasoline_Medium Efficiency':  'Diesel_Medium Efficiency',
     'Gasoline_High Efficiency': 'Diesel_High Efficiency',
 }
+
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
@@ -435,6 +443,42 @@ def _build_transit_sr_rows(tp: pl.DataFrame, region: str,
     return pl.DataFrame(rows) if rows else _empty_frame()
 
 
+def _build_statcan_pvm_base_shares() -> pl.DataFrame:
+    """Build year-2000 market_share_total rows from calibration's EPA shares."""
+    calibration_shares = _calibration_mod._build_statcan_vehicle_motor_shares()
+    base = calibration_shares.filter(
+        (pl.col('Service') == 'Passenger Vehicle Motors')
+        & (pl.col('Parameter') == 'calibration_market_share_new')
+        & (pl.col('Year').cast(pl.Int32, strict=False) == DATA_START)
+    )
+    if len(base) == 0:
+        raise ValueError(
+            f'No StatCan/EPA Passenger Vehicle Motors calibration shares found for {DATA_START}.'
+        )
+
+    result = base.select([
+        pl.col('Region').alias('province'),
+        pl.lit('Passenger Vehicle Motors').alias('variable'),
+        pl.col('Technology').alias('category'),
+        pl.lit('market_share_total').alias('parameter'),
+        pl.col('Unit').alias('unit'),
+        pl.col('Source').alias('source'),
+        pl.col('Year').cast(pl.Int32).alias('year'),
+        pl.col('Value').cast(pl.Float64).alias('value'),
+    ])
+
+    check = result.group_by('province').agg(
+        pl.col('value').sum().alias('market_share_sum')
+    )
+    bad = check.filter((pl.col('market_share_sum') - 1.0).abs() > 1e-9)
+    if len(bad) > 0:
+        raise ValueError(
+            f'{DATA_START} Passenger Vehicle Motors shares do not sum to 1: '
+            f'{bad.to_dicts()}'
+        )
+    return result
+
+
 def _build_mst_rows(
     tp: pl.DataFrame,
     fixed: pl.DataFrame,
@@ -518,7 +562,7 @@ def _build_mst_rows(
             'Target':      '',
             'Source':      src,
             'Unit':        unit,
-            'Year':        '2000',
+            'Year':        str(DATA_START),
             'Value':       str(val),
             '_order':      lifetime_max + 0.5,
         })
@@ -874,6 +918,18 @@ def main() -> dict[str, pl.DataFrame]:
         .then(pl.lit('CEUD'))
         .otherwise(pl.lit('Assumptions'))
         .alias('source')
+    )
+
+    # Passenger Vehicle Motors uses StatCan/EPA shares, not CEUD defaults.
+    tp = tp.filter(
+        ~(
+            (pl.col('variable') == 'Passenger Vehicle Motors')
+            & (pl.col('parameter') == 'market_share_total')
+        )
+    )
+    tp = pl.concat(
+        [tp, _build_statcan_pvm_base_shares()],
+        how='diagonal_relaxed',
     )
 
     multipliers = pl.from_pandas(_energy_price_mod.main())
