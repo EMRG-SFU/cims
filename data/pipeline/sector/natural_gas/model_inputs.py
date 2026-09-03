@@ -109,6 +109,7 @@ import tempfile
 import importlib.util
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
@@ -137,9 +138,17 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_cer_spec = importlib.util.spec_from_file_location(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source' / 'cer' / 'cer_resd_demand.py',
+)
+_cer_resd_mod = importlib.util.module_from_spec(_cer_spec)
+_cer_spec.loader.exec_module(_cer_resd_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
 from utils.drop_zero_activity import drop_zero_activity_regions
+from utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/natural_gas'
@@ -378,6 +387,44 @@ def _order_after_region_anchor(rows: pl.DataFrame, anchors: pl.DataFrame, offset
     )
 
 
+def _build_feedstock_rows(ng: pl.DataFrame) -> pl.DataFrame:
+    """
+    Feedstock service rows for the Natural Gas sector (CER vFsDmd-CIMS.csv,
+    via cer_resd_demand.load_feedstock_demand()), tied to the same
+    'Natural Gas' production driver _build_activity_rows() already uses.
+
+    Only built for PROVINCIAL_REGIONS (AB/BC/SK): gas_production.py's
+    activity data -- and therefore a real 2000-2100 scale driver -- only
+    exists for those three; every other region's own Natural Gas ->
+    Production service_request is a flat structural placeholder ("1" for
+    every year) with no genuine per-year signal to divide by. NL in
+    particular has real, substantial CER feedstock demand with no usable
+    driver anywhere in this pipeline -- a known gap, left for a follow-up
+    decision on a proxy driver rather than guessed at here.
+    """
+    feedstock_demand = _cer_resd_mod.load_feedstock_demand()
+    feedstock_demand = feedstock_demand[feedstock_demand['Node'] == '.Natural Gas']
+    if feedstock_demand.empty:
+        return pl.DataFrame()
+
+    driver = (
+        ng.filter((pl.col('Variable') == 'Natural Gas') & pl.col('Region').is_in(PROVINCIAL_REGIONS))
+        .with_columns(pl.col('Year').cast(pl.Int64), pl.col('Value').cast(pl.Float64))
+    )
+    scale_unit = driver['Unit'][0] if len(driver) else '1000m3'
+    scale_by_region = {
+        region: pd.Series(sub['Value'].to_list(), index=sub['Year'].to_list())
+        for region, sub in driver.to_pandas().groupby('Region')
+    }
+
+    return build_feedstock_rows_all_regions(
+        sector_name='Natural Gas',
+        feedstock_demand=feedstock_demand,
+        scale_by_region=scale_by_region,
+        scale_unit=scale_unit,
+    )
+
+
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> pl.DataFrame:
@@ -414,6 +461,10 @@ def main() -> pl.DataFrame:
     price_rows = _build_price_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
 
+    print('Building feedstock rows...')
+    feedstock_rows = _build_feedstock_rows(ng)
+    print(f'  Rows: {len(feedstock_rows):,}')
+
     print('Combining...')
 
     # ── provincial files (AB, BC, SK) ──────────────────────────────────────────
@@ -444,11 +495,12 @@ def main() -> pl.DataFrame:
     extraction_rows_ordered = _order_after_region_anchor(extraction_rows, extraction_competition_anchor, offset=0.5)
     processing_rows_ordered = _order_after_region_anchor(processing_rows, supply_competition_anchor, offset=0.5)
     lng_rows_ordered = _order_after_region_anchor(lng_rows, supply_competition_anchor, offset=0.6)
+    feedstock_rows_ordered = _order_after_region_anchor(feedstock_rows, sector_competition_anchor, offset=0.7)
 
     provincial_output = (
         pl.concat(
             [fixed_provincial,
-             activity_rows_ordered, price_rows_ordered,
+             activity_rows_ordered, price_rows_ordered, feedstock_rows_ordered,
              extraction_rows_ordered, processing_rows_ordered, lng_rows_ordered],
             how='diagonal_relaxed',
         )

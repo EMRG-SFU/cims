@@ -31,6 +31,7 @@ import tempfile
 import importlib.util
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 
 # ── path setup ────────────────────────────────────────────────────────────────
@@ -59,8 +60,16 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_cer_spec = importlib.util.spec_from_file_location(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source' / 'cer' / 'cer_resd_demand.py',
+)
+_cer_resd_mod = importlib.util.module_from_spec(_cer_spec)
+_cer_spec.loader.exec_module(_cer_resd_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ─────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/construction'
@@ -173,6 +182,33 @@ def _build_price_mult_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def _build_feedstock_rows(emissions: pl.DataFrame) -> pl.DataFrame:
+    """
+    Feedstock service rows for the Construction sector (CER vFsDmd-CIMS.csv,
+    via cer_resd_demand.load_feedstock_demand()), tied to the same
+    'Construction' tCO2e driver _build_emission_rows() already uses.
+    """
+    feedstock_demand = _cer_resd_mod.load_feedstock_demand()
+    feedstock_demand = feedstock_demand[feedstock_demand['Node'] == '.Construction']
+    if feedstock_demand.empty:
+        return pl.DataFrame()
+
+    driver = emissions.filter(pl.col('Variable') == 'Construction').with_columns(
+        pl.col('Year').cast(pl.Int64), pl.col('Value').cast(pl.Float64)
+    )
+    scale_by_region = {
+        region: pd.Series(sub['Value'].to_list(), index=sub['Year'].to_list())
+        for region, sub in driver.to_pandas().groupby('Region')
+    }
+
+    return build_feedstock_rows_all_regions(
+        sector_name='Construction',
+        feedstock_demand=feedstock_demand,
+        scale_by_region=scale_by_region,
+        scale_unit='tCO2e',
+    )
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main() -> pl.DataFrame:
@@ -198,6 +234,10 @@ def main() -> pl.DataFrame:
     price_rows = _build_price_mult_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
 
+    print('Building feedstock rows...')
+    feedstock_rows = _build_feedstock_rows(emissions)
+    print(f'  Rows: {len(feedstock_rows):,}')
+
     print('Combining...')
     fixed_str = fixed.cast(pl.String)
     _con_branch       = pl.col('Branch').str.ends_with('.Construction')
@@ -212,7 +252,7 @@ def main() -> pl.DataFrame:
 
     output = (
         pl.concat(
-            [total_emissions, fixed_con_header, price_rows,
+            [total_emissions, fixed_con_header, price_rows, feedstock_rows,
              fixed_con_tail, fixed_transport_header, fixed_transport_tail, fixed_rest],
             how='diagonal_relaxed',
         )

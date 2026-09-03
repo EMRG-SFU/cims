@@ -56,6 +56,7 @@ import tempfile
 import importlib.util
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
@@ -85,8 +86,16 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_cer_spec = importlib.util.spec_from_file_location(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source' / 'cer' / 'cer_resd_demand.py',
+)
+_cer_resd_mod = importlib.util.module_from_spec(_cer_spec)
+_cer_spec.loader.exec_module(_cer_resd_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/transportation_passenger'
@@ -636,10 +645,56 @@ def _build_output_rows(
     return pl.DataFrame(rows) if rows else _empty_frame()
 
 
+def _build_feedstock_rows(
+    tp: pl.DataFrame,
+    feedstock_demand: pd.DataFrame,
+    feedstock_last_hist_year: int,
+    region: str,
+    start_order: float,
+) -> pl.DataFrame:
+    """
+    Feedstock service rows for the Transportation Passenger sector (CER
+    vFsDmd-CIMS.csv, via cer_resd_demand.load_feedstock_demand()), tied to
+    the same 'total_kpkm' driver _build_total_kpkm_rows() already uses.
+    """
+    feedstock_region = feedstock_demand.loc[
+        feedstock_demand['Region'] == region, ['Variable', 'Year', 'Value']
+    ]
+    if feedstock_region.empty:
+        return pl.DataFrame()
+
+    data = (
+        tp.filter(
+            (pl.col('province') == region) &
+            (pl.col('variable') == 'total_kpkm') &
+            (pl.col('parameter') == 'service_request')
+        )
+        .with_columns(pl.col('year').cast(pl.Int64), pl.col('value').cast(pl.Float64))
+        .sort('year')
+    )
+    if len(data) == 0:
+        return pl.DataFrame()
+    scale_unit = data['unit'][0] or 'k*pkm'
+    scale_series = pd.Series(data['value'].to_list(), index=data['year'].to_list())
+
+    return build_feedstock_rows(
+        sector_branch=f'CIMS.CAN.{region}.Transportation Passenger',
+        sector_name='Transportation Passenger',
+        region=region,
+        feedstock=feedstock_region,
+        scale_series=scale_series,
+        scale_unit=scale_unit,
+        last_hist_year=feedstock_last_hist_year,
+        start_order=start_order,
+    )
+
+
 def _assemble_region(
     fixed: pl.DataFrame,
     tp: pl.DataFrame,
     multipliers: pl.DataFrame,
+    feedstock_demand: pd.DataFrame,
+    feedstock_last_hist_year: int,
     region: str,
 ) -> pl.DataFrame:
     """
@@ -687,6 +742,12 @@ def _assemble_region(
     price_rows = _build_price_mult_rows(
         multipliers, region,
         start_order=sector_competition_max + 0.5,
+    )
+
+    # 2b. Feedstock: just after price multipliers, on the sector's own branch
+    feedstock_rows = _build_feedstock_rows(
+        tp, feedstock_demand, feedstock_last_hist_year, region,
+        start_order=sector_competition_max + 0.6,
     )
 
     # 3. Mode service_request: just after Mode competition row
@@ -776,6 +837,7 @@ def _assemble_region(
         fixed.cast({'_order': pl.Float64}),
         total_kpkm_rows,
         price_rows,
+        feedstock_rows,
         mode_sr_rows,
         transit_sr_rows,
         urban_mst,
@@ -818,6 +880,14 @@ def main() -> dict[str, pl.DataFrame]:
     print(f'  Transportation passenger data: {len(tp):,} rows, '
           f'regions: {sorted(tp["province"].unique().to_list())}')
 
+    feedstock_demand = _cer_resd_mod.load_feedstock_demand()
+    feedstock_demand = feedstock_demand[feedstock_demand['Node'] == '.Transportation Passenger']
+    feedstock_last_hist_year = (
+        int(feedstock_demand['Year'].max()) if len(feedstock_demand) else _tp_mod.LAST_HIST_YEAR
+    )
+    print(f'  Feedstock data: {len(feedstock_demand):,} rows, '
+          f'last historical year: {feedstock_last_hist_year}')
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: dict[str, pl.DataFrame] = {}
 
@@ -836,7 +906,9 @@ def main() -> dict[str, pl.DataFrame]:
             fixed = _read_flattened_fixed(template)
 
             print('  Assembling...')
-            output = _assemble_region(fixed, tp, multipliers, region)
+            output = _assemble_region(
+                fixed, tp, multipliers, feedstock_demand, feedstock_last_hist_year, region,
+            )
 
             out_path = OUTPUT_DIR / f'transportation_passenger_{region.lower()}.csv'
             output = collapse_constant_years(output)

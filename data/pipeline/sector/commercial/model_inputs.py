@@ -55,6 +55,7 @@ import tempfile
 import importlib.util
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
@@ -83,8 +84,16 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_cer_spec = importlib.util.spec_from_file_location(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source' / 'cer' / 'cer_resd_demand.py',
+)
+_cer_resd_mod = importlib.util.module_from_spec(_cer_spec)
+_cer_spec.loader.exec_module(_cer_resd_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.feedstock_demand import build_feedstock_rows
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/commercial'
@@ -106,6 +115,10 @@ FIXED_TEMPLATE: dict[str, str] = {
 BC_COLD_FRACTION   = 0.80
 BC_MARINE_FRACTION = 0.20
 BC_TERRITORY_CODES = {'YT', 'NT', 'NU'}
+
+# How many of the most recent historical years' feedstock-per-floorspace
+# ratio to average when projecting feedstock demand beyond LAST_HIST_YEAR.
+FEEDSTOCK_RATIO_YEARS = 5
 
 # Pipeline building_shell_shares category → CIMS Shell sub-service name
 CAT_TO_COLD_SVC: dict[str, str] = {
@@ -612,6 +625,8 @@ def _assemble_region(
     fixed: pl.DataFrame,
     commercial: pl.DataFrame,
     multipliers: pl.DataFrame,
+    feedstock: pd.DataFrame,
+    feedstock_last_hist_year: int,
     region: str,
     template_region: str,
 ) -> pl.DataFrame:
@@ -731,6 +746,32 @@ def _assemble_region(
         if is_bc_full else _empty_frame()
     )
 
+    # Feedstock: after everything else in this region's fixed data (mirrors
+    # floorspace's "before everything" -1000.0 anchor, but at the other end).
+    floorspace_series = (
+        commercial
+        .filter((pl.col('region') == region) & (pl.col('variable') == 'total_floorspace'))
+        .sort('year')
+    )
+    scale_series = pd.Series(
+        floorspace_series['value'].to_list(),
+        index=floorspace_series['year'].to_list(),
+    )
+    feedstock_region = feedstock.loc[
+        feedstock['Region'] == region, ['Variable', 'Year', 'Value']
+    ]
+    feedstock_rows = build_feedstock_rows(
+        sector_branch=f'CIMS.CAN.{region}.Commercial',
+        sector_name='Commercial',
+        region=region,
+        feedstock=feedstock_region,
+        scale_series=scale_series,
+        scale_unit='m2',
+        last_hist_year=feedstock_last_hist_year,
+        ratio_window=FEEDSTOCK_RATIO_YEARS,
+        start_order=float(fixed['_order'].max()) + 1000.0,
+    )
+
     # ── combine and sort ───────────────────────────────────────────────────────
     all_frames = [
         fixed.cast({'_order': pl.Float64}),
@@ -742,6 +783,7 @@ def _assemble_region(
         hw_mst,
         hvac_cold_mst,
         hvac_marine_mst,
+        feedstock_rows,
     ]
 
     combined = pl.concat(
@@ -775,6 +817,21 @@ def main() -> dict[str, pl.DataFrame]:
     print(f'  Commercial data: {len(commercial):,} rows, '
           f'regions: {sorted(commercial["region"].unique().to_list())}')
 
+    feedstock_demand = _cer_resd_mod.load_feedstock_demand()
+    feedstock_demand = feedstock_demand[feedstock_demand['Node'] == '.Commercial']
+    # CER's own last historical year (vFsDmd-CIMS.csv currently runs through
+    # 2024) rather than _commercial_mod.LAST_HIST_YEAR (CEUD's cutoff, 2023):
+    # feedstock demand is CER-sourced, and its last actual year should still
+    # be reported as real CER/RESD data, not folded into the post-historical
+    # trailing-average projection a year early.
+    feedstock_last_hist_year = (
+        int(feedstock_demand['Year'].max())
+        if len(feedstock_demand) else _commercial_mod.LAST_HIST_YEAR
+    )
+    print(f'  Feedstock data: {len(feedstock_demand):,} rows, '
+          f'fuels: {sorted(feedstock_demand["Variable"].unique())}, '
+          f'last historical year: {feedstock_last_hist_year}')
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: dict[str, pl.DataFrame] = {}
 
@@ -793,7 +850,10 @@ def main() -> dict[str, pl.DataFrame]:
             fixed = _read_flattened_fixed(template, region)
 
             print('  Assembling...')
-            output = _assemble_region(fixed, commercial, multipliers, region, template)
+            output = _assemble_region(
+                fixed, commercial, multipliers, feedstock_demand,
+                feedstock_last_hist_year, region, template,
+            )
 
             out_path = OUTPUT_DIR / f'commercial_{region.lower()}.csv'
             output = collapse_constant_years(output)

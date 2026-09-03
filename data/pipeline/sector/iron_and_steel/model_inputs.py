@@ -66,6 +66,7 @@ import tempfile
 import importlib.util
 from pathlib import Path
 
+import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
@@ -94,8 +95,16 @@ _ep_spec = importlib.util.spec_from_file_location(
 _energy_price_mod = importlib.util.module_from_spec(_ep_spec)
 _ep_spec.loader.exec_module(_energy_price_mod)
 
+_cer_spec = importlib.util.spec_from_file_location(
+    'cer_resd_demand',
+    _PIPELINE_ROOT / 'source' / 'cer' / 'cer_resd_demand.py',
+)
+_cer_resd_mod = importlib.util.module_from_spec(_cer_spec)
+_cer_spec.loader.exec_module(_cer_resd_mod)
+
 from utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from utils.collapse_constant_years import collapse_constant_years
+from utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/iron_and_steel'
@@ -186,6 +195,33 @@ def _build_price_rows(multipliers: pl.DataFrame) -> pl.DataFrame:
     )
 
 
+def _build_feedstock_rows(heavy_ind: pl.DataFrame) -> pl.DataFrame:
+    """
+    Feedstock service rows for the Iron and Steel sector (CER vFsDmd-CIMS.csv,
+    via cer_resd_demand.load_feedstock_demand()), tied to the same 'Iron and
+    Steel' tonnes driver _build_total_rows() already uses.
+    """
+    feedstock_demand = _cer_resd_mod.load_feedstock_demand()
+    feedstock_demand = feedstock_demand[feedstock_demand['Node'] == '.Iron and Steel']
+    if feedstock_demand.empty:
+        return pl.DataFrame()
+
+    driver = heavy_ind.filter(pl.col('Variable') == 'Iron and Steel').with_columns(
+        pl.col('Year').cast(pl.Int64), pl.col('Value').cast(pl.Float64)
+    )
+    scale_by_region = {
+        region: pd.Series(sub['Value'].to_list(), index=sub['Year'].to_list())
+        for region, sub in driver.to_pandas().groupby('Region')
+    }
+
+    return build_feedstock_rows_all_regions(
+        sector_name='Iron and Steel',
+        feedstock_demand=feedstock_demand,
+        scale_by_region=scale_by_region,
+        scale_unit='tonne',
+    )
+
+
 # ── main ───────────────────────────────────────────────────────────────────────
 
 def main() -> pl.DataFrame:
@@ -209,6 +245,10 @@ def main() -> pl.DataFrame:
     multipliers = pl.from_pandas(_energy_price_mod.main())
     price_rows = _build_price_rows(multipliers)
     print(f'  Rows: {len(price_rows):,}')
+
+    print('Building feedstock rows...')
+    feedstock_rows = _build_feedstock_rows(heavy_ind)
+    print(f'  Rows: {len(feedstock_rows):,}')
 
     print('Combining...')
 
@@ -234,7 +274,7 @@ def main() -> pl.DataFrame:
     output = (
         pl.concat(
             [total_rows, fixed_sector_competition,
-             price_rows, fixed_rest],
+             price_rows, feedstock_rows, fixed_rest],
             how='diagonal_relaxed',
         )
         .select(OUTPUT_COLS)
