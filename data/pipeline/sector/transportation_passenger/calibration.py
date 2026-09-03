@@ -545,6 +545,20 @@ def _expand_efficiency_technologies(
         suffixes=('', '_share'),
     )
     unsplit = out.loc[~split_mask].copy()
+    
+    unsplit[fuel_col] = unsplit[fuel_col].replace({
+        "Hybrid electric": "Hybrid",
+        "Plug-in hybrid electric": "Plug-in Hybrid",
+        "Battery electric": "BEV 500",
+    })
+
+    unsplit = unsplit[
+        ~unsplit[fuel_col].isin([
+            "Other fuel types",
+            "All fuel types",
+            "All zero-emission vehicles",
+        ])
+    ]
 
     # Detect the additive sales/registration field used by calculate_market_shares().
     measure_candidates = (
