@@ -138,15 +138,18 @@ def load_cer_data() -> pd.DataFrame:
             usecols=["Area", "Sector", "Enduse", "Fuel", "Year", "Data"],
         )
         df.rename(columns={"Sector": "cer_sector", "Enduse": "cer_enduse"}, inplace=True)
+        df["demand_type"] = "general"
         frames.append(df)
 
     # Files with a Technology column (treated as enduse)
-    for fname in ("vTrDmd-CIMS.csv", "vTrFsDmd-CIMS.csv"):
+    for fname, demand_type in (("vTrDmd-CIMS.csv", "transport"),
+                               ("vTrFsDmd-CIMS.csv", "transport_feedstock")):
         df = pd.read_csv(
             CER_DIR / fname, sep=";",
             usecols=["Area", "Sector", "Technology", "Fuel", "Year", "Data"],
         )
         df.rename(columns={"Sector": "cer_sector", "Technology": "cer_enduse"}, inplace=True)
+        df["demand_type"] = demand_type
         frames.append(df)
 
     # Feedstock file — no enduse column
@@ -156,6 +159,7 @@ def load_cer_data() -> pd.DataFrame:
     )
     df.rename(columns={"Sector": "cer_sector"}, inplace=True)
     df["cer_enduse"] = ""
+    df["demand_type"] = "feedstock"
     frames.append(df)
 
     combined = pd.concat(frames, ignore_index=True)
@@ -164,20 +168,29 @@ def load_cer_data() -> pd.DataFrame:
     return combined
 
 
-def main() -> pd.DataFrame:
-    print("Loading CER demand data...")
-    cer = load_cer_data()
-    print(f"  {len(cer):,} rows across all CER files")
-
-    print("Loading mappings...")
+def _load_mapping_tables() -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     mapping = pd.read_csv(MAP_FILE)
     mapping["cer_sector"] = mapping["cer_sector"].str.strip().str.lower()
     mapping["cer_enduse"] = mapping["cer_enduse"].fillna("").str.strip().str.lower()
     energy_map = pd.read_csv(ENERGY_MAP_FILE)
     region_map = pd.read_csv(REGION_MAP_FILE)
+    return mapping, energy_map, region_map
+
+
+def _map_to_cims(cer: pd.DataFrame, mapping: pd.DataFrame, energy_map: pd.DataFrame,
+                  region_map: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
+    """
+    Join raw CER demand rows (as returned by load_cer_data(), optionally
+    pre-filtered by `demand_type`) to CIMS nodes, fuel names and region
+    codes. Returns long-format rows with columns cims_node / Fuel / Region /
+    Year / Data — one row per (area, sector, enduse, fuel, year) after
+    sector/enduse mapping, still needing the region/cims_node/fuel groupby
+    aggregation main() and load_feedstock_demand() both apply afterward.
+    """
     area_to_cims = dict(zip(region_map["CER"].str.strip(), region_map["CIMS"].str.strip()))
 
-    print("Joining to CIMS nodes...")
+    if verbose:
+        print("Joining to CIMS nodes...")
     specific_map = mapping[mapping["cer_enduse"] != ""]
     sector_map   = mapping[mapping["cer_enduse"] == ""][["cer_sector", "cims_node"]]
 
@@ -190,24 +203,27 @@ def main() -> pd.DataFrame:
     merged = pd.concat([merged_specific, merged_sector], ignore_index=True)
 
     # Report sectors that have no mapping at all (neither specific nor sector-level)
-    mapped_sectors = set(specific_map["cer_sector"]) | set(sector_map["cer_sector"])
-    unmatched = (
-        cer[["cer_sector", "cer_enduse"]]
-        .drop_duplicates()
-        .loc[lambda d: ~d["cer_sector"].isin(mapped_sectors)]
-        .sort_values(["cer_sector", "cer_enduse"])
-    )
-    if not unmatched.empty:
-        print(f"  Warning: {len(unmatched['cer_sector'].unique())} sectors have no mapping:")
-        print(unmatched.to_string(index=False))
+    if verbose:
+        mapped_sectors = set(specific_map["cer_sector"]) | set(sector_map["cer_sector"])
+        unmatched = (
+            cer[["cer_sector", "cer_enduse"]]
+            .drop_duplicates()
+            .loc[lambda d: ~d["cer_sector"].isin(mapped_sectors)]
+            .sort_values(["cer_sector", "cer_enduse"])
+        )
+        if not unmatched.empty:
+            print(f"  Warning: {len(unmatched['cer_sector'].unique())} sectors have no mapping:")
+            print(unmatched.to_string(index=False))
 
-    print("Mapping fuel names to CIMS names...")
+    if verbose:
+        print("Mapping fuel names to CIMS names...")
     merged = map_fuel_names(merged, energy_map)
 
     ignore_fuels = {"air thermal", "geothermal", "steam"}
     merged = merged[~merged["Fuel"].str.lower().isin(ignore_fuels)]
 
-    print("Mapping regions to CIMS names...")
+    if verbose:
+        print("Mapping regions to CIMS names...")
     merged["_area_norm"] = merged["Area"].str.strip().str.lower()
     for cer_raw, cer_std in _AREA_NORMALIZE.items():
         merged["_area_norm"] = merged["_area_norm"].where(
@@ -217,9 +233,10 @@ def main() -> pd.DataFrame:
     merged["Region"] = merged["_area_norm"].map(_area_lower).fillna(merged["Area"])
     merged.drop(columns="_area_norm", inplace=True)
 
-    unmatched_areas = merged.loc[merged["Region"] == merged["Area"], "Area"].unique()
-    if len(unmatched_areas):
-        print(f"  Warning: unmapped areas: {sorted(unmatched_areas)}")
+    if verbose:
+        unmatched_areas = merged.loc[merged["Region"] == merged["Area"], "Area"].unique()
+        if len(unmatched_areas):
+            print(f"  Warning: unmapped areas: {sorted(unmatched_areas)}")
 
     # cer_to_cims_map.csv maps each Space Heating activity to both a "(Marine)"
     # and a "(Cold)" node with no region qualifier. Marine is BC's coastal
@@ -227,7 +244,11 @@ def main() -> pd.DataFrame:
     is_marine = merged["cims_node"].str.contains(r"\(Marine\)", regex=True)
     merged = merged[~is_marine | (merged["Region"] == "BC")]
 
-    print("Aggregating by region, cims_node, fuel, year...")
+    return merged
+
+
+def _aggregate(merged: pd.DataFrame) -> pd.DataFrame:
+    """Region/cims_node/Fuel/Year groupby -> the Region/Node/Variable/Unit/Source/Year/Value shape."""
     agg = (
         merged
         .groupby(["Region", "cims_node", "Fuel", "Year"], as_index=False)["Data"]
@@ -244,7 +265,34 @@ def main() -> pd.DataFrame:
         "Year":     agg["Year"],
         "Value":    agg["Data"],
     })
-    result = result.sort_values(["Region", "Node", "Variable", "Year"]).reset_index(drop=True)
+    return result.sort_values(["Region", "Node", "Variable", "Year"]).reset_index(drop=True)
+
+
+def load_feedstock_demand() -> pd.DataFrame:
+    """
+    Region/Node/Variable/Unit/Source/Year/Value for feedstock-only CER
+    demand (vFsDmd-CIMS.csv), mapped through the same node/fuel/region
+    logic as main(). Returns an in-memory frame — writes nothing to disk.
+    """
+    cer = load_cer_data()
+    cer = cer[cer["demand_type"] == "feedstock"]
+    mapping, energy_map, region_map = _load_mapping_tables()
+    merged = _map_to_cims(cer, mapping, energy_map, region_map, verbose=False)
+    return _aggregate(merged)
+
+
+def main() -> pd.DataFrame:
+    print("Loading CER demand data...")
+    cer = load_cer_data()
+    print(f"  {len(cer):,} rows across all CER files")
+
+    print("Loading mappings...")
+    mapping, energy_map, region_map = _load_mapping_tables()
+
+    merged = _map_to_cims(cer, mapping, energy_map, region_map, verbose=True)
+
+    print("Aggregating by region, cims_node, fuel, year...")
+    result = _aggregate(merged)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT_FILE, index=False, encoding="utf-8-sig", na_rep="")
