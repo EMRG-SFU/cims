@@ -589,7 +589,8 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
 
     EPA engine packages determine gasoline Low/Medium/High efficiency shares.
     The gasoline shares are smoothed using the Shares-tab method and then applied
-    identically to diesel. Other StatCan fuel technologies remain unchanged.
+    identically to diesel. Other StatCan fuel technologies are mapped to cims techs
+    or removed if not relevant.
     """
     statcan_last_year = _last_data_year(
         'stat_can_market_shares',
