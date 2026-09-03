@@ -94,7 +94,7 @@ def get_quantityRequested_diff_frame(model,
     if join_type == "inner":
         both_frame = cims.join(cal, on=['year','fuel'], how='inner')
     elif join_type == "outer":
-        both_frame = cims.join(cal, on=['year','fuel'], how='outer')
+        both_frame = cims.join(cal, on=['year','fuel'], how='full', coalesce=True)
     else:
         raise NotImplemented(f"join type {join_type} not accepted here.")
 
