@@ -4,6 +4,16 @@ from CIMS import declining_costs, lcc_calculation
 from ..graph.query import parent_name
 from . import list as PARAM
 
+def _return_val(val, param_source, unit, return_source, return_unit):
+    if return_source and return_unit:
+        return val, param_source, unit
+    if return_source:
+        return val, param_source
+    if return_unit:
+        return val, unit
+    return val
+
+
 calculation_directory = {
     PARAM.capital_cost_declining: declining_costs.calc_declining_capital_cost,
     PARAM.capital_cost: lcc_calculation.calc_capital_cost,
@@ -25,8 +35,8 @@ calculation_directory = {
 }
 
 def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,
-              target=None, return_source=False, do_calc=False, check_exist=False,
-              dict_expected=False):
+              target=None, return_source=False, return_unit=False, do_calc=False,
+              check_exist=False, dict_expected=False):
     """
     Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
     calculating the parameter's value if needed.
@@ -83,6 +93,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         default, or previous_year}.
     """
     val = None
+    param_source = None
     is_exogenous = None
 
     # Get Parameter from Description
@@ -118,8 +129,10 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
+    unit = None
     if isinstance(val, dict) and (PARAM.year_value in val):
         param_source = val[PARAM.param_source]
+        unit = val.get(PARAM.unit)
         is_exogenous = param_source in ['model', 'initialization']
         val = val[PARAM.year_value]
 
@@ -137,16 +150,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
 
         warnings.warn(warning_message)
 
-    if val is not None:
-        if not do_calc:
-            if return_source:
-                return val, param_source
-            return val
-        elif is_exogenous:
-            if return_source:
-                return val, param_source
-            else:
-                return val
+    if val is not None and (not do_calc or is_exogenous):
+        return _return_val(val, param_source, unit, return_source, return_unit)
 
     # If check_exist is True, raise an Exception if val has not yet been returned, which means
     # the value at the current context could not be found as is.
@@ -224,10 +229,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             val = None
             param_source = None
 
-    if return_source:
-        return val, param_source
-    else:
-        return val
+    return _return_val(val, param_source, unit, return_source, return_unit)
 
 def is_param_exogenous(model, param, node, year, tech=None):
     """Checks if a parameter is exogenously defined"""

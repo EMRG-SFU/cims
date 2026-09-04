@@ -400,6 +400,23 @@ REGISTRY.register("nodes_missing_competition", CheckSpec(
     ),
 ))
 
+REGISTRY.register("currency_table_coverage", CheckSpec(
+    fn=file_errors.currency_table_coverage,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="monetary units in the data cannot be converted — year or currency missing from deflator/exchange tables",
+    help_text=(
+        "Output: [\"SRC_CURRENCY SRC_YEAR → TARGET_CURRENCY TARGET_YEAR: <reason>\"]\n"
+        "  Each entry is a unique conversion that failed; reason is the missing key\n"
+        "  (e.g. 'Year 1800 not found in deflator table for CAD (available: 1995-2024)').\n\n"
+        "Reading: open the deflator CSV and confirm the target dollar-year row exists\n"
+        "for every currency present in the data. Open the exchange CSV and confirm the\n"
+        "required cross-currency rate exists for the target year. This check is skipped\n"
+        "when no target_units are configured."
+    ),
+))
+
 REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
     fn=file_errors.no_structural_parent_node_exists,
     phase=Phase.FILE,
@@ -512,6 +529,23 @@ REGISTRY.register("zero_requested_nodes", CheckSpec(
         "Reading: something is pointing at this node but the demand is always 0.\n"
         "Check whether the requesting nodes' service_request values are\n"
         "intentionally 0 or whether they should be non-zero."
+    ),
+))
+REGISTRY.register("cost_params_missing_currency_unit", CheckSpec(
+    fn=file_warnings.cost_params_missing_currency_unit,
+    phase=Phase.FILE,
+    severity=Severity.WARNING,
+    argmap={},
+    short_desc="rows with a '$' unit are missing a YYYY_CCC monetary year prefix",
+    help_text=(
+        "Output: [(row_index, node, parameter, unit)]\n"
+        "  Each entry is a row whose Unit contains '$' but lacks a YYYY_CCC prefix;\n"
+        "  row_index is that row in model_df.\n\n"
+        "Reading: currency conversion uses the year prefix to identify which rows to\n"
+        "convert. Without it those values are silently skipped. Update the Unit column\n"
+        "to include the dollar-year and currency code\n"
+        "(e.g. '$/GJ' → '2010_CAD/GJ', '$' → '2010_CAD').\n\n"
+        "This check is skipped when no target_units are configured."
     ),
 ))
 
