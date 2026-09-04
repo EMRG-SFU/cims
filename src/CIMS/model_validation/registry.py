@@ -409,13 +409,14 @@ REGISTRY.register("currency_table_coverage", CheckSpec(
     help_text=(
         "Output: [\"SRC_CURRENCY SRC_YEAR → TARGET_CURRENCY TARGET_YEAR: <reason>\"]\n"
         "  Each entry is a unique conversion that failed; reason is the missing key\n"
-        "  (e.g. 'Year 1800 not found in deflator table for CAD').\n\n"
+        "  (e.g. 'Year 1800 not found in deflator table for CAD (available: 1995-2024)').\n\n"
         "Reading: open the deflator CSV and confirm the target dollar-year row exists\n"
         "for every currency present in the data. Open the exchange CSV and confirm the\n"
         "required cross-currency rate exists for the target year. This check is skipped\n"
         "when no target_units are configured."
     ),
 ))
+
 REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
     fn=file_errors.no_structural_parent_node_exists,
     phase=Phase.FILE,
@@ -540,10 +541,11 @@ REGISTRY.register("cost_params_missing_currency_unit", CheckSpec(
         "Output: [(row_index, node, parameter, unit)]\n"
         "  Each entry is a row whose Unit contains '$' but lacks a YYYY_CCC prefix;\n"
         "  row_index is that row in model_df.\n\n"
-        "Reading: configure_unit_conversion() uses the year prefix to identify which\n"
-        "rows to convert. Without it those values are silently skipped. Update the\n"
-        "Unit column to include the dollar-year and currency code\n"
-        "(e.g. '$/GJ' → '2010_CAD/GJ', '$' → '2010_CAD')."
+        "Reading: currency conversion uses the year prefix to identify which rows to\n"
+        "convert. Without it those values are silently skipped. Update the Unit column\n"
+        "to include the dollar-year and currency code\n"
+        "(e.g. '$/GJ' → '2010_CAD/GJ', '$' → '2010_CAD').\n\n"
+        "This check is skipped when no target_units are configured."
     ),
 ))
 

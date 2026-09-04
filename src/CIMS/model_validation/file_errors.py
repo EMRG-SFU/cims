@@ -4,6 +4,7 @@ import numpy as np
 
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
+from ..unit_conversion import MONETARY_PREFIX_RE
 
 
 def _base_year(validator):
@@ -500,13 +501,14 @@ def currency_table_coverage(validator):
     if converter is None:
         return [], ""
 
-    from ..unit_conversion import _MONETARY_PREFIX_RE
-
     target_currency = validator.target_currency
     target_year = validator.target_dollar_year
 
+    if COL.unit not in validator.model_df.columns:
+        return [], ""
+
     unit_col = validator.model_df[COL.unit].fillna("").astype(str)
-    extracted = unit_col.str.extract(_MONETARY_PREFIX_RE)
+    extracted = unit_col.str.extract(MONETARY_PREFIX_RE)
     monetary_mask = extracted[0].notna()
 
     if not monetary_mask.any():

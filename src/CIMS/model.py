@@ -185,7 +185,6 @@ class Model:
     def update(self, scenario_model_reader):
         """
         Create an updated version of self based off another ModelReader.
-        Intended for use with a reference + scenario model setup.
 
         Parameters
         ----------
@@ -212,10 +211,17 @@ class Model:
         # Update the model's node_df & tech_dfs
         model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
 
+        # Normalise the incoming scenario values to the model's target currency &
+        # dollar-year. Without this, a scenario applied through update would
+        # inject unconverted values into an already-converted graph.
+        scenario_node_dfs, scenario_tech_dfs = model._convert_currency(
+            model.scenario_node_dfs, model.scenario_tech_dfs, label="scenario "
+        )
+
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0    # For Excel results viewer TODO: remove once we switch to notebook visualization
-        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs, model.scenario_tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs, model.scenario_tech_dfs)
+        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
@@ -242,6 +248,37 @@ class Model:
         self.target_dollar_year = target_units["dollar_year"]
         self.currency_converter = CurrencyConverter(deflator_path, exchange_path)
 
+    def _convert_currency(self, node_dfs, tech_dfs, label=""):
+        """
+        Return currency-converted copies of the given node & technology DataFrames.
+
+        Returns the inputs unchanged when no currency conversion is configured, so
+        every path that builds or updates the graph can call this unconditionally.
+
+        Parameters
+        ----------
+        node_dfs : dict[str, pd.DataFrame]
+        tech_dfs : dict[str, dict[str, pd.DataFrame]]
+        label : str, optional
+            Descriptive prefix for the progress message (e.g. "scenario ").
+
+        Returns
+        -------
+        tuple[dict, dict]
+            The (possibly converted) node_dfs and tech_dfs.
+        """
+        if getattr(self, "currency_converter", None) is None:
+            return node_dfs, tech_dfs
+        if not node_dfs and not tech_dfs:
+            return node_dfs, tech_dfs
+
+        print(f"  Converting {label}costs to "
+              f"{self.target_dollar_year}_{self.target_currency}...")
+        return apply_currency_conversion(
+            node_dfs, tech_dfs, self.currency_converter,
+            self.target_currency, self.target_dollar_year,
+        )
+
     def construct_graph(self):
         """
         Build the model graph from the base and scenario descriptions and
@@ -261,19 +298,10 @@ class Model:
         graph.cur_tree_index = [0]
         graph.max_tree_index = [0]
 
-        node_dfs, tech_dfs = self.node_dfs, self.tech_dfs
-        scenario_node_dfs = self.scenario_node_dfs
-        scenario_tech_dfs = self.scenario_tech_dfs
-        if self.currency_converter is not None:
-            print(f"  Converting costs to {self.target_dollar_year}_{self.target_currency}...")
-            node_dfs, tech_dfs = apply_currency_conversion(
-                node_dfs, tech_dfs, self.currency_converter,
-                self.target_currency, self.target_dollar_year,
-            )
-            scenario_node_dfs, scenario_tech_dfs = apply_currency_conversion(
-                scenario_node_dfs, scenario_tech_dfs, self.currency_converter,
-                self.target_currency, self.target_dollar_year,
-            )
+        node_dfs, tech_dfs = self._convert_currency(self.node_dfs, self.tech_dfs)
+        scenario_node_dfs, scenario_tech_dfs = self._convert_currency(
+            self.scenario_node_dfs, self.scenario_tech_dfs, label="scenario "
+        )
 
         print("  Building base graph...")
         graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)

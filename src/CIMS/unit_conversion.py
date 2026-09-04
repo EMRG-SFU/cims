@@ -1,6 +1,12 @@
 """
 Unit conversion utilities for normalizing parameter values to a common currency and dollar-year
 at model read-time. Designed for future extension to physical unit conversion (e.g. energy units).
+
+Conversion order
+----------------
+A value is rebased within its own (source) currency first, and only then exchanged
+into the target currency. This ordering is deliberate — see
+``CurrencyConverter.conversion_factor`` for the full rationale and its consequences.
 """
 import re
 import pandas as pd
@@ -8,7 +14,7 @@ from pathlib import Path
 
 # Matches: 4-digit year, optional separator (_, space, or none), 3-letter currency code,
 # optional physical unit after / or _ (e.g. '2010_CAD', '2010_USD/GJ', '2010 CAD')
-_MONETARY_PREFIX_RE = re.compile(r'^(\d{4})\s*_?\s*([A-Za-z]{3})(?:[/_](.+))?$')
+MONETARY_PREFIX_RE = re.compile(r'^(\d{4})\s*_?\s*([A-Za-z]{3})(?:[/_](.+))?$')
 
 
 def parse_unit_string(unit: str | None) -> tuple[int | None, str | None, str | None]:
@@ -32,7 +38,7 @@ def parse_unit_string(unit: str | None) -> tuple[int | None, str | None, str | N
     if not unit:
         return None, None, unit
 
-    match = _MONETARY_PREFIX_RE.match(unit.strip())
+    match = MONETARY_PREFIX_RE.match(unit.strip())
     if match:
         return int(match.group(1)), match.group(2).upper(), match.group(3)
 
@@ -40,7 +46,14 @@ def parse_unit_string(unit: str | None) -> tuple[int | None, str | None, str | N
 
 
 class CurrencyConverter:
-    """Converts values between currencies and dollar-years using CPI and exchange rate tables."""
+    """
+    Converts values between currencies and dollar-years using price deflator and
+    exchange rate tables.
+
+    The deflator table is expected to hold a GDP deflator at market prices, indexed
+    per currency; see ``conversion_factor`` for why that series, and why deflation
+    is applied before the exchange step.
+    """
 
     def __init__(self, deflator_path: str | Path, exchange_path: str | Path):
         self._deflator = _load_table(deflator_path, key_col='Context')
@@ -52,7 +65,28 @@ class CurrencyConverter:
         Compute the factor to convert a value from source_currency/source_year
         to target_currency/target_year.
 
-        Applies inflation in the source currency first, then exchanges to the target currency.
+        Methodology
+        -----------
+        Deflate first (within the source currency), then exchange:
+
+            factor = deflator[source_currency][target_year]
+                     / deflator[source_currency][source_year]
+                     * exchange[target_currency per source_currency][target_year]
+
+        Rebasing within the source (foreign) currency using the GDP deflator at
+        market prices ensures that the value is adjusted consistently for changes in
+        the domestic price level of output, preserving the real economic meaning of
+        the original estimate. Performing this step first avoids mixing inflation
+        dynamics across countries. The subsequent conversion to the target currency
+        using the exchange rate then translates this real value into the target
+        currency, separating time (inflation) effects from space (currency) effects
+        and maintaining consistency with national accounts principles.
+
+        Consequence: the factor is *not* symmetric, because the two directions
+        deflate in different currencies and exchange in different years. Converting
+        USD 2010 -> CAD 2020 and back to USD 2010 does not return the original value.
+        Convert once, from the source the estimate was published in, rather than
+        chaining or reversing conversions.
 
         Parameters
         ----------
@@ -114,7 +148,7 @@ def normalize_currency_in_df(
     if df.empty:
         return df
 
-    extracted = df['Unit'].fillna('').astype(str).str.extract(_MONETARY_PREFIX_RE)
+    extracted = df['Unit'].fillna('').astype(str).str.extract(MONETARY_PREFIX_RE)
     extracted.columns = ['dollar_year', 'currency', 'physical_unit']
     monetary_mask = extracted['dollar_year'].notna()
 
@@ -183,7 +217,16 @@ def apply_currency_conversion(
 
 def _load_table(path: str | Path, key_col: str) -> dict[tuple[str, int], float]:
     df = pd.read_csv(path)
-    return {(row[key_col], int(row['Year'])): float(row['Value']) for _, row in df.iterrows()}
+    missing = [c for c in (key_col, 'Year', 'Value') if c not in df.columns]
+    if missing:
+        raise ValueError(
+            f"{path} is missing required column(s): {', '.join(missing)}. "
+            f"Expected columns: {key_col}, Year, Value."
+        )
+    return dict(zip(
+        zip(df[key_col].astype(str), df['Year'].astype(int)),
+        df['Value'].astype(float),
+    ))
 
 
 def _inflate_factor(deflator: dict, currency: str, source_year: int, target_year: int) -> float:
@@ -199,28 +242,38 @@ def _inflate_factor(deflator: dict, currency: str, source_year: int, target_year
 def _exchange_factor(exchange: dict, source_currency: str, target_currency: str, year: int) -> float:
     if source_currency == target_currency:
         return 1.0
-    key = (f"{target_currency}_per_{source_currency}", year)
-    if key not in exchange:
-        if year not in {k[1] for k in exchange}:
-            raise ValueError(
-                f"Year {year} not found in exchange rate table. "
-                "Please review the exchange rate table for missing or out-of-range years."
-            )
+    pair = f"{target_currency}_per_{source_currency}"
+    if (pair, year) in exchange:
+        return exchange[(pair, year)]
+
+    # Distinguish "this currency pair is absent entirely" from "the pair exists
+    # but not for this year", so the message points at the right fix.
+    years_for_pair = {k[1] for k in exchange if k[0] == pair}
+    if not years_for_pair:
         raise ValueError(
-            f"{target_currency}_per_{source_currency} not found in exchange rate table. "
+            f"{pair} not found in exchange rate table. "
             "Please review the exchange rate table for missing currencies."
         )
-    return exchange[key]
+    raise ValueError(
+        f"Year {year} not found in exchange rate table for {pair} "
+        f"(available: {min(years_for_pair)}-{max(years_for_pair)}). "
+        "Please review the exchange rate table for missing or out-of-range years."
+    )
 
 
 def _check_deflator_key(table: dict, key: tuple, currency: str, year: int) -> None:
-    if key not in table:
-        if year not in {k[1] for k in table}:
-            raise ValueError(
-                f"Year {year} not found in deflator table. "
-                "Please review the deflator table for missing or out-of-range years."
-            )
+    if key in table:
+        return
+
+    # As above: a missing currency and a missing year need different messages.
+    years_for_currency = {k[1] for k in table if k[0] == currency}
+    if not years_for_currency:
         raise ValueError(
             f"Currency {currency} not found in deflator table. "
             "Please review the deflator table for missing currencies."
         )
+    raise ValueError(
+        f"Year {year} not found in deflator table for {currency} "
+        f"(available: {min(years_for_currency)}-{max(years_for_currency)}). "
+        "Please review the deflator table for missing or out-of-range years."
+    )
