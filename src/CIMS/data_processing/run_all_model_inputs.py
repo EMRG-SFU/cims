@@ -2,8 +2,8 @@
 Run all sector pipeline scripts in the correct order.
 
 Usage:
-    python -m CIMS.data_processing.run_all_model
-    python -m CIMS.data_processing.run_all_model --stop-on-error
+    python -m CIMS.data_processing.run_all_model_inputs
+    python -m CIMS.data_processing.run_all_model_inputs --stop-on-error
 """
 
 import os

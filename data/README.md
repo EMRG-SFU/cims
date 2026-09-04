@@ -89,7 +89,7 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 ```
 <repo>/src/CIMS/data_processing/
 ├── process_source_data.py      # Runs all Stage 1 source modules in dependency order
-├── run_all_model.py            # Runs all Stage 2 model_inputs modules
+├── run_all_model_inputs.py     # Runs all Stage 2 model_inputs modules
 ├── run_all_calibration.py      # Runs all Stage 2 calibration modules
 ├── source/                     # Stage 1 — raw → processed_data
 │   ├── activity/               # Activity for all sectors (res/com/trans from ceud source)
@@ -139,7 +139,7 @@ You can run scripts individually (useful when only one source has been updated) 
 ```powershell
 # Run the full pipeline in one go
 python -m CIMS.data_processing.process_source_data       # all Stage 1 source processors
-python -m CIMS.data_processing.run_all_model              # all Stage 2 model input assemblers
+python -m CIMS.data_processing.run_all_model_inputs      # all Stage 2 model input assemblers
 python -m CIMS.data_processing.run_all_calibration        # all Stage 2 calibration assemblers
 ```
 
