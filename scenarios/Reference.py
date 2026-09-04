@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.2"
+__generated_with = "0.23.15"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -36,6 +36,8 @@ def _():
     ### Default values and parameter list files
     default_path = 'data/model_inputs/defaults/defaults_Parameters.csv'
     list_path = 'data/model_inputs/defaults/defaults_Lists.csv'
+    deflator_path = 'data/processed_data/deflator_exchange/currency_deflator.csv'
+    exchange_path = 'data/processed_data/deflator_exchange/currency_exchange.csv'
 
     update_files = {}
 
@@ -75,16 +77,16 @@ def _():
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
-         'dcc', # declining capital cost
-         'dic', # declining intangible cost (neighbour effect)
-         'fic', # fixed intangible cost; primarily used for calibration
-         'market_share_limits', # use of limits should be minimised
+        'DCC', # declining capital cost
+        'DIC', # declining intangible cost (neighbour effect)
+        'FIC', # fixed intangible cost; primarily used for calibration
+        'market_share_limits', # use of limits should be minimised
         ]
     if model_req:
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-    return base_model, default_path, list_path, model_path, update_files
+    return base_model, default_path, list_path, deflator_path, exchange_path, model_path, update_files
 
 
 @app.cell(hide_code=True)
@@ -97,6 +99,12 @@ def _():
 
 @app.cell
 def _(model_path, update_files):
+    # Target dollar year and currency for scenario
+    target_units={
+        "currency": "CAD", 
+        "dollar_year": 2020
+    }
+
     # Only uncommented regions below will be run in the simulation
     region_list = [
         'CIMS', # Required
@@ -146,12 +154,12 @@ def _(model_path, update_files):
         2023,
         2024,
         ### Forecast ###
-        # 2025,
-        # 2030,
-        # 2035,
-        # 2040,
-        # 2045,
-        # 2050,
+        2025,
+        2030,
+        2035,
+        2040,
+        2045,
+        2050,
     ]
 
     # Only uncommented sectors below will be run in the simulation
@@ -198,41 +206,41 @@ def _(model_path, update_files):
     ### Reference scenario update files (these files should always be included as the base model specification, but they can be excluded if appropriate for your scenario)
     ref_path = 'data/model_inputs/policies/reference'
     ref_policies = [
-     ### Economy
-         'ref_carbon_tax',
-         'ref_obps_fed',
-     ### Coal Mining
-     ### Natural Gas Production
-     ### Petroleum Crude
-     ### Mining
-     ### Electricity
-         'ref_coal_phase_out',
-         'ref_nuclear_ban',
-         'ref_nuclear_decommission',
-         'ref_clean_electricity',
-         'ref_cer',
-     ### Biodiesel
-     ### Ethanol
-     ### Hydrogen
-     ### Petroleum Refining
-     ### Industrial Minerals
-     ### Iron and Steel
-     ### Metal Smelting
-     ### Chemical Products
-     ### Pulp and Paper
-     ### Light Industrial
-     ### Residential
-         'ref_incandescent_phase_out',
-     ### Commercial
-     ### Transportation Personal
-         'ref_ldv_zev_federal', #include before Prov version
-         'ref_ldv_zev_Prov',
-         'ref_renewable_fuel_content_fed', #include before Prov version
-         'ref_renewable_fuel_content_prov',
-     ### Transportation Freight
-     ### Waste
-         'ref_waste_methane_large_sites',
-     ### Agriculture
+    ### Economy
+        'ref_carbon_tax',
+        'ref_obps_fed',
+    ### Coal Mining
+    ### Natural Gas Production
+    ### Petroleum Crude
+    ### Mining
+    ### Electricity
+        'ref_coal_phase_out',
+        'ref_nuclear_ban',
+        'ref_nuclear_decommission',
+        'ref_clean_electricity',
+        'ref_cer',
+    ### Biodiesel
+    ### Ethanol
+    ### Hydrogen
+    ### Petroleum Refining
+    ### Industrial Minerals
+    ### Iron and Steel
+    ### Metal Smelting
+    ### Chemical Products
+    ### Pulp and Paper
+    ### Light Industrial
+    ### Residential
+        'ref_incandescent_phase_out',
+    ### Commercial
+    ### Transportation Personal
+        'ref_ldv_zev_federal', #include before Prov version
+        'ref_ldv_zev_prov',
+        'ref_renewable_fuel_content_fed', #include before Prov version
+        'ref_renewable_fuel_content_prov',
+    ### Transportation Freight
+    ### Waste
+        'ref_waste_methane_large_sites',
+    ### Agriculture
         ]
     if ref_policies:
         if ref_path not in update_files:
@@ -363,6 +371,9 @@ def _(
     base_model,
     default_path,
     list_path,
+    target_units,
+    deflator_path,
+    exchange_path,
     model_path,
     region_list,
     sector_list,
@@ -375,9 +386,11 @@ def _(
         region_list=region_list,
         update_files=update_files,
         year_list=year_list,
-        sector_list=sector_list,
-        default_values_csv_path=default_path,
+        sector_list=sector_list,    default_values_csv_path=default_path,
         list_csv_path=list_path,
+        target_units=target_units,
+        deflator_path=deflator_path,
+        exchange_path=exchange_path,
     )
     return (model,)
 
