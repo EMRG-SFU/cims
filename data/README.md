@@ -91,6 +91,7 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 ├── source/                     # Stage 1 — raw → processed_data
 │   ├── run_all.py              # Runs all Stage 1 modules in dependency order
 │   ├── activity/               # Activity for all sectors (res/com/trans from ceud source)
+│   ├── deflator_exchange/      # GDP deflators and exchange rates (currency conversion)
 │   ├── eccc/nir/               # National Inventory Report processing
 │   ├── emission_factors/       # Fuel-level emission factors (NIR Annex 6, CEEDC)
 │   ├── energy_prices/          # Energy prices and their multipliers (various sources)
@@ -154,6 +155,7 @@ python -m CIMS.data_processing.source.nrcan.ceud.transportation_freight.transpor
 python -m CIMS.data_processing.source.energy_prices.energy_prices
 python -m CIMS.data_processing.source.energy_prices.energy_price_multipliers
 python -m CIMS.data_processing.source.eccc.nir.nir_to_cims
+python -m CIMS.data_processing.source.deflator_exchange.deflator_exchange
 python -m CIMS.data_processing.source.emission_factors.emission_factors
 ```
 
@@ -301,6 +303,11 @@ All sector model input files share a common long-format schema:
 Files are saved as CSVs.
 
 ---
+
+Some scripts document their own outputs in a README beside the script — for
+instance the currency deflator and exchange rate tables written to
+`data/processed_data/deflator_exchange/`, described in
+[`src/CIMS/data_processing/source/deflator_exchange/README.md`](../src/CIMS/data_processing/source/deflator_exchange/README.md).
 
 ## Common Patterns
 

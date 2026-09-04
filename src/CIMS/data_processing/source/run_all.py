@@ -15,6 +15,8 @@ PACKAGE = "CIMS.data_processing.source"
 # Explicit order where dependencies matter (energy_prices before multipliers).
 # All other scripts are independent and run after.
 MODULES = [
+    # Currency reference tables (GDP deflators and exchange rates)
+    f"{PACKAGE}.deflator_exchange.deflator_exchange",
     # ECCC GHG inventory
     f"{PACKAGE}.eccc.nir.nir_to_cims",
     f"{PACKAGE}.eccc.nir.nir_crosswalk_tables_cims",
