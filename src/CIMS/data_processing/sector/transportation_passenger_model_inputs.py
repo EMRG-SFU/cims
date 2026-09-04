@@ -62,7 +62,7 @@ import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
 
 import CIMS.data_processing.source.nrcan.ceud.transportation_passenger.transportation_passenger as _tp_mod
 
-import CIMS.data_processing.sector.transportation_passenger.calibration as _calibration_mod
+import CIMS.data_processing.sector.transportation_passenger_calibration as _calibration_mod
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 

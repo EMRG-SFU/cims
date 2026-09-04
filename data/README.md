@@ -24,7 +24,7 @@ Raw data from various sources is gathered and placed in the External-CIMS sharep
 
 **Step 2 — Source processing** (`src/CIMS/data_processing/source/`): Each script takes in raw data, manipulates it, and writes a CSV to `data/processed_data/` for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly. 
 
-**Step 3 — Sector assembly** (`src/CIMS/data_processing/sector/`): Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
+**Step 3 — Sector assembly** (`src/CIMS/data_processing/sector/`): One flat module per sector and stage, named `<sector>_model_inputs.py` and `<sector>_calibration.py`. Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
 
 ---
 
@@ -103,14 +103,14 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 ├── sector/                     # Stage 2 — processed_data + fixed_data → model_inputs
 │   ├── run_all_model.py        # Runs all model_inputs modules
 │   ├── run_all_calibration.py  # Runs all calibration modules
-│   ├── agriculture/
-│   ├── biodiesel/
-│   ├── chemical_products/
-│   ├── commercial/
-│   ├── residential/
-│   ├── transportation_passenger/
-│   ├── transportation_freight/
-│   └── .../
+│   ├── agriculture_model_inputs.py
+│   ├── agriculture_calibration.py
+│   ├── biodiesel_model_inputs.py
+│   ├── biodiesel_calibration.py
+│   ├── commercial_model_inputs.py
+│   ├── commercial_calibration.py
+│   └── ...                     # one <sector>_model_inputs.py, and where the
+│                               # sector is calibrated, a <sector>_calibration.py
 └── utils/                      # Shared utility functions
     ├── extractors/             # Source-specific readers (Stats Can, CEUD, CER)
     ├── output_builder.py       # CIMS output row formatter
@@ -162,10 +162,10 @@ python -m CIMS.data_processing.source.emission_factors.emission_factors
 Run Stage 2 sector assemblers:
 
 ```powershell
-python -m CIMS.data_processing.sector.agriculture.model_inputs
-python -m CIMS.data_processing.sector.agriculture.calibration
-python -m CIMS.data_processing.sector.commercial.model_inputs
-python -m CIMS.data_processing.sector.commercial.calibration
+python -m CIMS.data_processing.sector.agriculture_model_inputs
+python -m CIMS.data_processing.sector.agriculture_calibration
+python -m CIMS.data_processing.sector.commercial_model_inputs
+python -m CIMS.data_processing.sector.commercial_calibration
 ...
 ```
 
