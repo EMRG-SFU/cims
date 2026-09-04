@@ -10,7 +10,8 @@ with app.setup(hide_code=True):
     import re
     from pathlib import Path
 
-    MAPPINGS_PATH = Path('C:/cims/data/mappings_conversions')
+    # This file lives in data/mappings_conversions/, so its own folder is the path.
+    MAPPINGS_PATH = Path(__file__).resolve().parent
 
     # -------------------------------------------------------------------------
     # CONTROLS — edit values here directly, or use the UI below and click Save.
