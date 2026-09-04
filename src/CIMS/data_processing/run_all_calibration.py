@@ -1,9 +1,9 @@
 """
-Run all sector pipeline scripts in the correct order.
+Run all sector calibration scripts.
 
 Usage:
-    python -m CIMS.data_processing.sector.run_all_model
-    python -m CIMS.data_processing.sector.run_all_model --stop-on-error
+    python -m CIMS.data_processing.run_all_calibration
+    python -m CIMS.data_processing.run_all_calibration --stop-on-error
 """
 
 import os
@@ -13,38 +13,29 @@ import time
 
 PACKAGE = "CIMS.data_processing.sector"
 MODULES = [
-    f"{PACKAGE}.agriculture_model_inputs",
-    f"{PACKAGE}.biodiesel_model_inputs",
-    f"{PACKAGE}.chemical_products_model_inputs",
-    f"{PACKAGE}.cims_base_model_inputs",
-    f"{PACKAGE}.coal_mining_model_inputs",
-    f"{PACKAGE}.commercial_model_inputs",
-    f"{PACKAGE}.construction_model_inputs",
-    f"{PACKAGE}.dcc_model_inputs",
-    f"{PACKAGE}.dic_model_inputs",
-    f"{PACKAGE}.electricity_model_inputs",
-    f"{PACKAGE}.ethanol_model_inputs",
-    f"{PACKAGE}.exogenous_demand_model_inputs",
-    f"{PACKAGE}.exogenous_prices_model_inputs",
-    f"{PACKAGE}.fic_model_inputs",
-    f"{PACKAGE}.forestry_model_inputs",
-    f"{PACKAGE}.fuels_model_inputs",
-    f"{PACKAGE}.hydrogen_model_inputs",
-    f"{PACKAGE}.industrial_minerals_model_inputs",
-    f"{PACKAGE}.iron_and_steel_model_inputs",
-    f"{PACKAGE}.light_industrial_model_inputs",
-    f"{PACKAGE}.market_share_limits_model_inputs",
-    f"{PACKAGE}.metal_smelting_model_inputs",
-    f"{PACKAGE}.mining_model_inputs",
-    f"{PACKAGE}.natural_gas_model_inputs",
-    f"{PACKAGE}.petroleum_crude_model_inputs",
-    f"{PACKAGE}.petroleum_refining_model_inputs",
-    f"{PACKAGE}.pulp_and_paper_model_inputs",
-    f"{PACKAGE}.residential_model_inputs",
-    f"{PACKAGE}.transmission_model_inputs",
-    f"{PACKAGE}.transportation_passenger_model_inputs",
-    f"{PACKAGE}.transportation_freight_model_inputs",
-    f"{PACKAGE}.waste_model_inputs",
+    f"{PACKAGE}.agriculture_calibration",
+    f"{PACKAGE}.biodiesel_calibration",
+    f"{PACKAGE}.chemical_products_calibration",
+    f"{PACKAGE}.coal_mining_calibration",
+    f"{PACKAGE}.commercial_calibration",
+    f"{PACKAGE}.construction_calibration",
+    f"{PACKAGE}.electricity_calibration",
+    f"{PACKAGE}.ethanol_calibration",
+    f"{PACKAGE}.forestry_calibration",
+    f"{PACKAGE}.hydrogen_calibration",
+    f"{PACKAGE}.industrial_minerals_calibration",
+    f"{PACKAGE}.iron_and_steel_calibration",
+    f"{PACKAGE}.light_industrial_calibration",
+    f"{PACKAGE}.metal_smelting_calibration",
+    f"{PACKAGE}.mining_calibration",
+    f"{PACKAGE}.natural_gas_calibration",
+    f"{PACKAGE}.petroleum_crude_calibration",
+    f"{PACKAGE}.petroleum_refining_calibration",
+    f"{PACKAGE}.pulp_and_paper_calibration",
+    f"{PACKAGE}.residential_calibration",
+    f"{PACKAGE}.transportation_passenger_calibration",
+    f"{PACKAGE}.transportation_freight_calibration",
+    f"{PACKAGE}.waste_calibration",
 ]
 
 def main() -> int:
@@ -57,7 +48,7 @@ def main() -> int:
 
     results = []
 
-    print(f"{BOLD}Running {len(MODULES)} sector scripts{RESET}\n")
+    print(f"{BOLD}Running {len(MODULES)} calibration scripts{RESET}\n")
 
     for module in MODULES:
         label = module[len(PACKAGE) + 1:]

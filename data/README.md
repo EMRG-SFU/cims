@@ -88,8 +88,10 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 
 ```
 <repo>/src/CIMS/data_processing/
+├── run_all_source.py           # Runs all Stage 1 source modules in dependency order
+├── run_all_model.py            # Runs all Stage 2 model_inputs modules
+├── run_all_calibration.py      # Runs all Stage 2 calibration modules
 ├── source/                     # Stage 1 — raw → processed_data
-│   ├── run_all.py              # Runs all Stage 1 modules in dependency order
 │   ├── activity/               # Activity for all sectors (res/com/trans from ceud source)
 │   ├── deflator_exchange/      # GDP deflators and exchange rates (currency conversion)
 │   ├── eccc/nir/               # National Inventory Report processing
@@ -101,8 +103,6 @@ Pipeline **code** lives outside the data tree, inside the installed `CIMS` packa
 │       ├── transportation_passenger/
 │       └── transportation_freight/
 ├── sector/                     # Stage 2 — processed_data + fixed_data → model_inputs
-│   ├── run_all_model.py        # Runs all model_inputs modules
-│   ├── run_all_calibration.py  # Runs all calibration modules
 │   ├── agriculture_model_inputs.py
 │   ├── agriculture_calibration.py
 │   ├── biodiesel_model_inputs.py
@@ -138,9 +138,9 @@ You can run scripts individually (useful when only one source has been updated) 
 
 ```powershell
 # Run the full pipeline in one go
-python -m CIMS.data_processing.source.run_all              # all Stage 1 source processors
-python -m CIMS.data_processing.sector.run_all_model        # all Stage 2 model input assemblers
-python -m CIMS.data_processing.sector.run_all_calibration  # all Stage 2 calibration assemblers
+python -m CIMS.data_processing.run_all_source             # all Stage 1 source processors
+python -m CIMS.data_processing.run_all_model              # all Stage 2 model input assemblers
+python -m CIMS.data_processing.run_all_calibration        # all Stage 2 calibration assemblers
 ```
 
 Or run stages selectively. Stage 1 source processors (order generally does not matter, except `energy_prices.py` before `energy_price_multipliers.py`):
@@ -331,7 +331,7 @@ Because `CIMS` is installed (editable) into the project venv, this works from an
 
 **4. `main()` function + `__main__` guard** — All processing is wrapped in a `main()` function that returns a DataFrame. The `if __name__ == '__main__': main()` guard at the bottom means:
 - Scripts can be run directly: `python emissions_drivers.py`
-- `run_all.py` runs each module as a subprocess (`python -m ...`), and a sector assembler can import a source module and call its `main()` directly
+- The `run_all_*.py` runners sit at the top of `src/CIMS/data_processing/` and run each module as a subprocess (`python -m ...`), and a sector assembler can import a source module and call its `main()` directly
 - Sector assemblers that need to chain outputs can import a source script's `main()` directly
 
 **5. Console summary on completion** — Every script prints a ✅ block at the end showing row count, regions/variables processed, years covered, and the output path. This gives quick confirmation that the data landed where expected without opening the output file.

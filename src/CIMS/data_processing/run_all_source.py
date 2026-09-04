@@ -2,8 +2,8 @@
 Run all source pipeline scripts in the correct order.
 
 Usage:
-    python -m CIMS.data_processing.source.run_all
-    python -m CIMS.data_processing.source.run_all --stop-on-error
+    python -m CIMS.data_processing.run_all_source
+    python -m CIMS.data_processing.run_all_source --stop-on-error
 """
 
 import os
