@@ -26,6 +26,7 @@ dependencies = [
     'xlrd',
     'pyxlsb',
     'openpyxl',
+    'fastexcel',
     'scipy',
     'seaborn>=0.13.2',
     'matplotlib',
