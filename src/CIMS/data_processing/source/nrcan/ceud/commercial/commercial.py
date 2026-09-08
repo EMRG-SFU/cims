@@ -33,7 +33,6 @@ CEUD technology splits (NRCan Excel):
 
 from pathlib import Path
 from typing import Optional
-import csv
 import polars as pl
 import pandas as pd
 import numpy as np
@@ -42,6 +41,7 @@ from CIMS.data_processing.utils.extractors.nrcan_ceud import (
     get_row_series, row_to_series, pct_series, find_row_indices, extract_year_cols, _to_float,
 )
 from CIMS.data_processing.utils.output_builder import pl_to_series, pl_get_scalar
+from CIMS.data_processing.utils.csv_io import read_dict_rows, iter_dict_rows
 from CIMS.data_processing.utils.extractors.stats_can import build_population_shares
 from CIMS.data_processing.utils.data_extensions import (
     extend_series_trend_dampener,
@@ -1107,12 +1107,11 @@ def _hvac_technologies(region: str, climate: str) -> list[str]:
     """
     fixed_path = FIXED_DATA_DIR / f'commercial_{region.lower()}.csv'
     techs, seen = [], set()
-    with open(fixed_path, encoding='utf-8-sig') as f:
-        for r in csv.DictReader(f):
-            if (r['Branch'].endswith(f'.HVAC ({climate})') and r['Parameter'] == 'service_request'
-                    and r['Target'].endswith('.Cooling') and r['Technology'] not in seen):
-                seen.add(r['Technology'])
-                techs.append(r['Technology'])
+    for r in iter_dict_rows(fixed_path):
+        if (r['Branch'].endswith(f'.HVAC ({climate})') and r['Parameter'] == 'service_request'
+                and r['Target'].endswith('.Cooling') and r['Technology'] not in seen):
+            seen.add(r['Technology'])
+            techs.append(r['Technology'])
     return techs
 
 
@@ -1126,10 +1125,9 @@ def _cooling_own_conversion_rate(region: str) -> float:
     see _hvac_cooling_to_heat_ratio.
     """
     fixed_path = FIXED_DATA_DIR / f'commercial_{region.lower()}.csv'
-    with open(fixed_path, encoding='utf-8-sig') as f:
-        for r in csv.DictReader(f):
-            if r['Branch'].endswith('.Commercial.Cooling') and r['Parameter'] == 'service_request':
-                return float(r['2000'])
+    for r in iter_dict_rows(fixed_path):
+        if r['Branch'].endswith('.Commercial.Cooling') and r['Parameter'] == 'service_request':
+            return float(r['2000'])
     return 1.0
 
 
@@ -1282,8 +1280,7 @@ def _hvac_fuel_conversion_factor(region: str) -> pd.Series:
     fixed_path = FIXED_DATA_DIR / f'commercial_{region_lower}.csv'
     calib_path = CALIBRATION_DIR / f'commercial_{region_lower}.csv'
 
-    with open(fixed_path, encoding='utf-8-sig') as f:
-        fixed_rows = list(csv.DictReader(f))
+    fixed_rows = read_dict_rows(fixed_path)
 
     own_fuel_rate: dict[str, float] = {}
     for r in fixed_rows:
@@ -1297,18 +1294,17 @@ def _hvac_fuel_conversion_factor(region: str) -> pd.Series:
 
     shares_by_year: dict[int, dict[str, float]] = {}
     if calib_path.exists():
-        with open(calib_path, encoding='utf-8-sig') as f:
-            for r in csv.DictReader(f):
-                if r['Parameter'] != 'calibration_market_share_total':
-                    continue
-                if not r['Branch'].endswith('.HVAC (Cold)'):
-                    continue
-                try:
-                    year = int(r['Year'])
-                    value = float(r['Value'])
-                except (ValueError, TypeError):
-                    continue
-                shares_by_year.setdefault(year, {})[r['Technology']] = value
+        for r in iter_dict_rows(calib_path):
+            if r['Parameter'] != 'calibration_market_share_total':
+                continue
+            if not r['Branch'].endswith('.HVAC (Cold)'):
+                continue
+            try:
+                year = int(r['Year'])
+                value = float(r['Value'])
+            except (ValueError, TypeError):
+                continue
+            shares_by_year.setdefault(year, {})[r['Technology']] = value
 
     factor_by_year = {
         year: sum(share * own_fuel_rate.get(tech, 0.0) for tech, share in shares.items())
