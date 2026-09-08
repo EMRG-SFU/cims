@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.15"
+__generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -86,7 +86,15 @@ def _():
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-    return base_model, default_path, list_path, deflator_path, exchange_path, model_path, update_files
+    return (
+        base_model,
+        default_path,
+        deflator_path,
+        exchange_path,
+        list_path,
+        model_path,
+        update_files,
+    )
 
 
 @app.cell(hide_code=True)
@@ -355,7 +363,7 @@ def _(model_path, update_files):
     ### Scenario Name
     ### This will be the save location for results (i.e., results_dir/scenario_name/results_general.csv)
     scenario_name = 'Reference'  # Set this to current scenario (e.g., "Reference", "Net Zero")
-    return region_list, scenario_name, sector_list, year_list
+    return region_list, scenario_name, sector_list, target_units, year_list
 
 
 @app.cell(hide_code=True)
@@ -370,13 +378,13 @@ def _():
 def _(
     base_model,
     default_path,
-    list_path,
-    target_units,
     deflator_path,
     exchange_path,
+    list_path,
     model_path,
     region_list,
     sector_list,
+    target_units,
     update_files,
     year_list,
 ):
