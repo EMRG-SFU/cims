@@ -2,8 +2,8 @@
 Run all sector calibration scripts.
 
 Usage:
-    python -m CIMS.data_processing.run_all_calibration
-    python -m CIMS.data_processing.run_all_calibration --stop-on-error
+    python -m CIMS.data_processing.process_calibration
+    python -m CIMS.data_processing.process_calibration --stop-on-error
 """
 
 import os
