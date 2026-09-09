@@ -96,12 +96,19 @@ def set_marketShareTotal_calibration_withDataFrame(model, nodeName, dataFrame, k
                 checkSumOne(col)
 
     if transpose:
-        dfu = dataFrame.unpivet(index="year", variable_name="tech", value_name="value")
+        dfu = dataFrame.unpivot(index="year", variable_name="tech", value_name="value")
     else:
         dfu = dataFrame.unpivot(index="tech", variable_name="year", value_name="value")
-    
+   
+
+    def floatIfNotNone(x):
+        if pd.isna(x) or (x is None):
+            return x
+        else:
+            return float(x)
+
     for r in dfu.iter_rows(named=True):
-        set_param_calibration(model, r['value'], key, nodeName, year=r['year'], tech=r['tech'], save=False)
+        set_param_calibration(model, floatIfNotNone(r['value']), key, nodeName, year=r['year'], tech=r['tech'], save=False)
 
     print(f"Values saved to calibration_market_share_total of {nodeName}")
     return True
