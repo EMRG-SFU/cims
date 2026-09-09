@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import polars as pl
 
 from ..utils.model_description import column_list as COL
@@ -7,7 +6,7 @@ from ..utils.parameter.parse import infer_type
 
 
 class ModelReader:
-    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
+    def __init__(self, model_df,
                  default_values_csv_path=None, node_col=COL.branch, root_node="CIMS", list_csv_path=None):
 
         if default_values_csv_path:
@@ -15,48 +14,15 @@ class ModelReader:
         if list_csv_path:
             self.list_csv = list_csv_path
 
-        self.csv_files = csv_file_paths
         self.node_col = node_col
-        self.col_list = col_list
-        self.year_list = [str(x) for x in year_list]
-        self.sector_list = sector_list
 
-        self.model_df = self._get_model_df()
+        self.model_df = model_df.copy()
         self.root = root_node
 
         self.node_dfs = {}
         self.tech_dfs = {}
 
-    def _get_model_df(self):
-        appended_data = []
-        for csv_file in self.csv_files:
-            try:
-                sheet_df = pl.read_csv(
-                    csv_file,
-                    use_pyarrow=False,
-                    infer_schema_length=0,
-                ).to_pandas().replace({np.nan: None, "": None})
-                appended_data.append(sheet_df)
-            except ValueError:
-                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
-
-        model_df = pd.concat(appended_data, ignore_index=True)
-
-        meta_cols = [c for c in model_df.columns if c not in ("Year", "Value") and c in self.col_list]
-        year_mask = model_df["Year"].isin(self.year_list) | model_df["Year"].isna()
-        mdf = model_df[year_mask][meta_cols + ["Year", "Value"]]
-
-        return mdf
-
     def get_model_description(self, inplace=False):
-        # ------------------------
-        # Filter sectors for calibration (if applicable)
-        # ------------------------
-        if self.sector_list:
-            if None not in self.sector_list:
-                self.sector_list.append(None)
-            self.model_df = self.model_df.apply(lambda row: row[self.model_df[COL.sector].isin(self.sector_list)])
-
         # ------------------------
         # Extract Node DFs
         # ------------------------

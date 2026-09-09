@@ -327,7 +327,7 @@ def new_techs_in_scenario(validator):
     Identify new technologies included in the scenario models (i.e. were not in
     the base model) but which don't have a technology parameter.
     """
-    if validator.scenario_files:
+    if not validator._scenario_df.empty:
         # The model dataframes
         base_data = validator._get_model_df(read_scenario_files=False)
         scenario_data = validator._get_model_df(read_base_file=False)

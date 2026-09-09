@@ -12,21 +12,19 @@ from .registry import REGISTRY, resolve_kwargs, Phase, Severity
 
 
 class ModelValidator:
-    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 csv_update_file_paths=None, default_values_csv_path=None, node_col=COL.branch,
+    def __init__(self, base_df, scenario_df, year_list,
+                 default_values_csv_path=None, node_col=COL.branch,
                  target_col=COL.target, root_node="CIMS", list_csv_path=None):
 
-        self.csv_files = csv_file_paths
-        self.scenario_files = csv_update_file_paths or []
+        self._base_df = base_df.copy()
+        self._scenario_df = scenario_df.copy()
 
         self.default_param_df = self.get_default_df(default_values_csv_path)
         self.competition_types = self._get_list(list_csv_path, column_identifier="Competition")
 
         self.node_col = node_col
         self.target_col = target_col
-        self.col_list = col_list
         self.year_list = [str(x) for x in year_list]
-        self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
         self.root_node = root_node
@@ -45,39 +43,13 @@ class ModelValidator:
         self.graph_validation_warnings = False
 
     def _get_model_df(self, read_base_file=True, read_scenario_files=True):
-        files_to_read = []
+        frames = []
         if read_base_file:
-            for file in self.csv_files:
-                files_to_read.append(file)
+            frames.append(self._base_df)
         if read_scenario_files:
-            for file in self.scenario_files:
-                files_to_read.append(file)
+            frames.append(self._scenario_df)
 
-        appended_data = []
-        for csv_file in files_to_read:
-            try:
-                sheet_df = pl.read_csv(
-                    csv_file,
-                    use_pyarrow=False,
-                    infer_schema_length=0,
-                ).to_pandas().replace({np.nan: None, "": None})
-                appended_data.append(sheet_df)
-
-            except ValueError:
-                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
-
-        model_df = pd.concat(appended_data,
-                             ignore_index=True)  # Add province sheets together and re-index
-        
-        # Filter sectors (if applicable)
-        if self.sector_list:
-            if None not in self.sector_list:
-                self.sector_list.append(None)
-            model_df = model_df[model_df[COL.sector].isin(self.sector_list)]
-
-        meta_cols = [c for c in model_df.columns if c not in ("Year", "Value") and c in self.col_list]
-        year_mask = model_df["Year"].isin(self.year_list) | model_df["Year"].isna()
-        mdf = model_df[year_mask][meta_cols + ["Year", "Value"]]
+        mdf = pd.concat(frames, ignore_index=True) if frames else self._base_df.iloc[0:0].copy()
         mdf[COL.parameter] = mdf[COL.parameter].str.lower()
 
         return mdf
