@@ -319,15 +319,16 @@ def _lcc_slope(model, node, year, all_techs, probe_idx, apply):
     return slope if abs(slope) > 1e-9 else None
 
 
-def _pin_index(model, node, all_techs, pin_reference):
+def _pin_index(model, node, all_techs, pin_reference, share_param=PARAM.market_share_total):
     """
     Index of the technology to hold at fic = 0, or None.
 
-    'base_year_share' picks the technology with the largest `market_share_total`
-    in the base year. Market shares depend only on RELATIVE lifecycle costs, so
-    without a pinned reference the FIC level is arbitrary; fixing the dominant
-    technology at zero makes every other FIC read as a premium or discount
-    against it.
+    'base_year_share' picks the technology with the largest `share_param`
+    (`market_share_total` by default — pass `market_share_new` when fitting
+    against new-share targets) in the base year. Market shares depend only on
+    RELATIVE lifecycle costs, so without a pinned reference the FIC level is
+    arbitrary; fixing the dominant technology at zero makes every other FIC
+    read as a premium or discount against it.
     """
     if not pin_reference:
         return None
@@ -340,7 +341,7 @@ def _pin_index(model, node, all_techs, pin_reference):
     best, best_share = None, None
     for i, tech in enumerate(all_techs):
         try:
-            share = model.get_param(PARAM.market_share_total, node, base, tech=tech)
+            share = model.get_param(share_param, node, base, tech=tech)
         except Exception:
             share = None
         if share is None:
@@ -419,12 +420,25 @@ def optimize_ms_via_fics_v2(
         skip_base_year=True,
         seed=0,
         logFile="log_optimize_ms_via_fics.log",
-        verbose=True):
+        verbose=True,
+        objective_counterFactual='calibration_market_share_total',
+        objective_estimate=PARAM.market_share_total):
     """
     Calibrate FICs so modelled market shares match the calibration counterfactual.
 
     Parameters
     ----------
+    objective_counterFactual : str
+        The calibration-input key holding the target series, e.g.
+        `'calibration_market_share_total'` (default) or
+        `'calibration_market_share_new'`.
+    objective_estimate : str
+        The model parameter compared against it, e.g. `PARAM.market_share_total`
+        (default) or `PARAM.market_share_new`. Change this alongside
+        `objective_counterFactual` — the two have to describe the same quantity,
+        or the fit is scored against a mismatched pair. See
+        `optimize_ms_via_fics_new_share` below for the new-share pairing; it is
+        also the technology picked by `pin_reference='base_year_share'`.
     start : {'analytic', 'warm', 'zero', 'analytic+warm'}
         Where each year's optimization starts. 'analytic' inverts the market
         share logit for that year's costs and targets — recommended, and the
@@ -502,7 +516,8 @@ def optimize_ms_via_fics_v2(
     warm = {tech: 0.0 for tech in all_techs}
     out = {}
     responsive_cache = {}
-    pin_idx = _pin_index(model, nodeName, all_techs, pin_reference)
+    pin_idx = _pin_index(model, nodeName, all_techs, pin_reference,
+                          share_param=objective_estimate)
 
     fit_years = [y for y in all_years
                  if not (skip_base_year and int(y) == model.base_year)]
@@ -526,11 +541,14 @@ def optimize_ms_via_fics_v2(
     else:
         skipping = bool(skip_retrofits)
 
-    with open(logFile, 'w') as fh, redirect_stdout(fh), redirect_stderr(fh), \
+    with open(logFile, 'w', buffering=1) as fh, redirect_stdout(fh), redirect_stderr(fh), \
             _retrofits_disabled(skipping):
         for sweep, year in schedule:
 
-            objective = make_objective_localNode(model, nodeName, year, all_techs)
+            objective = make_objective_localNode(
+                model, nodeName, year, all_techs,
+                objective_counterFactual=objective_counterFactual,
+                objective_estimate=objective_estimate)
 
             def apply(vec):
                 """Full-length FIC vector -> objective detail dict."""
@@ -707,6 +725,50 @@ def optimize_ms_via_fics_v2(
               f"{sum(r['end'] for r in out.values()):>10.4f}")
 
     return out
+
+
+def optimize_ms_via_fics_new_share(
+        model,
+        nodeName,
+        objective_counterFactual='calibration_market_share_new',
+        **kwargs):
+    """
+    Calibrate FICs so modelled NEW market share matches a new-share
+    counterfactual, instead of the total-share target `optimize_ms_via_fics_v2`
+    fits by default.
+
+    This is the easier case, not a harder one. The module docstring's "What a
+    FIC cannot fix" section explains why a total-share fit can leave a residual:
+    the objective there includes surviving vintage stock that no FIC reaches,
+    which is what `optimize_ms_via_fics_and_lifetimes` exists to close with a
+    second lever (lifetime). A new-share target has no such gap — FIC is
+    exactly the lever that sets `market_share_new` within a single competition
+    year, with no vintage stock mixed in — so a plain FIC-only fit here should
+    already converge cleanly. There is no `..._new_share_and_lifetimes`
+    counterpart: shortening a lifetime changes retirement of EXISTING stock,
+    which a new-share objective cannot see at all, so that lever has nothing to
+    offer it.
+
+    Thin wrapper: sets `objective_estimate=PARAM.market_share_new` and passes
+    everything else straight to `optimize_ms_via_fics_v2` — see its docstring
+    for every other parameter (`ridge`, `pin_reference`, `smooth`, etc.).
+
+    Parameters
+    ----------
+    objective_counterFactual : str
+        The calibration-input key holding the new-share target series.
+        Defaults to `'calibration_market_share_new'`, the naming counterpart of
+        `'calibration_market_share_total'`. Pass a different key if your raw
+        data was loaded under another name — nothing else has to change.
+    **kwargs
+        Forwarded to `optimize_ms_via_fics_v2` (`ridge`, `pin_reference`,
+        `smooth`, `logFile`, `verbose`, and so on).
+    """
+    return optimize_ms_via_fics_v2(
+        model, nodeName,
+        objective_counterFactual=objective_counterFactual,
+        objective_estimate=PARAM.market_share_new,
+        **kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -1308,3 +1370,80 @@ def optimize_ms_via_fics_and_lifetimes(
             'trials': trials, 'roster': roster, 'rosters': rosters,
             'figures': figures,
             'candidates': [r for r in roster if r['eligible']]}
+
+
+def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kwargs,
+                                  timeout_seconds=1200, mode='total'):
+    """
+    Run one node's Stage 1 fit in a separate `python _stage1_worker.py`
+    subprocess, so a fit that runs past `timeout_seconds` can be killed outright
+    rather than left to keep mutating `model` in the background — both fit
+    functions below mutate in place, so a merely-abandoned thread would race
+    the next node's fit over the same object.
+
+    `mode` selects which fit runs in the subprocess:
+        'total'     (default) -- `optimize_ms_via_fics_and_lifetimes` against
+                     total share. Writes both lifetimes and fics.
+        'new_share' -- `optimize_ms_via_fics_new_share` against new share. No
+                     lifetime lever applies to a new-share objective (see that
+                     function's docstring), so only fics are written.
+
+    Deliberately `subprocess`, not `multiprocessing`: under an interactive
+    notebook kernel (marimo, Jupyter) on Windows, `multiprocessing`'s `spawn`
+    start method re-bootstraps through the kernel's own `__main__` module and
+    its captured `sys.stdout`, which is fragile enough to fail silently rather
+    than raise. `subprocess` launches a genuinely independent interpreter with
+    pipes this function controls directly, sidestepping that entirely.
+
+    Because the fit happens in a separate process, `model` in the caller is
+    never updated by this call. The subprocess writes that node's output
+    straight to `calibration_output_dir` before exiting, so the result reaches
+    disk even though it never reaches the caller's `model`.
+
+    Returns a `(status, payload)` pair:
+        ('ok', {'final_baseline', 'final', 'changed'})
+        ('timeout', None)
+        ('error', descriptive string, possibly including subprocess stderr)
+    """
+    import os
+    import pickle
+    import subprocess
+    import sys
+    import tempfile
+
+    package_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))))
+    worker_script = os.path.join(package_root, '_stage1_worker.py')
+
+    job = {
+        'model': model,
+        'nodeName': nodeName,
+        'calibration_output_dir': calibration_output_dir,
+        'fit_kwargs': fit_kwargs,
+        'mode': mode,
+    }
+
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        in_path = os.path.join(tmp_dir, 'job.pkl')
+        out_path = os.path.join(tmp_dir, 'result.pkl')
+        with open(in_path, 'wb') as f:
+            pickle.dump(job, f, protocol=-1)
+
+        try:
+            proc = subprocess.run(
+                [sys.executable, worker_script, in_path, out_path],
+                cwd=package_root,
+                timeout=timeout_seconds,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.TimeoutExpired:
+            return ('timeout', None)
+
+        if not os.path.exists(out_path):
+            return ('error',
+                     f'worker exited {proc.returncode} with no result.\n'
+                     f'stdout:\n{proc.stdout}\nstderr:\n{proc.stderr}')
+
+        with open(out_path, 'rb') as f:
+            return pickle.load(f)
