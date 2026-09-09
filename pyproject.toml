@@ -25,6 +25,8 @@ dependencies = [
     'pandas==2.3.3',
     'xlrd',
     'pyxlsb',
+    'openpyxl',
+    'fastexcel',
     'scipy',
     'seaborn>=0.13.2',
     'matplotlib',
@@ -54,7 +56,7 @@ version = {attr = "CIMS.about.__version__"}
 
 
 [tool.fawltydeps]
-code = ["src/CIMS"]  # Only search for imports under ./src/CIMS
+code = ["src/CIMS"]  # Only search for imports under ./src/CIMS (includes data_processing)
 deps = ["pyproject.toml"]  # Only look for declared dependencies here
 ignore_unused = ["xlrd", "pyxlsb"]  # Pandas uses them, but they aren't imported
 output_format = "human_detailed"  # Detailed report by default

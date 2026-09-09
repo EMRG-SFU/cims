@@ -22,16 +22,16 @@ The data processing step transforms data into **model input** files and **calibr
 **Step 1 - Assemble Raw Data** (`data/raw_data/`):
 Raw data from various sources is gathered and placed in the External-CIMS sharepoint. Source data is documented in the source_detail.xlsx in `data/raw_data/`. The last historical year for the raw data is input into the control file `data/mappings_conversions/control.py`. This data is different by source and important to update as scripts will call on this year to begin projection assumptions in the following year. Any other important control information, such as which scenario to draw from the data, and currency country/years is also input into this control file. 
 
-**Step 2 — Source processing** (`data/pipeline/source/`): Each script takes in raw data, manipulates it, and writes a CSV to `data/processed_data/` for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly. 
+**Step 2 — Source processing** (`src/CIMS/data_processing/source/`): Each script takes in raw data, manipulates it, and writes a CSV to `data/processed_data/` for user vetting. The data is often yearly, from 2000-2100, and covers all Canadian regions, depending on the data type. The processed_data csvs are not used elsewhere in the pipeline. The functions and data frames in the source processing scripts are called for the next step - sector assembly. 
 
-**Step 3 — Sector assembly** (`data/pipeline/sector/`): Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
+**Step 3 — Sector assembly** (`src/CIMS/data_processing/sector/`): One flat module per sector and stage, named `<sector>_model_inputs.py` and `<sector>_calibration.py`. Each sector's model_inputs script combines fixed structural parameters (`data/raw_data/fixed_data/`) with one or more processed data frames and writes final CIMS model input files to `model_inputs/model/{sector}/`. Each sector's calibration script combines processed historical energy demand, emissions, and technology market shares and writes final CIMS calibration files to `calibration/{sector}/`.
 
 ---
 
 ## Directory Structure
 
 ```
-C:\cims\data\
+<repo>/data/
 ├── mappings_conversions/       # Master configuration
 │   ├── control.py              # Pipeline-wide settings (edit this to change data years, scenarios)
 │   ├── energy_map.csv          # Map for energy types across sources
@@ -40,39 +40,6 @@ C:\cims\data\
 │   ├── energy_conversions.csv  # Unit conversions (GJ ↔ TJ, L ↔ tonnes, …)
 │   ├── NIR_to_CIMS_map.csv     # Maps NIR rows to CIMS branch nodes
 │   └── README.md
-│
-├── pipeline/                   # All pipeline scripts (committed)
-│   ├── source/                 # Stage 1 — raw → processed_data
-│   │   ├── run_all.py          # Runs all Stage 1 scripts in dependency order
-│   │   ├── activity/           # Activity for all sectors (res/com/trans from ceud source)
-│   │   ├── eccc/nir/           # National Inventory Report processing
-│   │   ├── emission_factors/   # Fuel-level emission factors (NIR Annex 6, CEEDC)
-│   │   ├── energy_prices/      # Energy prices and their multipliers (various sources)
-│   │   └── nrcan/ceud/         # Comprehensive Energy Use Database extraction
-│   │       ├── residential/
-│   │       ├── commercial/
-│   │       ├── transportation_passenger/
-│   │       └── transportation_freight/
-│   ├── sector/                 # Stage 2 — processed_data + fixed_data → model_inputs
-│   │   ├── run_all_model.py    # Runs all model_inputs.py scripts
-│   │   ├── run_all_calibration.py  # Runs all calibration.py scripts
-│   │   ├── agriculture/
-│   │   ├── biodiesel/
-│   │   ├── chemical products/
-│   │   ├── commercial/
-│   │   ├── residential/
-│   │   ├── transportation passenger/
-│   │   ├── transportation freight/
-│   │   └── .../
-│   └── utils/                  # Shared utility functions (committed)
-│       ├── extractors/         # Source-specific readers (Stats Can, CEUD, CER)
-│       ├── output_builder.py   # CIMS output row formatter
-│       ├── data_extensions.py  # CAGR projection and trend fitting
-│       ├── data_fill.py        # Interpolation and gap filling
-│       ├── flatten_fixed_data.py  # Wide fixed-data CSVs → annual long format
-│       ├── add_cims_totals.py
-│       ├── dict_ops.py
-│       └── controls_conversions.py
 │
 ├── raw_data/                   # Source files — gitignored, never committed
 │   ├── assumptions/            # Assumption parameters that extend model input data through the projection period
@@ -117,6 +84,44 @@ C:\cims\data\
     └── .../
 ```
 
+Pipeline **code** lives outside the data tree, inside the installed `CIMS` package:
+
+```
+<repo>/src/CIMS/data_processing/
+├── process_source_data.py      # Runs all Stage 1 source modules in dependency order
+├── run_all_model_inputs.py     # Runs all Stage 2 model_inputs modules
+├── run_all_calibration.py      # Runs all Stage 2 calibration modules
+├── source/                     # Stage 1 — raw → processed_data
+│   ├── activity/               # Activity for all sectors (res/com/trans from ceud source)
+│   ├── deflator_exchange/      # GDP deflators and exchange rates (currency conversion)
+│   ├── eccc/nir/               # National Inventory Report processing
+│   ├── emission_factors/       # Fuel-level emission factors (NIR Annex 6, CEEDC)
+│   ├── energy_prices/          # Energy prices and their multipliers (various sources)
+│   └── nrcan/ceud/             # Comprehensive Energy Use Database extraction
+│       ├── residential/
+│       ├── commercial/
+│       ├── transportation_passenger/
+│       └── transportation_freight/
+├── sector/                     # Stage 2 — processed_data + fixed_data → model_inputs
+│   ├── agriculture_model_inputs.py
+│   ├── agriculture_calibration.py
+│   ├── biodiesel_model_inputs.py
+│   ├── biodiesel_calibration.py
+│   ├── commercial_model_inputs.py
+│   ├── commercial_calibration.py
+│   └── ...                     # one <sector>_model_inputs.py, and where the
+│                               # sector is calibrated, a <sector>_calibration.py
+└── utils/                      # Shared utility functions
+    ├── extractors/             # Source-specific readers (Stats Can, CEUD, CER)
+    ├── output_builder.py       # CIMS output row formatter
+    ├── data_extensions.py      # CAGR projection and trend fitting
+    ├── data_fill.py            # Interpolation and gap filling
+    ├── flatten_fixed_data.py   # Wide fixed-data CSVs → annual long format
+    ├── add_cims_totals.py
+    ├── dict_ops.py
+    └── controls_conversions.py  # Path anchors + CONTROLS loader
+
+
 ---
 
 ## Quick Start
@@ -133,33 +138,34 @@ You can run scripts individually (useful when only one source has been updated) 
 
 ```powershell
 # Run the full pipeline in one go
-python pipeline/source/run_all.py            # all Stage 1 source processors
-python pipeline/sector/run_all_model.py      # all Stage 2 model input assemblers
-python pipeline/sector/run_all_calibration.py  # all Stage 2 calibration assemblers
+python -m CIMS.data_processing.process_source_data       # all Stage 1 source processors
+python -m CIMS.data_processing.run_all_model_inputs      # all Stage 2 model input assemblers
+python -m CIMS.data_processing.run_all_calibration        # all Stage 2 calibration assemblers
 ```
 
 Or run stages selectively. Stage 1 source processors (order generally does not matter, except `energy_prices.py` before `energy_price_multipliers.py`):
 
 ```powershell
-python pipeline/source/activity/emissions_drivers.py
-python pipeline/source/activity/electricity.py
-python pipeline/source/nrcan/ceud/residential/residential.py
-python pipeline/source/nrcan/ceud/commercial/commercial.py
-python pipeline/source/nrcan/ceud/transportation_passenger/transportation_passenger.py
-python pipeline/source/nrcan/ceud/transportation_freight/transportation_freight.py
-python pipeline/source/energy_prices/energy_prices.py
-python pipeline/source/energy_prices/energy_price_multipliers.py
-python pipeline/source/eccc/nir/nir_to_cims.py
-python pipeline/source/emission_factors/emission_factors.py
+python -m CIMS.data_processing.source.activity.emissions_drivers
+python -m CIMS.data_processing.source.activity.electricity
+python -m CIMS.data_processing.source.nrcan.ceud.residential.residential
+python -m CIMS.data_processing.source.nrcan.ceud.commercial.commercial
+python -m CIMS.data_processing.source.nrcan.ceud.transportation_passenger.transportation_passenger
+python -m CIMS.data_processing.source.nrcan.ceud.transportation_freight.transportation_freight
+python -m CIMS.data_processing.source.energy_prices.energy_prices
+python -m CIMS.data_processing.source.energy_prices.energy_price_multipliers
+python -m CIMS.data_processing.source.eccc.nir.nir_to_cims
+python -m CIMS.data_processing.source.deflator_exchange.deflator_exchange
+python -m CIMS.data_processing.source.emission_factors.emission_factors
 ```
 
 Run Stage 2 sector assemblers:
 
 ```powershell
-python pipeline/sector/agriculture/model_inputs.py
-python pipeline/sector/agriculture/calibration.py
-python pipeline/sector/commercial/model_inputs.py
-python pipeline/sector/commercial/calibration.py
+python -m CIMS.data_processing.sector.agriculture_model_inputs
+python -m CIMS.data_processing.sector.agriculture_calibration
+python -m CIMS.data_processing.sector.commercial_model_inputs
+python -m CIMS.data_processing.sector.commercial_calibration
 ...
 ```
 
@@ -169,7 +175,7 @@ Model inputs land in `model_inputs/model/{sector}/` — one CSV per province/ter
 
 ## Configuration
 
-All pipeline-wide parameters are set in **`mappings_conversions/control.py`**. This file exports a `CONTROLS` dict that every script imports via `pipeline/utils/controls_conversions.py`.
+All pipeline-wide parameters are set in **`mappings_conversions/control.py`**. This file exports a `CONTROLS` dict that every script imports via `src/CIMS/data_processing/utils/controls_conversions.py`.
 
 Key parameters:
 
@@ -194,7 +200,7 @@ When a new data vintage arrives:
 1. Download the file and replace it in its folder under `raw_data/`.
 2. Open the `control.py` Marimo notebook:
    ```powershell
-   cd C:\cims\data\mappings_conversions
+   cd <repo>/data/mappings_conversions
    marimo edit control.py
    ```
 3. Update the relevant `last_data_year_*` value (and currency year or scenario name if needed). The pipeline uses the year *after* the last data year as the start of its projection assumptions, so keeping this current is important.
@@ -205,7 +211,7 @@ When a new data vintage arrives:
 
 ## Utility Library
 
-All utilities live in `pipeline/utils/`.
+All utilities live in `src/CIMS/data_processing/utils/`.
 
 ### `output_builder.py`
 
@@ -298,30 +304,34 @@ Files are saved as CSVs.
 
 ---
 
+Some scripts document their own outputs in a README beside the script — for
+instance the currency deflator and exchange rate tables written to
+`data/processed_data/deflator_exchange/`, described in
+[`src/CIMS/data_processing/source/deflator_exchange/README.md`](../src/CIMS/data_processing/source/deflator_exchange/README.md).
+
 ## Common Patterns
 
 ### Source Script Structure
 
-Despite pulling from different sources, all scripts in `pipeline/source/` share the same structure:
+Despite pulling from different sources, all scripts in `src/CIMS/data_processing/source/` share the same structure:
 
 **1. Module-level docstring** — Every script opens with a prominent docstring (sometimes a `===` banner) that states what it does, its input files and output location, and its specific suppression-handling strategy. This is the first place to look when diagnosing unexpected output.
 
-**2. `sys.path` setup** — Immediately after imports, every script locates the project root relative to `__file__` and inserts it into `sys.path`:
+**2. Package imports** — The pipeline is a package under `src/CIMS/data_processing/`, so scripts use absolute imports and need no `sys.path` manipulation:
 
 ```python
-_current_file = Path(__file__)
-_project_root = _current_file.parent.parent.parent
-if str(_project_root) not in sys.path:
-    sys.path.insert(0, str(_project_root))
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START
+from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
+import CIMS.data_processing.source.activity.emissions_drivers as _emissions_mod
 ```
 
-This lets the script be run from any working directory (`python pipeline/source/activity/emissions_drivers.py` from `C:\cims\data\`, or directly from its own folder) without import errors.
+Because `CIMS` is installed (editable) into the project venv, this works from any working directory, whether the script is run as a module (`python -m CIMS.data_processing.source.activity.emissions_drivers`) or by path.
 
 **3. Configuration block** — Input/output paths and key constants (e.g. `DATA_START`, `LAST_HIST_YEAR`, `REGIONS`) are declared at module level, loaded from `controls_conversions.py`. All paths are built with `BASE_PATH / '...'` so they resolve correctly regardless of working directory.
 
 **4. `main()` function + `__main__` guard** — All processing is wrapped in a `main()` function that returns a DataFrame. The `if __name__ == '__main__': main()` guard at the bottom means:
 - Scripts can be run directly: `python emissions_drivers.py`
-- `run_all.py` can import and call each `main()` in-process without spawning subprocesses
+- The `run_all_*.py` runners sit at the top of `src/CIMS/data_processing/` and run each module as a subprocess (`python -m ...`), and a sector assembler can import a source module and call its `main()` directly
 - Sector assemblers that need to chain outputs can import a source script's `main()` directly
 
 **5. Console summary on completion** — Every script prints a ✅ block at the end showing row count, regions/variables processed, years covered, and the output path. This gives quick confirmation that the data landed where expected without opening the output file.
@@ -340,7 +350,7 @@ Government data sources use various codes for confidential or unavailable cells:
 
 ### Projections
 
-Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the data_extensions.py util. A common one used across activity drivers is the CAGR function. It uses paramters defined  C:\cims\data\raw_data\assumptions\activity_cagr_projections.csv to determine the CAGR calculation period, and determine the projection period splits and dampeners. 
+Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the data_extensions.py util. A common one used across activity drivers is the CAGR function. It uses paramters defined  `data/raw_data/assumptions/activity_cagr_projections.csv` to determine the CAGR calculation period, and determine the projection period splits and dampeners. 
 
 CAGR Example
 ```
@@ -382,7 +392,7 @@ Install with:
 pip install polars pandas numpy scipy openpyxl marimo
 ```
 
-**Path convention**: The base path is derived automatically from the location of `controls_conversions.py` in `pipeline/utils/`, so scripts work regardless of where the `cims/data` folder lives on disk. The internal directory layout under the data root (`raw_data/`, `processed_data/`, `model_inputs/`, `mappings_conversions/`) must be preserved as described above.
+**Path convention**: The base path is derived automatically from the location of `controls_conversions.py` in `src/CIMS/data_processing/utils/`, so scripts work regardless of where the `cims/data` folder lives on disk. The internal directory layout under the data root (`raw_data/`, `processed_data/`, `model_inputs/`, `mappings_conversions/`) must be preserved as described above.
 
 ---
 
@@ -390,7 +400,7 @@ pip install polars pandas numpy scipy openpyxl marimo
 
 ### Committed (tracked in git)
 
-- All Python scripts in `pipeline/`
+- All Python scripts in `src/CIMS/data_processing/`
 - Mapping and conversion files in `mappings_conversions/`
 - `.gitkeep` files preserving empty output directory structure
 - This README and sub-READMEs
