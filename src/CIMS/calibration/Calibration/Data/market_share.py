@@ -102,7 +102,7 @@ def set_marketShareTotal_calibration_withDataFrame(model, nodeName, dataFrame, k
    
 
     def floatIfNotNone(x):
-        if pd.isna(x) or (x is None):
+        if pd.isna(x) or (x is None) or (isinstance(x, str) and x == ""):
             return x
         else:
             return float(x)
