@@ -16,6 +16,7 @@ from contextlib import redirect_stdout, redirect_stderr
 
 import Calibration.Data.node_info as node_info
 from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
+from Calibration.SubGraphs.graphFunctions import getDescendants
 
 def numFormat(x, doNumFormat=True):
     """
@@ -123,18 +124,40 @@ def tweak_marketShareTotal_calibration(model, nodeName, key="calibration_market_
     )
 
 
-def toCSV_marketShareTotal_calibration(model, nodeName, key="calibration_market_share_total", recursive=True):
+def toCSV_marketShareTotal_calibration(model, nodeName, filePath, key="calibration_market_share_total", recursive=True):
     """
     """
     # Get set of all structural descendents of nodeName in model.graph
     allNodes = [nodeName] + list(getDescendants(model, nodeName))
 
-    def addNodeName(df, nName):
-        df['nodeName'] = nName
-        return df
+    # Skip nodes with no technologies, since there's no market share to report for them
+    # and get_marketShareTotal_calibration would otherwise return an empty frame that can't be pivoted.
+    allNodes = [n for n in allNodes if node_info.list_techs(model.graph, n)]
 
-    allCalFrame = pl.concat([addNodeName(get_marketShareTotal_calibration(model, n), n) for n in allNodes])
-    return allCalFrame
+    def addNodeName(df, nName):
+        return df.with_columns(pl.lit(nName).alias('nodeName'))
+
+    allCalFrame = pl.concat([addNodeName(get_marketShareTotal_calibration(model, n, key, doNumFormat=False), n) for n in allNodes], how="diagonal_relaxed")
+
+    yearCols = sorted((c for c in allCalFrame.columns if c not in ('nodeName', 'tech')), key=int)
+    allCalFrame = allCalFrame.select(['nodeName', 'tech'] + yearCols)
+
+    allCalFrame.write_csv(filePath)
+    print(f"Node/tech {key} information written to: {filePath}.")
+
+
+def fromCSV_marketShareTotal_calibration(model, filePath, key="calibration_market_share_total"):
+    """
+    """
+    allCalFrame = pl.read_csv(filePath)
+
+    for nName in allCalFrame['nodeName'].unique():
+        nodeFrame = allCalFrame.filter(pl.col('nodeName') == nName).drop('nodeName')
+        set_marketShareTotal_calibration_withDataFrame(model, nName, nodeFrame, key)
+
+    return True
+
+
     
 
 
