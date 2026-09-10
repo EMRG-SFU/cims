@@ -100,6 +100,13 @@ VARIABLE_CONFIGS = [
     {'key': 'wh_high',                'name': 'wh_high',                'parameter': 'service_request',    'unit': 'GJ/GJ'},
     {'key': 'wh_tech_lowmed',         'name': 'wh_tech_lowmed',         'parameter': 'market_share_total', 'unit': '%'},
     {'key': 'wh_tech_high',           'name': 'wh_tech_high',           'parameter': 'market_share_total', 'unit': '%'},
+    {'key': 'lighting_total_pj',      'name': 'lighting_total_pj',      'parameter': 'service_request',    'unit': 'PJ'},
+    {'key': 'cooling_intensity',      'name': 'cooling_intensity',      'parameter': 'service_request',    'unit': 'GJ/m2'},
+    {'key': 'cooling_total_pj',       'name': 'cooling_total_pj',       'parameter': 'service_request',    'unit': 'PJ'},
+    {'key': 'heating_intensity',      'name': 'heating_intensity',      'parameter': 'service_request',    'unit': 'GJ/m2'},
+    {'key': 'wh_intensity',           'name': 'wh_intensity',           'parameter': 'service_request',    'unit': 'GJ/household'},
+    {'key': 'wh_total_pj',            'name': 'wh_total_pj',            'parameter': 'service_request',    'unit': 'PJ'},
+    {'key': 'minor_appliance_gj',     'name': 'minor_appliance_gj',     'parameter': 'service_request',    'unit': 'GJ/household'},
 ]
 
 
@@ -286,9 +293,9 @@ def load_tables(province_code: str) -> dict:
         raise FileNotFoundError(f"Data file not found: {file_path}")
 
     table_names = [
-        "Table 4", "Table 10", "Table 11", "Table 15", "Table 18",
-        "Table 19", "Table 20", "Table 22", "Table 23", "Table 24",
-        "Table 25", "Table 31",
+        "Table 3", "Table 4", "Table 6", "Table 10", "Table 11", "Table 13",
+        "Table 15", "Table 18", "Table 19", "Table 20", "Table 22", "Table 23",
+        "Table 24", "Table 25", "Table 31",
     ]
     return {name: pl.read_excel(str(file_path), sheet_name=name, has_header=False)
             for name in table_names}
@@ -543,6 +550,101 @@ def _weighted_heat(tech_series: dict[str, pd.Series],
     return out
 
 
+# Backup-fuel ASHP technology → CEUD heating-tech keys whose combined share
+# defines that backup fuel's weight in the split. Order doesn't matter.
+_ASHP_BACKUP_FUEL_SOURCES: dict[str, tuple[str, ...]] = {
+    "Electricity_ASHP_Natural Gas_Backup": (
+        "Natural Gas_Furnace_Low Efficiency",
+        "Natural Gas_Furnace_Medium Efficiency",
+        "Natural Gas_Furnace_High Efficiency",
+    ),
+    "Electricity_ASHP_Electricity_Backup": (
+        "Electricity_Resistance_High Efficiency",
+    ),
+    "Electricity_ASHP_Oil_Backup": (
+        "Light Fuel Oil_Furnace_Low Efficiency",
+        "Light Fuel Oil_Furnace_Medium Efficiency",
+        "Light Fuel Oil_Furnace_High Efficiency",
+    ),
+    "Electricity_ASHP_Wood_Backup": (
+        "Wood_Furnace_Low Efficiency",
+    ),
+}
+
+
+# Provinces where oil and wood heating are common enough that the model
+# defines dedicated Electricity_ASHP_Oil_Backup / _Wood_Backup technologies
+# (fixed_data/residential_*.csv). Everywhere else, only gas/electric backup
+# ASHP technologies exist, so the CEUD 'Heat Pump' share must be split
+# between just those two.
+_ASHP_OIL_WOOD_PROVINCES = {'NB', 'NS', 'PE', 'NL', 'QC'}
+
+
+def _split_ashp_backup(techs: dict[str, pd.Series], province: str) -> dict[str, pd.Series]:
+    """
+    Split CEUD's undifferentiated 'Heat Pump' share across backup-fuel ASHP
+    technologies (gas, electric, and — in provinces with a dedicated
+    technology for it — oil, wood).
+
+    CEUD reports a single 'Heat Pump' row with no backup-fuel detail. We
+    assume a household adopting an ASHP keeps its existing furnace as
+    backup, so the split mirrors the region's existing non-heat-pump
+    heating mix rather than defaulting entirely to gas. Regions with none
+    of the applicable fuels present locally get an even split across
+    whichever backup techs apply there, so the shares still sum to the
+    original 'Heat Pump' total.
+
+    Parameters
+    ----------
+    techs : dict mapping tech_name → pd.Series
+        Must contain 'Electricity_ASHP_Natural Gas_Backup' (currently 100%
+        of the CEUD 'Heat Pump' share) plus the region's Natural Gas, Light
+        Fuel Oil, Wood, and Electricity resistance series to derive the
+        split from.
+    province : str
+        Two-letter province/territory code. Only provinces in
+        _ASHP_OIL_WOOD_PROVINCES get Oil_Backup / Wood_Backup shares;
+        elsewhere the split is gas vs. electric only, matching the
+        technologies actually defined in fixed_data for that region.
+
+    Returns
+    -------
+    dict with each applicable backup-fuel ASHP entry replaced by its share
+    of the original 'Heat Pump' total. Electricity_ASHP_Oil_Backup and
+    Electricity_ASHP_Wood_Backup are dropped entirely for provinces outside
+    _ASHP_OIL_WOOD_PROVINCES.
+    """
+    heat_pump = techs.get("Electricity_ASHP_Natural Gas_Backup", pd.Series(dtype=float))
+    if heat_pump.empty:
+        return techs
+
+    fuel_sources = dict(_ASHP_BACKUP_FUEL_SOURCES)
+    if province.upper() not in _ASHP_OIL_WOOD_PROVINCES:
+        fuel_sources.pop("Electricity_ASHP_Oil_Backup", None)
+        fuel_sources.pop("Electricity_ASHP_Wood_Backup", None)
+
+    fuel_totals = {}
+    for backup_tech, source_keys in fuel_sources.items():
+        s = pd.Series(0.0, index=heat_pump.index)
+        for key in source_keys:
+            s = s.add(techs.get(key, pd.Series(dtype=float)), fill_value=0)
+        fuel_totals[backup_tech] = s
+
+    total = pd.Series(0.0, index=heat_pump.index)
+    for s in fuel_totals.values():
+        total = total.add(s, fill_value=0)
+    total = total.replace(0, np.nan)
+
+    n_fuels = len(fuel_sources)
+    techs = dict(techs)
+    techs.pop("Electricity_ASHP_Oil_Backup", None)
+    techs.pop("Electricity_ASHP_Wood_Backup", None)
+    for backup_tech, s in fuel_totals.items():
+        ratio = (s / total).fillna(1.0 / n_fuels)
+        techs[backup_tech] = heat_pump * ratio
+    return techs
+
+
 def extract_heating_technologies(province: str, tables: dict,
                                   building_shares_df: pl.DataFrame) -> list[pl.DataFrame]:
     """
@@ -584,6 +686,8 @@ def extract_heating_technologies(province: str, tables: dict,
         'Natural Gas_ASHP_Natural Gas_Backup':     [],
         "Electricity_ASHP_Natural Gas_Backup":     ["Heat Pump"],
         "Electricity_ASHP_Electricity_Backup":     [],
+        "Electricity_ASHP_Oil_Backup":             [],
+        "Electricity_ASHP_Wood_Backup":             [],
     }
 
     # For each tech, collect per-building-type series then weighted average
@@ -597,7 +701,8 @@ def extract_heating_technologies(province: str, tables: dict,
         }
         cold_high[tech] = _extract_heating_bucket(t24, row_labels)
 
-    lowmed_cold = _weighted_heat(cold_by_tech_lowmed, w_det, w_att, w_mob)
+    lowmed_cold = _split_ashp_backup(_weighted_heat(cold_by_tech_lowmed, w_det, w_att, w_mob), province)
+    cold_high   = _split_ashp_backup(cold_high, province)
 
     frames = []
     for tech, s in lowmed_cold.items():
@@ -683,6 +788,87 @@ def extract_cooling_technologies(province: str, tables: dict) -> list[pl.DataFra
 
 
 # ==============================================================================
+# EXTRACTION — END-USE INTENSITIES (cooling, heating, minor appliances)
+# ==============================================================================
+#
+# CEUD reports each end use's total energy intensity directly (e.g. GJ per m2
+# of floor space, GJ per household). Unlike the technology/density *shares*
+# extracted above, these intensities carry real annual variation (weather,
+# equipment penetration, etc.) that the hand-curated fixed_data constants they
+# replace do not.
+# ==============================================================================
+
+def extract_lighting_total(province: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    Absolute province-wide Lighting energy total (PJ) from Table 3 -- used
+    downstream to calibrate the Building Type.{Density}.Lighting constant
+    against CEUD's real total. CEUD doesn't survey lighting by bulb
+    technology, so this is the only Lighting quantity it can inform.
+
+    Returns
+    -------
+    list of pl.DataFrame
+    """
+    t3 = tables["Table 3"]
+    total_pj = row_to_series(t3, "Total Lighting Energy Use2 (PJ)")
+    return [_long(province, 'lighting_total_pj', '', 'service_request', 'PJ', total_pj)]
+
+
+def extract_cooling_intensity(province: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    Space cooling energy intensity (GJ/m2 of floor space) from Table 4.
+
+    Returns
+    -------
+    list of pl.DataFrame
+    """
+    t4 = tables["Table 4"]
+    s = row_to_series(t4, "Energy Intensity (MJ/m2)") / 1000.0  # MJ -> GJ
+
+    # Absolute province-wide total (PJ) -- used downstream to calibrate the
+    # Building Type.{Density}.Cooling constant against CEUD's real total.
+    total_pj = row_to_series(t4, "Total Space Cooling Energy Use2 (PJ)")
+
+    return [
+        _long(province, 'cooling_intensity', '', 'service_request', 'GJ/m2', s),
+        _long(province, 'cooling_total_pj', '', 'service_request', 'PJ', total_pj),
+    ]
+
+
+def extract_heating_intensity(province: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    Space heating energy intensity (GJ/m2 of floor space) from Table 6.
+
+    Province-wide (CEUD has no climate-zone split); the same series is used
+    downstream for both Cold and Marine heating in BC.
+
+    Returns
+    -------
+    list of pl.DataFrame
+    """
+    t6 = tables["Table 6"]
+    s = row_to_series(t6, "Energy Intensity (GJ/m2)")
+    return [_long(province, 'heating_intensity', '', 'service_request', 'GJ/m2', s)]
+
+
+def extract_minor_appliance_intensity(province: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    "Other Appliances" (minor appliances) energy intensity (GJ/household)
+    from Table 13, computed as Other Appliances energy (PJ) / Total Households.
+
+    Returns
+    -------
+    list of pl.DataFrame
+    """
+    t13 = tables["Table 13"]
+    energy_pj  = row_to_series(t13, "Other Appliances3", match_n=0)
+    households = row_to_series(t13, "Total Households (thousands)")
+    gj_per_household = (energy_pj * 1000.0) / households  # PJ -> GJ, thousands -> households
+    return [_long(province, 'minor_appliance_gj', '', 'service_request', 'GJ/household',
+                  gj_per_household)]
+
+
+# ==============================================================================
 # EXTRACTION — WATER HEATING
 # ==============================================================================
 
@@ -730,6 +916,15 @@ def extract_water_heating(province: str, tables: dict,
 
     # wh_high = apartments share
     wh_high = wh_apt
+
+    # Overall water heating energy intensity (GJ/household) — carries CEUD's
+    # real annual variation, unlike the flat fixed_data constant it replaces.
+    wh_intensity = row_to_series(t11, "Energy Intensity (GJ/household)")
+
+    # Absolute province-wide total (PJ) -- used downstream to calibrate the
+    # combined Non-appliance Hot Water + Dishwashing + Clothes Washing
+    # contributions to the Water Heating node against CEUD's real total.
+    wh_total_pj = row_to_series(t10, "Total Water Heating Energy Use (PJ)")
 
     # Water heating fuel shares (aggregate from t10)
     ng_wh   = pct_series(t10, "Natural Gas", match_n=1).add(
@@ -779,6 +974,8 @@ def extract_water_heating(province: str, tables: dict,
     frames = [
         _long(province, 'wh_lowmed', '', 'service_request', 'GJ/GJ', wh_lowmed),
         _long(province, 'wh_high',   '', 'service_request', 'GJ/GJ', wh_high),
+        _long(province, 'wh_intensity', '', 'service_request', 'GJ/household', wh_intensity),
+        _long(province, 'wh_total_pj', '', 'service_request', 'PJ', wh_total_pj),
     ]
     for tech, s in wh_tech_lowmed.items():
         frames.append(_long(province, 'wh_tech_lowmed', tech,
@@ -930,13 +1127,21 @@ def apply_extensions(df: pl.DataFrame, province: str, params: dict) -> pl.DataFr
     for var in ['wh_lowmed', 'wh_high']:
         s = _series(var, '')
         frames.append(_apply_to_variable(var, '', s, extend_series_constant))
- 
+
     # -- 6. Cooling — constant (hold last historical value) --------------------
     for cooling_type in ['Room', 'Central']:
         s = _series('cooling_share_data', cooling_type)
         if not s.dropna().empty:
             frames.append(_apply_to_variable('cooling_share_data', cooling_type,
                                              s, extend_series_constant))
+
+    # -- 7. End-use intensities — constant (hold last historical value) --------
+    for var in ['cooling_intensity', 'heating_intensity', 'wh_intensity',
+                'minor_appliance_gj', 'wh_total_pj', 'cooling_total_pj',
+                'lighting_total_pj']:
+        s = _series(var, '')
+        if not s.dropna().empty:
+            frames.append(_apply_to_variable(var, '', s, extend_series_constant))
  
     return pl.concat([f for f in frames if f is not None and len(f) > 0],
                      how='diagonal_relaxed')
@@ -1036,12 +1241,19 @@ IDENTICAL_VARIABLES = {
     'cooling_share_data',
     'wh_lowmed',
     'wh_high',
+    'cooling_intensity',
+    'heating_intensity',
+    'wh_intensity',
+    'minor_appliance_gj',
 }
 
 # Variables split by population share
 POPULATION_VARIABLES = {
     'housing_thousand',
     'housing_by_type',
+    'wh_total_pj',
+    'cooling_total_pj',
+    'lighting_total_pj',
 }
 
 # Market share variables that require efficiency correction + renormalization
@@ -1373,6 +1585,10 @@ def extract_all_data(
 
     frames += extract_cooling_technologies(province, tables)
     frames += extract_water_heating(province, tables, building_shares_df, heating_df)
+    frames += extract_lighting_total(province, tables)
+    frames += extract_cooling_intensity(province, tables)
+    frames += extract_heating_intensity(province, tables)
+    frames += extract_minor_appliance_intensity(province, tables)
 
     df = pl.concat(frames, how='diagonal_relaxed')
 
