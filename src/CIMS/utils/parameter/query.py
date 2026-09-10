@@ -167,7 +167,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # Inherit Parameter Value
     # ******************************
     # If the value has been defined at a structural parent node for that year, use that value.
-    if (param_source is None) and (param in model.inheritable_params):
+    if (param_source is None) and (param in model.inheritable_params_set):
         if tech:
             try:
                 val, source = model.get_param(param, node, year=year, context=context,
