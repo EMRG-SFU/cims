@@ -159,7 +159,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if (param in calculation_directory) & do_calc:
+    if do_calc and (param in calculation_directory):
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year, tech)
         param_source = 'calculation'
