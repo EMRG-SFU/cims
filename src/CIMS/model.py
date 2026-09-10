@@ -15,6 +15,7 @@ from .utils.model_description.columns_builder import build_col_list
 from .readers.helpers import collect_base_paths, collect_update_paths, collect_all_paths
 
 from . import lcc_calculation
+from . import declining_costs
 from . import stock_allocation
 from . import tax_foresight
 from . import cost_curves
@@ -507,6 +508,9 @@ class Model:
 
         self.show_run_warnings = show_warnings
         self.status = 'Run initiated'
+
+        # Discard DCC state cached during any previous run (see CIMS.declining_costs)
+        declining_costs.reset_dcc_caches(self)
 
         print("\n=== Running model ===")
 
