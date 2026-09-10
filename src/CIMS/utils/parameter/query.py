@@ -114,7 +114,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                     val = val[target]
                 except KeyError:
                     val = None
-            if not context and not target and isinstance(val, dict) and None in val:
+            if not context and not target and None in val:
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
