@@ -120,6 +120,114 @@ def _calc_all_stock(model, node, year, tech):
 
 
 # ==========================================
+# DCC Caching
+# ==========================================
+# `_calc_all_stock()` depends only on a technology's DCC class and the year -- never on the
+# node/tech it was called for. Left uncached it is therefore recomputed, identically, once per
+# member of the class, twice per LCC evaluation (financial + competition upfront cost), four
+# times per equilibrium iteration, for every iteration of every year. The caches below collapse
+# that to one computation per (dcc_class, year).
+_CACHE_ATTR = '_dcc_cache'
+
+
+def reset_dcc_caches(model: 'CIMS.Model') -> None:
+    """
+    Discard any DCC state cached on `model`.
+
+    Called at the start of `CIMS.Model.run()`. Only needed when the graph has been edited in
+    place between runs; a rebuilt or swapped-in set of DCC classes is detected automatically by
+    `_get_cache()`.
+    """
+    if hasattr(model, _CACHE_ATTR):
+        delattr(model, _CACHE_ATTR)
+
+
+def _get_cache(model):
+    """
+    Return `model`'s DCC cache, rebuilding it if the model's DCC classes have been replaced.
+
+    `Model.dcc_classes` is reassigned whenever the graph is (re)constructed or swapped out for a
+    subgraph (see CIMS.calibration.Calibration.SubGraphs), so the cache is tied to the identity
+    of the dict it was derived from and is discarded whenever that dict changes.
+    """
+    cache = getattr(model, _CACHE_ATTR, None)
+    if cache is None or cache['dcc_classes'] is not model.dcc_classes:
+        cache = {'dcc_classes': model.dcc_classes,
+                 'members': {},
+                 'year': None,
+                 'all_stock': {}}
+        setattr(model, _CACHE_ATTR, cache)
+    return cache
+
+
+def _get_class_members(model, dcc_class, cache):
+    """
+    Return `[(node, tech, unit_convert), ...]` for every technology in `dcc_class`.
+
+    `multiplier_load_factor` (needed to convert transportation stocks to a common vkt unit) is
+    read at the base year, and base-year values are fixed once `Model.initialize_graph()` has run
+    for the base year. It is therefore looked up once per technology rather than once per
+    technology per call.
+    """
+    members = cache['members'].get(dcc_class)
+    if members is None:
+        base_year = str(model.base_year)
+        members = []
+        for node_k, tech_k in model.dcc_classes[dcc_class]:
+            # Need to convert stocks for transportation techs to common vkt unit
+            unit_convert = model.get_param(PARAM.multiplier_load_factor, node_k, base_year,
+                                           tech=tech_k)
+            if unit_convert is None:
+                unit_convert = 1
+            members.append((node_k, tech_k, unit_convert))
+        cache['members'][dcc_class] = members
+    return members
+
+
+def _calc_all_stock(model, node, year, tech):
+    dcc_class = model.get_param(PARAM.dcc_class, node, year, tech=tech)
+
+    cache = _get_cache(model)
+    if cache['year'] != year:
+        # Only one year is ever in flight at a time, so the previous year's entries are dead.
+        cache['year'] = year
+        cache['all_stock'] = {}
+    elif dcc_class in cache['all_stock']:
+        return cache['all_stock'][dcc_class]
+
+    base_year = int(model.base_year)
+    base_year_str = str(base_year)
+    step = model.step
+
+    # Range function is exclusive of final year (i.e., up to but not including final year)
+    reference_years = [str((j - base_year) // step * step + base_year)
+                       for j in range(base_year, int(year))]
+
+    stock_sums = {PARAM.stock_base: 0,
+                  PARAM.stock_new: 0}
+    for node_k, tech_k, unit_convert in _get_class_members(model, dcc_class, cache):
+        # Base Stock summed over all techs in DCC class (base year only)
+        bs_k = model.get_param(PARAM.stock_base, node_k, base_year_str, tech=tech_k)
+        if bs_k is not None:
+            stock_sums[PARAM.stock_base] += bs_k / unit_convert
+
+        for reference_year in reference_years:
+            ns_jk = model.get_param(PARAM.stock_new, node_k, reference_year, tech=tech_k)
+            stock_sums[PARAM.stock_new] += ns_jk / unit_convert
+    all_stock = stock_sums[PARAM.stock_base] + stock_sums[PARAM.stock_new]
+
+    # Cache beyond the base year only. During the base year, stock allocation is still writing
+    # stock_base at the base year (stock_allocation._record_allocation_results), so all_stock
+    # genuinely changes within that year. From the following year onward every input -- stock_base
+    # at the base year, and stock_new at years strictly before `year` -- is final, so the value is
+    # constant for the whole of that year's solve, equilibrium iterations included.
+    if int(year) > base_year:
+        cache['all_stock'][dcc_class] = all_stock
+
+    return all_stock
+
+
+# ==========================================
 # Declining Intangible Cost Functions
 # ==========================================
 def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, tech: str) -> float:
