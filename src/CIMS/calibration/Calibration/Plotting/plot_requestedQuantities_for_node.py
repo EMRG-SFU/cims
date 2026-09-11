@@ -52,6 +52,10 @@ def plot_requestedQuantities(model,
     for ct,trace in enumerate(ret_calib.data):
         fig.add_trace(trace, row=1, col=2)
 
+    # Link the two y-axes so they share the same autoranged scale (correctly
+    # accounts for the stacked/cumulative totals in each area plot).
+    fig.update_yaxes(matches='y')
+
     fig.show()
 
 
@@ -107,19 +111,8 @@ def plot_requestedQuantities_line(model,
     for ct,trace in enumerate(ret_calib.data):
         fig.add_trace(trace, row=1, col=2)
 
-    # Find the maximum value across both subplots
-    all_values = []
-    for trace in ret_base.data:
-        all_values.extend([v for v in trace.y if v is not None])
-    for trace in ret_calib.data:
-        all_values.extend([v for v in trace.y if v is not None])
-
-    max_val = max(all_values) if all_values else 1.0
-    margin = 0.1
-    y_max = max_val * (1 + margin)
-
-    fig.update_yaxes(range=[0, y_max], row=1, col=1)
-    fig.update_yaxes(range=[0, y_max], row=1, col=2)
+    # Link the two y-axes so they share the same autoranged scale.
+    fig.update_yaxes(matches='y')
 
     fig.show()
 

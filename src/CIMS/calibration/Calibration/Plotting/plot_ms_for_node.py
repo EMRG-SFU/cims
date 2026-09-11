@@ -76,6 +76,9 @@ def plot_ms(model,
     for ct,trace in enumerate(ret_calib.data):
         fig.add_trace(trace, row=1, col=2)
 
+    # Link the two y-axes so they share the same autoranged scale.
+    fig.update_yaxes(matches='y')
+
     fig.show()
 
 
