@@ -58,7 +58,7 @@ def recursive_key_value_filter(value_dict, key, value):
 
 
 def inherit_parameter(model, graph, node, year, param, inheritance=True):
-    assert param in model.inheritable_params
+    assert param in model.inheritable_params_set
 
     if inheritance:
         parent = '.'.join(node.split('.')[:-1])

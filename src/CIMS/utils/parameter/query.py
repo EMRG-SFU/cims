@@ -100,7 +100,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
     # been defined), use it.
-    data = model.graph.nodes[node]
+    data = model.graph._node[node]  # _node is the dict backing graph.nodes
     if year:
         data = data[year]
         if tech:  # assumption: any tech node always requires a year
@@ -125,7 +125,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                     val = val[target]
                 except KeyError:
                     val = None
-            if not context and not target and isinstance(val, dict) and None in val:
+            if not context and not target and None in val:
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
@@ -164,7 +164,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if (param in calculation_directory) & do_calc:
+    if do_calc and (param in calculation_directory):
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year, tech)
         param_source = 'calculation'
@@ -172,7 +172,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # Inherit Parameter Value
     # ******************************
     # If the value has been defined at a structural parent node for that year, use that value.
-    if (param_source is None) and (param in model.inheritable_params):
+    if (param_source is None) and (param in model.inheritable_params_set):
         if tech:
             try:
                 val, source = model.get_param(param, node, year=year, context=context,
@@ -187,7 +187,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             # If the value has been defined at a structural ancestor, it should be here with
             # param_source == 'inheritance'
             try:
-                val = model.graph.nodes[node][year][param]
+                val = model.graph._node[node][year][param]
                 if context:
                     val = val[context]
                     if sub_context:

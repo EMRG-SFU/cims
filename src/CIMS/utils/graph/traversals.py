@@ -10,7 +10,14 @@ def find_next_node(degrees):
 
 
 def find_loops(graph, warn=False):
-    loops = list(nx.simple_cycles(graph))
+    # nx.simple_cycles emits cycles in a hash-seeded order, and each cycle at an arbitrary
+    # rotation, so canonicalise both: rotate every cycle to start at its smallest node, then
+    # sort. Loop resolution breaks ties by iteration order, so this has to be stable.
+    loops = []
+    for cycle in nx.simple_cycles(graph):
+        start = cycle.index(min(cycle))
+        loops.append(cycle[start:] + cycle[:start])
+    loops.sort()
     if warn and len(loops) > 0:
         warning_str = f"Found {len(loops)} loops (see model.loops for the full list)"
         warnings.warn(warning_str)
@@ -43,7 +50,7 @@ def top_down_traversal(graph, node_process_func, *args, root=None,
     # Find the root of the sub-graph
     if not root:
         possible_roots = [n for n, d in graph.in_degree() if d == 0]
-        possible_roots.sort(key=lambda n: len(n))
+        possible_roots.sort(key=lambda n: (len(n), n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
@@ -51,7 +58,13 @@ def top_down_traversal(graph, node_process_func, *args, root=None,
 
     # Start the traversal
     sub_graph = graph
-    sg_cur = sub_graph.copy()
+    # Bookkeeping only (degree, remove_node, find_loops); the callbacks get sub_graph, so
+    # this needs no node data. Rebuilt in sorted order rather than copied, because an
+    # nx.subgraph view iterates its own node set -- hash-seeded -- when the selection is
+    # less than half the parent graph.
+    sg_cur = nx.DiGraph()
+    sg_cur.add_nodes_from(sorted(sub_graph.nodes))
+    sg_cur.add_edges_from(sorted(sub_graph.edges))
 
     while len(sg_cur.nodes) > 0:
         n_cur = find_next_node(sg_cur.in_degree)
@@ -98,7 +111,7 @@ def bottom_up_traversal(graph, node_process_func, *args, root=None,
     # If root hasn't been provided, find the sub-graph's root
     if not root:
         possible_roots = [n for n, d in graph.in_degree() if d == 0]
-        possible_roots.sort(key=lambda n: len(n))
+        possible_roots.sort(key=lambda n: (len(n), n))
         root = possible_roots[0]
 
     # Find the distance from the root to each node in the sub-graph
@@ -106,7 +119,13 @@ def bottom_up_traversal(graph, node_process_func, *args, root=None,
 
     # Start the traversal
     sub_graph = graph
-    sg_cur = sub_graph.copy()
+    # Bookkeeping only (degree, remove_node, find_loops); the callbacks get sub_graph, so
+    # this needs no node data. Rebuilt in sorted order rather than copied, because an
+    # nx.subgraph view iterates its own node set -- hash-seeded -- when the selection is
+    # less than half the parent graph.
+    sg_cur = nx.DiGraph()
+    sg_cur.add_nodes_from(sorted(sub_graph.nodes))
+    sg_cur.add_edges_from(sorted(sub_graph.edges))
 
     while len(sg_cur.nodes) > 0:
         n_cur = find_next_node(sg_cur.out_degree)
