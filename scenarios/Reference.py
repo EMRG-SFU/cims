@@ -36,6 +36,8 @@ def _():
     ### Default values and parameter list files
     default_path = 'data/model_inputs/defaults/defaults_Parameters.csv'
     list_path = 'data/model_inputs/defaults/defaults_Lists.csv'
+    deflator_path = 'data/processed_data/deflator_exchange/currency_deflator.csv'
+    exchange_path = 'data/processed_data/deflator_exchange/currency_exchange.csv'
 
     update_files = {}
 
@@ -84,7 +86,7 @@ def _():
         if model_path not in update_files:
             update_files[model_path] = []
         update_files[model_path].extend(model_req)
-    return base_model, default_path, list_path, model_path, update_files
+    return base_model, default_path, list_path, deflator_path, exchange_path, model_path, update_files
 
 
 @app.cell(hide_code=True)
@@ -97,6 +99,12 @@ def _():
 
 @app.cell
 def _(model_path, update_files):
+    # Target dollar year and currency for scenario
+    target_units={
+        "currency": "CAD", 
+        "dollar_year": 2020
+    }
+
     # Only uncommented regions below will be run in the simulation
     region_list = [
         'CIMS', # Required
@@ -304,13 +312,15 @@ def _(
     base_model,
     default_path,
     list_path,
+    target_units,
+    deflator_path,
+    exchange_path,
     model_path,
     region_list,
     sector_list,
     update_files,
     year_list,
 ):
-    # breakpoint()
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
@@ -319,6 +329,9 @@ def _(
         year_list=year_list,
         sector_list=sector_list,    default_values_csv_path=default_path,
         list_csv_path=list_path,
+        target_units=target_units,
+        deflator_path=deflator_path,
+        exchange_path=exchange_path,
     )
     return (model,)
 
