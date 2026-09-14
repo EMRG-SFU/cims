@@ -42,18 +42,21 @@ def _glob_csvs(directory: Path) -> List[Path]:
 
 
 @lru_cache(maxsize=None)
-def _scannable(path) -> bool:
+def _scannable_cached(path: str, mtime: float) -> bool:
     """Check a CSV can be read the way filter_model_data reads it.
 
-    Checks that every column any consumer needs is present. Also check that 
+    Checks that every column any consumer needs is present. Also check that
     the file actually parses: reading the first SCAN_PROBE_ROWS rows surfaces
-    ragged rows and unbalanced quotes near the top of a file, which pass a 
-    header check and then raise ComputeError mid-load. Damage deeper in a file 
+    ragged rows and unbalanced quotes near the top of a file, which pass a
+    header check and then raise ComputeError mid-load. Damage deeper in a file
     is caught at load time instead (see filter_model_data).
 
-    Cached per path: one run asks the same question from collect_base_files,
-    collect_update_files, _coverage_data, _excluded_region_branches and
-    filter_model_data.
+    Cached per (path, mtime): one run asks the same question from
+    collect_base_files, collect_update_files, _coverage_data,
+    _excluded_region_branches and filter_model_data. Keying on mtime alongside
+    path means an edited file gets re-checked automatically — this matters for
+    long-lived processes (e.g. a marimo kernel) where a user fixes a file and
+    reruns a cell without restarting the process.
     """
     try:
         head = pl.read_csv(
@@ -67,9 +70,23 @@ def _scannable(path) -> bool:
     return all(c in head.columns for c in REQUIRED_COLUMNS)
 
 
+def _scannable(path) -> bool:
+    try:
+        mtime = Path(path).stat().st_mtime
+    except OSError:
+        return False
+    return _scannable_cached(str(path), mtime)
+
+
 def clear_scannable_cache() -> None:
-    """Forget cached per-file results. Call after input CSVs change on disk."""
-    _scannable.cache_clear()
+    """Forget cached per-file results.
+
+    Not needed for an edited file's content — _scannable already re-checks
+    that automatically via mtime. Kept as a manual fallback for edge cases
+    mtime can't catch (e.g. a filesystem with coarse mtime resolution, or an
+    edit landing within that resolution window of the previous check).
+    """
+    _scannable_cached.cache_clear()
 
 
 def _build_rows(summary: dict) -> List[dict]:
