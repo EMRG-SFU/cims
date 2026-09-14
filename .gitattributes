@@ -1,0 +1,42 @@
+# Normalize line endings across Windows / macOS / Linux.
+# Everything Git detects as text is stored with LF in the repository
+# and checked out with LF in the working tree on every platform.
+* text=auto eol=lf
+
+# Explicit text types (belt and braces)
+*.py      text eol=lf
+*.pyi     text eol=lf
+*.md      text eol=lf
+*.txt     text eol=lf
+*.csv     text eol=lf
+*.json    text eol=lf
+*.toml    text eol=lf
+*.cff     text eol=lf
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.cfg     text eol=lf
+*.ini     text eol=lf
+*.sh      text eol=lf
+.gitattributes text eol=lf
+.gitignore     text eol=lf
+uv.lock        text eol=lf
+
+# Windows-only scripts must keep CRLF or they break
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+*.ps1     text eol=crlf
+
+# Never touch these
+*.pkl     binary
+*.xlsx    binary
+*.xls     binary
+*.parquet binary
+*.pdf     binary
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.zip     binary
+*.gz      binary
+*.7z      binary

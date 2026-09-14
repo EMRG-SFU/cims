@@ -334,6 +334,10 @@ def _(
     update_files,
     year_list,
 ):
+    #################### Instantiate Model ####################
+    # Once currency_deflator.csv and currency_exchange.csv are available in
+    # data/model_inputs/, uncomment target_units/deflator_path/exchange_path below
+    # to normalize cost inputs to a single currency and dollar-year.
     model = CIMS.Model(
         model_path=model_path,
         base_model= base_model,
@@ -343,6 +347,9 @@ def _(
         sector_list=sector_list,
         default_values_csv_path=default_path,
         list_csv_path=list_path,
+        # target_units={"currency": "CAD", "dollar_year": 2020},
+        # deflator_path="data/model_inputs/currency_deflator.csv",
+        # exchange_path="data/model_inputs/currency_exchange.csv",
     )
     return (model,)
 

@@ -167,3 +167,55 @@ dic_min = "dic_min"
 dic_x50 = "dic_x50"
 multiplier_load_factor = "multiplier_load_factor"
 
+# ==========================================
+# Monetary Parameters
+# Parameters whose values are monetary and should carry a YYYY_CCC unit prefix
+# (e.g. "2010_CAD" or "2010_USD/GJ") whenever present in a model CSV.
+# ==========================================
+MONETARY_PARAMS = frozenset({
+    # Lifecycle Cost
+    capital_cost,
+    capital_cost_declining,
+    capital_cost_min,
+    competition_cost_annual,
+    competition_cost_upfront,
+    cost_curve_lcc_max,
+    cost_curve_lcc_min,
+    cost_curve_price,
+    emissions_cost,
+    fcc,
+    financial_cost_annual,
+    financial_cost_emissions,
+    financial_cost_service,
+    financial_cost_upfront,
+    fixed_cost_rate,
+    fixed_cost_total,
+    fom,
+    lcc_competition,
+    lcc_financial,
+    non_energy_cost,
+    non_energy_cost_change,
+    p2000,
+    price,
+    price_subsidy,
+    revenue_recycled,
+    service_cost,
+    stock_new_financial_cost_annual,
+    stock_new_financial_cost_upfront,
+    subsidy,
+    tax,
+    # Stock Allocation
+    export_subsidy,
+    fic,
+    global_price,
+    # Emissions
+    emissions_rate_cumul_cost,
+    emissions_rate_direct_cost,
+    emissions_total_cumul_cost,
+    emissions_total_direct_cost,
+    # Declining Costs
+    dic,
+    dic_initial,
+    dic_min,
+})
+

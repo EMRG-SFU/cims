@@ -3,6 +3,7 @@ import numpy as np
 
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
+from ..unit_conversion import MONETARY_PREFIX_RE
 
 
 def missing_parameter_default(validator):
@@ -134,6 +135,54 @@ def bad_service_req(validator):
         0's or are missing all values"
 
     return bad_service_requests, concern_desc
+
+
+def cost_params_missing_currency_unit(validator):
+    """
+    Identify rows whose Unit column looks monetary (contains '$') but is missing
+    a valid YYYY_CCC dollar-year prefix (e.g. '$/GJ' should be '2010_CAD/GJ').
+
+    Without the year prefix, currency conversion silently skips those rows and
+    their values are not normalised to the target currency and dollar-year.
+
+    A secondary check flags rows whose parameter is in MONETARY_PARAMS but whose
+    unit does not match the YYYY_CCC pattern at all (e.g. 'fcc' with unit 'CAD'
+    rather than '2010_CAD'). This catches monetary parameters that lack a '$' symbol
+    and would otherwise be missed by the heuristic above.
+
+    Skipped when no currency converter is configured on the validator. Without a
+    target currency and dollar-year a missing YYYY_CCC prefix has no consequence,
+    and flagging it would warn on essentially every cost row in every model.
+    """
+    if getattr(validator, "currency_converter", None) is None:
+        return [], ""
+
+    data = validator.model_df
+
+    # A model description is not required to carry a Unit column; with no column
+    # there is nothing to check.
+    if COL.unit not in data.columns:
+        return [], ""
+
+    unit_col = data[COL.unit].fillna('').astype(str)
+
+    monetary_prefix_mask = unit_col.str.match(MONETARY_PREFIX_RE)
+
+    dollar_mask = unit_col.str.contains(r'\$', regex=True)
+    has_unit_mask = unit_col != ''
+    monetary_param_mask = data[COL.parameter].isin(PARAM.MONETARY_PARAMS) & has_unit_mask
+
+    missing = data[(dollar_mask | monetary_param_mask) & ~monetary_prefix_mask]
+
+    result = list(zip(
+        missing.index,
+        missing[validator.node_col],
+        missing[COL.parameter],
+        missing[COL.unit],
+    ))
+
+    concern_desc = "rows with a monetary parameter or '$' unit are missing a YYYY_CCC prefix (e.g. '$/GJ' → '2010_CAD/GJ')"
+    return result, concern_desc
 
 
 def zero_requested_nodes(validator, providers):
