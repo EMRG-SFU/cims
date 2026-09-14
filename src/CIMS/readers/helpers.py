@@ -98,8 +98,8 @@ def _build_rows(summary: dict) -> List[dict]:
             COL_FOUND: info["found"],
             COL_UNREADABLE: len(info["unreadable"]),
             "unreadable_paths": info["unreadable"],
-            "missing": info.get("missing", False),
-            "path": info.get("path", name),
+            "missing": info["missing"],
+            "path": info["path"],
         })
     return rows
 
@@ -116,7 +116,7 @@ def _print_terse_health(rows: List[dict]):
         group = by_dir.setdefault(d, {"found": 0, "unreadable": 0, "missing": [], "paths": []})
         group["found"] += row[COL_FOUND]
         group["unreadable"] += row[COL_UNREADABLE]
-        if row.get("missing"):
+        if row["missing"]:
             group["missing"].append(row[COL_NAME])
         group["paths"].extend(row["unreadable_paths"])
 
@@ -394,9 +394,9 @@ def collect_files(
     else:
         # Match on the immediate parent directory name: collect_update_files globbed
         # each entry's files straight out of <dir>/<entry>.
-        wanted = {str(name) for name in sector_folders}
+        sector_folder_names = {str(name) for name in sector_folders}
         sector_paths = set(base_found)
-        sector_paths.update(p for p in update_found if Path(p).parent.name in wanted)
+        sector_paths.update(p for p in update_found if Path(p).parent.name in sector_folder_names)
 
     print_coverage_matrix(base_found + update_found, region_list, sector_list, sector_paths)
     print_file_health(health_rows, verbose=verbose)
