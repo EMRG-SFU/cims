@@ -12,7 +12,7 @@ from .utils.model_description import column_list as COL
 from .utils.parameter import construction, list as PARAM, setters, query as param_query
 from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
 from .utils.model_description.columns_builder import build_col_list
-from .readers.helpers import collect_base_paths, collect_update_paths, collect_all_paths
+from .readers.helpers import collect_base_files, collect_update_files, collect_files, filter_model_data, print_file_health
 
 from . import lcc_calculation
 from . import stock_allocation
@@ -21,11 +21,11 @@ from . import cost_curves
 from . import aggregation
 from . import visualize
 
-from .readers.scenario_reader import ScenarioReader
 from .readers.model_reader import ModelReader
 from .model_validation import ModelValidator, ValidationError
 from .quantities import ProvidedQuantity
 from .emissions import EmissionsCost
+from .unit_conversion import CurrencyConverter, apply_currency_conversion
 
 
 
@@ -43,6 +43,11 @@ class Model:
     sector_list : Sectors to include/filter.
     default_values_csv_path : Path to defaults values CSV (parameter defaults).
     list_csv_path : Path to defaults_Lists.csv
+    sector_folders : Update-file entries that define sectors (e.g., the notebook's sector_req).
+        Only files collected from these folders count toward the Region x Sector coverage
+        matrix; cross-cutting entries (DCC/DIC/FIC, market share limits, policies) feed the
+        "(no sector)" row instead. None treats every collected path as sector-defining.
+    verbose : Print the full per-entry file health table instead of the per-folder rollup.
 
     Attributes
     ----------
@@ -68,27 +73,44 @@ class Model:
         sector_list: Iterable[str],
         default_values_csv_path: str,
         list_csv_path: str,
+        sector_folders: Iterable[str] = None,
+        verbose: bool = False,
+        target_units: dict = None,
+        deflator_path: str = None,
+        exchange_path: str = None,
         ):
         print("\n=== Instantiating Model ===")
         start_init = time.time()
 
+        # Stored so update() can rebuild scenario paths/filters identically to __init__
+        self._region_list = list(region_list)
+        self._sector_list = sector_list
+        self._year_list = list(year_list)
+
         print("  Building column list...")
-        col_list = build_col_list(list_csv_path, year_list)
+        col_list = build_col_list(list_csv_path)
+        self._col_list = col_list
 
         print("  Collecting Base & Update CSV paths...")
-        base_paths, update_paths = collect_all_paths(
+        base_paths, update_paths, self._file_health_rows = collect_files(
             model_path=model_path,
             base_model=base_model,
             region_list=region_list,
+            sector_list=sector_list,
             update_files=update_files,
+            sector_folders=sector_folders,
+            verbose=verbose,
         )
+
+        print("  Reading & filtering model CSVs...")
+        base_df = filter_model_data(base_paths, region_list, sector_list, year_list, col_list)
+        update_df = filter_model_data(update_paths, region_list, sector_list, year_list, col_list)
+
         print("  Instantiating ModelValidator...")
         self.validator = ModelValidator(
-            csv_file_paths=base_paths,
-            csv_update_file_paths=update_paths,
-            col_list=col_list,
+            base_df=base_df,
+            scenario_df=update_df,
             year_list=year_list,
-            sector_list=sector_list,
             default_values_csv_path=default_values_csv_path,
             list_csv_path=list_csv_path,
         )
@@ -98,20 +120,12 @@ class Model:
 
         print("  Instantiating Readers...")
         self._model_reader = ModelReader(
-            csv_file_paths=base_paths,
-            col_list=col_list,
-            year_list=year_list,
-            sector_list=sector_list,
+            model_df=base_df,
             default_values_csv_path=default_values_csv_path,
             list_csv_path=list_csv_path,
         )
 
-        self._scenario_reader = ScenarioReader(
-            csv_file_paths=update_paths,
-            col_list=col_list,
-            year_list=year_list,
-            sector_list=sector_list,
-        )
+        self._scenario_reader = ModelReader(model_df=update_df)
 
         print("  Initializing model metadata and defaults...")
         self.root = self._model_reader.root
@@ -138,7 +152,7 @@ class Model:
 
         # Run / logging metadata
         self.show_run_warnings = True
-        self.model_description_file_prefix = os.path.commonprefix(self._model_reader.csv_files)
+        self.model_description_file_prefix = os.path.commonprefix(base_paths)
 
         self.change_history = pd.DataFrame(
             columns=[
@@ -154,27 +168,46 @@ class Model:
             ]
         )
 
+        # Currency conversion — configured at instantiation so the validator can access
+        # the tables during validate_files(); conversion is applied later in construct_graph()
+        self.currency_converter = None
+        self.target_currency = None
+        self.target_dollar_year = None
+        if target_units is not None:
+            print("  Configuring currency conversion...")
+            self._configure_currency_conversion(target_units, deflator_path, exchange_path)
+            self.validator.currency_converter = self.currency_converter
+            self.validator.target_currency = self.target_currency
+            self.validator.target_dollar_year = self.target_dollar_year
+
         # Track current state of the model build
         self.status = "instantiated"  # description loaded, graph not yet constructed
-        self.scenario_model_description_file = self._scenario_reader.csv_files
+        self.scenario_model_description_file = update_paths
 
         print(f"=== Model instantiation complete (completed in {time.time() - start_init:.2f}s) ===")
 
-    def validate_files(self):            
+    def validate_files(self):
         self.validator.validate()
+
+    def print_file_health(self, verbose: bool = True):
+        """Reprint the file health report from instantiation; verbose=True for the full per-entry table."""
+        print_file_health(self._file_health_rows, verbose=verbose)
         
     def validate_graph(self):
         self.validator.validate_graph()
     
-    def update(self, scenario_model_reader):
+    def update(self, update_files: Mapping[str, Iterable[str]]):
         """
-        Create an updated version of self based off another ModelReader.
+        Create an updated version of self using new scenario/update files.
         Intended for use with a reference + scenario model setup.
 
         Parameters
         ----------
-        scenario_model_reader : CIMS.ModelReader
-            An instantiated ModelReader to be used for updating self.
+        update_files : Mapping[str, Iterable[str]]
+            Same shape as the `update_files` argument to Model(...): a mapping
+            of directory to the file-name stems of the scenario CSVs to apply.
+            Collected and filtered using this model's own region/sector/year
+            configuration, exactly as Model.__init__ does for its own scenario files.
 
         Returns
         -------
@@ -186,20 +219,29 @@ class Model:
                              already been run. To prevent inconsistencies, \
                              this update has not been done.")
 
-        if not isinstance(scenario_model_reader, ScenarioReader):
-            raise ValueError("You are attempting to update a model with \
-                             something other than a ScenarioReader object.")
+        update_paths, _ = collect_update_files(update_files)
+        update_df = filter_model_data(
+            update_paths, self._region_list, self._sector_list, self._year_list, self._col_list
+        )
+        scenario_reader = ModelReader(model_df=update_df)
 
         # Make a copy, so we don't alter self
         model = copy.deepcopy(self)
 
         # Update the model's node_df & tech_dfs
-        model.scenario_node_dfs, model.scenario_tech_dfs = scenario_model_reader.get_model_description()
+        model.scenario_node_dfs, model.scenario_tech_dfs = scenario_reader.get_model_description()
+
+        # Normalise the incoming scenario values to the model's target currency &
+        # dollar-year. Without this, a scenario applied through update would
+        # inject unconverted values into an already-converted graph.
+        scenario_node_dfs, scenario_tech_dfs = model._convert_currency(
+            model.scenario_node_dfs, model.scenario_tech_dfs, label="scenario "
+        )
 
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0    # For Excel results viewer TODO: remove once we switch to notebook visualization
-        graph = node_utils.make_or_update_nodes(model.graph, model.scenario_node_dfs, model.scenario_tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, model.scenario_node_dfs, model.scenario_tech_dfs)
+        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
 
@@ -214,9 +256,48 @@ class Model:
         model._initialize_tax()
 
         model.show_run_warnings = True
-        model.scenario_model_description_file = scenario_model_reader.csv_files
+        model.scenario_model_description_file = update_paths
 
         return model
+
+    def _configure_currency_conversion(self, target_units: dict, deflator_path: str, exchange_path: str):
+        if deflator_path is None or exchange_path is None:
+            missing = [name for name, val in [("deflator_path", deflator_path), ("exchange_path", exchange_path)] if val is None]
+            raise ValueError(f"{' and '.join(missing)} must be provided when target_units is set")
+        self.target_currency = target_units["currency"]
+        self.target_dollar_year = target_units["dollar_year"]
+        self.currency_converter = CurrencyConverter(deflator_path, exchange_path)
+
+    def _convert_currency(self, node_dfs, tech_dfs, label=""):
+        """
+        Return currency-converted copies of the given node & technology DataFrames.
+
+        Returns the inputs unchanged when no currency conversion is configured, so
+        every path that builds or updates the graph can call this unconditionally.
+
+        Parameters
+        ----------
+        node_dfs : dict[str, pd.DataFrame]
+        tech_dfs : dict[str, dict[str, pd.DataFrame]]
+        label : str, optional
+            Descriptive prefix for the progress message (e.g. "scenario ").
+
+        Returns
+        -------
+        tuple[dict, dict]
+            The (possibly converted) node_dfs and tech_dfs.
+        """
+        if getattr(self, "currency_converter", None) is None:
+            return node_dfs, tech_dfs
+        if not node_dfs and not tech_dfs:
+            return node_dfs, tech_dfs
+
+        print(f"  Converting {label}costs to "
+              f"{self.target_dollar_year}_{self.target_currency}...")
+        return apply_currency_conversion(
+            node_dfs, tech_dfs, self.currency_converter,
+            self.target_currency, self.target_dollar_year,
+        )
 
     def construct_graph(self):
         """
@@ -231,14 +312,20 @@ class Model:
 
         start = time.time()
         print("\n=== Constructing model graph ===")
-        
+
         # --- Base graph from model description -------------------------------
         graph = nx.DiGraph()
         graph.cur_tree_index = [0]
         graph.max_tree_index = [0]
 
-        graph = node_utils.make_or_update_nodes(graph, self.node_dfs, self.tech_dfs)
-        graph = edge_utils.make_or_update_edges(graph, self.node_dfs, self.tech_dfs)
+        node_dfs, tech_dfs = self._convert_currency(self.node_dfs, self.tech_dfs)
+        scenario_node_dfs, scenario_tech_dfs = self._convert_currency(
+            self.scenario_node_dfs, self.scenario_tech_dfs, label="scenario "
+        )
+
+        print("  Building base graph...")
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
         # Update metadata from base graph
@@ -253,22 +340,17 @@ class Model:
         # Initialize parameters on the base graph
         self._inherit_parameter_values()
         self._initialize_tax()
-        print("  Base graph constructed")
 
         # --- Apply scenario overlays (if any) --------------------------------
-        if not isinstance(self._scenario_reader, ScenarioReader):
-            raise ValueError(
-                "You are attempting to update a model with something other than a ScenarioReader object."
-            )
-
         # Only do work if there is scenario content
         if self.scenario_node_dfs or self.scenario_tech_dfs:
+            print("  Applying scenario overlays...")
             self.graph.max_tree_index[0] = 0
             graph = node_utils.make_or_update_nodes(
-                self.graph, self.scenario_node_dfs, self.scenario_tech_dfs
+                self.graph, scenario_node_dfs, scenario_tech_dfs
             )
             graph = edge_utils.make_or_update_edges(
-                graph, self.scenario_node_dfs, self.scenario_tech_dfs
+                graph, scenario_node_dfs, scenario_tech_dfs
             )
             self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
             self.graph = graph
@@ -284,10 +366,9 @@ class Model:
             # Re-initialize parameters after scenario changes
             self._inherit_parameter_values()
             self._initialize_tax()
-            print("  Scenario overlays applied")
 
         else:
-            print("  No scenario overlays to apply")
+            print("  No scenario overlays to apply...")
 
         # Final state after graph is ready
         self.status = "graph constructed"
@@ -1102,8 +1183,8 @@ class Model:
         return self.node_tech_defaults[parameter]
 
     def get_param(self, param, node, year=None, tech=None, context=None, sub_context=None,
-                  target=None, return_source=False, do_calc=False, check_exist=False,
-                  dict_expected=False):
+                  target=None, return_source=False, return_unit=False, do_calc=False,
+                  check_exist=False, dict_expected=False):
         """
         Gets a parameter's value from the model, given a specific context (node,
         year, tech, context, sub-context), calculating the parameter's value if
@@ -1174,6 +1255,7 @@ class Model:
                                     sub_context=sub_context,
                                     target=target,
                                     return_source=return_source,
+                                    return_unit=return_unit,
                                     do_calc=do_calc,
                                     check_exist=check_exist,
                                     dict_expected=dict_expected)
