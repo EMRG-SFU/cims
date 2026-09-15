@@ -24,10 +24,10 @@ def _():
     return
 
 
-@app.cell(hide_code=True)
-def _():
+@app.function(hide_code=True)
+def reset_model_files():
     ### Base model and standard files below are required for the model to run
-    model_path = 'data/model_inputs/model'
+    model_path = 'data/new_model_inputs'
     # Model files should be located at: data/model_inputs/
 
     ### Base model to start initialisation
@@ -97,6 +97,7 @@ def _():
         update_files,
     )
 
+
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
@@ -114,10 +115,22 @@ def _():
 
 
 @app.cell
-def _(model_path, update_files):
+def _():
+    # Make sure list of model files is reset even if notebook kernel is not restarted
+    (
+        base_model,
+        default_path,
+        list_path,
+        deflator_path,
+        exchange_path,
+        model_path,
+        sector_req,
+        update_files,
+    ) = reset_model_files()
+
     # Target dollar year and currency for scenario
     target_units={
-        "currency": "CAD", 
+        "currency": "CAD",
         "dollar_year": 2020
     }
 
@@ -180,7 +193,20 @@ def _(model_path, update_files):
         'Agriculture',
         'Forestry',
     ]
-    return region_list, sector_list, year_list
+    return (
+        base_model,
+        default_path,
+        deflator_path,
+        exchange_path,
+        list_path,
+        model_path,
+        region_list,
+        sector_list,
+        sector_req,
+        target_units,
+        update_files,
+        year_list,
+    )
 
 
 @app.cell(hide_code=True)
@@ -343,14 +369,14 @@ def _():
 def _(
     base_model,
     default_path,
-    list_path,
-    target_units,
     deflator_path,
     exchange_path,
+    list_path,
     model_path,
     region_list,
     sector_list,
     sector_req,
+    target_units,
     update_files,
     year_list,
 ):
