@@ -23,8 +23,8 @@ Number = Union[int, float]
 # leaves are always value dicts built by construction.create_value_dict() -- i.e. flat
 # dicts of scalars (context, sub_context, target, unit, year_value, param_source).
 #
-#   3 levels:  {source_branch: {ghg: {emission_type: value_dict}}}   -> _copy3
-#   2 levels:  {ghg: {emission_type: value_dict}}                    -> _copy2
+#   3 levels:  {source_branch: {ghg: {emission_type: value_dict}}}   -> _copy_3level
+#   2 levels:  {ghg: {emission_type: value_dict}}                    -> _copy_2level
 #
 # WHY NOT copy.deepcopy: profiling the Reference scenario (2026-09-10) attributed 31% of
 # total runtime to copy.deepcopy, 133M calls of it, almost all from copying these two
@@ -44,7 +44,7 @@ Number = Union[int, float]
 # ------------------------------------------------------------------------------------
 
 
-def _copy3(d):
+def _copy_3level(d):
     """Copy a {source_branch: {ghg: {emission_type: value_dict}}} structure.
 
     Drop-in replacement for copy.deepcopy on this shape -- see the note above for why it is
@@ -65,11 +65,17 @@ def _copy3(d):
             for sb, sbd in d.items()}
 
 
-def _copy2(d):
+def _copy_2level(d):
     """Copy a {ghg: {emission_type: value_dict}} structure.
 
-    The two-level version of _copy3 (no source_branch level); same rationale and same caveat.
-    Used for tax_rates / removal_rates, which are keyed by GHG and emission type only.
+    The two-level version of _copy_3level (no source_branch level); same rationale and same
+    caveat. Used for tax_rates / removal_rates, which are keyed by GHG and emission type only.
+
+    Parameters
+    ----------
+    d : dict
+        g  / gd  -- ghg (CO2, CH4, ...) and its dict
+        et / vd  -- emission_type (Combustion, Process, Fugitive, ...) and its value dict
 
     Returns
     -------
@@ -116,9 +122,9 @@ class EmissionsCost:
         """
         # Start by recording all the emissions from self in the result. This must be a copy,
         # not a reference: the loop below mutates the leaves in place with `+=`, so sharing
-        # them would corrupt `self`. See the module-level note on _copy3 for why it is used
+        # them would corrupt `self`. See the module-level note on _copy_3level for why it is used
         # here in place of copy.deepcopy.
-        result = EmissionsCost(_copy3(self.emissions_cost), num_units=self.num_units)
+        result = EmissionsCost(_copy_3level(self.emissions_cost), num_units=self.num_units)
 
         # Then, go through each of the emissions in other and add those to the result
         for source_branch in other.emissions_cost:
@@ -349,7 +355,7 @@ class Emissions:
         for energy, ghgs in self.emissions.items():
             totals.setdefault(energy, {})
             for ghg, types in ghgs.items():
-                totals[energy].set_default(ghg, {})
+                totals[energy].setdefault(ghg, {})
                 for em_type, val_dict in types.items():
                     totals[energy][ghg].setdefault(em_type, 0)
                     totals[energy][ghg][em_type] += val_dict[PARAM.year_value]
@@ -691,7 +697,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                                         removal_dict[ghg][emission_type][PARAM.year_value])
 
     # AVOIDED EMISSIONS
-    avoided_emissions = _copy3(gross_emissions)
+    avoided_emissions = _copy_3level(gross_emissions)
     for node_name in avoided_emissions:
         for ghg in avoided_emissions[node_name]:
             for emission_type in avoided_emissions[node_name][ghg]:
@@ -700,7 +706,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     PARAM.year_value]
 
     # NEGATIVE EMISSIONS
-    negative_emissions = _copy3(gross_emissions)
+    negative_emissions = _copy_3level(gross_emissions)
     for node_name in negative_emissions:
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
@@ -713,7 +719,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
 
     # NET EMISSIONS
-    net_emissions = _copy3(gross_emissions)
+    net_emissions = _copy_3level(gross_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
@@ -722,7 +728,7 @@ def calc_competition_emissions_cost(model: 'CIMS.Model', node: str, year: str, t
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value]
 
     # EMISSIONS COST
-    emissions_cost = _copy3(net_emissions)
+    emissions_cost = _copy_3level(net_emissions)
     for node_name in emissions_cost:
         for ghg in emissions_cost[node_name]:
             for emission_type in emissions_cost[node_name][ghg]:
@@ -842,7 +848,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
     supply_nodes = model.supply_nodes
     tax_rates = {ghg: {em_type: construction.create_value_dict(0) for em_type in model.emission_types} for
                  ghg in model.GHGs}
-    removal_rates = _copy2(tax_rates)
+    removal_rates = _copy_2level(tax_rates)
 
     # Grab correct tax values
     if node not in supply_nodes:
@@ -932,7 +938,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                                     construction.create_value_dict(rr_val)
 
     # AVOIDED EMISSIONS
-    avoided_emissions = _copy3(gross_emissions)
+    avoided_emissions = _copy_3level(gross_emissions)
     for node_name in avoided_emissions:
         for ghg in avoided_emissions[node_name]:
             for emission_type in avoided_emissions[node_name][ghg]:
@@ -940,7 +946,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                 avoided_emissions[node_name][ghg][emission_type][PARAM.year_value] *= em_removed
 
     # NEGATIVE EMISSIONS
-    negative_emissions = _copy3(gross_emissions)
+    negative_emissions = _copy_3level(gross_emissions)
     for node_name in negative_emissions:
         for ghg in negative_emissions[node_name]:
             for emission_type in negative_emissions[node_name][ghg]:
@@ -953,7 +959,7 @@ def calc_financial_emissions_cost(model: 'CIMS.Model', node: str, year: str, tec
                     negative_emissions[node_name][ghg][emission_type][PARAM.year_value] = 0
 
     # NET EMISSIONS
-    net_emissions = _copy3(gross_emissions)
+    net_emissions = _copy_3level(gross_emissions)
     for node_name in net_emissions:
         for ghg in net_emissions[node_name]:
             for emission_type in net_emissions[node_name][ghg]:
