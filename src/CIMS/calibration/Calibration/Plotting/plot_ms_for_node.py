@@ -24,26 +24,52 @@ def plot_ms(model,
             calMsKey = "calibration_market_share_total",
             techFilters = []):
     """
-    `techFilters` here contains strings that serve as regex matches for the technologies. If you want to only plot
-        a subset of the technologies, here is where you specify them.
+    Show a side-by-side stacked-area comparison of CIMS vs counterfactual market share.
+
+    Reads two parameters per technology at `nodeName` — the share CIMS computed
+    and the calibration target it is being fitted against — and draws each as a
+    stacked area panel in a single one-row, two-column Plotly figure. The two
+    y-axes are linked so the panels share one autoranged scale and can be
+    compared by eye.
+
+    Parameters
+    ----------
+    model : object
+        The loaded CIMS model. Only its `.graph` attribute is used.
+    nodeName : str
+        Name of the node to plot, used as a key into the model graph.
+    msKey : str
+        Tech parameter holding the CIMS-calculated share (left panel).
+    calMsKey : str
+        Tech parameter holding the counterfactual calibration target (right panel).
+    techFilters : list of str
+        Regex patterns used to plot only a subset of the technologies. A
+        technology is kept if it matches *any* pattern, case-insensitively.
+        An empty list (the default) keeps everything.
+
+    Returns
+    -------
+    None
+        Calls `fig.show()` for its side effect and returns nothing, so the
+        figure cannot be further customised or saved by the caller.
+
+    Notes
+    -----
+    Values of `None` or the string 'NA' become `None` and render as gaps.
+    Unlike the sibling VizServer version, no percentage rescaling is applied
+    here: both series are read with `maybeFloat`, which assumes `calMsKey` is
+    already stored as a 0-1 fraction rather than a percentage.
     """
 
 
     def maybeFloat(x):
+        """Coerce to float, mapping `None` and the string 'NA' to `None`."""
         if x is None:
             return(None)
         elif isinstance(x, str) and x=='NA':
             return(None)
         else:
             return(float(x))
-
-    def maybeFloatDiv100(x):
-        if x is None:
-            return(None)
-        elif isinstance(x, str) and x=='NA':
-            return(None)
-        else:
-            return(float(x)/100.0)
 
     allTechNames = node_info.list_techs(model.graph, nodeName)
 
@@ -90,6 +116,40 @@ def plot_ms_heatmap(model,
                     calMsKey="calibration_market_share_total",
                     fixedColor=None):
     """
+    Show a technology-by-year heatmap of the gap between CIMS and calibration.
+
+    The plotted value is `diff` = CIMS share minus counterfactual share, so
+    positive cells are technologies CIMS over-predicts relative to the
+    calibration target and negative cells are ones it under-predicts. The
+    colour scale is diverging and centred on zero, making the sign of the
+    mismatch readable at a glance.
+
+    Parameters
+    ----------
+    model : object
+        The loaded CIMS model, passed through to the data layer.
+    nodeName : str
+        Name of the node to plot. Also used in the figure title.
+    msKey : str
+        Tech parameter holding the CIMS-calculated share.
+    calMsKey : str
+        Tech parameter holding the counterfactual calibration target.
+    fixedColor : float, optional
+        Clamp the colour scale to a symmetric range of `-fixedColor` to
+        `+fixedColor` instead of autoscaling. Use this to hold the scale steady
+        when comparing heatmaps across several nodes, since an autoscaled range
+        makes a small mismatch look as dramatic as a large one.
+
+    Returns
+    -------
+    None
+        Calls `fig.show()` for its side effect and returns nothing.
+
+    Notes
+    -----
+    A technology with no calibration value is treated as a target of 0.0 rather
+    than being dropped, so it will show up as a non-zero diff. A missing CIMS
+    value instead raises `RuntimeError` from the data layer.
     """
     df = get_marketShare_diff_frame(
             model,
@@ -114,6 +174,33 @@ def plot_ms_diffLine(model,
                     msKey="market_share_total",
                     calMsKey="calibration_market_share_total"):
     """
+    Show the CIMS-minus-calibration gap over time, as one line per technology.
+
+    The line-plot counterpart to `plot_ms_heatmap`, built from the same `diff`
+    column: CIMS share minus counterfactual share. A dotted horizontal
+    reference line is drawn at zero, so a well-calibrated technology is one
+    whose line stays flat against it.
+
+    Parameters
+    ----------
+    model : object
+        The loaded CIMS model, passed through to the data layer.
+    nodeName : str
+        Name of the node to plot.
+    msKey : str
+        Tech parameter holding the CIMS-calculated share.
+    calMsKey : str
+        Tech parameter holding the counterfactual calibration target.
+
+    Returns
+    -------
+    None
+        Calls `fig.show()` for its side effect and returns nothing.
+
+    Notes
+    -----
+    Shares the missing-value behaviour of `plot_ms_heatmap`: an absent
+    calibration value is treated as 0.0, an absent CIMS value raises.
     """
     df = get_marketShare_diff_frame(
             model,

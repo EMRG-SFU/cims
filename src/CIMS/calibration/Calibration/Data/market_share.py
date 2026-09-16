@@ -216,8 +216,7 @@ def calMissingRemove(cimsVal, calVal, year=None, tech=None, key_cims=None, key_c
 def get_marketShare_both_dict(model, 
                          nodeName, 
                          key_cims = "market_share_total",
-                         key_cal = "calibration_market_share_total",
-                         missingValFunc = calMissingToZero):
+                         key_cal = "calibration_market_share_total"):
     """
 
     """

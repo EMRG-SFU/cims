@@ -51,7 +51,7 @@ def plotOverTime_stack(res_obj, allYears=None, showlegend=True):
         #return(allDf)
 
         fig = px.area(allDf, x='dates', y='vals', color='name', markers=True)
-        fig.update_trace(showlegend=showlegend)
+        fig.update_traces(showlegend=showlegend)
         return((fig, allDf))
 
 
