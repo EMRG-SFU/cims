@@ -82,7 +82,10 @@ class ModelReader:
         return node_tech_defaults
         
     def get_inheritable_params(self):
-        return self._get_list(column_identifier="Inheritable")
+        # Blank cells in the "Inheritable" column come back as None from _get_list;
+        # they aren't parameter names, so drop them.
+        return [param for param in self._get_list(column_identifier="Inheritable")
+                if param is not None]
     
     def get_valid_competition_types(self):
         return self._get_list(column_identifier="Competition")

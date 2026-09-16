@@ -135,7 +135,7 @@ class Model:
 
         # Parameter lists & defaults
         self.node_tech_defaults = self._model_reader.get_default_params()
-        self.inheritable_params = self._model_reader.get_inheritable_params()
+        self.inheritable_params = frozenset(self._model_reader.get_inheritable_params())
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
 
