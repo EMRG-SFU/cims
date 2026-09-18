@@ -32,7 +32,8 @@ dependencies = [
     'tqdm',
     "packaging",
     "requests",
-    'tabulate>=0.10'
+    'tabulate>=0.10',
+    'psutil',
     ]
 dynamic = ["version"]
 
