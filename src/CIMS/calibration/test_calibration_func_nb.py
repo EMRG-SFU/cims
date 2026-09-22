@@ -489,6 +489,44 @@ def _(model):
 @app.cell(hide_code=True)
 def _():
     mo.md(r"""
+    ## Tweak Node Market Share Data via CSV
+    """)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Write out the values to a csv file. This writes the values for all service nodes under `nodeName` that have technologies. If there are no technologies at the node, it is omitted.
+
+    If you want to just output a single node, and not everything tree'd under it as well, put `recursive = False`.
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    market_share.toCSV_marketShareTotal_calibration(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density", filePath="test_AB_res_dwell_highDensity.csv", recursive=True)
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
+    Read the values back in again
+    """)
+    return
+
+
+@app.cell
+def _(model):
+    market_share.fromCSV_marketShareTotal_calibration(model, filePath="test_AB_res_dwell_highDensity.csv")
+    return
+
+
+@app.cell(hide_code=True)
+def _():
+    mo.md(r"""
     ## Plot Node Market Shares
 
     Model Data and Calibration Counterfactual
