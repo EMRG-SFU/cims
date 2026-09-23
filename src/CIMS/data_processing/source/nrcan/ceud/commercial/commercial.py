@@ -103,6 +103,7 @@ END_USE_TABLE     = 2
 FLOORSPACE_TABLES = [4, 6, 8, 10, 12, 14, 16, 18, 20, 22]
 HVAC_TABLE       = 24
 HOT_WATER_TABLE   = 26
+LIGHTING_TABLE    = 31
 
 FILE_NAME_MAP = {'BC': 'bct', 'AT': 'atl'}
 
@@ -137,23 +138,44 @@ AUX_TECH_GJ_PER_UNIT: dict[str, float] = {
     'plug_load':     0.014043,
 }
 
-# Lighting sub-service shares of total lit floorspace and each sub-service's
-# weighted GJ/m2 (100% "Existing" technology at year 2000), combined into one
-# weighted GJ/m2 factor for the whole Lighting end-use.
-LIGHTING_SUBSERVICE_SHARES: dict[str, float] = {
-    'General Area':    0.746420765,
-    'Service Lighting': 0.214826958,
-    'High Bay':        0.038752277,
+# Lighting conversion factor.
+# Replaces the old General Area / Service Lighting / High Bay weighted
+# assumption. Converts CEUD lighting energy into CIMS lighting service demand.
+# This initial calibrated value is intended to raise model demand toward the
+# Ontario counterfactual; tune upward to reduce demand or downward to raise it.
+LIGHTING_GJ_PER_M2 = {
+    2000: 0.165,
+    2001: 0.162,
+    2002: 0.159,
+    2003: 0.156,
+    2004: 0.153,
+    2005: 0.150,
+    2006: 0.148,
+    2007: 0.146,
+    2008: 0.144,
+    2009: 0.143,
+    2010: 0.142,
+    2011: 0.140,
+    2012: 0.138,
+    2013: 0.136,
+    2014: 0.134,
+    2015: 0.132,
+    2016: 0.130,
+    2017: 0.128,
+    2018: 0.126,
+    2019: 0.123,
+    2020: 0.120,
+    2021: 0.117,
+    2022: 0.114,
+    2023: 0.111,
+    2024: 0.108,
 }
-LIGHTING_SUBSERVICE_GJ_PER_M2: dict[str, float] = {
-    'General Area':    0.266470436,
-    'Service Lighting': 0.271183964,
-    'High Bay':        0.20330031,
-}
-LIGHTING_GJ_PER_M2: float = sum(
-    LIGHTING_SUBSERVICE_SHARES[s] * LIGHTING_SUBSERVICE_GJ_PER_M2[s]
-    for s in LIGHTING_SUBSERVICE_SHARES
-)
+
+def get_lighting_conversion_factor(year):
+    for yr in sorted(LIGHTING_GJ_PER_M2.keys(), reverse=True):
+        if year >= yr:
+            return LIGHTING_GJ_PER_M2[yr]
+    return LIGHTING_GJ_PER_M2[min(LIGHTING_GJ_PER_M2)]
 
 # Hot Water technology total GJ per unit -- summed across every energy target
 # a technology serves (e.g. an NG boiler burns Methane Blend for heat *and*
@@ -424,7 +446,7 @@ def load_tables(region_code: str) -> dict:
         raise FileNotFoundError(f"Data file not found: {file_path}")
 
     table_numbers = ([TOTAL_FLOORSPACE_TABLE] + [END_USE_TABLE] + FLOORSPACE_TABLES +
-                      [HVAC_TABLE] + [HOT_WATER_TABLE] + [SPACE_HEATING_TABLE])
+                      [HVAC_TABLE] + [HOT_WATER_TABLE] + [LIGHTING_TABLE] + [SPACE_HEATING_TABLE])
     table_names = [f"Table {n}" for n in sorted(set(table_numbers))]
 
     def load_and_clean(sheet_name: str) -> pl.DataFrame:
@@ -469,6 +491,21 @@ def extract_floorspace(region: str, tables: dict) -> list[pl.DataFrame]:
                             'service_request', 'm2', raw))
 
     return frames
+
+
+# ==============================================================================
+# EXTRACTION — LIGHTING ENERGY INTENSITY
+# ==============================================================================
+def extract_lighting_intensity(region: str, tables: dict) -> list[pl.DataFrame]:
+    """Extract annual Buildings -> Lighting service_request from CEUD Table 31.
+
+    CEUD reports this series directly as Energy Intensity (GJ/m2), so no
+    General Area / Service Lighting / High Bay weighting is applied.
+    """
+    t31 = tables[f"Table {LIGHTING_TABLE}"]
+    intensity = row_to_series(t31, "Energy Intensity (GJ/m2)")
+    return [_long(region, 'lighting_intensity', '',
+                  'service_request', 'GJ/m2', intensity)]
 
 
 # ==============================================================================
@@ -828,10 +865,9 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
 
         frames.append(_apply('total_floorspace', '', _extend_floorspace))
 
-    # 2. Lighting / Water Heating / Auxiliary Equipment energy — hold energy
-    #    intensity (GJ per m2 of floorspace) constant beyond the last
-    #    historical year; there's no published growth assumption for these
-    #    end-uses, so floorspace growth alone drives their projection.
+    # 2. Lighting intensity and Water Heating / Auxiliary Equipment energy.
+    #    Hold Table 31 lighting intensity constant beyond the last historical
+    #    year. Energy totals retain the existing flat-intensity projection.
     floorspace_full = pl.concat([f for f in frames if len(f) > 0], how='diagonal_relaxed')
     floorspace_series = pl_to_series(
         floorspace_full.filter(pl.col('variable') == 'total_floorspace')
@@ -847,6 +883,15 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
     for var in ('lighting_energy', 'water_heating_energy', 'aux_equipment_energy',
                 'space_heating_energy', 'space_cooling_energy'):
         frames.append(_apply(var, '', _extend_flat_intensity))
+
+    # Table 31 already reports GJ/m2, so projections hold the last historical
+    # value constant instead of multiplying it by projected floorspace.
+    def _extend_flat_value(series, base_year):
+        future_years = [y for y in floorspace_series.index if y > base_year]
+        projected = pd.Series({y: float(series[base_year]) for y in future_years})
+        return pd.concat([series, projected]).sort_index()
+
+    frames.append(_apply('lighting_intensity', '', _extend_flat_value))
 
     # 3. Building shell shares — trend then dampener, per activity
     bs_params = params.get('building_shell_shares', {})
@@ -950,10 +995,11 @@ def _year_indexed(df: pl.DataFrame, variable: str, category: str = '') -> pd.Ser
 
 def compute_enduse_service_requests(df: pl.DataFrame, region: str) -> pl.DataFrame:
     """
-    Combine CEUD end-use energy (lighting_energy / water_heating_energy /
-    aux_equipment_energy) with the fixed national technology energy factors
-    (AUX_TECH_GJ_PER_UNIT, LIGHTING_GJ_PER_M2) and this region's own
-    hot_water_tech mix to back out the Buildings -> {Lighting, Hot Water,
+    Convert CEUD lighting energy into Buildings -> Lighting service demand
+    using the year-specific step-change LIGHTING_GJ_PER_M2 factor.
+    Combine CEUD water_heating_energy / aux_equipment_energy with the fixed
+    national technology energy factors (AUX_TECH_GJ_PER_UNIT) and this region's
+    own hot_water_tech mix to back out the remaining Buildings -> {Hot Water,
     Refrigeration, Cooking, Plug Load} service_request intensities (m2 or
     "unit" per m2 of floorspace) that raw_data/fixed_data/commercial
     previously hardcoded as constants.
@@ -988,13 +1034,21 @@ def compute_enduse_service_requests(df: pl.DataFrame, region: str) -> pl.DataFra
         fs = float(floorspace[y])
         if not fs:
             continue
-        lighting_vals[y] = float(lighting_e[y]) / (fs * LIGHTING_GJ_PER_M2)
+
+        conversion_factor = get_lighting_conversion_factor(y)
+        lighting_vals[y] = float(lighting_e[y]) / (fs * conversion_factor)
 
         shares = _aux_energy_shares(y)
         aux_gj = float(aux_e[y])
-        refrig_vals[y] = shares['refrigeration'] * aux_gj / (fs * AUX_TECH_GJ_PER_UNIT['refrigeration'])
-        cook_vals[y]   = shares['cooking']       * aux_gj / (fs * AUX_TECH_GJ_PER_UNIT['cooking'])
-        plug_vals[y]   = shares['plug_load']     * aux_gj / (fs * AUX_TECH_GJ_PER_UNIT['plug_load'])
+        refrig_vals[y] = shares['refrigeration'] * aux_gj / (
+            fs * AUX_TECH_GJ_PER_UNIT['refrigeration']
+        )
+        cook_vals[y] = shares['cooking'] * aux_gj / (
+            fs * AUX_TECH_GJ_PER_UNIT['cooking']
+        )
+        plug_vals[y] = shares['plug_load'] * aux_gj / (
+            fs * AUX_TECH_GJ_PER_UNIT['plug_load']
+        )
 
         if hw_gj_per_unit > 0:
             hw_vals[y] = float(water_e[y]) / (fs * hw_gj_per_unit)
@@ -1520,6 +1574,7 @@ def extract_all_data(
     # -- End-use energy (Lighting / Water Heating / Auxiliary Equipment / -----
     # -- Space Heating / Space Cooling totals, and Space Heating by activity)
     end_use_frames = extract_end_use_energy(region, tables)
+    lighting_intensity_frames = extract_lighting_intensity(region, tables)
     space_heating_frames = extract_space_heating_by_activity(region, tables)
 
     # Assemble — floorspace_by_activity was only needed to derive shell shares.
@@ -1530,7 +1585,7 @@ def extract_all_data(
     total_floorspace_frames = [f for f in floorspace_frames
                                if f['variable'][0] == 'total_floorspace']
     all_frames = (total_floorspace_frames + shell_frames + hvac_frames + hw_frames +
-                  end_use_frames + space_heating_frames)
+                  end_use_frames + lighting_intensity_frames + space_heating_frames)
     df = pl.concat(all_frames, how='diagonal_relaxed')
 
     if apply_projections:
@@ -1697,6 +1752,7 @@ COMM_CATEGORY_EFFICIENCY_KEY = {
 # Variables identical across sub-regions (shares copied as-is)
 COMM_IDENTICAL_VARIABLES = {
     'building_shell_shares',
+    'lighting_intensity',
 }
 
 # Absolute quantities split by population share when disaggregating AT/BCT
