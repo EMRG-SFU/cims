@@ -70,19 +70,19 @@ def _():
 @app.cell
 def _():
     nodeNames = [
-        "CIMS.CAN.ON.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.AB.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.BC.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.SK.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.MB.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.QC.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.NB.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.NS.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.PE.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.NL.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.NT.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.NU.Fuel Blends.Gasoline_Transportation",
-        "CIMS.CAN.YT.Fuel Blends.Gasoline_Transportation",
+        "CIMS.CAN.ON.Fuel Blends.Diesel_Transportation"
+        "CIMS.CAN.AB.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.BC.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.SK.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.MB.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.QC.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.NB.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.NS.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.PE.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.NL.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.NT.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.NU.Fuel Blends.Diesel_Transportation",
+        "CIMS.CAN.YT.Fuel Blends.Diesel_Transportation",
     ]
     return (nodeNames,)
 
