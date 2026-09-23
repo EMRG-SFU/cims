@@ -74,27 +74,29 @@ def set_marketShareTotal_calibration_withDataFrame(model, nodeName, dataFrame, k
     # Also, if all the entries in the column are entirely None, don't raise an issue. We'll assume that
     # this is a case where we just don't have counterfactual data for that year, and we'll just deal somehow
     # (right now I've only seen this in the last year of the series).
-    def checkSumOne(ser):
-        """`ser` is a polars series, and has a `.name` attr which should be the series header (whether row or col or whatever, which
-        in this case is the year"""
-        if all([a is None for a in ser]):
+    def checkSumOne(values, year):
+        """`values` are the per-technology entries for a single year; `year` labels
+        that year for the error message."""
+        if all([a is None for a in values]):
             pass
-        elif abs(sum([float(a) for a in ser if a is not None]) - 1.0) > 0.0001:
-            raise RuntimeError(f"calibration_market_share for {nodeName} in year {ser.name} does not sum to one.\
-                    It sums to {sum([float(a) for a in ser if a is not None])}")
+        elif abs(sum([float(a) for a in values if a is not None]) - 1.0) > 0.0001:
+            raise RuntimeError(f"calibration_market_share for {nodeName} in year {year} does not sum to one.\
+                    It sums to {sum([float(a) for a in values if a is not None])}")
         else:
             pass
 
     if transpose:
-        for ind,row in enumerate(dataFrame.iter_rows()):
-            # Skip the 1st row, which is the tech names.
-            if ind > 0:
-                checkSumOne(row)
+        # Rows are years, columns are "year" + one per tech; check each row's
+        # tech values (excluding the year label itself) sum to one.
+        for row in dataFrame.iter_rows(named=True):
+            year = row["year"]
+            techValues = [v for k, v in row.items() if k != "year"]
+            checkSumOne(techValues, year)
     else:
         for ind,col in enumerate(dataFrame.iter_columns()):
             # Skip the 1st col, which is the tech names.
             if ind > 0:
-                checkSumOne(col)
+                checkSumOne(list(col), col.name)
 
     if transpose:
         dfu = dataFrame.unpivot(index="year", variable_name="tech", value_name="value")
@@ -108,8 +110,12 @@ def set_marketShareTotal_calibration_withDataFrame(model, nodeName, dataFrame, k
         else:
             return float(x)
 
-    for r in dfu.iter_rows(named=True):
-        set_param_calibration(model, floatIfNotNone(r['value']), key, nodeName, year=r['year'], tech=r['tech'], save=False)
+    # Redirect the rather copious output that `set_param_calibration` produces, just in
+    # this case -- it really clutters up the calibration Marimo notebooks.
+    with open(os.devnull, 'w') as devnull:
+        with redirect_stdout(devnull), redirect_stderr(devnull):
+            for r in dfu.iter_rows(named=True):
+                set_param_calibration(model, floatIfNotNone(r['value']), key, nodeName, year=r['year'], tech=r['tech'], save=False)
 
     print(f"Values saved to calibration_market_share_total of {nodeName}")
     return True
@@ -119,8 +125,28 @@ def tweak_marketShareTotal_calibration(model, nodeName, key="calibration_market_
 
     """
     msFrame = get_marketShareTotal_calibration(model, nodeName, key, doNumFormat, transpose = transpose)
+
+    # A tech/year that has never had `key` set produces an all-null column after
+    # the pivot, which polars types as Null. marimo's data_editor frontend doesn't
+    # recognize that dtype and logs "Unsupported dtype: Unknown" once per cell
+    # while applying edits -- noisy, and that log write itself can crash on
+    # Windows. Filling with a concrete default keeps every column's dtype
+    # well-defined before the frame reaches the editor widget.
+    fillValue = "0.00" if doNumFormat else 0.0
+    indexCol = "year" if transpose else "tech"
+    msFrame = msFrame.with_columns([
+        pl.col(c).fill_null(fillValue) for c in msFrame.columns if c != indexCol
+    ])
+
+    def _on_change(df):
+        try:
+            set_marketShareTotal_calibration_withDataFrame(model, nodeName, df, key, transpose = transpose)
+            print(f"OK -- saved {nodeName}")
+        except Exception as e:
+            print(f"ERROR -- {nodeName} NOT saved: {type(e).__name__}: {e}")
+
     return(
-        mo.ui.data_editor(msFrame).form(on_change = lambda df: set_marketShareTotal_calibration_withDataFrame(model, nodeName, df, key, transpose = transpose))
+        mo.ui.data_editor(msFrame).form(on_change = _on_change)
     )
 
 
