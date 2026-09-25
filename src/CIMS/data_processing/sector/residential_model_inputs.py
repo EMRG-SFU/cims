@@ -36,6 +36,13 @@ Heating market shares  (market_share_total, year 2000)
     in every vintage × bldg-code context.  For BC only, the same is done
     for Heating (Marine).
 
+Space-heating intensity  (service_request rows, all years)
+    Replaces the fixed-data Reference / Retrofit service_request rows from
+    each Vintage "<bin> Bldg Code" node to its Heating node(s) with the CEUD
+    intensity from residential_heating_intensity.py (GJ of heat per m2),
+    averaged over HEATING_INTENSITY_YEARS.  Retrofit techs and BC's
+    Cold/Marine split keep their fixed-data ratios to Reference.
+
 Cooling shares  (service_request rows, all years)
     Inserted after the inheritance row of each density's Cooling service.
 
@@ -63,6 +70,8 @@ import CIMS.data_processing.source.nrcan.ceud.residential.residential as _reside
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
+import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heating_mod
+
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
@@ -85,6 +94,18 @@ OUTPUT_COLS = [
 REGION_SPECIFIC_ENERGIES: set[str] = {
     'Electricity', 'Biodiesel',
     'Ethanol', 'Hydrogen',
+}
+
+# Space-heating intensity (Vintage Bldg Code -> Heating service_request).
+# CIMS vintage-weights technology service_request, so the pre-2001 vintages
+# (base stock only, never any new stock) always use their base-year value and
+# later bins average over their stock vintages -- year-by-year values can't
+# reach the model. A single historical mean is used instead.
+HEATING_INTENSITY_YEARS: tuple[int, int] = (DATA_START, _heating_mod.LAST_HIST_YEAR)
+HEATING_SERVICES: tuple[str, ...] = ('Heating (Cold)', 'Heating (Marine)')
+DENSITY_TO_INTENSITY_VARIABLE: dict[str, str] = {
+    'High Density':   'heating_intensity_high',
+    'LowMed Density': 'heating_intensity_lowmed',
 }
 
 # Pipeline building-type category → CIMS Building Type technology name
@@ -569,8 +590,88 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
     return pl.DataFrame(rows) if rows else _empty_frame()
 
 
+def _heating_intensity_means(heating, region: str) -> dict[tuple[str, str], float]:
+    """{(density, vintage bin): mean GJ/m2 over HEATING_INTENSITY_YEARS} for one region."""
+    lo, hi = HEATING_INTENSITY_YEARS
+    data = heating[
+        (heating['Region'] == region) &
+        heating['Variable'].isin(DENSITY_TO_INTENSITY_VARIABLE.values()) &
+        heating['Year'].between(lo, hi)
+    ]
+    var_to_density = {v: d for d, v in DENSITY_TO_INTENSITY_VARIABLE.items()}
+    return {
+        (var_to_density[var], cat): float(g['Value'].mean())
+        for (var, cat), g in data.groupby(['Variable', 'Category'])
+    }
+
+
+def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
+                                   region: str) -> tuple[pl.DataFrame, list[int]]:
+    """
+    Reference / Retrofit service_request rows (all years) from each Vintage
+    "<bin> Bldg Code" node to its Heating node(s), from CEUD intensity.
+
+    Each fixed-data (technology, target) row keeps its ratio to the node's
+    total Reference request -- Retrofit Average / Deep stay at their JCIMS
+    fraction of Reference, and BC's Heating (Cold) / (Marine) targets keep
+    their climate split -- and is rescaled to the CEUD mean intensity.
+
+    Returns the new rows (placed at the replaced rows' positions) and the
+    _order values of the fixed rows they replace. Bldg Code nodes with no
+    CEUD intensity keep their fixed-data rows.
+    """
+    means = _heating_intensity_means(heating, region)
+    lo, hi = HEATING_INTENSITY_YEARS
+    sr = fixed.filter(
+        (pl.col('Parameter') == 'service_request') &
+        pl.col('Service').str.ends_with(' Bldg Code') &
+        pl.any_horizontal([pl.col('Target').str.ends_with(f'.{s}') for s in HEATING_SERVICES])
+    )
+
+    rows: list[dict] = []
+    replaced: list[int] = []
+    for (branch,), g in sr.group_by('Branch', maintain_order=True):
+        parts = branch.split('.')
+        density, vintage_bin = parts[-3], parts[-1].removesuffix(' Bldg Code')
+        if (density, vintage_bin) not in means:
+            print(f'  No CEUD heating intensity for {density} {vintage_bin}; keeping fixed data')
+            continue
+        intensity = means[(density, vintage_bin)]
+
+        g = g.with_columns(pl.col('Value').cast(pl.Float64, strict=False).alias('_v'))
+        mean_v = {
+            (t, tgt): float(sub['_v'].mean())
+            for (t, tgt), sub in g.group_by(['Technology', 'Target'], maintain_order=True)
+        }
+        ref_total = sum(v for (t, _), v in mean_v.items() if t == 'Reference')
+        if not ref_total:
+            print(f'  No Reference heating request at {branch}; keeping fixed data')
+            continue
+
+        for (tech, target), v in mean_v.items():
+            first = g.filter((pl.col('Technology') == tech) & (pl.col('Target') == target))
+            order = float(first['_order'].min())
+            value = str(intensity * v / ref_total)
+            for i, year in enumerate(range(DATA_START, PROJECTION_END + 1)):
+                rows.append({
+                    'Branch': branch, 'Type': 'Service', 'Region': region,
+                    'Sector': 'Residential', 'Service': first['Service'][0],
+                    'Technology': tech,
+                    'Parameter': 'service_request',
+                    'Context': '', 'Sub_Context': '',
+                    'Target': target,
+                    'Source': f'CEUD mean {lo}-{hi}',
+                    'Unit': first['Unit'][0],
+                    'Year': str(year), 'Value': value,
+                    '_order': order + i * 1e-6,
+                })
+        replaced.extend(g['_order'].to_list())
+
+    return (pl.DataFrame(rows) if rows else _empty_frame()), replaced
+
+
 def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
-                      multipliers: pl.DataFrame, region: str) -> pl.DataFrame:
+                      multipliers: pl.DataFrame, heating, region: str) -> pl.DataFrame:
     """
     Build the complete model-inputs DataFrame for one region by interleaving
     fixed structural data with pipeline-derived rows at the correct positions.
@@ -647,11 +748,15 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
         residential, fixed, region, 'wh_tech_high', 'High Density'
     )
 
+    # 10. Space-heating intensity: Vintage Bldg Code -> Heating service_request
+    heat_sr, replaced = _build_heating_intensity_rows(heating, fixed, region)
+    fixed = fixed.filter(~pl.col('_order').is_in(replaced))
+
     all_frames = [
         fixed.cast({'_order': pl.Float64}),
         housing, prices, appliances, bt_rows, vb_rows,
         heat_cold_high, heat_cold_lm, heat_mar_high, heat_mar_lm,
-        cool_high, cool_lm, wh_split, wh_mst_lm, wh_mst_high,
+        cool_high, cool_lm, wh_split, wh_mst_lm, wh_mst_high, heat_sr,
     ]
 
     combined = pl.concat(
@@ -682,6 +787,7 @@ def main() -> dict[str, pl.DataFrame]:
         )
     )
     multipliers = pl.from_pandas(_energy_price_mod.main())
+    heating = _heating_mod.main(export_csv=False)
     print(
         f'  Residential data: {len(residential):,} rows, '
         f'regions: {sorted(residential["province"].unique().to_list())}'
@@ -705,7 +811,7 @@ def main() -> dict[str, pl.DataFrame]:
             fixed = _read_flattened_fixed(region)
 
             print('  Assembling...')
-            output = _assemble_region(fixed, residential, multipliers, region)
+            output = _assemble_region(fixed, residential, multipliers, heating, region)
             output = collapse_constant_years(output)
 
             out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'
