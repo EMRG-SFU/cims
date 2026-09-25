@@ -1,0 +1,2876 @@
+key,year,value
+sh_by_fuel|Electricity,2000,3.9486810000000006
+sh_by_fuel|Electricity,2001,4.035577
+sh_by_fuel|Electricity,2002,4.642871000000007
+sh_by_fuel|Electricity,2003,4.531380000000002
+sh_by_fuel|Electricity,2004,4.789090000000002
+sh_by_fuel|Electricity,2005,4.770671
+sh_by_fuel|Electricity,2006,5.461461999999997
+sh_by_fuel|Electricity,2007,6.2306399999999975
+sh_by_fuel|Electricity,2008,6.706875
+sh_by_fuel|Electricity,2009,7.6272879999999965
+sh_by_fuel|Electricity,2010,7.274772999999996
+sh_by_fuel|Electricity,2011,7.820509999999999
+sh_by_fuel|Electricity,2012,8.118752
+sh_by_fuel|Electricity,2013,9.035416999999999
+sh_by_fuel|Electricity,2014,10.111194999999999
+sh_by_fuel|Electricity,2015,9.635780000000004
+sh_by_fuel|Electricity,2016,9.986870000000003
+sh_by_fuel|Electricity,2017,10.694707999999991
+sh_by_fuel|Electricity,2018,11.878993000000001
+sh_by_fuel|Electricity,2019,13.211088000000004
+sh_by_fuel|Electricity,2020,13.306759999999997
+sh_by_fuel|Natural Gas,2000,120.72279099999999
+sh_by_fuel|Natural Gas,2001,101.54070800000002
+sh_by_fuel|Natural Gas,2002,117.23983199999999
+sh_by_fuel|Natural Gas,2003,119.19722399999999
+sh_by_fuel|Natural Gas,2004,117.383694
+sh_by_fuel|Natural Gas,2005,104.92457399999999
+sh_by_fuel|Natural Gas,2006,106.796472
+sh_by_fuel|Natural Gas,2007,128.572246
+sh_by_fuel|Natural Gas,2008,125.87492600000002
+sh_by_fuel|Natural Gas,2009,125.09202
+sh_by_fuel|Natural Gas,2010,115.99391699999997
+sh_by_fuel|Natural Gas,2011,123.27693399999998
+sh_by_fuel|Natural Gas,2012,121.79908700000001
+sh_by_fuel|Natural Gas,2013,124.57520899999999
+sh_by_fuel|Natural Gas,2014,125.31463500000002
+sh_by_fuel|Natural Gas,2015,117.83214699999999
+sh_by_fuel|Natural Gas,2016,99.05398699999998
+sh_by_fuel|Natural Gas,2017,121.59714400000001
+sh_by_fuel|Natural Gas,2018,130.820222
+sh_by_fuel|Natural Gas,2019,130.393805
+sh_by_fuel|Natural Gas,2020,124.782856
+sh_by_fuel|Heating Oil,2000,0.240986
+sh_by_fuel|Heating Oil,2001,0.07301999999999999
+sh_by_fuel|Heating Oil,2002,0.084482
+sh_by_fuel|Heating Oil,2003,0.04285
+sh_by_fuel|Heating Oil,2004,0.040724
+sh_by_fuel|Heating Oil,2005,0.066101
+sh_by_fuel|Heating Oil,2006,0.04757999999999999
+sh_by_fuel|Heating Oil,2007,0.040501999999999996
+sh_by_fuel|Heating Oil,2008,0.057980000000000004
+sh_by_fuel|Heating Oil,2009,0.071986
+sh_by_fuel|Heating Oil,2010,0.06410700000000001
+sh_by_fuel|Heating Oil,2011,0.07369499999999998
+sh_by_fuel|Heating Oil,2012,0.0273
+sh_by_fuel|Heating Oil,2013,0.037702
+sh_by_fuel|Heating Oil,2014,0.027157
+sh_by_fuel|Heating Oil,2015,0.020466
+sh_by_fuel|Heating Oil,2016,0.004095
+sh_by_fuel|Heating Oil,2017,0.002625
+sh_by_fuel|Heating Oil,2018,0.003333
+sh_by_fuel|Heating Oil,2019,0.021418
+sh_by_fuel|Heating Oil,2020,0.01248
+sh_by_fuel|Other,2000,1.410599
+sh_by_fuel|Other,2001,2.0094869999999996
+sh_by_fuel|Other,2002,1.7594580000000002
+sh_by_fuel|Other,2003,1.580181
+sh_by_fuel|Other,2004,1.331703
+sh_by_fuel|Other,2005,0.9550879999999999
+sh_by_fuel|Other,2006,0.9731790000000001
+sh_by_fuel|Other,2007,1.097177
+sh_by_fuel|Other,2008,1.2006109999999999
+sh_by_fuel|Other,2009,1.1376519999999999
+sh_by_fuel|Other,2010,1.381443
+sh_by_fuel|Other,2011,1.661942
+sh_by_fuel|Other,2012,2.0253129999999997
+sh_by_fuel|Other,2013,1.8134139999999999
+sh_by_fuel|Other,2014,1.675526
+sh_by_fuel|Other,2015,1.5142499999999999
+sh_by_fuel|Other,2016,1.320973
+sh_by_fuel|Other,2017,1.3151759999999997
+sh_by_fuel|Other,2018,1.672602
+sh_by_fuel|Other,2019,1.66784
+sh_by_fuel|Other,2020,1.555567
+sh_by_fuel|Wood,2000,2.957788
+sh_by_fuel|Wood,2001,2.131497
+sh_by_fuel|Wood,2002,1.780319
+sh_by_fuel|Wood,2003,1.1191689999999999
+sh_by_fuel|Wood,2004,1.36716
+sh_by_fuel|Wood,2005,1.5153509999999997
+sh_by_fuel|Wood,2006,1.6773299999999998
+sh_by_fuel|Wood,2007,2.022958
+sh_by_fuel|Wood,2008,1.918935
+sh_by_fuel|Wood,2009,1.913056
+sh_by_fuel|Wood,2010,1.62994
+sh_by_fuel|Wood,2011,1.55999
+sh_by_fuel|Wood,2012,1.3863130000000001
+sh_by_fuel|Wood,2013,1.221559
+sh_by_fuel|Wood,2014,1.141221
+sh_by_fuel|Wood,2015,0.865666
+sh_by_fuel|Wood,2016,2.33306
+sh_by_fuel|Wood,2017,4.081296
+sh_by_fuel|Wood,2018,3.2567850000000003
+sh_by_fuel|Wood,2019,2.207996
+sh_by_fuel|Wood,2020,2.099815
+energy_by_type|Single Detached,2000,145.288466
+energy_by_type|Single Detached,2001,130.21379
+energy_by_type|Single Detached,2002,143.964615
+energy_by_type|Single Detached,2003,144.839575
+energy_by_type|Single Detached,2004,144.200211
+energy_by_type|Single Detached,2005,134.098433
+energy_by_type|Single Detached,2006,136.545292
+energy_by_type|Single Detached,2007,159.432745
+energy_by_type|Single Detached,2008,156.99736
+energy_by_type|Single Detached,2009,155.128335
+energy_by_type|Single Detached,2010,147.831352
+energy_by_type|Single Detached,2011,156.084139
+energy_by_type|Single Detached,2012,155.240287
+energy_by_type|Single Detached,2013,156.831687
+energy_by_type|Single Detached,2014,156.93806
+energy_by_type|Single Detached,2015,151.497546
+energy_by_type|Single Detached,2016,132.736824
+energy_by_type|Single Detached,2017,156.842963
+energy_by_type|Single Detached,2018,162.981836
+energy_by_type|Single Detached,2019,162.951913
+energy_by_type|Single Detached,2020,160.830333
+energy_by_type|Single Attached,2000,14.469755
+energy_by_type|Single Attached,2001,13.429027
+energy_by_type|Single Attached,2002,14.632898
+energy_by_type|Single Attached,2003,14.839139
+energy_by_type|Single Attached,2004,14.910403
+energy_by_type|Single Attached,2005,14.135463
+energy_by_type|Single Attached,2006,14.304553
+energy_by_type|Single Attached,2007,16.482878
+energy_by_type|Single Attached,2008,16.49141
+energy_by_type|Single Attached,2009,16.403221
+energy_by_type|Single Attached,2010,15.974995
+energy_by_type|Single Attached,2011,17.00306
+energy_by_type|Single Attached,2012,17.024301
+energy_by_type|Single Attached,2013,17.213387
+energy_by_type|Single Attached,2014,17.294662
+energy_by_type|Single Attached,2015,17.178081
+energy_by_type|Single Attached,2016,15.313125
+energy_by_type|Single Attached,2017,18.043689
+energy_by_type|Single Attached,2018,18.680999
+energy_by_type|Single Attached,2019,18.932282
+energy_by_type|Single Attached,2020,19.087782
+energy_by_type|Apartments,2000,22.528946
+energy_by_type|Apartments,2001,20.67978
+energy_by_type|Apartments,2002,22.560413
+energy_by_type|Apartments,2003,22.843849
+energy_by_type|Apartments,2004,22.850617
+energy_by_type|Apartments,2005,21.456964
+energy_by_type|Apartments,2006,21.584606
+energy_by_type|Apartments,2007,24.794319
+energy_by_type|Apartments,2008,24.502594
+energy_by_type|Apartments,2009,24.249155
+energy_by_type|Apartments,2010,23.307812
+energy_by_type|Apartments,2011,24.532313
+energy_by_type|Apartments,2012,24.384725
+energy_by_type|Apartments,2013,24.524357
+energy_by_type|Apartments,2014,24.499168
+energy_by_type|Apartments,2015,24.031959
+energy_by_type|Apartments,2016,21.396417
+energy_by_type|Apartments,2017,25.233733
+energy_by_type|Apartments,2018,26.048571
+energy_by_type|Apartments,2019,26.304219
+energy_by_type|Apartments,2020,26.358066
+energy_by_type|Mobile Homes,2000,9.000119
+energy_by_type|Mobile Homes,2001,7.906605
+energy_by_type|Mobile Homes,2002,8.5956
+energy_by_type|Mobile Homes,2003,8.467437
+energy_by_type|Mobile Homes,2004,8.50773
+energy_by_type|Mobile Homes,2005,7.996297
+energy_by_type|Mobile Homes,2006,8.197333
+energy_by_type|Mobile Homes,2007,9.630173
+energy_by_type|Mobile Homes,2008,9.384739
+energy_by_type|Mobile Homes,2009,9.197529
+energy_by_type|Mobile Homes,2010,8.639708
+energy_by_type|Mobile Homes,2011,9.008488
+energy_by_type|Mobile Homes,2012,8.856687
+energy_by_type|Mobile Homes,2013,8.860985
+energy_by_type|Mobile Homes,2014,8.826445
+energy_by_type|Mobile Homes,2015,8.491414
+energy_by_type|Mobile Homes,2016,7.861227
+energy_by_type|Mobile Homes,2017,9.679143
+energy_by_type|Mobile Homes,2018,9.807953
+energy_by_type|Mobile Homes,2019,9.531374
+energy_by_type|Mobile Homes,2020,9.389287
+floor_total|Single Detached,2000,101.548
+floor_total|Single Detached,2001,104.225
+floor_total|Single Detached,2002,107.402
+floor_total|Single Detached,2003,110.726
+floor_total|Single Detached,2004,113.888
+floor_total|Single Detached,2005,117.42
+floor_total|Single Detached,2006,121.368
+floor_total|Single Detached,2007,125.729
+floor_total|Single Detached,2008,129.089
+floor_total|Single Detached,2009,131.259
+floor_total|Single Detached,2010,134.002
+floor_total|Single Detached,2011,136.465
+floor_total|Single Detached,2012,140.333
+floor_total|Single Detached,2013,144.629
+floor_total|Single Detached,2014,148.991
+floor_total|Single Detached,2015,153.442
+floor_total|Single Detached,2016,155.498
+floor_total|Single Detached,2017,157.487
+floor_total|Single Detached,2018,159.616
+floor_total|Single Detached,2019,161.372
+floor_total|Single Detached,2020,163.091
+floor_total|Single Attached,2000,14.515
+floor_total|Single Attached,2001,14.98
+floor_total|Single Attached,2002,15.568
+floor_total|Single Attached,2003,16.212
+floor_total|Single Attached,2004,16.929
+floor_total|Single Attached,2005,17.617
+floor_total|Single Attached,2006,18.366
+floor_total|Single Attached,2007,19.251
+floor_total|Single Attached,2008,20.203
+floor_total|Single Attached,2009,20.861
+floor_total|Single Attached,2010,21.594
+floor_total|Single Attached,2011,22.353
+floor_total|Single Attached,2012,23.228
+floor_total|Single Attached,2013,24.344
+floor_total|Single Attached,2014,25.558
+floor_total|Single Attached,2015,27.027
+floor_total|Single Attached,2016,28.252
+floor_total|Single Attached,2017,29.276
+floor_total|Single Attached,2018,30.373
+floor_total|Single Attached,2019,31.472
+floor_total|Single Attached,2020,32.47
+floor_total|Apartments,2000,20.627
+floor_total|Apartments,2001,21.383
+floor_total|Apartments,2002,22.072
+floor_total|Apartments,2003,22.962
+floor_total|Apartments,2004,23.861
+floor_total|Apartments,2005,24.653
+floor_total|Apartments,2006,25.579
+floor_total|Apartments,2007,26.371
+floor_total|Apartments,2008,27.566
+floor_total|Apartments,2009,28.649
+floor_total|Apartments,2010,29.417
+floor_total|Apartments,2011,29.963
+floor_total|Apartments,2012,30.628
+floor_total|Apartments,2013,31.595
+floor_total|Apartments,2014,32.74
+floor_total|Apartments,2015,34.243
+floor_total|Apartments,2016,36.116
+floor_total|Apartments,2017,37.196
+floor_total|Apartments,2018,37.894
+floor_total|Apartments,2019,39.09
+floor_total|Apartments,2020,40.297
+floor_total|Mobile Homes,2000,4.382
+floor_total|Mobile Homes,2001,4.469
+floor_total|Mobile Homes,2002,4.584
+floor_total|Mobile Homes,2003,4.713
+floor_total|Mobile Homes,2004,4.835
+floor_total|Mobile Homes,2005,4.972
+floor_total|Mobile Homes,2006,5.125
+floor_total|Mobile Homes,2007,5.294
+floor_total|Mobile Homes,2008,5.425
+floor_total|Mobile Homes,2009,5.509
+floor_total|Mobile Homes,2010,5.614
+floor_total|Mobile Homes,2011,5.709
+floor_total|Mobile Homes,2012,5.813
+floor_total|Mobile Homes,2013,5.932
+floor_total|Mobile Homes,2014,6.052
+floor_total|Mobile Homes,2015,6.173
+floor_total|Mobile Homes,2016,6.253
+floor_total|Mobile Homes,2017,6.33
+floor_total|Mobile Homes,2018,6.413
+floor_total|Mobile Homes,2019,6.481
+floor_total|Mobile Homes,2020,6.547
+stock|Single Detached|Heating Oil – Normal Efficiency,2000,3.561
+stock|Single Detached|Heating Oil – Normal Efficiency,2001,3.12
+stock|Single Detached|Heating Oil – Normal Efficiency,2002,2.639
+stock|Single Detached|Heating Oil – Normal Efficiency,2003,2.166
+stock|Single Detached|Heating Oil – Normal Efficiency,2004,1.707
+stock|Single Detached|Heating Oil – Normal Efficiency,2005,1.275
+stock|Single Detached|Heating Oil – Normal Efficiency,2006,0.867
+stock|Single Detached|Heating Oil – Normal Efficiency,2007,0.469
+stock|Single Detached|Heating Oil – Normal Efficiency,2008,0.024
+stock|Single Detached|Heating Oil – Normal Efficiency,2009,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2010,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2011,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2012,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2013,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2014,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2015,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2016,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2017,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2018,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2019,0
+stock|Single Detached|Heating Oil – Normal Efficiency,2020,0
+stock|Single Detached|Heating Oil – Medium Efficiency,2000,1.296
+stock|Single Detached|Heating Oil – Medium Efficiency,2001,1.676
+stock|Single Detached|Heating Oil – Medium Efficiency,2002,2.118
+stock|Single Detached|Heating Oil – Medium Efficiency,2003,2.564
+stock|Single Detached|Heating Oil – Medium Efficiency,2004,2.898
+stock|Single Detached|Heating Oil – Medium Efficiency,2005,3.121
+stock|Single Detached|Heating Oil – Medium Efficiency,2006,3.248
+stock|Single Detached|Heating Oil – Medium Efficiency,2007,3.293
+stock|Single Detached|Heating Oil – Medium Efficiency,2008,3.278
+stock|Single Detached|Heating Oil – Medium Efficiency,2009,3.241
+stock|Single Detached|Heating Oil – Medium Efficiency,2010,3.186
+stock|Single Detached|Heating Oil – Medium Efficiency,2011,3.112
+stock|Single Detached|Heating Oil – Medium Efficiency,2012,3.02
+stock|Single Detached|Heating Oil – Medium Efficiency,2013,2.913
+stock|Single Detached|Heating Oil – Medium Efficiency,2014,2.796
+stock|Single Detached|Heating Oil – Medium Efficiency,2015,2.658
+stock|Single Detached|Heating Oil – Medium Efficiency,2016,2.52
+stock|Single Detached|Heating Oil – Medium Efficiency,2017,2.4
+stock|Single Detached|Heating Oil – Medium Efficiency,2018,2.305
+stock|Single Detached|Heating Oil – Medium Efficiency,2019,2.224
+stock|Single Detached|Heating Oil – Medium Efficiency,2020,2.151
+stock|Single Detached|Heating Oil – High Efficiency,2000,0
+stock|Single Detached|Heating Oil – High Efficiency,2001,0
+stock|Single Detached|Heating Oil – High Efficiency,2002,0
+stock|Single Detached|Heating Oil – High Efficiency,2003,0
+stock|Single Detached|Heating Oil – High Efficiency,2004,0
+stock|Single Detached|Heating Oil – High Efficiency,2005,0
+stock|Single Detached|Heating Oil – High Efficiency,2006,0
+stock|Single Detached|Heating Oil – High Efficiency,2007,0
+stock|Single Detached|Heating Oil – High Efficiency,2008,0
+stock|Single Detached|Heating Oil – High Efficiency,2009,0
+stock|Single Detached|Heating Oil – High Efficiency,2010,0
+stock|Single Detached|Heating Oil – High Efficiency,2011,0
+stock|Single Detached|Heating Oil – High Efficiency,2012,0
+stock|Single Detached|Heating Oil – High Efficiency,2013,0
+stock|Single Detached|Heating Oil – High Efficiency,2014,0
+stock|Single Detached|Heating Oil – High Efficiency,2015,0
+stock|Single Detached|Heating Oil – High Efficiency,2016,0
+stock|Single Detached|Heating Oil – High Efficiency,2017,0
+stock|Single Detached|Heating Oil – High Efficiency,2018,0
+stock|Single Detached|Heating Oil – High Efficiency,2019,0
+stock|Single Detached|Heating Oil – High Efficiency,2020,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2000,328.21
+stock|Single Detached|Natural Gas – Normal Efficiency,2001,304.498
+stock|Single Detached|Natural Gas – Normal Efficiency,2002,278.936
+stock|Single Detached|Natural Gas – Normal Efficiency,2003,254.8
+stock|Single Detached|Natural Gas – Normal Efficiency,2004,221.762
+stock|Single Detached|Natural Gas – Normal Efficiency,2005,191.901
+stock|Single Detached|Natural Gas – Normal Efficiency,2006,163.011
+stock|Single Detached|Natural Gas – Normal Efficiency,2007,135.951
+stock|Single Detached|Natural Gas – Normal Efficiency,2008,112.137
+stock|Single Detached|Natural Gas – Normal Efficiency,2009,88.805
+stock|Single Detached|Natural Gas – Normal Efficiency,2010,70.42
+stock|Single Detached|Natural Gas – Normal Efficiency,2011,51.687
+stock|Single Detached|Natural Gas – Normal Efficiency,2012,33.93
+stock|Single Detached|Natural Gas – Normal Efficiency,2013,18.07
+stock|Single Detached|Natural Gas – Normal Efficiency,2014,4.496
+stock|Single Detached|Natural Gas – Normal Efficiency,2015,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2016,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2017,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2018,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2019,0
+stock|Single Detached|Natural Gas – Normal Efficiency,2020,0
+stock|Single Detached|Natural Gas – Medium Efficiency,2000,320.536
+stock|Single Detached|Natural Gas – Medium Efficiency,2001,348.523
+stock|Single Detached|Natural Gas – Medium Efficiency,2002,380.142
+stock|Single Detached|Natural Gas – Medium Efficiency,2003,408.45
+stock|Single Detached|Natural Gas – Medium Efficiency,2004,440.586
+stock|Single Detached|Natural Gas – Medium Efficiency,2005,470.677
+stock|Single Detached|Natural Gas – Medium Efficiency,2006,498.873
+stock|Single Detached|Natural Gas – Medium Efficiency,2007,523.6
+stock|Single Detached|Natural Gas – Medium Efficiency,2008,535.374
+stock|Single Detached|Natural Gas – Medium Efficiency,2009,542.202
+stock|Single Detached|Natural Gas – Medium Efficiency,2010,537.974
+stock|Single Detached|Natural Gas – Medium Efficiency,2011,532.381
+stock|Single Detached|Natural Gas – Medium Efficiency,2012,525.254
+stock|Single Detached|Natural Gas – Medium Efficiency,2013,516.202
+stock|Single Detached|Natural Gas – Medium Efficiency,2014,504.561
+stock|Single Detached|Natural Gas – Medium Efficiency,2015,486.8
+stock|Single Detached|Natural Gas – Medium Efficiency,2016,464.751
+stock|Single Detached|Natural Gas – Medium Efficiency,2017,441.163
+stock|Single Detached|Natural Gas – Medium Efficiency,2018,416.806
+stock|Single Detached|Natural Gas – Medium Efficiency,2019,391.046
+stock|Single Detached|Natural Gas – Medium Efficiency,2020,364.968
+stock|Single Detached|Natural Gas – High Efficiency,2000,37.475
+stock|Single Detached|Natural Gas – High Efficiency,2001,46.801
+stock|Single Detached|Natural Gas – High Efficiency,2002,58.803
+stock|Single Detached|Natural Gas – High Efficiency,2003,71.005
+stock|Single Detached|Natural Gas – High Efficiency,2004,86.716
+stock|Single Detached|Natural Gas – High Efficiency,2005,103.485
+stock|Single Detached|Natural Gas – High Efficiency,2006,121.499
+stock|Single Detached|Natural Gas – High Efficiency,2007,143.167
+stock|Single Detached|Natural Gas – High Efficiency,2008,169.005
+stock|Single Detached|Natural Gas – High Efficiency,2009,189.944
+stock|Single Detached|Natural Gas – High Efficiency,2010,222.084
+stock|Single Detached|Natural Gas – High Efficiency,2011,252.772
+stock|Single Detached|Natural Gas – High Efficiency,2012,283.498
+stock|Single Detached|Natural Gas – High Efficiency,2013,315.539
+stock|Single Detached|Natural Gas – High Efficiency,2014,347.354
+stock|Single Detached|Natural Gas – High Efficiency,2015,376.555
+stock|Single Detached|Natural Gas – High Efficiency,2016,400.678
+stock|Single Detached|Natural Gas – High Efficiency,2017,424.908
+stock|Single Detached|Natural Gas – High Efficiency,2018,454.667
+stock|Single Detached|Natural Gas – High Efficiency,2019,483.727
+stock|Single Detached|Natural Gas – High Efficiency,2020,512.418
+stock|Single Detached|Electric,2000,11.402
+stock|Single Detached|Electric,2001,13.143
+stock|Single Detached|Electric,2002,13.787
+stock|Single Detached|Electric,2003,17.057
+stock|Single Detached|Electric,2004,20.923
+stock|Single Detached|Electric,2005,25.082
+stock|Single Detached|Electric,2006,30.057
+stock|Single Detached|Electric,2007,35.652
+stock|Single Detached|Electric,2008,41.001
+stock|Single Detached|Electric,2009,47.963
+stock|Single Detached|Electric,2010,53.471
+stock|Single Detached|Electric,2011,59.369
+stock|Single Detached|Electric,2012,65.864
+stock|Single Detached|Electric,2013,73.172
+stock|Single Detached|Electric,2014,81.223
+stock|Single Detached|Electric,2015,89.513
+stock|Single Detached|Electric,2016,97.753
+stock|Single Detached|Electric,2017,106.831
+stock|Single Detached|Electric,2018,111.643
+stock|Single Detached|Electric,2019,116.54
+stock|Single Detached|Electric,2020,121.845
+stock|Single Detached|Heat Pump,2000,13.494
+stock|Single Detached|Heat Pump,2001,14.472
+stock|Single Detached|Heat Pump,2002,15.472
+stock|Single Detached|Heat Pump,2003,16.525
+stock|Single Detached|Heat Pump,2004,17.588
+stock|Single Detached|Heat Pump,2005,18.823
+stock|Single Detached|Heat Pump,2006,20.036
+stock|Single Detached|Heat Pump,2007,21.351
+stock|Single Detached|Heat Pump,2008,22.554
+stock|Single Detached|Heat Pump,2009,23.673
+stock|Single Detached|Heat Pump,2010,24.815
+stock|Single Detached|Heat Pump,2011,25.906
+stock|Single Detached|Heat Pump,2012,27.021
+stock|Single Detached|Heat Pump,2013,28.322
+stock|Single Detached|Heat Pump,2014,29.558
+stock|Single Detached|Heat Pump,2015,30.632
+stock|Single Detached|Heat Pump,2016,31.466
+stock|Single Detached|Heat Pump,2017,32.459
+stock|Single Detached|Heat Pump,2018,33.482
+stock|Single Detached|Heat Pump,2019,34.459
+stock|Single Detached|Heat Pump,2020,35.482
+stock|Single Detached|Other1,2000,10.633999999999999
+stock|Single Detached|Other1,2001,10.636999999999999
+stock|Single Detached|Other1,2002,10.673
+stock|Single Detached|Other1,2003,10.729000000000001
+stock|Single Detached|Other1,2004,10.761
+stock|Single Detached|Other1,2005,10.776
+stock|Single Detached|Other1,2006,10.781
+stock|Single Detached|Other1,2007,10.769
+stock|Single Detached|Other1,2008,10.665999999999999
+stock|Single Detached|Other1,2009,10.456
+stock|Single Detached|Other1,2010,10.238999999999999
+stock|Single Detached|Other1,2011,9.99
+stock|Single Detached|Other1,2012,9.744
+stock|Single Detached|Other1,2013,9.522
+stock|Single Detached|Other1,2014,9.301
+stock|Single Detached|Other1,2015,9.022
+stock|Single Detached|Other1,2016,8.674999999999999
+stock|Single Detached|Other1,2017,8.350999999999999
+stock|Single Detached|Other1,2018,8.237
+stock|Single Detached|Other1,2019,8.108
+stock|Single Detached|Other1,2020,7.989
+stock|Single Detached|Wood,2000,0.518
+stock|Single Detached|Wood,2001,0.453
+stock|Single Detached|Wood,2002,0.395
+stock|Single Detached|Wood,2003,0.342
+stock|Single Detached|Wood,2004,0.273
+stock|Single Detached|Wood,2005,0.19
+stock|Single Detached|Wood,2006,0.094
+stock|Single Detached|Wood,2007,0
+stock|Single Detached|Wood,2008,0
+stock|Single Detached|Wood,2009,0
+stock|Single Detached|Wood,2010,0
+stock|Single Detached|Wood,2011,0
+stock|Single Detached|Wood,2012,0
+stock|Single Detached|Wood,2013,0
+stock|Single Detached|Wood,2014,0
+stock|Single Detached|Wood,2015,0
+stock|Single Detached|Wood,2016,0
+stock|Single Detached|Wood,2017,0
+stock|Single Detached|Wood,2018,0
+stock|Single Detached|Wood,2019,0
+stock|Single Detached|Wood,2020,0
+stock|Single Detached|Wood/Electric,2000,0.937
+stock|Single Detached|Wood/Electric,2001,0.97
+stock|Single Detached|Wood/Electric,2002,1.002
+stock|Single Detached|Wood/Electric,2003,1.035
+stock|Single Detached|Wood/Electric,2004,1.068
+stock|Single Detached|Wood/Electric,2005,1.1
+stock|Single Detached|Wood/Electric,2006,1.133
+stock|Single Detached|Wood/Electric,2007,1.165
+stock|Single Detached|Wood/Electric,2008,1.198
+stock|Single Detached|Wood/Electric,2009,1.229
+stock|Single Detached|Wood/Electric,2010,1.261
+stock|Single Detached|Wood/Electric,2011,1.293
+stock|Single Detached|Wood/Electric,2012,1.324
+stock|Single Detached|Wood/Electric,2013,1.356
+stock|Single Detached|Wood/Electric,2014,1.388
+stock|Single Detached|Wood/Electric,2015,1.411
+stock|Single Detached|Wood/Electric,2016,1.43
+stock|Single Detached|Wood/Electric,2017,1.451
+stock|Single Detached|Wood/Electric,2018,1.477
+stock|Single Detached|Wood/Electric,2019,1.503
+stock|Single Detached|Wood/Electric,2020,1.53
+stock|Single Detached|Wood/Heating Oil,2000,3.142
+stock|Single Detached|Wood/Heating Oil,2001,3.251
+stock|Single Detached|Wood/Heating Oil,2002,3.359
+stock|Single Detached|Wood/Heating Oil,2003,3.468
+stock|Single Detached|Wood/Heating Oil,2004,3.576
+stock|Single Detached|Wood/Heating Oil,2005,3.685
+stock|Single Detached|Wood/Heating Oil,2006,3.793
+stock|Single Detached|Wood/Heating Oil,2007,3.901
+stock|Single Detached|Wood/Heating Oil,2008,4.009
+stock|Single Detached|Wood/Heating Oil,2009,4.115
+stock|Single Detached|Wood/Heating Oil,2010,4.22
+stock|Single Detached|Wood/Heating Oil,2011,4.325
+stock|Single Detached|Wood/Heating Oil,2012,4.43
+stock|Single Detached|Wood/Heating Oil,2013,4.536
+stock|Single Detached|Wood/Heating Oil,2014,4.643
+stock|Single Detached|Wood/Heating Oil,2015,4.719
+stock|Single Detached|Wood/Heating Oil,2016,4.78
+stock|Single Detached|Wood/Heating Oil,2017,4.851
+stock|Single Detached|Wood/Heating Oil,2018,4.936
+stock|Single Detached|Wood/Heating Oil,2019,5.022
+stock|Single Detached|Wood/Heating Oil,2020,5.114
+stock|Single Detached|Natural Gas/Electric,2000,2.134
+stock|Single Detached|Natural Gas/Electric,2001,2.242
+stock|Single Detached|Natural Gas/Electric,2002,2.35
+stock|Single Detached|Natural Gas/Electric,2003,2.458
+stock|Single Detached|Natural Gas/Electric,2004,2.566
+stock|Single Detached|Natural Gas/Electric,2005,2.674
+stock|Single Detached|Natural Gas/Electric,2006,2.782
+stock|Single Detached|Natural Gas/Electric,2007,2.89
+stock|Single Detached|Natural Gas/Electric,2008,2.998
+stock|Single Detached|Natural Gas/Electric,2009,3.103
+stock|Single Detached|Natural Gas/Electric,2010,3.209
+stock|Single Detached|Natural Gas/Electric,2011,3.314
+stock|Single Detached|Natural Gas/Electric,2012,3.42
+stock|Single Detached|Natural Gas/Electric,2013,3.526
+stock|Single Detached|Natural Gas/Electric,2014,3.632
+stock|Single Detached|Natural Gas/Electric,2015,3.715
+stock|Single Detached|Natural Gas/Electric,2016,3.786
+stock|Single Detached|Natural Gas/Electric,2017,3.864
+stock|Single Detached|Natural Gas/Electric,2018,3.952
+stock|Single Detached|Natural Gas/Electric,2019,4.042
+stock|Single Detached|Natural Gas/Electric,2020,4.136
+stock|Single Detached|Heating Oil/Electric,2000,0.055
+stock|Single Detached|Heating Oil/Electric,2001,0.058
+stock|Single Detached|Heating Oil/Electric,2002,0.061
+stock|Single Detached|Heating Oil/Electric,2003,0.065
+stock|Single Detached|Heating Oil/Electric,2004,0.068
+stock|Single Detached|Heating Oil/Electric,2005,0.072
+stock|Single Detached|Heating Oil/Electric,2006,0.075
+stock|Single Detached|Heating Oil/Electric,2007,0.078
+stock|Single Detached|Heating Oil/Electric,2008,0.082
+stock|Single Detached|Heating Oil/Electric,2009,0.085
+stock|Single Detached|Heating Oil/Electric,2010,0.088
+stock|Single Detached|Heating Oil/Electric,2011,0.091
+stock|Single Detached|Heating Oil/Electric,2012,0.095
+stock|Single Detached|Heating Oil/Electric,2013,0.098
+stock|Single Detached|Heating Oil/Electric,2014,0.101
+stock|Single Detached|Heating Oil/Electric,2015,0.104
+stock|Single Detached|Heating Oil/Electric,2016,0.106
+stock|Single Detached|Heating Oil/Electric,2017,0.109
+stock|Single Detached|Heating Oil/Electric,2018,0.112
+stock|Single Detached|Heating Oil/Electric,2019,0.114
+stock|Single Detached|Heating Oil/Electric,2020,0.117
+stock|Single Attached|Heating Oil – Normal Efficiency,2000,0.868
+stock|Single Attached|Heating Oil – Normal Efficiency,2001,0.76
+stock|Single Attached|Heating Oil – Normal Efficiency,2002,0.658
+stock|Single Attached|Heating Oil – Normal Efficiency,2003,0.564
+stock|Single Attached|Heating Oil – Normal Efficiency,2004,0.482
+stock|Single Attached|Heating Oil – Normal Efficiency,2005,0.415
+stock|Single Attached|Heating Oil – Normal Efficiency,2006,0.358
+stock|Single Attached|Heating Oil – Normal Efficiency,2007,0.306
+stock|Single Attached|Heating Oil – Normal Efficiency,2008,0.248
+stock|Single Attached|Heating Oil – Normal Efficiency,2009,0.166
+stock|Single Attached|Heating Oil – Normal Efficiency,2010,0.073
+stock|Single Attached|Heating Oil – Normal Efficiency,2011,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2012,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2013,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2014,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2015,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2016,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2017,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2018,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2019,0
+stock|Single Attached|Heating Oil – Normal Efficiency,2020,0
+stock|Single Attached|Heating Oil – Medium Efficiency,2000,0.346
+stock|Single Attached|Heating Oil – Medium Efficiency,2001,0.458
+stock|Single Attached|Heating Oil – Medium Efficiency,2002,0.571
+stock|Single Attached|Heating Oil – Medium Efficiency,2003,0.68
+stock|Single Attached|Heating Oil – Medium Efficiency,2004,0.764
+stock|Single Attached|Heating Oil – Medium Efficiency,2005,0.812
+stock|Single Attached|Heating Oil – Medium Efficiency,2006,0.833
+stock|Single Attached|Heating Oil – Medium Efficiency,2007,0.839
+stock|Single Attached|Heating Oil – Medium Efficiency,2008,0.838
+stock|Single Attached|Heating Oil – Medium Efficiency,2009,0.836
+stock|Single Attached|Heating Oil – Medium Efficiency,2010,0.831
+stock|Single Attached|Heating Oil – Medium Efficiency,2011,0.823
+stock|Single Attached|Heating Oil – Medium Efficiency,2012,0.811
+stock|Single Attached|Heating Oil – Medium Efficiency,2013,0.796
+stock|Single Attached|Heating Oil – Medium Efficiency,2014,0.778
+stock|Single Attached|Heating Oil – Medium Efficiency,2015,0.757
+stock|Single Attached|Heating Oil – Medium Efficiency,2016,0.737
+stock|Single Attached|Heating Oil – Medium Efficiency,2017,0.716
+stock|Single Attached|Heating Oil – Medium Efficiency,2018,0.697
+stock|Single Attached|Heating Oil – Medium Efficiency,2019,0.676
+stock|Single Attached|Heating Oil – Medium Efficiency,2020,0.652
+stock|Single Attached|Heating Oil – High Efficiency,2000,0
+stock|Single Attached|Heating Oil – High Efficiency,2001,0
+stock|Single Attached|Heating Oil – High Efficiency,2002,0
+stock|Single Attached|Heating Oil – High Efficiency,2003,0
+stock|Single Attached|Heating Oil – High Efficiency,2004,0
+stock|Single Attached|Heating Oil – High Efficiency,2005,0
+stock|Single Attached|Heating Oil – High Efficiency,2006,0
+stock|Single Attached|Heating Oil – High Efficiency,2007,0
+stock|Single Attached|Heating Oil – High Efficiency,2008,0
+stock|Single Attached|Heating Oil – High Efficiency,2009,0
+stock|Single Attached|Heating Oil – High Efficiency,2010,0
+stock|Single Attached|Heating Oil – High Efficiency,2011,0
+stock|Single Attached|Heating Oil – High Efficiency,2012,0
+stock|Single Attached|Heating Oil – High Efficiency,2013,0
+stock|Single Attached|Heating Oil – High Efficiency,2014,0
+stock|Single Attached|Heating Oil – High Efficiency,2015,0
+stock|Single Attached|Heating Oil – High Efficiency,2016,0
+stock|Single Attached|Heating Oil – High Efficiency,2017,0
+stock|Single Attached|Heating Oil – High Efficiency,2018,0
+stock|Single Attached|Heating Oil – High Efficiency,2019,0
+stock|Single Attached|Heating Oil – High Efficiency,2020,0
+stock|Single Attached|Natural Gas – Normal Efficiency,2000,62.911
+stock|Single Attached|Natural Gas – Normal Efficiency,2001,58.526
+stock|Single Attached|Natural Gas – Normal Efficiency,2002,53.683
+stock|Single Attached|Natural Gas – Normal Efficiency,2003,48.987
+stock|Single Attached|Natural Gas – Normal Efficiency,2004,42.825
+stock|Single Attached|Natural Gas – Normal Efficiency,2005,37.26
+stock|Single Attached|Natural Gas – Normal Efficiency,2006,32.033
+stock|Single Attached|Natural Gas – Normal Efficiency,2007,27.339
+stock|Single Attached|Natural Gas – Normal Efficiency,2008,23.322
+stock|Single Attached|Natural Gas – Normal Efficiency,2009,19.473
+stock|Single Attached|Natural Gas – Normal Efficiency,2010,16.49
+stock|Single Attached|Natural Gas – Normal Efficiency,2011,13.448
+stock|Single Attached|Natural Gas – Normal Efficiency,2012,10.532
+stock|Single Attached|Natural Gas – Normal Efficiency,2013,7.931
+stock|Single Attached|Natural Gas – Normal Efficiency,2014,5.632
+stock|Single Attached|Natural Gas – Normal Efficiency,2015,3.764
+stock|Single Attached|Natural Gas – Normal Efficiency,2016,2.216
+stock|Single Attached|Natural Gas – Normal Efficiency,2017,0.901
+stock|Single Attached|Natural Gas – Normal Efficiency,2018,0.091
+stock|Single Attached|Natural Gas – Normal Efficiency,2019,0
+stock|Single Attached|Natural Gas – Normal Efficiency,2020,0
+stock|Single Attached|Natural Gas – Medium Efficiency,2000,58.138
+stock|Single Attached|Natural Gas – Medium Efficiency,2001,63.723
+stock|Single Attached|Natural Gas – Medium Efficiency,2002,70.269
+stock|Single Attached|Natural Gas – Medium Efficiency,2003,76.439
+stock|Single Attached|Natural Gas – Medium Efficiency,2004,83.668
+stock|Single Attached|Natural Gas – Medium Efficiency,2005,90.059
+stock|Single Attached|Natural Gas – Medium Efficiency,2006,95.905
+stock|Single Attached|Natural Gas – Medium Efficiency,2007,101.24
+stock|Single Attached|Natural Gas – Medium Efficiency,2008,104.524
+stock|Single Attached|Natural Gas – Medium Efficiency,2009,106.632
+stock|Single Attached|Natural Gas – Medium Efficiency,2010,106.199
+stock|Single Attached|Natural Gas – Medium Efficiency,2011,105.468
+stock|Single Attached|Natural Gas – Medium Efficiency,2012,104.387
+stock|Single Attached|Natural Gas – Medium Efficiency,2013,102.945
+stock|Single Attached|Natural Gas – Medium Efficiency,2014,100.995
+stock|Single Attached|Natural Gas – Medium Efficiency,2015,98.5
+stock|Single Attached|Natural Gas – Medium Efficiency,2016,95.331
+stock|Single Attached|Natural Gas – Medium Efficiency,2017,91.564
+stock|Single Attached|Natural Gas – Medium Efficiency,2018,87.364
+stock|Single Attached|Natural Gas – Medium Efficiency,2019,82.636
+stock|Single Attached|Natural Gas – Medium Efficiency,2020,77.781
+stock|Single Attached|Natural Gas – High Efficiency,2000,6.957
+stock|Single Attached|Natural Gas – High Efficiency,2001,8.818
+stock|Single Attached|Natural Gas – High Efficiency,2002,11.302
+stock|Single Attached|Natural Gas – High Efficiency,2003,13.952
+stock|Single Attached|Natural Gas – High Efficiency,2004,17.459
+stock|Single Attached|Natural Gas – High Efficiency,2005,20.967
+stock|Single Attached|Natural Gas – High Efficiency,2006,24.611
+stock|Single Attached|Natural Gas – High Efficiency,2007,29.1
+stock|Single Attached|Natural Gas – High Efficiency,2008,35.395
+stock|Single Attached|Natural Gas – High Efficiency,2009,40.315
+stock|Single Attached|Natural Gas – High Efficiency,2010,47.764
+stock|Single Attached|Natural Gas – High Efficiency,2011,55.226
+stock|Single Attached|Natural Gas – High Efficiency,2012,63.422
+stock|Single Attached|Natural Gas – High Efficiency,2013,72.999
+stock|Single Attached|Natural Gas – High Efficiency,2014,83.159
+stock|Single Attached|Natural Gas – High Efficiency,2015,94.741
+stock|Single Attached|Natural Gas – High Efficiency,2016,104.503
+stock|Single Attached|Natural Gas – High Efficiency,2017,113.212
+stock|Single Attached|Natural Gas – High Efficiency,2018,123.229
+stock|Single Attached|Natural Gas – High Efficiency,2019,133.033
+stock|Single Attached|Natural Gas – High Efficiency,2020,142.215
+stock|Single Attached|Electric,2000,2.298
+stock|Single Attached|Electric,2001,2.637
+stock|Single Attached|Electric,2002,2.782
+stock|Single Attached|Electric,2003,3.422
+stock|Single Attached|Electric,2004,4.203
+stock|Single Attached|Electric,2005,5.032
+stock|Single Attached|Electric,2006,6.021
+stock|Single Attached|Electric,2007,7.159
+stock|Single Attached|Electric,2008,8.34
+stock|Single Attached|Electric,2009,9.84
+stock|Single Attached|Electric,2010,11.071
+stock|Single Attached|Electric,2011,12.425
+stock|Single Attached|Electric,2012,13.978
+stock|Single Attached|Electric,2013,15.83
+stock|Single Attached|Electric,2014,17.948
+stock|Single Attached|Electric,2015,20.465
+stock|Single Attached|Electric,2016,23.055
+stock|Single Attached|Electric,2017,25.78
+stock|Single Attached|Electric,2018,27.527
+stock|Single Attached|Electric,2019,29.322
+stock|Single Attached|Electric,2020,31.172
+stock|Single Attached|Heat Pump,2000,0.471
+stock|Single Attached|Heat Pump,2001,0.511
+stock|Single Attached|Heat Pump,2002,0.555
+stock|Single Attached|Heat Pump,2003,0.604
+stock|Single Attached|Heat Pump,2004,0.641
+stock|Single Attached|Heat Pump,2005,0.695
+stock|Single Attached|Heat Pump,2006,0.751
+stock|Single Attached|Heat Pump,2007,0.797
+stock|Single Attached|Heat Pump,2008,0.864
+stock|Single Attached|Heat Pump,2009,0.923
+stock|Single Attached|Heat Pump,2010,0.968
+stock|Single Attached|Heat Pump,2011,1.032
+stock|Single Attached|Heat Pump,2012,1.102
+stock|Single Attached|Heat Pump,2013,1.164
+stock|Single Attached|Heat Pump,2014,1.252
+stock|Single Attached|Heat Pump,2015,1.354
+stock|Single Attached|Heat Pump,2016,1.424
+stock|Single Attached|Heat Pump,2017,1.51
+stock|Single Attached|Heat Pump,2018,1.603
+stock|Single Attached|Heat Pump,2019,1.694
+stock|Single Attached|Heat Pump,2020,1.759
+stock|Single Attached|Other1,2000,1.9500000000000002
+stock|Single Attached|Other1,2001,1.958
+stock|Single Attached|Other1,2002,1.975
+stock|Single Attached|Other1,2003,1.998
+stock|Single Attached|Other1,2004,2.027
+stock|Single Attached|Other1,2005,2.043
+stock|Single Attached|Other1,2006,2.055
+stock|Single Attached|Other1,2007,2.069
+stock|Single Attached|Other1,2008,2.084
+stock|Single Attached|Other1,2009,2.0700000000000003
+stock|Single Attached|Other1,2010,2.05
+stock|Single Attached|Other1,2011,2.026
+stock|Single Attached|Other1,2012,2.008
+stock|Single Attached|Other1,2013,2.004
+stock|Single Attached|Other1,2014,2.003
+stock|Single Attached|Other1,2015,2.0140000000000002
+stock|Single Attached|Other1,2016,2
+stock|Single Attached|Other1,2017,1.9729999999999999
+stock|Single Attached|Other1,2018,1.9889999999999999
+stock|Single Attached|Other1,2019,1.9989999999999999
+stock|Single Attached|Other1,2020,2.003
+stock|Single Attached|Wood,2000,0.444
+stock|Single Attached|Wood,2001,0.446
+stock|Single Attached|Wood,2002,0.45
+stock|Single Attached|Wood,2003,0.455
+stock|Single Attached|Wood,2004,0.46
+stock|Single Attached|Wood,2005,0.46
+stock|Single Attached|Wood,2006,0.456
+stock|Single Attached|Wood,2007,0.452
+stock|Single Attached|Wood,2008,0.445
+stock|Single Attached|Wood,2009,0.43
+stock|Single Attached|Wood,2010,0.413
+stock|Single Attached|Wood,2011,0.395
+stock|Single Attached|Wood,2012,0.378
+stock|Single Attached|Wood,2013,0.365
+stock|Single Attached|Wood,2014,0.353
+stock|Single Attached|Wood,2015,0.343
+stock|Single Attached|Wood,2016,0.329
+stock|Single Attached|Wood,2017,0.313
+stock|Single Attached|Wood,2018,0.31
+stock|Single Attached|Wood,2019,0.306
+stock|Single Attached|Wood,2020,0.301
+stock|Single Attached|Wood/Electric,2000,0
+stock|Single Attached|Wood/Electric,2001,0
+stock|Single Attached|Wood/Electric,2002,0
+stock|Single Attached|Wood/Electric,2003,0
+stock|Single Attached|Wood/Electric,2004,0
+stock|Single Attached|Wood/Electric,2005,0
+stock|Single Attached|Wood/Electric,2006,0
+stock|Single Attached|Wood/Electric,2007,0
+stock|Single Attached|Wood/Electric,2008,0
+stock|Single Attached|Wood/Electric,2009,0
+stock|Single Attached|Wood/Electric,2010,0
+stock|Single Attached|Wood/Electric,2011,0
+stock|Single Attached|Wood/Electric,2012,0
+stock|Single Attached|Wood/Electric,2013,0
+stock|Single Attached|Wood/Electric,2014,0
+stock|Single Attached|Wood/Electric,2015,0
+stock|Single Attached|Wood/Electric,2016,0
+stock|Single Attached|Wood/Electric,2017,0
+stock|Single Attached|Wood/Electric,2018,0
+stock|Single Attached|Wood/Electric,2019,0
+stock|Single Attached|Wood/Electric,2020,0
+stock|Single Attached|Wood/Heating Oil,2000,0
+stock|Single Attached|Wood/Heating Oil,2001,0
+stock|Single Attached|Wood/Heating Oil,2002,0
+stock|Single Attached|Wood/Heating Oil,2003,0
+stock|Single Attached|Wood/Heating Oil,2004,0
+stock|Single Attached|Wood/Heating Oil,2005,0
+stock|Single Attached|Wood/Heating Oil,2006,0
+stock|Single Attached|Wood/Heating Oil,2007,0
+stock|Single Attached|Wood/Heating Oil,2008,0
+stock|Single Attached|Wood/Heating Oil,2009,0
+stock|Single Attached|Wood/Heating Oil,2010,0
+stock|Single Attached|Wood/Heating Oil,2011,0
+stock|Single Attached|Wood/Heating Oil,2012,0
+stock|Single Attached|Wood/Heating Oil,2013,0
+stock|Single Attached|Wood/Heating Oil,2014,0
+stock|Single Attached|Wood/Heating Oil,2015,0
+stock|Single Attached|Wood/Heating Oil,2016,0
+stock|Single Attached|Wood/Heating Oil,2017,0
+stock|Single Attached|Wood/Heating Oil,2018,0
+stock|Single Attached|Wood/Heating Oil,2019,0
+stock|Single Attached|Wood/Heating Oil,2020,0
+stock|Single Attached|Natural Gas/Electric,2000,0.14
+stock|Single Attached|Natural Gas/Electric,2001,0.147
+stock|Single Attached|Natural Gas/Electric,2002,0.154
+stock|Single Attached|Natural Gas/Electric,2003,0.16
+stock|Single Attached|Natural Gas/Electric,2004,0.167
+stock|Single Attached|Natural Gas/Electric,2005,0.174
+stock|Single Attached|Natural Gas/Electric,2006,0.181
+stock|Single Attached|Natural Gas/Electric,2007,0.187
+stock|Single Attached|Natural Gas/Electric,2008,0.194
+stock|Single Attached|Natural Gas/Electric,2009,0.201
+stock|Single Attached|Natural Gas/Electric,2010,0.207
+stock|Single Attached|Natural Gas/Electric,2011,0.214
+stock|Single Attached|Natural Gas/Electric,2012,0.221
+stock|Single Attached|Natural Gas/Electric,2013,0.228
+stock|Single Attached|Natural Gas/Electric,2014,0.234
+stock|Single Attached|Natural Gas/Electric,2015,0.241
+stock|Single Attached|Natural Gas/Electric,2016,0.248
+stock|Single Attached|Natural Gas/Electric,2017,0.254
+stock|Single Attached|Natural Gas/Electric,2018,0.261
+stock|Single Attached|Natural Gas/Electric,2019,0.267
+stock|Single Attached|Natural Gas/Electric,2020,0.273
+stock|Single Attached|Heating Oil/Electric,2000,0
+stock|Single Attached|Heating Oil/Electric,2001,0
+stock|Single Attached|Heating Oil/Electric,2002,0
+stock|Single Attached|Heating Oil/Electric,2003,0
+stock|Single Attached|Heating Oil/Electric,2004,0
+stock|Single Attached|Heating Oil/Electric,2005,0
+stock|Single Attached|Heating Oil/Electric,2006,0
+stock|Single Attached|Heating Oil/Electric,2007,0
+stock|Single Attached|Heating Oil/Electric,2008,0
+stock|Single Attached|Heating Oil/Electric,2009,0
+stock|Single Attached|Heating Oil/Electric,2010,0
+stock|Single Attached|Heating Oil/Electric,2011,0
+stock|Single Attached|Heating Oil/Electric,2012,0
+stock|Single Attached|Heating Oil/Electric,2013,0
+stock|Single Attached|Heating Oil/Electric,2014,0
+stock|Single Attached|Heating Oil/Electric,2015,0
+stock|Single Attached|Heating Oil/Electric,2016,0
+stock|Single Attached|Heating Oil/Electric,2017,0
+stock|Single Attached|Heating Oil/Electric,2018,0
+stock|Single Attached|Heating Oil/Electric,2019,0
+stock|Single Attached|Heating Oil/Electric,2020,0
+stock|Apartments|Heating Oil – Normal Efficiency,2000,1.859
+stock|Apartments|Heating Oil – Normal Efficiency,2001,1.738
+stock|Apartments|Heating Oil – Normal Efficiency,2002,1.568
+stock|Apartments|Heating Oil – Normal Efficiency,2003,1.398
+stock|Apartments|Heating Oil – Normal Efficiency,2004,1.233
+stock|Apartments|Heating Oil – Normal Efficiency,2005,1.078
+stock|Apartments|Heating Oil – Normal Efficiency,2006,0.934
+stock|Apartments|Heating Oil – Normal Efficiency,2007,0.797
+stock|Apartments|Heating Oil – Normal Efficiency,2008,0.678
+stock|Apartments|Heating Oil – Normal Efficiency,2009,0.545
+stock|Apartments|Heating Oil – Normal Efficiency,2010,0.376
+stock|Apartments|Heating Oil – Normal Efficiency,2011,0.219
+stock|Apartments|Heating Oil – Normal Efficiency,2012,0.09
+stock|Apartments|Heating Oil – Normal Efficiency,2013,0
+stock|Apartments|Heating Oil – Normal Efficiency,2014,0
+stock|Apartments|Heating Oil – Normal Efficiency,2015,0
+stock|Apartments|Heating Oil – Normal Efficiency,2016,0
+stock|Apartments|Heating Oil – Normal Efficiency,2017,0
+stock|Apartments|Heating Oil – Normal Efficiency,2018,0
+stock|Apartments|Heating Oil – Normal Efficiency,2019,0
+stock|Apartments|Heating Oil – Normal Efficiency,2020,0
+stock|Apartments|Heating Oil – Medium Efficiency,2000,0.335
+stock|Apartments|Heating Oil – Medium Efficiency,2001,0.464
+stock|Apartments|Heating Oil – Medium Efficiency,2002,0.636
+stock|Apartments|Heating Oil – Medium Efficiency,2003,0.823
+stock|Apartments|Heating Oil – Medium Efficiency,2004,0.977
+stock|Apartments|Heating Oil – Medium Efficiency,2005,1.078
+stock|Apartments|Heating Oil – Medium Efficiency,2006,1.146
+stock|Apartments|Heating Oil – Medium Efficiency,2007,1.171
+stock|Apartments|Heating Oil – Medium Efficiency,2008,1.178
+stock|Apartments|Heating Oil – Medium Efficiency,2009,1.172
+stock|Apartments|Heating Oil – Medium Efficiency,2010,1.16
+stock|Apartments|Heating Oil – Medium Efficiency,2011,1.143
+stock|Apartments|Heating Oil – Medium Efficiency,2012,1.122
+stock|Apartments|Heating Oil – Medium Efficiency,2013,1.095
+stock|Apartments|Heating Oil – Medium Efficiency,2014,1.064
+stock|Apartments|Heating Oil – Medium Efficiency,2015,1.031
+stock|Apartments|Heating Oil – Medium Efficiency,2016,0.998
+stock|Apartments|Heating Oil – Medium Efficiency,2017,0.963
+stock|Apartments|Heating Oil – Medium Efficiency,2018,0.933
+stock|Apartments|Heating Oil – Medium Efficiency,2019,0.91
+stock|Apartments|Heating Oil – Medium Efficiency,2020,0.888
+stock|Apartments|Heating Oil – High Efficiency,2000,0
+stock|Apartments|Heating Oil – High Efficiency,2001,0
+stock|Apartments|Heating Oil – High Efficiency,2002,0
+stock|Apartments|Heating Oil – High Efficiency,2003,0
+stock|Apartments|Heating Oil – High Efficiency,2004,0
+stock|Apartments|Heating Oil – High Efficiency,2005,0
+stock|Apartments|Heating Oil – High Efficiency,2006,0
+stock|Apartments|Heating Oil – High Efficiency,2007,0
+stock|Apartments|Heating Oil – High Efficiency,2008,0
+stock|Apartments|Heating Oil – High Efficiency,2009,0
+stock|Apartments|Heating Oil – High Efficiency,2010,0
+stock|Apartments|Heating Oil – High Efficiency,2011,0
+stock|Apartments|Heating Oil – High Efficiency,2012,0
+stock|Apartments|Heating Oil – High Efficiency,2013,0
+stock|Apartments|Heating Oil – High Efficiency,2014,0
+stock|Apartments|Heating Oil – High Efficiency,2015,0
+stock|Apartments|Heating Oil – High Efficiency,2016,0
+stock|Apartments|Heating Oil – High Efficiency,2017,0
+stock|Apartments|Heating Oil – High Efficiency,2018,0
+stock|Apartments|Heating Oil – High Efficiency,2019,0
+stock|Apartments|Heating Oil – High Efficiency,2020,0
+stock|Apartments|Natural Gas – Normal Efficiency,2000,126.237
+stock|Apartments|Natural Gas – Normal Efficiency,2001,117.174
+stock|Apartments|Natural Gas – Normal Efficiency,2002,107.059
+stock|Apartments|Natural Gas – Normal Efficiency,2003,96.884
+stock|Apartments|Natural Gas – Normal Efficiency,2004,83.705
+stock|Apartments|Natural Gas – Normal Efficiency,2005,71.155
+stock|Apartments|Natural Gas – Normal Efficiency,2006,58.903
+stock|Apartments|Natural Gas – Normal Efficiency,2007,47.493
+stock|Apartments|Natural Gas – Normal Efficiency,2008,37.817
+stock|Apartments|Natural Gas – Normal Efficiency,2009,29.343
+stock|Apartments|Natural Gas – Normal Efficiency,2010,22.688
+stock|Apartments|Natural Gas – Normal Efficiency,2011,16.69
+stock|Apartments|Natural Gas – Normal Efficiency,2012,11.762
+stock|Apartments|Natural Gas – Normal Efficiency,2013,7.884
+stock|Apartments|Natural Gas – Normal Efficiency,2014,4.686
+stock|Apartments|Natural Gas – Normal Efficiency,2015,2.293
+stock|Apartments|Natural Gas – Normal Efficiency,2016,0.247
+stock|Apartments|Natural Gas – Normal Efficiency,2017,0
+stock|Apartments|Natural Gas – Normal Efficiency,2018,0
+stock|Apartments|Natural Gas – Normal Efficiency,2019,0
+stock|Apartments|Natural Gas – Normal Efficiency,2020,0
+stock|Apartments|Natural Gas – Medium Efficiency,2000,92.422
+stock|Apartments|Natural Gas – Medium Efficiency,2001,103.445
+stock|Apartments|Natural Gas – Medium Efficiency,2002,114.708
+stock|Apartments|Natural Gas – Medium Efficiency,2003,126.274
+stock|Apartments|Natural Gas – Medium Efficiency,2004,139.351
+stock|Apartments|Natural Gas – Medium Efficiency,2005,150.841
+stock|Apartments|Natural Gas – Medium Efficiency,2006,161.856
+stock|Apartments|Natural Gas – Medium Efficiency,2007,170.405
+stock|Apartments|Natural Gas – Medium Efficiency,2008,176.346
+stock|Apartments|Natural Gas – Medium Efficiency,2009,180.902
+stock|Apartments|Natural Gas – Medium Efficiency,2010,180.181
+stock|Apartments|Natural Gas – Medium Efficiency,2011,179.016
+stock|Apartments|Natural Gas – Medium Efficiency,2012,177.39
+stock|Apartments|Natural Gas – Medium Efficiency,2013,175.127
+stock|Apartments|Natural Gas – Medium Efficiency,2014,171.95
+stock|Apartments|Natural Gas – Medium Efficiency,2015,167.816
+stock|Apartments|Natural Gas – Medium Efficiency,2016,162.685
+stock|Apartments|Natural Gas – Medium Efficiency,2017,155.679
+stock|Apartments|Natural Gas – Medium Efficiency,2018,148.234
+stock|Apartments|Natural Gas – Medium Efficiency,2019,140.83
+stock|Apartments|Natural Gas – Medium Efficiency,2020,133.272
+stock|Apartments|Natural Gas – High Efficiency,2000,10.91
+stock|Apartments|Natural Gas – High Efficiency,2001,14.583
+stock|Apartments|Natural Gas – High Efficiency,2002,18.861
+stock|Apartments|Natural Gas – High Efficiency,2003,23.853
+stock|Apartments|Natural Gas – High Efficiency,2004,30.248
+stock|Apartments|Natural Gas – High Efficiency,2005,36.642
+stock|Apartments|Natural Gas – High Efficiency,2006,43.614
+stock|Apartments|Natural Gas – High Efficiency,2007,51.015
+stock|Apartments|Natural Gas – High Efficiency,2008,62.601
+stock|Apartments|Natural Gas – High Efficiency,2009,72.788
+stock|Apartments|Natural Gas – High Efficiency,2010,84.475
+stock|Apartments|Natural Gas – High Efficiency,2011,93.681
+stock|Apartments|Natural Gas – High Efficiency,2012,103.049
+stock|Apartments|Natural Gas – High Efficiency,2013,113.978
+stock|Apartments|Natural Gas – High Efficiency,2014,126.096
+stock|Apartments|Natural Gas – High Efficiency,2015,140.652
+stock|Apartments|Natural Gas – High Efficiency,2016,157.365
+stock|Apartments|Natural Gas – High Efficiency,2017,168.646
+stock|Apartments|Natural Gas – High Efficiency,2018,179.112
+stock|Apartments|Natural Gas – High Efficiency,2019,192.617
+stock|Apartments|Natural Gas – High Efficiency,2020,206.155
+stock|Apartments|Electric,2000,4.145
+stock|Apartments|Electric,2001,4.762
+stock|Apartments|Electric,2002,4.982
+stock|Apartments|Electric,2003,6.109
+stock|Apartments|Electric,2004,7.452
+stock|Apartments|Electric,2005,8.847
+stock|Apartments|Electric,2006,10.519
+stock|Apartments|Electric,2007,12.31
+stock|Apartments|Electric,2008,14.258
+stock|Apartments|Electric,2009,16.875
+stock|Apartments|Electric,2010,18.822
+stock|Apartments|Electric,2011,20.827
+stock|Apartments|Electric,2012,23.104
+stock|Apartments|Electric,2013,25.797
+stock|Apartments|Electric,2014,28.886
+stock|Apartments|Electric,2015,32.57
+stock|Apartments|Electric,2016,36.87
+stock|Apartments|Electric,2017,40.771
+stock|Apartments|Electric,2018,42.709
+stock|Apartments|Electric,2019,45.319
+stock|Apartments|Electric,2020,48.098
+stock|Apartments|Heat Pump,2000,0.997
+stock|Apartments|Heat Pump,2001,1.048
+stock|Apartments|Heat Pump,2002,1.098
+stock|Apartments|Heat Pump,2003,1.131
+stock|Apartments|Heat Pump,2004,1.192
+stock|Apartments|Heat Pump,2005,1.25
+stock|Apartments|Heat Pump,2006,1.312
+stock|Apartments|Heat Pump,2007,1.37
+stock|Apartments|Heat Pump,2008,1.446
+stock|Apartments|Heat Pump,2009,1.52
+stock|Apartments|Heat Pump,2010,1.581
+stock|Apartments|Heat Pump,2011,1.601
+stock|Apartments|Heat Pump,2012,1.658
+stock|Apartments|Heat Pump,2013,1.729
+stock|Apartments|Heat Pump,2014,1.809
+stock|Apartments|Heat Pump,2015,1.907
+stock|Apartments|Heat Pump,2016,2.019
+stock|Apartments|Heat Pump,2017,2.089
+stock|Apartments|Heat Pump,2018,2.146
+stock|Apartments|Heat Pump,2019,2.193
+stock|Apartments|Heat Pump,2020,2.28
+stock|Apartments|Other1,2000,3.525
+stock|Apartments|Other1,2001,3.54
+stock|Apartments|Other1,2002,3.541
+stock|Apartments|Other1,2003,3.5700000000000003
+stock|Apartments|Other1,2004,3.596
+stock|Apartments|Other1,2005,3.593
+stock|Apartments|Other1,2006,3.59
+stock|Apartments|Other1,2007,3.557
+stock|Apartments|Other1,2008,3.562
+stock|Apartments|Other1,2009,3.549
+stock|Apartments|Other1,2010,3.485
+stock|Apartments|Other1,2011,3.395
+stock|Apartments|Other1,2012,3.318
+stock|Apartments|Other1,2013,3.264
+stock|Apartments|Other1,2014,3.2220000000000004
+stock|Apartments|Other1,2015,3.203
+stock|Apartments|Other1,2016,3.1980000000000004
+stock|Apartments|Other1,2017,3.1189999999999998
+stock|Apartments|Other1,2018,3.0839999999999996
+stock|Apartments|Other1,2019,3.088
+stock|Apartments|Other1,2020,3.089
+stock|Apartments|Wood,2000,0.803
+stock|Apartments|Wood,2001,0.807
+stock|Apartments|Wood,2002,0.807
+stock|Apartments|Wood,2003,0.813
+stock|Apartments|Wood,2004,0.816
+stock|Apartments|Wood,2005,0.808
+stock|Apartments|Wood,2006,0.797
+stock|Apartments|Wood,2007,0.777
+stock|Apartments|Wood,2008,0.761
+stock|Apartments|Wood,2009,0.738
+stock|Apartments|Wood,2010,0.701
+stock|Apartments|Wood,2011,0.661
+stock|Apartments|Wood,2012,0.625
+stock|Apartments|Wood,2013,0.595
+stock|Apartments|Wood,2014,0.567
+stock|Apartments|Wood,2015,0.545
+stock|Apartments|Wood,2016,0.526
+stock|Apartments|Wood,2017,0.496
+stock|Apartments|Wood,2018,0.481
+stock|Apartments|Wood,2019,0.473
+stock|Apartments|Wood,2020,0.464
+stock|Apartments|Wood/Electric,2000,0
+stock|Apartments|Wood/Electric,2001,0
+stock|Apartments|Wood/Electric,2002,0
+stock|Apartments|Wood/Electric,2003,0
+stock|Apartments|Wood/Electric,2004,0
+stock|Apartments|Wood/Electric,2005,0
+stock|Apartments|Wood/Electric,2006,0
+stock|Apartments|Wood/Electric,2007,0
+stock|Apartments|Wood/Electric,2008,0
+stock|Apartments|Wood/Electric,2009,0
+stock|Apartments|Wood/Electric,2010,0
+stock|Apartments|Wood/Electric,2011,0
+stock|Apartments|Wood/Electric,2012,0
+stock|Apartments|Wood/Electric,2013,0
+stock|Apartments|Wood/Electric,2014,0
+stock|Apartments|Wood/Electric,2015,0
+stock|Apartments|Wood/Electric,2016,0
+stock|Apartments|Wood/Electric,2017,0
+stock|Apartments|Wood/Electric,2018,0
+stock|Apartments|Wood/Electric,2019,0
+stock|Apartments|Wood/Electric,2020,0
+stock|Apartments|Wood/Heating Oil,2000,0
+stock|Apartments|Wood/Heating Oil,2001,0
+stock|Apartments|Wood/Heating Oil,2002,0
+stock|Apartments|Wood/Heating Oil,2003,0
+stock|Apartments|Wood/Heating Oil,2004,0
+stock|Apartments|Wood/Heating Oil,2005,0
+stock|Apartments|Wood/Heating Oil,2006,0
+stock|Apartments|Wood/Heating Oil,2007,0
+stock|Apartments|Wood/Heating Oil,2008,0
+stock|Apartments|Wood/Heating Oil,2009,0
+stock|Apartments|Wood/Heating Oil,2010,0
+stock|Apartments|Wood/Heating Oil,2011,0
+stock|Apartments|Wood/Heating Oil,2012,0
+stock|Apartments|Wood/Heating Oil,2013,0
+stock|Apartments|Wood/Heating Oil,2014,0
+stock|Apartments|Wood/Heating Oil,2015,0
+stock|Apartments|Wood/Heating Oil,2016,0
+stock|Apartments|Wood/Heating Oil,2017,0
+stock|Apartments|Wood/Heating Oil,2018,0
+stock|Apartments|Wood/Heating Oil,2019,0
+stock|Apartments|Wood/Heating Oil,2020,0
+stock|Apartments|Natural Gas/Electric,2000,1.942
+stock|Apartments|Natural Gas/Electric,2001,2.029
+stock|Apartments|Natural Gas/Electric,2002,2.116
+stock|Apartments|Natural Gas/Electric,2003,2.202
+stock|Apartments|Natural Gas/Electric,2004,2.289
+stock|Apartments|Natural Gas/Electric,2005,2.376
+stock|Apartments|Natural Gas/Electric,2006,2.463
+stock|Apartments|Natural Gas/Electric,2007,2.549
+stock|Apartments|Natural Gas/Electric,2008,2.636
+stock|Apartments|Natural Gas/Electric,2009,2.723
+stock|Apartments|Natural Gas/Electric,2010,2.81
+stock|Apartments|Natural Gas/Electric,2011,2.896
+stock|Apartments|Natural Gas/Electric,2012,2.983
+stock|Apartments|Natural Gas/Electric,2013,3.07
+stock|Apartments|Natural Gas/Electric,2014,3.156
+stock|Apartments|Natural Gas/Electric,2015,3.242
+stock|Apartments|Natural Gas/Electric,2016,3.328
+stock|Apartments|Natural Gas/Electric,2017,3.397
+stock|Apartments|Natural Gas/Electric,2018,3.47
+stock|Apartments|Natural Gas/Electric,2019,3.552
+stock|Apartments|Natural Gas/Electric,2020,3.633
+stock|Apartments|Heating Oil/Electric,2000,0.001
+stock|Apartments|Heating Oil/Electric,2001,0.001
+stock|Apartments|Heating Oil/Electric,2002,0.001
+stock|Apartments|Heating Oil/Electric,2003,0.001
+stock|Apartments|Heating Oil/Electric,2004,0.001
+stock|Apartments|Heating Oil/Electric,2005,0.001
+stock|Apartments|Heating Oil/Electric,2006,0.001
+stock|Apartments|Heating Oil/Electric,2007,0.001
+stock|Apartments|Heating Oil/Electric,2008,0.001
+stock|Apartments|Heating Oil/Electric,2009,0.001
+stock|Apartments|Heating Oil/Electric,2010,0.001
+stock|Apartments|Heating Oil/Electric,2011,0.001
+stock|Apartments|Heating Oil/Electric,2012,0.001
+stock|Apartments|Heating Oil/Electric,2013,0.001
+stock|Apartments|Heating Oil/Electric,2014,0.001
+stock|Apartments|Heating Oil/Electric,2015,0.001
+stock|Apartments|Heating Oil/Electric,2016,0.001
+stock|Apartments|Heating Oil/Electric,2017,0.001
+stock|Apartments|Heating Oil/Electric,2018,0.001
+stock|Apartments|Heating Oil/Electric,2019,0.001
+stock|Apartments|Heating Oil/Electric,2020,0.001
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2000,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2001,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2002,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2003,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2004,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2005,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2006,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2007,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2008,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2009,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2010,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2011,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2012,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2013,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2014,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2015,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2016,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2017,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2018,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2019,0
+stock|Mobile Homes|Heating Oil – Normal Efficiency,2020,0
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2000,0.079
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2001,0.098
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2002,0.124
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2003,0.152
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2004,0.172
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2005,0.186
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2006,0.194
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2007,0.196
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2008,0.195
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2009,0.193
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2010,0.189
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2011,0.184
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2012,0.178
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2013,0.171
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2014,0.162
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2015,0.152
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2016,0.143
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2017,0.135
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2018,0.129
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2019,0.124
+stock|Mobile Homes|Heating Oil – Medium Efficiency,2020,0.12
+stock|Mobile Homes|Heating Oil – High Efficiency,2000,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2001,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2002,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2003,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2004,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2005,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2006,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2007,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2008,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2009,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2010,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2011,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2012,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2013,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2014,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2015,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2016,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2017,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2018,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2019,0
+stock|Mobile Homes|Heating Oil – High Efficiency,2020,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2000,24.103
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2001,22.394
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2002,20.594
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2003,18.886
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2004,16.645
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2005,14.59
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2006,12.566
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2007,10.616
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2008,8.818
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2009,7.012
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2010,5.44
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2011,3.814
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2012,2.226
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2013,0.763
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2014,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2015,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2016,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2017,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2018,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2019,0
+stock|Mobile Homes|Natural Gas – Normal Efficiency,2020,0
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2000,18.132
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2001,20.402
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2002,23.112
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2003,25.705
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2004,28.73
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2005,31.701
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2006,34.65
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2007,37.647
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2008,40.145
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2009,42.109
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2010,44.137
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2011,46.029
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2012,47.843
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2013,49.611
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2014,50.751
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2015,51.207
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2016,51.32
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2017,51.326
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2018,51.587
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2019,51.717
+stock|Mobile Homes|Natural Gas – Medium Efficiency,2020,51.791
+stock|Mobile Homes|Natural Gas – High Efficiency,2000,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2001,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2002,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2003,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2004,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2005,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2006,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2007,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2008,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2009,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2010,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2011,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2012,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2013,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2014,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2015,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2016,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2017,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2018,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2019,0
+stock|Mobile Homes|Natural Gas – High Efficiency,2020,0
+stock|Mobile Homes|Electric,2000,0.685
+stock|Mobile Homes|Electric,2001,0.786
+stock|Mobile Homes|Electric,2002,0.82
+stock|Mobile Homes|Electric,2003,1.017
+stock|Mobile Homes|Electric,2004,1.252
+stock|Mobile Homes|Electric,2005,1.503
+stock|Mobile Homes|Electric,2006,1.804
+stock|Mobile Homes|Electric,2007,2.142
+stock|Mobile Homes|Electric,2008,2.464
+stock|Mobile Homes|Electric,2009,2.887
+stock|Mobile Homes|Electric,2010,3.219
+stock|Mobile Homes|Electric,2011,3.575
+stock|Mobile Homes|Electric,2012,3.966
+stock|Mobile Homes|Electric,2013,4.406
+stock|Mobile Homes|Electric,2014,4.85
+stock|Mobile Homes|Electric,2015,5.292
+stock|Mobile Homes|Electric,2016,5.755
+stock|Mobile Homes|Electric,2017,6.269
+stock|Mobile Homes|Electric,2018,6.53
+stock|Mobile Homes|Electric,2019,6.798
+stock|Mobile Homes|Electric,2020,7.091
+stock|Mobile Homes|Heat Pump,2000,1.845
+stock|Mobile Homes|Heat Pump,2001,1.969
+stock|Mobile Homes|Heat Pump,2002,2.106
+stock|Mobile Homes|Heat Pump,2003,2.259
+stock|Mobile Homes|Heat Pump,2004,2.408
+stock|Mobile Homes|Heat Pump,2005,2.574
+stock|Mobile Homes|Heat Pump,2006,2.749
+stock|Mobile Homes|Heat Pump,2007,2.933
+stock|Mobile Homes|Heat Pump,2008,3.107
+stock|Mobile Homes|Heat Pump,2009,3.251
+stock|Mobile Homes|Heat Pump,2010,3.418
+stock|Mobile Homes|Heat Pump,2011,3.571
+stock|Mobile Homes|Heat Pump,2012,3.733
+stock|Mobile Homes|Heat Pump,2013,3.908
+stock|Mobile Homes|Heat Pump,2014,4.047
+stock|Mobile Homes|Heat Pump,2015,4.161
+stock|Mobile Homes|Heat Pump,2016,4.258
+stock|Mobile Homes|Heat Pump,2017,4.373
+stock|Mobile Homes|Heat Pump,2018,4.507
+stock|Mobile Homes|Heat Pump,2019,4.631
+stock|Mobile Homes|Heat Pump,2020,4.768
+stock|Mobile Homes|Other1,2000,0.667
+stock|Mobile Homes|Other1,2001,0.664
+stock|Mobile Homes|Other1,2002,0.664
+stock|Mobile Homes|Other1,2003,0.666
+stock|Mobile Homes|Other1,2004,0.668
+stock|Mobile Homes|Other1,2005,0.668
+stock|Mobile Homes|Other1,2006,0.667
+stock|Mobile Homes|Other1,2007,0.665
+stock|Mobile Homes|Other1,2008,0.658
+stock|Mobile Homes|Other1,2009,0.645
+stock|Mobile Homes|Other1,2010,0.631
+stock|Mobile Homes|Other1,2011,0.614
+stock|Mobile Homes|Other1,2012,0.599
+stock|Mobile Homes|Other1,2013,0.585
+stock|Mobile Homes|Other1,2014,0.5660000000000001
+stock|Mobile Homes|Other1,2015,0.543
+stock|Mobile Homes|Other1,2016,0.519
+stock|Mobile Homes|Other1,2017,0.498
+stock|Mobile Homes|Other1,2018,0.49
+stock|Mobile Homes|Other1,2019,0.48
+stock|Mobile Homes|Other1,2020,0.47300000000000003
+stock|Mobile Homes|Wood,2000,0
+stock|Mobile Homes|Wood,2001,0
+stock|Mobile Homes|Wood,2002,0
+stock|Mobile Homes|Wood,2003,0
+stock|Mobile Homes|Wood,2004,0
+stock|Mobile Homes|Wood,2005,0
+stock|Mobile Homes|Wood,2006,0
+stock|Mobile Homes|Wood,2007,0
+stock|Mobile Homes|Wood,2008,0
+stock|Mobile Homes|Wood,2009,0
+stock|Mobile Homes|Wood,2010,0
+stock|Mobile Homes|Wood,2011,0
+stock|Mobile Homes|Wood,2012,0
+stock|Mobile Homes|Wood,2013,0
+stock|Mobile Homes|Wood,2014,0
+stock|Mobile Homes|Wood,2015,0
+stock|Mobile Homes|Wood,2016,0
+stock|Mobile Homes|Wood,2017,0
+stock|Mobile Homes|Wood,2018,0
+stock|Mobile Homes|Wood,2019,0
+stock|Mobile Homes|Wood,2020,0
+stock|Mobile Homes|Wood/Electric,2000,0.548
+stock|Mobile Homes|Wood/Electric,2001,0.566
+stock|Mobile Homes|Wood/Electric,2002,0.584
+stock|Mobile Homes|Wood/Electric,2003,0.603
+stock|Mobile Homes|Wood/Electric,2004,0.621
+stock|Mobile Homes|Wood/Electric,2005,0.64
+stock|Mobile Homes|Wood/Electric,2006,0.658
+stock|Mobile Homes|Wood/Electric,2007,0.677
+stock|Mobile Homes|Wood/Electric,2008,0.695
+stock|Mobile Homes|Wood/Electric,2009,0.713
+stock|Mobile Homes|Wood/Electric,2010,0.731
+stock|Mobile Homes|Wood/Electric,2011,0.749
+stock|Mobile Homes|Wood/Electric,2012,0.767
+stock|Mobile Homes|Wood/Electric,2013,0.785
+stock|Mobile Homes|Wood/Electric,2014,0.797
+stock|Mobile Homes|Wood/Electric,2015,0.802
+stock|Mobile Homes|Wood/Electric,2016,0.808
+stock|Mobile Homes|Wood/Electric,2017,0.817
+stock|Mobile Homes|Wood/Electric,2018,0.829
+stock|Mobile Homes|Wood/Electric,2019,0.842
+stock|Mobile Homes|Wood/Electric,2020,0.856
+stock|Mobile Homes|Wood/Heating Oil,2000,1.895
+stock|Mobile Homes|Wood/Heating Oil,2001,1.958
+stock|Mobile Homes|Wood/Heating Oil,2002,2.02
+stock|Mobile Homes|Wood/Heating Oil,2003,2.084
+stock|Mobile Homes|Wood/Heating Oil,2004,2.147
+stock|Mobile Homes|Wood/Heating Oil,2005,2.21
+stock|Mobile Homes|Wood/Heating Oil,2006,2.273
+stock|Mobile Homes|Wood/Heating Oil,2007,2.337
+stock|Mobile Homes|Wood/Heating Oil,2008,2.4
+stock|Mobile Homes|Wood/Heating Oil,2009,2.461
+stock|Mobile Homes|Wood/Heating Oil,2010,2.523
+stock|Mobile Homes|Wood/Heating Oil,2011,2.585
+stock|Mobile Homes|Wood/Heating Oil,2012,2.647
+stock|Mobile Homes|Wood/Heating Oil,2013,2.709
+stock|Mobile Homes|Wood/Heating Oil,2014,2.748
+stock|Mobile Homes|Wood/Heating Oil,2015,2.765
+stock|Mobile Homes|Wood/Heating Oil,2016,2.788
+stock|Mobile Homes|Wood/Heating Oil,2017,2.819
+stock|Mobile Homes|Wood/Heating Oil,2018,2.86
+stock|Mobile Homes|Wood/Heating Oil,2019,2.903
+stock|Mobile Homes|Wood/Heating Oil,2020,2.95
+stock|Mobile Homes|Natural Gas/Electric,2000,0
+stock|Mobile Homes|Natural Gas/Electric,2001,0
+stock|Mobile Homes|Natural Gas/Electric,2002,0
+stock|Mobile Homes|Natural Gas/Electric,2003,0
+stock|Mobile Homes|Natural Gas/Electric,2004,0
+stock|Mobile Homes|Natural Gas/Electric,2005,0
+stock|Mobile Homes|Natural Gas/Electric,2006,0
+stock|Mobile Homes|Natural Gas/Electric,2007,0
+stock|Mobile Homes|Natural Gas/Electric,2008,0
+stock|Mobile Homes|Natural Gas/Electric,2009,0
+stock|Mobile Homes|Natural Gas/Electric,2010,0
+stock|Mobile Homes|Natural Gas/Electric,2011,0
+stock|Mobile Homes|Natural Gas/Electric,2012,0
+stock|Mobile Homes|Natural Gas/Electric,2013,0
+stock|Mobile Homes|Natural Gas/Electric,2014,0
+stock|Mobile Homes|Natural Gas/Electric,2015,0
+stock|Mobile Homes|Natural Gas/Electric,2016,0
+stock|Mobile Homes|Natural Gas/Electric,2017,0
+stock|Mobile Homes|Natural Gas/Electric,2018,0
+stock|Mobile Homes|Natural Gas/Electric,2019,0
+stock|Mobile Homes|Natural Gas/Electric,2020,0
+stock|Mobile Homes|Heating Oil/Electric,2000,0
+stock|Mobile Homes|Heating Oil/Electric,2001,0
+stock|Mobile Homes|Heating Oil/Electric,2002,0
+stock|Mobile Homes|Heating Oil/Electric,2003,0
+stock|Mobile Homes|Heating Oil/Electric,2004,0
+stock|Mobile Homes|Heating Oil/Electric,2005,0
+stock|Mobile Homes|Heating Oil/Electric,2006,0
+stock|Mobile Homes|Heating Oil/Electric,2007,0
+stock|Mobile Homes|Heating Oil/Electric,2008,0
+stock|Mobile Homes|Heating Oil/Electric,2009,0
+stock|Mobile Homes|Heating Oil/Electric,2010,0
+stock|Mobile Homes|Heating Oil/Electric,2011,0
+stock|Mobile Homes|Heating Oil/Electric,2012,0
+stock|Mobile Homes|Heating Oil/Electric,2013,0
+stock|Mobile Homes|Heating Oil/Electric,2014,0
+stock|Mobile Homes|Heating Oil/Electric,2015,0
+stock|Mobile Homes|Heating Oil/Electric,2016,0
+stock|Mobile Homes|Heating Oil/Electric,2017,0
+stock|Mobile Homes|Heating Oil/Electric,2018,0
+stock|Mobile Homes|Heating Oil/Electric,2019,0
+stock|Mobile Homes|Heating Oil/Electric,2020,0
+eff|Heating Oil – Normal Efficiency,2000,60
+eff|Heating Oil – Normal Efficiency,2001,60
+eff|Heating Oil – Normal Efficiency,2002,60
+eff|Heating Oil – Normal Efficiency,2003,60
+eff|Heating Oil – Normal Efficiency,2004,60
+eff|Heating Oil – Normal Efficiency,2005,60
+eff|Heating Oil – Normal Efficiency,2006,60
+eff|Heating Oil – Normal Efficiency,2007,60
+eff|Heating Oil – Normal Efficiency,2008,60
+eff|Heating Oil – Normal Efficiency,2009,60
+eff|Heating Oil – Normal Efficiency,2010,60
+eff|Heating Oil – Normal Efficiency,2011,60
+eff|Heating Oil – Normal Efficiency,2012,60
+eff|Heating Oil – Normal Efficiency,2013,60
+eff|Heating Oil – Normal Efficiency,2014,60
+eff|Heating Oil – Normal Efficiency,2015,60
+eff|Heating Oil – Normal Efficiency,2016,60
+eff|Heating Oil – Normal Efficiency,2017,60
+eff|Heating Oil – Normal Efficiency,2018,60
+eff|Heating Oil – Normal Efficiency,2019,60
+eff|Heating Oil – Normal Efficiency,2020,60
+eff|Heating Oil – Medium Efficiency,2000,78
+eff|Heating Oil – Medium Efficiency,2001,78
+eff|Heating Oil – Medium Efficiency,2002,78
+eff|Heating Oil – Medium Efficiency,2003,78
+eff|Heating Oil – Medium Efficiency,2004,78
+eff|Heating Oil – Medium Efficiency,2005,78
+eff|Heating Oil – Medium Efficiency,2006,78
+eff|Heating Oil – Medium Efficiency,2007,78
+eff|Heating Oil – Medium Efficiency,2008,78
+eff|Heating Oil – Medium Efficiency,2009,78
+eff|Heating Oil – Medium Efficiency,2010,78
+eff|Heating Oil – Medium Efficiency,2011,78
+eff|Heating Oil – Medium Efficiency,2012,78
+eff|Heating Oil – Medium Efficiency,2013,78
+eff|Heating Oil – Medium Efficiency,2014,78
+eff|Heating Oil – Medium Efficiency,2015,78
+eff|Heating Oil – Medium Efficiency,2016,78
+eff|Heating Oil – Medium Efficiency,2017,78
+eff|Heating Oil – Medium Efficiency,2018,78
+eff|Heating Oil – Medium Efficiency,2019,78
+eff|Heating Oil – Medium Efficiency,2020,78
+eff|Heating Oil – High Efficiency,2000,85
+eff|Heating Oil – High Efficiency,2001,85
+eff|Heating Oil – High Efficiency,2002,85
+eff|Heating Oil – High Efficiency,2003,85
+eff|Heating Oil – High Efficiency,2004,85
+eff|Heating Oil – High Efficiency,2005,85
+eff|Heating Oil – High Efficiency,2006,85
+eff|Heating Oil – High Efficiency,2007,85
+eff|Heating Oil – High Efficiency,2008,85
+eff|Heating Oil – High Efficiency,2009,85
+eff|Heating Oil – High Efficiency,2010,85
+eff|Heating Oil – High Efficiency,2011,85
+eff|Heating Oil – High Efficiency,2012,85
+eff|Heating Oil – High Efficiency,2013,85
+eff|Heating Oil – High Efficiency,2014,85
+eff|Heating Oil – High Efficiency,2015,85
+eff|Heating Oil – High Efficiency,2016,85
+eff|Heating Oil – High Efficiency,2017,85
+eff|Heating Oil – High Efficiency,2018,85
+eff|Heating Oil – High Efficiency,2019,85
+eff|Heating Oil – High Efficiency,2020,85
+eff|Natural Gas – Normal Efficiency,2000,62
+eff|Natural Gas – Normal Efficiency,2001,62
+eff|Natural Gas – Normal Efficiency,2002,62
+eff|Natural Gas – Normal Efficiency,2003,62
+eff|Natural Gas – Normal Efficiency,2004,62
+eff|Natural Gas – Normal Efficiency,2005,62
+eff|Natural Gas – Normal Efficiency,2006,62
+eff|Natural Gas – Normal Efficiency,2007,62
+eff|Natural Gas – Normal Efficiency,2008,62
+eff|Natural Gas – Normal Efficiency,2009,62
+eff|Natural Gas – Normal Efficiency,2010,62
+eff|Natural Gas – Normal Efficiency,2011,62
+eff|Natural Gas – Normal Efficiency,2012,62
+eff|Natural Gas – Normal Efficiency,2013,62
+eff|Natural Gas – Normal Efficiency,2014,62
+eff|Natural Gas – Normal Efficiency,2015,62
+eff|Natural Gas – Normal Efficiency,2016,62
+eff|Natural Gas – Normal Efficiency,2017,62
+eff|Natural Gas – Normal Efficiency,2018,62
+eff|Natural Gas – Normal Efficiency,2019,62
+eff|Natural Gas – Normal Efficiency,2020,62
+eff|Natural Gas – Medium Efficiency,2000,79
+eff|Natural Gas – Medium Efficiency,2001,80
+eff|Natural Gas – Medium Efficiency,2002,80
+eff|Natural Gas – Medium Efficiency,2003,80
+eff|Natural Gas – Medium Efficiency,2004,80
+eff|Natural Gas – Medium Efficiency,2005,80
+eff|Natural Gas – Medium Efficiency,2006,80
+eff|Natural Gas – Medium Efficiency,2007,80
+eff|Natural Gas – Medium Efficiency,2008,80
+eff|Natural Gas – Medium Efficiency,2009,80
+eff|Natural Gas – Medium Efficiency,2010,80
+eff|Natural Gas – Medium Efficiency,2011,80
+eff|Natural Gas – Medium Efficiency,2012,80
+eff|Natural Gas – Medium Efficiency,2013,80
+eff|Natural Gas – Medium Efficiency,2014,80
+eff|Natural Gas – Medium Efficiency,2015,80
+eff|Natural Gas – Medium Efficiency,2016,80
+eff|Natural Gas – Medium Efficiency,2017,80
+eff|Natural Gas – Medium Efficiency,2018,80
+eff|Natural Gas – Medium Efficiency,2019,80
+eff|Natural Gas – Medium Efficiency,2020,80
+eff|Natural Gas – High Efficiency,2000,90
+eff|Natural Gas – High Efficiency,2001,90
+eff|Natural Gas – High Efficiency,2002,90
+eff|Natural Gas – High Efficiency,2003,90
+eff|Natural Gas – High Efficiency,2004,90
+eff|Natural Gas – High Efficiency,2005,90
+eff|Natural Gas – High Efficiency,2006,90
+eff|Natural Gas – High Efficiency,2007,90
+eff|Natural Gas – High Efficiency,2008,90
+eff|Natural Gas – High Efficiency,2009,90
+eff|Natural Gas – High Efficiency,2010,90
+eff|Natural Gas – High Efficiency,2011,90
+eff|Natural Gas – High Efficiency,2012,90
+eff|Natural Gas – High Efficiency,2013,90
+eff|Natural Gas – High Efficiency,2014,90
+eff|Natural Gas – High Efficiency,2015,90
+eff|Natural Gas – High Efficiency,2016,90
+eff|Natural Gas – High Efficiency,2017,90
+eff|Natural Gas – High Efficiency,2018,90
+eff|Natural Gas – High Efficiency,2019,90
+eff|Natural Gas – High Efficiency,2020,90
+eff|Electric,2000,100
+eff|Electric,2001,100
+eff|Electric,2002,100
+eff|Electric,2003,100
+eff|Electric,2004,100
+eff|Electric,2005,100
+eff|Electric,2006,100
+eff|Electric,2007,100
+eff|Electric,2008,100
+eff|Electric,2009,100
+eff|Electric,2010,100
+eff|Electric,2011,100
+eff|Electric,2012,100
+eff|Electric,2013,100
+eff|Electric,2014,100
+eff|Electric,2015,100
+eff|Electric,2016,100
+eff|Electric,2017,100
+eff|Electric,2018,100
+eff|Electric,2019,100
+eff|Electric,2020,100
+eff|Heat Pump,2000,190
+eff|Heat Pump,2001,190
+eff|Heat Pump,2002,190
+eff|Heat Pump,2003,190
+eff|Heat Pump,2004,190
+eff|Heat Pump,2005,190
+eff|Heat Pump,2006,190
+eff|Heat Pump,2007,190
+eff|Heat Pump,2008,190
+eff|Heat Pump,2009,190
+eff|Heat Pump,2010,190
+eff|Heat Pump,2011,190
+eff|Heat Pump,2012,190
+eff|Heat Pump,2013,190
+eff|Heat Pump,2014,190
+eff|Heat Pump,2015,190
+eff|Heat Pump,2016,190
+eff|Heat Pump,2017,190
+eff|Heat Pump,2018,190
+eff|Heat Pump,2019,190
+eff|Heat Pump,2020,190
+eff|Other1,2000,50
+eff|Other1,2001,50
+eff|Other1,2002,50
+eff|Other1,2003,50
+eff|Other1,2004,50
+eff|Other1,2005,50
+eff|Other1,2006,50
+eff|Other1,2007,50
+eff|Other1,2008,50
+eff|Other1,2009,50
+eff|Other1,2010,50
+eff|Other1,2011,50
+eff|Other1,2012,50
+eff|Other1,2013,50
+eff|Other1,2014,50
+eff|Other1,2015,50
+eff|Other1,2016,50
+eff|Other1,2017,50
+eff|Other1,2018,50
+eff|Other1,2019,50
+eff|Other1,2020,50
+eff|Wood,2000,50
+eff|Wood,2001,50
+eff|Wood,2002,50
+eff|Wood,2003,50
+eff|Wood,2004,50
+eff|Wood,2005,50
+eff|Wood,2006,50
+eff|Wood,2007,50
+eff|Wood,2008,50
+eff|Wood,2009,50
+eff|Wood,2010,50
+eff|Wood,2011,50
+eff|Wood,2012,50
+eff|Wood,2013,50
+eff|Wood,2014,50
+eff|Wood,2015,50
+eff|Wood,2016,50
+eff|Wood,2017,50
+eff|Wood,2018,50
+eff|Wood,2019,50
+eff|Wood,2020,50
+sh_by_vintage|Before 1946,2000,15.009116
+sh_by_vintage|Before 1946,2001,12.480504
+sh_by_vintage|Before 1946,2002,13.918611
+sh_by_vintage|Before 1946,2003,13.652732
+sh_by_vintage|Before 1946,2004,13.09804
+sh_by_vintage|Before 1946,2005,11.42264
+sh_by_vintage|Before 1946,2006,11.37895
+sh_by_vintage|Before 1946,2007,13.24534
+sh_by_vintage|Before 1946,2008,12.686838
+sh_by_vintage|Before 1946,2009,12.439583
+sh_by_vintage|Before 1946,2010,11.348552
+sh_by_vintage|Before 1946,2011,11.844596
+sh_by_vintage|Before 1946,2012,11.427818
+sh_by_vintage|Before 1946,2013,11.368811
+sh_by_vintage|Before 1946,2014,11.143674
+sh_by_vintage|Before 1946,2015,10.131583
+sh_by_vintage|Before 1946,2016,8.545511
+sh_by_vintage|Before 1946,2017,10.164457
+sh_by_vintage|Before 1946,2018,10.631153
+sh_by_vintage|Before 1946,2019,10.362485
+sh_by_vintage|Before 1946,2020,9.719522
+sh_by_vintage|1946–1960,2000,13.718244
+sh_by_vintage|1946–1960,2001,11.466935
+sh_by_vintage|1946–1960,2002,12.859626
+sh_by_vintage|1946–1960,2003,12.691546
+sh_by_vintage|1946–1960,2004,12.280404
+sh_by_vintage|1946–1960,2005,10.798702
+sh_by_vintage|1946–1960,2006,10.84376
+sh_by_vintage|1946–1960,2007,12.731266
+sh_by_vintage|1946–1960,2008,12.303192
+sh_by_vintage|1946–1960,2009,12.165572
+sh_by_vintage|1946–1960,2010,11.183602
+sh_by_vintage|1946–1960,2011,11.771218
+sh_by_vintage|1946–1960,2012,11.368386
+sh_by_vintage|1946–1960,2013,11.318732
+sh_by_vintage|1946–1960,2014,11.107715
+sh_by_vintage|1946–1960,2015,10.109097
+sh_by_vintage|1946–1960,2016,8.616219
+sh_by_vintage|1946–1960,2017,10.35996
+sh_by_vintage|1946–1960,2018,10.955967
+sh_by_vintage|1946–1960,2019,10.797787
+sh_by_vintage|1946–1960,2020,10.236283
+sh_by_vintage|1961–1977,2000,38.659582
+sh_by_vintage|1961–1977,2001,32.287985
+sh_by_vintage|1961–1977,2002,36.180882
+sh_by_vintage|1961–1977,2003,35.691362
+sh_by_vintage|1961–1977,2004,34.585078
+sh_by_vintage|1961–1977,2005,30.452667
+sh_by_vintage|1961–1977,2006,30.610268
+sh_by_vintage|1961–1977,2007,35.983947
+sh_by_vintage|1961–1977,2008,34.762719
+sh_by_vintage|1961–1977,2009,34.352875
+sh_by_vintage|1961–1977,2010,31.542144
+sh_by_vintage|1961–1977,2011,33.173974
+sh_by_vintage|1961–1977,2012,32.151437
+sh_by_vintage|1961–1977,2013,32.11802
+sh_by_vintage|1961–1977,2014,31.634241
+sh_by_vintage|1961–1977,2015,28.894894
+sh_by_vintage|1961–1977,2016,24.737016
+sh_by_vintage|1961–1977,2017,29.865633
+sh_by_vintage|1961–1977,2018,31.678207
+sh_by_vintage|1961–1977,2019,31.316189
+sh_by_vintage|1961–1977,2020,29.787384
+sh_by_vintage|1978–1983,2000,28.661517
+sh_by_vintage|1978–1983,2001,23.920335
+sh_by_vintage|1978–1983,2002,26.78557
+sh_by_vintage|1978–1983,2003,26.415777
+sh_by_vintage|1978–1983,2004,25.565472
+sh_by_vintage|1978–1983,2005,22.478601
+sh_by_vintage|1978–1983,2006,22.550427
+sh_by_vintage|1978–1983,2007,26.468441
+sh_by_vintage|1978–1983,2008,25.561295
+sh_by_vintage|1978–1983,2009,25.23983
+sh_by_vintage|1978–1983,2010,23.133692
+sh_by_vintage|1978–1983,2011,24.302771
+sh_by_vintage|1978–1983,2012,23.528489
+sh_by_vintage|1978–1983,2013,23.472071
+sh_by_vintage|1978–1983,2014,23.097588
+sh_by_vintage|1978–1983,2015,21.076242
+sh_by_vintage|1978–1983,2016,18.092156
+sh_by_vintage|1978–1983,2017,21.889837
+sh_by_vintage|1978–1983,2018,23.221709
+sh_by_vintage|1978–1983,2019,22.963002
+sh_by_vintage|1978–1983,2020,21.861161
+sh_by_vintage|1984–1995,2000,23.417703
+sh_by_vintage|1984–1995,2001,19.577925
+sh_by_vintage|1984–1995,2002,21.965885
+sh_by_vintage|1984–1995,2003,21.712054
+sh_by_vintage|1984–1995,2004,21.043976
+sh_by_vintage|1984–1995,2005,18.526977
+sh_by_vintage|1984–1995,2006,18.607801
+sh_by_vintage|1984–1995,2007,21.87274
+sh_by_vintage|1984–1995,2008,21.154096
+sh_by_vintage|1984–1995,2009,20.910176
+sh_by_vintage|1984–1995,2010,19.178782
+sh_by_vintage|1984–1995,2011,20.167982
+sh_by_vintage|1984–1995,2012,20.08326
+sh_by_vintage|1984–1995,2013,20.596088
+sh_by_vintage|1984–1995,2014,20.829252
+sh_by_vintage|1984–1995,2015,19.532523
+sh_by_vintage|1984–1995,2016,16.765165
+sh_by_vintage|1984–1995,2017,20.290075
+sh_by_vintage|1984–1995,2018,21.562274
+sh_by_vintage|1984–1995,2019,21.357004
+sh_by_vintage|1984–1995,2020,20.351452
+sh_by_vintage|1996–2000,2000,9.888131
+sh_by_vintage|1996–2000,2001,8.28778
+sh_by_vintage|1996–2000,2002,9.324188
+sh_by_vintage|1996–2000,2003,9.24791
+sh_by_vintage|1996–2000,2004,8.98971
+sh_by_vintage|1996–2000,2005,7.934395
+sh_by_vintage|1996–2000,2006,7.983252
+sh_by_vintage|1996–2000,2007,9.407729
+sh_by_vintage|1996–2000,2008,9.118512
+sh_by_vintage|1996–2000,2009,9.026511
+sh_by_vintage|1996–2000,2010,8.2802
+sh_by_vintage|1996–2000,2011,8.717042
+sh_by_vintage|1996–2000,2012,8.941864
+sh_by_vintage|1996–2000,2013,9.426012
+sh_by_vintage|1996–2000,2014,9.787899
+sh_by_vintage|1996–2000,2015,9.41069
+sh_by_vintage|1996–2000,2016,8.090668
+sh_by_vintage|1996–2000,2017,9.808094
+sh_by_vintage|1996–2000,2018,10.436913
+sh_by_vintage|1996–2000,2019,10.352099
+sh_by_vintage|1996–2000,2020,9.877032
+sh_by_vintage|2001–2005,2000,0
+sh_by_vintage|2001–2005,2001,1.876037
+sh_by_vintage|2001–2005,2002,4.562352
+sh_by_vintage|2001–2005,2003,7.140582
+sh_by_vintage|2001–2005,2004,9.419384
+sh_by_vintage|2001–2005,2005,10.667986
+sh_by_vintage|2001–2005,2006,10.745033
+sh_by_vintage|2001–2005,2007,12.681765
+sh_by_vintage|2001–2005,2008,12.308332
+sh_by_vintage|2001–2005,2009,12.195527
+sh_by_vintage|2001–2005,2010,11.186715
+sh_by_vintage|2001–2005,2011,11.784793
+sh_by_vintage|2001–2005,2012,11.853082
+sh_by_vintage|2001–2005,2013,12.266697
+sh_by_vintage|2001–2005,2014,12.526237
+sh_by_vintage|2001–2005,2015,11.856108
+sh_by_vintage|2001–2005,2016,10.207137
+sh_by_vintage|2001–2005,2017,12.389927
+sh_by_vintage|2001–2005,2018,13.193879
+sh_by_vintage|2001–2005,2019,13.097986
+sh_by_vintage|2001–2005,2020,12.507305
+sh_by_vintage|2006–2010,2000,0
+sh_by_vintage|2006–2010,2001,0
+sh_by_vintage|2006–2010,2002,0
+sh_by_vintage|2006–2010,2003,0
+sh_by_vintage|2006–2010,2004,0
+sh_by_vintage|2006–2010,2005,0
+sh_by_vintage|2006–2010,2006,2.287982
+sh_by_vintage|2006–2010,2007,5.632569
+sh_by_vintage|2006–2010,2008,7.930644
+sh_by_vintage|2006–2010,2009,9.575462
+sh_by_vintage|2006–2010,2010,10.567162
+sh_by_vintage|2006–2010,2011,11.133875
+sh_by_vintage|2006–2010,2012,10.916347
+sh_by_vintage|2006–2010,2013,11.016375
+sh_by_vintage|2006–2010,2014,10.984222
+sh_by_vintage|2006–2010,2015,10.157465
+sh_by_vintage|2006–2010,2016,8.759551
+sh_by_vintage|2006–2010,2017,10.647851
+sh_by_vintage|2006–2010,2018,11.341034
+sh_by_vintage|2006–2010,2019,11.26263
+sh_by_vintage|2006–2010,2020,10.759305
+sh_by_vintage|2011–2015,2000,0
+sh_by_vintage|2011–2015,2001,0
+sh_by_vintage|2011–2015,2002,0
+sh_by_vintage|2011–2015,2003,0
+sh_by_vintage|2011–2015,2004,0
+sh_by_vintage|2011–2015,2005,0
+sh_by_vintage|2011–2015,2006,0
+sh_by_vintage|2011–2015,2007,0
+sh_by_vintage|2011–2015,2008,0
+sh_by_vintage|2011–2015,2009,0
+sh_by_vintage|2011–2015,2010,0
+sh_by_vintage|2011–2015,2011,1.586172
+sh_by_vintage|2011–2015,2012,3.190873
+sh_by_vintage|2011–2015,2013,5.191498
+sh_by_vintage|2011–2015,2014,7.240023
+sh_by_vintage|2011–2015,2015,8.77191
+sh_by_vintage|2011–2015,2016,7.568936
+sh_by_vintage|2011–2015,2017,9.206187
+sh_by_vintage|2011–2015,2018,9.810362
+sh_by_vintage|2011–2015,2019,9.748525
+sh_by_vintage|2011–2015,2020,9.31584
+sh_by_vintage|2016_2020,2000,0
+sh_by_vintage|2016_2020,2001,0
+sh_by_vintage|2016_2020,2002,0
+sh_by_vintage|2016_2020,2003,0
+sh_by_vintage|2016_2020,2004,0
+sh_by_vintage|2016_2020,2005,0
+sh_by_vintage|2016_2020,2006,0
+sh_by_vintage|2016_2020,2007,0
+sh_by_vintage|2016_2020,2008,0
+sh_by_vintage|2016_2020,2009,0
+sh_by_vintage|2016_2020,2010,0
+sh_by_vintage|2016_2020,2011,0
+sh_by_vintage|2016_2020,2012,0
+sh_by_vintage|2016_2020,2013,0
+sh_by_vintage|2016_2020,2014,0
+sh_by_vintage|2016_2020,2015,0
+sh_by_vintage|2016_2020,2016,1.378592
+sh_by_vintage|2016_2020,2017,3.1298
+sh_by_vintage|2016_2020,2018,4.876622
+sh_by_vintage|2016_2020,2019,6.319665
+sh_by_vintage|2016_2020,2020,7.412218
+floor|Single Detached|Before 1946,2000,6.823
+floor|Single Detached|Before 1946,2001,6.8
+floor|Single Detached|Before 1946,2002,6.775
+floor|Single Detached|Before 1946,2003,6.749
+floor|Single Detached|Before 1946,2004,6.698
+floor|Single Detached|Before 1946,2005,6.645
+floor|Single Detached|Before 1946,2006,6.592
+floor|Single Detached|Before 1946,2007,6.539
+floor|Single Detached|Before 1946,2008,6.482
+floor|Single Detached|Before 1946,2009,6.426
+floor|Single Detached|Before 1946,2010,6.369
+floor|Single Detached|Before 1946,2011,6.311
+floor|Single Detached|Before 1946,2012,6.239
+floor|Single Detached|Before 1946,2013,6.166
+floor|Single Detached|Before 1946,2014,6.095
+floor|Single Detached|Before 1946,2015,6.024
+floor|Single Detached|Before 1946,2016,5.919
+floor|Single Detached|Before 1946,2017,5.816
+floor|Single Detached|Before 1946,2018,5.714
+floor|Single Detached|Before 1946,2019,5.615
+floor|Single Detached|Before 1946,2020,5.517
+floor|Single Detached|1946–1960,2000,7.852
+floor|Single Detached|1946–1960,2001,7.852
+floor|Single Detached|1946–1960,2002,7.851
+floor|Single Detached|1946–1960,2003,7.849
+floor|Single Detached|1946–1960,2004,7.842
+floor|Single Detached|1946–1960,2005,7.834
+floor|Single Detached|1946–1960,2006,7.826
+floor|Single Detached|1946–1960,2007,7.817
+floor|Single Detached|1946–1960,2008,7.808
+floor|Single Detached|1946–1960,2009,7.8
+floor|Single Detached|1946–1960,2010,7.791
+floor|Single Detached|1946–1960,2011,7.781
+floor|Single Detached|1946–1960,2012,7.669
+floor|Single Detached|1946–1960,2013,7.558
+floor|Single Detached|1946–1960,2014,7.448
+floor|Single Detached|1946–1960,2015,7.34
+floor|Single Detached|1946–1960,2016,7.289
+floor|Single Detached|1946–1960,2017,7.238
+floor|Single Detached|1946–1960,2018,7.187
+floor|Single Detached|1946–1960,2019,7.137
+floor|Single Detached|1946–1960,2020,7.088
+floor|Single Detached|1961–1977,2000,25.927
+floor|Single Detached|1961–1977,2001,25.9
+floor|Single Detached|1961–1977,2002,25.872
+floor|Single Detached|1961–1977,2003,25.844
+floor|Single Detached|1961–1977,2004,25.848
+floor|Single Detached|1961–1977,2005,25.852
+floor|Single Detached|1961–1977,2006,25.854
+floor|Single Detached|1961–1977,2007,25.857
+floor|Single Detached|1961–1977,2008,25.81
+floor|Single Detached|1961–1977,2009,25.765
+floor|Single Detached|1961–1977,2010,25.718
+floor|Single Detached|1961–1977,2011,25.672
+floor|Single Detached|1961–1977,2012,25.428
+floor|Single Detached|1961–1977,2013,25.185
+floor|Single Detached|1961–1977,2014,24.943
+floor|Single Detached|1961–1977,2015,24.704
+floor|Single Detached|1961–1977,2016,24.613
+floor|Single Detached|1961–1977,2017,24.521
+floor|Single Detached|1961–1977,2018,24.431
+floor|Single Detached|1961–1977,2019,24.341
+floor|Single Detached|1961–1977,2020,24.252
+floor|Single Detached|1978–1983,2000,22.704
+floor|Single Detached|1978–1983,2001,22.638
+floor|Single Detached|1978–1983,2002,22.572
+floor|Single Detached|1978–1983,2003,22.507
+floor|Single Detached|1978–1983,2004,22.441
+floor|Single Detached|1978–1983,2005,22.375
+floor|Single Detached|1978–1983,2006,22.309
+floor|Single Detached|1978–1983,2007,22.244
+floor|Single Detached|1978–1983,2008,22.179
+floor|Single Detached|1978–1983,2009,22.114
+floor|Single Detached|1978–1983,2010,22.049
+floor|Single Detached|1978–1983,2011,21.985
+floor|Single Detached|1978–1983,2012,21.706
+floor|Single Detached|1978–1983,2013,21.43
+floor|Single Detached|1978–1983,2014,21.154
+floor|Single Detached|1978–1983,2015,20.88
+floor|Single Detached|1978–1983,2016,20.819
+floor|Single Detached|1978–1983,2017,20.757
+floor|Single Detached|1978–1983,2018,20.696
+floor|Single Detached|1978–1983,2019,20.635
+floor|Single Detached|1978–1983,2020,20.574
+floor|Single Detached|1984–1995,2000,25.342
+floor|Single Detached|1984–1995,2001,25.296
+floor|Single Detached|1984–1995,2002,25.251
+floor|Single Detached|1984–1995,2003,25.205
+floor|Single Detached|1984–1995,2004,25.159
+floor|Single Detached|1984–1995,2005,25.113
+floor|Single Detached|1984–1995,2006,25.067
+floor|Single Detached|1984–1995,2007,25.02
+floor|Single Detached|1984–1995,2008,24.975
+floor|Single Detached|1984–1995,2009,24.929
+floor|Single Detached|1984–1995,2010,24.883
+floor|Single Detached|1984–1995,2011,24.837
+floor|Single Detached|1984–1995,2012,25.371
+floor|Single Detached|1984–1995,2013,25.903
+floor|Single Detached|1984–1995,2014,26.433
+floor|Single Detached|1984–1995,2015,26.961
+floor|Single Detached|1984–1995,2016,26.911
+floor|Single Detached|1984–1995,2017,26.861
+floor|Single Detached|1984–1995,2018,26.811
+floor|Single Detached|1984–1995,2019,26.762
+floor|Single Detached|1984–1995,2020,26.713
+floor|Single Detached|1996–2000,2000,12.9
+floor|Single Detached|1996–2000,2001,12.891
+floor|Single Detached|1996–2000,2002,12.882
+floor|Single Detached|1996–2000,2003,12.872
+floor|Single Detached|1996–2000,2004,12.863
+floor|Single Detached|1996–2000,2005,12.853
+floor|Single Detached|1996–2000,2006,12.844
+floor|Single Detached|1996–2000,2007,12.834
+floor|Single Detached|1996–2000,2008,12.825
+floor|Single Detached|1996–2000,2009,12.816
+floor|Single Detached|1996–2000,2010,12.807
+floor|Single Detached|1996–2000,2011,12.797
+floor|Single Detached|1996–2000,2012,13.529
+floor|Single Detached|1996–2000,2013,14.259
+floor|Single Detached|1996–2000,2014,14.988
+floor|Single Detached|1996–2000,2015,15.717
+floor|Single Detached|1996–2000,2016,15.705
+floor|Single Detached|1996–2000,2017,15.693
+floor|Single Detached|1996–2000,2018,15.682
+floor|Single Detached|1996–2000,2019,15.67
+floor|Single Detached|1996–2000,2020,15.659
+floor|Single Detached|2001–2005,2000,0
+floor|Single Detached|2001–2005,2001,2.848
+floor|Single Detached|2001–2005,2002,6.199
+floor|Single Detached|2001–2005,2003,9.7
+floor|Single Detached|2001–2005,2004,13.038
+floor|Single Detached|2001–2005,2005,16.748
+floor|Single Detached|2001–2005,2006,16.745
+floor|Single Detached|2001–2005,2007,16.742
+floor|Single Detached|2001–2005,2008,16.738
+floor|Single Detached|2001–2005,2009,16.735
+floor|Single Detached|2001–2005,2010,16.732
+floor|Single Detached|2001–2005,2011,16.729
+floor|Single Detached|2001–2005,2012,17.299
+floor|Single Detached|2001–2005,2013,17.868
+floor|Single Detached|2001–2005,2014,18.437
+floor|Single Detached|2001–2005,2015,19.006
+floor|Single Detached|2001–2005,2016,19.003
+floor|Single Detached|2001–2005,2017,18.999
+floor|Single Detached|2001–2005,2018,18.995
+floor|Single Detached|2001–2005,2019,18.992
+floor|Single Detached|2001–2005,2020,18.988
+floor|Single Detached|2006–2010,2000,0
+floor|Single Detached|2006–2010,2001,0
+floor|Single Detached|2006–2010,2002,0
+floor|Single Detached|2006–2010,2003,0
+floor|Single Detached|2006–2010,2004,0
+floor|Single Detached|2006–2010,2005,0
+floor|Single Detached|2006–2010,2006,4.132
+floor|Single Detached|2006–2010,2007,8.676
+floor|Single Detached|2006–2010,2008,12.272
+floor|Single Detached|2006–2010,2009,14.675
+floor|Single Detached|2006–2010,2010,17.653
+floor|Single Detached|2006–2010,2011,17.652
+floor|Single Detached|2006–2010,2012,17.639
+floor|Single Detached|2006–2010,2013,17.626
+floor|Single Detached|2006–2010,2014,17.614
+floor|Single Detached|2006–2010,2015,17.601
+floor|Single Detached|2006–2010,2016,17.6
+floor|Single Detached|2006–2010,2017,17.6
+floor|Single Detached|2006–2010,2018,17.599
+floor|Single Detached|2006–2010,2019,17.598
+floor|Single Detached|2006–2010,2020,17.598
+floor|Single Detached|2011–2015,2000,0
+floor|Single Detached|2011–2015,2001,0
+floor|Single Detached|2011–2015,2002,0
+floor|Single Detached|2011–2015,2003,0
+floor|Single Detached|2011–2015,2004,0
+floor|Single Detached|2011–2015,2005,0
+floor|Single Detached|2011–2015,2006,0
+floor|Single Detached|2011–2015,2007,0
+floor|Single Detached|2011–2015,2008,0
+floor|Single Detached|2011–2015,2009,0
+floor|Single Detached|2011–2015,2010,0
+floor|Single Detached|2011–2015,2011,2.701
+floor|Single Detached|2011–2015,2012,5.454
+floor|Single Detached|2011–2015,2013,8.634
+floor|Single Detached|2011–2015,2014,11.879
+floor|Single Detached|2011–2015,2015,15.21
+floor|Single Detached|2011–2015,2016,15.21
+floor|Single Detached|2011–2015,2017,15.21
+floor|Single Detached|2011–2015,2018,15.21
+floor|Single Detached|2011–2015,2019,15.21
+floor|Single Detached|2011–2015,2020,15.21
+floor|Single Detached|2016_2020,2000,0
+floor|Single Detached|2016_2020,2001,0
+floor|Single Detached|2016_2020,2002,0
+floor|Single Detached|2016_2020,2003,0
+floor|Single Detached|2016_2020,2004,0
+floor|Single Detached|2016_2020,2005,0
+floor|Single Detached|2016_2020,2006,0
+floor|Single Detached|2016_2020,2007,0
+floor|Single Detached|2016_2020,2008,0
+floor|Single Detached|2016_2020,2009,0
+floor|Single Detached|2016_2020,2010,0
+floor|Single Detached|2016_2020,2011,0
+floor|Single Detached|2016_2020,2012,0
+floor|Single Detached|2016_2020,2013,0
+floor|Single Detached|2016_2020,2014,0
+floor|Single Detached|2016_2020,2015,0
+floor|Single Detached|2016_2020,2016,2.43
+floor|Single Detached|2016_2020,2017,4.792
+floor|Single Detached|2016_2020,2018,7.29
+floor|Single Detached|2016_2020,2019,9.412
+floor|Single Detached|2016_2020,2020,11.493
+floor|Single Attached|Before 1946,2000,0.612
+floor|Single Attached|Before 1946,2001,0.606
+floor|Single Attached|Before 1946,2002,0.6
+floor|Single Attached|Before 1946,2003,0.594
+floor|Single Attached|Before 1946,2004,0.587
+floor|Single Attached|Before 1946,2005,0.58
+floor|Single Attached|Before 1946,2006,0.574
+floor|Single Attached|Before 1946,2007,0.567
+floor|Single Attached|Before 1946,2008,0.561
+floor|Single Attached|Before 1946,2009,0.554
+floor|Single Attached|Before 1946,2010,0.548
+floor|Single Attached|Before 1946,2011,0.542
+floor|Single Attached|Before 1946,2012,0.536
+floor|Single Attached|Before 1946,2013,0.53
+floor|Single Attached|Before 1946,2014,0.524
+floor|Single Attached|Before 1946,2015,0.518
+floor|Single Attached|Before 1946,2016,0.509
+floor|Single Attached|Before 1946,2017,0.5
+floor|Single Attached|Before 1946,2018,0.491
+floor|Single Attached|Before 1946,2019,0.483
+floor|Single Attached|Before 1946,2020,0.475
+floor|Single Attached|1946–1960,2000,0.939
+floor|Single Attached|1946–1960,2001,0.939
+floor|Single Attached|1946–1960,2002,0.939
+floor|Single Attached|1946–1960,2003,0.939
+floor|Single Attached|1946–1960,2004,0.938
+floor|Single Attached|1946–1960,2005,0.937
+floor|Single Attached|1946–1960,2006,0.936
+floor|Single Attached|1946–1960,2007,0.935
+floor|Single Attached|1946–1960,2008,0.934
+floor|Single Attached|1946–1960,2009,0.933
+floor|Single Attached|1946–1960,2010,0.932
+floor|Single Attached|1946–1960,2011,0.931
+floor|Single Attached|1946–1960,2012,0.931
+floor|Single Attached|1946–1960,2013,0.93
+floor|Single Attached|1946–1960,2014,0.929
+floor|Single Attached|1946–1960,2015,0.928
+floor|Single Attached|1946–1960,2016,0.922
+floor|Single Attached|1946–1960,2017,0.915
+floor|Single Attached|1946–1960,2018,0.909
+floor|Single Attached|1946–1960,2019,0.903
+floor|Single Attached|1946–1960,2020,0.896
+floor|Single Attached|1961–1977,2000,3.435
+floor|Single Attached|1961–1977,2001,3.423
+floor|Single Attached|1961–1977,2002,3.41
+floor|Single Attached|1961–1977,2003,3.398
+floor|Single Attached|1961–1977,2004,3.386
+floor|Single Attached|1961–1977,2005,3.374
+floor|Single Attached|1961–1977,2006,3.361
+floor|Single Attached|1961–1977,2007,3.349
+floor|Single Attached|1961–1977,2008,3.337
+floor|Single Attached|1961–1977,2009,3.325
+floor|Single Attached|1961–1977,2010,3.313
+floor|Single Attached|1961–1977,2011,3.301
+floor|Single Attached|1961–1977,2012,3.289
+floor|Single Attached|1961–1977,2013,3.277
+floor|Single Attached|1961–1977,2014,3.265
+floor|Single Attached|1961–1977,2015,3.253
+floor|Single Attached|1961–1977,2016,3.241
+floor|Single Attached|1961–1977,2017,3.229
+floor|Single Attached|1961–1977,2018,3.218
+floor|Single Attached|1961–1977,2019,3.206
+floor|Single Attached|1961–1977,2020,3.194
+floor|Single Attached|1978–1983,2000,4.34
+floor|Single Attached|1978–1983,2001,4.328
+floor|Single Attached|1978–1983,2002,4.315
+floor|Single Attached|1978–1983,2003,4.303
+floor|Single Attached|1978–1983,2004,4.291
+floor|Single Attached|1978–1983,2005,4.278
+floor|Single Attached|1978–1983,2006,4.266
+floor|Single Attached|1978–1983,2007,4.253
+floor|Single Attached|1978–1983,2008,4.241
+floor|Single Attached|1978–1983,2009,4.229
+floor|Single Attached|1978–1983,2010,4.216
+floor|Single Attached|1978–1983,2011,4.204
+floor|Single Attached|1978–1983,2012,4.192
+floor|Single Attached|1978–1983,2013,4.18
+floor|Single Attached|1978–1983,2014,4.168
+floor|Single Attached|1978–1983,2015,4.155
+floor|Single Attached|1978–1983,2016,4.143
+floor|Single Attached|1978–1983,2017,4.131
+floor|Single Attached|1978–1983,2018,4.119
+floor|Single Attached|1978–1983,2019,4.107
+floor|Single Attached|1978–1983,2020,4.095
+floor|Single Attached|1984–1995,2000,3.052
+floor|Single Attached|1984–1995,2001,3.046
+floor|Single Attached|1984–1995,2002,3.041
+floor|Single Attached|1984–1995,2003,3.035
+floor|Single Attached|1984–1995,2004,3.03
+floor|Single Attached|1984–1995,2005,3.024
+floor|Single Attached|1984–1995,2006,3.019
+floor|Single Attached|1984–1995,2007,3.013
+floor|Single Attached|1984–1995,2008,3.008
+floor|Single Attached|1984–1995,2009,3.002
+floor|Single Attached|1984–1995,2010,2.997
+floor|Single Attached|1984–1995,2011,2.992
+floor|Single Attached|1984–1995,2012,2.986
+floor|Single Attached|1984–1995,2013,2.981
+floor|Single Attached|1984–1995,2014,2.975
+floor|Single Attached|1984–1995,2015,2.97
+floor|Single Attached|1984–1995,2016,2.964
+floor|Single Attached|1984–1995,2017,2.959
+floor|Single Attached|1984–1995,2018,2.954
+floor|Single Attached|1984–1995,2019,2.948
+floor|Single Attached|1984–1995,2020,2.943
+floor|Single Attached|1996–2000,2000,2.136
+floor|Single Attached|1996–2000,2001,2.135
+floor|Single Attached|1996–2000,2002,2.133
+floor|Single Attached|1996–2000,2003,2.132
+floor|Single Attached|1996–2000,2004,2.13
+floor|Single Attached|1996–2000,2005,2.129
+floor|Single Attached|1996–2000,2006,2.127
+floor|Single Attached|1996–2000,2007,2.126
+floor|Single Attached|1996–2000,2008,2.124
+floor|Single Attached|1996–2000,2009,2.123
+floor|Single Attached|1996–2000,2010,2.121
+floor|Single Attached|1996–2000,2011,2.119
+floor|Single Attached|1996–2000,2012,2.118
+floor|Single Attached|1996–2000,2013,2.116
+floor|Single Attached|1996–2000,2014,2.115
+floor|Single Attached|1996–2000,2015,2.113
+floor|Single Attached|1996–2000,2016,2.112
+floor|Single Attached|1996–2000,2017,2.11
+floor|Single Attached|1996–2000,2018,2.109
+floor|Single Attached|1996–2000,2019,2.107
+floor|Single Attached|1996–2000,2020,2.106
+floor|Single Attached|2001–2005,2000,0
+floor|Single Attached|2001–2005,2001,0.503
+floor|Single Attached|2001–2005,2002,1.129
+floor|Single Attached|2001–2005,2003,1.812
+floor|Single Attached|2001–2005,2004,2.567
+floor|Single Attached|2001–2005,2005,3.295
+floor|Single Attached|2001–2005,2006,3.295
+floor|Single Attached|2001–2005,2007,3.294
+floor|Single Attached|2001–2005,2008,3.294
+floor|Single Attached|2001–2005,2009,3.293
+floor|Single Attached|2001–2005,2010,3.292
+floor|Single Attached|2001–2005,2011,3.292
+floor|Single Attached|2001–2005,2012,3.291
+floor|Single Attached|2001–2005,2013,3.291
+floor|Single Attached|2001–2005,2014,3.29
+floor|Single Attached|2001–2005,2015,3.289
+floor|Single Attached|2001–2005,2016,3.289
+floor|Single Attached|2001–2005,2017,3.288
+floor|Single Attached|2001–2005,2018,3.288
+floor|Single Attached|2001–2005,2019,3.287
+floor|Single Attached|2001–2005,2020,3.286
+floor|Single Attached|2006–2010,2000,0
+floor|Single Attached|2006–2010,2001,0
+floor|Single Attached|2006–2010,2002,0
+floor|Single Attached|2006–2010,2003,0
+floor|Single Attached|2006–2010,2004,0
+floor|Single Attached|2006–2010,2005,0
+floor|Single Attached|2006–2010,2006,0.789
+floor|Single Attached|2006–2010,2007,1.713
+floor|Single Attached|2006–2010,2008,2.704
+floor|Single Attached|2006–2010,2009,3.401
+floor|Single Attached|2006–2010,2010,4.174
+floor|Single Attached|2006–2010,2011,4.174
+floor|Single Attached|2006–2010,2012,4.173
+floor|Single Attached|2006–2010,2013,4.173
+floor|Single Attached|2006–2010,2014,4.173
+floor|Single Attached|2006–2010,2015,4.173
+floor|Single Attached|2006–2010,2016,4.173
+floor|Single Attached|2006–2010,2017,4.173
+floor|Single Attached|2006–2010,2018,4.172
+floor|Single Attached|2006–2010,2019,4.172
+floor|Single Attached|2006–2010,2020,4.172
+floor|Single Attached|2011–2015,2000,0
+floor|Single Attached|2011–2015,2001,0
+floor|Single Attached|2011–2015,2002,0
+floor|Single Attached|2011–2015,2003,0
+floor|Single Attached|2011–2015,2004,0
+floor|Single Attached|2011–2015,2005,0
+floor|Single Attached|2011–2015,2006,0
+floor|Single Attached|2011–2015,2007,0
+floor|Single Attached|2011–2015,2008,0
+floor|Single Attached|2011–2015,2009,0
+floor|Single Attached|2011–2015,2010,0
+floor|Single Attached|2011–2015,2011,0.798
+floor|Single Attached|2011–2015,2012,1.713
+floor|Single Attached|2011–2015,2013,2.867
+floor|Single Attached|2011–2015,2014,4.12
+floor|Single Attached|2011–2015,2015,5.627
+floor|Single Attached|2011–2015,2016,5.627
+floor|Single Attached|2011–2015,2017,5.627
+floor|Single Attached|2011–2015,2018,5.627
+floor|Single Attached|2011–2015,2019,5.627
+floor|Single Attached|2011–2015,2020,5.627
+floor|Single Attached|2016_2020,2000,0
+floor|Single Attached|2016_2020,2001,0
+floor|Single Attached|2016_2020,2002,0
+floor|Single Attached|2016_2020,2003,0
+floor|Single Attached|2016_2020,2004,0
+floor|Single Attached|2016_2020,2005,0
+floor|Single Attached|2016_2020,2006,0
+floor|Single Attached|2016_2020,2007,0
+floor|Single Attached|2016_2020,2008,0
+floor|Single Attached|2016_2020,2009,0
+floor|Single Attached|2016_2020,2010,0
+floor|Single Attached|2016_2020,2011,0
+floor|Single Attached|2016_2020,2012,0
+floor|Single Attached|2016_2020,2013,0
+floor|Single Attached|2016_2020,2014,0
+floor|Single Attached|2016_2020,2015,0
+floor|Single Attached|2016_2020,2016,1.272
+floor|Single Attached|2016_2020,2017,2.343
+floor|Single Attached|2016_2020,2018,3.486
+floor|Single Attached|2016_2020,2019,4.631
+floor|Single Attached|2016_2020,2020,5.676
+floor|Apartments|Before 1946,2000,1.483
+floor|Apartments|Before 1946,2001,1.476
+floor|Apartments|Before 1946,2002,1.468
+floor|Apartments|Before 1946,2003,1.46
+floor|Apartments|Before 1946,2004,1.443
+floor|Apartments|Before 1946,2005,1.427
+floor|Apartments|Before 1946,2006,1.411
+floor|Apartments|Before 1946,2007,1.395
+floor|Apartments|Before 1946,2008,1.379
+floor|Apartments|Before 1946,2009,1.363
+floor|Apartments|Before 1946,2010,1.348
+floor|Apartments|Before 1946,2011,1.333
+floor|Apartments|Before 1946,2012,1.318
+floor|Apartments|Before 1946,2013,1.303
+floor|Apartments|Before 1946,2014,1.288
+floor|Apartments|Before 1946,2015,1.273
+floor|Apartments|Before 1946,2016,1.252
+floor|Apartments|Before 1946,2017,1.23
+floor|Apartments|Before 1946,2018,1.209
+floor|Apartments|Before 1946,2019,1.188
+floor|Apartments|Before 1946,2020,1.167
+floor|Apartments|1946–1960,2000,2.214
+floor|Apartments|1946–1960,2001,2.214
+floor|Apartments|1946–1960,2002,2.213
+floor|Apartments|1946–1960,2003,2.213
+floor|Apartments|1946–1960,2004,2.211
+floor|Apartments|1946–1960,2005,2.209
+floor|Apartments|1946–1960,2006,2.207
+floor|Apartments|1946–1960,2007,2.205
+floor|Apartments|1946–1960,2008,2.202
+floor|Apartments|1946–1960,2009,2.2
+floor|Apartments|1946–1960,2010,2.198
+floor|Apartments|1946–1960,2011,2.195
+floor|Apartments|1946–1960,2012,2.193
+floor|Apartments|1946–1960,2013,2.191
+floor|Apartments|1946–1960,2014,2.189
+floor|Apartments|1946–1960,2015,2.187
+floor|Apartments|1946–1960,2016,2.172
+floor|Apartments|1946–1960,2017,2.157
+floor|Apartments|1946–1960,2018,2.142
+floor|Apartments|1946–1960,2019,2.128
+floor|Apartments|1946–1960,2020,2.113
+floor|Apartments|1961–1977,2000,6.877
+floor|Apartments|1961–1977,2001,6.865
+floor|Apartments|1961–1977,2002,6.853
+floor|Apartments|1961–1977,2003,6.841
+floor|Apartments|1961–1977,2004,6.836
+floor|Apartments|1961–1977,2005,6.83
+floor|Apartments|1961–1977,2006,6.824
+floor|Apartments|1961–1977,2007,6.818
+floor|Apartments|1961–1977,2008,6.812
+floor|Apartments|1961–1977,2009,6.806
+floor|Apartments|1961–1977,2010,6.8
+floor|Apartments|1961–1977,2011,6.794
+floor|Apartments|1961–1977,2012,6.77
+floor|Apartments|1961–1977,2013,6.745
+floor|Apartments|1961–1977,2014,6.721
+floor|Apartments|1961–1977,2015,6.696
+floor|Apartments|1961–1977,2016,6.672
+floor|Apartments|1961–1977,2017,6.648
+floor|Apartments|1961–1977,2018,6.623
+floor|Apartments|1961–1977,2019,6.599
+floor|Apartments|1961–1977,2020,6.575
+floor|Apartments|1978–1983,2000,5.635
+floor|Apartments|1978–1983,2001,5.619
+floor|Apartments|1978–1983,2002,5.603
+floor|Apartments|1978–1983,2003,5.586
+floor|Apartments|1978–1983,2004,5.57
+floor|Apartments|1978–1983,2005,5.554
+floor|Apartments|1978–1983,2006,5.538
+floor|Apartments|1978–1983,2007,5.522
+floor|Apartments|1978–1983,2008,5.506
+floor|Apartments|1978–1983,2009,5.49
+floor|Apartments|1978–1983,2010,5.474
+floor|Apartments|1978–1983,2011,5.458
+floor|Apartments|1978–1983,2012,5.442
+floor|Apartments|1978–1983,2013,5.426
+floor|Apartments|1978–1983,2014,5.41
+floor|Apartments|1978–1983,2015,5.395
+floor|Apartments|1978–1983,2016,5.379
+floor|Apartments|1978–1983,2017,5.363
+floor|Apartments|1978–1983,2018,5.348
+floor|Apartments|1978–1983,2019,5.332
+floor|Apartments|1978–1983,2020,5.316
+floor|Apartments|1984–1995,2000,2.871
+floor|Apartments|1984–1995,2001,2.865
+floor|Apartments|1984–1995,2002,2.86
+floor|Apartments|1984–1995,2003,2.855
+floor|Apartments|1984–1995,2004,2.85
+floor|Apartments|1984–1995,2005,2.845
+floor|Apartments|1984–1995,2006,2.84
+floor|Apartments|1984–1995,2007,2.834
+floor|Apartments|1984–1995,2008,2.829
+floor|Apartments|1984–1995,2009,2.824
+floor|Apartments|1984–1995,2010,2.819
+floor|Apartments|1984–1995,2011,2.814
+floor|Apartments|1984–1995,2012,2.809
+floor|Apartments|1984–1995,2013,2.804
+floor|Apartments|1984–1995,2014,2.799
+floor|Apartments|1984–1995,2015,2.794
+floor|Apartments|1984–1995,2016,2.788
+floor|Apartments|1984–1995,2017,2.783
+floor|Apartments|1984–1995,2018,2.778
+floor|Apartments|1984–1995,2019,2.773
+floor|Apartments|1984–1995,2020,2.768
+floor|Apartments|1996–2000,2000,1.548
+floor|Apartments|1996–2000,2001,1.547
+floor|Apartments|1996–2000,2002,1.546
+floor|Apartments|1996–2000,2003,1.545
+floor|Apartments|1996–2000,2004,1.543
+floor|Apartments|1996–2000,2005,1.542
+floor|Apartments|1996–2000,2006,1.541
+floor|Apartments|1996–2000,2007,1.54
+floor|Apartments|1996–2000,2008,1.539
+floor|Apartments|1996–2000,2009,1.538
+floor|Apartments|1996–2000,2010,1.537
+floor|Apartments|1996–2000,2011,1.536
+floor|Apartments|1996–2000,2012,1.534
+floor|Apartments|1996–2000,2013,1.533
+floor|Apartments|1996–2000,2014,1.532
+floor|Apartments|1996–2000,2015,1.531
+floor|Apartments|1996–2000,2016,1.53
+floor|Apartments|1996–2000,2017,1.529
+floor|Apartments|1996–2000,2018,1.528
+floor|Apartments|1996–2000,2019,1.527
+floor|Apartments|1996–2000,2020,1.526
+floor|Apartments|2001–2005,2000,0
+floor|Apartments|2001–2005,2001,0.798
+floor|Apartments|2001–2005,2002,1.528
+floor|Apartments|2001–2005,2003,2.462
+floor|Apartments|2001–2005,2004,3.409
+floor|Apartments|2001–2005,2005,4.246
+floor|Apartments|2001–2005,2006,4.246
+floor|Apartments|2001–2005,2007,4.245
+floor|Apartments|2001–2005,2008,4.244
+floor|Apartments|2001–2005,2009,4.243
+floor|Apartments|2001–2005,2010,4.243
+floor|Apartments|2001–2005,2011,4.242
+floor|Apartments|2001–2005,2012,4.241
+floor|Apartments|2001–2005,2013,4.24
+floor|Apartments|2001–2005,2014,4.239
+floor|Apartments|2001–2005,2015,4.239
+floor|Apartments|2001–2005,2016,4.238
+floor|Apartments|2001–2005,2017,4.237
+floor|Apartments|2001–2005,2018,4.236
+floor|Apartments|2001–2005,2019,4.236
+floor|Apartments|2001–2005,2020,4.235
+floor|Apartments|2006–2010,2000,0
+floor|Apartments|2006–2010,2001,0
+floor|Apartments|2006–2010,2002,0
+floor|Apartments|2006–2010,2003,0
+floor|Apartments|2006–2010,2004,0
+floor|Apartments|2006–2010,2005,0
+floor|Apartments|2006–2010,2006,0.973
+floor|Apartments|2006–2010,2007,1.812
+floor|Apartments|2006–2010,2008,3.053
+floor|Apartments|2006–2010,2009,4.184
+floor|Apartments|2006–2010,2010,4.999
+floor|Apartments|2006–2010,2011,4.999
+floor|Apartments|2006–2010,2012,4.999
+floor|Apartments|2006–2010,2013,4.999
+floor|Apartments|2006–2010,2014,4.998
+floor|Apartments|2006–2010,2015,4.998
+floor|Apartments|2006–2010,2016,4.998
+floor|Apartments|2006–2010,2017,4.998
+floor|Apartments|2006–2010,2018,4.998
+floor|Apartments|2006–2010,2019,4.997
+floor|Apartments|2006–2010,2020,4.997
+floor|Apartments|2011–2015,2000,0
+floor|Apartments|2011–2015,2001,0
+floor|Apartments|2011–2015,2002,0
+floor|Apartments|2011–2015,2003,0
+floor|Apartments|2011–2015,2004,0
+floor|Apartments|2011–2015,2005,0
+floor|Apartments|2011–2015,2006,0
+floor|Apartments|2011–2015,2007,0
+floor|Apartments|2011–2015,2008,0
+floor|Apartments|2011–2015,2009,0
+floor|Apartments|2011–2015,2010,0
+floor|Apartments|2011–2015,2011,0.593
+floor|Apartments|2011–2015,2012,1.322
+floor|Apartments|2011–2015,2013,2.353
+floor|Apartments|2011–2015,2014,3.563
+floor|Apartments|2011–2015,2015,5.129
+floor|Apartments|2011–2015,2016,5.129
+floor|Apartments|2011–2015,2017,5.129
+floor|Apartments|2011–2015,2018,5.129
+floor|Apartments|2011–2015,2019,5.129
+floor|Apartments|2011–2015,2020,5.129
+floor|Apartments|2016_2020,2000,0
+floor|Apartments|2016_2020,2001,0
+floor|Apartments|2016_2020,2002,0
+floor|Apartments|2016_2020,2003,0
+floor|Apartments|2016_2020,2004,0
+floor|Apartments|2016_2020,2005,0
+floor|Apartments|2016_2020,2006,0
+floor|Apartments|2016_2020,2007,0
+floor|Apartments|2016_2020,2008,0
+floor|Apartments|2016_2020,2009,0
+floor|Apartments|2016_2020,2010,0
+floor|Apartments|2016_2020,2011,0
+floor|Apartments|2016_2020,2012,0
+floor|Apartments|2016_2020,2013,0
+floor|Apartments|2016_2020,2014,0
+floor|Apartments|2016_2020,2015,0
+floor|Apartments|2016_2020,2016,1.958
+floor|Apartments|2016_2020,2017,3.121
+floor|Apartments|2016_2020,2018,3.902
+floor|Apartments|2016_2020,2019,5.181
+floor|Apartments|2016_2020,2020,6.47
+floor|Mobile Homes|Before 1946,2000,0.293
+floor|Mobile Homes|Before 1946,2001,0.289
+floor|Mobile Homes|Before 1946,2002,0.286
+floor|Mobile Homes|Before 1946,2003,0.283
+floor|Mobile Homes|Before 1946,2004,0.28
+floor|Mobile Homes|Before 1946,2005,0.276
+floor|Mobile Homes|Before 1946,2006,0.273
+floor|Mobile Homes|Before 1946,2007,0.27
+floor|Mobile Homes|Before 1946,2008,0.267
+floor|Mobile Homes|Before 1946,2009,0.264
+floor|Mobile Homes|Before 1946,2010,0.261
+floor|Mobile Homes|Before 1946,2011,0.258
+floor|Mobile Homes|Before 1946,2012,0.255
+floor|Mobile Homes|Before 1946,2013,0.252
+floor|Mobile Homes|Before 1946,2014,0.249
+floor|Mobile Homes|Before 1946,2015,0.246
+floor|Mobile Homes|Before 1946,2016,0.242
+floor|Mobile Homes|Before 1946,2017,0.238
+floor|Mobile Homes|Before 1946,2018,0.233
+floor|Mobile Homes|Before 1946,2019,0.229
+floor|Mobile Homes|Before 1946,2020,0.225
+floor|Mobile Homes|1946–1960,2000,0.281
+floor|Mobile Homes|1946–1960,2001,0.281
+floor|Mobile Homes|1946–1960,2002,0.281
+floor|Mobile Homes|1946–1960,2003,0.281
+floor|Mobile Homes|1946–1960,2004,0.28
+floor|Mobile Homes|1946–1960,2005,0.28
+floor|Mobile Homes|1946–1960,2006,0.28
+floor|Mobile Homes|1946–1960,2007,0.28
+floor|Mobile Homes|1946–1960,2008,0.279
+floor|Mobile Homes|1946–1960,2009,0.279
+floor|Mobile Homes|1946–1960,2010,0.279
+floor|Mobile Homes|1946–1960,2011,0.278
+floor|Mobile Homes|1946–1960,2012,0.278
+floor|Mobile Homes|1946–1960,2013,0.278
+floor|Mobile Homes|1946–1960,2014,0.277
+floor|Mobile Homes|1946–1960,2015,0.277
+floor|Mobile Homes|1946–1960,2016,0.275
+floor|Mobile Homes|1946–1960,2017,0.273
+floor|Mobile Homes|1946–1960,2018,0.271
+floor|Mobile Homes|1946–1960,2019,0.269
+floor|Mobile Homes|1946–1960,2020,0.268
+floor|Mobile Homes|1961–1977,2000,1.141
+floor|Mobile Homes|1961–1977,2001,1.137
+floor|Mobile Homes|1961–1977,2002,1.132
+floor|Mobile Homes|1961–1977,2003,1.128
+floor|Mobile Homes|1961–1977,2004,1.124
+floor|Mobile Homes|1961–1977,2005,1.12
+floor|Mobile Homes|1961–1977,2006,1.116
+floor|Mobile Homes|1961–1977,2007,1.112
+floor|Mobile Homes|1961–1977,2008,1.108
+floor|Mobile Homes|1961–1977,2009,1.104
+floor|Mobile Homes|1961–1977,2010,1.1
+floor|Mobile Homes|1961–1977,2011,1.096
+floor|Mobile Homes|1961–1977,2012,1.092
+floor|Mobile Homes|1961–1977,2013,1.088
+floor|Mobile Homes|1961–1977,2014,1.084
+floor|Mobile Homes|1961–1977,2015,1.08
+floor|Mobile Homes|1961–1977,2016,1.076
+floor|Mobile Homes|1961–1977,2017,1.072
+floor|Mobile Homes|1961–1977,2018,1.068
+floor|Mobile Homes|1961–1977,2019,1.064
+floor|Mobile Homes|1961–1977,2020,1.06
+floor|Mobile Homes|1978–1983,2000,1.264
+floor|Mobile Homes|1978–1983,2001,1.26
+floor|Mobile Homes|1978–1983,2002,1.256
+floor|Mobile Homes|1978–1983,2003,1.253
+floor|Mobile Homes|1978–1983,2004,1.249
+floor|Mobile Homes|1978–1983,2005,1.245
+floor|Mobile Homes|1978–1983,2006,1.242
+floor|Mobile Homes|1978–1983,2007,1.238
+floor|Mobile Homes|1978–1983,2008,1.234
+floor|Mobile Homes|1978–1983,2009,1.231
+floor|Mobile Homes|1978–1983,2010,1.227
+floor|Mobile Homes|1978–1983,2011,1.224
+floor|Mobile Homes|1978–1983,2012,1.229
+floor|Mobile Homes|1978–1983,2013,1.234
+floor|Mobile Homes|1978–1983,2014,1.24
+floor|Mobile Homes|1978–1983,2015,1.245
+floor|Mobile Homes|1978–1983,2016,1.242
+floor|Mobile Homes|1978–1983,2017,1.238
+floor|Mobile Homes|1978–1983,2018,1.234
+floor|Mobile Homes|1978–1983,2019,1.231
+floor|Mobile Homes|1978–1983,2020,1.227
+floor|Mobile Homes|1984–1995,2000,0.927
+floor|Mobile Homes|1984–1995,2001,0.925
+floor|Mobile Homes|1984–1995,2002,0.923
+floor|Mobile Homes|1984–1995,2003,0.921
+floor|Mobile Homes|1984–1995,2004,0.92
+floor|Mobile Homes|1984–1995,2005,0.918
+floor|Mobile Homes|1984–1995,2006,0.916
+floor|Mobile Homes|1984–1995,2007,0.915
+floor|Mobile Homes|1984–1995,2008,0.913
+floor|Mobile Homes|1984–1995,2009,0.911
+floor|Mobile Homes|1984–1995,2010,0.91
+floor|Mobile Homes|1984–1995,2011,0.908
+floor|Mobile Homes|1984–1995,2012,0.906
+floor|Mobile Homes|1984–1995,2013,0.905
+floor|Mobile Homes|1984–1995,2014,0.903
+floor|Mobile Homes|1984–1995,2015,0.901
+floor|Mobile Homes|1984–1995,2016,0.9
+floor|Mobile Homes|1984–1995,2017,0.898
+floor|Mobile Homes|1984–1995,2018,0.896
+floor|Mobile Homes|1984–1995,2019,0.895
+floor|Mobile Homes|1984–1995,2020,0.893
+floor|Mobile Homes|1996–2000,2000,0.476
+floor|Mobile Homes|1996–2000,2001,0.476
+floor|Mobile Homes|1996–2000,2002,0.475
+floor|Mobile Homes|1996–2000,2003,0.475
+floor|Mobile Homes|1996–2000,2004,0.475
+floor|Mobile Homes|1996–2000,2005,0.474
+floor|Mobile Homes|1996–2000,2006,0.474
+floor|Mobile Homes|1996–2000,2007,0.474
+floor|Mobile Homes|1996–2000,2008,0.473
+floor|Mobile Homes|1996–2000,2009,0.473
+floor|Mobile Homes|1996–2000,2010,0.472
+floor|Mobile Homes|1996–2000,2011,0.472
+floor|Mobile Homes|1996–2000,2012,0.472
+floor|Mobile Homes|1996–2000,2013,0.471
+floor|Mobile Homes|1996–2000,2014,0.471
+floor|Mobile Homes|1996–2000,2015,0.471
+floor|Mobile Homes|1996–2000,2016,0.47
+floor|Mobile Homes|1996–2000,2017,0.47
+floor|Mobile Homes|1996–2000,2018,0.47
+floor|Mobile Homes|1996–2000,2019,0.469
+floor|Mobile Homes|1996–2000,2020,0.469
+floor|Mobile Homes|2001–2005,2000,0
+floor|Mobile Homes|2001–2005,2001,0.102
+floor|Mobile Homes|2001–2005,2002,0.23
+floor|Mobile Homes|2001–2005,2003,0.373
+floor|Mobile Homes|2001–2005,2004,0.508
+floor|Mobile Homes|2001–2005,2005,0.658
+floor|Mobile Homes|2001–2005,2006,0.658
+floor|Mobile Homes|2001–2005,2007,0.658
+floor|Mobile Homes|2001–2005,2008,0.657
+floor|Mobile Homes|2001–2005,2009,0.657
+floor|Mobile Homes|2001–2005,2010,0.657
+floor|Mobile Homes|2001–2005,2011,0.657
+floor|Mobile Homes|2001–2005,2012,0.657
+floor|Mobile Homes|2001–2005,2013,0.657
+floor|Mobile Homes|2001–2005,2014,0.657
+floor|Mobile Homes|2001–2005,2015,0.657
+floor|Mobile Homes|2001–2005,2016,0.656
+floor|Mobile Homes|2001–2005,2017,0.656
+floor|Mobile Homes|2001–2005,2018,0.656
+floor|Mobile Homes|2001–2005,2019,0.656
+floor|Mobile Homes|2001–2005,2020,0.656
+floor|Mobile Homes|2006–2010,2000,0
+floor|Mobile Homes|2006–2010,2001,0
+floor|Mobile Homes|2006–2010,2002,0
+floor|Mobile Homes|2006–2010,2003,0
+floor|Mobile Homes|2006–2010,2004,0
+floor|Mobile Homes|2006–2010,2005,0
+floor|Mobile Homes|2006–2010,2006,0.166
+floor|Mobile Homes|2006–2010,2007,0.349
+floor|Mobile Homes|2006–2010,2008,0.493
+floor|Mobile Homes|2006–2010,2009,0.59
+floor|Mobile Homes|2006–2010,2010,0.709
+floor|Mobile Homes|2006–2010,2011,0.709
+floor|Mobile Homes|2006–2010,2012,0.709
+floor|Mobile Homes|2006–2010,2013,0.709
+floor|Mobile Homes|2006–2010,2014,0.708
+floor|Mobile Homes|2006–2010,2015,0.708
+floor|Mobile Homes|2006–2010,2016,0.708
+floor|Mobile Homes|2006–2010,2017,0.708
+floor|Mobile Homes|2006–2010,2018,0.708
+floor|Mobile Homes|2006–2010,2019,0.708
+floor|Mobile Homes|2006–2010,2020,0.708
+floor|Mobile Homes|2011–2015,2000,0
+floor|Mobile Homes|2011–2015,2001,0
+floor|Mobile Homes|2011–2015,2002,0
+floor|Mobile Homes|2011–2015,2003,0
+floor|Mobile Homes|2011–2015,2004,0
+floor|Mobile Homes|2011–2015,2005,0
+floor|Mobile Homes|2011–2015,2006,0
+floor|Mobile Homes|2011–2015,2007,0
+floor|Mobile Homes|2011–2015,2008,0
+floor|Mobile Homes|2011–2015,2009,0
+floor|Mobile Homes|2011–2015,2010,0
+floor|Mobile Homes|2011–2015,2011,0.108
+floor|Mobile Homes|2011–2015,2012,0.216
+floor|Mobile Homes|2011–2015,2013,0.339
+floor|Mobile Homes|2011–2015,2014,0.462
+floor|Mobile Homes|2011–2015,2015,0.587
+floor|Mobile Homes|2011–2015,2016,0.587
+floor|Mobile Homes|2011–2015,2017,0.587
+floor|Mobile Homes|2011–2015,2018,0.587
+floor|Mobile Homes|2011–2015,2019,0.587
+floor|Mobile Homes|2011–2015,2020,0.587
+floor|Mobile Homes|2016_2020,2000,0
+floor|Mobile Homes|2016_2020,2001,0
+floor|Mobile Homes|2016_2020,2002,0
+floor|Mobile Homes|2016_2020,2003,0
+floor|Mobile Homes|2016_2020,2004,0
+floor|Mobile Homes|2016_2020,2005,0
+floor|Mobile Homes|2016_2020,2006,0
+floor|Mobile Homes|2016_2020,2007,0
+floor|Mobile Homes|2016_2020,2008,0
+floor|Mobile Homes|2016_2020,2009,0
+floor|Mobile Homes|2016_2020,2010,0
+floor|Mobile Homes|2016_2020,2011,0
+floor|Mobile Homes|2016_2020,2012,0
+floor|Mobile Homes|2016_2020,2013,0
+floor|Mobile Homes|2016_2020,2014,0
+floor|Mobile Homes|2016_2020,2015,0
+floor|Mobile Homes|2016_2020,2016,0.096
+floor|Mobile Homes|2016_2020,2017,0.19
+floor|Mobile Homes|2016_2020,2018,0.288
+floor|Mobile Homes|2016_2020,2019,0.372
+floor|Mobile Homes|2016_2020,2020,0.454
+expected|heating_intensity_high|<1960,2000,0.6481831945060401
+expected|heating_intensity_high|<1960,2001,0.5636383078420579
+expected|heating_intensity_high|<1960,2002,0.6366335084730843
+expected|heating_intensity_high|<1960,2003,0.6411511681197607
+expected|heating_intensity_high|<1960,2004,0.6336429077821217
+expected|heating_intensity_high|<1960,2005,0.5703326089138702
+expected|heating_intensity_high|<1960,2006,0.5759241867964733
+expected|heating_intensity_high|<1960,2007,0.6751494860673973
+expected|heating_intensity_high|<1960,2008,0.6633561610927399
+expected|heating_intensity_high|<1960,2009,0.665370596453825
+expected|heating_intensity_high|<1960,2010,0.6215830340052063
+expected|heating_intensity_high|<1960,2011,0.6577117097218774
+expected|heating_intensity_high|<1960,2012,0.6416640526353062
+expected|heating_intensity_high|<1960,2013,0.6449365561756104
+expected|heating_intensity_high|<1960,2014,0.6396762948670814
+expected|heating_intensity_high|<1960,2015,0.5954330348368647
+expected|heating_intensity_high|<1960,2016,0.5167908831530554
+expected|heating_intensity_high|<1960,2017,0.6213363832410941
+expected|heating_intensity_high|<1960,2018,0.6613951386940492
+expected|heating_intensity_high|<1960,2019,0.66620055123229
+expected|heating_intensity_high|<1960,2020,0.6451289115857007
+expected|heating_intensity_lowmed|<1960,2000,1.113565423692552
+expected|heating_intensity_lowmed|<1960,2001,0.9457841964172388
+expected|heating_intensity_lowmed|<1960,2002,1.076698264061582
+expected|heating_intensity_lowmed|<1960,2003,1.0706149867989585
+expected|heating_intensity_lowmed|<1960,2004,1.051097805363962
+expected|heating_intensity_lowmed|<1960,2005,0.9376338890183229
+expected|heating_intensity_lowmed|<1960,2006,0.9563928801405086
+expected|heating_intensity_lowmed|<1960,2007,1.1347894236343061
+expected|heating_intensity_lowmed|<1960,2008,1.1083146692967782
+expected|heating_intensity_lowmed|<1960,2009,1.1084077264064014
+expected|heating_intensity_lowmed|<1960,2010,1.0260195882569154
+expected|heating_intensity_lowmed|<1960,2011,1.0886347362492717
+expected|heating_intensity_lowmed|<1960,2012,1.070964729791699
+expected|heating_intensity_lowmed|<1960,2013,1.0900474342440245
+expected|heating_intensity_lowmed|<1960,2014,1.092570130654624
+expected|heating_intensity_lowmed|<1960,2015,1.0084479975490195
+expected|heating_intensity_lowmed|<1960,2016,0.8698698423049379
+expected|heating_intensity_lowmed|<1960,2017,1.050958973164356
+expected|heating_intensity_lowmed|<1960,2018,1.1234098244687547
+expected|heating_intensity_lowmed|<1960,2019,1.1203072605146815
+expected|heating_intensity_lowmed|<1960,2020,1.0718626034759933
+expected|heating_intensity_high|1961-1980,2000,0.4488238863809717
+expected|heating_intensity_high|1961-1980,2001,0.39103410564077346
+expected|heating_intensity_high|1961-1980,2002,0.44238862647503724
+expected|heating_intensity_high|1961-1980,2003,0.44675589408288385
+expected|heating_intensity_high|1961-1980,2004,0.4423397376850054
+expected|heating_intensity_high|1961-1980,2005,0.39887163081615945
+expected|heating_intensity_high|1961-1980,2006,0.40321694257616886
+expected|heating_intensity_high|1961-1980,2007,0.47353700652646386
+expected|heating_intensity_high|1961-1980,2008,0.4655157111007381
+expected|heating_intensity_high|1961-1980,2009,0.4669631035391502
+expected|heating_intensity_high|1961-1980,2010,0.43575711365915265
+expected|heating_intensity_high|1961-1980,2011,0.4609421339413478
+expected|heating_intensity_high|1961-1980,2012,0.45059654601872123
+expected|heating_intensity_high|1961-1980,2013,0.4536527542319512
+expected|heating_intensity_high|1961-1980,2014,0.4509736634653996
+expected|heating_intensity_high|1961-1980,2015,0.4206694047808123
+expected|heating_intensity_high|1961-1980,2016,0.36644105637838637
+expected|heating_intensity_high|1961-1980,2017,0.4418229202882786
+expected|heating_intensity_high|1961-1980,2018,0.47084934408174467
+expected|heating_intensity_high|1961-1980,2019,0.4749575372956437
+expected|heating_intensity_high|1961-1980,2020,0.46056487121229994
+expected|heating_intensity_lowmed|1961-1980,2000,0.7541045481520003
+expected|heating_intensity_lowmed|1961-1980,2001,0.640703216998696
+expected|heating_intensity_lowmed|1961-1980,2002,0.731462204915104
+expected|heating_intensity_lowmed|1961-1980,2003,0.7290088961878434
+expected|heating_intensity_lowmed|1961-1980,2004,0.71701332600705
+expected|heating_intensity_lowmed|1961-1980,2005,0.6400950693332843
+expected|heating_intensity_lowmed|1961-1980,2006,0.653976422275455
+expected|heating_intensity_lowmed|1961-1980,2007,0.7779559140082213
+expected|heating_intensity_lowmed|1961-1980,2008,0.760687491368282
+expected|heating_intensity_lowmed|1961-1980,2009,0.7615076408331313
+expected|heating_intensity_lowmed|1961-1980,2010,0.7041162420289756
+expected|heating_intensity_lowmed|1961-1980,2011,0.7472996514542878
+expected|heating_intensity_lowmed|1961-1980,2012,0.7363408592175789
+expected|heating_intensity_lowmed|1961-1980,2013,0.7504370519396968
+expected|heating_intensity_lowmed|1961-1980,2014,0.7534693835585016
+expected|heating_intensity_lowmed|1961-1980,2015,0.6955614591164061
+expected|heating_intensity_lowmed|1961-1980,2016,0.600085236507653
+expected|heating_intensity_lowmed|1961-1980,2017,0.725809818505422
+expected|heating_intensity_lowmed|1961-1980,2018,0.7765291072842089
+expected|heating_intensity_lowmed|1961-1980,2019,0.7747166264636546
+expected|heating_intensity_lowmed|1961-1980,2020,0.7409906096479761
+expected|heating_intensity_high|1981-2000,2000,0.6287062998973072
+expected|heating_intensity_high|1981-2000,2001,0.5485324495598425
+expected|heating_intensity_high|1981-2000,2002,0.6214918151827824
+expected|heating_intensity_high|1981-2000,2003,0.6289886895834345
+expected|heating_intensity_high|1981-2000,2004,0.6237284627925735
+expected|heating_intensity_high|1981-2000,2005,0.5628938686355632
+expected|heating_intensity_high|1981-2000,2006,0.5691138357143513
+expected|heating_intensity_high|1981-2000,2007,0.6691361792341313
+expected|heating_intensity_high|1981-2000,2008,0.6587968564406486
+expected|heating_intensity_high|1981-2000,2009,0.661258697740528
+expected|heating_intensity_high|1981-2000,2010,0.6166400578282114
+expected|heating_intensity_high|1981-2000,2011,0.6524462008436063
+expected|heating_intensity_high|1981-2000,2012,0.6604808938504833
+expected|heating_intensity_high|1981-2000,2013,0.6875496644152809
+expected|heating_intensity_high|1981-2000,2014,0.7066175405067464
+expected|heating_intensity_high|1981-2000,2015,0.6811528132264252
+expected|heating_intensity_high|1981-2000,2016,0.5935170764464425
+expected|heating_intensity_high|1981-2000,2017,0.7157024043904628
+expected|heating_intensity_high|1981-2000,2018,0.7629667985588757
+expected|heating_intensity_high|1981-2000,2019,0.76986356201136
+expected|heating_intensity_high|1981-2000,2020,0.7464580821644238
+expected|heating_intensity_lowmed|1981-2000,2000,0.4896875469176168
+expected|heating_intensity_lowmed|1981-2000,2001,0.41655058491253777
+expected|heating_intensity_lowmed|1981-2000,2002,0.4759543051491874
+expected|heating_intensity_lowmed|1981-2000,2003,0.4752819596651529
+expected|heating_intensity_lowmed|1981-2000,2004,0.4683932595543937
+expected|heating_intensity_lowmed|1981-2000,2005,0.4189413076763635
+expected|heating_intensity_lowmed|1981-2000,2006,0.42829228682370707
+expected|heating_intensity_lowmed|1981-2000,2007,0.51010872477794
+expected|heating_intensity_lowmed|1981-2000,2008,0.4991835690531717
+expected|heating_intensity_lowmed|1981-2000,2009,0.49967857102732965
+expected|heating_intensity_lowmed|1981-2000,2010,0.46132708195183225
+expected|heating_intensity_lowmed|1981-2000,2011,0.48933044184184293
+expected|heating_intensity_lowmed|1981-2000,2012,0.48138554261659766
+expected|heating_intensity_lowmed|1981-2000,2013,0.489696630500015
+expected|heating_intensity_lowmed|1981-2000,2014,0.491220155854205
+expected|heating_intensity_lowmed|1981-2000,2015,0.4537321716984218
+expected|heating_intensity_lowmed|1981-2000,2016,0.3929150309111811
+expected|heating_intensity_lowmed|1981-2000,2017,0.4762799126189171
+expected|heating_intensity_lowmed|1981-2000,2018,0.5088744804972901
+expected|heating_intensity_lowmed|1981-2000,2019,0.5073299039716751
+expected|heating_intensity_lowmed|1981-2000,2020,0.4855198778983485
+expected|heating_intensity_high|2001-2020,2001,0.2041767567573548
+expected|heating_intensity_high|2001-2020,2002,0.2612996121922319
+expected|heating_intensity_high|2001-2020,2003,0.25926305115786064
+expected|heating_intensity_high|2001-2020,2004,0.25208304200701165
+expected|heating_intensity_high|2001-2020,2005,0.2344683577103157
+expected|heating_intensity_high|2001-2020,2006,0.23415016040967337
+expected|heating_intensity_high|2001-2020,2007,0.28291344783754696
+expected|heating_intensity_high|2001-2020,2008,0.26365043959718504
+expected|heating_intensity_high|2001-2020,2009,0.24891925158221068
+expected|heating_intensity_high|2001-2020,2010,0.23025330721228063
+expected|heating_intensity_high|2001-2020,2011,0.2448402972500592
+expected|heating_intensity_high|2001-2020,2012,0.24290674914383031
+expected|heating_intensity_high|2001-2020,2013,0.24397831711123047
+expected|heating_intensity_high|2001-2020,2014,0.240131856972161
+expected|heating_intensity_high|2001-2020,2015,0.21811926991923386
+expected|heating_intensity_high|2001-2020,2016,0.17632463300607545
+expected|heating_intensity_high|2001-2020,2017,0.20743727642363574
+expected|heating_intensity_high|2001-2020,2018,0.2204700694558038
+expected|heating_intensity_high|2001-2020,2019,0.2159722470940305
+expected|heating_intensity_high|2001-2020,2020,0.20358373350707928
+expected|heating_intensity_lowmed|2001-2020,2001,0.3711835175305294
+expected|heating_intensity_lowmed|2001-2020,2002,0.4196554878107967
+expected|heating_intensity_lowmed|2001-2020,2003,0.4211899226125395
+expected|heating_intensity_lowmed|2001-2020,2004,0.41774274160744235
+expected|heating_intensity_lowmed|2001-2020,2005,0.3728203294554983
+expected|heating_intensity_lowmed|2001-2020,2006,0.37124512263179954
+expected|heating_intensity_lowmed|2001-2020,2007,0.4331305112833465
+expected|heating_intensity_lowmed|2001-2020,2008,0.4222446716937177
+expected|heating_intensity_lowmed|2001-2020,2009,0.4233120891525475
+expected|heating_intensity_lowmed|2001-2020,2010,0.38764180864182424
+expected|heating_intensity_lowmed|2001-2020,2011,0.40703748885293983
+expected|heating_intensity_lowmed|2001-2020,2012,0.39852200723736825
+expected|heating_intensity_lowmed|2001-2020,2013,0.4040923600816122
+expected|heating_intensity_lowmed|2001-2020,2014,0.40530033485833306
+expected|heating_intensity_lowmed|2001-2020,2015,0.3746328119045693
+expected|heating_intensity_lowmed|2001-2020,2016,0.32531976547932995
+expected|heating_intensity_lowmed|2001-2020,2017,0.3941366517784747
+expected|heating_intensity_lowmed|2001-2020,2018,0.41976638789848103
+expected|heating_intensity_lowmed|2001-2020,2019,0.4186794128516454
+expected|heating_intensity_lowmed|2001-2020,2020,0.40031134436389565
