@@ -52,6 +52,13 @@ Differences from the workbook (each can be reverted with ``Options``)
 ``validation/check_workbook_port.py`` runs the workbook options against the
 workbook's own CEUD inputs and reproduces rows 365-373 for 2000-2020.
 
+Heating degree-day index
+------------------------
+Table 1's provincial Heating Degree-Day Index (1.0 = climate normal) is
+emitted alongside the intensities, historical years only.  The sector module
+uses it to weather-normalise the intensity and to drive the Weather nodes
+that carry year-to-year weather variation past CIMS's vintage weighting.
+
 Output
 ------
 processed_data/nrcan/ceud/residential_heating_intensity.csv
@@ -61,6 +68,9 @@ processed_data/nrcan/ceud/residential_heating_intensity.csv
                 2021-2035, >2035)
     Parameter : service_request   (Reference technology -> Heating)
     Unit      : GJ/m2
+  plus
+    Variable  : hdd_index   Category: ''   Parameter: weather_factor
+    Unit      : index       (historical years only)
 BC's Marine/Cold split is left to the sector module.
 """
 from __future__ import annotations
@@ -458,6 +468,34 @@ def finalize(intensity: pd.DataFrame, region: str,
 
 
 # ==============================================================================
+# HEATING DEGREE-DAY INDEX
+# ==============================================================================
+
+HDD_TABLE = 'Table 1'
+HDD_LABEL = 'Heating Degree-Day Index'
+
+
+def load_hdd_index(region: str, raw_dir: Path = RAW_DIR) -> pd.Series:
+    """Table 1 Heating Degree-Day Index for one region file, indexed by year."""
+    path = raw_dir / f'res_{REGION_FILES[region]}_e.xls'
+    if not path.exists():
+        raise FileNotFoundError(path)
+    t = pl.read_excel(str(path), sheet_name=HDD_TABLE, has_header=False)
+    return _series(t, HDD_LABEL).dropna()
+
+
+def hdd_frame(hdd: pd.Series, region: str,
+              last_hist_year: int = LAST_HIST_YEAR) -> pd.DataFrame:
+    """Shape an HDD index series to the output schema (historical years only)."""
+    hdd = hdd[hdd.index <= last_hist_year]
+    return pd.DataFrame({
+        'Region': region, 'Variable': 'hdd_index', 'Category': '',
+        'Parameter': 'weather_factor', 'Unit': 'index', 'Source': 'CEUD',
+        'Year': hdd.index.astype(int), 'Value': hdd.to_numpy(dtype=float),
+    })
+
+
+# ==============================================================================
 # DIAGNOSTICS
 # ==============================================================================
 
@@ -490,7 +528,9 @@ def extract_all(regions: Optional[list[str]] = None, opts: Options = Options(),
         try:
             inp = load_region(region, raw_dir)
             result = compute_region(inp, opts)
-            df = finalize(result['intensity'], region)
+            df = pd.concat([finalize(result['intensity'], region),
+                            hdd_frame(load_hdd_index(region, raw_dir), region)],
+                           ignore_index=True)
             if verbose:
                 print(f'   {region}: {diagnostics(inp, result)}')
             if region == 'TR':

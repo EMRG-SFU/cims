@@ -20,6 +20,9 @@ Output: `processed_data/nrcan/ceud/residential_heating_intensity.csv` (GJ/m2).
 5. Back-fill leading years, 2021-2035 / >2035 = 0.75 / 0.75^2 x 2001-2020 (JCIMS),
    constant after the last CEUD year, TR applied to YT/NT/NU. No weather normalisation.
    BC Marine/Cold split is left to the sector module.
+6. Also emits Table 1's Heating Degree-Day Index (`hdd_index`, historical years only);
+   `residential_model_inputs.py` uses it to weather-normalise the intensity and to feed
+   the residential Weather nodes.
 
 `Options` switches restore the workbook logic; `validation/check_workbook_port.py`
 reproduces the workbook's rows 365-373 (2000-2020) exactly from its own inputs.
