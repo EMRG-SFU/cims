@@ -43,6 +43,16 @@ Space-heating intensity  (service_request rows, all years)
     averaged over HEATING_INTENSITY_YEARS.  Retrofit techs and BC's
     Cold/Marine split keep their fixed-data ratios to Reference.
 
+Weather nodes  (WEATHER_NODES; service_provide / competition / service_request)
+    A Fixed Ratio "Weather (Cold|Marine)" node is inserted before each
+    Heating node, and the Bldg Code technologies request it instead of the
+    Heating node.  Its service_request to Heating is the CEUD Heating
+    Degree-Day Index (historical years; mean of the last
+    HDD_PROJECTION_YEARS thereafter), and the Bldg Code intensity is the
+    weather-normalised mean (CEUD intensity / HDD index).  A node without
+    technologies isn't vintage-weighted, so the year-to-year weather signal
+    reaches all floor space rather than only new stock.
+
 Cooling shares  (service_request rows, all years)
     Inserted after the inheritance row of each density's Cooling service.
 
@@ -107,6 +117,13 @@ DENSITY_TO_INTENSITY_VARIABLE: dict[str, str] = {
     'High Density':   'heating_intensity_high',
     'LowMed Density': 'heating_intensity_lowmed',
 }
+
+# Weather nodes: Fixed Ratio "Weather (<climate>)" node between each Bldg Code
+# node and its Heating node, carrying the CEUD HDD index (see module docstring).
+# Its node-level service_request isn't vintage-weighted.
+WEATHER_NODES: bool = True
+# Projection-year weather factor = mean HDD index over the last N CEUD years.
+HDD_PROJECTION_YEARS: int = 10
 
 # Pipeline building-type category → CIMS Building Type technology name
 PIPELINE_TO_CIMS_BUILDING: dict[str, str] = {
@@ -590,19 +607,72 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
     return pl.DataFrame(rows) if rows else _empty_frame()
 
 
-def _heating_intensity_means(heating, region: str) -> dict[tuple[str, str], float]:
-    """{(density, vintage bin): mean GJ/m2 over HEATING_INTENSITY_YEARS} for one region."""
+def _hdd_index(heating, region: str):
+    """CEUD HDD index for one region as a year-indexed Series (empty if absent)."""
+    data = heating[(heating['Region'] == region) & (heating['Variable'] == 'hdd_index')]
+    return data.set_index('Year')['Value'].astype(float).sort_index()
+
+
+def _weather_factors(hdd) -> dict[int, float]:
+    """{year: weather factor} for DATA_START..PROJECTION_END from the HDD index."""
+    proj = float(hdd.iloc[-HDD_PROJECTION_YEARS:].mean())
+    return {y: float(hdd.get(y, proj)) for y in range(DATA_START, PROJECTION_END + 1)}
+
+
+def _heating_intensity_means(heating, region: str,
+                             hdd=None) -> dict[tuple[str, str], float]:
+    """
+    {(density, vintage bin): mean GJ/m2 over HEATING_INTENSITY_YEARS} for one
+    region. With `hdd`, each year is divided by its HDD index first
+    (weather-normalised intensity).
+    """
     lo, hi = HEATING_INTENSITY_YEARS
     data = heating[
         (heating['Region'] == region) &
         heating['Variable'].isin(DENSITY_TO_INTENSITY_VARIABLE.values()) &
         heating['Year'].between(lo, hi)
     ]
+    if hdd is not None:
+        data = data.assign(Value=data['Value'] / data['Year'].map(hdd))
     var_to_density = {v: d for d, v in DENSITY_TO_INTENSITY_VARIABLE.items()}
     return {
         (var_to_density[var], cat): float(g['Value'].mean())
         for (var, cat), g in data.groupby(['Variable', 'Category'])
     }
+
+
+def _weather_node_name(heating_branch: str) -> str:
+    """'...Bldg Code.Heating (Cold)' -> '...Bldg Code.Weather (Cold)'."""
+    return heating_branch.replace('.Heating (', '.Weather (')
+
+
+def _build_weather_node_rows(fixed: pl.DataFrame, heating_branch: str, region: str,
+                             factors: dict[int, float]) -> list[dict]:
+    """Fixed Ratio Weather node rows, positioned just before the Heating node."""
+    heat_rows = fixed.filter(pl.col('Branch') == heating_branch)
+    order = float(heat_rows['_order'].min()) - 0.5
+    sp = heat_rows.filter(pl.col('Parameter') == 'service_provide')
+    unit = sp['Unit'][0] if len(sp) else 'GJ of heat'
+    branch = _weather_node_name(heating_branch)
+    service = branch.split('.')[-1]
+    base = {'Branch': branch, 'Type': 'Service', 'Region': region,
+            'Sector': 'Residential', 'Service': service, 'Technology': '',
+            'Context': '', 'Sub_Context': ''}
+    rows = [
+        {**base, 'Parameter': 'service_provide', 'Target': '', 'Source': '',
+         'Unit': unit, 'Year': '', 'Value': '', '_order': order},
+        {**base, 'Parameter': 'competition', 'Target': '', 'Source': '',
+         'Unit': '', 'Year': '', 'Value': 'Fixed Ratio', '_order': order + 1e-3},
+    ]
+    # One Source for every year: collapse_constant_years groups on Source, and
+    # splitting history from projection would let a repeated historical value
+    # become a second blank-Year default.
+    for i, (year, f) in enumerate(factors.items()):
+        rows.append({**base, 'Parameter': 'service_request', 'Target': heating_branch,
+                     'Source': 'CEUD HDD index',
+                     'Unit': 'GJ', 'Year': str(year), 'Value': str(f),
+                     '_order': order + 2e-3 + i * 1e-6})
+    return rows
 
 
 def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
@@ -616,12 +686,22 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
     fraction of Reference, and BC's Heating (Cold) / (Marine) targets keep
     their climate split -- and is rescaled to the CEUD mean intensity.
 
+    With WEATHER_NODES (and an HDD index for the region) the intensity is
+    weather-normalised, the rows target a Weather node instead of the
+    Heating node, and the Weather node's own rows are added.
+
     Returns the new rows (placed at the replaced rows' positions) and the
     _order values of the fixed rows they replace. Bldg Code nodes with no
     CEUD intensity keep their fixed-data rows.
     """
-    means = _heating_intensity_means(heating, region)
+    hdd = _hdd_index(heating, region) if WEATHER_NODES else None
+    if hdd is not None and hdd.empty:
+        print(f'  No CEUD HDD index for {region}; no Weather nodes')
+        hdd = None
+    factors = _weather_factors(hdd) if hdd is not None else None
+    means = _heating_intensity_means(heating, region, hdd)
     lo, hi = HEATING_INTENSITY_YEARS
+    source = f'CEUD mean {lo}-{hi}' + (' / HDD index' if hdd is not None else '')
     sr = fixed.filter(
         (pl.col('Parameter') == 'service_request') &
         pl.col('Service').str.ends_with(' Bldg Code') &
@@ -630,6 +710,7 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
 
     rows: list[dict] = []
     replaced: list[int] = []
+    weather_done: set[str] = set()
     for (branch,), g in sr.group_by('Branch', maintain_order=True):
         parts = branch.split('.')
         density, vintage_bin = parts[-3], parts[-1].removesuffix(' Bldg Code')
@@ -652,6 +733,11 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
             first = g.filter((pl.col('Technology') == tech) & (pl.col('Target') == target))
             order = float(first['_order'].min())
             value = str(intensity * v / ref_total)
+            if factors is not None:
+                if target not in weather_done:
+                    rows.extend(_build_weather_node_rows(fixed, target, region, factors))
+                    weather_done.add(target)
+                target = _weather_node_name(target)
             for i, year in enumerate(range(DATA_START, PROJECTION_END + 1)):
                 rows.append({
                     'Branch': branch, 'Type': 'Service', 'Region': region,
@@ -660,7 +746,7 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
                     'Parameter': 'service_request',
                     'Context': '', 'Sub_Context': '',
                     'Target': target,
-                    'Source': f'CEUD mean {lo}-{hi}',
+                    'Source': source,
                     'Unit': first['Unit'][0],
                     'Year': str(year), 'Value': value,
                     '_order': order + i * 1e-6,
