@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "CIMS"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 authors = [
     {name = "Jillian Anderson"},
     {name = "Bradford Griffin"},
@@ -18,7 +18,7 @@ classifiers = [
     "Programming Language :: Python",
 ]
 dependencies = [
-    'networkx',
+    'networkx>=3.6.1',
     'numpy',
     'polars',
     'pyarrow',
@@ -34,14 +34,15 @@ dependencies = [
     'tqdm',
     "packaging",
     "requests",
-    'tabulate',
+    'tabulate>=0.10',
+    'psutil',
     "flask>=3.1.3",
     "plotly>=6.9.0",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-notebooks = ['marimo']
+notebooks = ['marimo>=0.24.0']
 
 [project.urls]
 Repository = "https://github.com/EMRG-SFU/cims"
