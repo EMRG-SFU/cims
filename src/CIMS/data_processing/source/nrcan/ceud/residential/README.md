@@ -13,9 +13,18 @@ space heat**, not of dwellings (`HEATING_SHARE_BASIS = 'heat'`). Heat by buildin
 system comes from the same allocation as the intensity below (steps 1-2): stock x
 per-unit energy, IPF-balanced to Tables 6/8, x Table 26 efficiency. LowMed pools the heat
 of SFD + SFA + MOB; High = apartments. Dual systems go wholly to the first-named fuel's
-technology. Set `HEATING_SHARE_BASIS = 'stock'` to restore dwelling shares (Tables 22-25
-"Shares (%)", building-share weighted). Water heating keeps borrowing its NG/oil
-efficiency-tier split from the stock basis either way.
+technology. CEUD's single Heat Pump share is then split across backup-fuel ASHP
+technologies (`_split_ashp_backup`, Cold only).
+
+`wh_tech_{lowmed,high}` are shares of **delivered hot water** too: Table 10 fuel shares
+are converted with each technology's fixed_data `service_request` (fuel per unit of
+service, TR uses YT), using the heat-based space-heating NG/oil tier split (falling back
+to the stock split in years where Table 8 has no energy for a fuel, e.g. NS gas
+2005-2008), then normalised over the technologies present.
+
+Set `HEATING_SHARE_BASIS = 'stock'` to restore the previous method for both: dwelling
+shares (Tables 22-25 "Shares (%)", building-share weighted) and fuel shares split by the
+stock tier mix.
 
 ## Space-heating intensity (`residential_heating_intensity.py`)
 

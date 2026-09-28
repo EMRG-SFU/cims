@@ -63,10 +63,15 @@ EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
 ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
 
-# Basis for space-heating market shares: 'heat' (share of delivered heat, see
-# heat_by_type_and_system) or 'stock' (share of dwellings, CEUD Tables 22-25).
-# Water heating always borrows its NG/oil efficiency split from the stock basis.
+# Basis for space- and water-heating market shares:
+#   'heat'  — share of heat delivered (CIMS market shares are shares of the
+#             service a node provides). Space heating: heat_by_type_and_system.
+#             Water heating: CEUD fuel shares / each technology's fixed_data
+#             service_request (fuel per unit of service).
+#   'stock' — space heating: share of dwellings (CEUD Tables 22-25); water
+#             heating: CEUD fuel shares split by the space-heating tier mix.
 HEATING_SHARE_BASIS = 'heat'
+WH_FIXED_DATA_DIR = _CIMS_BASE / 'raw_data/fixed_data/residential'
 
 # Per-province overrides — explicit annual rate per period, bypasses computed CAGR.
 CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
@@ -936,22 +941,56 @@ def extract_minor_appliance_intensity(province: str, tables: dict) -> list[pl.Da
 # EXTRACTION — WATER HEATING
 # ==============================================================================
 
+def _wh_service_request(province: str) -> dict[tuple[str, str], float]:
+    """Fuel per unit of water-heating service (GJ/GJ) by (density, technology).
+
+    Read from the region's fixed_data residential CSV — the same coefficients
+    CIMS uses — so that fuel shares convert to the service shares CIMS
+    competes on.  TR uses YT's file.  Values are flat over time; the 2000
+    column is used.
+    """
+    region = 'yt' if province.upper() == 'TR' else province.lower()
+    df = pd.read_csv(WH_FIXED_DATA_DIR / f'residential_{region}.csv', encoding='utf-8-sig')
+    out = {}
+    for density in ('LowMed', 'High'):
+        branch = f'CIMS.CAN.{region.upper()}.Residential.Water Heating.{density} Density'
+        rows = df[(df['Branch'] == branch) & (df['Parameter'] == 'service_request')]
+        for _, r in rows.iterrows():
+            out[(density, r['Technology'])] = float(r['2000'])
+    return out
+
+
 def extract_water_heating(province: str, tables: dict,
                            building_shares_df: pl.DataFrame,
-                           heating_df: pl.DataFrame) -> list[pl.DataFrame]:
+                           heating_df: pl.DataFrame,
+                           basis: str = HEATING_SHARE_BASIS,
+                           fallback_heating_df: Optional[pl.DataFrame] = None) -> list[pl.DataFrame]:
     """
     Derive water heating intensity and technology shares.
 
     CEUD does not break water heating by efficiency tier, so we borrow the
     NG and oil efficiency split from the heating technology data.
 
+    With basis='heat' the tier split is a split of heat (from heat-based space
+    heating shares), and each fuel's CEUD energy share is converted to heat
+    with the technologies' fixed_data service_request (fuel per unit of
+    service):  heat_fuel = fuel_share / sum_t(tier_t * sr_t),  heat_t =
+    tier_t * heat_fuel,  electricity = fuel_share / sr_elec.  Shares are then
+    normalised over the technologies present.  With basis='stock' the tier
+    split is applied directly to the fuel shares (the original method).
+
     Parameters
     ----------
     building_shares_df : pl.DataFrame
         Output of extract_building_shares.
     heating_df : pl.DataFrame
-        Output of extract_heating_technologies(basis='stock') (cold climate
-        only needed here).
+        Output of extract_heating_technologies with the same basis (cold
+        climate only needed here).
+    basis : {'heat', 'stock'}
+    fallback_heating_df : pl.DataFrame, optional
+        Stock-basis heating shares, used for a year's NG or oil tier split when
+        heating_df has none (CEUD can list furnace stock with zero Table 8
+        energy, e.g. NS gas 2005-2008).
 
     Returns
     -------
@@ -962,9 +1001,9 @@ def extract_water_heating(province: str, tables: dict,
     def _weight(bt: str) -> pd.Series:
         return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
 
-    def _heat_tech(variable: str, category: str) -> pd.Series:
+    def _heat_tech(variable: str, category: str, source: Optional[pl.DataFrame] = None) -> pd.Series:
         """Retrieve a heating tech series from the heating DataFrame."""
-        subset = heating_df.filter(
+        subset = (heating_df if source is None else source).filter(
             (pl.col('variable') == variable) & (pl.col('category') == category)
         )
         return pl_to_series(subset) if len(subset) > 0 else pd.Series(dtype=float)
@@ -999,42 +1038,66 @@ def extract_water_heating(province: str, tables: dict,
                .add(pct_series(t10, "Wood", match_n=1), fill_value=0))
     
     # NG efficiency split from cold heating data
-    def _ng_total(var: str) -> pd.Series:
-        lo = _heat_tech(var, "Natural Gas_Furnace_Low Efficiency")
-        md = _heat_tech(var, "Natural Gas_Furnace_Medium Efficiency")
-        hi = _heat_tech(var, "Natural Gas_Furnace_High Efficiency")
+    def _ng_total(var: str, source: Optional[pl.DataFrame] = None) -> pd.Series:
+        lo = _heat_tech(var, "Natural Gas_Furnace_Low Efficiency", source)
+        md = _heat_tech(var, "Natural Gas_Furnace_Medium Efficiency", source)
+        hi = _heat_tech(var, "Natural Gas_Furnace_High Efficiency", source)
         return lo.add(md, fill_value=0).add(hi, fill_value=0).replace(0, np.nan)
 
-    def _oil_total(var: str) -> pd.Series:
-        lo = _heat_tech(var, "Light Fuel Oil_Furnace_Low Efficiency")
-        md = _heat_tech(var, "Light Fuel Oil_Furnace_Medium Efficiency")
+    def _oil_total(var: str, source: Optional[pl.DataFrame] = None) -> pd.Series:
+        lo = _heat_tech(var, "Light Fuel Oil_Furnace_Low Efficiency", source)
+        md = _heat_tech(var, "Light Fuel Oil_Furnace_Medium Efficiency", source)
         return lo.add(md, fill_value=0).replace(0, np.nan)
 
-    # Low/med density
-    ng_tot_lm  = _ng_total('heating_lowmed_cold')
-    oil_tot_lm = _oil_total('heating_lowmed_cold')
+    ng_tiers = ("Natural Gas_Furnace_Low Efficiency", "Natural Gas_Furnace_Medium Efficiency",
+                "Natural Gas_Furnace_High Efficiency")
+    oil_tiers = ("Light Fuel Oil_Furnace_Low Efficiency", "Light Fuel Oil_Furnace_Medium Efficiency")
+    ng_boilers = ("Natural Gas_Boiler_Low Efficiency", "Natural Gas_Boiler_Medium Efficiency",
+                  "Natural Gas_Boiler_High Efficiency")
+    oil_boilers = ("Light Fuel Oil_Boiler_Low Efficiency", "Light Fuel Oil_Boiler_Medium Efficiency")
+    elec_boiler = "Electricity_Boiler_High Efficiency"
+    sr = _wh_service_request(province) if basis == 'heat' else {}
 
-    wh_tech_lowmed = {
-        "Natural Gas_Boiler_Low Efficiency":      ng_wh * (_heat_tech('heating_lowmed_cold', "Natural Gas_Furnace_Low Efficiency")     / ng_tot_lm),
-        "Natural Gas_Boiler_Medium Efficiency":   ng_wh * (_heat_tech('heating_lowmed_cold', "Natural Gas_Furnace_Medium Efficiency")  / ng_tot_lm),
-        "Natural Gas_Boiler_High Efficiency":     ng_wh * (_heat_tech('heating_lowmed_cold', "Natural Gas_Furnace_High Efficiency")    / ng_tot_lm),
-        "Light Fuel Oil_Boiler_Low Efficiency":   oil_wh * (_heat_tech('heating_lowmed_cold', "Light Fuel Oil_Furnace_Low Efficiency") / oil_tot_lm),
-        "Light Fuel Oil_Boiler_Medium Efficiency":oil_wh * (_heat_tech('heating_lowmed_cold', "Light Fuel Oil_Furnace_Medium Efficiency") / oil_tot_lm),
-        "Electricity_Boiler_High Efficiency":     elec_wh,
-    }
+    def _wh_techs(var: str, density: str) -> dict[str, pd.Series]:
+        def _split(boilers, tiers, total_fn):
+            tot = total_fn(var)
+            split = {b: _heat_tech(var, t) / tot for b, t in zip(boilers, tiers)}
+            if fallback_heating_df is None:
+                return split
+            fb_tot = total_fn(var, fallback_heating_df)
+            for b, t in zip(boilers, tiers):
+                fb = _heat_tech(var, t, fallback_heating_df) / fb_tot
+                idx = split[b].index.union(fb.index)
+                split[b] = split[b].reindex(idx).fillna(fb.reindex(idx))
+            return split
 
-    # High density
-    ng_tot_h  = _ng_total('heating_high_cold')
-    oil_tot_h = _oil_total('heating_high_cold')
+        ng_split = _split(ng_boilers, ng_tiers, _ng_total)
+        oil_split = _split(oil_boilers, oil_tiers, _oil_total)
+        if basis == 'stock':
+            techs = {b: ng_wh * f for b, f in ng_split.items()}
+            techs.update({b: oil_wh * f for b, f in oil_split.items()})
+            techs[elec_boiler] = elec_wh
+            return techs
 
-    wh_tech_high = {
-        "Natural Gas_Boiler_Low Efficiency":      ng_wh * (_heat_tech('heating_high_cold', "Natural Gas_Furnace_Low Efficiency")     / ng_tot_h),
-        "Natural Gas_Boiler_Medium Efficiency":   ng_wh * (_heat_tech('heating_high_cold', "Natural Gas_Furnace_Medium Efficiency")  / ng_tot_h),
-        "Natural Gas_Boiler_High Efficiency":     ng_wh * (_heat_tech('heating_high_cold', "Natural Gas_Furnace_High Efficiency")    / ng_tot_h),
-        "Light Fuel Oil_Boiler_Low Efficiency":   oil_wh * (_heat_tech('heating_high_cold', "Light Fuel Oil_Furnace_Low Efficiency") / oil_tot_h),
-        "Light Fuel Oil_Boiler_Medium Efficiency":oil_wh * (_heat_tech('heating_high_cold', "Light Fuel Oil_Furnace_Medium Efficiency") / oil_tot_h),
-        "Electricity_Boiler_High Efficiency":     elec_wh,
-    }
+        def _fuel_to_heat(fuel_share: pd.Series, split: dict[str, pd.Series]) -> dict[str, pd.Series]:
+            sr_mix = None
+            for b, f in split.items():
+                term = f * sr[(density, b)]
+                sr_mix = term if sr_mix is None else sr_mix.add(term, fill_value=0)
+            heat_fuel = fuel_share / sr_mix.replace(0, np.nan)
+            return {b: f * heat_fuel for b, f in split.items()}
+
+        heat = _fuel_to_heat(ng_wh, ng_split)
+        heat.update(_fuel_to_heat(oil_wh, oil_split))
+        heat[elec_boiler] = elec_wh / sr[(density, elec_boiler)]
+        total = None
+        for h in heat.values():
+            total = h.fillna(0) if total is None else total.add(h.fillna(0), fill_value=0)
+        total = total.replace(0, np.nan)
+        return {b: h / total for b, h in heat.items()}
+
+    wh_tech_lowmed = _wh_techs('heating_lowmed_cold', 'LowMed')
+    wh_tech_high = _wh_techs('heating_high_cold', 'High')
 
     frames = [
         _long(province, 'wh_lowmed', '', 'service_request', 'GJ/GJ', wh_lowmed),
@@ -1646,17 +1709,15 @@ def extract_all_data(
 
     heating_frames = extract_heating_technologies(province, tables, building_shares_df)
     frames += heating_frames
-
-    # Water heating borrows the NG/oil efficiency-tier split of the heating
-    # equipment stock, independent of the space-heating share basis.
-    stock_heating_frames = (
-        heating_frames if HEATING_SHARE_BASIS == 'stock'
-        else extract_heating_technologies(province, tables, building_shares_df, basis='stock')
+    heating_df = pl.concat(heating_frames)   # water heating borrows its tier split
+    stock_heating_df = (
+        None if HEATING_SHARE_BASIS == 'stock'
+        else pl.concat(extract_heating_technologies(province, tables, building_shares_df, basis='stock'))
     )
-    heating_df = pl.concat(stock_heating_frames)
 
     frames += extract_cooling_technologies(province, tables)
-    frames += extract_water_heating(province, tables, building_shares_df, heating_df)
+    frames += extract_water_heating(province, tables, building_shares_df, heating_df,
+                                    fallback_heating_df=stock_heating_df)
     frames += extract_lighting_total(province, tables)
     frames += extract_cooling_intensity(province, tables)
     frames += extract_heating_intensity(province, tables)
