@@ -112,4 +112,42 @@ def plot_ms_line(model,
     fig.show()
 
 
+def plot_ms_line_cims(model,
+            nodeName,
+            msKey = "market_share_total",
+            techFilters=[]):
+    """
+    CIMS-only market share line plot (no counterfactual/calibration comparison).
+
+    `techFilters` here contains strings that serve as regex matches for the technologies. If you want to only plot
+        a subset of the technologies, here is where you specify them.
+    """
+
+    def maybeFloat(x):
+        if x is None:
+            return(None)
+        elif isinstance(x, str) and x=='NA':
+            return(None)
+        else:
+            return(float(x))
+
+    allTechNames = node_info.list_techs(model.graph, nodeName)
+
+    if len(techFilters) > 0:
+        allTechNames = [a for a in allTechNames
+            if any([
+                bool( re.search(b, a, flags = re.IGNORECASE) ) for b in techFilters
+                ])
+         ]
+
+    allYears = node_info.list_years(model.graph, nodeName)
+
+    res_base = {tn:[maybeFloat(x) for x in node_info.getTechParamOverTime(model.graph, nodeName, tn, msKey)] for tn in allTechNames}
+
+    fig = plotOverTime_line(res_base, allYears, showlegend=True)[0]
+    fig.update_layout(title=f"Node: {nodeName}")
+
+    fig.show()
+
+
 

@@ -70,6 +70,7 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 import polars as pl
 
@@ -88,6 +89,7 @@ from CIMS.data_processing.utils.collapse_constant_years import collapse_constant
 # ── configuration ──────────────────────────────────────────────────────────────
 FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/residential'
 OUTPUT_DIR      = BASE_PATH / 'model_inputs/model/residential'
+LIGHTING_ESTIMATED_MS_DIR = BASE_PATH / 'calibration/calibration_estimated/residential'
 
 REGIONS = [
     'AB', 'BC', 'MB', 'NB', 'NL', 'NS', 'NT', 'NU',
@@ -164,6 +166,18 @@ def _read_flattened_fixed(region: str) -> pl.DataFrame:
 def _empty_frame() -> pl.DataFrame:
     return pl.DataFrame(
         {c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS + ['_order']}
+    )
+
+
+def _ceud_series(residential: pl.DataFrame, region: str, variable: str) -> pl.DataFrame:
+    """All-years rows for a scalar (category-less) CEUD variable, sorted by year."""
+    return (
+        residential
+        .filter(
+            (pl.col('province') == region) &
+            (pl.col('variable') == variable)
+        )
+        .sort('year')
     )
 
 
@@ -249,22 +263,57 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
     ])
 
 
-def _build_appliance_rows(residential: pl.DataFrame, region: str,
+def _build_appliance_rows(residential: pl.DataFrame, fixed: pl.DataFrame, region: str,
                            insert_order: float) -> pl.DataFrame:
-    """service_request rows (all years) from Dwellings to each appliance sub-service."""
+    """
+    service_request rows (all years) from Dwellings to each appliance sub-service.
+
+    Minor Appliances is special-cased: CEUD's raw appliance-count index
+    (Table 31 "Other Appliances", ~13-20 "units"/household) isn't a literal
+    quantity compatible with the fixed_data Existing-technology GJ/unit
+    factor (a flat, nationally-fixed JCIMS assumption) -- multiplying the two
+    overstates minor-appliance energy by roughly 20x. Instead, the quantity
+    sent is CEUD's actual Minor Appliances energy use (GJ/household, from
+    Table 13) divided by that same Existing-tech factor, which reproduces
+    CEUD's real historical total under the model's year-2000 benchmark
+    convention (Existing = 100% share in the base year).
+    """
     data = (
         residential
         .filter(
             (pl.col('province') == region) &
-            (pl.col('variable') == 'appliances_per_household')
+            (pl.col('variable') == 'appliances_per_household') &
+            (pl.col('category') != 'Minor Appliances')
         )
         .sort('category', 'year')
     )
-    if len(data) == 0:
+
+    minor_gj = _ceud_series(residential, region, 'minor_appliance_gj')
+    minor_rows = pl.DataFrame()
+    if len(minor_gj) > 0:
+        existing = fixed.filter(
+            (pl.col('Service') == 'Minor Appliances') &
+            (pl.col('Technology') == 'Existing') &
+            (pl.col('Parameter') == 'service_request')
+        )
+        if len(existing) > 0:
+            gj_per_unit = float(existing['Value'][0])
+            minor_rows = minor_gj.with_columns(
+                (pl.col('value') / gj_per_unit).alias('value'),
+                pl.lit('unit/building').alias('unit'),
+                pl.lit('Minor Appliances').alias('category'),
+            )
+
+    combined = (
+        pl.concat([data, minor_rows], how='diagonal_relaxed')
+        if len(minor_rows) > 0 else data
+    )
+    if len(combined) == 0:
         return _empty_frame()
+
     branch = f'CIMS.CAN.{region}.Residential.Dwellings'
     rows: list[dict] = []
-    for r in data.iter_rows(named=True):
+    for r in combined.sort(['category', 'year']).iter_rows(named=True):
         rows.append({
             'Branch': branch,
             'Type': 'Service',
@@ -543,9 +592,10 @@ def _build_wh_split_rows(residential: pl.DataFrame, region: str,
 
 def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
                               region: str, variable: str,
-                              wh_service: str) -> pl.DataFrame:
+                              wh_service: str, year: int = 2000) -> pl.DataFrame:
     """
-    market_share_total (year 2000) after each WH technology's lifetime rows.
+    market_share_total (at `year`, 2000 by default) after each WH
+    technology's lifetime rows.
 
     Filters Branch to 'Water Heating' to avoid matching Building Type density
     services that share the same Service name.
@@ -559,7 +609,7 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
     data = residential.filter(
         (pl.col('province') == region) &
         (pl.col('variable') == variable) &
-        (pl.col('year') == 2000)
+        (pl.col('year') == year)
     )
     pipe_vals: dict[str, float] = {}
     pipe_sources: dict[str, str] = {}
@@ -599,12 +649,538 @@ def _build_wh_tech_mst_rows(residential: pl.DataFrame, fixed: pl.DataFrame,
             'Parameter': 'market_share_total',
             'Context': '', 'Sub_Context': '', 'Target': '',
             'Source': pipe_sources.get(tech, 'CEUD'),
-            'Unit': pipe_unit, 'Year': '2000',
+            'Unit': pipe_unit, 'Year': str(year),
             'Value': str(value),
             '_order': max_order + 0.5,
         })
 
     return pl.DataFrame(rows) if rows else _empty_frame()
+
+
+def _annual_rows_with_continuation(branch: str, service: str, technology: str,
+                                    target: str, region: str, source: str, unit: str,
+                                    order: float, values_by_year: dict[int, float]) -> pl.DataFrame:
+    """
+    Build one service_request row per year from `values_by_year`'s earliest
+    year through PROJECTION_END, holding flat at the last available (CEUD-
+    covered) year's value for every year beyond it -- `collapse_constant_years`
+    later folds that flat tail back into a single default row, matching the
+    convention used throughout this module for CEUD-derived series.
+    """
+    last_hist_year = max(values_by_year.keys())
+    rows: list[dict] = []
+    for i, year in enumerate(range(min(values_by_year.keys()), PROJECTION_END + 1)):
+        value = values_by_year.get(year, values_by_year[last_hist_year])
+        rows.append({
+            'Branch': branch, 'Type': 'Service', 'Region': region,
+            'Sector': 'Residential', 'Service': service,
+            'Technology': technology or '',
+            'Parameter': 'service_request',
+            'Context': '', 'Sub_Context': '',
+            'Target': target,
+            'Source': source, 'Unit': unit,
+            'Year': str(year), 'Value': str(value),
+            '_order': order + i * 1e-4,
+        })
+    return pl.DataFrame(rows)
+
+
+def _density_floorspace_series(residential: pl.DataFrame, region: str) -> dict[str, dict[int, float]]:
+    """
+    Density -> year -> total floor space (m2), built the same way the CIMS
+    engine itself accumulates it onto Building Type.{Density}: each building
+    type's floorspace_per_building x building_shares x total households,
+    summed over the building types that map to that density.
+    """
+    fs = {
+        (r['category'], int(r['year'])): float(r['value'])
+        for r in residential.filter(
+            (pl.col('province') == region) & (pl.col('variable') == 'floorspace_per_building')
+        ).iter_rows(named=True)
+    }
+    bs = {
+        (r['category'], int(r['year'])): float(r['value'])
+        for r in residential.filter(
+            (pl.col('province') == region) & (pl.col('variable') == 'building_shares')
+        ).iter_rows(named=True)
+    }
+    households = {
+        int(r['year']): float(r['value'])
+        for r in residential.filter(
+            (pl.col('province') == region) & (pl.col('variable') == 'housing_thousand')
+        ).iter_rows(named=True)
+    }
+
+    totals: dict[str, dict[int, float]] = {'High Density': {}, 'LowMed Density': {}}
+    for pipeline_cat, cims_tech in PIPELINE_TO_CIMS_BUILDING.items():
+        density = CIMS_BUILDING_TO_DENSITY[cims_tech]
+        for year, hh in households.items():
+            fsv = fs.get((pipeline_cat, year))
+            bsv = bs.get((pipeline_cat, year))
+            if fsv is None or bsv is None:
+                continue
+            totals[density][year] = totals[density].get(year, 0.0) + fsv * bsv * hh
+    return totals
+
+
+def _replace_cooling_intensity(residential: pl.DataFrame, fixed: pl.DataFrame,
+                                region: str) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """
+    Recalibrate the flat fixed_data Cooling intensity constant (Building
+    Type.{Density}.Cooling service_request, identical for both densities) so
+    that Cooling's TOTAL demand -- summed across both densities' floor space,
+    split Room/Central, and shrunk by each system type's own technology mix
+    -- matches CEUD's real annual "Total Space Cooling Energy Use" (Table 4).
+    Same reconciliation approach as Water Heating (see `_replace_wh_intensity`):
+    the original per-m2 constant was set without this downstream shrinkage in
+    mind, so matching CEUD's per-m2 intensity directly at this node
+    systematically misses the target (sometimes high, sometimes low --
+    the original constants aren't consistently calibrated against it).
+    """
+    bt_branch = f'CIMS.CAN.{region}.Residential.Dwellings.Building Type'
+    old_by_density: dict[str, pl.DataFrame] = {}
+    drop_mask = pl.lit(False)
+    for density in ['High Density', 'LowMed Density']:
+        branch = f'{bt_branch}.{density}'
+        target = f'{branch}.Cooling'
+        mask = (
+            (pl.col('Branch') == branch) &
+            (pl.col('Parameter') == 'service_request') &
+            (pl.col('Target') == target) &
+            (pl.col('Unit') == 'GJ')
+        )
+        old = fixed.filter(mask)
+        if len(old) > 0:
+            old_by_density[density] = old
+            drop_mask = drop_mask | mask
+    if not old_by_density:
+        return fixed, _empty_frame()
+
+    room_factor = _weighted_tech_factor_2000(fixed, 'Room', branch_contains='Cooling')
+    central_factor = _weighted_tech_factor_2000(fixed, 'Central', branch_contains='Cooling')
+    if room_factor is None or central_factor is None:
+        return fixed, _empty_frame()
+
+    cooling_total_pj = _ceud_series(residential, region, 'cooling_total_pj')
+    cooling_shares = _ceud_series(residential, region, 'cooling_share_data')
+    room_share = cooling_shares.filter(pl.col('category') == 'Room')
+    central_share = cooling_shares.filter(pl.col('category') == 'Central')
+    floorspace = _density_floorspace_series(residential, region)
+
+    def _lookup(df: pl.DataFrame, year: int) -> float:
+        row = df.filter(pl.col('year') == year)
+        return float(row['value'][0]) if len(row) > 0 else 0.0
+
+    years = [y for y in cooling_total_pj['year'].to_list() if y <= _residential_mod.LAST_HIST_YEAR]
+    const_by_year: dict[int, float] = {}
+    for year in years:
+        downstream_factor = (
+            _lookup(room_share, year) * room_factor + _lookup(central_share, year) * central_factor
+        )
+        total_floorspace = floorspace['High Density'].get(year, 0.0) + floorspace['LowMed Density'].get(year, 0.0)
+        if downstream_factor <= 0 or total_floorspace <= 0:
+            continue
+        target_gj = _lookup(cooling_total_pj, year) * 1e6
+        const_by_year[year] = target_gj / (total_floorspace * downstream_factor)
+
+    if not const_by_year:
+        return fixed, _empty_frame()
+
+    frames: list[pl.DataFrame] = []
+    for density, old in old_by_density.items():
+        branch = f'{bt_branch}.{density}'
+        target = f'{branch}.Cooling'
+        frames.append(_annual_rows_with_continuation(
+            branch, density, '', target, region,
+            old['Source'][0], old['Unit'][0], float(old['_order'].min()), const_by_year,
+        ))
+
+    fixed = fixed.filter(~drop_mask)
+    return fixed, pl.concat(frames, how='diagonal_relaxed')
+
+
+def _estimated_lighting_factor_by_year(fixed: pl.DataFrame, region: str) -> Optional[dict[int, float]]:
+    """
+    Year -> weighted-average GJ/unit conversion factor for Lighting, built
+    from the Incandescent/CFL/LED `estimated_market_share_total` series in
+    `LIGHTING_ESTIMATED_MS_DIR` (an external bulb-penetration estimate --
+    CEUD itself doesn't survey lighting by technology, so this is a stand-in
+    for the real annual mix) weighted against each technology's fixed_data
+    GJ/unit at the Lighting node. Returns None if no estimated-mix file
+    exists for this region, so the caller can fall back to
+    `_weighted_tech_factor_2000`.
+    """
+    ms_path = LIGHTING_ESTIMATED_MS_DIR / f'estimated_market_share_total_{region.lower()}.csv'
+    if not ms_path.exists():
+        return None
+
+    # GJ/unit is a flat constant per technology in fixed_data, so after
+    # flatten_fixed_data's constant-year collapsing it lands on a single row
+    # with Year == None rather than an explicit '2000' -- prefer an exact
+    # '2000' row if one exists (mirrors _weighted_tech_factor_2000's lookup),
+    # but fall back to whatever row is there instead of matching nothing.
+    sr_rows = fixed.filter(
+        (pl.col('Service') == 'Lighting') &
+        (pl.col('Parameter') == 'service_request') &
+        pl.col('Technology').is_not_null() & (pl.col('Technology') != '')
+    )
+    gj_per_unit: dict[str, float] = {}
+    for tech in sr_rows['Technology'].unique().to_list():
+        tech_rows = sr_rows.filter(pl.col('Technology') == tech)
+        exact = tech_rows.filter(pl.col('Year') == '2000')
+        row = exact if len(exact) > 0 else tech_rows
+        gj_per_unit[tech] = float(row['Value'][0])
+    if not gj_per_unit:
+        return None
+
+    ms = pl.read_csv(ms_path, infer_schema_length=0)
+    factor_by_year: dict[int, float] = {}
+    for row in ms.iter_rows(named=True):
+        gj = gj_per_unit.get(row['Technology'])
+        if gj is None:
+            continue
+        year = int(row['Year'])
+        factor_by_year[year] = factor_by_year.get(year, 0.0) + float(row['Value']) * gj
+    return factor_by_year or None
+
+
+def _replace_lighting_total(residential: pl.DataFrame, fixed: pl.DataFrame,
+                             region: str) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """
+    Recalibrate the flat fixed_data Lighting constant (Building
+    Type.{Density}.Lighting service_request, identical for both densities and
+    nationally uniform) so that Lighting's TOTAL demand -- summed across both
+    densities' floor space and shrunk by the Incandescent/CFL/LED technology
+    mix -- matches CEUD's real annual "Total Lighting Energy Use" (Table 3).
+
+    CEUD doesn't survey lighting by bulb technology, so the technology-mix
+    side of the conversion uses `_estimated_lighting_factor_by_year` (an
+    external per-year Incandescent/CFL/LED estimate) where available,
+    falling back to `_weighted_tech_factor_2000`'s single 2000-mix snapshot
+    for any region missing that file. Either way, the resulting constant is
+    still recalibrated per-year, since floor space and household counts grow
+    over the historical period even independent of the technology mix.
+    """
+    bt_branch = f'CIMS.CAN.{region}.Residential.Dwellings.Building Type'
+    lighting_target = f'CIMS.CAN.{region}.Residential.Dwellings.Lighting'
+    old_by_density: dict[str, pl.DataFrame] = {}
+    drop_mask = pl.lit(False)
+    for density in ['High Density', 'LowMed Density']:
+        branch = f'{bt_branch}.{density}'
+        mask = (
+            (pl.col('Branch') == branch) &
+            (pl.col('Parameter') == 'service_request') &
+            (pl.col('Target') == lighting_target)
+        )
+        old = fixed.filter(mask)
+        if len(old) > 0:
+            old_by_density[density] = old
+            drop_mask = drop_mask | mask
+    if not old_by_density:
+        return fixed, _empty_frame()
+
+    lighting_factor_by_year = _estimated_lighting_factor_by_year(fixed, region)
+    fallback_factor = _weighted_tech_factor_2000(fixed, 'Lighting')
+    if not lighting_factor_by_year and fallback_factor is None:
+        return fixed, _empty_frame()
+
+    def _factor_for(year: int) -> Optional[float]:
+        if lighting_factor_by_year:
+            if year in lighting_factor_by_year:
+                return lighting_factor_by_year[year]
+            nearest = min(lighting_factor_by_year, key=lambda yy: abs(yy - year))
+            return lighting_factor_by_year[nearest]
+        return fallback_factor
+
+    lighting_total_pj = _ceud_series(residential, region, 'lighting_total_pj')
+    floorspace = _density_floorspace_series(residential, region)
+
+    def _lookup(df: pl.DataFrame, year: int) -> float:
+        row = df.filter(pl.col('year') == year)
+        return float(row['value'][0]) if len(row) > 0 else 0.0
+
+    years = [y for y in lighting_total_pj['year'].to_list() if y <= _residential_mod.LAST_HIST_YEAR]
+    const_by_year: dict[int, float] = {}
+    for year in years:
+        total_floorspace = floorspace['High Density'].get(year, 0.0) + floorspace['LowMed Density'].get(year, 0.0)
+        factor = _factor_for(year)
+        if total_floorspace <= 0 or not factor:
+            continue
+        target_gj = _lookup(lighting_total_pj, year) * 1e6
+        const_by_year[year] = target_gj / (total_floorspace * factor)
+
+    if not const_by_year:
+        return fixed, _empty_frame()
+
+    frames: list[pl.DataFrame] = []
+    for density, old in old_by_density.items():
+        branch = f'{bt_branch}.{density}'
+        frames.append(_annual_rows_with_continuation(
+            branch, density, '', lighting_target, region,
+            old['Source'][0], old['Unit'][0], float(old['_order'].min()), const_by_year,
+        ))
+
+    fixed = fixed.filter(~drop_mask)
+    return fixed, pl.concat(frames, how='diagonal_relaxed')
+
+
+def _reanchored_factor(factor_by_anchor: dict[int, float], year: int) -> Optional[float]:
+    """
+    Re-anchored downstream factor for `year`: its own value if it was
+    computed, otherwise the nearest year that has one (e.g. a year CEUD
+    reports as suppressed/missing for that particular technology mix).
+
+    `factor_by_anchor` is keyed by every year being reconciled, so this re-
+    derives the technology-mix-weighted downstream factor annually instead
+    of freezing it at year 2000 (or any single anchor) forever -- a factor
+    frozen at one year goes increasingly stale as the (separately, correctly)
+    calibrated tech competition shifts the real technology mix over time --
+    e.g. a fuel's efficiency-tier split can flip almost entirely within
+    15-20 years -- which otherwise makes computed demand drift further from
+    CEUD's real total every year even when the base year matched exactly.
+    """
+    if year in factor_by_anchor:
+        return factor_by_anchor[year]
+    if not factor_by_anchor:
+        return None
+    return factor_by_anchor[min(factor_by_anchor, key=lambda a: abs(a - year))]
+
+
+def _weighted_tech_factor_2000(fixed: pl.DataFrame, service: str,
+                                branch_contains: Optional[str] = None,
+                                target_contains: Optional[str] = None,
+                                shares: Optional[dict[str, float]] = None,
+                                anchor_year: int = 2000) -> Optional[float]:
+    """
+    Weighted-average GJ/unit conversion factor for a Tech-Compete service's
+    `anchor_year` technology mix: sum(market_share_total(tech) *
+    service_request(tech)). A technology can send separate service_request
+    rows to several different targets (e.g. a dishwasher sends both to
+    Electricity and to Water Heating) -- pass `target_contains` to restrict
+    to the row(s) relevant to one of them.
+
+    `shares` lets a caller supply technology -> market_share_total directly
+    instead of reading it from `fixed` -- needed for the Water Heating
+    density nodes, whose fuel-technology market shares aren't in the raw
+    fixed_data CSV at all; they're pipeline-inserted from CEUD
+    (`_build_wh_tech_mst_rows`) rather than hand-curated.
+    """
+    mask = (pl.col('Service') == service)
+    if branch_contains is not None:
+        mask = mask & pl.col('Branch').str.contains(branch_contains, literal=True)
+    base = fixed.filter(
+        mask & pl.col('Technology').is_not_null() & (pl.col('Technology') != '')
+    )
+    if shares is None:
+        shares = {
+            r['Technology']: float(r['Value'])
+            for r in base.filter(pl.col('Parameter') == 'market_share_total').iter_rows(named=True)
+        }
+    if not shares:
+        return None
+
+    sr = base.filter(pl.col('Parameter') == 'service_request')
+    if target_contains is not None:
+        sr = sr.filter(pl.col('Target').str.contains(target_contains, literal=True))
+
+    weighted = 0.0
+    for tech, share in shares.items():
+        tech_rows = sr.filter(pl.col('Technology') == tech)
+        if len(tech_rows) == 0:
+            continue
+        exact = tech_rows.filter(pl.col('Year') == str(anchor_year))
+        row = exact if len(exact) > 0 else tech_rows
+        weighted += share * float(row['Value'][0])
+    return weighted if weighted > 0 else None
+
+
+def _fixed_value_by_year(fixed: pl.DataFrame, branch: str, target: str,
+                          years: list[int]) -> dict[int, float]:
+    """
+    Year -> value for a fixed_data service_request row (Branch, Target), for
+    each year in `years`. Handles both a flat/constant row (a single blank-
+    Year default applied to every year) and a genuine multi-year trend
+    (Dishwashing's Machine/Non-machine split moves from 60/40 in 2000 to
+    77/23 by 2050) the same way, falling back to the nearest explicit year
+    if a requested year has neither an exact match nor a default.
+    """
+    rows = fixed.filter(
+        (pl.col('Branch') == branch) &
+        (pl.col('Parameter') == 'service_request') &
+        (pl.col('Target') == target)
+    )
+    by_year = {
+        int(r['Year']): float(r['Value'])
+        for r in rows.iter_rows(named=True) if r['Year'] is not None
+    }
+    default = next(
+        (float(r['Value']) for r in rows.iter_rows(named=True) if r['Year'] is None), None
+    )
+
+    out: dict[int, float] = {}
+    for y in years:
+        if y in by_year:
+            out[y] = by_year[y]
+        elif default is not None:
+            out[y] = default
+        elif by_year:
+            out[y] = by_year[min(by_year, key=lambda yy: abs(yy - y))]
+    return out
+
+
+def _replace_wh_intensity(residential: pl.DataFrame, fixed: pl.DataFrame,
+                           region: str) -> tuple[pl.DataFrame, pl.DataFrame]:
+    """
+    Recalibrate the flat fixed_data 'unit' quantity sent from Dwellings to
+    Non-appliance Hot Water so that Water Heating's TOTAL demand matches
+    CEUD's real annual "Total Water Heating Energy Use" (Table 10).
+
+    Water Heating actually has three independent contributors -- Non-
+    appliance Hot Water, Dishwashing, and Clothes Washing -- which all get
+    summed at the Water Heating node before it splits by density and each
+    density's fuel-technology mix shrinks the total again. Matching CEUD's
+    number at Non-appliance Hot Water alone (ignoring the other two, and
+    ignoring the downstream density/fuel-tech shrinkage) systematically
+    misses the target. Dishwashing and Clothes Washing's own GJ-per-cycle
+    assumptions are fixed engineering inputs (not something CEUD reports),
+    so per user direction they're left untouched -- Non-appliance Hot Water
+    alone is solved for so that:
+
+        (NAHW_contribution + Dishwashing_contribution + Clothes_Washing_contribution)
+            x downstream_density_and_fueltech_factor
+            == CEUD's actual annual Total Water Heating Energy Use (Table 10)
+
+    downstream_density_and_fueltech_factor (the NAHW Std-use/Low-flow split
+    and each density's fuel-technology mix) is re-anchored every year instead
+    of frozen at 2000 (`_reanchored_factor`): that mix evolves via the
+    same calibrated tech competition that sets market_share_total everywhere
+    else (e.g. NG boiler efficiency tiers can flip almost entirely within
+    15-20 years), so a factor frozen at year 2000 understates or overstates
+    the real one by a growing amount every year past it, even in years this
+    function otherwise reconciles exactly to CEUD's target.
+    """
+    dwellings_branch = f'CIMS.CAN.{region}.Residential.Dwellings'
+    nahw_target = f'{dwellings_branch}.Non-appliance Hot Water'
+    nahw_mask = (
+        (pl.col('Branch') == dwellings_branch) &
+        (pl.col('Parameter') == 'service_request') &
+        (pl.col('Target') == nahw_target)
+    )
+    old = fixed.filter(nahw_mask)
+    if len(old) == 0:
+        return fixed, _empty_frame()
+
+    dw_machine_factor = _weighted_tech_factor_2000(
+        fixed, 'Machine', branch_contains='Dishwashing', target_contains='Water Heating') or 0.0
+    dw_nonmachine_factor = _weighted_tech_factor_2000(
+        fixed, 'Non-machine', branch_contains='Dishwashing', target_contains='Water Heating') or 0.0
+    cw_factor = _weighted_tech_factor_2000(
+        fixed, 'Clothes Washing', target_contains='Water Heating') or 0.0
+
+    wh_total_pj = _ceud_series(residential, region, 'wh_total_pj')
+    wh_lowmed = _ceud_series(residential, region, 'wh_lowmed')
+    wh_high = _ceud_series(residential, region, 'wh_high')
+    # 'housing_thousand' is a misleading name -- extract_housing_stock() already
+    # multiplies the raw CEUD thousands figure by 1000, so its stored value is
+    # the absolute household count already.
+    households = _ceud_series(residential, region, 'housing_thousand')
+    dw_count = residential.filter(
+        (pl.col('province') == region) &
+        (pl.col('variable') == 'appliances_per_household') &
+        (pl.col('category') == 'Dishwashing')
+    )
+    cw_count = residential.filter(
+        (pl.col('province') == region) &
+        (pl.col('variable') == 'appliances_per_household') &
+        (pl.col('category') == 'Clothes Washing')
+    )
+
+    years = sorted(
+        set(wh_total_pj['year'].to_list()) & set(wh_lowmed['year'].to_list()) &
+        set(wh_high['year'].to_list()) & set(households['year'].to_list()) &
+        set(dw_count['year'].to_list()) & set(cw_count['year'].to_list())
+    )
+    years = [y for y in years if y <= _residential_mod.LAST_HIST_YEAR]
+    if not years:
+        return fixed, _empty_frame()
+
+    # Re-anchored every year rather than frozen at 2000: the NAHW "Std
+    # use"/"Low flow devices" split and each density's fuel-technology mix
+    # (e.g. NG boiler efficiency tiers) both evolve via the same calibrated
+    # tech competition that sets market_share_total everywhere else, so a
+    # factor frozen at year 2000 goes increasingly stale -- see
+    # `_reanchored_factor`.
+    nahw_factor_by_anchor: dict[int, float] = {}
+    f_lowmed_by_anchor: dict[int, float] = {}
+    f_high_by_anchor: dict[int, float] = {}
+    for anchor in years:
+        nf = _weighted_tech_factor_2000(fixed, 'Non-appliance Hot Water', anchor_year=anchor)
+        if nf is not None:
+            nahw_factor_by_anchor[anchor] = nf
+
+        lm_mst_rows = _build_wh_tech_mst_rows(
+            residential, fixed, region, 'wh_tech_lowmed', 'LowMed Density', year=anchor)
+        high_mst_rows = _build_wh_tech_mst_rows(
+            residential, fixed, region, 'wh_tech_high', 'High Density', year=anchor)
+        lm_shares = ({r['Technology']: float(r['Value']) for r in lm_mst_rows.iter_rows(named=True)}
+                     if len(lm_mst_rows) > 0 else None)
+        high_shares = ({r['Technology']: float(r['Value']) for r in high_mst_rows.iter_rows(named=True)}
+                       if len(high_mst_rows) > 0 else None)
+
+        fl = _weighted_tech_factor_2000(
+            fixed, 'LowMed Density', branch_contains='Water Heating', shares=lm_shares, anchor_year=anchor)
+        fh = _weighted_tech_factor_2000(
+            fixed, 'High Density', branch_contains='Water Heating', shares=high_shares, anchor_year=anchor)
+        if fl is not None:
+            f_lowmed_by_anchor[anchor] = fl
+        if fh is not None:
+            f_high_by_anchor[anchor] = fh
+
+    if not nahw_factor_by_anchor or not f_lowmed_by_anchor or not f_high_by_anchor:
+        return fixed, _empty_frame()
+
+    dishwashing_branch = f'{dwellings_branch}.Dishwashing'
+    machine_split = _fixed_value_by_year(
+        fixed, dishwashing_branch, f'{dishwashing_branch}.Machine', years)
+    nonmachine_split = _fixed_value_by_year(
+        fixed, dishwashing_branch, f'{dishwashing_branch}.Non-machine', years)
+
+    def _lookup(df: pl.DataFrame, year: int) -> float:
+        row = df.filter(pl.col('year') == year)
+        return float(row['value'][0]) if len(row) > 0 else 0.0
+
+    unit_by_year: dict[int, float] = {}
+    for year in years:
+        hh = _lookup(households, year)
+        f_lowmed = _reanchored_factor(f_lowmed_by_anchor, year)
+        f_high = _reanchored_factor(f_high_by_anchor, year)
+        nahw_factor = _reanchored_factor(nahw_factor_by_anchor, year)
+        if f_lowmed is None or f_high is None or nahw_factor is None:
+            continue
+        downstream_factor = _lookup(wh_lowmed, year) * f_lowmed + _lookup(wh_high, year) * f_high
+        if hh <= 0 or downstream_factor <= 0:
+            continue
+
+        target_gj = _lookup(wh_total_pj, year) * 1e6
+        dw_gj_per_unit = (
+            machine_split.get(year, 0.0) * dw_machine_factor +
+            nonmachine_split.get(year, 0.0) * dw_nonmachine_factor
+        )
+        dw_contribution = _lookup(dw_count, year) * hh * dw_gj_per_unit
+        cw_contribution = _lookup(cw_count, year) * hh * cw_factor
+
+        needed_assessed_demand = target_gj / downstream_factor - dw_contribution - cw_contribution
+        unit_by_year[year] = needed_assessed_demand / (nahw_factor * hh)
+
+    if not unit_by_year:
+        return fixed, _empty_frame()
+
+    new_rows = _annual_rows_with_continuation(
+        dwellings_branch, 'Dwellings', '', nahw_target, region,
+        old['Source'][0], old['Unit'][0], float(old['_order'].min()), unit_by_year,
+    )
+    fixed = fixed.filter(~nahw_mask)
+    return fixed, new_rows
 
 
 def _hdd_index(heating, region: str):
@@ -762,6 +1338,12 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
     Build the complete model-inputs DataFrame for one region by interleaving
     fixed structural data with pipeline-derived rows at the correct positions.
     """
+    # 0. Recalculate end-use demand quantities from CEUD's real annual data,
+    #    in place of the flat/smoothed constants baked into fixed_data.
+    fixed, cooling_intensity_rows = _replace_cooling_intensity(residential, fixed, region)
+    fixed, wh_intensity_rows = _replace_wh_intensity(residential, fixed, region)
+    fixed, lighting_total_rows = _replace_lighting_total(residential, fixed, region)
+
     # 1. Housing before all fixed data
     housing = _build_housing_rows(
         residential, region,
@@ -787,7 +1369,7 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
         float(bt_sr_rows['_order'].max()) if len(bt_sr_rows) > 0
         else res_header_max + 2
     )
-    appliances = _build_appliance_rows(residential, region, bt_sr_order + 0.5)
+    appliances = _build_appliance_rows(residential, fixed, region, bt_sr_order + 0.5)
 
     # 4. Building type market_share_total + service_request per technology
     bt_rows = _build_building_type_rows(residential, fixed, region)
@@ -843,6 +1425,7 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
         housing, prices, appliances, bt_rows, vb_rows,
         heat_cold_high, heat_cold_lm, heat_mar_high, heat_mar_lm,
         cool_high, cool_lm, wh_split, wh_mst_lm, wh_mst_high, heat_sr,
+        cooling_intensity_rows, wh_intensity_rows, lighting_total_rows,
     ]
 
     combined = pl.concat(
