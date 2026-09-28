@@ -244,7 +244,7 @@ class Model:
 
         # Update the nodes & edges in the graph
         self.graph.max_tree_index[0] = 0    # For Excel results viewer TODO: remove once we switch to notebook visualization
-        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs)
+        graph = node_utils.make_or_update_nodes(model.graph, scenario_node_dfs, scenario_tech_dfs, year_list=[str(y) for y in self._year_list])
         graph = edge_utils.make_or_update_edges(graph, scenario_node_dfs, scenario_tech_dfs)
         self.graph.cur_tree_index[0] += self.graph.max_tree_index[0]
         model.graph = graph
@@ -328,7 +328,7 @@ class Model:
         )
 
         print("  Building base graph...")
-        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs)
+        graph = node_utils.make_or_update_nodes(graph, node_dfs, tech_dfs, year_list=[str(y) for y in self._year_list])
         graph = edge_utils.make_or_update_edges(graph, node_dfs, tech_dfs)
         graph.cur_tree_index[0] += graph.max_tree_index[0]
 
@@ -351,7 +351,8 @@ class Model:
             print("  Applying scenario overlays...")
             self.graph.max_tree_index[0] = 0
             graph = node_utils.make_or_update_nodes(
-                self.graph, scenario_node_dfs, scenario_tech_dfs
+                self.graph, scenario_node_dfs, scenario_tech_dfs,
+                year_list=[str(y) for y in self._year_list]
             )
             graph = edge_utils.make_or_update_edges(
                 graph, scenario_node_dfs, scenario_tech_dfs
