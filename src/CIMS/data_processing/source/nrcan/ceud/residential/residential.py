@@ -46,6 +46,7 @@ from CIMS.data_processing.utils.data_extensions import (
 from CIMS.data_processing.utils.extractors.stats_can import load_resd
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH as _CIMS_BASE
 from CIMS.data_processing.utils.controls_conversions import load_control_config
+import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heat_mod
 
 CONTROLS = load_control_config()
 
@@ -61,6 +62,11 @@ POP_CSV  = _CIMS_BASE / 'raw_data/stats_can/population/1710000901.csv'
 EFFICIENCY_XLS = _CIMS_BASE / 'raw_data/nrcan/ceud/residential/res_ca_e_32.xls'
 ACTIVITY_CAGR_CSV = _CIMS_BASE / 'raw_data/assumptions/activity_cagr_projections.csv'
 LAST_HIST_YEAR = CONTROLS["last_data_year"]["ceud"]
+
+# Basis for space-heating market shares: 'heat' (share of delivered heat, see
+# heat_by_type_and_system) or 'stock' (share of dwellings, CEUD Tables 22-25).
+# Water heating always borrows its NG/oil efficiency split from the stock basis.
+HEATING_SHARE_BASIS = 'heat'
 
 # Per-province overrides — explicit annual rate per period, bypasses computed CAGR.
 CAGR_OVERRIDES: dict[str, tuple[float, ...]] = {
@@ -543,105 +549,159 @@ def _weighted_heat(tech_series: dict[str, pd.Series],
     return out
 
 
+# CIMS heating technology -> CEUD heating-system rows (Tables 22-25, Table 8).
+# Dual systems are assigned wholly to the first-named fuel's technology.
+COLD_HEATING_BUCKETS: dict[str, list[str]] = {
+    "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
+    "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
+    "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
+    "Propane_Furnace_Medium Efficiency":       ["Other1"],
+    "Electricity_Resistance_High Efficiency":  ["Electric"],
+    "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
+    "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
+    "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
+    "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
+    'Natural Gas_ASHP_Natural Gas_Backup':     [],
+    "Electricity_ASHP_Natural Gas_Backup":     ["Heat Pump"],
+    "Electricity_ASHP_Electricity_Backup":     [],
+}
+
+MARINE_HEATING_BUCKETS: dict[str, list[str]] = {
+    "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
+    "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
+    "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
+    "Propane_Furnace_Medium Efficiency":       ["Other1"],
+    "Electricity_Resistance_High Efficiency":  ["Electric"],
+    "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
+    "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
+    "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
+    "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
+    "Natural Gas_ASHP":                        [],
+    "Electricity_ASHP":                        ["Heat Pump"],
+}
+
+LOWMED_TYPES = ("Single Detached", "Single Attached", "Mobile Homes")
+HIGH_TYPES = ("Apartments",)
+
+
+def _stock_based_heating_shares(tables: dict, building_shares_df: pl.DataFrame,
+                                buckets: dict[str, list[str]]
+                                ) -> tuple[dict[str, pd.Series], dict[str, pd.Series]]:
+    """Heating shares as a fraction of dwellings (Tables 22-25 'Shares (%)' rows).
+
+    LowMed is the building-share-weighted average of Detached, Attached and
+    Mobile; High is Apartments.  Returns (lowmed, high) dicts of tech -> Series.
+    """
+    t22, t23, t24, t25 = (tables["Table 22"], tables["Table 23"],
+                           tables["Table 24"], tables["Table 25"])
+
+    def _weight(bt: str) -> pd.Series:
+        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
+
+    by_tech_lowmed, high = {}, {}
+    for tech, row_labels in buckets.items():
+        by_tech_lowmed[tech] = {
+            'det': _extract_heating_bucket(t22, row_labels),
+            'att': _extract_heating_bucket(t23, row_labels),
+            'mob': _extract_heating_bucket(t25, row_labels),
+        }
+        high[tech] = _extract_heating_bucket(t24, row_labels)
+
+    lowmed = _weighted_heat(by_tech_lowmed, _weight("Single Detached"),
+                            _weight("Single Attached"), _weight("Mobile Homes"))
+    return lowmed, high
+
+
+def heat_by_type_and_system(province: str) -> dict[int, pd.DataFrame]:
+    """Delivered space heat (PJ) by building type x CEUD heating system, per year.
+
+    Uses the same allocation as residential_heating_intensity.py: system stock
+    (Tables 22-25) x provincial energy per unit (Table 8), balanced by IPF to
+    Table 6 / Table 8 totals, then x Table 26 stock efficiency (dual systems
+    80 % first-named fuel / 20 % second).
+    """
+    inp = _heat_mod.load_region(province.upper())
+    opts = _heat_mod.Options()
+    eff = _heat_mod.system_efficiencies(inp, opts.dual_primary_share)
+    out = {}
+    for year in inp.sh_by_type.index:
+        fuel = _heat_mod.allocate_fuel_ipf(inp, year)
+        out[int(year)] = fuel * eff.loc[year, list(_heat_mod.SYSTEMS)].fillna(0.0)
+    return out
+
+
+def _heat_based_heating_shares(province: str, buckets: dict[str, list[str]]
+                               ) -> tuple[dict[str, pd.Series], dict[str, pd.Series]]:
+    """Heating shares as a fraction of delivered space heat.
+
+    LowMed pools the heat of Detached, Attached and Mobile (so each type is
+    weighted by its heat, not its dwelling count); High is Apartments.
+    Returns (lowmed, high) dicts of tech -> year-indexed Series.
+    """
+    heat = heat_by_type_and_system(province)
+
+    def _shares(types: tuple[str, ...]) -> dict[str, pd.Series]:
+        out = {tech: {} for tech in buckets}
+        for year, mat in heat.items():
+            by_system = mat.loc[list(types)].sum(axis=0)
+            total = by_system.sum()
+            for tech, rows in buckets.items():
+                out[tech][year] = (by_system[rows].sum() / total) if total > 0 else np.nan
+        return {tech: pd.Series(v, dtype=float).sort_index() for tech, v in out.items()}
+
+    lowmed, high = _shares(LOWMED_TYPES), _shares(HIGH_TYPES)
+    # Match the stock basis's row set: an unmapped tech is an explicit zero at
+    # LowMed (weighted average of nothing) but emits no rows at High.
+    for tech, rows in buckets.items():
+        if not rows:
+            high[tech] = pd.Series(dtype=float)
+    return lowmed, high
+
+
 def extract_heating_technologies(province: str, tables: dict,
-                                  building_shares_df: pl.DataFrame) -> list[pl.DataFrame]:
+                                  building_shares_df: pl.DataFrame,
+                                  basis: str = HEATING_SHARE_BASIS) -> list[pl.DataFrame]:
     """
     Extract heating technology market shares by density type and climate zone.
 
-    BC receives both Cold and Marine data.  All other provinces get Cold only.
+    BC receives both Cold and Marine data.  All other provinces get Cold only
+    (the Marine buckets hold the same CEUD numbers under Marine tech names).
 
     Parameters
     ----------
     building_shares_df : pl.DataFrame
-        Output of extract_building_shares — used for weighting.
+        Output of extract_building_shares — used for weighting (stock basis).
+    basis : {'heat', 'stock'}
+        'heat'  — share of delivered space heat (CIMS market shares are shares
+                  of the service a node provides).
+        'stock' — share of dwellings by heating system (CEUD Tables 22-25).
 
     Returns
     -------
     list of pl.DataFrame
     """
-    t22, t23, t24, t25 = (tables["Table 22"], tables["Table 23"],
-                           tables["Table 24"], tables["Table 25"])
+    if basis not in ('heat', 'stock'):
+        raise ValueError(f"basis must be 'heat' or 'stock', got {basis!r}")
     is_bc = province.upper() == 'BC'
 
-    def _weight(bt: str) -> pd.Series:
-        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
+    def _compute(buckets):
+        if basis == 'heat':
+            return _heat_based_heating_shares(province, buckets)
+        return _stock_based_heating_shares(tables, building_shares_df, buckets)
 
-    w_det = _weight("Single Detached")
-    w_att = _weight("Single Attached")
-    w_mob = _weight("Mobile Homes")
-
-    # -- COLD climate ----------------------------------------------------------
-    cold_buckets = {
-        "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
-        "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
-        "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
-        "Propane_Furnace_Medium Efficiency":       ["Other1"],  
-        "Electricity_Resistance_High Efficiency":  ["Electric"],
-        "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
-        "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
-        "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
-        "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
-        'Natural Gas_ASHP_Natural Gas_Backup':     [],
-        "Electricity_ASHP_Natural Gas_Backup":     ["Heat Pump"],
-        "Electricity_ASHP_Electricity_Backup":     [],
-    }
-
-    # For each tech, collect per-building-type series then weighted average
-    cold_by_tech_lowmed = {}
-    cold_high = {}
-    for tech, row_labels in cold_buckets.items():
-        cold_by_tech_lowmed[tech] = {
-            'det': _extract_heating_bucket(t22, row_labels),
-            'att': _extract_heating_bucket(t23, row_labels),
-            'mob': _extract_heating_bucket(t25, row_labels),
-        }
-        cold_high[tech] = _extract_heating_bucket(t24, row_labels)
-
-    lowmed_cold = _weighted_heat(cold_by_tech_lowmed, w_det, w_att, w_mob)
+    climates = [('cold', COLD_HEATING_BUCKETS)]
+    if is_bc:
+        climates.append(('marine', MARINE_HEATING_BUCKETS))
 
     frames = []
-    for tech, s in lowmed_cold.items():
-        frames.append(_long(province, 'heating_lowmed_cold', tech,
-                            'market_share_total', '%', s))
-    for tech, s in cold_high.items():
-        frames.append(_long(province, 'heating_high_cold', tech,
-                            'market_share_total', '%', s))
-
-    # -- MARINE climate (BC only) ----------------------------------------------
-    if is_bc:
-        marine_buckets = {
-            "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
-            "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
-            "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
-            "Propane_Furnace_Medium Efficiency":       ["Other1"],  
-            "Electricity_Resistance_High Efficiency":  ["Electric"],
-            "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
-            "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
-            "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
-            "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
-            "Natural Gas_ASHP":                        [],
-            "Electricity_ASHP":                        ["Heat Pump"],
-        }
-
-        marine_by_tech_lowmed = {}
-        marine_high = {}
-        for tech, row_labels in marine_buckets.items():
-            marine_by_tech_lowmed[tech] = {
-                'det': _extract_heating_bucket(t22, row_labels),
-                'att': _extract_heating_bucket(t23, row_labels),
-                'mob': _extract_heating_bucket(t25, row_labels),
-            }
-            marine_high[tech] = _extract_heating_bucket(t24, row_labels)
-
-        lowmed_marine = _weighted_heat(marine_by_tech_lowmed, w_det, w_att, w_mob)
-
-        for tech, s in lowmed_marine.items():
-            frames.append(_long(province, 'heating_lowmed_marine', tech,
+    for climate, buckets in climates:
+        lowmed, high = _compute(buckets)
+        for tech, s in lowmed.items():
+            frames.append(_long(province, f'heating_lowmed_{climate}', tech,
                                 'market_share_total', '%', s))
-        for tech, s in marine_high.items():
-            frames.append(_long(province, 'heating_high_marine', tech,
+        for tech, s in high.items():
+            frames.append(_long(province, f'heating_high_{climate}', tech,
                                 'market_share_total', '%', s))
-
     return frames
 
 
@@ -700,7 +760,8 @@ def extract_water_heating(province: str, tables: dict,
     building_shares_df : pl.DataFrame
         Output of extract_building_shares.
     heating_df : pl.DataFrame
-        Output of extract_heating_technologies (cold climate only needed here).
+        Output of extract_heating_technologies(basis='stock') (cold climate
+        only needed here).
 
     Returns
     -------
@@ -1369,7 +1430,14 @@ def extract_all_data(
 
     heating_frames = extract_heating_technologies(province, tables, building_shares_df)
     frames += heating_frames
-    heating_df = pl.concat(heating_frames)
+
+    # Water heating borrows the NG/oil efficiency-tier split of the heating
+    # equipment stock, independent of the space-heating share basis.
+    stock_heating_frames = (
+        heating_frames if HEATING_SHARE_BASIS == 'stock'
+        else extract_heating_technologies(province, tables, building_shares_df, basis='stock')
+    )
+    heating_df = pl.concat(stock_heating_frames)
 
     frames += extract_cooling_technologies(province, tables)
     frames += extract_water_heating(province, tables, building_shares_df, heating_df)

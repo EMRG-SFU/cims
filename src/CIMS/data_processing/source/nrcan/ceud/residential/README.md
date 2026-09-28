@@ -6,6 +6,17 @@
 2. Manitoba vintage bucket for last historical period is labeled 2022 instead of 2021
 3. Will need to split out territorial data into each territory when RESD data is ready
 
+## Space-heating market shares (`residential.py`)
+
+`heating_{lowmed,high}_{cold,marine}` (`market_share_total`) are shares of **delivered
+space heat**, not of dwellings (`HEATING_SHARE_BASIS = 'heat'`). Heat by building type x
+system comes from the same allocation as the intensity below (steps 1-2): stock x
+per-unit energy, IPF-balanced to Tables 6/8, x Table 26 efficiency. LowMed pools the heat
+of SFD + SFA + MOB; High = apartments. Dual systems go wholly to the first-named fuel's
+technology. Set `HEATING_SHARE_BASIS = 'stock'` to restore dwelling shares (Tables 22-25
+"Shares (%)", building-share weighted). Water heating keeps borrowing its NG/oil
+efficiency-tier split from the stock basis either way.
+
 ## Space-heating intensity (`residential_heating_intensity.py`)
 
 Replaces the REM699 workbook (`AB_CIMS_Input_Res` rows 363-378) behind the Vintage
