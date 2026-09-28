@@ -651,88 +651,40 @@ def _split_ashp_backup(techs: dict[str, pd.Series], province: str) -> dict[str, 
     return techs
 
 
-def extract_heating_technologies(province: str, tables: dict,
-                                  building_shares_df: pl.DataFrame) -> list[pl.DataFrame]:
-    """
-    Extract heating technology market shares by density type and climate zone.
+# CIMS heating technology -> CEUD heating-system rows (Tables 22-25, Table 8).
+# Dual systems are assigned wholly to the first-named fuel's technology.
+# CEUD's single 'Heat Pump' row lands on Electricity_ASHP_Natural Gas_Backup and
+# is then re-split across backup fuels by _split_ashp_backup (Cold only).
+COLD_HEATING_BUCKETS: dict[str, list[str]] = {
+    "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
+    "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
+    "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
+    "Propane_Furnace_Medium Efficiency":       ["Other1"],
+    "Electricity_Resistance_High Efficiency":  ["Electric"],
+    "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
+    "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
+    "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
+    "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
+    'Natural Gas_ASHP_Natural Gas_Backup':     [],
+    "Electricity_ASHP_Natural Gas_Backup":     ["Heat Pump"],
+    "Electricity_ASHP_Electricity_Backup":     [],
+    "Electricity_ASHP_Oil_Backup":             [],
+    "Electricity_ASHP_Wood_Backup":            [],
+}
 
-    BC receives both Cold and Marine data.  All other provinces get Cold only.
-
-    Parameters
-    ----------
-    building_shares_df : pl.DataFrame
-        Output of extract_building_shares — used for weighting.
-
-    Returns
-    -------
-    list of pl.DataFrame
-    """
-    t22, t23, t24, t25 = (tables["Table 22"], tables["Table 23"],
-                           tables["Table 24"], tables["Table 25"])
-    is_bc = province.upper() == 'BC'
-
-    def _weight(bt: str) -> pd.Series:
-        return pl_to_series(building_shares_df.filter(pl.col('category') == bt))
-
-    w_det = _weight("Single Detached")
-    w_att = _weight("Single Attached")
-    w_mob = _weight("Mobile Homes")
-
-    # -- COLD climate ----------------------------------------------------------
-    cold_buckets = {
-        "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
-        "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
-        "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
-        "Propane_Furnace_Medium Efficiency":       ["Other1"],  
-        "Electricity_Resistance_High Efficiency":  ["Electric"],
-        "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
-        "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
-        "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
-        "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
-        'Natural Gas_ASHP_Natural Gas_Backup':     [],
-        "Electricity_ASHP_Natural Gas_Backup":     ["Heat Pump"],
-        "Electricity_ASHP_Electricity_Backup":     [],
-        "Electricity_ASHP_Oil_Backup":             [],
-        "Electricity_ASHP_Wood_Backup":             [],
-    }
-
-    # For each tech, collect per-building-type series then weighted average
-    cold_by_tech_lowmed = {}
-    cold_high = {}
-    for tech, row_labels in cold_buckets.items():
-        cold_by_tech_lowmed[tech] = {
-            'det': _extract_heating_bucket(t22, row_labels),
-            'att': _extract_heating_bucket(t23, row_labels),
-            'mob': _extract_heating_bucket(t25, row_labels),
-        }
-        cold_high[tech] = _extract_heating_bucket(t24, row_labels)
-
-    lowmed_cold = _split_ashp_backup(_weighted_heat(cold_by_tech_lowmed, w_det, w_att, w_mob), province)
-    cold_high   = _split_ashp_backup(cold_high, province)
-
-    frames = []
-    for tech, s in lowmed_cold.items():
-        frames.append(_long(province, 'heating_lowmed_cold', tech,
-                            'market_share_total', '%', s))
-    for tech, s in cold_high.items():
-        frames.append(_long(province, 'heating_high_cold', tech,
-                            'market_share_total', '%', s))
-
-    # -- MARINE climate (BC only) ----------------------------------------------
-    if is_bc:
-        marine_buckets = {
-            "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
-            "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
-            "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
-            "Propane_Furnace_Medium Efficiency":       ["Other1"],  
-            "Electricity_Resistance_High Efficiency":  ["Electric"],
-            "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
-            "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
-            "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
-            "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
-            "Natural Gas_ASHP":                        [],
-            "Electricity_ASHP":                        ["Heat Pump"],
-        }
+MARINE_HEATING_BUCKETS: dict[str, list[str]] = {
+    "Natural Gas_Furnace_Low Efficiency":      ["Natural Gas – Normal Efficiency", "Natural Gas/Electric"],
+    "Natural Gas_Furnace_Medium Efficiency":   ["Natural Gas – Medium Efficiency"],
+    "Natural Gas_Furnace_High Efficiency":     ["Natural Gas – High Efficiency"],
+    "Propane_Furnace_Medium Efficiency":       ["Other1"],
+    "Electricity_Resistance_High Efficiency":  ["Electric"],
+    "Light Fuel Oil_Furnace_Low Efficiency":   ["Heating Oil – Normal Efficiency", "Heating Oil/Electric"],
+    "Light Fuel Oil_Furnace_Medium Efficiency":["Heating Oil – Medium Efficiency"],
+    "Light Fuel Oil_Furnace_High Efficiency":  ["Heating Oil – High Efficiency"],
+    "Wood_Furnace_Low Efficiency":             ["Wood", "Wood/Electric", "Wood/Heating Oil"],
+    "Natural Gas_ASHP":                        [],
+    "Electricity_ASHP":                        ["Heat Pump"],
+}
 
 LOWMED_TYPES = ("Single Detached", "Single Attached", "Mobile Homes")
 HIGH_TYPES = ("Apartments",)
@@ -850,6 +802,9 @@ def extract_heating_technologies(province: str, tables: dict,
     frames = []
     for climate, buckets in climates:
         lowmed, high = _compute(buckets)
+        if climate == 'cold':
+            lowmed = _split_ashp_backup(lowmed, province)
+            high = _split_ashp_backup(high, province)
         for tech, s in lowmed.items():
             frames.append(_long(province, f'heating_lowmed_{climate}', tech,
                                 'market_share_total', '%', s))
