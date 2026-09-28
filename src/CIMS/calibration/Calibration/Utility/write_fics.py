@@ -23,10 +23,20 @@ def extractRegion(node):
         return ""
 
 def extractSector(node):
+    """
+    Fuel Blends nodes are shared infrastructure consumed by multiple downstream
+    sectors, not owned by one, so the base fixed data (e.g. fic_*.csv) always
+    leaves Sector blank for them -- letting the value pass the sector_list
+    filter in ModelReader.get_model_description() regardless of which sector(s)
+    a scenario run is scoped to. Populating a real sector name here would get
+    calibrated values for these nodes silently dropped by that filter whenever
+    the active sector_list doesn't happen to include "Fuel Blends".
+    """
     pattern = r'^CIMS\.CAN\.([A-Za-z]{2})\.(.*?)(\.|$)'
     try:
         res = re.match(pattern, node)
-        return res.groups()[1]
+        sector = res.groups()[1]
+        return "" if sector == "Fuel Blends" else sector
     except AttributeError as ee:
         return ""
 
@@ -39,7 +49,7 @@ def extractService(node):
         return ''
 
 
-def get_fic_file_rows(model, nodeName):
+def get_fic_file_rows(model, nodeName, source="calibration_fic_export"):
     all_years = list_years(model.graph, nodeName)
     all_techs = list_techs(model.graph, nodeName)
 
@@ -59,7 +69,7 @@ def get_fic_file_rows(model, nodeName):
                 "Context": "",
                 "Sub_Context": "",
                 "Target": "",
-                "Source": "calibration_fic_export",
+                "Source": source,
                 "Unit": "",
                 "Year": yy,
                 "Value": out_value,
@@ -95,7 +105,7 @@ def write_rows_by_region(rows, outputDir, name, nodes_written):
         combined_df.to_csv(region_file, index=False)
 
 
-def write_fics(model, nodeName, outputDir, name='fitted_fics', include_subtree=False):
+def write_fics(model, nodeName, outputDir, name='fitted_fics', include_subtree=False, source="calibration_fic_export"):
 
     if include_subtree:
         nodes_to_process = sorted( [nodeName] + list(getDescendants(model, nodeName)) )
@@ -104,6 +114,6 @@ def write_fics(model, nodeName, outputDir, name='fitted_fics', include_subtree=F
 
     rows = []
     for node in nodes_to_process:
-        rows.extend(get_fic_file_rows(model, node))
+        rows.extend(get_fic_file_rows(model, node, source=source))
 
     write_rows_by_region(rows, outputDir, name, nodes_to_process)

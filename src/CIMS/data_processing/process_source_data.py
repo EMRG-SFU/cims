@@ -37,6 +37,7 @@ MODULES = [
     f"{PACKAGE}.energy_prices.energy_price_multipliers",
     # NRCan CEUD
     f"{PACKAGE}.nrcan.ceud.residential.residential",
+    f"{PACKAGE}.nrcan.ceud.residential.residential_heating_intensity",
     f"{PACKAGE}.nrcan.ceud.commercial.commercial",
     f"{PACKAGE}.nrcan.ceud.transportation_passenger.transportation_passenger",
     f"{PACKAGE}.nrcan.ceud.transportation_freight.transportation_freight",

@@ -36,12 +36,22 @@ Heating market shares  (market_share_total, year 2000)
     in every vintage × bldg-code context.  For BC only, the same is done
     for Heating (Marine).
 
-Heating intensity reconciliation  (service_request rows, historical years)
-    Every vintage-level Heating (Cold)/(Marine) rate is scaled by one
-    per-density factor per historical year, re-anchored annually to that
-    year's own technology mix, so total Heating demand matches CEUD's real
-    annual "Total Space Heating Energy Use" (Table 6) exactly in every
-    historical year.
+Space-heating intensity  (service_request rows, all years)
+    Replaces the fixed-data Reference / Retrofit service_request rows from
+    each Vintage "<bin> Bldg Code" node to its Heating node(s) with the CEUD
+    intensity from residential_heating_intensity.py (GJ of heat per m2),
+    averaged over HEATING_INTENSITY_YEARS.  Retrofit techs and BC's
+    Cold/Marine split keep their fixed-data ratios to Reference.
+
+Weather nodes  (WEATHER_NODES; service_provide / competition / service_request)
+    A Fixed Ratio "Weather (Cold|Marine)" node is inserted before each
+    Heating node, and the Bldg Code technologies request it instead of the
+    Heating node.  Its service_request to Heating is the CEUD Heating
+    Degree-Day Index (historical years; mean of the last
+    HDD_PROJECTION_YEARS thereafter), and the Bldg Code intensity is the
+    weather-normalised mean (CEUD intensity / HDD index).  A node without
+    technologies isn't vintage-weighted, so the year-to-year weather signal
+    reaches all floor space rather than only new stock.
 
 Cooling shares  (service_request rows, all years)
     Inserted after the inheritance row of each density's Cooling service.
@@ -71,6 +81,8 @@ import CIMS.data_processing.source.nrcan.ceud.residential.residential as _reside
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
+import CIMS.data_processing.source.nrcan.ceud.residential.residential_heating_intensity as _heating_mod
+
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
@@ -95,6 +107,25 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
     'Electricity', 'Biodiesel',
     'Ethanol', 'Hydrogen',
 }
+
+# Space-heating intensity (Vintage Bldg Code -> Heating service_request).
+# CIMS vintage-weights technology service_request, so the pre-2001 vintages
+# (base stock only, never any new stock) always use their base-year value and
+# later bins average over their stock vintages -- year-by-year values can't
+# reach the model. A single historical mean is used instead.
+HEATING_INTENSITY_YEARS: tuple[int, int] = (DATA_START, _heating_mod.LAST_HIST_YEAR)
+HEATING_SERVICES: tuple[str, ...] = ('Heating (Cold)', 'Heating (Marine)')
+DENSITY_TO_INTENSITY_VARIABLE: dict[str, str] = {
+    'High Density':   'heating_intensity_high',
+    'LowMed Density': 'heating_intensity_lowmed',
+}
+
+# Weather nodes: Fixed Ratio "Weather (<climate>)" node between each Bldg Code
+# node and its Heating node, carrying the CEUD HDD index (see module docstring).
+# Its node-level service_request isn't vintage-weighted.
+WEATHER_NODES: bool = True
+# Projection-year weather factor = mean HDD index over the last N CEUD years.
+HDD_PROJECTION_YEARS: int = 10
 
 # Pipeline building-type category → CIMS Building Type technology name
 PIPELINE_TO_CIMS_BUILDING: dict[str, str] = {
@@ -1152,331 +1183,157 @@ def _replace_wh_intensity(residential: pl.DataFrame, fixed: pl.DataFrame,
     return fixed, new_rows
 
 
-def _heating_downstream_factor(residential: pl.DataFrame, fixed: pl.DataFrame,
-                                region: str, variable: str, climate_service: str,
-                                density: str, anchor_year: int = 2000) -> Optional[float]:
+def _hdd_index(heating, region: str):
+    """CEUD HDD index for one region as a year-indexed Series (empty if absent)."""
+    data = heating[(heating['Region'] == region) & (heating['Variable'] == 'hdd_index')]
+    return data.set_index('Year')['Value'].astype(float).sort_index()
+
+
+def _weather_factors(hdd) -> dict[int, float]:
+    """{year: weather factor} for DATA_START..PROJECTION_END from the HDD index."""
+    proj = float(hdd.iloc[-HDD_PROJECTION_YEARS:].mean())
+    return {y: float(hdd.get(y, proj)) for y in range(DATA_START, PROJECTION_END + 1)}
+
+
+def _heating_intensity_means(heating, region: str,
+                             hdd=None) -> dict[tuple[str, str], float]:
     """
-    Weighted-average GJ/unit conversion factor for one density's Heating
-    (Cold)/(Marine) fuel-technology mix, as of `anchor_year`.
-
-    CEUD's heating_*_cold/marine shares are reported at density granularity
-    only (identical across every vintage bin within a density -- unlike the
-    fuel-tech GJ/unit factors themselves, which are flat nationally-fixed
-    constants per `_weighted_tech_factor_2000`), so this only needs computing
-    once per (region, density, climate, anchor_year) rather than per vintage
-    bin.
+    {(density, vintage bin): mean GJ/m2 over HEATING_INTENSITY_YEARS} for one
+    region. With `hdd`, each year is divided by its HDD index first
+    (weather-normalised intensity).
     """
-    data = residential.filter(
-        (pl.col('province') == region) & (pl.col('variable') == variable) &
-        (pl.col('year') == anchor_year)
-    )
-    shares = {r['category']: float(r['value']) for r in data.iter_rows(named=True)}
-    if not shares:
-        return None
-    return _weighted_tech_factor_2000(fixed, climate_service, branch_contains=density,
-                                       shares=shares, anchor_year=anchor_year)
-
-
-def _heating_target_by_density(residential: pl.DataFrame, region: str) -> dict[str, dict[int, float]]:
-    """
-    Year -> CEUD absolute Heating PJ target for each density, from Table 6's
-    "Energy Use by Building Type" breakdown: Apartments -> High Density;
-    Single Detached + Single Attached + Mobile Homes -> LowMed Density
-    (mirrors `CIMS_BUILDING_TO_DENSITY`). Reconciling each density against
-    its own CEUD figure -- rather than only the combined province-wide total
-    -- is needed because the hand-curated fixed_data intensities don't
-    necessarily split the combined total across densities the way CEUD's
-    own building-type breakdown does.
-    """
-    by_building: dict[str, dict[int, float]] = {}
-    for r in residential.filter(
-        (pl.col('province') == region) & (pl.col('variable') == 'heating_total_pj_by_building')
-    ).iter_rows(named=True):
-        if r['value'] is None:
-            continue
-        by_building.setdefault(r['category'], {})[int(r['year'])] = float(r['value'])
-
-    targets: dict[str, dict[int, float]] = {'High Density': {}, 'LowMed Density': {}}
-    for year, val in by_building.get('Apartments', {}).items():
-        targets['High Density'][year] = val
-    for bt in ['Single Detached', 'Single Attached', 'Mobile Homes']:
-        for year, val in by_building.get(bt, {}).items():
-            targets['LowMed Density'][year] = targets['LowMed Density'].get(year, 0.0) + val
-    return targets
-
-
-def _ceud_vintage_intensity(residential: pl.DataFrame, region: str) -> dict[str, dict[int, float]]:
-    """
-    Year -> CEUD-derived heating intensity (GJ/m2) for each of the model's
-    vintage bins, from `heating_intensity_by_vintage`
-    (`extract_heating_intensity_by_vintage` in residential.py, which does
-    the CEUD-bin -> model-bin mapping and the Table 7/Table 18 PJ /
-    million-m2 division). Province-wide (CEUD has no vintage x building-
-    type/density cross-tab), so this is the same shape applied to every
-    density.
-    """
-    intensity_by_bin: dict[str, dict[int, float]] = {}
-    for r in residential.filter(
-        (pl.col('province') == region) & (pl.col('variable') == 'heating_intensity_by_vintage')
-    ).iter_rows(named=True):
-        if r['value'] is None:
-            continue
-        intensity_by_bin.setdefault(r['category'], {})[int(r['year'])] = float(r['value'])
-    return intensity_by_bin
-
-
-def _replace_heating_intensity(residential: pl.DataFrame, fixed: pl.DataFrame,
-                                region: str) -> pl.DataFrame:
-    """
-    Scale every vintage-level Heating (Cold)/(Marine) service_request value
-    by a per-density, per-year factor so that Heating's TOTAL demand --
-    summed across each density's vintage bins (weighted by each vintage
-    bin's year-2000 floor-space share) and shrunk by that density/climate's
-    fuel-technology mix, re-anchored every year
-    (`_heating_downstream_factor`/`_reanchored_factor`) rather than frozen
-    at 2000 -- matches CEUD's real annual Heating energy use
-    for that density (Table 6's "Energy Use by Building Type", Apartments
-    vs. Single Detached/Attached + Mobile Homes) exactly, in every
-    historical year, not just year 2000.
-
-    Unlike Water Heating/Cooling/Lighting (a single flat fixed_data constant,
-    nationally uniform), Heating's fixed_data intensities already carry real
-    vintage-bin, retrofit-state, and year-to-year structure that a full
-    replacement would discard. This instead multiplies every existing rate
-    (Reference, Retrofit Average, Retrofit Deep, Retrofit Passive alike) by
-    one scalar per (density, year), preserving relative differences between
-    vintage bins, retrofit states, and years, while pinning the absolute
-    level of *each density* to CEUD in every historical year -- reconciling
-    only the combined High+LowMed total (an earlier version of this
-    function) leaves fixed_data's own High/LowMed split unvalidated, which
-    can make one density's demand (by any fuel, including Natural Gas) read
-    too high or too low relative to CEUD even once the province-wide total
-    is correct.
-    """
-    density_targets = _heating_target_by_density(residential, region)
-    if not density_targets['High Density'] and not density_targets['LowMed Density']:
-        return fixed
-
-    years = sorted({
-        y for targets in density_targets.values()
-        for y in targets if y <= _residential_mod.LAST_HIST_YEAR
-    })
-
-    floorspace = _density_floorspace_series(residential, region)
-
-    # Re-anchored every year (via _reanchored_factor below) rather than
-    # frozen at 2000: vintage_bins_high/vintage_bins_lowmed (CEUD Tables
-    # 19-20, via extract_vintages) carry a real annual series -- the share
-    # of a density's housing stock in each vintage bin genuinely shifts
-    # over time as new construction accumulates -- so freezing it at year
-    # 2000 forever is the same kind of staleness already fixed for the
-    # fuel-technology downstream factor.
-    bin_share: dict[tuple[str, str], dict[int, float]] = {}
-    for variable, density in [('vintage_bins_high', 'High Density'),
-                              ('vintage_bins_lowmed', 'LowMed Density')]:
-        for r in residential.filter(
-            (pl.col('province') == region) & (pl.col('variable') == variable)
-        ).iter_rows(named=True):
-            if r['value'] is None:
-                continue
-            key = (density, r['category'])
-            bin_share.setdefault(key, {})[int(r['year'])] = float(r['value'])
-
-    heat_rows = fixed.filter(
-        (pl.col('Parameter') == 'service_request') &
-        (pl.col('Target').str.ends_with('.Heating (Cold)') |
-         pl.col('Target').str.ends_with('.Heating (Marine)'))
-    )
-    ref_rows = heat_rows.filter(pl.col('Technology') == 'Reference')
-    if len(ref_rows) == 0:
-        return fixed
-
-    # Re-anchored every year rather than frozen at 2000:
-    # downstream_factor[(density, climate_service)][year] -> factor
-    downstream_factor: dict[tuple[str, str], dict[int, float]] = {}
-    contexts: list[dict] = []
-    for branch in sorted(ref_rows['Branch'].unique().to_list()):
-        density = 'High Density' if '.High Density.' in branch else 'LowMed Density'
-        vint = branch.rsplit('.Vintage.', 1)[1].removesuffix(' Bldg Code')
-        share_by_year = bin_share.get((density, vint))
-        if not share_by_year:
-            continue
-        for target in ref_rows.filter(pl.col('Branch') == branch)['Target'].unique().to_list():
-            is_marine = target.endswith('Heating (Marine)')
-            climate_service = 'Heating (Marine)' if is_marine else 'Heating (Cold)'
-            if density == 'High Density':
-                variable = 'heating_high_marine' if is_marine else 'heating_high_cold'
-            else:
-                variable = 'heating_lowmed_marine' if is_marine else 'heating_lowmed_cold'
-
-            key = (density, climate_service)
-            if key not in downstream_factor:
-                by_anchor: dict[int, float] = {}
-                for anchor in years:
-                    factor = _heating_downstream_factor(
-                        residential, fixed, region, variable, climate_service, density,
-                        anchor_year=anchor)
-                    if factor is not None:
-                        by_anchor[anchor] = factor
-                downstream_factor[key] = by_anchor
-            if not downstream_factor[key]:
-                continue
-            contexts.append({
-                'branch': branch, 'target': target, 'density': density,
-                'share_by_year': share_by_year, 'factor_by_anchor': downstream_factor[key],
-            })
-    if not contexts:
-        return fixed
-
-    ref_by_ctx: dict[tuple, tuple[dict, Optional[float]]] = {}
-    for ctx in contexts:
-        rows = ref_rows.filter(
-            (pl.col('Branch') == ctx['branch']) & (pl.col('Target') == ctx['target'])
-        )
-        by_year: dict[int, float] = {}
-        default: Optional[float] = None
-        for r in rows.iter_rows(named=True):
-            if r['Year'] is None:
-                default = float(r['Value'])
-            else:
-                by_year[int(r['Year'])] = float(r['Value'])
-        ref_by_ctx[(ctx['branch'], ctx['target'])] = (by_year, default)
-
-    def _vint_of(branch: str) -> str:
-        return branch.rsplit('.Vintage.', 1)[1].removesuffix(' Bldg Code')
-
-    # Reference's per-year intensity to actually use in place of each vintage
-    # bin's own Bouillet-sourced value, keyed the same way as ref_by_ctx --
-    # (branch, target) -> {year: intensity}. A bin/year with no CEUD-derived
-    # value (e.g. '2021-2035'/'>2035' before CEUD has any real construction
-    # to report -- see `_ceud_vintage_intensity`) simply has no entry here,
-    # so the lookup below falls back to ref_by_ctx's own fixed_data value for
-    # that specific (bin, year) rather than the CEUD one.
-    override_by_ctx: dict[tuple, dict[int, float]] = {}
-    ceud_by_vint = _ceud_vintage_intensity(residential, region)
-    for ctx in contexts:
-        vint = _vint_of(ctx['branch'])
-        if vint in ceud_by_vint:
-            override_by_ctx[(ctx['branch'], ctx['target'])] = ceud_by_vint[vint]
-
-    contexts_by_density: dict[str, list[dict]] = {'High Density': [], 'LowMed Density': []}
-    for ctx in contexts:
-        contexts_by_density[ctx['density']].append(ctx)
-
-    scale_by_density_year: dict[str, dict[int, float]] = {'High Density': {}, 'LowMed Density': {}}
-    for density, density_contexts in contexts_by_density.items():
-        targets = density_targets[density]
-        for year in years:
-            target_pj = targets.get(year)
-            if target_pj is None:
-                continue
-            target_gj = target_pj * 1e6
-            current_gj = 0.0
-            for ctx in density_contexts:
-                override = override_by_ctx.get((ctx['branch'], ctx['target']))
-                intensity = override.get(year) if override else None
-                if intensity is None:
-                    by_year, default = ref_by_ctx[(ctx['branch'], ctx['target'])]
-                    intensity = by_year.get(year, default)
-                factor = _reanchored_factor(ctx['factor_by_anchor'], year)
-                share = _reanchored_factor(ctx['share_by_year'], year)
-                if intensity is None or factor is None or share is None:
-                    continue
-                current_gj += (
-                    share * floorspace[density].get(year, 0.0)
-                    * intensity * factor
-                )
-            if current_gj > 0:
-                scale_by_density_year[density][year] = target_gj / current_gj
-
-    if not scale_by_density_year['High Density'] and not scale_by_density_year['LowMed Density']:
-        return fixed
-
-    scale_rows = [
-        {'_density': density, '_yr': year, '_scale': scale}
-        for density, by_year in scale_by_density_year.items()
-        for year, scale in by_year.items()
+    lo, hi = HEATING_INTENSITY_YEARS
+    data = heating[
+        (heating['Region'] == region) &
+        heating['Variable'].isin(DENSITY_TO_INTENSITY_VARIABLE.values()) &
+        heating['Year'].between(lo, hi)
     ]
-    scale_df = pl.DataFrame(scale_rows)
+    if hdd is not None:
+        data = data.assign(Value=data['Value'] / data['Year'].map(hdd))
+    var_to_density = {v: d for d, v in DENSITY_TO_INTENSITY_VARIABLE.items()}
+    return {
+        (var_to_density[var], cat): float(g['Value'].mean())
+        for (var, cat), g in data.groupby(['Variable', 'Category'])
+    }
 
-    mask = (
+
+def _weather_node_name(heating_branch: str) -> str:
+    """'...Bldg Code.Heating (Cold)' -> '...Bldg Code.Weather (Cold)'."""
+    return heating_branch.replace('.Heating (', '.Weather (')
+
+
+def _build_weather_node_rows(fixed: pl.DataFrame, heating_branch: str, region: str,
+                             factors: dict[int, float]) -> list[dict]:
+    """Fixed Ratio Weather node rows, positioned just before the Heating node."""
+    heat_rows = fixed.filter(pl.col('Branch') == heating_branch)
+    order = float(heat_rows['_order'].min()) - 0.5
+    sp = heat_rows.filter(pl.col('Parameter') == 'service_provide')
+    unit = sp['Unit'][0] if len(sp) else 'GJ of heat'
+    branch = _weather_node_name(heating_branch)
+    service = branch.split('.')[-1]
+    base = {'Branch': branch, 'Type': 'Service', 'Region': region,
+            'Sector': 'Residential', 'Service': service, 'Technology': '',
+            'Context': '', 'Sub_Context': ''}
+    rows = [
+        {**base, 'Parameter': 'service_provide', 'Target': '', 'Source': '',
+         'Unit': unit, 'Year': '', 'Value': '', '_order': order},
+        {**base, 'Parameter': 'competition', 'Target': '', 'Source': '',
+         'Unit': '', 'Year': '', 'Value': 'Fixed Ratio', '_order': order + 1e-3},
+    ]
+    # One Source for every year: collapse_constant_years groups on Source, and
+    # splitting history from projection would let a repeated historical value
+    # become a second blank-Year default.
+    for i, (year, f) in enumerate(factors.items()):
+        rows.append({**base, 'Parameter': 'service_request', 'Target': heating_branch,
+                     'Source': 'CEUD HDD index',
+                     'Unit': 'GJ', 'Year': str(year), 'Value': str(f),
+                     '_order': order + 2e-3 + i * 1e-6})
+    return rows
+
+
+def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
+                                   region: str) -> tuple[pl.DataFrame, list[int]]:
+    """
+    Reference / Retrofit service_request rows (all years) from each Vintage
+    "<bin> Bldg Code" node to its Heating node(s), from CEUD intensity.
+
+    Each fixed-data (technology, target) row keeps its ratio to the node's
+    total Reference request -- Retrofit Average / Deep stay at their JCIMS
+    fraction of Reference, and BC's Heating (Cold) / (Marine) targets keep
+    their climate split -- and is rescaled to the CEUD mean intensity.
+
+    With WEATHER_NODES (and an HDD index for the region) the intensity is
+    weather-normalised, the rows target a Weather node instead of the
+    Heating node, and the Weather node's own rows are added.
+
+    Returns the new rows (placed at the replaced rows' positions) and the
+    _order values of the fixed rows they replace. Bldg Code nodes with no
+    CEUD intensity keep their fixed-data rows.
+    """
+    hdd = _hdd_index(heating, region) if WEATHER_NODES else None
+    if hdd is not None and hdd.empty:
+        print(f'  No CEUD HDD index for {region}; no Weather nodes')
+        hdd = None
+    factors = _weather_factors(hdd) if hdd is not None else None
+    means = _heating_intensity_means(heating, region, hdd)
+    lo, hi = HEATING_INTENSITY_YEARS
+    source = f'CEUD mean {lo}-{hi}' + (' / HDD index' if hdd is not None else '')
+    sr = fixed.filter(
         (pl.col('Parameter') == 'service_request') &
-        (pl.col('Target').str.ends_with('.Heating (Cold)') |
-         pl.col('Target').str.ends_with('.Heating (Marine)')) &
-        pl.col('Year').is_not_null() &
-        pl.col('Year').cast(pl.Int64, strict=False).is_in(years)
-    )
-    reference_mask = mask & (pl.col('Technology') == 'Reference')
-
-    if override_by_ctx:
-        override_rows = [
-            {'_branch': branch, '_target': target, '_yr': year, '_override': value}
-            for (branch, target), by_year_o in override_by_ctx.items()
-            for year, value in by_year_o.items()
-        ]
-        override_df = pl.DataFrame(override_rows)
-
-        unaffected = fixed.filter(~reference_mask)
-        affected = (
-            fixed.filter(reference_mask)
-            .with_columns(
-                pl.col('Year').cast(pl.Int64).alias('_yr'),
-                pl.when(pl.col('Branch').str.contains('.High Density.', literal=True))
-                .then(pl.lit('High Density')).otherwise(pl.lit('LowMed Density'))
-                .alias('_density'),
-            )
-            .join(scale_df, on=['_density', '_yr'], how='left')
-            .join(
-                override_df,
-                left_on=['Branch', 'Target', '_yr'], right_on=['_branch', '_target', '_yr'],
-                how='left',
-            )
-            .with_columns(
-                pl.when(pl.col('_override').is_not_null() & pl.col('_scale').is_not_null())
-                .then(pl.col('_override') * pl.col('_scale'))
-                .otherwise(pl.col('Value').cast(pl.Float64))
-                .cast(pl.String)
-                .alias('Value'),
-                pl.when(pl.col('_override').is_not_null() & pl.col('_scale').is_not_null())
-                .then(pl.lit('CEUD'))
-                .otherwise(pl.col('Source'))
-                .alias('Source'),
-            )
-            .drop(['_yr', '_density', '_scale', '_override'])
-        )
-        # Every other technology (Retrofit Average/Deep/Passive) keeps the
-        # ordinary per-bin scaling below -- they hold 0% share today, so this
-        # only matters if/when retrofit uptake becomes nonzero.
-        fixed = pl.concat([unaffected, affected], how='diagonal_relaxed').sort('_order')
-        mask = mask & (pl.col('Technology') != 'Reference')
-
-    unaffected = fixed.filter(~mask)
-    affected = (
-        fixed.filter(mask)
-        .with_columns(
-            pl.col('Year').cast(pl.Int64).alias('_yr'),
-            pl.when(pl.col('Branch').str.contains('.High Density.', literal=True))
-            .then(pl.lit('High Density')).otherwise(pl.lit('LowMed Density'))
-            .alias('_density'),
-        )
-        .join(scale_df, on=['_density', '_yr'], how='left')
-        .with_columns(
-            (pl.col('Value').cast(pl.Float64) * pl.col('_scale').fill_null(1.0))
-            .cast(pl.String)
-            .alias('Value'),
-            pl.when(pl.col('_scale').is_not_null())
-            .then(pl.lit('CEUD'))
-            .otherwise(pl.col('Source'))
-            .alias('Source'),
-        )
-        .drop(['_yr', '_density', '_scale'])
+        pl.col('Service').str.ends_with(' Bldg Code') &
+        pl.any_horizontal([pl.col('Target').str.ends_with(f'.{s}') for s in HEATING_SERVICES])
     )
 
-    return pl.concat([unaffected, affected], how='diagonal_relaxed').sort('_order')
+    rows: list[dict] = []
+    replaced: list[int] = []
+    weather_done: set[str] = set()
+    for (branch,), g in sr.group_by('Branch', maintain_order=True):
+        parts = branch.split('.')
+        density, vintage_bin = parts[-3], parts[-1].removesuffix(' Bldg Code')
+        if (density, vintage_bin) not in means:
+            print(f'  No CEUD heating intensity for {density} {vintage_bin}; keeping fixed data')
+            continue
+        intensity = means[(density, vintage_bin)]
+
+        g = g.with_columns(pl.col('Value').cast(pl.Float64, strict=False).alias('_v'))
+        mean_v = {
+            (t, tgt): float(sub['_v'].mean())
+            for (t, tgt), sub in g.group_by(['Technology', 'Target'], maintain_order=True)
+        }
+        ref_total = sum(v for (t, _), v in mean_v.items() if t == 'Reference')
+        if not ref_total:
+            print(f'  No Reference heating request at {branch}; keeping fixed data')
+            continue
+
+        for (tech, target), v in mean_v.items():
+            first = g.filter((pl.col('Technology') == tech) & (pl.col('Target') == target))
+            order = float(first['_order'].min())
+            value = str(intensity * v / ref_total)
+            if factors is not None:
+                if target not in weather_done:
+                    rows.extend(_build_weather_node_rows(fixed, target, region, factors))
+                    weather_done.add(target)
+                target = _weather_node_name(target)
+            for i, year in enumerate(range(DATA_START, PROJECTION_END + 1)):
+                rows.append({
+                    'Branch': branch, 'Type': 'Service', 'Region': region,
+                    'Sector': 'Residential', 'Service': first['Service'][0],
+                    'Technology': tech,
+                    'Parameter': 'service_request',
+                    'Context': '', 'Sub_Context': '',
+                    'Target': target,
+                    'Source': source,
+                    'Unit': first['Unit'][0],
+                    'Year': str(year), 'Value': value,
+                    '_order': order + i * 1e-6,
+                })
+        replaced.extend(g['_order'].to_list())
+
+    return (pl.DataFrame(rows) if rows else _empty_frame()), replaced
 
 
 def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
-                      multipliers: pl.DataFrame, region: str) -> pl.DataFrame:
+                      multipliers: pl.DataFrame, heating, region: str) -> pl.DataFrame:
     """
     Build the complete model-inputs DataFrame for one region by interleaving
     fixed structural data with pipeline-derived rows at the correct positions.
@@ -1486,7 +1343,6 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
     fixed, cooling_intensity_rows = _replace_cooling_intensity(residential, fixed, region)
     fixed, wh_intensity_rows = _replace_wh_intensity(residential, fixed, region)
     fixed, lighting_total_rows = _replace_lighting_total(residential, fixed, region)
-    fixed = _replace_heating_intensity(residential, fixed, region)
 
     # 1. Housing before all fixed data
     housing = _build_housing_rows(
@@ -1560,11 +1416,15 @@ def _assemble_region(fixed: pl.DataFrame, residential: pl.DataFrame,
         residential, fixed, region, 'wh_tech_high', 'High Density'
     )
 
+    # 10. Space-heating intensity: Vintage Bldg Code -> Heating service_request
+    heat_sr, replaced = _build_heating_intensity_rows(heating, fixed, region)
+    fixed = fixed.filter(~pl.col('_order').is_in(replaced))
+
     all_frames = [
         fixed.cast({'_order': pl.Float64}),
         housing, prices, appliances, bt_rows, vb_rows,
         heat_cold_high, heat_cold_lm, heat_mar_high, heat_mar_lm,
-        cool_high, cool_lm, wh_split, wh_mst_lm, wh_mst_high,
+        cool_high, cool_lm, wh_split, wh_mst_lm, wh_mst_high, heat_sr,
         cooling_intensity_rows, wh_intensity_rows, lighting_total_rows,
     ]
 
@@ -1596,6 +1456,7 @@ def main() -> dict[str, pl.DataFrame]:
         )
     )
     multipliers = pl.from_pandas(_energy_price_mod.main())
+    heating = _heating_mod.main(export_csv=False)
     print(
         f'  Residential data: {len(residential):,} rows, '
         f'regions: {sorted(residential["province"].unique().to_list())}'
@@ -1619,7 +1480,7 @@ def main() -> dict[str, pl.DataFrame]:
             fixed = _read_flattened_fixed(region)
 
             print('  Assembling...')
-            output = _assemble_region(fixed, residential, multipliers, region)
+            output = _assemble_region(fixed, residential, multipliers, heating, region)
             output = collapse_constant_years(output)
 
             out_path = OUTPUT_DIR / f'residential_{region.lower()}.csv'

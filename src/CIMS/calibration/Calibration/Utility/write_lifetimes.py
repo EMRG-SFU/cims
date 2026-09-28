@@ -7,7 +7,7 @@ from Calibration.Data.node_info import list_years, list_techs
 from Calibration.Utility.write_fics import extractRegion, extractSector, extractService, write_rows_by_region
 
 
-def get_lifetime_file_rows(model, nodeName):
+def get_lifetime_file_rows(model, nodeName, source="calibration_lifetime_export"):
     all_years = list_years(model.graph, nodeName)
     all_techs = list_techs(model.graph, nodeName)
 
@@ -28,7 +28,7 @@ def get_lifetime_file_rows(model, nodeName):
             "Context": "",
             "Sub_Context": "",
             "Target": "",
-            "Source": "calibration_lifetime_export",
+            "Source": source,
             "Unit": "",
             "Year": "",
             "Value": out_value,
@@ -37,7 +37,7 @@ def get_lifetime_file_rows(model, nodeName):
     return rows
 
 
-def write_lifetimes(model, nodeName, outputDir, name='fitted_lifetimes', include_subtree=False):
+def write_lifetimes(model, nodeName, outputDir, name='fitted_lifetimes', include_subtree=False, source="calibration_lifetime_export"):
 
     if include_subtree:
         nodes_to_process = sorted( [nodeName] + list(getDescendants(model, nodeName)) )
@@ -46,6 +46,6 @@ def write_lifetimes(model, nodeName, outputDir, name='fitted_lifetimes', include
 
     rows = []
     for node in nodes_to_process:
-        rows.extend(get_lifetime_file_rows(model, node))
+        rows.extend(get_lifetime_file_rows(model, node, source=source))
 
     write_rows_by_region(rows, outputDir, name, nodes_to_process)
