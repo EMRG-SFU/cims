@@ -117,6 +117,83 @@ def _empty_df() -> pl.DataFrame:
     return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
+# Bottom-up roll-up chain: each parent branch suffix (after "CIMS.CAN.{region}")
+# gets a calibration_quantity_requested row equal to the sum of its children's
+# values (per Target fuel/Year), plus whatever value is already sitting directly
+# on the parent branch itself (e.g. an un-attributable CER residual, such as
+# Lubricants feedstock, which has no technology breakdown to drill into).
+# Order matters: each level must be computed before the level above it, since
+# a parent's own children can include an already-rolled-up lower-level parent
+# (e.g. Freight.Land needs Freight.Land.Heavy to already be summed).
+_ROLLUP_LEVELS: list[tuple[str, list[str]]] = [
+    ('.Transportation Freight.Freight.Land.Heavy', [
+        '.Transportation Freight.Freight.Land.Heavy.Trucks',
+        '.Transportation Freight.Freight.Land.Heavy.Rail',
+    ]),
+    ('.Transportation Freight.Freight.Land', [
+        '.Transportation Freight.Freight.Land.Light Medium',
+        '.Transportation Freight.Freight.Land.Heavy',
+    ]),
+    ('.Transportation Freight.Freight', [
+        '.Transportation Freight.Freight.Land',
+        '.Transportation Freight.Freight.Marine',
+        '.Transportation Freight.Freight.Air',
+    ]),
+    ('.Transportation Freight', [
+        '.Transportation Freight.Freight',
+        '.Transportation Freight.Off Road',
+    ]),
+]
+
+
+def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
+    """Roll calibration_quantity_requested up from leaf mode nodes to their
+    parent Freight/Transportation Freight branches, per _ROLLUP_LEVELS."""
+    if rows.is_empty():
+        return rows
+
+    df = rows.to_pandas()
+    df['Value_f'] = df['Value'].astype(float)
+
+    for parent_suffix, child_suffixes in _ROLLUP_LEVELS:
+        child_mask = df['Branch'].str.endswith(tuple(child_suffixes))
+        children = df[child_mask]
+        if children.empty:
+            continue
+
+        summed = children.groupby(['Region', 'Target', 'Year'], as_index=False)['Value_f'].sum()
+        parent_branch = 'CIMS.CAN.' + summed['Region'] + parent_suffix
+        summed['Branch'] = parent_branch
+
+        existing_mask = df['Branch'] == ('CIMS.CAN.' + df['Region'] + parent_suffix)
+        existing = df[existing_mask][['Region', 'Target', 'Year', 'Value_f']]
+        if not existing.empty:
+            summed = summed.merge(
+                existing, on=['Region', 'Target', 'Year'],
+                how='outer', suffixes=('', '_existing'),
+            )
+            summed['Value_f'] = summed['Value_f'].fillna(0) + summed['Value_f_existing'].fillna(0)
+            summed = summed.drop(columns=['Value_f_existing'])
+            summed['Branch'] = 'CIMS.CAN.' + summed['Region'] + parent_suffix
+
+        df = df[~existing_mask]
+
+        meta_cols = summed['Branch'].apply(_branch_meta).apply(pd.Series).drop(columns=['Region'])
+        summed = pd.concat([summed.reset_index(drop=True), meta_cols.reset_index(drop=True)], axis=1)
+        summed['Technology']  = ''
+        summed['Parameter']   = 'calibration_quantity_requested'
+        summed['Context']     = ''
+        summed['Sub_Context'] = ''
+        summed['Source']      = 'CER (rolled up)'
+        summed['Unit']        = 'GJ'
+        summed['Value']       = summed['Value_f'].astype(str)
+
+        df = pd.concat([df, summed[df.columns]], ignore_index=True)
+
+    df = df.drop(columns=['Value_f'])
+    return pl.DataFrame(df, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
 # ── energy demand builder ─────────────────────────────────────────────────────
 
 def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
@@ -290,7 +367,9 @@ def main() -> pl.DataFrame:
 
     print('\nBuilding CER energy demand rows...')
     cer_rows = _build_cer_energy(cer_df)
-    print(f'  Rows: {len(cer_rows):,}')
+    print(f'  Leaf rows: {len(cer_rows):,}')
+    cer_rows = _rollup_hierarchy(cer_rows)
+    print(f'  Rows after rolling up to Freight/Transportation Freight: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
     crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)

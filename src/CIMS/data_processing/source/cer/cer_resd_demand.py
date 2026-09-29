@@ -191,8 +191,17 @@ def _map_to_cims(cer: pd.DataFrame, mapping: pd.DataFrame, energy_map: pd.DataFr
     # Exact match on sector + enduse
     merged_specific = cer.merge(specific_map, on=["cer_sector", "cer_enduse"], how="inner")
 
-    # Sector-only rows: sum all enduses for that sector
-    merged_sector = cer.merge(sector_map, on="cer_sector", how="inner")
+    # Sector-only rows: sum all enduses for that sector, EXCEPT (sector, enduse)
+    # combinations already claimed by a specific mapping above. Without this
+    # exclusion, a specifically-mapped (sector, enduse) pair would double-count:
+    # once under its specific node, once again under the sector-wide fallback.
+    specific_keys = specific_map[["cer_sector", "cer_enduse"]].drop_duplicates()
+    cer_flagged = cer.merge(
+        specific_keys.assign(_has_specific=True),
+        on=["cer_sector", "cer_enduse"], how="left",
+    )
+    cer_sector_only = cer_flagged[cer_flagged["_has_specific"].isna()].drop(columns="_has_specific")
+    merged_sector = cer_sector_only.merge(sector_map, on="cer_sector", how="inner")
 
     merged = pd.concat([merged_specific, merged_sector], ignore_index=True)
 

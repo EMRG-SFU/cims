@@ -141,3 +141,32 @@ Freight,,.Transportation Freight
 Air Freight,,.Transportation Freight
 Foreign Freight,,.Transportation Freight
 Off-Road,Off-Road,.Transportation Freight.Off Road
+Freight,HDV2B3 Diesel,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV2B3 Electric,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV2B3 Gasoline,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV2B3 Natural Gas,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV2B3 Propane,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV45 Diesel,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV45 Electric,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV45 Gasoline,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV45 Natural Gas,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV45 Propane,.Transportation Freight.Freight.Land.Light Medium
+Freight,HDV67 Diesel,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV67 Electric,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV67 Gasoline,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV67 Natural Gas,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV67 Propane,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV8 Diesel,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV8 Electric,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV8 Gasoline,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV8 Natural Gas,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,HDV8 Propane,.Transportation Freight.Freight.Land.Heavy.Trucks
+Freight,Marine Heavy,.Transportation Freight.Freight.Marine
+Freight,Marine Light,.Transportation Freight.Freight.Marine
+Freight,Train Diesel,.Transportation Freight.Freight.Land.Heavy.Rail
+Foreign Freight,Marine Heavy,.Transportation Freight.Freight.Marine
+Foreign Freight,Marine Light,.Transportation Freight.Freight.Marine
+Foreign Freight,Plane Gasoline,.Transportation Freight.Freight.Air
+Foreign Freight,Plane Jet Fuel,.Transportation Freight.Freight.Air
+Air Freight,Plane Gasoline,.Transportation Freight.Freight.Air
+Air Freight,Plane Jet Fuel,.Transportation Freight.Freight.Air

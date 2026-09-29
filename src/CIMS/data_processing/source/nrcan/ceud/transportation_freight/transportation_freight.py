@@ -65,7 +65,16 @@ IPCC_FILE               = _CIMS_BASE / 'raw_data/eccc/nir/GHG_IPCC_Can_Prov_Terr
 OFFROAD_MJ_PER_TKM      = 7.82     # TJ per M·tkm (TJ→MJ and M·tkm cancel); same for all regions
 GASOLINE_EF_KT_CO2EQ_TJ = 0.064   # kt CO2eq per TJ for motor gasoline
 HFO_EF_KT_CO2EQ_TJ      = 0.074737 # kt CO2eq per TJ for heavy fuel oil (marine)
-MARINE_TKM_DOMESTIC_SHARE = 0.46   # fraction of CAN total marine M·tkm that is domestic
+# CAN-level freight-air PJ/M·tkm intensity (Table 21) spikes in 2020-2021 — passenger
+# belly-hold cargo capacity collapsed while air-freight PJ held up or rose. Since
+# extract_air_ktkm() allocates every province's activity as prov_pj * (can_M_tkm/can_pj),
+# this national distortion drags down every province's derived activity for those years
+# even where that province's own reported PJ rose. For AIR_INTENSITY_ANOMALY_YEARS, the
+# allocation uses the mean CAN intensity from AIR_INTENSITY_BASELINE_YEARS instead of
+# that year's actual (distorted) ratio. Rail's CAN intensity stayed flat through the same
+# years, so this correction is air-specific.
+AIR_INTENSITY_ANOMALY_YEARS  = (2020, 2021)
+AIR_INTENSITY_BASELINE_YEARS = (2017, 2018, 2019)
 
 # IPCC region name → province abbreviation(s)
 # "Northwest Territories and Nunavut" is combined in IPCC; NT and NU each get 50%.
@@ -127,11 +136,12 @@ CAGR_OVERRIDES: dict[tuple[str, str], tuple[float, float]] = {
 # CEUD PROVINCIAL TABLE NUMBERS
 # ==============================================================================
 
-TABLE_FREIGHT_AIR   = 15   # Freight air fuel by source (PJ)
-TABLE_FREIGHT_RAIL  = 18   # Freight rail energy use (PJ)
-TABLE_FREIGHT_LT    = 35   # Freight light truck fuel by source (PJ)
-TABLE_FREIGHT_MHVT  = 36   # Freight medium & heavy truck fuel + tkm
-TABLE_TRUCK_EXPL    = 37   # Truck explanatory variables (stock, avg km)
+TABLE_FREIGHT_AIR    = 15   # Freight air fuel by source (PJ)
+TABLE_FREIGHT_MARINE = 19   # Marine energy use by source (PJ) -- provincial, direct
+TABLE_FREIGHT_RAIL   = 18   # Freight rail energy use (PJ)
+TABLE_FREIGHT_LT     = 35   # Freight light truck fuel by source (PJ)
+TABLE_FREIGHT_MHVT   = 36   # Freight medium & heavy truck fuel + tkm
+TABLE_TRUCK_EXPL     = 37   # Truck explanatory variables (stock, avg km)
 
 # ==============================================================================
 # CAN FILE ROW MAPS  (tran_ca_e.xls, 0-indexed rows — verified from file)
@@ -145,8 +155,10 @@ CAN_T27_RAIL_TKM = 29
 CAN_T21_AIR_PJ  = 5
 CAN_T21_AIR_TKM = 13
 
-# Table 29 (marine): row 29 = CAN total M·tkm (domestic + international combined)
-# Domestic share = MARINE_TKM_DOMESTIC_SHARE (0.46); provincial split via IPCC Domestic Navigation.
+# Table 29 (marine): row 29 = CAN total M·tkm (domestic + international combined).
+# Provincial split via IPCC Domestic Navigation CO2eq (see extract_marine_ktkm) — this
+# allocates the full domestic+international total using domestic-traffic proportions,
+# since no separate international-only provincial allocator is available.
 CAN_T29_MARINE_TKM = 29
 
 # ==============================================================================
@@ -181,6 +193,16 @@ T18_RAIL_PJ_ROW = 5     # Freight Rail Transportation Energy Use (PJ)
 
 # Table 15 (Freight Air — activity not available by region, allocate from CAN)
 T15_AIR_PJ_ROW  = 5     # Freight Air Transportation Energy Use (PJ)
+
+# Table 19 (Marine) — provincial energy use IS available directly (unlike rail/air
+# activity -- the table's own footnote says "Activity variable for marine
+# transportation is not available by region"), so no CAN-proportional allocation
+# is needed for the PJ figures. Row indices verified against the polars-loaded
+# table (has_header=False drops fully-blank rows, so these differ from the raw
+# spreadsheet's own row numbers).
+T19_MARINE_PJ_ROW        = 5    # Marine Transportation Energy Use (PJ)
+T19_MARINE_DIESEL_PJ_ROW = 7    # Energy Use by Source: Diesel Fuel Oil (PJ)
+T19_MARINE_HFO_PJ_ROW    = 8    # Energy Use by Source: Heavy Fuel Oil (PJ)
 
 # Light Medium: fuels blended into the Gasoline/Diesel pool, not separate
 # vehicle technologies.
@@ -378,9 +400,7 @@ def load_can_freight_params() -> dict:
         try:
             can_M_tkm_total = _read_row(t29, CAN_T29_MARINE_TKM).dropna()
             if not can_M_tkm_total.empty:
-                params['can_dom_marine_M_tkm'] = (
-                    can_M_tkm_total * MARINE_TKM_DOMESTIC_SHARE
-                ).dropna()
+                params['can_marine_M_tkm'] = can_M_tkm_total
         except Exception:
             pass
 
@@ -582,6 +602,7 @@ def load_tables(province_code: str) -> dict:
     """Load freight CEUD tables for a province. Returns dict 'Table N' → pl.DataFrame."""
     table_numbers = [
         TABLE_FREIGHT_AIR,
+        TABLE_FREIGHT_MARINE,
         TABLE_FREIGHT_RAIL,
         TABLE_FREIGHT_LT,
         TABLE_FREIGHT_MHVT,
@@ -710,6 +731,10 @@ def extract_air_ktkm(province: str, tables: dict, can_params: dict) -> list[pl.D
     Table 15 row 5 gives provincial freight air energy (PJ) — already freight-only.
     CAN Table 21 rows 5/13 give national totals. Provincial activity is not available
     directly by region (per CEUD note), so CAN-proportional allocation is used.
+
+    For AIR_INTENSITY_ANOMALY_YEARS, can_air_M_tkm is replaced with the value implied
+    by the mean pre-COVID CAN intensity (AIR_INTENSITY_BASELINE_YEARS) — see the module
+    docstring comment above AIR_INTENSITY_ANOMALY_YEARS for why.
     """
     t15 = tables.get(f'Table {TABLE_FREIGHT_AIR}')
     if t15 is None:
@@ -725,13 +750,63 @@ def extract_air_ktkm(province: str, tables: dict, can_params: dict) -> list[pl.D
     if not common:
         return []
 
+    can_pj_common    = can_pj.reindex(common)
+    can_M_tkm_common = can_M_tkm.reindex(common).copy()
+
+    baseline_years = [y for y in AIR_INTENSITY_BASELINE_YEARS
+                      if y in can_pj.index and y in can_M_tkm.index]
+    if baseline_years:
+        baseline_intensity = (
+            can_pj.reindex(baseline_years) / can_M_tkm.reindex(baseline_years)
+        ).mean()
+        if baseline_intensity:
+            for y in AIR_INTENSITY_ANOMALY_YEARS:
+                if y in can_M_tkm_common.index:
+                    can_M_tkm_common.loc[y] = can_pj_common.loc[y] / baseline_intensity
+
     prov_M_tkm = (
-        _safe_div(prov_pj.reindex(common), can_pj.reindex(common))
-        * can_M_tkm.reindex(common)
+        _safe_div(prov_pj.reindex(common), can_pj_common)
+        * can_M_tkm_common
     ).dropna()
     if prov_M_tkm.empty:
         return []
     return [_long(province, 'air_ktkm', '', 'intermediate', 'M_tkm', prov_M_tkm)]
+
+
+# ==============================================================================
+# EXTRACTION — MARINE ENERGY (PJ, direct from Table 19 -- no CAN allocation needed)
+# ==============================================================================
+
+
+def extract_marine_energy(province: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    Provincial marine energy use (PJ), read directly from Table 19 -- unlike
+    rail/air, marine energy IS reported by province in CEUD, so no CAN-level
+    proportional allocation is needed here (that machinery in `extract_marine_ktkm`
+    is only for activity, M·tkm, which Table 19 does not report).
+
+    Table 19 row 12 gives total marine PJ; rows 14/15 give the Diesel Fuel
+    Oil / Heavy Fuel Oil energy-source split. Per the table's own footnote,
+    all marine is freight except recreational boating (already excluded).
+    """
+    t19 = tables.get(f'Table {TABLE_FREIGHT_MARINE}')
+    if t19 is None:
+        return []
+
+    frames = []
+    total_pj = _read_row(t19, T19_MARINE_PJ_ROW).dropna()
+    if not total_pj.empty:
+        frames.append(_long(province, 'marine_pj', '', 'intermediate', 'PJ', total_pj))
+
+    diesel_pj = _read_row(t19, T19_MARINE_DIESEL_PJ_ROW).dropna()
+    if not diesel_pj.empty:
+        frames.append(_long(province, 'marine_pj', 'Diesel Fuel Oil', 'intermediate', 'PJ', diesel_pj))
+
+    hfo_pj = _read_row(t19, T19_MARINE_HFO_PJ_ROW).dropna()
+    if not hfo_pj.empty:
+        frames.append(_long(province, 'marine_pj', 'Heavy Fuel Oil', 'intermediate', 'PJ', hfo_pj))
+
+    return frames
 
 
 # ==============================================================================
@@ -743,29 +818,39 @@ def extract_marine_ktkm(
     province: str, can_params: dict, ipcc_marine: dict
 ) -> list[pl.DataFrame]:
     """
-    Provincial domestic marine freight M·tkm via IPCC Domestic Navigation CO2eq.
+    Provincial marine freight M·tkm (domestic + international) via IPCC Domestic
+    Navigation CO2eq.
 
     Formula (HFO emission factor cancels in the ratio):
-        prov_dom_M_tkm = (prov_CO2eq / can_CO2eq) × can_dom_M_tkm
+        prov_M_tkm = (prov_CO2eq / can_CO2eq) × can_M_tkm
 
-    Where can_dom_M_tkm = CAN Table 29 total M·tkm × MARINE_TKM_DOMESTIC_SHARE (0.46).
+    Where can_M_tkm = CAN Table 29 total M·tkm (domestic + international combined).
+    A previous version of this function scaled can_M_tkm down to a domestic-only
+    46% share before allocating; that restriction is removed — CER calibration data
+    for Transportation Freight is not domestic-only, so comparing a domestic-only
+    model estimate against it understated marine energy demand. The IPCC Domestic
+    Navigation CO2eq ratio is still used as the *provincial* allocator (no separate
+    international-only provincial split is available), so province-to-province
+    proportions reflect domestic traffic patterns even though the total they're
+    applied to now includes international activity.
+
     BCT ('BC') uses "British Columbia" IPCC data; territories (YT/NT/NU) are zeroed
     in _split_bct since they have no significant domestic marine freight.
     """
-    prov_co2eq    = ipcc_marine.get(province, pd.Series(dtype=float)).dropna()
-    can_co2eq     = ipcc_marine.get('CAN',    pd.Series(dtype=float)).dropna()
-    can_dom_M_tkm = can_params.get('can_dom_marine_M_tkm', pd.Series(dtype=float)).dropna()
+    prov_co2eq  = ipcc_marine.get(province, pd.Series(dtype=float)).dropna()
+    can_co2eq   = ipcc_marine.get('CAN',    pd.Series(dtype=float)).dropna()
+    can_M_tkm   = can_params.get('can_marine_M_tkm', pd.Series(dtype=float)).dropna()
 
-    if prov_co2eq.empty or can_co2eq.empty or can_dom_M_tkm.empty:
+    if prov_co2eq.empty or can_co2eq.empty or can_M_tkm.empty:
         return []
 
-    common = sorted(set(prov_co2eq.index) & set(can_co2eq.index) & set(can_dom_M_tkm.index))
+    common = sorted(set(prov_co2eq.index) & set(can_co2eq.index) & set(can_M_tkm.index))
     if not common:
         return []
 
     prov_M_tkm = (
         _safe_div(prov_co2eq.reindex(common), can_co2eq.reindex(common))
-        * can_dom_M_tkm.reindex(common)
+        * can_M_tkm.reindex(common)
     ).dropna()
 
     if prov_M_tkm.empty:
