@@ -1,33 +1,3 @@
-import re
-
-
-def is_year(val: str | int) -> bool:
-    """ Determines whether `cn` is a year
-
-    Parameters
-    ----------
-    val : int or str
-        The value to check to determine if it is a year.
-
-    Returns
-    -------
-    bool
-        True if `cn` is made entirely of digits [0-9] and is 4 characters in length. False
-        otherwise.
-
-    Examples
-    --------
-    >>> is_year(1900)
-    True
-
-    >>> is_year('2010')
-    True
-    """
-    re_year = re.compile(r'^\d{4}$')
-
-    return bool(re_year.match(str(val)))
-
-
 def infer_type(d):
     """ 
 

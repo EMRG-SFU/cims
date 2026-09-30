@@ -130,7 +130,7 @@ def get_services_requested(model, node, year, tech=None, use_vintage_weighting=F
             if use_vintage_weighting:
                 weighted_services = {}
                 for target in services_requested:
-                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_request, model, node, year, tech=tech, context=target)
+                    weighted_req_ratio = vintage_weighting.calculate_vintage_weighted_parameter(PARAM.service_request, model, node, year, tech=tech, target=target)
                     weighted_services[target] = create_value_dict(year_val=weighted_req_ratio, target=target, param_source='vintage_weighting')
                 services_requested = weighted_services
 

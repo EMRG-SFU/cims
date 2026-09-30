@@ -1,16 +1,12 @@
 import pandas as pd
-from typing import Iterable, List
+from typing import List
 
 
-def build_col_list(list_csv_path: str, year_list: Iterable) -> List[str]:
-    """
-    Build the column list from defaults_Lists.csv plus the provided years.
-    """
-    base_cols = (
+def build_col_list(list_csv_path: str) -> List[str]:
+    """Build the metadata column allowlist from defaults_Lists.csv's Columns field."""
+    return (
         pd.read_csv(list_csv_path)["Columns"]
         .dropna()
         .astype(str)
         .tolist()
     )
-    year_cols = [str(y) for y in year_list]
-    return base_cols + year_cols

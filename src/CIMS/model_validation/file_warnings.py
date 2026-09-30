@@ -1,11 +1,9 @@
 import pandas as pd
 import numpy as np
 
-from .validation_utils import get_year_cols
-
 from ..utils.model_description import column_list as COL
 from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import is_year
+from ..unit_conversion import MONETARY_PREFIX_RE
 
 
 def missing_parameter_default(validator):
@@ -31,8 +29,7 @@ def missing_parameter_default(validator):
         # Find Unique Node/Branch + Technology rows
         missing_parameter_default = []
         for parameter, occurences in params_no_defs.items():
-            missing_parameter_default.append((parameter,
-                                              f"{occurences} occurences"))
+            missing_parameter_default.append((parameter, int(occurences)))
 
         # Create Warning information
         concern_desc = "parameters are in the model, but do not have default \
@@ -85,34 +82,31 @@ def nodes_no_requested_service(validator):
 
 def duplicate_service_requests(validator):
     """
-    Identify nodes and technologies which request the same service twice.
+    Identify nodes and technologies which request the same service more than once.
+
+    Returns {(node, tech, target): {year: count}} so the caller can see exactly
+    which (node, technology, target) combinations have duplicates and how many
+    times each year appears. All years duplicated at the same count suggests the
+    same rows exist in multiple files; only some years duplicated suggests a
+    data entry error.
     """
-    # The model's DataFrame
     data = validator.model_df
 
     serv_request = data[data[COL.parameter] == PARAM.service_request]
     duplicated = serv_request[serv_request.duplicated(
-        subset=[validator.node_col, COL.technology, validator.target_col],
+        subset=[validator.node_col, COL.technology, validator.target_col, "Year"],
         keep=False)]
 
-    if len(duplicated) > 0:
-        # Group & list rows (index) where duplicates exist
-        duplicated_with_idx = duplicated.reset_index()
-        duplicated_groups = duplicated_with_idx.groupby(
-            [validator.node_col, COL.technology, validator.target_col],
-            dropna=False)['index'].apply(list)
-        duplicated_groups = duplicated_groups.reset_index()
+    result: dict = {}
+    for _, row in duplicated.iterrows():
+        key = (row[validator.node_col], row[COL.technology], row[validator.target_col])
+        year = row["Year"]
+        result.setdefault(key, {})
+        result[key][year] = result[key].get(year, 0) + 1
 
-        # Create our Warning information
-        duplicate_req = list(zip(duplicated_groups['index'],
-                                 duplicated_groups[COL.branch],
-                                 duplicated_groups[COL.technology]))
-    else:
-        duplicate_req = []
+    concern_desc = "(node, technology, target) combination(s) have duplicate service_request rows"
 
-    concern_desc = "nodes/technologies request the same service more than once"
-
-    return duplicate_req, concern_desc
+    return result, concern_desc
 
 
 def bad_service_req(validator):
@@ -120,28 +114,75 @@ def bad_service_req(validator):
     Identify nodes/technologies that have a service requested line, but where the values in these
     lines are either blank or exogenously specified as 0.
     """
-    # The model's DataFrame
     data = validator.model_df
+    services_req = data[data[COL.parameter] == PARAM.service_request].copy()
+    services_req["Value_num"] = pd.to_numeric(services_req["Value"], errors="coerce")
+    group_keys = [validator.node_col, COL.technology, validator.target_col]
 
-    # Filter to Only Include Service Requested
-    services_req = data[data[COL.parameter] == PARAM.service_request]
+    # True for each row where ALL values in the (node, tech, target) group are 0 or NaN
+    all_bad_mask = services_req.groupby(group_keys, dropna=False)["Value_num"] \
+        .transform(lambda g: (g.isna() | (g == 0)).all())
 
-    # Select only the year columns
-    year_cols = [c for c in services_req.columns if is_year(c)]
-    year_values = services_req[year_cols]
-
-    # Identify rows that have 0's or missing values
-    row_has_bad_values = year_values.isin([0, np.nan]).all(axis=1)
-    rows_with_bad_values = services_req[row_has_bad_values]
-
-    # Create our Warning information
-    bad_service_requests = list(
-        zip(rows_with_bad_values.index, rows_with_bad_values[validator.node_col]))
+    bad_rows = services_req[all_bad_mask].drop_duplicates(subset=group_keys)
+    bad_service_requests = list(zip(
+        bad_rows.index,
+        bad_rows[validator.node_col],
+        bad_rows[COL.technology],
+        bad_rows[validator.target_col],
+    ))
 
     concern_desc = "nodes/technologies have Service requested values of only \
         0's or are missing all values"
 
     return bad_service_requests, concern_desc
+
+
+def cost_params_missing_currency_unit(validator):
+    """
+    Identify rows whose Unit column looks monetary (contains '$') but is missing
+    a valid YYYY_CCC dollar-year prefix (e.g. '$/GJ' should be '2010_CAD/GJ').
+
+    Without the year prefix, currency conversion silently skips those rows and
+    their values are not normalised to the target currency and dollar-year.
+
+    A secondary check flags rows whose parameter is in MONETARY_PARAMS but whose
+    unit does not match the YYYY_CCC pattern at all (e.g. 'fcc' with unit 'CAD'
+    rather than '2010_CAD'). This catches monetary parameters that lack a '$' symbol
+    and would otherwise be missed by the heuristic above.
+
+    Skipped when no currency converter is configured on the validator. Without a
+    target currency and dollar-year a missing YYYY_CCC prefix has no consequence,
+    and flagging it would warn on essentially every cost row in every model.
+    """
+    if getattr(validator, "currency_converter", None) is None:
+        return [], ""
+
+    data = validator.model_df
+
+    # A model description is not required to carry a Unit column; with no column
+    # there is nothing to check.
+    if COL.unit not in data.columns:
+        return [], ""
+
+    unit_col = data[COL.unit].fillna('').astype(str)
+
+    monetary_prefix_mask = unit_col.str.match(MONETARY_PREFIX_RE)
+
+    dollar_mask = unit_col.str.contains(r'\$', regex=True)
+    has_unit_mask = unit_col != ''
+    monetary_param_mask = data[COL.parameter].isin(PARAM.MONETARY_PARAMS) & has_unit_mask
+
+    missing = data[(dollar_mask | monetary_param_mask) & ~monetary_prefix_mask]
+
+    result = list(zip(
+        missing.index,
+        missing[validator.node_col],
+        missing[COL.parameter],
+        missing[COL.unit],
+    ))
+
+    concern_desc = "rows with a monetary parameter or '$' unit are missing a YYYY_CCC prefix (e.g. '$/GJ' → '2010_CAD/GJ')"
+    return result, concern_desc
 
 
 def zero_requested_nodes(validator, providers):
@@ -151,14 +192,13 @@ def zero_requested_nodes(validator, providers):
     0.
     """
     data = validator.model_df
-    request_lines = data[data[COL.parameter] == PARAM.service_request]
+    request_lines = data[data[COL.parameter] == PARAM.service_request].copy()
+    request_lines["Value_num"] = pd.to_numeric(request_lines["Value"], errors="coerce").fillna(0)
     all_requested = set(request_lines[validator.target_col])
 
-    numeric_values = request_lines[get_year_cols(
-        data)].replace("None", None).astype(float)
-    zero_request_line = numeric_values.sum(axis=1) == 0
-    non_zero_request_lines = request_lines[~zero_request_line]
-    non_zero_requested = set(non_zero_request_lines[validator.target_col])
+    group_keys = [validator.node_col, COL.technology, validator.target_col]
+    group_sums = request_lines.groupby(group_keys, dropna=False)["Value_num"].sum()
+    non_zero_requested = set(group_sums[group_sums != 0].reset_index()[validator.target_col])
 
     zero_requested = [(i, v) for i, v in providers.items() if
                       (v in all_requested) and

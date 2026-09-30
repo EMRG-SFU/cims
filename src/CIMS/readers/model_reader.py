@@ -1,15 +1,12 @@
 import numpy as np
-import pandas as pd
 import polars as pl
 
 from ..utils.model_description import column_list as COL
-from ..utils.model_description.query import get_node_cols
-from ..utils.parameter import list as PARAM
-from ..utils.parameter.parse import infer_type, is_year
+from ..utils.parameter.parse import infer_type
 
 
 class ModelReader:
-    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
+    def __init__(self, model_df,
                  default_values_csv_path=None, node_col=COL.branch, root_node="CIMS", list_csv_path=None):
 
         if default_values_csv_path:
@@ -17,61 +14,15 @@ class ModelReader:
         if list_csv_path:
             self.list_csv = list_csv_path
 
-        self.csv_files = csv_file_paths
         self.node_col = node_col
-        self.col_list = col_list
-        self.year_list = [str(x) for x in year_list]
-        self.sector_list = sector_list
 
-        self.model_df = self._get_model_df()
+        self.model_df = model_df.copy()
         self.root = root_node
 
         self.node_dfs = {}
         self.tech_dfs = {}
 
-    def _get_model_df(self):
-        appended_data = []
-        for csv_file in self.csv_files:
-            try:
-                mixed_type_columns = [COL.context]
-
-                sheet_df = pl.read_csv(
-                    csv_file,
-                    skip_rows=1,
-                    use_pyarrow=False,
-                    infer_schema_length=0,
-                    ).with_columns(pl.all().replace(
-                            {np.nan: None}
-                        )).to_pandas()
-
-                appended_data.append(sheet_df)
-
-            except ValueError:
-                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
-
-        model_df = pd.concat(appended_data, ignore_index=True)  # Add province sheets together and re-index
-        model_df.index += 3  # Adjust index to correspond to Excel line numbers
-        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
-        model_df.columns = [str(c) for c in
-                            model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df, self.node_col)  # Find columns, separated year cols from non-year cols
-        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
-        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
-        all_cols = n_cols + y_cols
-
-        mdf = model_df.loc[1:, all_cols]  # Create df, drop irrelevant columns & skip first, empty row
-
-        return mdf
-
     def get_model_description(self, inplace=False):
-        # ------------------------
-        # Filter sectors for calibration (if applicable)
-        # ------------------------
-        if self.sector_list:
-            if None not in self.sector_list:
-                self.sector_list.append(None)
-            self.model_df = self.model_df.apply(lambda row: row[self.model_df[COL.sector].isin(self.sector_list)])
-
         # ------------------------
         # Extract Node DFs
         # ------------------------
@@ -100,8 +51,7 @@ class ModelReader:
         return node_dfs, tech_dfs
 
     def get_years(self):
-        cols = [y for y in self.model_df.columns if is_year(y)]
-        return cols
+        return sorted(self.model_df["Year"].dropna().unique().tolist())
 
     def get_default_params(self):
         # Read model_description from excel
@@ -132,7 +82,10 @@ class ModelReader:
         return node_tech_defaults
         
     def get_inheritable_params(self):
-        return self._get_list(column_identifier="Inheritable")
+        # Blank cells in the "Inheritable" column come back as None from _get_list;
+        # they aren't parameter names, so drop them.
+        return [param for param in self._get_list(column_identifier="Inheritable")
+                if param is not None]
     
     def get_valid_competition_types(self):
         return self._get_list(column_identifier="Competition")

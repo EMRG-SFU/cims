@@ -4,6 +4,16 @@ from CIMS import declining_costs, lcc_calculation
 from ..graph.query import parent_name
 from . import list as PARAM
 
+def _return_val(val, param_source, unit, return_source, return_unit):
+    if return_source and return_unit:
+        return val, param_source, unit
+    if return_source:
+        return val, param_source
+    if return_unit:
+        return val, unit
+    return val
+
+
 calculation_directory = {
     PARAM.capital_cost_declining: declining_costs.calc_declining_capital_cost,
     PARAM.capital_cost: lcc_calculation.calc_capital_cost,
@@ -25,7 +35,8 @@ calculation_directory = {
 }
 
 def get_param(model, param, node, year=None, tech=None, context=None, sub_context=None,
-              return_source=False, do_calc=False, check_exist=False, dict_expected=False):
+              target=None, return_source=False, return_unit=False, do_calc=False,
+              check_exist=False, dict_expected=False):
     """
     Gets a parameter's value from the model, given a specific context (node, year, tech, context, sub-context),
     calculating the parameter's value if needed.
@@ -54,6 +65,12 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         Used when there is context available in the node. Analogous to the `context` column in the model description
     sub_context : str, optional
         Must be used only if context is given. Analogous to the `subcontext` column in the model description
+    target : str, optional
+        A target node name used to differentiate values for the same parameter across multiple
+        service request lines (e.g. a node requesting services from several target nodes). Applied
+        as a dict key lookup after `context`/`sub_context`. Can be combined with `context` for
+        chained lookups, or used alone as an alternative to `context` when the dict keys are
+        target node names rather than model-description context values.
     return_source : bool, default=False
         Whether to return the method by which this value was originally obtained.
     do_calc : bool
@@ -76,13 +93,14 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         default, or previous_year}.
     """
     val = None
+    param_source = None
     is_exogenous = None
 
     # Get Parameter from Description
     # ******************************
     # If the parameter's value is in the model description for that node & year (if the year has
     # been defined), use it.
-    data = model.graph.nodes[node]
+    data = model.graph._node[node]  # _node is the dict backing graph.nodes
     if year:
         data = data[year]
         if tech:  # assumption: any tech node always requires a year
@@ -102,12 +120,19 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                             val = None
                 except KeyError:
                     val = None
-            elif None in val:
+            if target and isinstance(val, dict):
+                try:
+                    val = val[target]
+                except KeyError:
+                    val = None
+            if not context and not target and None in val:
                 val = val[None]
 
     # Grab the year_value in the dictionary if exists
+    unit = None
     if isinstance(val, dict) and (PARAM.year_value in val):
         param_source = val[PARAM.param_source]
+        unit = val.get(PARAM.unit)
         is_exogenous = param_source in ['model', 'initialization']
         val = val[PARAM.year_value]
 
@@ -120,20 +145,13 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                 \nYear: {year if year else ''}\
                 \nContext: {context if context else ''}\
                 \nSub-context: {sub_context if sub_context else ''}\
+                \nTarget: {target if target else ''}\
                 \nTech: {tech if tech else ''}"
 
         warnings.warn(warning_message)
 
-    if val is not None:
-        if not do_calc:
-            if return_source:
-                return val, param_source
-            return val
-        elif is_exogenous:
-            if return_source:
-                return val, param_source
-            else:
-                return val
+    if val is not None and (not do_calc or is_exogenous):
+        return _return_val(val, param_source, unit, return_source, return_unit)
 
     # If check_exist is True, raise an Exception if val has not yet been returned, which means
     # the value at the current context could not be found as is.
@@ -146,7 +164,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
     # If there is a calculation for the parameter & the arguments for that calculation are present
     # in the model description for that node & year, calculate the parameter value using this
     # calculation.
-    if (param in calculation_directory) & do_calc:
+    if do_calc and (param in calculation_directory):
         param_calculator = calculation_directory[param]
         val = param_calculator(model, node, year, tech)
         param_source = 'calculation'
@@ -158,7 +176,8 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
         if tech:
             try:
                 val, source = model.get_param(param, node, year=year, context=context,
-                                              sub_context=sub_context, return_source=True)
+                                              sub_context=sub_context, target=target,
+                                              return_source=True)
                 assert (source in ['inheritance', 'model', 'default'])
                 assert (val is not None)
                 param_source = source
@@ -168,11 +187,13 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             # If the value has been defined at a structural ancestor, it should be here with
             # param_source == 'inheritance'
             try:
-                val = model.graph.nodes[node][year][param]
+                val = model.graph._node[node][year][param]
                 if context:
                     val = val[context]
                     if sub_context:
                         val = val[sub_context]
+                if target and isinstance(val, dict):
+                    val = val[target]
                 if val[PARAM.param_source] == 'inheritance':
                     param_source = 'inheritance'
             except KeyError:
@@ -197,6 +218,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
                                       year=prev_year,
                                       context=context,
                                       sub_context=sub_context,
+                                      target=target,
                                       tech=tech,
                                       dict_expected=dict_expected)
                 param_source = 'previous_year'
@@ -207,10 +229,7 @@ def get_param(model, param, node, year=None, tech=None, context=None, sub_contex
             val = None
             param_source = None
 
-    if return_source:
-        return val, param_source
-    else:
-        return val
+    return _return_val(val, param_source, unit, return_source, return_unit)
 
 def is_param_exogenous(model, param, node, year, tech=None):
     """Checks if a parameter is exogenously defined"""

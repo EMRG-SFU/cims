@@ -4,7 +4,7 @@ import copy
 
 from CIMS import cost_curves
 from ..model_description import column_list as COL
-from ..parameter.parse import infer_type, is_year
+from ..parameter.parse import infer_type
 from ..parameter import list as PARAM
 
 
@@ -121,28 +121,44 @@ def _update_year_dict(existing_year_dict, update_data):
                     ((param in existing_year_dict) and (PARAM.year_value not in existing_year_dict[param])):
                     year_dict[param][context] = value_dict
 
-                # 3. We save context as the year_value, which will remain constant
-                #    across all years.
+                # 3. Context present but Value null — old format no longer supported.
                 else:
-                    value_dict[PARAM.year_value] = infer_type(context)
-                    year_dict[param] = value_dict
+                    raise ValueError(
+                        f"Parameter '{param}' has a Context value ('{context}') but no Value. "
+                        "Constants must use the Value column with a null Year."
+                    )
             else:
                 year_dict[param] = value_dict
 
     return year_dict
 
 
-def _add_all_year_data(graph, current_node_df, current_node):
-    # 6 For the remaining data, group by year
-    years = [c for c in current_node_df.columns if is_year(c)]          # Get Year Columns
-    non_years = [c for c in current_node_df.columns if not is_year(c)]  # Get Non-Year Columns
-    non_year_data = [current_node_df[c] for c in non_years]
-    for year in years:
-        current_year_data = non_year_data + [current_node_df[year]]
-        existing_year_dict = _get_current_year_dict(graph, current_node, year)
-        updated_year_dict = _update_year_dict(existing_year_dict, current_year_data)
-        graph.nodes[current_node][year] = updated_year_dict
-        # _build_one_year_data(graph, current_year_data, year, current_node)
+def _add_all_year_data(graph, current_node_df, current_node, year_list=None):
+    # Pre-initialize an empty dict for every year in year_list so that tech
+    # data can always attach, even when the node has no non-tech rows for a
+    # given year (e.g. all node-level rows are constants with a null Year).
+    if year_list is not None:
+        for year in year_list:
+            if year not in graph.nodes[current_node]:
+                graph.nodes[current_node][year] = {}
+
+    # Constant rows (null Year, non-null Value) seed every year; year-specific rows override.
+    is_constant = current_node_df[COL.year].isna() & current_node_df[COL.value].notna()
+    constant_df = current_node_df[is_constant].drop(columns=[COL.year])
+
+    if not constant_df.empty:
+        seed = [constant_df[c] for c in constant_df.columns]
+        for year in (year_list or sorted(current_node_df[COL.year].dropna().unique())):
+            graph.nodes[current_node][year] = _update_year_dict(
+                _get_current_year_dict(graph, current_node, year), seed
+            )
+
+    for year in current_node_df[COL.year].dropna().unique():
+        year_df = current_node_df[current_node_df[COL.year] == year].drop(columns=[COL.year])
+        graph.nodes[current_node][year] = _update_year_dict(
+            _get_current_year_dict(graph, current_node, year),
+            [year_df[c] for c in year_df.columns]
+        )
 
     return graph, current_node_df
 
@@ -175,8 +191,8 @@ def _init_node(graph, current_node_df, current_node):
 
     # 2.1 Add index for use in the results viewer file
     if PARAM.tree_index not in graph.nodes[current_node]:
-        graph.max_tree_index[0] = max(graph.max_tree_index[0], current_node_df.index[0].item())
-        graph.nodes[current_node][PARAM.tree_index] = current_node_df.index[0].item() + graph.cur_tree_index[0]
+        graph.max_tree_index[0] = max(graph.max_tree_index[0], int(current_node_df.index[0]))
+        graph.nodes[current_node][PARAM.tree_index] = int(current_node_df.index[0]) + graph.cur_tree_index[0]
 
     return graph, current_node_df
 
@@ -189,10 +205,10 @@ def _standardize_param_value(val):
 
 
 def _add_node_constant(graph, node_df, node, parameter, required=False):
-    parameter_list = list(node_df[node_df[COL.parameter] == parameter][COL.context])
+    parameter_list = list(node_df[node_df[COL.parameter] == parameter][COL.value])
 
     if len(set(parameter_list)) == 1:
-        parameter_val = _standardize_param_value(parameter_list[0])
+        parameter_val = infer_type(_standardize_param_value(parameter_list[0]))
     elif len(set(parameter_list)) > 1:
         raise ValueError(f"{parameter} has too many values at {node}.")
     elif parameter in graph.nodes[node]:
@@ -250,7 +266,7 @@ def _set_node_region_sector(graph, current_node_df, current_node):
     return graph, current_node_df
 
 
-def _add_node_data(graph, current_node, node_dfs):
+def _add_node_data(graph, current_node, node_dfs, year_list=None):
     # args and kwargs for including new fields (e.g. LCC, Service Cost, etc)
     """ Add and populate a new node to `graph`
 
@@ -258,6 +274,10 @@ def _add_node_data(graph, current_node, node_dfs):
     ----------
     current_node : str
         The name of the node (branch notation) to add.
+    year_list : list of str, optional
+        All years the model is being run for.  When provided, every year in
+        the list is pre-initialised as an empty dict on the node so that tech
+        data can always attach even when the node has no year-keyed rows.
 
     Returns
     -------
@@ -280,43 +300,50 @@ def _add_node_data(graph, current_node, node_dfs):
     graph, current_node_df = _build_cost_curve(graph, current_node_df, current_node)
 
     # 6 For the remaining data, group by year.
-    graph, current_node_df = _add_all_year_data(graph, current_node_df, current_node)
+    graph, current_node_df = _add_all_year_data(graph, current_node_df, current_node, year_list=year_list)
 
     # 7 Return the new graph
     return graph
 
 
-def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech):
-    years = [c for c in current_tech_df.columns if is_year(c)]             # Get Year Columns
-    non_years = [c for c in current_tech_df.columns if not is_year(c)]     # Get Non-Year Columns
+def _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech, year_list=None):
+    # Constant rows (null Year, non-null Value) seed every year; year-specific rows override.
+    is_constant = current_tech_df[COL.year].isna() & current_tech_df[COL.value].notna()
+    constant_df = current_tech_df[is_constant].drop(columns=[COL.year])
 
-    non_year_data = [current_tech_df[c] for c in non_years]
-    for year in years:
-        year_data_to_update = non_year_data + [current_tech_df[year]]
-        existing_year_dict = _get_current_year_dict(graph, node, year, tech=current_tech)
-        updated_year_dict = _update_year_dict(existing_year_dict, year_data_to_update)
+    if not constant_df.empty and year_list:
+        seed = [constant_df[c] for c in constant_df.columns]
+        for year in year_list:
+            updated = _update_year_dict(_get_current_year_dict(graph, node, year, tech=current_tech), seed)
+            if PARAM.technologies not in graph.nodes[node][year]:
+                graph.nodes[node][year][PARAM.technologies] = {}
+            graph.nodes[node][year][PARAM.technologies][current_tech] = updated
+            if PARAM.tree_index not in updated:
+                updated[PARAM.tree_index] = int(current_tech_df.index[0]) + graph.cur_tree_index[0]
 
-        # Add technologies key (to the node's data) if needed
-        if PARAM.technologies not in graph.nodes[node][year].keys():
+    for year in current_tech_df[COL.year].dropna().unique():
+        year_df = current_tech_df[current_tech_df[COL.year] == year].drop(columns=[COL.year])
+        updated = _update_year_dict(_get_current_year_dict(graph, node, year, tech=current_tech),
+                                    [year_df[c] for c in year_df.columns])
+
+        if PARAM.technologies not in graph.nodes[node][year]:
             graph.nodes[node][year][PARAM.technologies] = {}
 
-        # Add the technology specific data for that year
-        graph.nodes[node][year][PARAM.technologies][current_tech] = updated_year_dict
+        graph.nodes[node][year][PARAM.technologies][current_tech] = updated
 
-        # Add index for use in the results viewer file
-        if PARAM.tree_index not in graph.nodes[node][year][PARAM.technologies][current_tech]:
-            graph.nodes[node][year][PARAM.technologies][current_tech][PARAM.tree_index] = current_tech_df.index[0].item() + graph.cur_tree_index[0]
+        if PARAM.tree_index not in updated:
+            updated[PARAM.tree_index] = int(current_tech_df.index[0]) + graph.cur_tree_index[0]
 
     return graph, current_tech_df
 
 
 def _init_tech(graph, current_tech_df):
-    graph.max_tree_index[0] = max(graph.max_tree_index[0], current_tech_df.index[0].item())
+    graph.max_tree_index[0] = max(graph.max_tree_index[0], int(current_tech_df.index[0]))
     current_tech_df = current_tech_df[current_tech_df[COL.parameter] != COL.technology.lower()]
     return graph, current_tech_df
 
 
-def _add_tech_data(graph, node, tech_dfs, current_tech):
+def _add_tech_data(graph, node, tech_dfs, current_tech, year_list=None):
     """
     Add and populate a new technology to `node`'s data within`graph`
     Parameters
@@ -325,6 +352,9 @@ def _add_tech_data(graph, node, tech_dfs, current_tech):
         The name of the node the new technology data will reside in.
     tech : str
         The name of the technology being added to the graph.
+    year_list : list of str, optional
+        All years the model is being run for. Required for constant rows
+        (null Year, non-null Value) to be seeded across every year.
     Returns
     -------
     networkx.Graph
@@ -338,42 +368,62 @@ def _add_tech_data(graph, node, tech_dfs, current_tech):
     graph, current_tech_df = _init_tech(graph, current_tech_df)
 
     # 3 Group data by year & add to the tech's dictionary
-    # NOTE: This is very similar to what we do for nodes (above). However, it differs because
-    # we aren't using the value column (its redundant here). TODO: Check
-    graph, current_tech_df = _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech)
+    graph, current_tech_df = _add_all_year_data_for_tech(graph, current_tech_df, node, current_tech,
+                                                          year_list=year_list)
 
     # 4 Return the new graph
     return graph
 
 
-def make_or_update_nodes(graph, node_dfs, tech_dfs):
+def make_or_update_nodes(graph, node_dfs, tech_dfs, year_list=None):
     """
     Add nodes to `graph` using `node_dfs` and `tech_dfs`. If node already exists, update it.
+
+    Parameters
+    ----------
+    graph : networkx.DiGraph
+    node_dfs : dict
+    tech_dfs : dict
+    year_list : list of str, optional
+        All years the model is being run for.  Each year is pre-initialised as
+        an empty dict on every node so that tech data can always attach, even
+        when a node has no year-keyed rows of its own (e.g. only constant rows
+        with a null Year).  When omitted, the year list is derived from the
+        Year column across all node_dfs and tech_dfs.
 
     Returns
     -------
     networkx.Graph
         An updated graph that contains all nodes and technologies in node_dfs and tech_dfs.
     """
-    # 1 Copy graph
+    # 1 Resolve year_list — derive from data if not supplied
+    if year_list is None:
+        all_years = set()
+        for df in node_dfs.values():
+            all_years.update(df["Year"].dropna().unique())
+        for tech_dict in tech_dfs.values():
+            for df in tech_dict.values():
+                all_years.update(df["Year"].dropna().unique())
+        year_list = sorted(all_years)
+
+    # 2 Copy graph
     new_graph = copy.copy(graph)
 
-    # 2 Add nodes to the graph
+    # 3 Add nodes to the graph
     # The strategy of trying to add a node to the graph, and then adding it to a "to add" list
     # if that doesn't work, deals with the possibility that nodes may be defined out of order.
     node_dfs_to_add = list(node_dfs.keys())
     while len(node_dfs_to_add) > 0:
         node_data = node_dfs_to_add.pop(0)
         try:
-            new_graph = _add_node_data(graph, node_data, node_dfs)
+            new_graph = _add_node_data(graph, node_data, node_dfs, year_list=year_list)
         except KeyError:
             node_dfs_to_add.append(node_data)
 
-    # 3 Add technologies to the graph
+    # 4 Add technologies to the graph
     for node in tech_dfs:
-        # Add technologies key to node data
         for tech in tech_dfs[node]:
-            new_graph = _add_tech_data(graph, node, tech_dfs, tech)
+            new_graph = _add_tech_data(graph, node, tech_dfs, tech, year_list=year_list)
 
     # Return the graph
     return new_graph

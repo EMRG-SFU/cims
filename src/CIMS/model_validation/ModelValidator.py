@@ -7,27 +7,24 @@ import time
 
 from .validation_utils import get_providers, get_requested
 from ..utils.model_description import column_list as COL
-from ..utils.model_description.query import get_node_cols
 
 from .registry import REGISTRY, resolve_kwargs, Phase, Severity
 
 
 class ModelValidator:
-    def __init__(self, csv_file_paths, col_list, year_list, sector_list,
-                 csv_update_file_paths=None, default_values_csv_path=None, node_col=COL.branch,
+    def __init__(self, base_df, scenario_df, year_list,
+                 default_values_csv_path=None, node_col=COL.branch,
                  target_col=COL.target, root_node="CIMS", list_csv_path=None):
 
-        self.csv_files = csv_file_paths
-        self.scenario_files = csv_update_file_paths or []
+        self._base_df = base_df.copy()
+        self._scenario_df = scenario_df.copy()
 
         self.default_param_df = self.get_default_df(default_values_csv_path)
         self.competition_types = self._get_list(list_csv_path, column_identifier="Competition")
 
         self.node_col = node_col
         self.target_col = target_col
-        self.col_list = col_list
         self.year_list = [str(x) for x in year_list]
-        self.sector_list = sector_list
 
         self.model_df = self._get_model_df()
         self.root_node = root_node
@@ -46,52 +43,13 @@ class ModelValidator:
         self.graph_validation_warnings = False
 
     def _get_model_df(self, read_base_file=True, read_scenario_files=True):
-        files_to_read = []
+        frames = []
         if read_base_file:
-            for file in self.csv_files:
-                files_to_read.append(file)
+            frames.append(self._base_df)
         if read_scenario_files:
-            for file in self.scenario_files:
-                files_to_read.append(file)
+            frames.append(self._scenario_df)
 
-        appended_data = []
-        for csv_file in files_to_read:
-            try:
-                mixed_type_columns = [COL.context]
-                sheet_df = pl.read_csv(
-                    csv_file,
-                    skip_rows=1,
-                    use_pyarrow=False,
-                    infer_schema_length=0,
-                    ).with_columns(pl.all().replace(
-                        {np.nan: None}
-                        )).to_pandas()
-                appended_data.append(sheet_df)
-
-            except ValueError:
-                print(f"Warning: Unable to parse csv_path at {csv_file}. Skipping.")
-
-        model_df = pd.concat(appended_data,
-                             ignore_index=True)  # Add province sheets together and re-index
-        
-        # Filter sectors (if applicable)
-        if self.sector_list:
-            if None not in self.sector_list:
-                self.sector_list.append(None)
-            model_df = model_df[model_df[COL.sector].isin(self.sector_list)]
-
-        model_df.index += 3  # Adjust index to correspond to Excel line numbers
-        # (+1: 0 vs 1 origin, +1: header skip, +1: column headers)
-        model_df.columns = [str(c) for c in
-                            model_df.columns]  # Convert all column names to strings (years were ints)
-        n_cols, y_cols = get_node_cols(model_df,
-                                       self.node_col)  # Find columns, separated year cols from non-year cols
-        n_cols = [n_col for n_col in n_cols if n_col in self.col_list]
-        y_cols = [y_col for y_col in y_cols if y_col in self.year_list]
-        all_cols = n_cols + y_cols
-
-        mdf = model_df.loc[1:,
-              all_cols]  # Create df, drop irrelevant columns & skip first, empty row
+        mdf = pd.concat(frames, ignore_index=True) if frames else self._base_df.iloc[0:0].copy()
         mdf[COL.parameter] = mdf[COL.parameter].str.lower()
 
         return mdf
@@ -173,15 +131,17 @@ class ModelValidator:
         return False
 
     def _run_check(self, check_function, **kwargs) -> bool:
-        # Collect list
         concern_list, concern_desc = check_function(**kwargs)
 
-        # Raise Concerns
+        # None signals the check was intentionally skipped
+        if concern_list is None:
+            print(f" SKIP  {check_function.__name__} — {concern_desc}")
+            self.warnings[check_function.__name__] = []
+            return False
+
         has_concerns = self._raise_concerns(
             concern_list, check_function.__name__, concern_desc
         )
-
-        # Return list
         self.warnings[check_function.__name__] = concern_list
         return has_concerns
 
@@ -265,3 +225,96 @@ class ModelValidator:
         print(f"\n=== Completed graph-phase validation{timing} ===")
 
         self.graph_validation_ran = True
+
+    def explain(self, key: str = None) -> None:
+        """
+        Print documentation for validation checks.
+
+        explain()        — summary table of all checks with current counts
+        explain("key")   — full documentation for a specific check
+        """
+        if key is not None:
+            self._explain_one(key)
+        else:
+            self._explain_all()
+
+    def _explain_one(self, key: str) -> None:
+        try:
+            spec = REGISTRY.get(key)
+        except KeyError:
+            print(f"Unknown check: '{key}'. Call explain() with no arguments to see all checks.")
+            return
+
+        width = 60
+        title = key.replace("_", " ").upper()
+        print(f"\n{title} ({spec.severity})")
+        print("=" * width)
+
+        # What it checks — first paragraph of the docstring
+        if spec.fn.__doc__:
+            first_para = []
+            for line in spec.fn.__doc__.strip().splitlines():
+                stripped = line.strip()
+                if not stripped and first_para:
+                    break
+                if stripped:
+                    first_para.append(stripped)
+            print("\n" + " ".join(first_para))
+
+        # Output format and interpretation
+        if spec.help_text:
+            print()
+            for line in spec.help_text.splitlines():
+                print(f"  {line}" if line else "")
+        else:
+            print("\n  (No additional output documentation yet.)")
+
+        # Current result
+        print()
+        if key in self.warnings:
+            count = len(self.warnings[key])
+            if count == 0:
+                print("  Current result: no issues found.")
+            else:
+                print(f"  Current result: {count} issue(s) found.")
+                print(f'  To inspect:     validator.warnings["{key}"]')
+        else:
+            print("  (Validation has not been run yet for this check.)")
+
+    def _explain_all(self) -> None:
+        col_w = 42
+
+        for phase in [Phase.FILE, Phase.GRAPH]:
+            phase_checks = list(REGISTRY.iter(phase=phase))
+            if not phase_checks:
+                continue
+
+            print(f"\n{'─' * 70}")
+            print(f"  {phase.upper()} PHASE CHECKS")
+            print(f"{'─' * 70}")
+
+            for severity_label, severity in [("Errors", Severity.ERROR), ("Warnings", Severity.WARNING)]:
+                checks = [(n, s) for n, s in phase_checks if s.severity == severity]
+                if not checks:
+                    continue
+
+                print(f"\n  {severity_label}")
+                print(f"  {'Check':<{col_w}} {'Count':>6}  Description")
+                print(f"  {'-' * (col_w + 30)}")
+
+                for name, spec in checks:
+                    count_str = ""
+                    if name in self.warnings:
+                        count_str = str(len(self.warnings[name]))
+
+                    if spec.short_desc:
+                        doc_line = spec.short_desc
+                    elif spec.fn.__doc__:
+                        doc_line = spec.fn.__doc__.strip().splitlines()[0].strip()
+                    else:
+                        doc_line = ""
+
+                    print(f"  {name:<{col_w}} {count_str:>6}  {doc_line}")
+
+        print(f"\n{'─' * 70}")
+        print("  Call explain('check_name') for full documentation on any check.")

@@ -766,7 +766,7 @@ def _record_provided_quantities(model, node, year, requested_services, assessed_
 
     for target in requested_services:
         vintage_weighted_service_request_ratio = calculate_vintage_weighted_parameter(
-            PARAM.service_request, model, node, year, tech=tech, context=target)
+            PARAM.service_request, model, node, year, tech=tech, target=target)
         quant_requested = market_share_total * vintage_weighted_service_request_ratio * assessed_demand
         year_node = model.graph.nodes[target][year]
         if PARAM.provided_quantities not in year_node.keys():

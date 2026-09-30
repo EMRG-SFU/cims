@@ -1,0 +1,27 @@
+name: Mirror to backup remote
+
+on:
+  push:
+    branches: [main, staging]
+    tags: ['**']
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up deploy key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.MIRROR_SSH_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan "${{ secrets.MIRROR_SSH_HOST }}" >> ~/.ssh/known_hosts
+      - name: Strip local remote-tracking refs
+        run: git for-each-ref --format='delete %(refname)' refs/remotes/origin | git update-ref --stdin
+      - name: Push mirror
+        run: git push --mirror "${{ secrets.MIRROR_REPO_SSH }}"

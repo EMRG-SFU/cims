@@ -464,12 +464,12 @@ def calc_financial_annual_service_cost(model: 'CIMS.Model', node: str, year: str
     def do_sc_calculation(target):
         service_requested_value = calculate_vintage_weighted_parameter(PARAM.service_request,
                                                                        model, node, year,
-                                                                       tech=tech, context=target)
+                                                                       tech=tech, target=target)
         service_cost = 0
 
         if target in model.supply_nodes:
             supply_price = model.get_param(PARAM.price, target, year, do_calc=True)
-            multiplier_price = model.get_param(PARAM.multiplier_price, node, year, context=target)
+            multiplier_price = model.get_param(PARAM.multiplier_price, node, year, target=target)
             service_requested_price = supply_price * multiplier_price
 
         else:
@@ -514,12 +514,12 @@ def calc_competition_annual_service_cost(model: 'CIMS.Model', node: str, year: s
     """
 
     def do_sc_calculation(target):
-        service_requested_value = model.get_param(PARAM.service_request, node, year, tech=tech, context=target)
+        service_requested_value = model.get_param(PARAM.service_request, node, year, tech=tech, target=target)
         service_cost = 0
 
         if target in model.supply_nodes:
             supply_price = model.get_param(PARAM.price, target, year, do_calc=True)
-            multiplier_price = model.get_param(PARAM.multiplier_price, node, year, context=target)
+            multiplier_price = model.get_param(PARAM.multiplier_price, node, year, target=target)
             service_requested_price = supply_price * multiplier_price
 
         else:
