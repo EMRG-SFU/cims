@@ -11,7 +11,7 @@ energy-emissions-economy model.
 CIMS is not currently available on PyPi or other package indexes. Follow the [setup instructions](https://emrg-sfu.github.io/cims/setup.html) to get CIMS running on your machine.
 
 ## :technologist: Usage
-See the [getting started guide](https://emrg-sfu.github.io/cims/getting_started.html) for instructions on running CIMS scenarios.
+See the [getting started guide](https://emrg-sfu.github.io/cims/running_scenario.html) for instructions on running CIMS scenarios.
 
 ## :memo: Contributing
 Contributions to CIMS are welcome, in many different forms: 

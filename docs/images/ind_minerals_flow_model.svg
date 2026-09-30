@@ -101,7 +101,7 @@
   <text class="lbl" x="870" y="265" text-anchor="middle">CCS — shared capture service</text>
 
   <rect class="svc" x="700" y="290" width="340" height="34" rx="6"/>
-  <text class="lbl" x="870" y="311" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="lbl" x="870" y="311" text-anchor="middle">Machine Drive</text>
   <text class="sub" x="870" y="346" text-anchor="middle">Materials Processing (grinding) · Fans · Pumps ·</text>
   <text class="sub" x="870" y="360" text-anchor="middle">Compressed Air · Materials Handling</text>
 

@@ -84,7 +84,7 @@
   <text class="sub" x="870" y="194" text-anchor="middle">(oxygen-enriched smelting / converting)</text>
 
   <rect class="svc" x="700" y="226" width="340" height="34" rx="6"/>
-  <text class="lbl" x="870" y="247" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="lbl" x="870" y="247" text-anchor="middle">Machine Drive</text>
 
   <rect class="svc" x="700" y="284" width="340" height="32" rx="6"/>
   <text class="lbl" x="870" y="304" text-anchor="middle">Steam</text>

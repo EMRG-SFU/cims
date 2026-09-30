@@ -32,11 +32,23 @@ body.suppress-tippy-popovers [data-tippy-root] {
   }
 
   function rewriteCrossChapterCites() {
-    document.querySelectorAll('a[href*=".html#ref-"]').forEach(function (a) {
+    // Match ANY href containing "#ref-", not just "*.html#ref-". This must
+    // survive a race with quarto-nav.js, whose "pretty URL" pass rewrites
+    // every link's "/index.html" to "/" (only when protocol !== "file:").
+    // If that pass runs first, "index.html#ref-foo" becomes ".../#ref-foo"
+    // -- the ".html" is gone, so a ".html#ref-" selector no longer matches
+    // and the citation stays pointing at the site root (the index page).
+    // A "#ref-" selector matches either form ("index.html#ref-foo",
+    // ".../#ref-foo", "chapter.html#ref-foo", or a bare "#ref-foo"), so the
+    // rewrite is correct regardless of which script wins the race. We only
+    // rewrite when the ref entry exists locally, so this never breaks a
+    // genuinely cross-page citation.
+    document.querySelectorAll('a[href*="#ref-"]').forEach(function (a) {
       const href = a.getAttribute('href') || '';
       const idx = href.lastIndexOf('#ref-');
       if (idx === -1) return;
       const hash = href.slice(idx);                          // "#ref-iea-fop"
+      if (href === hash) return;                             // already local
       if (document.getElementById(hash.slice(1))) {
         a.setAttribute('href', hash);
       }
@@ -242,8 +254,13 @@ body.suppress-tippy-popovers [data-tippy-root] {
   function start() {
     // Run once after Quarto finishes its own link rewriting
     setTimeout(applyAll, 0);
-    // And again on full load to be safe
-    window.addEventListener('load', applyAll);
+    // And again on full load to be safe. The extra delayed pass guarantees
+    // we run AFTER quarto-nav.js's "/index.html" -> "/" href rewrite even if
+    // its load listener happens to fire after ours; applyAll is idempotent.
+    window.addEventListener('load', function () {
+      applyAll();
+      setTimeout(applyAll, 300);
+    });
   }
 
   if (document.readyState === 'loading') {

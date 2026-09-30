@@ -142,6 +142,27 @@ img.img-fluid[src$=".png"] {
   border-radius: 0.25rem;
 }
 
+/* Lightbox (GLightbox) enlarged view for the flow-model figures. These
+   SVGs are authored with a viewBox but no intrinsic width/height, so
+   GLightbox — which sizes each slide from the image's *natural*
+   dimensions — falls back to a tiny default (~300x150) and the enlarged
+   figure opens far too small. Force SVG slides to fill the viewport
+   (object-fit: contain keeps the aspect ratio), and carry over the white
+   backplate from the inline figures so the dark line-work stays readable
+   against the dark lightbox overlay. GLightbox sets width/height inline on
+   the <img>, so !important is required to override it. Scoped to .svg only
+   so raster (PNG/photo) lightboxes are unaffected. */
+.glightbox-container .gslide-image img[src$=".svg"] {
+  width: 92vw !important;
+  height: 88vh !important;
+  max-width: 92vw !important;
+  max-height: 88vh !important;
+  object-fit: contain !important;
+  background-color: #fff;
+  padding: 1rem;
+  border-radius: 0.25rem;
+}
+
 /* (Dark-mode logo swap is handled natively by _brand.yml's light/dark
    logo pair — Quarto fills its own `.light-content`/`.dark-content` image
    slots, so no CSS swap is needed here.) */

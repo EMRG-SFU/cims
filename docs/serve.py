@@ -10,5 +10,9 @@ server.serve(root='_book/', port=5500)
 # quarto render --profile watermark
 # uv run --with livereload python serve.py
 
+# in browser:
+# http://localhost:5500/
+
+
 # To publish:
 # quarto publish gh-pages --no-render

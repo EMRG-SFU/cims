@@ -129,7 +129,7 @@
   <text class="lbl" x="860" y="221" text-anchor="middle">Lighting</text>
 
   <rect class="svc" x="700" y="248" width="320" height="36" rx="6"/>
-  <text class="lbl" x="860" y="271" text-anchor="middle">Machine Drive — EIA MECS end uses</text>
+  <text class="lbl" x="860" y="271" text-anchor="middle">Machine Drive</text>
 
   <!-- MECS chips -->
   <rect class="det" x="716" y="292" width="288" height="96" rx="6"/>

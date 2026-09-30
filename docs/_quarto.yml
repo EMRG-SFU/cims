@@ -45,6 +45,7 @@ book:
     # back to a single image, breaking the dark-mode swap.
   chapters:
     - index.qmd                 # Introduction
+    - setup.qmd                 # Installation
     - part: "About"
       chapters:
         - history.qmd           # History and development
@@ -90,21 +91,19 @@ book:
         - cogeneration.qmd     # Cogeneration of heat and power
         - ccus.qmd               # Carbon capture, utilization, and storage
         - energy_storage.qmd     # Energy storage: thermal, short duration, long duration
-    - part: "Data and Calibration"
-      chapters:
-        - data_inputs.qmd       # Data inputs
-        - calibration.qmd       # Calibration
-        - validation.qmd        # Validation
     - part: "Running the Model"
       chapters:
-        - setup.qmd             # Installation
-        - getting_started.qmd   # Getting started
-        - policies.qmd          # Scenarios and policies
+        - data_inputs.qmd       # Data inputs
+        - data_processing.qmd   # Data Processing
+        - running_scenario.qmd  # How to run a scenario
         - building_tree.qmd     # Building the model tree
+        - calibration.qmd       # Calibration
+        - validation.qmd        # Validation        
     - part: "Outputs and Analysis"
       chapters:
         - outputs.qmd           # Output files
         - post_processing.qmd   # Post-processing and reporting
+        - policies.qmd          # Scenarios and policies
     - references.qmd
   appendices:
     - appendix_acronyms.qmd

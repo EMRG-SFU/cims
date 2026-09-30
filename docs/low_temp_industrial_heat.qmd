@@ -28,7 +28,7 @@ Low-temperature heat demand is concentrated in a defined set of CIMS industrial 
 
 ## Technologies for Low- and Zero-Emission Heat Supply
 
-This section describes the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in @tbl-low_temp_heat-2. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 [@eia-mecs; @iea-hp].
+This section describes the low- and zero-emission supply technologies admitted to the low-temperature service nodes in the CIMS industrial sub-models, together with their assumed performance parameters and data sources. Technology efficiencies and coefficients of performance (COPs) used to parameterize the technology competitions are summarized in @tbl-low_temp_heat-2; traditional combustion boiler technologies are included for comparison. Combustion boiler efficiencies are estimated based on data from MECS; heat pump COPs are based on inputs from IEA Heat Pumping Technologies Programme Annex 58 [@eia-mecs; @iea-hp].
 
 | Technology | Efficiency / COP | Maximum temperature |
 |:----|:----:|:----:|

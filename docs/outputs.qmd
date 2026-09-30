@@ -26,6 +26,48 @@ Three main classes of output are created by the model:
 
     a)  CIMS Outputs (As of March 2007)
 
+## Outputs from CIMS
+
+Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS' micro and macro economic systems of dynamics (also referred to as feedback systems).
+
+Table 10. Sub-model Outputs Existing Prior to This Research
+
+Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).
+
+Fuel use and emissions by sector by year by technology.
+
+Service and auxiliary use by sector by year by technology.
+
+Total stock use by sector by year by technology.
+
+New stock use by sector by year by technology.
+
+Retrofits by sector by year by technology.
+
+Technology cost changes due to declining capital cost function
+
+Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research
+
+Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g. 7.5 or 10%)
+
+BAU and Policy final demand for each sector's product or service by year.
+
+BAU and Policy disaggregated energy demand for all sectors by year.
+
+Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.
+
+Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.
+
+Changes in net exports of key energy commodities from BAU to Policy
+
+Changes in energy prices by year
+
+Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing
+
+Changes consumers' surplus for personal transportation and residences
+
+Changes in value-added for industry
+
 ## Sub-sector Reports
 
 Four report types are available. In each type of report, the analyst opens a spreadsheet where data can be manipulated using spreadsheet functions. The report can then be reformatted, printed, or saved under another name.
@@ -104,7 +146,3 @@ Factors:
 - GHGtot / Eff (fuel decarbonisation)
 
 - GHGnet / GHGtot (CCS?)
-
-## Attributing emissions reductions to policies
-
-Shapley val

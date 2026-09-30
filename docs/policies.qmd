@@ -1,4 +1,4 @@
-# Policy Costing & Outputs {#sec-policies}
+# Policy Costs {#sec-policies}
 
 ### Policy costing methods associated with ISTUM and early CIMS
 
@@ -91,44 +91,6 @@ The consumers' surplus loss between BAU and Policy is then calculated as BAU min
 
 The lack of an output adjustment for welfare costs or value-added for the commercial sector is partly due to the nature of the Commercial and Institutional sub-model. It is composed mainly of building shells, HVAC, miscellaneous electricity, and air-conditioning systems for government and office buildings, retail space, hospitals, schools, etc. CIMS does not model what these spaces are used for, and thus cannot account for how financial output or value-added may have changed.
 
-### Outputs from CIMS
+## Attributing emissions reductions to policies
 
-Table 12 provides the outputs specific to the sub-models (i.e., for when they are run by themselves without feedbacks), while Table 13 provides the extra outputs necessary for working with the CIMS' micro and macro economic systems of dynamics (also referred to as feedback systems).
-
-Table 10. Sub-model Outputs Existing Prior to This Research
-
-Sub-models Annualized lifecycle costs by sector by year by technology based on behavioural discount rates (20-80%) (See Table 5).
-
-Fuel use and emissions by sector by year by technology.
-
-Service and auxiliary use by sector by year by technology.
-
-Total stock use by sector by year by technology.
-
-New stock use by sector by year by technology.
-
-Retrofits by sector by year by technology.
-
-Technology cost changes due to declining capital cost function
-
-Table 11. Supply and Demand Feedback Outputs Added as a Result of This Research
-
-Supply and Demand feedbacks Annualized lifecycle cost per unit produced for all sectors by year based on financial cost of capital for both the BAU and Policy case; the model operator sets the cost of capital (e.g. 7.5 or 10%)
-
-BAU and Policy final demand for each sector's product or service by year.
-
-BAU and Policy disaggregated energy demand for all sectors by year.
-
-Changes in disaggregated capital, operations and maintenance, and energy costs by sector by year.
-
-Changes in GHGs and selected criteria air contaminants (CACs), energy and service use by technology, sorted by technology competition, for BAU and Policy by sector by year.
-
-Changes in net exports of key energy commodities from BAU to Policy
-
-Changes in energy prices by year
-
-Changes in the financial cost of production split into the cost of production and demand effects for industry and manufacturing
-
-Changes consumers' surplus for personal transportation and residences
-
-Changes in value-added for industry and
+Shapley value
