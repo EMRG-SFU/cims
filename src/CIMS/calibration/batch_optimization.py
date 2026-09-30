@@ -14,8 +14,8 @@ with app.setup:
     import Calibration.Data.node_info as node_info
     import Calibration.Plotting.plot_ms_for_node as plotMS
     from Calibration.Optimization.optimize_ms_v2 import (
-        optimize_ms_via_fics_v2,
-        optimize_ms_via_fics_and_lifetimes,
+        optimize_total_market_share_fic,
+        optimize_total_market_share_fic_lifetime,
     )
     from Calibration.Utility.write_fics import write_fics
     from Calibration.Utility.write_lifetimes import write_lifetimes
@@ -34,9 +34,9 @@ def _():
     After ANY Reference.py run (including the very first, uncalibrated one),
     load its pkl below and run **Plot All Nodes**. Then:
 
-    1. `optimize_ms_via_fics_and_lifetimes`, all nodes -> **Stage 1** (fits and exports lifetimes + fics)
+    1. `optimize_total_market_share_fic_lifetime`, all nodes -> **Stage 1** (fits and exports lifetimes + fics)
     2. Reference.py (re-run with fitted fics/lifetimes) -> **Load Model** + **Plot All Nodes** + **Stage 2/4/5 export**
-    3. `optimize_ms_via_fics_v2`, all nodes -> **Stage 3**
+    3. `optimize_total_market_share_fic`, all nodes -> **Stage 3**
     4. Turn on `dcc` in Reference.py, re-run -> **Load Model** + **Plot All Nodes** + **Stage 2/4/5 export**
     5. same as 4, after `dcc` is on
 
@@ -109,7 +109,7 @@ def _():
     mo.md(r"""
     ## Stage 1 — Fit FICs + Lifetimes (All Nodes)
 
-    Runs `optimize_ms_via_fics_and_lifetimes` at every calibrated node, then
+    Runs `optimize_total_market_share_fic_lifetime` at every calibrated node, then
     exports both lifetimes and fics. Tune `fit_kwargs_stage1` (e.g. `ridge`,
     `smooth`) — see `optimize_ms_v2.py` module docstring. Each node gets its
     own log file under `<calibration_output_dir>/logs/`.
@@ -138,7 +138,7 @@ def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model):
         )
         _start = time.time()
         try:
-            _result = optimize_ms_via_fics_and_lifetimes(
+            _result = optimize_total_market_share_fic_lifetime(
                 model, _node, plot=False, verbose=False, **_kwargs)
             results_stage1[_node] = _result
             _elapsed = time.time() - _start

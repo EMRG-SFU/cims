@@ -8,7 +8,7 @@ with app.setup:
     import pickle
     import gzip
 
-    from Calibration.Optimization.optimize_ms_v2 import optimize_ms_via_fics_v2
+    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
     from Calibration.Utility.write_fics import write_fics
 
@@ -186,7 +186,7 @@ def _():
 def _(model, nodeNames):
     fit_results = {}
     for _i, _n in enumerate(nodeNames, start=1):
-        fit_results[_n] = optimize_ms_via_fics_v2(
+        fit_results[_n] = optimize_total_market_share_fic(
             model, _n, objective_counterFactual="estimated_market_share_total", verbose=False
         )
         print(f"[{_i}/{len(nodeNames)}] fit {_n}")

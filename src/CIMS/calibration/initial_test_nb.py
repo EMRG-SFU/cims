@@ -36,7 +36,7 @@ with app.setup:
 
     from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
 
-    from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
+    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
     #from Calibration.Optimization_objectiveFunctions import make_objective_localNode
 
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
@@ -499,7 +499,7 @@ def _():
 
 @app.cell
 def _(model):
-    res = optimize_ms_via_fics(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
+    res = optimize_total_market_share_fic(model, nodeName="CIMS.CAN.AB.Residential.Dwellings.Building Type.High Density.Vintage.1981-2000 Bldg Code.Heating (Cold)")
     return
 
 

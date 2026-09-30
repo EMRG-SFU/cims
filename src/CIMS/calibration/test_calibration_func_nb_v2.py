@@ -34,9 +34,9 @@ with app.setup:
     from Calibration import bind_data
 
 
-    from Calibration.Optimization.optimize_ms import optimize_ms_via_fics
-    from Calibration.Optimization.optimize_ms_v2 import optimize_ms_via_fics_v2
-    from Calibration.Optimization.optimize_ms_v2 import optimize_ms_via_fics_and_lifetimes
+    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
+    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic
+    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic_lifetime
 
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
@@ -543,7 +543,7 @@ def _():
 def _(model, nodeName):
     ### Use this function to adjust lifetimes and FICs
 
-    fit_techs = optimize_ms_via_fics_and_lifetimes(model, nodeName, plot=True)
+    fit_techs = optimize_total_market_share_fic_lifetime(model, nodeName, plot=True)
     return
 
 
@@ -551,7 +551,7 @@ def _(model, nodeName):
 def _():
     ### Use this function to adjust FICs only
 
-    # fit_techs = optimize_ms_via_fics_v2(model, nodeName)
+    # fit_techs = optimize_total_market_share_fic(model, nodeName)
     return
 
 
