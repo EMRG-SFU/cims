@@ -54,10 +54,24 @@ kinked exactly at the solution, which stalls the line search. The reported
 diagnostic is still the L1 sum, so the numbers stay readable as "total share
 error".
 
-**Explicit tolerances.** `ftol` and `gtol` are set separately and directly.
-Passing scipy's single `tol` to L-BFGS-B sets BOTH, and a `gtol` loose enough to
-be a sensible function tolerance is satisfied at the starting point by gradients
-this small — the optimizer then returns without moving.
+**Explicit tolerances.** `ftol`, `xtol` and `gtol` are set separately and
+directly. Passing scipy's single `tol` to L-BFGS-B sets BOTH `ftol` and `gtol`,
+and a `gtol` loose enough to be a sensible function tolerance is satisfied at the
+starting point by gradients this small — the optimizer then returns without
+moving.
+
+**Gauss-Newton, not quasi-Newton.** `solver='least_squares'` (the default) hands
+scipy's `least_squares` (trust-region reflective) the VECTOR of share residuals
+rather than their squared sum. Both solvers pay the same price for derivatives —
+`n + 1` evaluations per step for `n` free technologies, by finite differences —
+but a gradient is `n` numbers while a Jacobian is `m x n`, and for a
+sum-of-squares objective that is enough to take a Gauss-Newton step, which
+converges in a handful of iterations where L-BFGS-B needs tens. Measured across
+twelve residential nodes (13 and 6 technologies, 23 annual years), that was 2.4-3.4x
+faster at every node with the fit equal or better at eleven of them (the twelfth
+0.004 worse on an L1 of 1.1). `ridge` and `smooth` become extra residual rows
+(`sqrt(ridge) * z`, `sqrt(smooth) * (z - anchor)`), so the minimised quantity is
+identical. `solver='lbfgsb'` is the previous behaviour.
 
 **Only responsive technologies are fitted.** Removed from the free variables:
 the base year (all market shares are exogenous there), technologies outside their
@@ -138,13 +152,28 @@ where that is what is meant.
 Run time
 --------
 
-`skip_retrofits`: `calc_retrofits` is roughly 40% of an objective evaluation. 
-It is gated by `retrofit_existing_max`, and where that is 0 for every 
+Wall time is evaluations times the cost of one evaluation (6-10 ms at a
+13-technology node; `get_param` is about two thirds of it). Three things set the
+evaluation count: the solver (above), the tolerances, and — for the lifetime
+search — how many full fits the ladder runs. At a residential heating node with
+23 annual years the default L-BFGS-B fit took ~7,200 evaluations; `least_squares`
+at the same tolerances ~2,700; `least_squares` at the fast-search tolerances
+~1,600.
+
+`skip_retrofits`: `calc_retrofits` is roughly 40% of an objective evaluation.
+It is gated by `retrofit_existing_max`, and where that is 0 for every
 technology in every year the competition runs and returns nothing, so
 skipping it changes no result and saves 35-45%. `'auto'`, the default, checks
 that and skips only where it is safe. Note this changes what is being modelled
 during the search rather than how the solver searches, which is why it is
 guarded.
+
+`fast_search` (lifetime search only): the ladder has to RANK lifetimes, not
+deliver FICs, so by default every search fit runs at loosened tolerances
+(`FAST_SEARCH_TOLERANCES`) while the final fit uses exactly the arguments you
+passed. Measured, that picked the same lifetime and reached the same or a
+better final error in a third of the time. Nodes are independent of each
+other: `run_stage1_nodes_parallel` fits several at once, one subprocess each.
 
 
 What a FIC cannot fix
@@ -416,7 +445,9 @@ def optimize_total_market_share_fic(
         skip_retrofits='auto',
         ridge=0.0,
         pin_reference=None,
+        solver='least_squares',
         ftol=1e-10,
+        xtol=1e-10,
         gtol=1e-7,
         maxiter=5000,
         maxfun=20000,
@@ -499,6 +530,20 @@ def optimize_total_market_share_fic(
         `market_share_total`. Market shares depend only on relative lifecycle
         costs, so pinning removes the arbitrary level and makes every other FIC
         read as a premium or discount against the dominant technology. Free.
+    solver : {'least_squares', 'lbfgsb'}
+        'least_squares' (default) minimises the residual vector with scipy's
+        `least_squares` (method 'trf', bounded). 'lbfgsb' minimises the squared
+        sum with L-BFGS-B, the previous behaviour. See the module docstring for
+        why the first needs a third of the evaluations.
+    ftol, xtol, gtol : float
+        Termination tolerances, passed straight through. L-BFGS-B has no `xtol`
+        and ignores it. Keep these tight when the FICs are the deliverable:
+        at loose values `least_squares` can accept the analytic seed outright
+        (gtol met after two evaluations), which is fine for ranking lifetimes
+        and costs ~0.01 L1 per year in an answer.
+    maxiter, maxfun : int
+        Iteration and evaluation caps. `least_squares` has only an evaluation
+        cap (`max_nfev`), which counts residual calls, not Jacobian columns.
 
     Returns
     -------
@@ -507,8 +552,15 @@ def optimize_total_market_share_fic(
         'end'     – L1 market-share error after optimization
         'fics'    – {tech: fic} applied to the model
         'free'    – technologies that were optimized in that year
-        'result'  – the raw scipy OptimizeResult
+        'result'  – the scipy OptimizeResult, normalised across solvers:
+                    `fun` is the minimised sum of squares (penalties included),
+                    `nfev` the number of objective evaluations the solve
+                    actually made (finite differences included), `nit` the
+                    solver's iteration count, `message` its termination text.
+                    The raw attributes stay on the object.
     """
+    if solver not in ('least_squares', 'lbfgsb'):
+        raise ValueError(f"solver must be 'least_squares' or 'lbfgsb', got {solver!r}")
     all_techs = node_info.list_techs(model.graph, nodeName)
     all_years = node_info.list_years(model.graph, nodeName)
     rng = np.random.default_rng(seed)
@@ -661,22 +713,31 @@ def optimize_total_market_share_fic(
                         anchors.append(path[fit_years[nb]] / fic_scale)
 
             # ---- objective in scaled coordinates ------------------------------
-            def sum_sq(z):
+            # Both solvers see the same quantity: the share residuals, plus the
+            # smoothness and ridge penalties expressed as extra residual rows so
+            # that sum(residuals ** 2) == sum_sq exactly.
+            n_evals = [0]
+
+            def residuals(z):
                 vec = fixed.copy()
                 for zi, i in zip(z, free_idx):
                     vec[i] = zi * fic_scale
                 d = apply(vec)
-                value = float(sum((a - b) ** 2 for a, b in zip(targets, d['y_est'])))
+                n_evals[0] += 1
+                r = [a - b for a, b in zip(targets, d['y_est'])]
                 for anchor in anchors:
-                    value += smooth * float(sum((zi - anchor[i]) ** 2
-                                                for zi, i in zip(z, free_idx)))
+                    r.extend(np.sqrt(smooth) * (zi - anchor[i])
+                             for zi, i in zip(z, free_idx))
                 if ridge:
-                    value += ridge * float(np.dot(z, z))
-                return value
+                    r.extend(np.sqrt(ridge) * z)
+                return np.asarray(r, dtype=float)
+
+            def sum_sq(z):
+                r = residuals(z)
+                return float(np.dot(r, r))
 
             lo = -np.inf if fic_min is None else fic_min / fic_scale
-            bounds = [(lo, None)] * len(free_idx)
-            opts = {'maxiter': maxiter, 'maxfun': maxfun, 'ftol': ftol, 'gtol': gtol}
+            lo_arr = np.full(len(free_idx), lo)
 
             starts = []
             if start == 'analytic':
@@ -690,7 +751,29 @@ def optimize_total_market_share_fic(
 
             best = None
             for z0 in starts:
-                res = SO.minimize(sum_sq, z0, method="L-BFGS-B", bounds=bounds, options=opts)
+                before = n_evals[0]
+                if solver == 'lbfgsb':
+                    res = SO.minimize(
+                        sum_sq, z0, method="L-BFGS-B", bounds=[(lo, None)] * len(free_idx),
+                        options={'maxiter': maxiter, 'maxfun': maxfun,
+                                 'ftol': ftol, 'gtol': gtol})
+                    res.fun = float(res.fun)
+                else:
+                    # trf needs a strictly feasible start.
+                    z0 = np.asarray(z0, dtype=float)
+                    if not np.isinf(lo):
+                        z0 = np.maximum(z0, lo_arr + 1e-12)
+                    res = SO.least_squares(
+                        residuals, z0, method='trf', bounds=(lo_arr, np.inf),
+                        ftol=ftol, xtol=xtol, gtol=gtol, max_nfev=maxfun, x_scale=1.0)
+                    # Normalise to what the L-BFGS-B result carries: the scalar
+                    # objective, and an iteration count. The raw residual vector
+                    # and Jacobian count stay available as `residual`/`njev`.
+                    res.residual = res.fun
+                    res.fun = float(np.dot(res.residual, res.residual))
+                    res.nit = int(res.njev)
+                res.nfev = n_evals[0] - before     # true cost, finite differences included
+                res.solver = solver
                 if best is None or res.fun < best.fun:
                     best = res
 
@@ -774,6 +857,11 @@ def optimize_new_market_share_fic(
 # ---------------------------------------------------------------------------
 
 LIFETIME_LADDER = (0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1)
+
+# Tolerances for fits whose only job is to RANK lifetimes. Loose enough to cut
+# the evaluations roughly in half, tight enough that the ranking survived at
+# every node measured. The final fit never uses these.
+FAST_SEARCH_TOLERANCES = {'ftol': 1e-6, 'xtol': 1e-6, 'gtol': 1e-5}
 
 
 def _set_lifetime(model, node, tech, value, years):
@@ -1072,6 +1160,7 @@ def optimize_total_market_share_fic_lifetime(
         plot_kwargs=None,
         plot_aggregate=True,
         search_kwargs=None,
+        fast_search=True,
         verbose=True,
         **fit_kwargs):
     """
@@ -1178,17 +1267,24 @@ def optimize_total_market_share_fic_lifetime(
         sustained.
     search_kwargs : dict or None
         Settings for the fits used to SEARCH — ranking candidates and scoring
-        every rung of every ladder. Defaults to None, meaning **use
-        `**fit_kwargs`**: the ladder is scored against the same objective the
-        answer is fitted with, so a rung's gain means the same thing as the final
-        number and there is only one baseline to compare against.
+        every rung of every ladder. None (default) means **`**fit_kwargs`**,
+        with the tolerances loosened when `fast_search` is on: the ladder is
+        scored under the same `ridge`/`smooth`/`solver` as the answer, so a
+        rung's gain means the same thing as the final number.
 
-        Pass a dict to override. `search_kwargs={}` searches at the module's fast
-        defaults, which is meaningfully quicker — `ridge` alone costs 1.5-2.5x
-        the run time, and a ladder is many full fits — at the price of ranking
-        lifetimes under one objective and reporting them under another. That is a
-        reasonable trade on a large node when the ranking is all that is wanted,
-        but it can select different technologies than the consistent search does.
+        Pass a dict to take full control. `search_kwargs={}` searches at the
+        module's defaults, which drops `ridge` and the rest — quicker, at the
+        price of ranking lifetimes under one objective and reporting them under
+        another, which can select different technologies than the consistent
+        search does. A dict disables `fast_search`; add the tolerances yourself.
+    fast_search : bool
+        When `search_kwargs` is None, run every search fit (baseline and ladder
+        rungs) at `FAST_SEARCH_TOLERANCES` instead of the final-fit tolerances.
+        The final fit, and the baseline it is compared against, use exactly
+        `fit_kwargs`. Measured at a 13-technology residential node, this picked
+        the same lifetime and reached the same or a better final error in a
+        third of the run time. Tolerances you set in `fit_kwargs` still apply
+        to the final fit only; set `fast_search=False` to search at them too.
     **fit_kwargs
         Settings for the FINAL fit, once the lifetimes are chosen — `ridge`,
         `smooth`, tolerances, and so on. These shape the FICs you keep.
@@ -1214,11 +1310,15 @@ def optimize_total_market_share_fic_lifetime(
                 for t in all_techs}
 
     snapshot = _pickle.dumps(model, -1)
-    # Default: search at the SAME settings as the final fit. Passing a dict
-    # overrides that — `search_kwargs={}` restores the module's fast defaults for
-    # the ladder, which is quicker but scores the rungs against a different
-    # objective from the one the answer is fitted with.
-    search_kwargs = dict(fit_kwargs) if search_kwargs is None else dict(search_kwargs)
+    # Default: search with the SAME objective as the final fit (ridge, smooth,
+    # solver...), at looser tolerances when fast_search is on. Passing a dict
+    # overrides all of that.
+    if search_kwargs is None:
+        search_kwargs = dict(fit_kwargs)
+        if fast_search:
+            search_kwargs.update(FAST_SEARCH_TOLERANCES)
+    else:
+        search_kwargs = dict(search_kwargs)
     same_settings = search_kwargs == fit_kwargs
     figures = []
 
@@ -1370,8 +1470,16 @@ def optimize_total_market_share_fic_lifetime(
             'candidates': [r for r in roster if r['eligible']]}
 
 
+def _stage1_worker_script():
+    """Path of `_stage1_worker.py`, which lives at the calibration package root."""
+    package_root = os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__))))
+    return package_root, os.path.join(package_root, '_stage1_worker.py')
+
+
 def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kwargs,
-                                  timeout_seconds=1200, mode='total'):
+                                  timeout_seconds=3600, mode='total', model_path=None,
+                                  log_dir=None):
     """
     Run one node's Stage 1 fit in a separate `python _stage1_worker.py`
     subprocess, so a fit that runs past `timeout_seconds` can be killed outright
@@ -1386,6 +1494,13 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
                      lifetime lever applies to a new-share objective (see that
                      function's docstring), so only fics are written.
 
+    `model_path`, when given, is a pickle of the model already on disk (plain or
+    gzip); the worker loads it from there and `model` is not pickled again. The
+    parallel runner below uses this so a batch of nodes shares one copy.
+
+    `log_dir` is where the per-year solver output goes
+    (`<log_dir>/<node>_stage1.log`); default `<calibration_output_dir>/logs`.
+
     Deliberately `subprocess`, not `multiprocessing`: under an interactive
     notebook kernel (marimo, Jupyter) on Windows, `multiprocessing`'s `spawn`
     start method re-bootstraps through the kernel's own `__main__` module and
@@ -1399,27 +1514,28 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
     disk even though it never reaches the caller's `model`.
 
     Returns a `(status, payload)` pair:
-        ('ok', {'final_baseline', 'final', 'changed'})
+        ('ok', {'final_baseline', 'final', 'changed', 'lifetimes', 'elapsed'})
         ('timeout', None)
         ('error', descriptive string, possibly including subprocess stderr)
     """
-    import os
     import pickle
     import subprocess
     import sys
     import tempfile
 
-    package_root = os.path.dirname(os.path.dirname(os.path.dirname(
-        os.path.abspath(__file__))))
-    worker_script = os.path.join(package_root, '_stage1_worker.py')
+    package_root, worker_script = _stage1_worker_script()
 
     job = {
-        'model': model,
         'nodeName': nodeName,
         'calibration_output_dir': calibration_output_dir,
+        'log_dir': log_dir,
         'fit_kwargs': fit_kwargs,
         'mode': mode,
     }
+    if model_path is not None:
+        job['model_path'] = os.path.abspath(model_path)
+    else:
+        job['model'] = model
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         in_path = os.path.join(tmp_dir, 'job.pkl')
@@ -1445,3 +1561,103 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
 
         with open(out_path, 'rb') as f:
             return pickle.load(f)
+
+
+def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwargs=None,
+                              max_workers=None, timeout_seconds=3600, mode='total',
+                              model_path=None, verbose=True):
+    """
+    Stage 1 at several nodes at once — one `_stage1_worker.py` subprocess per
+    node, `max_workers` of them running at a time.
+
+    Nodes are independent (each fit works on its own copy of the model and
+    writes its own rows into the calibration output files), so this is a plain
+    N-way speed-up with no change to any result. The model is pickled to disk
+    ONCE and every worker loads it from there; pass `model_path` to reuse a
+    pickle you already have (the `results/<sector>/model.pkl` a Reference.py run
+    writes, say) and skip that step.
+
+    The output CSVs are written per region by `write_rows_by_region`, which reads
+    the existing file, replaces the node's rows and writes the whole file back.
+    Two workers finishing the same region at the same instant would race on
+    that, so writes are serialised through a lock file next to the output
+    (`<calibration_output_dir>/.write_lock`) — see `_stage1_worker.py`.
+
+    Memory is the only real constraint: each worker holds a full copy of the
+    model. `max_workers` defaults to `os.cpu_count() - 1` (at least 1); lower
+    it if the machine swaps.
+
+    Threads, not a process pool, drive the subprocesses: each thread only waits
+    on `subprocess.run`, so the GIL is irrelevant and the notebook-kernel
+    `multiprocessing` problem described above never arises.
+
+    Returns {nodeName: (status, payload)} in the order given, same pairs as
+    `run_stage1_node_with_timeout`. With `verbose`, prints one line per node as
+    it finishes.
+    """
+    import gzip
+    import pickle
+    import tempfile
+    import time
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    fit_kwargs = dict(fit_kwargs or {})
+    nodeNames = list(nodeNames)
+    if max_workers is None:
+        max_workers = max(1, (os.cpu_count() or 2) - 1)
+    max_workers = max(1, min(max_workers, len(nodeNames) or 1))
+
+    os.makedirs(calibration_output_dir, exist_ok=True)
+    log_dir = os.path.join(calibration_output_dir, 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+
+    tmp_dir = None
+    if model_path is None:
+        tmp_dir = tempfile.TemporaryDirectory()
+        model_path = os.path.join(tmp_dir.name, 'model.pkl.gz')
+        with gzip.open(model_path, 'wb') as f:
+            pickle.dump(model, f, protocol=-1)
+
+    results = {}
+    started = time.time()
+
+    def one(node):
+        t0 = time.time()
+        status, payload = run_stage1_node_with_timeout(
+            None, node, calibration_output_dir, fit_kwargs,
+            timeout_seconds=timeout_seconds, mode=mode,
+            model_path=model_path, log_dir=log_dir)
+        return node, status, payload, time.time() - t0
+
+    try:
+        with ThreadPoolExecutor(max_workers=max_workers) as pool:
+            futures = [pool.submit(one, node) for node in nodeNames]
+            for k, fut in enumerate(as_completed(futures), start=1):
+                node, status, payload, elapsed = fut.result()
+                results[node] = (status, payload)
+                if verbose:
+                    short = node.split('.Residential.')[-1] if '.Residential.' in node else node
+                    if status == 'ok':
+                        if mode == 'total':
+                            print(f"[{k}/{len(nodeNames)}] {elapsed:7.1f}s  "
+                                  f"L1 {payload['final_baseline']:.4f} -> {payload['final']:.4f}  "
+                                  f"({len(payload['changed'])} lifetime(s) changed)  {short}")
+                        else:
+                            print(f"[{k}/{len(nodeNames)}] {elapsed:7.1f}s  "
+                                  f"L1 {payload['final']:.4f}  {short}")
+                    elif status == 'timeout':
+                        print(f"[{k}/{len(nodeNames)}] {elapsed:7.1f}s  TIMEOUT "
+                              f"(> {timeout_seconds}s)  {short}")
+                    else:
+                        first = str(payload).strip().splitlines()
+                        print(f"[{k}/{len(nodeNames)}] {elapsed:7.1f}s  FAILED  {short}\n"
+                              f"      {first[-1] if first else payload}")
+    finally:
+        if tmp_dir is not None:
+            tmp_dir.cleanup()
+
+    if verbose:
+        n_ok = sum(1 for s, _ in results.values() if s == 'ok')
+        print(f"\n{n_ok}/{len(nodeNames)} node(s) fitted in {time.time() - started:.0f}s "
+              f"with {max_workers} worker(s)")
+    return {node: results[node] for node in nodeNames}

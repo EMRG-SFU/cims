@@ -13,9 +13,10 @@ with app.setup:
 
     import Calibration.Data.node_info as node_info
     import Calibration.Plotting.plot_ms_for_node as plotMS
-    from Calibration.Optimization.optimize_ms_v2 import (
+    from Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
+        run_stage1_nodes_parallel,
     )
     from Calibration.Utility.write_fics import write_fics
     from Calibration.Utility.write_lifetimes import write_lifetimes
@@ -111,8 +112,14 @@ def _():
 
     Runs `optimize_total_market_share_fic_lifetime` at every calibrated node, then
     exports both lifetimes and fics. Tune `fit_kwargs_stage1` (e.g. `ridge`,
-    `smooth`) — see `optimize_ms_v2.py` module docstring. Each node gets its
+    `smooth`) — see the `optimize_ms.py` module docstring. Each node gets its
     own log file under `<calibration_output_dir>/logs/`.
+
+    **Parallel** (next cell) runs the nodes `max_workers` at a time, one
+    subprocess each, and writes each node's fics/lifetimes as it finishes —
+    `model` in this notebook is NOT updated, re-load the next Reference.py
+    pickle instead. **Serial** (the cell after) is the original loop, which
+    does update `model`; use it for a handful of nodes you want to plot here.
     """)
     return
 
@@ -121,6 +128,19 @@ def _():
 def _():
     fit_kwargs_stage1 = dict()  # e.g. dict(ridge=1e-5)
     return (fit_kwargs_stage1,)
+
+
+@app.cell
+def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_pickle_path):
+    # One subprocess per node, max_workers at a time. Reuses the loaded pickle
+    # on disk so the model is not re-pickled. Status per node in results_parallel.
+    results_parallel = run_stage1_nodes_parallel(
+        model, calibrated_nodes, calibration_output_dir, fit_kwargs_stage1,
+        max_workers=None,          # default: cpu_count - 1; lower it if the machine swaps
+        timeout_seconds=3600,
+        model_path=model_pickle_path,
+    )
+    return (results_parallel,)
 
 
 @app.cell
