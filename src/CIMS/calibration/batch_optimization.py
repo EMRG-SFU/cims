@@ -115,11 +115,14 @@ def _():
     `smooth`) — see the `optimize_ms.py` module docstring. Each node gets its
     own log file under `<calibration_output_dir>/logs/`.
 
-    **Parallel** (next cell) runs the nodes `max_workers` at a time, one
-    subprocess each, and writes each node's fics/lifetimes as it finishes —
-    `model` in this notebook is NOT updated, re-load the next Reference.py
-    pickle instead. **Serial** (the cell after) is the original loop, which
-    does update `model`; use it for a handful of nodes you want to plot here.
+    Pick a mode with the toggle below; only the selected path runs.
+
+    - **parallel** runs the nodes `max_workers` at a time, one subprocess
+      each, and writes each node's fics/lifetimes as it finishes. `model` in
+      this notebook is NOT updated — re-load the next Reference.py pickle
+      instead.
+    - **serial** is the original loop, which fits `model` in place and then
+      writes the outputs. Use it for a handful of nodes you want to plot here.
     """)
     return
 
@@ -131,7 +134,16 @@ def _():
 
 
 @app.cell
-def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_pickle_path):
+def _():
+    stage1_mode = mo.ui.radio(
+        options=["parallel", "serial"], value="parallel", label="Stage 1 mode")
+    stage1_mode
+    return (stage1_mode,)
+
+
+@app.cell
+def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_pickle_path, stage1_mode):
+    mo.stop(stage1_mode.value != "parallel", mo.md("_parallel Stage 1 skipped (mode is serial)_"))
     # One subprocess per node, max_workers at a time. Reuses the loaded pickle
     # on disk so the model is not re-pickled. Status per node in results_parallel.
     results_parallel = run_stage1_nodes_parallel(
@@ -144,7 +156,10 @@ def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_
 
 
 @app.cell
-def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model):
+def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, stage1_mode):
+    # The write cell below depends on results_stage1, so marimo skips it too
+    # whenever this cell is stopped.
+    mo.stop(stage1_mode.value != "serial", mo.md("_serial Stage 1 skipped (mode is parallel)_"))
     _log_dir = os.path.join(calibration_output_dir, "logs")
     os.makedirs(_log_dir, exist_ok=True)
 
