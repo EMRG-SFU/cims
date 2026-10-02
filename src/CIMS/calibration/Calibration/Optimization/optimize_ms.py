@@ -1470,6 +1470,94 @@ def optimize_total_market_share_fic_lifetime(
             'candidates': [r for r in roster if r['eligible']]}
 
 
+# Share of currently-available memory the parallel runner will plan to use.
+# The rest is headroom for the notebook, the OS, and estimate error.
+MEMORY_BUDGET_FRACTION = 0.7
+
+# Per-worker peak = WORKER_PEAK_FACTOR x uncompressed pickle bytes +
+# WORKER_BASE_BYTES. Measured on the AB residential pickle (56.6 MB pickled):
+# 682 MB after load, 1,228 MB peak during the lifetime search, ~230 MB of
+# that being the interpreter and imports. Rounded up.
+WORKER_PEAK_FACTOR = 20.0
+WORKER_BASE_BYTES = 300 * 1024 ** 2
+
+
+class _ByteCounter:
+    """File-like sink that only counts what is written to it."""
+    def __init__(self):
+        self.n = 0
+
+    def write(self, data):
+        # Protocol 5 passes large buffers as PickleBuffer, which has no len().
+        n = memoryview(data).nbytes
+        self.n += n
+        return n
+
+
+class _TeeWriter:
+    """Writes to `f` and counts the uncompressed bytes in `counter`."""
+    def __init__(self, f, counter):
+        self.f, self.counter = f, counter
+
+    def write(self, data):
+        self.counter.write(data)
+        return self.f.write(data)
+
+
+def _estimate_worker_peak_bytes(pickle_bytes):
+    """Peak resident memory of one Stage 1 worker for a model of this pickled size."""
+    return WORKER_PEAK_FACTOR * pickle_bytes + WORKER_BASE_BYTES
+
+
+def _physical_cores():
+    try:
+        import psutil
+        n = psutil.cpu_count(logical=False)
+        if n:
+            return n
+    except Exception:
+        pass
+    # Without psutil, assume two hardware threads per core.
+    return max(1, (os.cpu_count() or 2) // 2)
+
+
+def _choose_worker_count(requested, n_nodes, pickle_bytes):
+    """
+    Worker count for the parallel runner, and a one-line reason.
+
+    `pickle_bytes` None skips the memory check. Raises MemoryError when a
+    single worker is not expected to fit in the memory available now.
+    """
+    gib = 1024 ** 3
+    cpu_cap = max(1, _physical_cores() - 1)
+    limits = {'nodes': n_nodes, 'cores': cpu_cap}
+    if requested is not None:
+        limits['requested'] = max(1, int(requested))
+
+    note = ''
+    if pickle_bytes is not None:
+        import psutil
+        available = psutil.virtual_memory().available
+        per_worker = _estimate_worker_peak_bytes(pickle_bytes)
+        budget = MEMORY_BUDGET_FRACTION * available
+        fit = int(budget // per_worker)
+        if fit < 1:
+            raise MemoryError(
+                f"one Stage 1 worker is expected to peak at ~{per_worker / gib:.1f} GB "
+                f"(model pickles to {pickle_bytes / gib:.2f} GB), but only "
+                f"{available / gib:.1f} GB is available now ({MEMORY_BUDGET_FRACTION:.0%} "
+                f"budget = {budget / gib:.1f} GB). Run Stage 1 serially in this process "
+                f"instead, free memory, or use a smaller pickle. Pass memory_check=False "
+                f"to override.")
+        limits['memory'] = fit
+        note = (f"; ~{per_worker / gib:.1f} GB per worker, "
+                f"{available / gib:.1f} GB available")
+
+    binding = min(limits, key=limits.get)
+    n = limits[binding]
+    return n, f"limited by {binding} ({n}){note}"
+
+
 def _stage1_worker_script():
     """Path of `_stage1_worker.py`, which lives at the calibration package root."""
     package_root = os.path.dirname(os.path.dirname(os.path.dirname(
@@ -1565,7 +1653,7 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
 
 def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwargs=None,
                               max_workers=None, timeout_seconds=3600, mode='total',
-                              model_path=None, verbose=True):
+                              model_path=None, memory_check=True, verbose=True):
     """
     Stage 1 at several nodes at once — one `_stage1_worker.py` subprocess per
     node, `max_workers` of them running at a time.
@@ -1583,9 +1671,25 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
     that, so writes are serialised through a lock file next to the output
     (`<calibration_output_dir>/.write_lock`) — see `_stage1_worker.py`.
 
-    Memory is the only real constraint: each worker holds a full copy of the
-    model. `max_workers` defaults to `os.cpu_count() - 1` (at least 1); lower
-    it if the machine swaps.
+    Memory is the real constraint: each worker loads a full copy of the model,
+    and the lifetime search then keeps a pickled snapshot plus a working copy,
+    so a worker peaks at roughly 20x the model's UNCOMPRESSED pickle size
+    (measured: 57 MB pickle -> 1.24 GB peak per worker). A full-sector pickle
+    can need well over 10 GB per worker. So the worker count is the smallest of:
+
+      - `max_workers` if you pass it,
+      - physical cores - 1 (logical cores overstate the useful parallelism and
+        the old `os.cpu_count() - 1` default started 15 workers on a 16-thread
+        laptop),
+      - as many workers as fit in `MEMORY_BUDGET_FRACTION` of the memory
+        available right now, at `_estimate_worker_peak_bytes` each,
+      - the number of nodes.
+
+    If not even one worker fits, it raises `MemoryError` rather than starting
+    and driving the machine into swap; use the serial loop instead (it fits in
+    the process that already holds the model) or a smaller pickle.
+    `memory_check=False` skips the memory part — only do that if you have
+    measured the per-worker peak yourself.
 
     Threads, not a process pool, drive the subprocesses: each thread only waits
     on `subprocess.run`, so the GIL is irrelevant and the notebook-kernel
@@ -1603,20 +1707,36 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
 
     fit_kwargs = dict(fit_kwargs or {})
     nodeNames = list(nodeNames)
-    if max_workers is None:
-        max_workers = max(1, (os.cpu_count() or 2) - 1)
-    max_workers = max(1, min(max_workers, len(nodeNames) or 1))
+    if not nodeNames:
+        return {}
 
     os.makedirs(calibration_output_dir, exist_ok=True)
     log_dir = os.path.join(calibration_output_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
 
+    # Pickle the model once — to a temporary file for the workers, or, when
+    # they will read `model_path` instead, to a byte counter — so its size is
+    # known without holding a second copy in memory.
     tmp_dir = None
+    counter = _ByteCounter()
     if model_path is None:
         tmp_dir = tempfile.TemporaryDirectory()
         model_path = os.path.join(tmp_dir.name, 'model.pkl.gz')
         with gzip.open(model_path, 'wb') as f:
-            pickle.dump(model, f, protocol=-1)
+            pickle.dump(model, _TeeWriter(f, counter), protocol=-1)
+    elif memory_check:
+        pickle.dump(model, counter, protocol=-1)
+
+    try:
+        max_workers, reason = _choose_worker_count(
+            requested=max_workers, n_nodes=len(nodeNames),
+            pickle_bytes=counter.n if memory_check else None)
+    except MemoryError:
+        if tmp_dir is not None:
+            tmp_dir.cleanup()
+        raise
+    if verbose:
+        print(f"running {len(nodeNames)} node(s) with {max_workers} worker(s): {reason}")
 
     results = {}
     started = time.time()

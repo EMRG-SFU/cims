@@ -148,7 +148,7 @@ def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_
     # on disk so the model is not re-pickled. Status per node in results_parallel.
     results_parallel = run_stage1_nodes_parallel(
         model, calibrated_nodes, calibration_output_dir, fit_kwargs_stage1,
-        max_workers=None,          # default: cpu_count - 1; lower it if the machine swaps
+        max_workers=None,          # default: capped by physical cores and available memory (see the docstring)
         timeout_seconds=3600,
         model_path=model_pickle_path,
     )
