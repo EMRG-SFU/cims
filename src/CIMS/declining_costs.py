@@ -216,6 +216,13 @@ def _calc_all_stock(model, node, year, tech):
             stock_sums[PARAM.stock_new] += ns_jk / unit_convert
     all_stock = stock_sums[PARAM.stock_base] + stock_sums[PARAM.stock_new]
 
+    # A calibration slice (Calibration/SubGraphs/node_slice.py) holds only some
+    # members of each class; the frozen contribution of the rest, per year, is
+    # stored on it. A full model has no such attribute and is unaffected.
+    external = getattr(model, '_dcc_external', None)
+    if external:
+        all_stock += external.get(dcc_class, {}).get(str(year), 0.0)
+
     # Cache beyond the base year only. During the base year, stock allocation is still writing
     # stock_base at the base year (stock_allocation._record_allocation_results), so all_stock
     # genuinely changes within that year. From the following year onward every input -- stock_base

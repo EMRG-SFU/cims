@@ -1613,6 +1613,12 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
 
     package_root, worker_script = _stage1_worker_script()
 
+    # The worker runs with cwd at the package root, so relative paths would
+    # land there rather than where the caller meant.
+    calibration_output_dir = os.path.abspath(calibration_output_dir)
+    if log_dir is not None:
+        log_dir = os.path.abspath(log_dir)
+
     job = {
         'nodeName': nodeName,
         'calibration_output_dir': calibration_output_dir,
@@ -1653,7 +1659,8 @@ def run_stage1_node_with_timeout(model, nodeName, calibration_output_dir, fit_kw
 
 def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwargs=None,
                               max_workers=None, timeout_seconds=3600, mode='total',
-                              model_path=None, memory_check=True, verbose=True):
+                              model_path=None, slice_model=True, memory_check=True,
+                              verbose=True):
     """
     Stage 1 at several nodes at once — one `_stage1_worker.py` subprocess per
     node, `max_workers` of them running at a time.
@@ -1671,7 +1678,17 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
     that, so writes are serialised through a lock file next to the output
     (`<calibration_output_dir>/.write_lock`) — see `_stage1_worker.py`.
 
-    Memory is the real constraint: each worker loads a full copy of the model,
+    `slice_model` (default True) sends each worker only what a fit at its node
+    reads — the node plus the nodes it requests services from, with declining
+    capital cost from the rest of the model frozen in — built by
+    `Calibration.SubGraphs.node_slice.build_node_slice`. Fitting the slice was
+    measured bit-identical to fitting the full model (FICs, L1, market shares,
+    lifetimes, output rows) at twelve residential nodes, at a quarter of the
+    per-worker memory against a 116-node model and far less against a
+    full-sector one. `model_path` is ignored when slicing. `slice_model=False`
+    sends the whole model, as before.
+
+    Without slicing, memory is the real constraint: each worker loads a full copy of the model,
     and the lifetime search then keeps a pickled snapshot plus a working copy,
     so a worker peaks at roughly 20x the model's UNCOMPRESSED pickle size
     (measured: 57 MB pickle -> 1.24 GB peak per worker). A full-sector pickle
@@ -1710,33 +1727,54 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
     if not nodeNames:
         return {}
 
+    calibration_output_dir = os.path.abspath(calibration_output_dir)
     os.makedirs(calibration_output_dir, exist_ok=True)
     log_dir = os.path.join(calibration_output_dir, 'logs')
     os.makedirs(log_dir, exist_ok=True)
 
-    # Pickle the model once — to a temporary file for the workers, or, when
-    # they will read `model_path` instead, to a byte counter — so its size is
-    # known without holding a second copy in memory.
+    # Pickle what the workers load — one slice per node, or the whole model
+    # once — counting the uncompressed bytes as they are written, so the memory
+    # estimate needs no second copy in memory.
     tmp_dir = None
-    counter = _ByteCounter()
-    if model_path is None:
+    node_paths = {}
+    pickle_bytes = 0
+    if slice_model:
+        if model is None:
+            raise ValueError("slice_model=True needs the model object to slice")
+        from Calibration.SubGraphs.node_slice import build_node_slice
         tmp_dir = tempfile.TemporaryDirectory()
-        model_path = os.path.join(tmp_dir.name, 'model.pkl.gz')
-        with gzip.open(model_path, 'wb') as f:
-            pickle.dump(model, _TeeWriter(f, counter), protocol=-1)
-    elif memory_check:
-        pickle.dump(model, counter, protocol=-1)
+        for i, node in enumerate(nodeNames):
+            sliced = build_node_slice(model, node)
+            path = os.path.join(tmp_dir.name, f'slice_{i}.pkl.gz')
+            counter = _ByteCounter()
+            with gzip.open(path, 'wb', compresslevel=1) as f:
+                pickle.dump(sliced, _TeeWriter(f, counter), protocol=-1)
+            del sliced
+            node_paths[node] = path
+            pickle_bytes = max(pickle_bytes, counter.n)
+    else:
+        counter = _ByteCounter()
+        if model_path is None:
+            tmp_dir = tempfile.TemporaryDirectory()
+            model_path = os.path.join(tmp_dir.name, 'model.pkl.gz')
+            with gzip.open(model_path, 'wb') as f:
+                pickle.dump(model, _TeeWriter(f, counter), protocol=-1)
+        elif memory_check:
+            pickle.dump(model, counter, protocol=-1)
+        pickle_bytes = counter.n
+        node_paths = {node: model_path for node in nodeNames}
 
     try:
         max_workers, reason = _choose_worker_count(
             requested=max_workers, n_nodes=len(nodeNames),
-            pickle_bytes=counter.n if memory_check else None)
+            pickle_bytes=pickle_bytes if memory_check else None)
     except MemoryError:
         if tmp_dir is not None:
             tmp_dir.cleanup()
         raise
     if verbose:
-        print(f"running {len(nodeNames)} node(s) with {max_workers} worker(s): {reason}")
+        what = 'per-node slices' if slice_model else 'the full model'
+        print(f"running {len(nodeNames)} node(s) with {max_workers} worker(s) on {what}: {reason}")
 
     results = {}
     started = time.time()
@@ -1746,7 +1784,7 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
         status, payload = run_stage1_node_with_timeout(
             None, node, calibration_output_dir, fit_kwargs,
             timeout_seconds=timeout_seconds, mode=mode,
-            model_path=model_path, log_dir=log_dir)
+            model_path=node_paths[node], log_dir=log_dir)
         return node, status, payload, time.time() - t0
 
     try:
