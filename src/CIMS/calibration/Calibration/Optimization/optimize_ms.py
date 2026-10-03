@@ -1470,6 +1470,54 @@ def optimize_total_market_share_fic_lifetime(
             'candidates': [r for r in roster if r['eligible']]}
 
 
+def optimize_on_slice(model, nodeName, fit=None, **kwargs):
+    """
+    Run a market-share fit at `nodeName` on a slice of `model`, then copy the
+    fitted nodes back into `model`.
+
+    The serial counterpart of what `run_stage1_nodes_parallel` does per
+    worker: the fit runs on `Calibration.SubGraphs.node_slice.build_node_slice`
+    (the node, its request targets, DCC from the rest frozen in), so the
+    lifetime search snapshots and re-loads a model of a few MB instead of the
+    whole sector on every ladder rung. Afterwards every node in the slice
+    replaces its counterpart in `model`, so `model` ends up exactly as an
+    in-place fit would have left it — the fit only ever writes to those nodes —
+    and plotting or exporting from `model` works as before.
+
+    `fit` defaults to `optimize_total_market_share_fic_lifetime`; pass
+    `optimize_total_market_share_fic` (or `optimize_new_market_share_fic`) for
+    a FIC-only fit. `**kwargs` go to `fit`. Returns whatever `fit` returns.
+
+    `plot=True` is refused: plotting inside the lifetime search runs the
+    aggregation traversal over the step model's whole graph, which a slice
+    does not have. Fit here, then plot from `model`.
+
+    Fits nodes one at a time: each slice is built from `model` as it stands,
+    so a later node sees the request-target state an earlier fit left behind,
+    as it would in place.
+    """
+    from Calibration.SubGraphs.node_slice import build_node_slice
+    from CIMS import declining_costs
+
+    if kwargs.get('plot'):
+        raise ValueError("plot=True is not supported on a slice; fit with "
+                         "optimize_on_slice, then plot from the full model")
+    if fit is None:
+        fit = optimize_total_market_share_fic_lifetime
+
+    sliced = build_node_slice(model, nodeName)
+    result = fit(sliced, nodeName, **kwargs)
+
+    for node in sliced.graph.nodes:
+        data = model.graph.nodes[node]
+        data.clear()
+        data.update(sliced.graph.nodes[node])
+    # Stock at nodeName changed, so any cumulative DCC stock cached on the full
+    # model is stale.
+    declining_costs.reset_dcc_caches(model)
+    return result
+
+
 # Share of currently-available memory the parallel runner will plan to use.
 # The rest is headroom for the notebook, the OS, and estimate error.
 MEMORY_BUDGET_FRACTION = 0.7

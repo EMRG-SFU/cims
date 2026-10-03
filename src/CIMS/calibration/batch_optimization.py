@@ -17,6 +17,7 @@ with app.setup:
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
         run_stage1_nodes_parallel,
+        optimize_on_slice,
     )
     from Calibration.Utility.write_fics import write_fics
     from Calibration.Utility.write_lifetimes import write_lifetimes
@@ -121,8 +122,10 @@ def _():
       each, and writes each node's fics/lifetimes as it finishes. `model` in
       this notebook is NOT updated — re-load the next Reference.py pickle
       instead.
-    - **serial** is the original loop, which fits `model` in place and then
-      writes the outputs. Use it for a handful of nodes you want to plot here.
+    - **serial** fits one node at a time on a slice of `model` and copies the
+      result back, so `model` ends up exactly as an in-place fit would leave
+      it, then writes the outputs. Use it for a handful of nodes you want to
+      plot here.
     """)
     return
 
@@ -173,7 +176,10 @@ def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, stage1
         )
         _start = time.time()
         try:
-            _result = optimize_total_market_share_fic_lifetime(
+            # Fits a slice of the model (the node and its request targets),
+            # then copies the fitted nodes back into `model` — identical
+            # result, a fraction of the memory and faster ladder rungs.
+            _result = optimize_on_slice(
                 model, _node, plot=False, verbose=False, **_kwargs)
             results_stage1[_node] = _result
             _elapsed = time.time() - _start
