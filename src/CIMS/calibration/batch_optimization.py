@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.23.2"
+__generated_with = "0.25.0"
 app = marimo.App(width="columns")
 
 with app.setup:
@@ -60,7 +60,7 @@ def _():
 @app.cell
 def _():
     # Point this at the model.pkl produced by the Reference.py run for this stage
-    model_pickle_path = "C:/calibration/cims/results/Reference/transportation_freight.pkl"
+    model_pickle_path = "results/Reference/model.pkl"
     return (model_pickle_path,)
 
 
@@ -83,7 +83,7 @@ def _(model):
 def _():
     # Where fitted fics/lifetimes get written, and read back in by the next
     # Reference.py run via its calibration_output_data inputs
-    calibration_output_dir = "C:/cims/data/model_inputs/calibration_outputs"
+    calibration_output_dir = "data/model_inputs/calibration_outputs"
     return (calibration_output_dir,)
 
 
@@ -145,7 +145,14 @@ def _():
 
 
 @app.cell
-def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_pickle_path, stage1_mode):
+def _(
+    calibrated_nodes,
+    calibration_output_dir,
+    fit_kwargs_stage1,
+    model,
+    model_pickle_path,
+    stage1_mode,
+):
     mo.stop(stage1_mode.value != "parallel", mo.md("_parallel Stage 1 skipped (mode is serial)_"))
     # One subprocess per node, max_workers at a time. Reuses the loaded pickle
     # on disk so the model is not re-pickled. Status per node in results_parallel.
@@ -155,11 +162,17 @@ def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, model_
         timeout_seconds=3600,
         model_path=model_pickle_path,
     )
-    return (results_parallel,)
+    return
 
 
 @app.cell
-def _(calibrated_nodes, calibration_output_dir, fit_kwargs_stage1, model, stage1_mode):
+def _(
+    calibrated_nodes,
+    calibration_output_dir,
+    fit_kwargs_stage1,
+    model,
+    stage1_mode,
+):
     # The write cell below depends on results_stage1, so marimo skips it too
     # whenever this cell is stopped.
     mo.stop(stage1_mode.value != "serial", mo.md("_serial Stage 1 skipped (mode is parallel)_"))
