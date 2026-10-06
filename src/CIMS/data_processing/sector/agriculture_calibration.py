@@ -34,17 +34,12 @@ import CIMS.data_processing.source.eccc.nir.nir_crosswalk_tables_cims as _crossw
 import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, branch_meta, empty_df, fuel_target
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/agriculture'
 
-
-OUTPUT_COLS = [
-    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
-    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
-    'Year', 'Value',
-]
 
 SECTOR_NAME = 'Agriculture'
 
@@ -65,44 +60,6 @@ _REGION_MAP: dict[str, str] = {
     'Nunavut':                   'NU',
 }
 
-# Fuels that have region-specific CIMS branches
-_REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel',
-    'Ethanol', 'Hydrogen',
-}
-
-
-# ── helpers ───────────────────────────────────────────────────────────────────
-
-def _branch_meta(branch: str) -> dict:
-    """Infer Type, Region, Sector, Service from a CIMS branch string.
-
-    Branch structure: CIMS.CAN.{Region}[.{Sector}[.{Service}[...]]]
-    """
-    parts = branch.split('.')
-    if len(parts) < 3:
-        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
-    region = parts[2]
-    if len(parts) == 3:
-        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
-    sector = parts[3]
-    if len(parts) == 4:
-        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
-    service = parts[4]
-    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
-
-
-def _fuel_target(region: str, fuel: str) -> str:
-    """Build CIMS branch for a fuel (mirrors model_inputs.py price_mult logic)."""
-    if fuel in _REGIONAL_FUELS:
-        return f'CIMS.CAN.{region}.{fuel}'
-    return f'CIMS.Generic Fuels.{fuel}'
-
-
-def _empty_df() -> pl.DataFrame:
-    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
 # ── emission builders ─────────────────────────────────────────────────────────
 
 def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
@@ -114,12 +71,12 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
     """
     ag = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Agriculture'))
     if ag.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for row in ag.to_dicts():
         branch = row['CIMS_Branch']
-        meta = _branch_meta(branch)
+        meta = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -147,7 +104,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
         & pl.col('Region').is_in(known_regions)
     )
     if ag.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for row in ag.to_dicts():
@@ -156,7 +113,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
         branch      = row['CIMS Branch'].replace(
             f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
         )
-        meta = _branch_meta(branch)
+        meta = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -187,7 +144,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
     """
     ag = cer_df[cer_df['Node'].str.startswith('.Agriculture')].copy()
     if ag.empty:
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for _, row in ag.iterrows():
@@ -195,7 +152,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
         node = str(row['Node'])
         fuel = str(row['Variable'])
         branch = f'CIMS.CAN.{region}{node}'
-        meta = _branch_meta(branch)
+        meta = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -206,7 +163,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
             'Parameter':   'calibration_quantity_requested',
             'Context':     '',
             'Sub_Context': '',
-            'Target':      _fuel_target(region, fuel),
+            'Target':      fuel_target(region, fuel),
             'Source':      str(row.get('Source', 'CER')),
             'Unit':        str(row.get('Unit', 'GJ')),
             'Year':        str(int(row['Year'])),

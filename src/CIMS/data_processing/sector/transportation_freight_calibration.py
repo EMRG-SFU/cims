@@ -37,16 +37,11 @@ import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 import CIMS.data_processing.source.nrcan.ceud.transportation_freight.transportation_freight as _tf_mod
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, branch_meta, empty_df, fuel_target
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/transportation_freight'
-
-OUTPUT_COLS = [
-    'Branch', 'Type', 'Region', 'Sector', 'Service', 'Technology',
-    'Parameter', 'Context', 'Sub_Context', 'Target', 'Source', 'Unit',
-    'Year', 'Value',
-]
 
 SECTOR_NAME = 'Transportation Freight'
 
@@ -64,11 +59,6 @@ _REGION_MAP: dict[str, str] = {
     'Yukon':                     'YT',
     'Northwest Territories':     'NT',
     'Nunavut':                   'NU',
-}
-
-_REGIONAL_FUELS = {
-    'Electricity', 'Biodiesel',
-    'Ethanol', 'Hydrogen',
 }
 
 # Pipeline fuel category → Light Medium technology name, for provinces where
@@ -92,31 +82,6 @@ _TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | Non
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
-
-def _branch_meta(branch: str) -> dict:
-    """Infer Type, Region, Sector, Service from a CIMS branch string."""
-    parts = branch.split('.')
-    if len(parts) < 3:
-        return {'Type': '', 'Region': '', 'Sector': '', 'Service': ''}
-    region = parts[2]
-    if len(parts) == 3:
-        return {'Type': 'Region', 'Region': region, 'Sector': '', 'Service': ''}
-    sector = parts[3]
-    if len(parts) == 4:
-        return {'Type': 'Sector', 'Region': region, 'Sector': sector, 'Service': ''}
-    service = parts[4]
-    return {'Type': 'Service', 'Region': region, 'Sector': sector, 'Service': service}
-
-
-def _fuel_target(region: str, fuel: str) -> str:
-    if fuel in _REGIONAL_FUELS:
-        return f'CIMS.CAN.{region}.{fuel}'
-    return f'CIMS.Generic Fuels.{fuel}'
-
-
-def _empty_df() -> pl.DataFrame:
-    return pl.DataFrame(schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
 
 # Bottom-up roll-up chain: each parent branch suffix (after "CIMS.CAN.{region}")
 # gets a calibration_quantity_requested row equal to the sum of its children's
@@ -179,7 +144,7 @@ def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
 
         df = df[~existing_mask]
 
-        meta_cols = summed['Branch'].apply(_branch_meta).apply(pd.Series).drop(columns=['Region'])
+        meta_cols = summed['Branch'].apply(branch_meta).apply(pd.Series).drop(columns=['Region'])
         summed = pd.concat([summed.reset_index(drop=True), meta_cols.reset_index(drop=True)], axis=1)
         summed['Technology']  = ''
         summed['Parameter']   = 'calibration_quantity_requested'
@@ -201,7 +166,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
     """Filter cer_resd_demand output to Transportation Freight CIMS nodes."""
     tf = cer_df[cer_df['Node'].str.startswith('.Transportation Freight')].copy()
     if tf.empty:
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for _, row in tf.iterrows():
@@ -209,7 +174,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
         node   = str(row['Node'])
         fuel   = str(row['Variable'])
         branch = f'CIMS.CAN.{region}{node}'
-        meta   = _branch_meta(branch)
+        meta   = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -220,7 +185,7 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
             'Parameter':   'calibration_quantity_requested',
             'Context':     '',
             'Sub_Context': '',
-            'Target':      _fuel_target(region, fuel),
+            'Target':      fuel_target(region, fuel),
             'Source':      str(row.get('Source', 'CER')),
             'Unit':        str(row.get('Unit', 'GJ')),
             'Year':        str(int(row['Year'])),
@@ -235,12 +200,12 @@ def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
     """Filter nir_crosswalk_tables_cims output to Transportation Freight CIMS branches."""
     tf = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Transportation Freight'))
     if tf.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for row in tf.to_dicts():
         branch = row['CIMS_Branch']
-        meta   = _branch_meta(branch)
+        meta   = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -268,7 +233,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
         & pl.col('Region').is_in(known_regions)
     )
     if tf.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows = []
     for row in tf.to_dicts():
@@ -277,7 +242,7 @@ def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
         branch      = row['CIMS Branch'].replace(
             f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
         )
-        meta = _branch_meta(branch)
+        meta = branch_meta(branch)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -313,7 +278,7 @@ def _build_tf_tech_shares(
         mask = mask & (pl.col('year') <= year_max)
     data = tf.filter(mask)
     if data.is_empty():
-        return _empty_df()
+        return empty_df()
 
     rows: list[dict] = []
     for r in data.iter_rows(named=True):
@@ -338,7 +303,7 @@ def _build_tf_tech_shares(
             'Value':       str(r['value']),
         })
     if not rows:
-        return _empty_df()
+        return empty_df()
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
@@ -386,7 +351,7 @@ def main() -> pl.DataFrame:
         frame = _build_tf_tech_shares(tf, variable, service_name, branch_suffix, cat_to_tech, year_max)
         tech_frames.append(frame)
         print(f'  {service_name}: {len(frame):,} rows')
-    tech_rows = pl.concat(tech_frames, how='diagonal_relaxed') if tech_frames else _empty_df()
+    tech_rows = pl.concat(tech_frames, how='diagonal_relaxed') if tech_frames else empty_df()
     print(f'  Tech share total: {len(tech_rows):,} rows')
 
     print('Combining...')
