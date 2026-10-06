@@ -1,5 +1,5 @@
 
-import VizServer.utility_functions as UF
+from . import utility_functions as UF
 import networkx as nx
 
 def addTech(g_in):

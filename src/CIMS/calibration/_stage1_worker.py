@@ -37,8 +37,6 @@ _here = os.path.dirname(os.path.abspath(__file__))
 _src = os.path.dirname(os.path.dirname(_here))
 if _src not in sys.path:
     sys.path.insert(0, _src)
-if _here not in sys.path:
-    sys.path.insert(0, _here)
 
 
 class _OutputLock:
@@ -94,12 +92,12 @@ def main(in_path, out_path):
         job = pickle.load(f)
 
     try:
-        from Calibration.Optimization.optimize_ms import (
+        from CIMS.calibration.Calibration.Optimization.optimize_ms import (
             optimize_total_market_share_fic_lifetime,
             optimize_new_market_share_fic,
         )
-        from Calibration.Utility.write_fics import write_fics
-        from Calibration.Utility.write_lifetimes import write_lifetimes
+        from CIMS.calibration.Calibration.Utility.write_fics import write_fics
+        from CIMS.calibration.Calibration.Utility.write_lifetimes import write_lifetimes
 
         node = job['nodeName']
         out_dir = job['calibration_output_dir']

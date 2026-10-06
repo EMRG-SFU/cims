@@ -52,6 +52,9 @@ Repository = "https://github.com/EMRG-SFU/cims"
 where = ["src"]
 include = ["CIMS*"]
 
+[tool.setuptools.package-data]
+"CIMS.calibration.VizServer" = ["static/*", "templates/*"]
+
 [tool.setuptools.dynamic]
 version = {attr = "CIMS.about.__version__"}
 

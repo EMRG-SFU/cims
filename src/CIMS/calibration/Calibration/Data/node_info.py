@@ -2,7 +2,7 @@
 from collections.abc import Mapping, Sequence, Iterable
 import re
 
-from Calibration.Utility.list_utils import intersect_sublists, union_of_sublists
+from CIMS.calibration.Calibration.Utility.list_utils import intersect_sublists, union_of_sublists
 
 ##################################
 ##################################

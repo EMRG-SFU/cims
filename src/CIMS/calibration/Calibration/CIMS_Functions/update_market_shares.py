@@ -6,8 +6,8 @@ import numpy as np
 import scipy
 import scipy.optimize as SO
 
-import Calibration.Data.node_info as node_info
-from Calibration.CIMS_Functions.lcc_calculation_calibration import lcc_calculation_faster
+import CIMS.calibration.Calibration.Data.node_info as node_info
+from CIMS.calibration.Calibration.CIMS_Functions.lcc_calculation_calibration import lcc_calculation_faster
 
 def update_market_shares(model, 
                          nodeName,

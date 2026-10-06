@@ -28,38 +28,38 @@ with app.setup:
     def vv(*args):
         return(mo.vstack(args))
 
-    import VizServer
+    from CIMS.calibration import VizServer
 
-    from Calibration import bind_data
+    from CIMS.calibration.Calibration import bind_data
 
     #from Calibration.cal_model import Cal_Model, find_calibration_nodes
 
-    from Calibration.Plotting import plot_ms_for_node, plot_ms_for_node_line
+    from CIMS.calibration.Calibration.Plotting import plot_ms_for_node
 
-    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
     #from Calibration.Optimization_objectiveFunctions import make_objective_localNode
 
-    from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
+    from CIMS.calibration.Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Data.parameter_values as parameter_values
-    import Calibration.Data.emissions as emissions
-    import Calibration.Data.quantities as requestedQuantities
-    import Calibration.Data.market_share as market_share
-    import Calibration.Data.FICs as FICs
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Data.parameter_values as parameter_values
+    import CIMS.calibration.Calibration.Data.emissions as emissions
+    import CIMS.calibration.Calibration.Data.quantities as requestedQuantities
+    import CIMS.calibration.Calibration.Data.market_share as market_share
+    import CIMS.calibration.Calibration.Data.FICs as FICs
 
-    from Calibration.Plotting.plot_ms_for_node import plot_ms
-    from Calibration.Plotting.plot_ms_for_node_line import plot_ms_line
+    from CIMS.calibration.Calibration.Plotting.plot_ms_for_node import plot_ms
+    from CIMS.calibration.Calibration.Plotting._plot_ms_for_node_line import plot_ms_line
 
 
-    from Calibration.paramLoc import ParamLoc
-    from Calibration.paramLoc import RegexSearch as Search
-    from Calibration.paramLoc import RegexMatch as Match
-    from Calibration.paramLoc import All
+    from CIMS.calibration.Calibration.paramLoc import ParamLoc
+    from CIMS.calibration.Calibration.paramLoc import RegexSearch as Search
+    from CIMS.calibration.Calibration.paramLoc import RegexMatch as Match
+    from CIMS.calibration.Calibration.paramLoc import All
 
-    import Calibration.utility_functions as UF
+    import CIMS.calibration.Calibration.utility_functions as UF
 
-    import Calibration.CIMS_Functions as CIMS_Functions
+    import CIMS.calibration.Calibration.CIMS_Functions as CIMS_Functions
 
 
 @app.cell(hide_code=True)

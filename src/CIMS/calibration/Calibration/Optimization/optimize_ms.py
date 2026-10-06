@@ -205,7 +205,7 @@ search names the technologies where they show up.
 Using it
 --------
 
-    from Calibration.Optimization.optimize_ms import (
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic, optimize_total_market_share_fic_lifetime)
 
     # FICs only, smallest that fit
@@ -231,9 +231,9 @@ from contextlib import contextmanager, redirect_stdout, redirect_stderr
 
 from CIMS.utils.parameter import list as PARAM
 
-import Calibration.Data.node_info as node_info
-from Calibration.Optimization._objectiveFunctions import make_objective_localNode
-from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
+import CIMS.calibration.Calibration.Data.node_info as node_info
+from CIMS.calibration.Calibration.Optimization._objectiveFunctions import make_objective_localNode
+from CIMS.calibration.Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
 
 DEAD_TECH_PROBE = 10.0      # FIC perturbation used to detect non-responding techs
 DEAD_TECH_TOL = 1e-12       # objective change below this counts as no response
@@ -1107,8 +1107,8 @@ def _plot_step(model, node, label, plot_kwargs, figures, aggregate=True,
     (a headless run, say) reports itself once and lets the fit continue.
     """
     try:
-        from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
-        import Calibration.Plotting.plot_ms_for_node as plotMS
+        from CIMS.calibration.Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
+        import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
         import plotly.io as pio
     except Exception as exc:                       # plotly/plotting not installed
         if verbose:
@@ -1496,7 +1496,7 @@ def optimize_on_slice(model, nodeName, fit=None, **kwargs):
     so a later node sees the request-target state an earlier fit left behind,
     as it would in place.
     """
-    from Calibration.SubGraphs.node_slice import build_node_slice
+    from CIMS.calibration.Calibration.SubGraphs.node_slice import build_node_slice
     from CIMS import declining_costs
 
     if kwargs.get('plot'):
@@ -1789,7 +1789,7 @@ def run_stage1_nodes_parallel(model, nodeNames, calibration_output_dir, fit_kwar
     if slice_model:
         if model is None:
             raise ValueError("slice_model=True needs the model object to slice")
-        from Calibration.SubGraphs.node_slice import build_node_slice
+        from CIMS.calibration.Calibration.SubGraphs.node_slice import build_node_slice
         tmp_dir = tempfile.TemporaryDirectory()
         for i, node in enumerate(nodeNames):
             sliced = build_node_slice(model, node)

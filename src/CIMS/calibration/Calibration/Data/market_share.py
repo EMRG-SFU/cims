@@ -14,9 +14,9 @@ import sys
 import math
 from contextlib import redirect_stdout, redirect_stderr
 
-import Calibration.Data.node_info as node_info
-from Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
-from Calibration.SubGraphs.graphFunctions import getDescendants
+import CIMS.calibration.Calibration.Data.node_info as node_info
+from CIMS.calibration.Calibration.CIMS_Functions.set_param_calibration import set_param_calibration
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getDescendants
 
 def numFormat(x, doNumFormat=True):
     """

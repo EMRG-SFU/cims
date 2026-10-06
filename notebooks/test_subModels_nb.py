@@ -20,7 +20,7 @@ with app.setup:
     # For using Flask in a cell without blocking
     import threading
 
-    import VizServer
+    from CIMS.calibration import VizServer
 
 
     # Custom cell output functions
@@ -31,15 +31,15 @@ with app.setup:
     def vv(*args):
         return(mo.vstack(args))
 
-    import Calibration.CIMS_Functions as CIMS_Functions
-    from Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
+    import CIMS.calibration.Calibration.CIMS_Functions as CIMS_Functions
+    from CIMS.calibration.Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
     #from Calibration.SubGraphs.get_subGraph_model import get_custom_model
-    from Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
+    from CIMS.calibration.Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
 
-    from Calibration.SubGraphs.single_sector_all_region import get_all_region_names
-    from Calibration.SubGraphs.single_sector_all_region import get_all_sector_names
-    from Calibration.SubGraphs.single_sector_all_region import get_single_sector_all_region
-    from Calibration.SubGraphs.single_sector_all_region import write_single_sector_all_region_pickle
+    from CIMS.calibration.Calibration.SubGraphs.single_sector_all_region import get_all_region_names
+    from CIMS.calibration.Calibration.SubGraphs.single_sector_all_region import get_all_sector_names
+    from CIMS.calibration.Calibration.SubGraphs.single_sector_all_region import get_single_sector_all_region
+    from CIMS.calibration.Calibration.SubGraphs.single_sector_all_region import write_single_sector_all_region_pickle
 
 
 @app.cell(hide_code=True)
