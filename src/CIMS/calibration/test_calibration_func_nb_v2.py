@@ -35,8 +35,7 @@ with app.setup:
 
 
     from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
-    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic
-    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic_lifetime
+    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic_lifetime
 
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
@@ -534,7 +533,7 @@ def _():
     mo.md(r"""
     ### Optimize FICs To Fit Market Share (v2)
 
-    See `optimize_ms_v2.py` for documentation
+    See `optimize_ms.py` for documentation
     """)
     return
 

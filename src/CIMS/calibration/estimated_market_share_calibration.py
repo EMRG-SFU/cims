@@ -8,7 +8,7 @@ with app.setup:
     import pickle
     import gzip
 
-    from Calibration.Optimization.optimize_ms_v2 import optimize_total_market_share_fic
+    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
     from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
     from Calibration.Utility.write_fics import write_fics
 
