@@ -1,10 +1,13 @@
 import argparse
 import csv
+import tempfile
 from collections import Counter
 from pathlib import Path
 
 import pandas as pd
+import polars as pl
 
+from CIMS.data_processing.utils.controls_conversions import DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from CIMS.data_processing.utils.data_extensions import extend_series_linear, extend_series_trend_decline, extend_constant
 from CIMS.data_processing.utils.data_fill import interpolate_5year_to_annual, backfill_constant
 
@@ -357,6 +360,50 @@ def main(
             target_step=target_step,
         )
         print(f"Processed {input_file.name}: {processed_rows} rows -> {output_file.relative_to(output_folder)}")
+
+
+def read_fixed_data_folder(folder, year_max=LAST_DATA_YEAR["cer"]):
+    """
+    Flatten every fixed-data CSV under `folder` and return them stacked as one
+    all-string polars DataFrame (e.g. every region of a sector).
+
+    Source year columns from DATA_START to `year_max` are expanded to annual
+    rows covering DATA_START–PROJECTION_END, as described for main().
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp_path = Path(tmp)
+        main(
+            input_folder=folder,
+            output_folder=tmp_path,
+            year_min=DATA_START,
+            year_max=year_max,
+            target_start=DATA_START,
+            target_end=PROJECTION_END,
+            target_step=1,
+        )
+        frames = [pl.read_csv(f, infer_schema_length=0) for f in discover_csv_files(tmp_path)]
+    return pl.concat(frames, how="diagonal_relaxed")
+
+
+def read_fixed_data_file(path, year_max=LAST_DATA_YEAR["cer"]):
+    """
+    Flatten a single fixed-data CSV and return it as an all-string polars
+    DataFrame (e.g. one region of a sector). Years are handled as in
+    read_fixed_data_folder().
+    """
+    path = Path(path)
+    with tempfile.TemporaryDirectory() as tmp:
+        out_file = Path(tmp) / path.name
+        process_file(
+            path,
+            out_file,
+            year_min=DATA_START,
+            year_max=year_max,
+            target_start=DATA_START,
+            target_end=PROJECTION_END,
+            target_step=1,
+        )
+        return pl.read_csv(out_file, infer_schema_length=0)
 
 
 if __name__ == "__main__":

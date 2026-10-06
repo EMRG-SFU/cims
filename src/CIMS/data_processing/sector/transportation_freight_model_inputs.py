@@ -55,14 +55,12 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 
 import pandas as pd
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.nrcan.ceud.transportation_freight.transportation_freight as _tf_mod
 
@@ -70,7 +68,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows
 
@@ -105,24 +103,6 @@ LM_CAT_TO_TECH: dict[str, str] = {
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed(region: str) -> pl.DataFrame:
-    """Flatten one fixed transportation freight CSV and return as a row-indexed DataFrame."""
-    fixed_path = FIXED_INPUT_DIR / f'transportation_freight_{region.lower()}.csv'
-    with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'transportation_freight_{region.lower()}.csv'
-        _flatten_mod.process_file(
-            input_path=fixed_path,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR['cer'],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
-    return df.with_row_index('_order')
-
 
 def _empty_frame() -> pl.DataFrame:
     return pl.DataFrame({c: pl.Series([], dtype=pl.Utf8) for c in OUTPUT_COLS + ['_order']})
@@ -779,7 +759,7 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region}:')
             print('  Flattening fixed data...')
-            fixed = _read_flattened_fixed(template)
+            fixed = read_fixed_data_file(fixed_path).with_row_index('_order')
 
             print('  Assembling...')
             output = _assemble_region(
