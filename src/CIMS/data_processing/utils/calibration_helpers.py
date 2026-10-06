@@ -8,6 +8,8 @@ to its own sector. Those pieces live here so the sector scripts only hold
 their sector-specific logic.
 """
 
+from collections.abc import Callable
+
 import pandas as pd
 import polars as pl
 
@@ -73,8 +75,17 @@ REGION_MAP: dict[str, str] = {
 
 # ── energy demand builder ─────────────────────────────────────────────────────
 
-def build_cer_energy(cer_df: pd.DataFrame, sector: str) -> pl.DataFrame:
-    """Filter cer_resd_demand output to the CIMS nodes of `sector`."""
+def build_cer_energy(
+    cer_df: pd.DataFrame,
+    sector: str,
+    scale: Callable[[str, str], float] | None = None,
+) -> pl.DataFrame:
+    """Filter cer_resd_demand output to the CIMS nodes of `sector`.
+
+    `scale`, if given, is called as ``scale(region, node)`` and each row's
+    value is multiplied by the result (e.g. to split a total that the CER
+    mapping assigns to more than one node).
+    """
     sector_df = cer_df[cer_df['Node'].str.startswith(f'.{sector}')].copy()
     if sector_df.empty:
         return empty_df()
@@ -86,6 +97,9 @@ def build_cer_energy(cer_df: pd.DataFrame, sector: str) -> pl.DataFrame:
         fuel   = str(row['Variable'])
         branch = f'CIMS.CAN.{region}{node}'
         meta   = branch_meta(branch)
+        value  = row['Value']
+        if scale is not None:
+            value = float(value) * scale(region, node)
         rows.append({
             'Branch':      branch,
             'Type':        meta['Type'],
@@ -100,7 +114,7 @@ def build_cer_energy(cer_df: pd.DataFrame, sector: str) -> pl.DataFrame:
             'Source':      str(row.get('Source', 'CER')),
             'Unit':        str(row.get('Unit', 'GJ')),
             'Year':        str(int(row['Year'])),
-            'Value':       str(row['Value']),
+            'Value':       str(value),
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 

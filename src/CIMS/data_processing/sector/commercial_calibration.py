@@ -34,7 +34,6 @@ Context, Sub_Context, Target, Source, Unit, Year, Value
 from pathlib import Path
 
 import polars as pl
-import pandas as pd
 
 # ── path setup ────────────────────────────────────────────────────────────────
 
@@ -46,11 +45,10 @@ from CIMS.data_processing.source.nrcan.ceud.commercial.commercial import main as
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
 from CIMS.data_processing.utils.calibration_helpers import (
     OUTPUT_COLS,
-    branch_meta,
+    build_cer_energy,
     build_crosswalk_emissions,
     build_nir_emissions,
     empty_df,
-    fuel_target,
 )
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
@@ -102,41 +100,6 @@ def _get_categories(df: pl.DataFrame, variable: str) -> list[str]:
     """Return sorted unique category values for a given variable."""
     subset = df.filter(pl.col('variable') == variable)
     return sorted(subset.get_column('category').unique().to_list())
-
-
-# ── energy demand builder ─────────────────────────────────────────────────────
-
-def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
-    """Filter cer_resd_demand output to Commercial CIMS nodes."""
-    com = cer_df[cer_df['Node'].str.startswith('.Commercial')].copy()
-    if com.empty:
-        return empty_df()
-
-    rows = []
-    for _, row in com.iterrows():
-        region = str(row['Region'])
-        node   = str(row['Node'])
-        fuel   = str(row['Variable'])
-        branch = f'CIMS.CAN.{region}{node}'
-        meta   = branch_meta(branch)
-        value  = float(row['Value']) * _bc_climate_fraction(region, node)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      region,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_quantity_requested',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      fuel_target(region, fuel),
-            'Source':      str(row.get('Source', 'CER')),
-            'Unit':        str(row.get('Unit', 'GJ')),
-            'Year':        str(int(row['Year'])),
-            'Value':       str(value),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
 # ── technology builders ───────────────────────────────────────────────────────
@@ -235,7 +198,7 @@ def main() -> pl.DataFrame:
     ceud_results = _ceud_main(apply_projections=True, export_csv=False)
 
     print('\nBuilding CER energy demand rows...')
-    cer_rows = _build_cer_energy(cer_df)
+    cer_rows = build_cer_energy(cer_df, SECTOR_NAME, scale=_bc_climate_fraction)
     print(f'  Rows: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
