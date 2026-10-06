@@ -54,7 +54,14 @@ import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 import CIMS.data_processing.source.nrcan.ceud.transportation_passenger.transportation_passenger as _tp_mod
 import CIMS.data_processing.source.stats_can.passenger_transportation as _statcan_tp_mod
 from CIMS.data_processing.utils.controls_conversions import load_control_config, BASE_PATH, load_sector_regions, filter_excluded_branches
-from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, branch_meta, empty_df, fuel_target
+from CIMS.data_processing.utils.calibration_helpers import (
+    OUTPUT_COLS,
+    REGION_MAP,
+    build_cer_energy,
+    build_crosswalk_emissions,
+    build_nir_emissions,
+    empty_df,
+)
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
@@ -90,23 +97,6 @@ EPA_ENGINE_PACKAGE_TO_EFFICIENCY = {
 
 EPA_EXCLUDED_ENGINE_PACKAGES = {'PHEV', 'All', 'Diesel', 'BEV'}
 EFFICIENCY_LEVELS = ('Low', 'Medium', 'High')
-
-# NIR full province name → CIMS abbreviation (excludes Canada)
-_REGION_MAP: dict[str, str] = {
-    'British Columbia':          'BC',
-    'Alberta':                   'AB',
-    'Saskatchewan':              'SK',
-    'Manitoba':                  'MB',
-    'Ontario':                   'ON',
-    'Quebec':                    'QC',
-    'New Brunswick':             'NB',
-    'Nova Scotia':               'NS',
-    'Prince Edward Island':      'PE',
-    'Newfoundland and Labrador': 'NL',
-    'Yukon':                     'YT',
-    'Northwest Territories':     'NT',
-    'Nunavut':                   'NU',
-}
 
 # Pipeline category → CIMS Technology for Urban mode tech shares
 _URBAN_CAT_TO_TECH: dict[str, str] = {
@@ -156,111 +146,9 @@ def _last_data_year(source_name: str, default: int) -> int:
 
 def _region_abbr(region: str) -> str:
     """Convert full province/territory names from StatCan to CIMS abbreviations."""
-    if region in set(_REGION_MAP.values()):
+    if region in set(REGION_MAP.values()):
         return region
-    return _REGION_MAP.get(region, region)
-
-
-# ── energy demand builder ─────────────────────────────────────────────────────
-
-def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
-    """Filter cer_resd_demand output to Transportation Passenger CIMS nodes."""
-    tp = cer_df[cer_df['Node'].str.startswith('.Transportation Passenger')].copy()
-    if tp.empty:
-        return empty_df()
-
-    rows = []
-    for _, row in tp.iterrows():
-        region = str(row['Region'])
-        node   = str(row['Node'])
-        fuel   = str(row['Variable'])
-        branch = f'CIMS.CAN.{region}{node}'
-        meta   = branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      region,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_quantity_requested',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      fuel_target(region, fuel),
-            'Source':      str(row.get('Source', 'CER')),
-            'Unit':        str(row.get('Unit', 'GJ')),
-            'Year':        str(int(row['Year'])),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-# ── emission builders ─────────────────────────────────────────────────────────
-
-def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
-    """Filter nir_crosswalk_tables_cims output to Transportation Passenger CIMS branches."""
-    tp = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Transportation Passenger'))
-    if tp.is_empty():
-        return empty_df()
-
-    rows = []
-    for row in tp.to_dicts():
-        branch = row['CIMS_Branch']
-        meta   = branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      meta['Region'],
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_total',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      str(row.get('Source', 'NIR')),
-            'Unit':        str(row.get('Unit', 'tCO2e')),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """Extract per-gas NIR emissions for Transportation Passenger branches."""
-    known_regions = set(_REGION_MAP.keys())
-    tp = nir_df.filter(
-        pl.col('CIMS Branch').str.contains(r'\.Transportation Passenger')
-        & pl.col('Region').is_in(known_regions)
-    )
-    if tp.is_empty():
-        return empty_df()
-
-    rows = []
-    for row in tp.to_dicts():
-        full_region = row['Region']
-        abbr        = _REGION_MAP[full_region]
-        branch      = row['CIMS Branch'].replace(
-            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
-        )
-        meta = branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      abbr,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_by_type',
-            'Context':     str(row['Variable']),
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      'NIR',
-            'Unit':        str(row['Unit']),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+    return REGION_MAP.get(region, region)
 
 
 # ── technology market share builder ───────────────────────────────────────────
@@ -569,15 +457,15 @@ def main() -> pl.DataFrame:
     )
 
     print('\nBuilding CER energy demand rows...')
-    cer_rows = _build_cer_energy(cer_df)
+    cer_rows = build_cer_energy(cer_df, SECTOR_NAME)
     print(f'  Rows: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
-    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    crosswalk_rows = build_crosswalk_emissions(crosswalk_df, SECTOR_NAME)
     print(f'  Rows: {len(crosswalk_rows):,}')
 
     print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
-    nir_rows = _build_nir_emissions(nir_df)
+    nir_rows = build_nir_emissions(nir_df, SECTOR_NAME)
     print(f'  Rows: {len(nir_rows):,}')
 
     print('Building technology market share rows...')

@@ -44,30 +44,20 @@ import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 from CIMS.data_processing.source.nrcan.ceud.commercial.commercial import main as _ceud_main
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
-from CIMS.data_processing.utils.calibration_helpers import OUTPUT_COLS, branch_meta, empty_df, fuel_target
+from CIMS.data_processing.utils.calibration_helpers import (
+    OUTPUT_COLS,
+    branch_meta,
+    build_crosswalk_emissions,
+    build_nir_emissions,
+    empty_df,
+    fuel_target,
+)
 from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/commercial'
 
 SECTOR_NAME = 'Commercial'
-
-# NIR full province name → CIMS abbreviation (excludes Canada)
-_REGION_MAP: dict[str, str] = {
-    'British Columbia':          'BC',
-    'Alberta':                   'AB',
-    'Saskatchewan':              'SK',
-    'Manitoba':                  'MB',
-    'Ontario':                   'ON',
-    'Quebec':                    'QC',
-    'New Brunswick':             'NB',
-    'Nova Scotia':               'NS',
-    'Prince Edward Island':      'PE',
-    'Newfoundland and Labrador': 'NL',
-    'Yukon':                     'YT',
-    'Northwest Territories':     'NT',
-    'Nunavut':                   'NU',
-}
 
 # cer_to_cims_map.csv maps every commercial Space Heating CER row to BOTH a
 # "(Marine)" and a "(Cold)" node variant (see e.g. .Commercial.HVAC (Cold) /
@@ -145,74 +135,6 @@ def _build_cer_energy(cer_df: pd.DataFrame) -> pl.DataFrame:
             'Unit':        str(row.get('Unit', 'GJ')),
             'Year':        str(int(row['Year'])),
             'Value':       str(value),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-# ── emission builders ─────────────────────────────────────────────────────────
-
-def _build_crosswalk_emissions(crosswalk_df: pl.DataFrame) -> pl.DataFrame:
-    """Filter nir_crosswalk_tables_cims output to Commercial CIMS branches."""
-    com = crosswalk_df.filter(pl.col('CIMS_Branch').str.contains(r'\.Commercial'))
-    if com.is_empty():
-        return empty_df()
-
-    rows = []
-    for row in com.to_dicts():
-        branch = row['CIMS_Branch']
-        meta   = branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      meta['Region'],
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_total',
-            'Context':     '',
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      str(row.get('Source', 'NIR')),
-            'Unit':        str(row.get('Unit', 'tCO2e')),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
-        })
-    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
-
-
-def _build_nir_emissions(nir_df: pl.DataFrame) -> pl.DataFrame:
-    """Extract per-gas NIR emissions for Commercial branches."""
-    known_regions = set(_REGION_MAP.keys())
-    com = nir_df.filter(
-        pl.col('CIMS Branch').str.contains(r'\.Commercial')
-        & pl.col('Region').is_in(known_regions)
-    )
-    if com.is_empty():
-        return empty_df()
-
-    rows = []
-    for row in com.to_dicts():
-        full_region = row['Region']
-        abbr        = _REGION_MAP[full_region]
-        branch      = row['CIMS Branch'].replace(
-            f'CIMS.CAN.{full_region}.', f'CIMS.CAN.{abbr}.'
-        )
-        meta = branch_meta(branch)
-        rows.append({
-            'Branch':      branch,
-            'Type':        meta['Type'],
-            'Region':      abbr,
-            'Sector':      meta['Sector'],
-            'Service':     meta['Service'],
-            'Technology':  '',
-            'Parameter':   'calibration_emissions_by_type',
-            'Context':     str(row['Variable']),
-            'Sub_Context': '',
-            'Target':      '',
-            'Source':      'NIR',
-            'Unit':        str(row['Unit']),
-            'Year':        str(row['Year']),
-            'Value':       str(row['Value']),
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
@@ -317,11 +239,11 @@ def main() -> pl.DataFrame:
     print(f'  Rows: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
-    crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
+    crosswalk_rows = build_crosswalk_emissions(crosswalk_df, SECTOR_NAME)
     print(f'  Rows: {len(crosswalk_rows):,}')
 
     print('Building NIR annual emission rows (tCO2e via AR5 GWP100)...')
-    nir_rows = _build_nir_emissions(nir_df)
+    nir_rows = build_nir_emissions(nir_df, SECTOR_NAME)
     print(f'  Rows: {len(nir_rows):,}')
 
     print('Building hot water technology rows...')
