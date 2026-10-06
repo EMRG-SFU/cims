@@ -66,15 +66,14 @@ from pathlib import Path
 
 import pandas as pd
 
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
-# This file lives at src/CIMS/data_processing/source/deflator_exchange/, so
-# parents[5] is the repository root.
-DATA_ROOT = Path(__file__).resolve().parents[5] / 'data'
-RAW_DIR = DATA_ROOT / 'raw_data' / 'deflator_exchange'
-OUT_DIR = DATA_ROOT / 'processed_data' / 'deflator_exchange'
+RAW_DIR = BASE_PATH / 'raw_data' / 'deflator_exchange'
+OUT_DIR = BASE_PATH / 'processed_data' / 'deflator_exchange'
 
 WORLD_BANK_FILE = RAW_DIR / 'world-bank_2026_gdp-deflator.csv'
 ECB_FILE = RAW_DIR / 'ecb_2026_gdp-deflator.csv'
