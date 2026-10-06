@@ -46,7 +46,7 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
-from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
+from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ─────────────────────────────────────────────────────────────
@@ -259,14 +259,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'forestry_{region.lower()}.csv'
-        region_df = collapse_constant_years(region_df)
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'forestry', collapse_years=True)
 
     print(f'\n✅ Forestry model inputs complete')
     print(f'   Total rows:  {len(output):,}')

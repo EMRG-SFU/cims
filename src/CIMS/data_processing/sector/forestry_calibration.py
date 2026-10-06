@@ -34,6 +34,7 @@ import CIMS.data_processing.source.eccc.nir.nir_crosswalk_tables_cims as _crossw
 import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/forestry'
@@ -249,15 +250,7 @@ def main() -> pl.DataFrame:
 
     output = filter_excluded_branches(output)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        if not (region_df['Value'].cast(pl.Float64, strict=False).fill_null(0) != 0).any():
-            continue
-        out_path  = OUTPUT_DIR / f'forestry_{region.lower()}.csv'
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'forestry', skip_if_all_zero=True)
 
     print(f'\n✅ Forestry calibration complete')
     print(f'   Total rows:  {len(output):,}')
