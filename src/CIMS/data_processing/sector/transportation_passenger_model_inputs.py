@@ -895,7 +895,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region, template in sorted(FIXED_TEMPLATE.items()):
-        fixed_path = FIXED_INPUT_DIR / f'transportation_passenger_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'transportation_passenger_{template.lower()}.csv'
         if not fixed_path.exists():
             print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue

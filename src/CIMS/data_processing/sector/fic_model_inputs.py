@@ -7,7 +7,7 @@ Flattens fixed incremental cost (FIC) data into CIMS-formatted CSVs
 Sources
 -------
 Fixed structural parameters
-    raw_data/fixed_data/fic/FIC_{region}.csv
+    raw_data/fixed_data/fic/fic_{region}.csv
     Flattened from wide (2000–2050 year columns) to long format.
     Each region has its own file; FIXED_TEMPLATE maps 1:1.
 
@@ -54,7 +54,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region, template in sorted(FIXED_TEMPLATE.items()):
-        fixed_path = FIXED_INPUT_DIR / f'FIC_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'fic_{template.lower()}.csv'
         if not fixed_path.exists():
             print(f'  ⚠  Skipping {region} — fixed data not found: {fixed_path.name}')
             continue

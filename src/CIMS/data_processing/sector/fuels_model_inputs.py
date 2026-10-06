@@ -272,7 +272,7 @@ def main() -> dict[str, pl.DataFrame]:
 
     # ── Regional files: flatten only ──────────────────────────────────────────
     for region, template in sorted(REGIONAL_FILES.items()):
-        fixed_path = FIXED_INPUT_DIR / f'fuels_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'fuels_{template.lower()}.csv'
         if not fixed_path.exists():
             print(f'\n  ⚠  Skipping {region} — file not found: {fixed_path.name}')
             continue
