@@ -300,6 +300,62 @@ def _build_heating_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
+def _build_vintage_composition(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
+    """
+    Extract vintage-bin housing-stock composition market shares from CEUD
+    data (vintage_bins_lowmed/vintage_bins_high, sourced from CEUD Tables
+    19-20 via extract_vintages in residential.py).
+
+    The "Vintage" node (Building Type.{Density}.Vintage) is a genuine
+    tech-compete node whose "technologies" are the vintage bins themselves
+    (<1960, 1961-1980, ...) -- which bin a unit of new construction lands in
+    is a real competition outcome with FIC/lifetime levers, structurally the
+    same as Heating (Cold)'s fuel competition. Previously this CEUD series
+    was only used to enumerate vintage categories for `_build_heating_techs`
+    and, downstream, only its year-2000 slice was read as a one-off anchor
+    (`_build_vintage_bin_rows`/`bin_share` in residential_model_inputs.py) --
+    its real annual values for every other year went unused. Exporting the
+    full series here lets `optimize_ms_via_fics_and_lifetimes` (generic to
+    any tech-compete node with a calibration_market_share_total target, no
+    optimizer changes needed) calibrate the Vintage node the same way it
+    already calibrates Heating/Water Heating fuel choice.
+
+    CEUD has no data for '>2035' (nothing can have been built after 2035
+    yet), so that bin gets no calibration target here -- same gap
+    `vintage_bins_lowmed`/`vintage_bins_high` themselves already have.
+    """
+    rows: list[dict] = []
+
+    for prov_code, df in ceud_results.items():
+        prov = prov_code.upper()
+
+        for variable, density in [('vintage_bins_lowmed', 'LowMed Density'),
+                                  ('vintage_bins_high', 'High Density')]:
+            branch = f'CIMS.CAN.{prov}.Residential.Dwellings.Building Type.{density}.Vintage'
+            for vint in _get_categories(df, variable):
+                for year, value in _get_series(df, variable, vint).items():
+                    rows.append({
+                        'Branch':      branch,
+                        'Type':        'Service',
+                        'Region':      prov,
+                        'Sector':      'Residential',
+                        'Service':     'Vintage',
+                        'Technology':  vint,
+                        'Parameter':   'calibration_market_share_total',
+                        'Context':     '',
+                        'Sub_Context': '',
+                        'Target':      '',
+                        'Source':      'CEUD',
+                        'Unit':        '%',
+                        'Year':        str(year),
+                        'Value':       str(value),
+                    })
+
+    if not rows:
+        return _empty_df()
+    return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
 def _build_wh_techs(ceud_results: dict[str, pl.DataFrame]) -> pl.DataFrame:
     """Extract water heating technology market shares from CEUD data."""
     rows: list[dict] = []
@@ -373,9 +429,13 @@ def main() -> pl.DataFrame:
     wh_rows = _build_wh_techs(ceud_results)
     print(f'  Rows: {len(wh_rows):,}')
 
+    print('Building vintage-bin composition rows...')
+    vintage_rows = _build_vintage_composition(ceud_results)
+    print(f'  Rows: {len(vintage_rows):,}')
+
     print('Combining...')
     output = (
-        pl.concat([cer_rows, crosswalk_rows, nir_rows, heating_rows, wh_rows],
+        pl.concat([cer_rows, crosswalk_rows, nir_rows, heating_rows, wh_rows, vintage_rows],
                   how='diagonal_relaxed')
         .select(OUTPUT_COLS)
     )
