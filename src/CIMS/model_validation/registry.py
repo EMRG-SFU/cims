@@ -548,6 +548,24 @@ REGISTRY.register("cost_params_missing_currency_unit", CheckSpec(
         "This check is skipped when no target_units are configured."
     ),
 ))
+REGISTRY.register("constant_fills_gaps_between_years", CheckSpec(
+    fn=file_warnings.constant_fills_gaps_between_years,
+    phase=Phase.FILE,
+    severity=Severity.WARNING,
+    argmap={},
+    short_desc="run years between explicit update years will take the constant, not an interpolated value",
+    help_text=(
+        "Output: [(node, tech, parameter, years)]\n"
+        "  Each entry is an update parameter with a null-Year constant and explicit year\n"
+        "  rows, where the listed run years fall between explicit years with no row of\n"
+        "  their own; tech is None for node-level entries.\n\n"
+        "Reading: those years take the constant. Values are not carried forward or\n"
+        "interpolated from the surrounding explicit rows. This usually means a model\n"
+        "that runs every year received an update with rows only every few years. Add\n"
+        "rows for the listed years, or remove the constant if it wasn't intended.\n"
+        "Years before the first or after the last explicit row are not flagged."
+    ),
+))
 
 # ---------------------------------------------------------------------------
 # GRAPH-PHASE CHECKS (to be added)

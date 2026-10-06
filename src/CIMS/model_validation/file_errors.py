@@ -112,13 +112,13 @@ def supply_without_lcc_or_price(validator):
     ][COL.branch]
     supply_nodes = supply_nodes[~supply_nodes.isin(sector_nodes)]
 
-    # Cost rows with a value defined in the base year
+    # Cost rows that cover the base year: an explicit base-year row, or a
+    # null-Year constant (applies to every year, including the base year).
     base_year = _base_year(validator)
     cost_df = validator.model_df[validator.model_df[COL.parameter].isin(
         [PARAM.lcc_financial, PARAM.price, PARAM.cost_curve_price])]
-    has_base_year_cost = cost_df[
-        (cost_df["Year"] == base_year) & cost_df["Value"].notna()
-    ][COL.branch]
+    covers_base_year = ((cost_df["Year"] == base_year) | cost_df["Year"].isna()) & cost_df["Value"].notna()
+    has_base_year_cost = cost_df[covers_base_year][COL.branch]
 
     no_prod_cost = [(validator.branch2node_index_map[f], f) for f in supply_nodes if
                     f not in has_base_year_cost.values]
