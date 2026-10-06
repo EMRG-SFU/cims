@@ -54,6 +54,7 @@ include = ["CIMS*"]
 
 [tool.setuptools.package-data]
 "CIMS.calibration.VizServer" = ["static/*", "templates/*"]
+"CIMS.data_processing.source.nrcan.ceud.residential.validation" = ["*.csv"]
 
 [tool.setuptools.dynamic]
 version = {attr = "CIMS.about.__version__"}
