@@ -45,7 +45,16 @@ From the `cims` directory, run:
 uv sync --extra notebooks
 ```
 
-This will automatically select a compatible Python version, create a virtual environment, and install all dependencies. You only need to do this once, or again when dependencies are updated.
+This will automatically select a compatible Python version, create a virtual environment, and install everything needed to run the model and the notebooks. You only need to do this once, or again when dependencies are updated.
+
+Some parts of CIMS need extra packages, which are installed by adding the matching `--extra`:
+
+| If you are... | Add |
+|---|---|
+| Running the data pipeline (`CIMS.data_processing`) | `--extra data-processing` |
+| Calibrating a model or using the VizServer (`CIMS.calibration`) | `--extra calibration` |
+
+For example, `uv sync --extra notebooks --extra calibration`. To install everything, run `uv sync --all-extras`.
 
 ### 3. Download Data Files
 
@@ -64,6 +73,7 @@ Marimo will open in your default browser. From there you can open, run, and edit
 | I want to... | Command |
 |---|---|
 | Set up or update my environment | `uv sync --extra notebooks` |
+| Set up or update my environment, with every optional package | `uv sync --all-extras` |
 | Launch Marimo | `uv run marimo edit` |
 | Run a Python script | `uv run python my_script.py` |
 | Open a Python shell | `uv run python` |
@@ -83,6 +93,7 @@ uv will use your existing environment and skip reinstalling dependencies unless 
 
 - **uv not found after install**: Restart your terminal session so the `uv` command is available on your PATH.
 - **Dependency conflicts**: Run `uv sync --extra notebooks` again to bring your environment up to date with the latest `pyproject.toml`.
+- **`ModuleNotFoundError` for `flask`, `plotly`, `openpyxl`, `fastexcel` or `xlrd`**: These belong to the optional `calibration` and `data-processing` groups. Run `uv sync --all-extras` (or add the `--extra` you need, see [Install Dependencies](#2-install-dependencies)).
 
 ## Additional Resources
 

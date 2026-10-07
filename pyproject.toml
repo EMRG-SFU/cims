@@ -23,10 +23,6 @@ dependencies = [
     'polars',
     'pyarrow',
     'pandas==2.3.3',
-    'xlrd',
-    'pyxlsb',
-    'openpyxl',
-    'fastexcel',
     'scipy',
     'seaborn>=0.13.2',
     'matplotlib',
@@ -36,13 +32,28 @@ dependencies = [
     "requests",
     'tabulate>=0.10',
     'psutil',
-    "flask>=3.1.3",
-    "plotly>=6.9.0",
 ]
 dynamic = ["version"]
 
 [project.optional-dependencies]
+# Install with e.g. `uv sync --extra notebooks --extra calibration`, or `uv sync --all-extras` for everything.
 notebooks = ['marimo>=0.24.0']
+# Needed only by CIMS.data_processing: reading the raw Excel sources, plus marimo because the
+# pipeline settings live in a marimo notebook (data/mappings_conversions/control.py)
+data-processing = [
+    'CIMS[notebooks]',
+    'openpyxl',
+    'fastexcel',
+    'xlrd',
+]
+# Needed only by CIMS.calibration: plots and the VizServer, plus marimo because some
+# calibration modules are marimo notebooks
+calibration = [
+    'CIMS[notebooks]',
+    'flask>=3.1.3',
+    'plotly>=6.9.0',
+    'kaleido',
+]
 
 [project.urls]
 Repository = "https://github.com/EMRG-SFU/cims"
@@ -63,5 +74,5 @@ version = {attr = "CIMS.about.__version__"}
 [tool.fawltydeps]
 code = ["src/CIMS"]  # Only search for imports under ./src/CIMS (includes data_processing)
 deps = ["pyproject.toml"]  # Only look for declared dependencies here
-ignore_unused = ["xlrd", "pyxlsb"]  # Pandas uses them, but they aren't imported
+ignore_unused = ["xlrd", "fastexcel", "pyarrow", "kaleido"]  # Used by pandas, polars & plotly, but never imported directly
 output_format = "human_detailed"  # Detailed report by default
