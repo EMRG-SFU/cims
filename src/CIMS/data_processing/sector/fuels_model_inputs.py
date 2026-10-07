@@ -18,6 +18,12 @@ Emission factors  (emissions / emissions_biomass rows)
     source/emission_factors/emission_factors.py — tGas/GJ from Canada NIR Annex 6.
     Inserted after each fuel's lcc_financial rows in fuels_CIMS.csv.
 
+Base-year transportation blend shares  (market_share_total, DATA_START year)
+    sector/fuels_calibration.py — CER Passenger/Freight shares of each technology in
+    Fuel Blends.Diesel_Transportation / Gasoline_Transportation. Replace the fixed-data
+    base-year values in the regional files, so the model starts from the same shares the
+    calibration targets.
+
 Output columns
 --------------
 Branch, Type, Region, Sector, Service, Technology, Parameter,
@@ -36,6 +42,8 @@ import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
 import CIMS.data_processing.source.energy_prices.energy_prices as _energy_prices_mod
 
 import CIMS.data_processing.source.emission_factors.emission_factors as _ef_mod
+
+import CIMS.data_processing.sector.fuels_calibration as _fuels_cal_mod
 
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
@@ -112,6 +120,29 @@ def _get_branch_map(fixed: pl.DataFrame) -> dict[str, str]:
         if service and service not in branch_map:
             branch_map[service] = branch or f'CIMS.Generic Fuels.{service}'
     return branch_map
+
+
+def _apply_base_year_blend_shares(output: pl.DataFrame, base_shares: pl.DataFrame) -> pl.DataFrame:
+    """Overwrite base-year market_share_total for blend technologies with CER shares."""
+    if len(base_shares) == 0:
+        return output
+    key = ['Branch', 'Technology', 'Year']
+    is_target = (pl.col('Parameter') == 'market_share_total') & (pl.col('Year') == str(DATA_START))
+    replaced = (
+        output.with_row_index('_row')
+        .join(base_shares.select(key + [pl.col('Value').alias('_cer_value')]), on=key, how='left')
+        .with_columns(
+            pl.when(is_target & pl.col('_cer_value').is_not_null())
+            .then(pl.col('_cer_value')).otherwise(pl.col('Value')).alias('Value'),
+            pl.when(is_target & pl.col('_cer_value').is_not_null())
+            .then(pl.lit('CER')).otherwise(pl.col('Source')).alias('Source'),
+        )
+        .sort('_row')
+    )
+    n = len(replaced.filter(is_target & pl.col('_cer_value').is_not_null()))
+    if n:
+        print(f'  Set {n} base-year blend market shares from CER')
+    return replaced.select(output.columns)
 
 
 def _build_lcc_rows(
@@ -267,6 +298,9 @@ def main() -> dict[str, pl.DataFrame]:
     ef_out     = ef_records.filter(~pl.col('fuel').is_in(pl.Series(list(_excluded))))
     ef_df      = _ef_mod.build_cims_table(ef_out)
 
+    print('\nBuilding base-year transportation blend shares from CER...')
+    base_shares = _fuels_cal_mod.blend_shares().filter(pl.col('Year') == str(DATA_START))
+
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     results: dict[str, pl.DataFrame] = {}
 
@@ -282,6 +316,8 @@ def main() -> dict[str, pl.DataFrame]:
             print('  Flattening fixed data...')
             df = _read_flattened(fixed_path)
             output = df.select(OUTPUT_COLS)
+            output = _apply_base_year_blend_shares(
+                output, base_shares.filter(pl.col('Region') == region))
 
             out_path = OUTPUT_DIR / f'fuels_{region.lower()}.csv'
             output = collapse_constant_years(output)
