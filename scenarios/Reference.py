@@ -1,6 +1,6 @@
 import marimo
 
-__generated_with = "0.24.0"
+__generated_with = "0.23.2"
 app = marimo.App(width="medium")
 
 with app.setup:
@@ -72,9 +72,9 @@ def reset_model_files():
 
     ### Required model files (included in data/model_inputs/model/)
     model_req = [
-        'DCC', # declining capital cost
-        'DIC', # declining intangible cost (neighbour effect)
-        'FIC', # fixed intangible cost; primarily used for calibration
+        'dcc', # declining capital cost
+        'dic', # declining intangible cost (neighbour effect)
+        # 'fic', # fixed intangible cost; primarily used for calibration
         'market_share_limits', # use of limits should be minimised
         ]
 
@@ -183,12 +183,12 @@ def _():
         2023,
         2024,
         ### Forecast ###
-        2025,
-        2030,
-        2035,
-        2040,
-        2045,
-        2050,
+        # 2025,
+        # 2030,
+        # 2035,
+        # 2040,
+        # 2045,
+        # 2050,
     ]
 
     # Only uncommented sectors below will be run in the simulation
@@ -196,8 +196,8 @@ def _():
     # Must use Exogenous prices (and optional exogenous demand) file below when calibrating
     sector_list = [
         'Coal Mining',
-        # 'Natural Gas', # Must run all regions due to Natural Gas Market
-        # 'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
+        'Natural Gas', # Must run all regions due to Natural Gas Market
+        'Petroleum Crude', # Must also run 'Natural Gas' sector since shared fuel blending
         'Petroleum Refining',
         'Electricity',
         'Biodiesel',
@@ -366,6 +366,7 @@ def _(model_path, update_files):
         'electricity',
         'ethanol',
         'forestry',
+        'fuels',
         'hydrogen',
         'industrial_minerals',
         'iron_and_steel',
@@ -382,6 +383,24 @@ def _(model_path, update_files):
         'waste'
     ]
 
+    ### Calibration Outputs (fitted FICs / lifetimes from a prior calibration pass)
+    # One subfolder per sector, each with its own fitted_fics/ and fitted_lifetimes/
+    # (data/model_inputs/calibration_outputs/<sector>/fitted_fics, ...), so several
+    # sectors' calibration outputs can be loaded together without overwriting each other.
+    calibration_outputs_path = 'data/model_inputs/calibration_outputs'
+    calibration_output_sectors = [
+        'transportation_passenger',
+        'transportation_freight',
+        'residential',
+        'commercial',
+        'fuels',
+    ]
+    calibration_outputs = [
+        f'{_sector}/{_kind}'
+        for _sector in calibration_output_sectors
+        for _kind in ('fitted_fics', 'fitted_lifetimes')
+    ]
+
     # Each entry below is (folder, [file/subfolder names]); merging just means
     # appending the list onto update_files[folder], creating it if needed.
     for _path, _files in [
@@ -390,6 +409,7 @@ def _(model_path, update_files):
         (turn_off_path, turn_off_policies),
         (scenario_path, scenario_policies),
         (calibration_path, calibration_data),
+        (calibration_outputs_path, calibration_outputs),
     ]:
         if _files:
             update_files.setdefault(_path, []).extend(_files)
@@ -464,7 +484,7 @@ def _(model):
 def _(model):
     #################### Show validator warnings ####################
     # change warning type as needed to view indicated nodes/techs
-    model.validator.warnings['supply_without_lcc_or_price']
+    model.validator.warnings['undefined_nodes']
     return
 
 
