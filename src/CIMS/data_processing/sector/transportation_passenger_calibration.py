@@ -16,11 +16,15 @@ Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
 
-Technology market shares  (calibration_market_share_new)
-    transportation_passenger.py   → CEUD-derived market shares (2000–last CEUD year)
-                                    for Urban, Intercity Land, Intercity Air modes;
-                                    Passenger Vehicles, Passenger Vehicle Motors;
-                                    Transit Public Bus, Intercity Bus, Intercity Rail
+Technology market shares  (calibration_market_share_total / calibration_market_share_new)
+    transportation_passenger.py   → CEUD-derived market_share_total (2000–last CEUD year),
+                                    written as calibration_market_share_total
+                                    for Urban, Intercity Land modes;
+                                    Passenger Vehicles;
+                                    Transit Public Bus, Intercity Bus.
+                                    Intercity Air, International Air and Intercity Rail get no market share
+                                    target (not calibrated); their year-2000 shares are
+                                    still written by transportation_passenger_model_inputs.
     stats_can/passenger_transportation.py
                                   → Build Passenger Vehicle Motors calibration_market_share_new 
                                   rows from StatCan vehicle sales and EPA engine-package data.
@@ -70,6 +74,10 @@ STATCAN_MARKET_SHARE_START_YEAR = 2000
 STATCAN_MARKET_SHARE_SERVICE = 'Passenger Vehicle Motors'
 STATCAN_MARKET_SHARE_BRANCH_SUFFIX = '.Passenger Vehicle Motors'
 STATCAN_MARKET_SHARE_SOURCE = 'StatCan/EPA'
+
+# Fixed data defining which technologies exist at each node; market share targets
+# are aligned to it (see _align_share_techs_to_fixed).
+FIXED_INPUT_DIR = BASE_PATH / 'raw_data/fixed_data/transportation_passenger'
 
 EPA_FILE = BASE_PATH / 'raw_data/epa/table_export.csv'
 
@@ -135,15 +143,14 @@ _INTERCITY_LAND_CAT_TO_TECH: dict[str, str] = {
 
 # (pipeline variable, CIMS service name, branch suffix after sector, category mapping, year_max)
 # year_max=None → all historical years; year_max=N → years up to and including N
+# Mode.Intercity Air, Mode.International Air and Intercity Rail are deliberately
+# absent: they are not calibrated, so they get no market share counterfactual.
 _TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | None]] = [
     ('Mode.Urban',               'Urban',                    '.Mode.Urban',               _URBAN_CAT_TO_TECH,          None),
     ('Mode.Intercity Land',      'Intercity Land',           '.Mode.Intercity Land',      _INTERCITY_LAND_CAT_TO_TECH, None),
-    ('Mode.Intercity Air',       'Intercity Air',            '.Mode.Intercity Air',       None,                        2000),
     ('Passenger Vehicles',       'Passenger Vehicles',       '.Passenger Vehicles',       None,                        None),
-    ('Passenger Vehicle Motors', 'Passenger Vehicle Motors', '.Passenger Vehicle Motors', None,                        2000),
     ('Transit.Public Bus',       'Public Bus',               '.Transit.Public Bus',       None,                        None),
     ('Intercity Bus',            'Intercity Bus',            '.Intercity Bus',            None,                        None),
-    ('Intercity Rail',           'Intercity Rail',           '.Intercity Rail',           None,                        2000),
 ]
 
 
@@ -198,6 +205,75 @@ def _region_abbr(region: str) -> str:
     if region in set(_REGION_MAP.values()):
         return region
     return _REGION_MAP.get(region, region)
+
+
+# Bottom-up roll-up chain: each parent branch suffix (after "CIMS.CAN.{region}")
+# gets a calibration_quantity_requested row equal to the sum of its children's
+# values (per Target fuel/Year). Where CER already maps a value directly onto
+# the parent branch (only .Transportation Passenger itself), cer_resd_demand.py
+# has made it a full rollup of the sector -- children plus CER categories with
+# no single CIMS node (buses, motorcycles, LDV/LDT natural gas and propane) --
+# so that value is used as-is rather than added on top of the children, which
+# would double count.
+# Order matters: each level must be computed before the level above it.
+_ROLLUP_LEVELS: list[tuple[str, list[str]]] = [
+    ('.Transportation Passenger.Mode', [
+        '.Transportation Passenger.Mode.Intercity Air',
+        '.Transportation Passenger.Mode.International Air',
+    ]),
+    ('.Transportation Passenger', [
+        '.Transportation Passenger.Mode',
+        '.Transportation Passenger.Passenger Vehicle Motors',
+        '.Transportation Passenger.Intercity Rail',
+    ]),
+]
+
+
+def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
+    """Roll calibration_quantity_requested up from leaf nodes to their
+    parent Mode/Transportation Passenger branches, per _ROLLUP_LEVELS."""
+    if rows.is_empty():
+        return rows
+
+    df = rows.to_pandas()
+    df['Value_f'] = df['Value'].astype(float)
+
+    for parent_suffix, child_suffixes in _ROLLUP_LEVELS:
+        child_mask = df['Branch'].str.endswith(tuple(child_suffixes))
+        children = df[child_mask]
+        if children.empty:
+            continue
+
+        summed = children.groupby(['Region', 'Target', 'Year'], as_index=False)['Value_f'].sum()
+        summed['Branch'] = 'CIMS.CAN.' + summed['Region'] + parent_suffix
+
+        existing_mask = df['Branch'] == ('CIMS.CAN.' + df['Region'] + parent_suffix)
+        existing = df[existing_mask][['Region', 'Target', 'Year', 'Value_f']]
+        if not existing.empty:
+            summed = summed.merge(
+                existing, on=['Region', 'Target', 'Year'],
+                how='outer', suffixes=('', '_existing'),
+            )
+            summed['Value_f'] = summed['Value_f_existing'].fillna(summed['Value_f'])
+            summed = summed.drop(columns=['Value_f_existing'])
+            summed['Branch'] = 'CIMS.CAN.' + summed['Region'] + parent_suffix
+
+        df = df[~existing_mask]
+
+        meta_cols = summed['Branch'].apply(_branch_meta).apply(pd.Series).drop(columns=['Region'])
+        summed = pd.concat([summed.reset_index(drop=True), meta_cols.reset_index(drop=True)], axis=1)
+        summed['Technology']  = ''
+        summed['Parameter']   = 'calibration_quantity_requested'
+        summed['Context']     = ''
+        summed['Sub_Context'] = ''
+        summed['Source']      = 'CER (rolled up)'
+        summed['Unit']        = 'GJ'
+        summed['Value']       = summed['Value_f'].astype(str)
+
+        df = pd.concat([df, summed[df.columns]], ignore_index=True)
+
+    df = df.drop(columns=['Value_f'])
+    return pl.DataFrame(df, schema={c: pl.Utf8 for c in OUTPUT_COLS})
 
 
 # ── energy demand builder ─────────────────────────────────────────────────────
@@ -312,11 +388,12 @@ def _build_tp_tech_shares(
     cat_to_tech: dict[str, str] | None = None,
     year_max: int | None = None,
 ) -> pl.DataFrame:
-    """Extract calibration_market_share_new rows for one transportation passenger service.
+    """Extract CEUD market_share_total rows for one transportation passenger service,
+    written as calibration_market_share_total.
 
     year_max=None outputs all historical years; year_max=N caps at year N inclusive.
     """
-    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'calibration_market_share_new')
+    mask = (pl.col('variable') == variable) & (pl.col('parameter') == 'market_share_total')
     if year_max is not None:
         mask = mask & (pl.col('year') <= year_max)
     data = tp.filter(mask)
@@ -336,7 +413,7 @@ def _build_tp_tech_shares(
             'Sector':      'Transportation Passenger',
             'Service':     service_name,
             'Technology':  tech,
-            'Parameter':   'calibration_market_share_new',
+            'Parameter':   'calibration_market_share_total',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
@@ -464,14 +541,36 @@ def _expand_efficiency_technologies(
         'StatCan fuel type',
     )
 
+    out = annual.copy()
+    out[year_col] = pd.to_numeric(out[year_col], errors='coerce').astype('Int64')
+
+    # Hold the nearest EPA year's split for StatCan years outside EPA coverage;
+    # otherwise the inner merge below drops those years' gasoline/diesel sales
+    # and the remaining techs are renormalized to 100%.
+    statcan_years = out[year_col].dropna().astype(int)
+    epa_years = efficiency_shares['year']
+    uncovered = sorted(set(statcan_years) - set(epa_years))
+    if uncovered:
+        print(
+            '  Holding nearest EPA efficiency split for StatCan years without EPA data: '
+            + ', '.join(map(str, uncovered))
+        )
+        efficiency_shares = (
+            efficiency_shares.set_index('year')
+            .reindex(range(min(statcan_years.min(), epa_years.min()),
+                           max(statcan_years.max(), epa_years.max()) + 1))
+            .ffill()
+            .bfill()
+            .rename_axis('year')
+            .reset_index()
+        )
+
     shares_long = efficiency_shares.melt(
         id_vars='year',
         value_vars=list(EFFICIENCY_LEVELS),
         var_name='efficiency',
         value_name='_efficiency_share',
     )
-    out = annual.copy()
-    out[year_col] = pd.to_numeric(out[year_col], errors='coerce').astype('Int64')
     out['_base_fuel'] = out[fuel_col].astype(str).str.strip().str.lower()
 
     split_mask = out['_base_fuel'].isin({'gasoline', 'diesel'})
@@ -563,6 +662,7 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
     rows: list[dict] = []
     for r in market_shares.to_dict('records'):
         region = _region_abbr(str(r['region']))
+        year, tech, share = int(r['year']), str(r['fuel_type']), float(r['market_share'])
         branch = f'CIMS.CAN.{region}.Transportation Passenger{STATCAN_MARKET_SHARE_BRANCH_SUFFIX}'
         rows.append({
             'Branch':      branch,
@@ -570,17 +670,81 @@ def _build_statcan_vehicle_motor_shares() -> pl.DataFrame:
             'Region':      region,
             'Sector':      'Transportation Passenger',
             'Service':     STATCAN_MARKET_SHARE_SERVICE,
-            'Technology':  str(r['fuel_type']),
+            'Technology':  tech,
             'Parameter':   'calibration_market_share_new',
             'Context':     '',
             'Sub_Context': '',
             'Target':      '',
             'Source':      STATCAN_MARKET_SHARE_SOURCE,
             'Unit':        '%',
-            'Year':        str(int(r['year'])),
-            'Value':       f"{float(r['market_share']):.12g}",
+            'Year':        str(year),
+            'Value':       f"{share:.12g}",
         })
     return pl.DataFrame(rows, schema={c: pl.Utf8 for c in OUTPUT_COLS})
+
+
+def _fixed_node_techs() -> dict[str, list[str]]:
+    """Branch → technologies declared at that branch, across all regional fixed files."""
+    techs: dict[str, list[str]] = {}
+    for path in sorted(FIXED_INPUT_DIR.glob('transportation_passenger_*.csv')):
+        fixed = pl.read_csv(path, infer_schema_length=0, columns=['Branch', 'Technology', 'Parameter'])
+        declared = fixed.filter(pl.col('Parameter') == 'technology').drop_nulls(['Branch', 'Technology'])
+        for branch, tech in declared.select(['Branch', 'Technology']).iter_rows():
+            techs.setdefault(branch, [])
+            if tech not in techs[branch]:
+                techs[branch].append(tech)
+    return techs
+
+
+def _align_share_techs_to_fixed(tech_rows: pl.DataFrame) -> pl.DataFrame:
+    """Make each node's market share targets cover exactly the node's fixed-data techs.
+
+    The optimizer needs a target for every technology it competes, so:
+      - technologies with no source category (e.g. BEV 800 — all battery-electric
+        sales go to BEV 500 — Fuel Cell 650, or future bus technologies) get an
+        explicit 0 for every year the node has targets;
+      - targets for technologies the node doesn't define (e.g. Ferry Urban outside
+        BC) are dropped, with a warning if any of them were non-zero.
+    """
+    node_techs = _fixed_node_techs()
+    is_share = pl.col('Parameter').is_in(['calibration_market_share_new', 'calibration_market_share_total'])
+    shares = tech_rows.filter(is_share)
+    other = tech_rows.filter(~is_share)
+
+    known = pl.DataFrame(
+        [(b, t) for b, ts in node_techs.items() for t in ts],
+        schema={'Branch': pl.Utf8, 'Technology': pl.Utf8},
+        orient='row',
+    )
+    unknown = shares.join(known, on=['Branch', 'Technology'], how='anti')
+    dropped_nonzero = unknown.filter(pl.col('Value').cast(pl.Float64, strict=False).fill_null(0) != 0)
+    shares = shares.join(known, on=['Branch', 'Technology'], how='semi')
+    if len(dropped_nonzero):
+        print('  Warning: dropping non-zero share targets for techs not in fixed data '
+              '(remaining shares rescaled to sum to 1): '
+              + ', '.join(sorted(set(dropped_nonzero['Branch'] + ' / ' + dropped_nonzero['Technology']))))
+        group = ['Branch', 'Parameter', 'Year']
+        affected = dropped_nonzero.select(group).unique()
+        value = pl.col('Value').cast(pl.Float64, strict=False)
+        rescaled = (
+            shares.join(affected, on=group, how='semi')
+            .with_columns((value / value.sum().over(group)).cast(pl.Utf8).alias('Value'))
+        )
+        shares = pl.concat([shares.join(affected, on=group, how='anti'), rescaled])
+
+    # One template row per branch/year/parameter, used to write the 0 targets.
+    templates = shares.unique(subset=['Branch', 'Parameter', 'Year'], keep='first', maintain_order=True)
+    fill = (
+        templates.drop('Technology')
+        .join(known, on='Branch', how='inner')
+        .join(shares.select(['Branch', 'Parameter', 'Year', 'Technology']),
+              on=['Branch', 'Parameter', 'Year', 'Technology'], how='anti')
+        .with_columns(pl.lit('0.0').alias('Value'))
+        .select(tech_rows.columns)
+    )
+    if len(fill):
+        print(f'  Added {len(fill):,} zero share targets for techs with no source data')
+    return pl.concat([other, shares, fill], how='diagonal_relaxed')
 
 
 # ── main ──────────────────────────────────────────────────────────────────────
@@ -609,7 +773,9 @@ def main() -> pl.DataFrame:
 
     print('\nBuilding CER energy demand rows...')
     cer_rows = _build_cer_energy(cer_df)
-    print(f'  Rows: {len(cer_rows):,}')
+    print(f'  Leaf rows: {len(cer_rows):,}')
+    cer_rows = _rollup_hierarchy(cer_rows)
+    print(f'  Rows after rolling up to Mode/Transportation Passenger: {len(cer_rows):,}')
 
     print('Building crosswalk emission rows...')
     crosswalk_rows = _build_crosswalk_emissions(crosswalk_df)
@@ -631,26 +797,10 @@ def main() -> pl.DataFrame:
     print('Building StatCan/EPA Passenger Vehicle Motors market share rows...')
     statcan_market_share_rows = _build_statcan_vehicle_motor_shares()
     print(f'  StatCan/EPA Passenger Vehicle Motors: {len(statcan_market_share_rows):,} rows')
-    statcan_market_share_end_year = _last_data_year(
-        'stat_can_market_shares',
-        getattr(_statcan_tp_mod, 'LAST_OBSERVED_YEAR', 2025),
-    )
-
-    # Replace overlapping CEUD Passenger Vehicle Motors rows from 2000 through
-    # the latest StatCan market-share year with the more detailed StatCan/EPA
-    # split so the output does not contain duplicate calibration_market_share_new records
-    # for the same branch/technology/year.
-    tech_rows = tech_rows.filter(
-        ~(
-            (pl.col('Service') == STATCAN_MARKET_SHARE_SERVICE)
-            & (
-                pl.col('Year')
-                .cast(pl.Int64, strict=False)
-                .is_between(STATCAN_MARKET_SHARE_START_YEAR, statcan_market_share_end_year)
-            )
-        )
-    )
+    # Passenger Vehicle Motors targets come only from StatCan/EPA (not in
+    # _TECH_SHARE_SERVICES), so the two sets never overlap.
     tech_rows = pl.concat([tech_rows, statcan_market_share_rows], how='diagonal_relaxed')
+    tech_rows = _align_share_techs_to_fixed(tech_rows)
     print(f'  Tech share total after StatCan/EPA merge: {len(tech_rows):,} rows')
 
     print('Combining...')
@@ -673,12 +823,12 @@ def main() -> pl.DataFrame:
     # Final output normalization:
     # - Remove any leading apostrophes that can make numeric-looking values
     #   appear as text markers in the generated calibration CSVs.
-    # - Force every calibration_market_share_new row to use Unit = '%', including rows
+    # - Force every calibration market share row to use Unit = '%', including rows
     #   that originate from upstream sources with Unit values like 'fraction'.
     output = output.with_columns(
         pl.col(pl.Utf8).str.replace(r"^'", "")
     ).with_columns(
-        pl.when(pl.col('Parameter') == 'calibration_market_share_new')
+        pl.when(pl.col('Parameter').is_in(['calibration_market_share_new', 'calibration_market_share_total']))
         .then(pl.lit('%'))
         .otherwise(pl.col('Unit'))
         .alias('Unit')
