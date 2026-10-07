@@ -140,6 +140,7 @@ Foreign Passenger,,.Transportation Passenger
 Freight,,.Transportation Freight
 Air Freight,,.Transportation Freight
 Foreign Freight,,.Transportation Freight
+Off-Road,,.Transportation Freight
 Off-Road,Off-Road,.Transportation Freight.Off Road
 Freight,HDV2B3 Diesel,.Transportation Freight.Freight.Land.Light Medium
 Freight,HDV2B3 Electric,.Transportation Freight.Freight.Land.Light Medium

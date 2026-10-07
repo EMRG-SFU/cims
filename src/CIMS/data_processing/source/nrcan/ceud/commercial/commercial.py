@@ -8,7 +8,7 @@ Key behavioural notes
 ---------------------
 - AT (Atlantic) groups NB + NS + PE + NL together.
 - BC groups BC + Territories together.
-- BC has Marine and Cold climate HVAC (80 % Marine / 20 % Cold floorspace split).
+- BC has Marine and Cold climate HVAC (75 % Marine / 25 % Cold floorspace split).
 - NG heating is split by efficiency tier using ng_eff_assumptions_commercial.csv.
 - Hot water technologies are NOT split by building shell type.
 - All intermediate data is held as Polars DataFrames in long format:
@@ -210,35 +210,12 @@ PLUG_TO_REFRIG_UNIT_RATIO: list[float] = [
 
 SPACE_HEATING_TABLE = 25
 
-# Universal (region-independent) year-2000 Buildings.Shell.<Activity> -> HVAC
-# (Cold) service_request rates (GJ per m2 of that activity's floorspace),
-# from raw_data/fixed_data/commercial -- identical across all 13 regions.
-# 100% of year-2000 market share sits on "Std" (LEED Silver/Platinum only
-# become available from 2010/2015 on), so Std alone anchors the weighted
-# average, exactly like AUX_TECH_GJ_PER_UNIT. compute_hvac_service_requests()
-# rescales all three tiers by the same per-activity/region/year factor to
-# match CEUD Table 25 (Space Heating by Activity Type), preserving each
-# tier's relative envelope-efficiency improvement over Std. Keyed by the
-# same CIMS activity name used elsewhere (ACTIVITY_MAPPING values).
-SHELL_TECH_GJ_PER_M2: dict[str, dict[str, float]] = {
-    'Wholesale':                          {'Std': 0.967671128, 'LEED Silver': 0.783813613, 'LEED Platinum': 0.53221912},
-    'Retail':                             {'Std': 0.943654332, 'LEED Silver': 0.764360009, 'LEED Platinum': 0.519009883},
-    'Transportation and Warehousing':     {'Std': 0.811187758, 'LEED Silver': 0.657062083, 'LEED Platinum': 0.446153267},
-    'Information and Cultural':           {'Std': 0.766898664, 'LEED Silver': 0.621187918, 'LEED Platinum': 0.421794266},
-    'Offices':                            {'Std': 0.8558116,   'LEED Silver': 0.693207398, 'LEED Platinum': 0.47069638},
-    'Educational':                        {'Std': 0.927642918, 'LEED Silver': 0.751390765, 'LEED Platinum': 0.510203605},
-    'Healthcare and Social Assistance':   {'Std': 1.429507969, 'LEED Silver': 1.157901455, 'LEED Platinum': 0.786229383},
-    'Arts Entertainment and Recreation':  {'Std': 1.1343701,   'LEED Silver': 0.918839781, 'LEED Platinum': 0.623903555},
-    'Accommodation and Food Services':    {'Std': 1.512157371, 'LEED Silver': 1.224847471, 'LEED Platinum': 0.831686554},
-    'Other Services':                     {'Std': 0.981626655, 'LEED Silver': 0.795117592, 'LEED Platinum': 0.539894659},
-}
-
-# HVAC (Marine) (BC only) = HVAC (Cold) x this ratio -- a fixed,
-# activity/technology-independent national climate correction already
-# embedded identically across every Marine rate in raw_data/fixed_data.
-# CEUD does not distinguish climate zones within a region, so there's no
-# CEUD-based way to recover this independently -- it's carried forward as-is.
-MARINE_TO_COLD_RATIO: float = 0.572456460
+# Table 1's provincial Heating Degree-Day Index (1.0 = climate normal). Emitted
+# as its own variable so commercial_model_inputs.py can both weather-normalise
+# the HVAC intensity below and drive the Weather (<climate>) nodes that carry
+# year-to-year weather variation past CIMS's vintage weighting -- the same
+# arrangement residential_heating_intensity.py uses.
+HDD_LABEL = 'Heating Degree-Day Index'
 
 
 def _aux_energy_shares(year: int) -> dict[str, float]:
@@ -494,6 +471,23 @@ def extract_floorspace(region: str, tables: dict) -> list[pl.DataFrame]:
 
 
 # ==============================================================================
+# EXTRACTION — HEATING DEGREE-DAY INDEX
+# ==============================================================================
+
+def extract_hdd_index(region: str, tables: dict) -> list[pl.DataFrame]:
+    """
+    Extract Table 1's Heating Degree-Day Index (1.0 = climate normal).
+
+    Historical years only -- no projection is applied (future weather is
+    unknown), so commercial_model_inputs.py holds the mean of the last
+    HDD_PROJECTION_YEARS constant beyond CEUD's cutoff.
+    """
+    t1 = tables[f"Table {TOTAL_FLOORSPACE_TABLE}"]
+    hdd = row_to_series(t1, HDD_LABEL).dropna()
+    return [_long(region, 'hdd_index', '', 'weather_factor', 'index', hdd)]
+
+
+# ==============================================================================
 # EXTRACTION — LIGHTING ENERGY INTENSITY
 # ==============================================================================
 def extract_lighting_intensity(region: str, tables: dict) -> list[pl.DataFrame]:
@@ -529,15 +523,11 @@ def extract_end_use_energy(region: str, tables: dict) -> list[pl.DataFrame]:
     lighting = row_to_series(t2, "Lighting", match_n=0) * 1e6
     water    = row_to_series(t2, "Water Heating", match_n=0) * 1e6
     aux      = row_to_series(t2, "Auxiliary Equipment", match_n=0) * 1e6
-    heating  = row_to_series(t2, "Space Heating", match_n=0) * 1e6
-    cooling  = row_to_series(t2, "Space Cooling", match_n=0) * 1e6
 
     return [
         _long(region, 'lighting_energy', '', 'service_request', 'GJ', lighting),
         _long(region, 'water_heating_energy', '', 'service_request', 'GJ', water),
         _long(region, 'aux_equipment_energy', '', 'service_request', 'GJ', aux),
-        _long(region, 'space_heating_energy', '', 'service_request', 'GJ', heating),
-        _long(region, 'space_cooling_energy', '', 'service_request', 'GJ', cooling),
     ]
 
 
@@ -569,7 +559,7 @@ def _row_to_series_by_prefix(table: pl.DataFrame, label: str, match_n: int = 0) 
 def extract_space_heating_by_activity(region: str, tables: dict) -> list[pl.DataFrame]:
     """
     Extract Space Heating secondary energy use by activity type (Table 25) --
-    the CEUD source compute_hvac_service_requests() uses to calibrate
+    the CEUD source compute_hvac_intensity() uses to calibrate
     Buildings.Shell.<Activity> -> HVAC service_request rates.
     """
     tbl = tables[f"Table {SPACE_HEATING_TABLE}"]
@@ -880,8 +870,7 @@ def apply_extensions(df: pl.DataFrame, region: str, params: dict) -> pl.DataFram
         projected = pd.Series({y: intensity * float(floorspace[y]) for y in future_years})
         return pd.concat([series, projected]).sort_index()
 
-    for var in ('lighting_energy', 'water_heating_energy', 'aux_equipment_energy',
-                'space_heating_energy', 'space_cooling_energy'):
+    for var in ('lighting_energy', 'water_heating_energy', 'aux_equipment_energy'):
         frames.append(_apply(var, '', _extend_flat_intensity))
 
     # Table 31 already reports GJ/m2, so projections hold the last historical
@@ -1067,238 +1056,8 @@ def compute_enduse_service_requests(df: pl.DataFrame, region: str) -> pl.DataFra
 
 
 # ==============================================================================
-# COMBINE — SHELL -> HVAC AND HVAC -> COOLING SERVICE_REQUEST INTENSITIES
+# COMBINE — SHELL -> HVAC SERVICE_REQUEST INTENSITY
 # ==============================================================================
-
-# First year Shell's own technology-mix (Std vs LEED Silver/Platinum)
-# drives HVAC's assessed_demand, replacing the CEUD-historical direct
-# request below. Independent of fixed_data 'available' -- LEED can be (and
-# currently is) available for the stock competition earlier than this; that
-# only decides which technology wins share, not which demand source HVAC
-# reads from. Before this year, Buildings -> HVAC carries exact historical
-# demand instead (see compute_buildings_hvac_direct_request), regardless of
-# what the Shell competition's technology mix would otherwise imply.
-SHELL_HVAC_COMPETITION_START_YEAR = 2025
-BUILDINGS_HVAC_HISTORICAL_CUTOFF = SHELL_HVAC_COMPETITION_START_YEAR - 1
-
-
-def compute_buildings_hvac_direct_request(df: pl.DataFrame, region: str) -> pl.DataFrame:
-    """
-    Buildings -> HVAC (Cold)/(Marine) direct service_request, years 2000
-    through BUILDINGS_HVAC_HISTORICAL_CUTOFF only.
-
-    Unlike Shell -> HVAC (per shell technology, vintage-weighted), this is a
-    node-level request from 'Buildings' -- no Technology field, matching
-    the existing Buildings -> {Lighting, Hot Water, ...} pattern. CIMS only
-    vintage-weights service_request when it can find a stock_total to split
-    by vintage (see _get_vintage_weights); a non-technology node has none,
-    so vintage_weights collapses to {year: 1} and the current year's value
-    applies to the entire assessed_demand uniformly -- old floorspace and
-    new alike, not diluted toward older vintages the way Shell -> HVAC's
-    per-technology rate was. This reproduces CEUD's actual historical heat
-    demand exactly.
-
-    Buildings' assessed_demand equals total_floorspace exactly (Commercial
-    -> Buildings is a literal 1:1 service_request in fixed_data), so this
-    rate is GJ of heat per m2 of the region's total floorspace.
-
-    Only covers history: Shell's own technology competition needs to keep
-    driving demand for projection years (see compute_hvac_service_requests),
-    since there's no CEUD ground truth for the future to match, and Shell's
-    competition needs a live, non-zero operating-cost signal once LEED
-    options become available to choose from.
-
-    Divides by _hvac_fuel_conversion_factor for the same reason Shell ->
-    HVAC does: CEUD's space_heating_energy is secondary energy (fuel
-    already consumed), but this feeds HVAC (Cold)'s assessed_demand, a
-    pre-efficiency quantity HVAC's own technologies then convert to fuel --
-    skipping this division would reintroduce the original double-counted-
-    efficiency bug for the historical period.
-    """
-    floorspace = _year_indexed(df, 'total_floorspace')
-    heat = _year_indexed(df, 'space_heating_energy')
-    conversion_factor = _hvac_fuel_conversion_factor(region)
-    is_bc = region.upper() == 'BC'
-
-    years = sorted(
-        y for y in (set(floorspace.dropna().index) & set(heat.dropna().index))
-        if y <= BUILDINGS_HVAC_HISTORICAL_CUTOFF
-    )
-
-    vals_cold = {
-        y: (float(heat[y]) / float(conversion_factor[y])) / float(floorspace[y])
-        for y in years if float(floorspace[y])
-    }
-
-    if is_bc:
-        # heat/floorspace above reconstructs BC's WHOLE-region CEUD total --
-        # floorspace and heat are never split by climate zone (CEUD can't
-        # distinguish them). Cold and Marine must partition that single
-        # total between them rather than each independently reproducing all
-        # of it, so the raw rate is divided by (1 + MARINE_TO_COLD_RATIO)
-        # before the Marine split is taken, keeping Cold + Marine equal to
-        # the original (correct) total instead of 1 + MARINE_TO_COLD_RATIO
-        # times it.
-        vals_cold = {y: v / (1.0 + MARINE_TO_COLD_RATIO) for y, v in vals_cold.items()}
-        vals_marine = {y: v * MARINE_TO_COLD_RATIO for y, v in vals_cold.items()}
-
-    frames = [_long(region, 'buildings_hvac_service_request', 'Cold',
-                    'service_request', 'GJ', pd.Series(vals_cold))]
-    if is_bc:
-        frames.append(_long(region, 'buildings_hvac_service_request', 'Marine',
-                            'service_request', 'GJ', pd.Series(vals_marine)))
-    return pl.concat(frames, how='diagonal_relaxed')
-
-
-def _hvac_technologies(region: str, climate: str) -> list[str]:
-    """
-    Technology names competing at HVAC (<climate>), read from fixed_data
-    (one row per technology, service_request targeting Cooling). Cold and
-    Marine (BC only) carry slightly different technology sets (e.g. Marine's
-    'Electricity_ASHP' vs Cold's 'Electricity_ASHP_Natural Gas_Backup' /
-    'Electricity_ASHP_Electricity_Backup'), so this must be read per climate,
-    not shared.
-    """
-    fixed_path = FIXED_DATA_DIR / f'commercial_{region.lower()}.csv'
-    techs, seen = [], set()
-    for r in iter_dict_rows(fixed_path):
-        if (r['Branch'].endswith(f'.HVAC ({climate})') and r['Parameter'] == 'service_request'
-                and r['Target'].endswith('.Cooling') and r['Technology'] not in seen):
-            seen.add(r['Technology'])
-            techs.append(r['Technology'])
-    return techs
-
-
-def _cooling_own_conversion_rate(region: str) -> float:
-    """
-    The Cooling node's own (single) technology -- 'Std', 100% market share,
-    no competing techs -- service_request rate to Electricity. Constant
-    across years in fixed_data. Needed to back out cooling *assessed_demand*
-    (a pre-efficiency 'cooling service' quantity) from CEUD's
-    space_cooling_energy, which is already actual electricity consumed --
-    see _hvac_cooling_to_heat_ratio.
-    """
-    fixed_path = FIXED_DATA_DIR / f'commercial_{region.lower()}.csv'
-    for r in iter_dict_rows(fixed_path):
-        if r['Branch'].endswith('.Commercial.Cooling') and r['Parameter'] == 'service_request':
-            return float(r['2000'])
-    return 1.0
-
-
-def _hvac_cooling_to_heat_ratio(df: pl.DataFrame, region: str) -> pd.Series:
-    """
-    GJ-cooling-per-GJ-heat ratio for HVAC (Cold)/(Marine) technologies' own
-    service_request to Cooling, replacing the flat "1" every technology used
-    previously (which made Cooling demand track heat demand 1:1, regardless
-    of the real, much smaller, cooling load).
-
-    Uses CEUD's region-wide Table 2 totals (space_cooling_energy /
-    space_heating_energy) -- CEUD doesn't break Space Cooling out per
-    activity the way Table 25 does for heating, so this is one ratio per
-    region/year, applied uniformly across every HVAC technology and every
-    activity (there's no CEUD-based way to differentiate cooling load by
-    heating technology, and architecturally there's no reason to expect one
-    -- cooling is a separate system from whatever's providing the heat).
-
-    Divides by _cooling_own_conversion_rate for the same reason
-    _hvac_fuel_conversion_factor does: CEUD's space_cooling_energy is
-    secondary energy (actual electricity already consumed), but this feeds
-    HVAC's service_request to Cooling, which sets Cooling's
-    assessed_demand -- a pre-efficiency quantity Cooling's own 'Std'
-    technology then converts to actual electricity. Skipping the division
-    would double-count that conversion.
-
-    Zero for years before SHELL_HVAC_COMPETITION_START_YEAR: the actual
-    historical cooling demand is carried instead by the Buildings -> Cooling
-    direct request (see compute_buildings_cooling_direct_request), which
-    isn't vintage-weighted (Buildings has no competing technologies) and so
-    reproduces CEUD's real annual variation exactly, including sharp
-    single-year spikes (e.g. QC 2005) that any smoothed or back-solved
-    per-technology rate would otherwise flatten out. Zeroing this uniformly
-    across every HVAC technology for those years doesn't distort HVAC's own
-    technology competition (Natural Gas Furnace vs Electric Furnace, etc.,
-    which must stay live and economically meaningful throughout history) --
-    it's the same value subtracted from every competing technology's
-    operating cost equally, so relative ranking is unaffected either way.
-    Shell's own technology competition (Std vs LEED) is zeroed the same way
-    over this range for the same reason, even though it may itself be live
-    during history -- see SHELL_HVAC_COMPETITION_START_YEAR.
-
-    For projection years, raw_ratio is used directly with no smoothing --
-    naturally flat by construction (both space_cooling_energy and
-    space_heating_energy hold their last historical value constant beyond
-    CEUD's data), and there's no CEUD ground truth to track for the future
-    anyway.
-    """
-    heat = _year_indexed(df, 'space_heating_energy')
-    cool = _year_indexed(df, 'space_cooling_energy')
-    years = sorted(set(heat.dropna().index) & set(cool.dropna().index))
-
-    cooling_conversion = _cooling_own_conversion_rate(region)
-    demand = pd.Series({y: float(heat[y]) for y in years if float(heat[y])})
-    raw_ratio = pd.Series({
-        y: (float(cool[y]) / cooling_conversion) / demand[y] for y in demand.index
-    })
-
-    return pd.Series({
-        y: (float(raw_ratio[y]) if y >= SHELL_HVAC_COMPETITION_START_YEAR else 0.0)
-        for y in raw_ratio.index
-    })
-
-
-def compute_buildings_cooling_direct_request(df: pl.DataFrame, region: str) -> pl.DataFrame:
-    """
-    Buildings -> Cooling direct service_request, years 2000 through
-    BUILDINGS_HVAC_HISTORICAL_CUTOFF only.
-
-    Unlike HVAC (Cold)/(Marine), which are genuinely separate model nodes,
-    Cooling is a single node region-wide -- both HVAC (Cold)'s and HVAC
-    (Marine)'s technologies (BC only) target the same CIMS.CAN.<region>.
-    Commercial.Cooling. So this produces exactly one value, not a Cold/
-    Marine split the way compute_buildings_hvac_direct_request does;
-    splitting it (e.g. Cold + Cold*MARINE_TO_COLD_RATIO) would create two
-    rows targeting the same key, and the model reader would silently keep
-    only the last one, discarding the other's contribution -- the same
-    last-row-wins collision collapse_constant_years was fixed for.
-
-    Mirrors compute_buildings_hvac_direct_request otherwise, for the same
-    reason: a node-level request from 'Buildings' (no Technology field)
-    isn't vintage-weighted (CIMS finds no stock_total to split by vintage
-    for a non-technology node -- see _get_vintage_weights), so the current
-    year's value applies to all existing floorspace uniformly, reproducing
-    CEUD's actual historical cooling demand exactly -- including sharp
-    single-year spikes a per-technology vintage-weighted or smoothed rate
-    can't track.
-
-    Buildings' assessed_demand equals total_floorspace exactly (Commercial
-    -> Buildings is a literal 1:1 service_request in fixed_data), so this
-    rate is GJ of cooling per m2 of the region's total floorspace -- cooling
-    demand scales with floorspace being cooled directly, with no need to
-    route it through heat demand the way HVAC (Cold)/(Marine)'s own
-    technologies' service_request to Cooling does for projection years.
-
-    Divides by _cooling_own_conversion_rate for the same reason
-    _hvac_cooling_to_heat_ratio does (CEUD's figure is already actual
-    electricity consumed, not the pre-efficiency assessed_demand level
-    Cooling's own technology then converts).
-    """
-    floorspace = _year_indexed(df, 'total_floorspace')
-    cool = _year_indexed(df, 'space_cooling_energy')
-    cooling_conversion = _cooling_own_conversion_rate(region)
-
-    years = sorted(
-        y for y in (set(floorspace.dropna().index) & set(cool.dropna().index))
-        if y <= BUILDINGS_HVAC_HISTORICAL_CUTOFF
-    )
-
-    vals = {
-        y: (float(cool[y]) / cooling_conversion) / float(floorspace[y])
-        for y in years if float(floorspace[y])
-    }
-
-    return _long(region, 'buildings_cooling_service_request', '',
-                'service_request', 'GJ', pd.Series(vals))
-
 
 _AUX_HVAC_TARGETS = {'Motive Power', 'Cooling'}
 
@@ -1372,150 +1131,60 @@ def _hvac_fuel_conversion_factor(region: str) -> pd.Series:
     return pd.Series({y: factor_by_year.get(y, last_factor) for y in YEARS})
 
 
-def compute_hvac_service_requests(df: pl.DataFrame, region: str) -> pl.DataFrame:
+def compute_hvac_intensity(df: pl.DataFrame, region: str) -> pl.DataFrame:
     """
-    Combine CEUD Space Heating/Cooling energy with the fixed national
-    shell-technology GJ/m2 rates (SHELL_TECH_GJ_PER_M2) to compute HVAC
-    (Cold)/(Marine)'s service_request rates. Two demand sources cover
-    mutually exclusive year ranges to avoid double-counting (see
-    SHELL_HVAC_COMPETITION_START_YEAR):
-      - Historical years: Buildings -> HVAC/Cooling direct requests
-        (compute_buildings_hvac_direct_request /
-        compute_buildings_cooling_direct_request) reproduce CEUD's actual
-        demand exactly, since they aren't vintage-weighted. Shell's own
-        per-technology service_request to HVAC, and HVAC's own
-        service_request to Cooling, are both zero for these years.
-      - Projection years: Shell's own technology competition (Std vs LEED
-        Silver/Platinum -- see fixed_data 'available' for when each becomes
-        eligible to compete) takes over, rescaling SHELL_TECH_GJ_PER_M2 per
-        region/year and preserving each shell tier's relative improvement
-        over Std. HVAC (Marine) (BC only) is derived as Cold x
-        MARINE_TO_COLD_RATIO, the same fixed relationship
-        raw_data/fixed_data/commercial already applied uniformly (CEUD
-        doesn't distinguish climate zones within a region).
+    Space-heating intensity of each commercial activity -- GJ of *useful heat*
+    per m2 of that activity's floor space, per year.
 
-    The Cooling node's own 'Std' technology's service_request to
-    Electricity (its own efficiency conversion) is untouched fixed_data,
-    not computed here.
+    This is the CEUD quantity commercial_model_inputs.py calibrates the
+    Buildings.Shell.<Activity> -> HVAC service_request rates against. It stays
+    an intensity here (not a per-technology rate): the sector module holds the
+    fixed data, so it rescales every shell tier (Std / LEED Silver / LEED
+    Platinum, and BC's Cold/Marine split) off its own JCIMS ratios to match
+    this level -- the same division of labour residential_heating_intensity.py
+    has with residential_model_inputs.py.
+
+    Activity floor space is derived on the fly as total_floorspace x
+    building_shell_shares(activity) rather than carried through as its own
+    projected variable.
+
+    Divides CEUD's Table 25 Space Heating energy by
+    _hvac_fuel_conversion_factor: that figure is secondary energy (fuel
+    already burned), but the Shell -> HVAC service_request feeds HVAC's
+    assessed_demand, a pre-efficiency 'useful heat' quantity HVAC's own
+    technologies then convert back to fuel. Calibrating against the fuel
+    figure directly would count efficiency twice.
 
     Must be called on a region's FULLY DISAGGREGATED frame, like
     compute_enduse_service_requests().
 
     Returns
     -------
-    pl.DataFrame with variables:
-      - 'hvac_service_request', category f'{activity}|{Cold|Marine}|{tech}'
-        (zero for years before SHELL_HVAC_COMPETITION_START_YEAR)
-      - 'hvac_cooling_service_request', category f'{Cold|Marine}|{tech}'
-        (zero for years before SHELL_HVAC_COMPETITION_START_YEAR)
-      - 'buildings_hvac_service_request', category '{Cold|Marine}' (years
-        through BUILDINGS_HVAC_HISTORICAL_CUTOFF only)
-      - 'buildings_cooling_service_request', category '{Cold|Marine}' (years
-        through BUILDINGS_HVAC_HISTORICAL_CUTOFF only)
+    pl.DataFrame with variable 'hvac_intensity', category = CIMS activity
+    name (ACTIVITY_MAPPING values), unit GJ/m2.
     """
-    floorspace  = _year_indexed(df, 'total_floorspace')
-    is_bc = region.upper() == 'BC'
+    floorspace = _year_indexed(df, 'total_floorspace')
     conversion_factor = _hvac_fuel_conversion_factor(region)
 
     frames = []
-
-    # Per-activity Shell -> HVAC rates
-    for activity, tech_rates in SHELL_TECH_GJ_PER_M2.items():
+    for activity in ACTIVITY_MAPPING.values():
         target_energy = _year_indexed(df, 'space_heating_by_activity', activity)
         shell_share   = _year_indexed(df, 'building_shell_shares', activity)
         years = sorted(
             set(floorspace.dropna().index) & set(target_energy.dropna().index) &
             set(shell_share.dropna().index)
         )
-        std_rate = tech_rates['Std']
-
-        demand = pd.Series({
+        activity_floorspace = pd.Series({
             y: float(floorspace[y]) * float(shell_share[y])
             for y in years if float(floorspace[y]) * float(shell_share[y])
         })
-        raw_scale = pd.Series({
-            y: (float(target_energy[y]) / float(conversion_factor[y])) / demand[y] / std_rate
-            for y in demand.index
+        intensity = pd.Series({
+            y: (float(target_energy[y]) / float(conversion_factor[y])) / activity_floorspace[y]
+            for y in activity_floorspace.index
         })
-
-        # Shell -> HVAC now only drives HVAC's assessed_demand for
-        # projection years (>= SHELL_HVAC_COMPETITION_START_YEAR). Historical
-        # years are driven entirely by the Buildings -> HVAC direct request
-        # instead (see compute_buildings_hvac_direct_request), which isn't
-        # vintage-weighted at all (Buildings has no competing technologies,
-        # so CIMS's vintage-weighting finds no stock_total to split by
-        # vintage and applies the current year's value to all existing
-        # floorspace uniformly -- exactly reproducing CEUD's real historical
-        # demand, instead of the ~98% diluted-toward-old-vintages result
-        # Shell's own per-technology service_request produced).
-        #
-        # Feeding Shell's own (per-technology, vintage-weighted) rate for
-        # historical years too would double-count that demand on top of the
-        # direct request, so it's set to exactly 0 for years before
-        # SHELL_HVAC_COMPETITION_START_YEAR, regardless of which shell
-        # technologies are available to compete. LEED Silver/Platinum can be
-        # (and currently are) available before this year, so Shell's stock
-        # competition is live during history -- but with every technology's
-        # operating-cost signal zeroed alike, it has no efficiency-based
-        # ranking to go on; calibrated FICs carry the full market-share
-        # differentiation for those years instead.
-        #
-        # For projection years, raw_scale is used directly with no
-        # smoothing or back-solving -- it's naturally flat by construction
-        # (both target_energy and conversion_factor hold their last
-        # historical value constant beyond CEUD's data), and there's no
-        # CEUD ground truth for future years to track anyway.
-        scale = pd.Series({
-            y: (float(raw_scale[y]) if y >= SHELL_HVAC_COMPETITION_START_YEAR else 0.0)
-            for y in raw_scale.index
-        })
-
-        for tech, fixed_rate in tech_rates.items():
-            vals_cold, vals_marine = {}, {}
-            for y in scale.index:
-                cold_rate = fixed_rate * float(scale[y])
-                if is_bc:
-                    # Same whole-region-vs-split issue as the historical
-                    # bypass (see compute_buildings_hvac_direct_request):
-                    # cold_rate here reconstructs demand against BC's
-                    # UNDIVIDED floorspace, so Cold and Marine must
-                    # partition it rather than each claiming it in full.
-                    cold_rate = cold_rate / (1.0 + MARINE_TO_COLD_RATIO)
-                    vals_marine[y] = cold_rate * MARINE_TO_COLD_RATIO
-                vals_cold[y] = cold_rate
-
-            if vals_cold:
-                frames.append(_long(region, 'hvac_service_request', f'{activity}|Cold|{tech}',
-                                    'service_request', 'GJ', pd.Series(vals_cold)))
-            if vals_marine:
-                frames.append(_long(region, 'hvac_service_request', f'{activity}|Marine|{tech}',
-                                    'service_request', 'GJ', pd.Series(vals_marine)))
-
-    # HVAC (Cold)/(Marine) technologies' own service_request to Cooling --
-    # replaces the flat "1" fixed_data constant (zero before
-    # SHELL_HVAC_COMPETITION_START_YEAR, real CEUD-derived ratio for
-    # projection years -- see _hvac_cooling_to_heat_ratio).
-    cooling_ratio = _hvac_cooling_to_heat_ratio(df, region)
-    if len(cooling_ratio):
-        cooling_vals = {y: float(cooling_ratio[y]) for y in cooling_ratio.index}
-        for tech in _hvac_technologies(region, 'Cold'):
-            frames.append(_long(region, 'hvac_cooling_service_request', f'Cold|{tech}',
-                                'service_request', 'ratio', pd.Series(cooling_vals)))
-        if is_bc:
-            for tech in _hvac_technologies(region, 'Marine'):
-                frames.append(_long(region, 'hvac_cooling_service_request', f'Marine|{tech}',
-                                    'service_request', 'ratio', pd.Series(cooling_vals)))
-
-    # Buildings -> HVAC (Cold)/(Marine) direct historical request -- carries
-    # HVAC's assessed_demand for years before Shell's own competition takes
-    # over (see compute_buildings_hvac_direct_request and the SHELL_HVAC_
-    # COMPETITION_START_YEAR split above).
-    frames.append(compute_buildings_hvac_direct_request(df, region))
-
-    # Buildings -> Cooling (Cold)/(Marine) direct historical request -- same
-    # pattern as Buildings -> HVAC above, see compute_buildings_cooling_
-    # direct_request.
-    frames.append(compute_buildings_cooling_direct_request(df, region))
+        if len(intensity):
+            frames.append(_long(region, 'hvac_intensity', activity,
+                                'service_request', 'GJ/m2', intensity))
 
     return pl.concat(frames, how='diagonal_relaxed') if frames else pl.DataFrame()
 
@@ -1571,21 +1240,23 @@ def extract_all_data(
     # -- Hot water -----------------------------------------------------------
     hw_frames = extract_hot_water(region, tables)
 
-    # -- End-use energy (Lighting / Water Heating / Auxiliary Equipment / -----
-    # -- Space Heating / Space Cooling totals, and Space Heating by activity)
+    # -- End-use energy (Lighting / Water Heating / Auxiliary Equipment -------
+    # -- totals, and Space Heating by activity)
     end_use_frames = extract_end_use_energy(region, tables)
     lighting_intensity_frames = extract_lighting_intensity(region, tables)
     space_heating_frames = extract_space_heating_by_activity(region, tables)
+    hdd_frames = extract_hdd_index(region, tables)
 
     # Assemble — floorspace_by_activity was only needed to derive shell shares.
     # Activity-level floorspace for HVAC calibration is instead derived on
     # the fly (total_floorspace x building_shell_shares) in
-    # compute_hvac_service_requests(), so it doesn't need to be carried
+    # compute_hvac_intensity(), so it doesn't need to be carried
     # through as its own projected/disaggregated variable.
     total_floorspace_frames = [f for f in floorspace_frames
                                if f['variable'][0] == 'total_floorspace']
     all_frames = (total_floorspace_frames + shell_frames + hvac_frames + hw_frames +
-                  end_use_frames + lighting_intensity_frames + space_heating_frames)
+                  end_use_frames + lighting_intensity_frames + space_heating_frames +
+                  hdd_frames)
     df = pl.concat(all_frames, how='diagonal_relaxed')
 
     if apply_projections:
@@ -1641,6 +1312,7 @@ def extract_all_regions(
 #   floorspace_by_activity    → identical shares within group (copy parent value
 #                               scaled by total_floorspace split)
 #   building_shell_shares     → identical across all sub-regions
+#   hdd_index                 → identical across all sub-regions
 #   hvac_cold                 → split by CER Space Heating fuel-demand share,
 #                               efficiency-corrected, renormalized
 #   hvac_marine               → BC only (dropped for YT/NT/NU and AT provinces)
@@ -1753,6 +1425,7 @@ COMM_CATEGORY_EFFICIENCY_KEY = {
 COMM_IDENTICAL_VARIABLES = {
     'building_shell_shares',
     'lighting_intensity',
+    'hdd_index',
 }
 
 # Absolute quantities split by population share when disaggregating AT/BCT
@@ -1762,7 +1435,7 @@ COMM_IDENTICAL_VARIABLES = {
 COMM_POP_SPLIT_VARIABLES = {
     'total_floorspace', 'floorspace_by_activity',
     'lighting_energy', 'water_heating_energy', 'aux_equipment_energy',
-    'space_heating_energy', 'space_cooling_energy', 'space_heating_by_activity',
+    'space_heating_by_activity',
 }
 
 # Market share variables needing efficiency correction + renormalization
@@ -2231,12 +1904,12 @@ def main(
         results = disaggregate_commercial(results, CER_DEMAND_CSV, POP_CSV, EFFICIENCY_XLS)
 
     # Buildings -> {Lighting, Hot Water, Refrigeration, Cooking, Plug Load}
-    # and Shell -> HVAC / HVAC -> Cooling service_request intensities,
-    # computed per final (post-disaggregation) region so Hot Water and HVAC
-    # (Marine) reflect each region's own hot_water_tech mix / climate split.
+    # intensities and the per-activity space-heating intensity, computed per
+    # final (post-disaggregation) region so Hot Water reflects each region's
+    # own hot_water_tech mix and HVAC its own technology mix.
     for region, region_df in list(results.items()):
         enduse_rows = compute_enduse_service_requests(region_df, region)
-        hvac_rows = compute_hvac_service_requests(region_df, region)
+        hvac_rows = compute_hvac_intensity(region_df, region)
         results[region] = pl.concat([region_df, enduse_rows, hvac_rows], how='diagonal_relaxed')
 
     all_frames = list(results.values())

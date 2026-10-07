@@ -23,26 +23,35 @@ Building shell shares  (market_share_total, year 2000 only)
     processed_data/nrcan/ceud/commercial.csv  →  variable = 'building_shell_shares'
     Inserted after the Shell service header rows (service_provide, competition,
     intercept_retirement), before the Shell activity sub-service sections.
-    BC splits each activity 80 % cold / 20 % marine.
+    BC splits each activity 25 % cold / 75 % marine.
 
 HVAC Cold / Marine and Hot Water market_share_total  (year 2000 only)
     processed_data/nrcan/ceud/commercial.csv  →  variables hvac_cold / hvac_marine / hot_water_tech
     Spliced between the 'lifetime' and 'output' parameter blocks for each
     technology within those service sections.
 
-HVAC and Cooling service_request  (see _build_hvac_service_request_rows)
-    processed_data/nrcan/ceud/commercial.csv  →  variables hvac_service_request /
-    hvac_cooling_service_request / buildings_hvac_service_request /
-    buildings_cooling_service_request
-    Two demand sources per target, covering mutually exclusive year ranges:
-    Buildings -> HVAC (Cold)/(Marine) and Buildings -> Cooling carry exact
-    CEUD-derived historical demand (through commercial.py's
-    BUILDINGS_HVAC_HISTORICAL_CUTOFF); Shell.<Activity> -> HVAC (per shell
-    technology) and HVAC -> Cooling (per HVAC technology) are zero through
-    that same cutoff and take over from SHELL_HVAC_COMPETITION_START_YEAR
-    onward, once Shell's own Std/LEED Silver/LEED Platinum competition
-    becomes live. See commercial.py's compute_hvac_service_requests for the
-    full rationale.
+Shell -> HVAC service_request  (see _build_hvac_intensity_rows)
+    processed_data/nrcan/ceud/commercial.csv  ->  variable = 'hvac_intensity'
+    Replaces the fixed-data Buildings.Shell.<Activity> -> HVAC (Cold)/(Marine)
+    service_request rows (one per shell technology) with the CEUD space-heating
+    intensity, averaged over HVAC_INTENSITY_YEARS.  Each shell tier keeps its
+    fixed-data ratio to Std, and BC's Cold/Marine nodes keep their climate
+    split, so only the overall level is recalibrated.  HVAC's own technology
+    service_request rows (-> fuels / Motive Power / Cooling) are untouched
+    fixed data.
+
+Weather nodes  (WEATHER_NODES; service_provide / competition / service_request)
+    processed_data/nrcan/ceud/commercial.csv  ->  variable = 'hdd_index'
+    A Fixed Ratio "Weather (Cold|Marine)" node is added under each
+    Buildings.Shell.<Activity> node, and that activity's technologies request
+    it instead of HVAC -- so the only service_request into HVAC comes from the
+    Shell subtree and HVAC stays a pure technology-competition node (same
+    arrangement as residential's '<bin> Bldg Code.Weather (<climate>)').  Its
+    service_request to HVAC is the CEUD Heating Degree-Day Index (historical
+    years; mean of the last HDD_PROJECTION_YEARS thereafter), and the Shell
+    intensity above is the weather-normalised mean.  A node without
+    technologies isn't vintage-weighted, so the year-to-year weather signal
+    reaches all floor space rather than only new stock.
 
 Output columns
 --------------
@@ -86,8 +95,17 @@ FIXED_TEMPLATE: dict[str, str] = {
     'QC': 'QC', 'SK': 'SK', 'YT': 'YT',
 }
 
-BC_COLD_FRACTION   = 0.80
-BC_MARINE_FRACTION = 0.20
+# Share of BC's commercial floor space in each climate zone, applied to every
+# activity's CEUD floorspace share (_build_shell_share_rows). CEUD carries no
+# climate-zone split of its own, so this is a modelling assumption, not a
+# measured quantity -- it is the only statement of it in the pipeline, and
+# commercial_calibration.py mirrors it so the two stay consistent. 75/25 lines
+# up with the split implied by residential's own BC fixed data, where each
+# Bldg Code node's Marine and Cold heating requests sit at a uniform 0.63249
+# Marine share -- 75/25 floor space once that figure's embedded climate
+# correction (MARINE_TO_COLD_RATIO, 0.5725) is backed out.
+BC_COLD_FRACTION   = 0.25
+BC_MARINE_FRACTION = 0.75
 BC_TERRITORY_CODES = {'YT', 'NT', 'NU'}
 
 # How many of the most recent historical years' feedstock-per-floorspace
@@ -121,6 +139,27 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
 _PARAMS_BEFORE_MST = {'technology', 'available', 'unavailable', 'lifetime'}
 _PARAMS_AFTER_MST  = {'output', 'fcc', 'capital_recovery', 'fom',
                       'service_request', 'market_share_new_max'}
+
+# Shell.<Activity> -> HVAC service_request intensity. CIMS vintage-weights a
+# technology's service_request, so the year-to-year signal in a per-shell-tech
+# rate can't reach the model intact -- old floorspace keeps its base-year
+# value and new stock is diluted toward the existing mix. A single historical
+# mean is used instead, and the annual weather signal is carried by the
+# Weather node below, which has no technologies to vintage-weight.
+HVAC_INTENSITY_YEARS: tuple[int, int] = (DATA_START, _commercial_mod.LAST_HIST_YEAR)
+HVAC_SERVICES: tuple[str, ...] = ('HVAC (Cold)', 'HVAC (Marine)')
+# Shell technology carrying 100 % of year-2000 market share (LEED Silver /
+# Platinum only become available later), so it anchors the rescaling the same
+# way 'Reference' does on the residential side.
+HVAC_ANCHOR_TECH = 'Std'
+
+# Weather nodes: a Fixed Ratio "Weather (<climate>)" node under each Shell
+# activity node, between that activity's technologies and the HVAC node,
+# carrying the CEUD heating degree-day index. Its node-level service_request
+# isn't vintage-weighted.
+WEATHER_NODES: bool = True
+# Projection-year weather factor = mean HDD index over the last N CEUD years.
+HDD_PROJECTION_YEARS: int = 10
 
 
 # ── helpers ────────────────────────────────────────────────────────────────────
@@ -292,7 +331,7 @@ def _build_shell_share_rows(commercial: pl.DataFrame, region: str,
     Shell demand that flows to each activity sub-service each year.  These
     are emitted as service_request rows from the Shell service, with Target
     pointing to the corresponding Shell sub-service branch.
-    BC splits each activity 80 % cold / 20 % marine.
+    BC splits each activity 25 % cold / 75 % marine.
     """
     data = (
         commercial
@@ -430,169 +469,211 @@ def _find_tech_param_max_order(df: pl.DataFrame, service: str, technology: str,
     return float(subset['_order'].max())
 
 
-def _build_hvac_service_request_rows(commercial: pl.DataFrame, fixed: pl.DataFrame,
-                                      region: str) -> pl.DataFrame:
+def _hdd_index(commercial: pl.DataFrame, region: str) -> pd.Series:
+    """CEUD HDD index for one region as a year-indexed Series (empty if absent)."""
+    data = (
+        commercial
+        .filter((pl.col('region') == region) & (pl.col('variable') == 'hdd_index'))
+        .sort('year')
+    )
+    return pd.Series(data['value'].to_list(),
+                     index=[int(y) for y in data['year'].to_list()], dtype=float)
+
+
+def _weather_factors(hdd: pd.Series) -> dict[int, float]:
+    """{year: weather factor} for DATA_START..PROJECTION_END from the HDD index."""
+    proj = float(hdd.iloc[-HDD_PROJECTION_YEARS:].mean())
+    return {y: float(hdd.get(y, proj)) for y in range(DATA_START, PROJECTION_END + 1)}
+
+
+def _hvac_intensity_means(commercial: pl.DataFrame, region: str,
+                          hdd: pd.Series | None = None) -> dict[str, float]:
     """
-    Builds four sets of rows, all computed from CEUD Space Heating/Cooling
-    energy in commercial.py's compute_hvac_service_requests(), replacing the
-    hand-fixed constants _assemble_region() strips out of `fixed` for these
-    targets:
-      - Buildings.Shell.<Activity> -> HVAC (Cold/Marine) service_request
-        (all years, all shell technologies -- zero before commercial.py's
-        SHELL_HVAC_COMPETITION_START_YEAR)
-      - HVAC (Cold/Marine) technologies' own service_request to Cooling
-        (same zero-before-competition-start pattern)
-      - Buildings -> HVAC (Cold/Marine) direct historical service_request
-        (years through BUILDINGS_HVAC_HISTORICAL_CUTOFF only)
-      - Buildings -> Cooling direct historical service_request (same cutoff)
-
-    Each new row is anchored to sit immediately after its technology's
-    surviving 'fom' row (or, for the two Buildings -> ... direct requests,
-    the surviving Buildings -> Shell row) -- the same slot the stripped
-    fixed-data service_request row used to occupy.
+    {activity: mean GJ of heat per m2 over HVAC_INTENSITY_YEARS} for one
+    region, from commercial.py's compute_hvac_intensity(). With `hdd`, each
+    year is divided by its HDD index first (weather-normalised intensity).
     """
-    frames = []
-
-    hvac_data = commercial.filter(
-        (pl.col('region') == region) & (pl.col('variable') == 'hvac_service_request')
+    lo, hi = HVAC_INTENSITY_YEARS
+    data = commercial.filter(
+        (pl.col('region') == region) &
+        (pl.col('variable') == 'hvac_intensity') &
+        pl.col('year').is_between(lo, hi)
     )
-    for category in hvac_data['category'].unique().to_list():
-        activity, climate, tech = category.split('|')
-        shell_svc = (CAT_TO_COLD_SVC if climate == 'Cold' else CAT_TO_MARINE_SVC).get(activity)
-        if shell_svc is None:
-            continue
+    if hdd is not None:
+        data = data.with_columns(
+            pl.col('value') / pl.col('year').cast(pl.Int64).replace_strict(
+                {int(y): float(v) for y, v in hdd.items()}, default=None,
+                return_dtype=pl.Float64,
+            )
+        ).drop_nulls('value')
+    return {
+        r['category']: float(r['value'])
+        for r in data.group_by('category').agg(pl.col('value').mean()).iter_rows(named=True)
+    }
 
-        anchor = _find_tech_param_max_order(fixed, shell_svc, tech, 'fom')
-        if anchor is None:
-            continue
 
-        data = hvac_data.filter(pl.col('category') == category).sort('year')
-        n = len(data)
-        if n == 0:
-            continue
+def _climate_of(hvac_target: str) -> str:
+    """'...Commercial.HVAC (Marine)' -> 'Marine'."""
+    return hvac_target.rsplit('(', 1)[-1].rstrip(')')
 
-        branch = f'CIMS.CAN.{region}.Commercial.Buildings.Shell.{shell_svc}'
-        target = f'CIMS.CAN.{region}.Commercial.HVAC ({climate})'
-        frames.append(data.select([
-            pl.lit(branch).alias('Branch'),
-            pl.lit('Service').alias('Type'),
-            pl.lit(region).alias('Region'),
-            pl.lit('Commercial').alias('Sector'),
-            pl.lit(shell_svc).alias('Service'),
-            pl.lit(tech).alias('Technology'),
-            pl.lit('service_request').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.lit(target).alias('Target'),
-            pl.col('source').alias('Source'),
-            pl.col('unit').alias('Unit'),
-            pl.col('year').cast(pl.String).alias('Year'),
-            pl.col('value').cast(pl.String).alias('Value'),
-            pl.Series('_order', [anchor + 0.5 + j * 1e-4 for j in range(n)],
-                      dtype=pl.Float64).alias('_order'),
-        ]))
 
-    buildings_hvac_data = commercial.filter(
-        (pl.col('region') == region) & (pl.col('variable') == 'buildings_hvac_service_request')
+def _weather_node_name(shell_branch: str, climate: str) -> str:
+    """
+    '...Buildings.Shell.Offices (Cold)' + 'Cold'
+        -> '...Buildings.Shell.Offices (Cold).Weather (Cold)'
+
+    The Weather node is a child of the shell activity node whose technologies
+    request it, mirroring residential, where each Bldg Code node carries its
+    own '<bin> Bldg Code.Weather (<climate>)'. That keeps the only
+    service_request into HVAC inside the Shell subtree -- HVAC itself stays a
+    pure technology-competition node.
+    """
+    return f'{shell_branch}.Weather ({climate})'
+
+
+def _build_weather_node_rows(fixed: pl.DataFrame, shell_branch: str,
+                             hvac_branch: str, region: str,
+                             factors: dict[int, float]) -> list[dict]:
+    """
+    Fixed Ratio Weather node rows for one shell activity, positioned straight
+    after that activity's own block and requesting the sector-level HVAC node.
+
+    One node per shell activity (and per climate), not one shared sector-wide:
+    the request into HVAC has to come from the Shell subtree, so each activity
+    needs its own.
+    """
+    shell_rows = fixed.filter(pl.col('Branch') == shell_branch)
+    order = float(shell_rows['_order'].max()) + 0.4
+    hvac_rows = fixed.filter(pl.col('Branch') == hvac_branch)
+    sp = hvac_rows.filter(pl.col('Parameter') == 'service_provide')
+    unit = sp['Unit'][0] if len(sp) else 'GJ'
+    climate = _climate_of(hvac_branch)
+    branch = _weather_node_name(shell_branch, climate)
+    service = f'Weather ({climate})'
+    base = {'Branch': branch, 'Type': 'Service', 'Region': region,
+            'Sector': 'Commercial', 'Service': service, 'Technology': '',
+            'Context': '', 'Sub_Context': ''}
+    rows = [
+        {**base, 'Parameter': 'service_provide', 'Target': '', 'Source': '',
+         'Unit': unit, 'Year': '', 'Value': '', '_order': order},
+        {**base, 'Parameter': 'competition', 'Target': '', 'Source': '',
+         'Unit': '', 'Year': '', 'Value': 'Fixed Ratio', '_order': order + 1e-3},
+    ]
+    # One Source for every year: collapse_constant_years groups on Source, and
+    # splitting history from projection would let a repeated historical value
+    # become a second blank-Year default.
+    for i, (year, f) in enumerate(factors.items()):
+        rows.append({**base, 'Parameter': 'service_request', 'Target': hvac_branch,
+                     'Source': 'CEUD HDD index',
+                     'Unit': 'GJ', 'Year': str(year), 'Value': str(f),
+                     '_order': order + 2e-3 + i * 1e-6})
+    return rows
+
+
+def _build_hvac_intensity_rows(commercial: pl.DataFrame, fixed: pl.DataFrame,
+                               region: str) -> tuple[pl.DataFrame, list[int]]:
+    """
+    Buildings.Shell.<Activity> -> HVAC service_request rows (all years, per
+    shell technology) from the CEUD space-heating intensity, replacing the
+    fixed-data constants.
+
+    Each fixed-data (shell technology, climate) rate keeps its ratio to the
+    activity's floorspace-weighted Std rate -- LEED Silver / Platinum stay at
+    their JCIMS fraction of Std, and BC's (Cold) / (Marine) activity nodes
+    keep the climate correction already embedded in fixed_data -- and the
+    whole activity is rescaled so that its floorspace-weighted mean rate
+    reproduces the CEUD intensity. BC's two climate nodes are weighted by
+    BC_COLD_FRACTION / BC_MARINE_FRACTION, the same floorspace split
+    _build_shell_share_rows applies, so Cold + Marine partition the activity's
+    heat rather than each reproducing all of it.
+
+    With WEATHER_NODES (and an HDD index for the region) the intensity is
+    weather-normalised, the rows target a Weather node instead of the HVAC
+    node, and the Weather node's own rows are added -- so the flat mean here
+    carries the structural level while the Weather node makes HVAC demand
+    track real year-to-year weather.
+
+    Returns the new rows (placed at the replaced rows' positions) and the
+    _order values of the fixed rows they replace. Activities with no CEUD
+    intensity keep their fixed-data rows.
+    """
+    hdd = _hdd_index(commercial, region) if WEATHER_NODES else None
+    if hdd is not None and hdd.empty:
+        print(f'  No CEUD HDD index for {region}; no Weather nodes')
+        hdd = None
+    factors = _weather_factors(hdd) if hdd is not None else None
+    means = _hvac_intensity_means(commercial, region, hdd)
+    lo, hi = HVAC_INTENSITY_YEARS
+    source = f'CEUD mean {lo}-{hi}' + (' / HDD index' if hdd is not None else '')
+
+    climate_fraction = (
+        {'Cold': BC_COLD_FRACTION, 'Marine': BC_MARINE_FRACTION} if region == 'BC'
+        else {'Cold': 1.0, 'Marine': 1.0}
     )
-    buildings_hvac_anchor = _find_max_order(fixed, 'Buildings', 'service_request', require_tech=False)
-    for climate_idx, climate in enumerate(buildings_hvac_data['category'].unique().to_list()):
-        if buildings_hvac_anchor is None:
-            break
-        data = buildings_hvac_data.filter(pl.col('category') == climate).sort('year')
-        n = len(data)
-        if n == 0:
+    svc_to_activity = {v: k for k, v in CAT_TO_COLD_SVC.items()}
+    svc_to_activity.update({v: k for k, v in CAT_TO_MARINE_SVC.items()})
+
+    sr = fixed.filter(
+        (pl.col('Parameter') == 'service_request') &
+        pl.col('Branch').str.contains('.Commercial.Buildings.Shell.', literal=True) &
+        pl.any_horizontal([pl.col('Target').str.ends_with(f'.{s}') for s in HVAC_SERVICES])
+    ).with_columns(
+        pl.col('Service').replace_strict(svc_to_activity, default=None).alias('_activity'),
+        pl.col('Value').cast(pl.Float64, strict=False).alias('_v'),
+    ).drop_nulls('_activity')
+
+    rows: list[dict] = []
+    replaced: list[int] = []
+    weather_done: set[str] = set()
+    for (activity,), g in sr.group_by('_activity', maintain_order=True):
+        if activity not in means:
+            print(f'  No CEUD HVAC intensity for {activity}; keeping fixed data')
             continue
-        branch = f'CIMS.CAN.{region}.Commercial.Buildings'
-        target = f'CIMS.CAN.{region}.Commercial.HVAC ({climate})'
-        frames.append(data.select([
-            pl.lit(branch).alias('Branch'),
-            pl.lit('Service').alias('Type'),
-            pl.lit(region).alias('Region'),
-            pl.lit('Commercial').alias('Sector'),
-            pl.lit('Buildings').alias('Service'),
-            pl.lit('').alias('Technology'),
-            pl.lit('service_request').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.lit(target).alias('Target'),
-            pl.col('source').alias('Source'),
-            pl.col('unit').alias('Unit'),
-            pl.col('year').cast(pl.String).alias('Year'),
-            pl.col('value').cast(pl.String).alias('Value'),
-            pl.Series('_order', [buildings_hvac_anchor + 0.6 + climate_idx * 0.01 + j * 1e-4
-                                 for j in range(n)], dtype=pl.Float64).alias('_order'),
-        ]))
+        intensity = means[activity]
 
-    buildings_cooling_data = commercial.filter(
-        (pl.col('region') == region) & (pl.col('variable') == 'buildings_cooling_service_request')
-    )
-    for climate_idx, climate in enumerate(buildings_cooling_data['category'].unique().to_list()):
-        if buildings_hvac_anchor is None:
-            break
-        data = buildings_cooling_data.filter(pl.col('category') == climate).sort('year')
-        n = len(data)
-        if n == 0:
-            continue
-        branch = f'CIMS.CAN.{region}.Commercial.Buildings'
-        target = f'CIMS.CAN.{region}.Commercial.Cooling'
-        frames.append(data.select([
-            pl.lit(branch).alias('Branch'),
-            pl.lit('Service').alias('Type'),
-            pl.lit(region).alias('Region'),
-            pl.lit('Commercial').alias('Sector'),
-            pl.lit('Buildings').alias('Service'),
-            pl.lit('').alias('Technology'),
-            pl.lit('service_request').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.lit(target).alias('Target'),
-            pl.col('source').alias('Source'),
-            pl.col('unit').alias('Unit'),
-            pl.col('year').cast(pl.String).alias('Year'),
-            pl.col('value').cast(pl.String).alias('Value'),
-            pl.Series('_order', [buildings_hvac_anchor + 0.7 + climate_idx * 0.01 + j * 1e-4
-                                 for j in range(n)], dtype=pl.Float64).alias('_order'),
-        ]))
-
-    hvac_cooling_data = commercial.filter(
-        (pl.col('region') == region) & (pl.col('variable') == 'hvac_cooling_service_request')
-    )
-    for category in hvac_cooling_data['category'].unique().to_list():
-        climate, tech = category.split('|')
-        service = f'HVAC ({climate})'
-
-        anchor = _find_tech_param_max_order(fixed, service, tech, 'fom')
-        if anchor is None:
+        mean_v = {
+            (branch, tech, target): float(sub['_v'].mean())
+            for (branch, tech, target), sub
+            in g.group_by(['Branch', 'Technology', 'Target'], maintain_order=True)
+        }
+        anchor_total = sum(
+            climate_fraction.get(_climate_of(target), 0.0) * v
+            for (_, tech, target), v in mean_v.items() if tech == HVAC_ANCHOR_TECH
+        )
+        if not anchor_total:
+            print(f'  No {HVAC_ANCHOR_TECH} HVAC request for {activity}; keeping fixed data')
             continue
 
-        data = hvac_cooling_data.filter(pl.col('category') == category).sort('year')
-        n = len(data)
-        if n == 0:
-            continue
+        for (branch, tech, target), v in mean_v.items():
+            first = g.filter(
+                (pl.col('Branch') == branch) & (pl.col('Technology') == tech) &
+                (pl.col('Target') == target)
+            )
+            order = float(first['_order'].min())
+            value = str(intensity * v / anchor_total)
+            if factors is not None:
+                weather_branch = _weather_node_name(branch, _climate_of(target))
+                if weather_branch not in weather_done:
+                    rows.extend(_build_weather_node_rows(
+                        fixed, branch, target, region, factors))
+                    weather_done.add(weather_branch)
+                target = weather_branch
+            for i, year in enumerate(range(DATA_START, PROJECTION_END + 1)):
+                rows.append({
+                    'Branch': branch, 'Type': 'Service', 'Region': region,
+                    'Sector': 'Commercial', 'Service': first['Service'][0],
+                    'Technology': tech,
+                    'Parameter': 'service_request',
+                    'Context': '', 'Sub_Context': '',
+                    'Target': target,
+                    'Source': source,
+                    'Unit': first['Unit'][0],
+                    'Year': str(year), 'Value': value,
+                    '_order': order + i * 1e-6,
+                })
+        replaced.extend(g['_order'].to_list())
 
-        branch = f'CIMS.CAN.{region}.Commercial.{service}'
-        target = f'CIMS.CAN.{region}.Commercial.Cooling'
-        frames.append(data.select([
-            pl.lit(branch).alias('Branch'),
-            pl.lit('Service').alias('Type'),
-            pl.lit(region).alias('Region'),
-            pl.lit('Commercial').alias('Sector'),
-            pl.lit(service).alias('Service'),
-            pl.lit(tech).alias('Technology'),
-            pl.lit('service_request').alias('Parameter'),
-            pl.lit('').alias('Context'),
-            pl.lit('').alias('Sub_Context'),
-            pl.lit(target).alias('Target'),
-            pl.col('source').alias('Source'),
-            pl.col('unit').alias('Unit'),
-            pl.col('year').cast(pl.String).alias('Year'),
-            pl.col('value').cast(pl.String).alias('Value'),
-            pl.Series('_order', [anchor + 0.5 + j * 1e-4 for j in range(n)],
-                      dtype=pl.Float64).alias('_order'),
-        ]))
-
-    return pl.concat(frames, how='diagonal_relaxed') if frames else _empty_frame()
+    return (pl.DataFrame(rows) if rows else _empty_frame()), replaced
 
 
 def _assemble_region(
@@ -638,34 +719,6 @@ def _assemble_region(
     )
     fixed = fixed.filter(~is_stripped_enduse_row)
 
-    # Strip the fixed-data Shell.<Activity> -> HVAC (Cold/Marine)
-    # service_request rows (per shell technology): these are now computed
-    # from CEUD (see compute_hvac_service_requests / _build_hvac_service_request_rows)
-    # instead of being hand-fixed constants. HVAC's own fuel-technology
-    # service_request rows (-> Methane Blend / Electricity / Motive Power)
-    # are untouched.
-    #
-    # NOTE: the Cooling NODE's own Std -> Electricity rate is intentionally
-    # LEFT AS THE ORIGINAL fixed_data constant here (not stripped) -- that's
-    # Cooling's own efficiency conversion, a separate concern from how much
-    # Cooling gets requested in the first place.
-    #
-    # HVAC (Cold/Marine) technologies' own service_request to Cooling *is*
-    # stripped: this used to be a flat "1" for every technology (Cooling
-    # tracking heat 1:1), now replaced by the CEUD-derived cooling/heat ratio
-    # (zero before SHELL_HVAC_COMPETITION_START_YEAR, since the Buildings ->
-    # Cooling direct request carries historical demand instead -- see
-    # compute_hvac_service_requests / _hvac_cooling_to_heat_ratio).
-    is_stripped_hvac_row = (
-        (pl.col('Parameter') == 'service_request') &
-        (pl.col('Target').str.ends_with('.HVAC (Cold)') |
-         pl.col('Target').str.ends_with('.HVAC (Marine)') |
-         ((pl.col('Branch').str.ends_with('.HVAC (Cold)') |
-           pl.col('Branch').str.ends_with('.HVAC (Marine)')) &
-          pl.col('Target').str.ends_with('.Cooling')))
-    )
-    fixed = fixed.filter(~is_stripped_hvac_row)
-
     # Anchor for the new end-use rows: right after the surviving Buildings ->
     # Shell row (where the stripped rows used to sit).
     buildings_shell_max = _find_max_order(fixed, 'Buildings', 'service_request',
@@ -684,10 +737,12 @@ def _assemble_region(
         commercial, region, start_order=buildings_shell_max + 0.5
     )
 
-    # Shell -> HVAC and Cooling -> Electricity service_request rows: each
-    # anchored to its own surviving technology's 'fom' row (see
-    # _build_hvac_service_request_rows).
-    hvac_rows = _build_hvac_service_request_rows(commercial, fixed, region)
+    # Shell.<Activity> -> HVAC service_request rows: the CEUD-derived
+    # historical mean intensity in place of the fixed-data constants, routed
+    # through a Weather node (see _build_hvac_intensity_rows).
+    hvac_rows, hvac_replaced = _build_hvac_intensity_rows(commercial, fixed, region)
+    if hvac_replaced:
+        fixed = fixed.filter(~pl.col('_order').is_in(hvac_replaced))
 
     # Price multipliers: just after Commercial header
     price_rows = _build_price_mult_rows(

@@ -191,17 +191,27 @@ def _map_to_cims(cer: pd.DataFrame, mapping: pd.DataFrame, energy_map: pd.DataFr
     # Exact match on sector + enduse
     merged_specific = cer.merge(specific_map, on=["cer_sector", "cer_enduse"], how="inner")
 
-    # Sector-only rows: sum all enduses for that sector, EXCEPT (sector, enduse)
-    # combinations already claimed by a specific mapping above. Without this
-    # exclusion, a specifically-mapped (sector, enduse) pair would double-count:
-    # once under its specific node, once again under the sector-wide fallback.
-    specific_keys = specific_map[["cer_sector", "cer_enduse"]].drop_duplicates()
-    cer_flagged = cer.merge(
-        specific_keys.assign(_has_specific=True),
-        on=["cer_sector", "cer_enduse"], how="left",
+    # Sector-only rows: sum all enduses for that sector, EXCEPT where the same
+    # (sector, enduse) is already mapped specifically to THE SAME node. That is
+    # the only real double count -- one node receiving the same demand twice,
+    # once specifically and once through the sector-wide entry (currently just
+    # .Agriculture, which maps both '' and 'miscellaneous' to itself).
+    #
+    # A specific mapping onto a DIFFERENT node is deliberately kept: those
+    # nodes are descendants of the sector node (e.g. .Commercial.HVAC (Cold)
+    # under .Commercial), so letting the sector entry keep that demand is what
+    # makes the sector node a rollup -- matching the model's own
+    # quantity_requested, which aggregates bottom-up over the same subtree.
+    # Excluding them on (sector, enduse) alone left sector nodes holding only
+    # unclaimed end-uses: AB .Commercial natural gas became 435 k instead of
+    # CER's 92.3 M for 2000.
+    specific_keys = specific_map[["cer_sector", "cer_enduse", "cims_node"]].drop_duplicates()
+    cer_sector_candidates = cer.merge(sector_map, on="cer_sector", how="inner")
+    cer_flagged = cer_sector_candidates.merge(
+        specific_keys.assign(_same_node=True),
+        on=["cer_sector", "cer_enduse", "cims_node"], how="left",
     )
-    cer_sector_only = cer_flagged[cer_flagged["_has_specific"].isna()].drop(columns="_has_specific")
-    merged_sector = cer_sector_only.merge(sector_map, on="cer_sector", how="inner")
+    merged_sector = cer_flagged[cer_flagged["_same_node"].isna()].drop(columns="_same_node")
 
     merged = pd.concat([merged_specific, merged_sector], ignore_index=True)
 
