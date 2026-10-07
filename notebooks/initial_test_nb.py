@@ -80,8 +80,9 @@ def _():
 
 @app.cell
 def _():
-    # model_pickle_path = "/path/to/your/model/here.pkl"
-    # or "C:\path\to\your\model.pkl"
+    # Set this to your own model pickle, e.g.
+    #   macOS/Linux: "/path/to/your/model.pkl"
+    #   Windows:     "C:/path/to/your/model.pkl"
 
     model_pickle_path = "C:/cims/results/Reference/model.pkl"
     return (model_pickle_path,)

@@ -60,6 +60,9 @@ def _():
 
 @app.cell
 def _():
+    # Set this to your own model pickle, e.g.
+    #   macOS/Linux: "/path/to/your/model.pkl"
+    #   Windows:     "C:/path/to/your/model.pkl"
     model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/TestData/modelPost_3regions_withCalibrationQuantFix.pickle"
     return (model_pickle_path,)
 

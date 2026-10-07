@@ -17,14 +17,15 @@ from CIMS.data_processing.utils.data_fill import interpolate_5year_to_annual, ba
 #    Example:
 #      python flatten_year_columns.py \
 #        "<repo>/data/raw_data/fixed_data/Agriculture" \
-#        "C:\Other Scripts" \
+#        "/path/to/output" \
 #        --year-min 2000 --year-max 2050 --target-start 2000 --target-end 2100 --target-step 1
+#    (macOS/Linux output folder shown; on Windows use e.g. "C:/path/to/output")
 #
 # 3. Or call main() directly from Python if you prefer programmatic use:
 #      from flatten_year_columns import main
 #      main(
 #          input_folder=r"<repo>/data/raw_data/fixed_data/Agriculture",
-#          output_folder=r"C:\Other Scripts",
+#          output_folder="/path/to/output",  # Windows: "C:/path/to/output"
 #          year_min=2000,
 #          year_max=2050,
 #          target_start=2000,

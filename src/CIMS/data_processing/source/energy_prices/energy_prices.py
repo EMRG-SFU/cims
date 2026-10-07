@@ -12,10 +12,6 @@ import numpy as np
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-# Robust path setup using __file__
-# File lives at:  C:\CIMS Data Processing\intermediate\energy_prices\
-# parent.parent.parent resolves to: C:\CIMS Data Processing\
-# src\ lives directly under there, so imports use the src. prefix.
 from CIMS.data_processing.utils.controls_conversions import (
     load_macro_indicators,
     convert_currency,
