@@ -137,6 +137,19 @@ Oil Sands Upgraders,,.Petroleum Crude.Production.Bitumen.Upgrading
 Passenger,,.Transportation Passenger
 Air Passenger,,.Transportation Passenger
 Foreign Passenger,,.Transportation Passenger
+Passenger,LDV Gasoline,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDV Diesel,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDV Electric,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDV Hybrid,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDT Gasoline,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDT Diesel,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDT Electric,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,LDT Hybrid,.Transportation Passenger.Passenger Vehicle Motors
+Passenger,Train Diesel,.Transportation Passenger.Intercity Rail
+Air Passenger,Plane Jet Fuel,.Transportation Passenger.Mode.Intercity Air
+Air Passenger,Plane Gasoline,.Transportation Passenger.Mode.Intercity Air
+Foreign Passenger,Plane Jet Fuel,.Transportation Passenger.Mode.International Air
+Foreign Passenger,Plane Gasoline,.Transportation Passenger.Mode.International Air
 Freight,,.Transportation Freight
 Air Freight,,.Transportation Freight
 Foreign Freight,,.Transportation Freight
