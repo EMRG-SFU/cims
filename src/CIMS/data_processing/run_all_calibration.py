@@ -22,6 +22,7 @@ MODULES = [
     f"{PACKAGE}.electricity_calibration",
     f"{PACKAGE}.ethanol_calibration",
     f"{PACKAGE}.forestry_calibration",
+    f"{PACKAGE}.fuels_calibration",
     f"{PACKAGE}.hydrogen_calibration",
     f"{PACKAGE}.industrial_minerals_calibration",
     f"{PACKAGE}.iron_and_steel_calibration",
