@@ -76,9 +76,11 @@ _TECH_SHARE_SERVICES: list[tuple[str, str, str, dict[str, str] | None, int | Non
 
 # Bottom-up roll-up chain: each parent branch suffix (after "CIMS.CAN.{region}")
 # gets a calibration_quantity_requested row equal to the sum of its children's
-# values (per Target fuel/Year), plus whatever value is already sitting directly
-# on the parent branch itself (e.g. an un-attributable CER residual, such as
-# Lubricants feedstock, which has no technology breakdown to drill into).
+# values (per Target fuel/Year). Where CER already maps a value directly onto
+# the parent branch (only .Transportation Freight itself), cer_resd_demand.py
+# has made it a full rollup of the sector -- children plus un-attributable
+# residuals such as Lubricants feedstock -- so that value is used as-is rather
+# than added on top of the children, which would double count.
 # Order matters: each level must be computed before the level above it, since
 # a parent's own children can include an already-rolled-up lower-level parent
 # (e.g. Freight.Land needs Freight.Land.Heavy to already be summed).
@@ -129,7 +131,7 @@ def _rollup_hierarchy(rows: pl.DataFrame) -> pl.DataFrame:
                 existing, on=['Region', 'Target', 'Year'],
                 how='outer', suffixes=('', '_existing'),
             )
-            summed['Value_f'] = summed['Value_f'].fillna(0) + summed['Value_f_existing'].fillna(0)
+            summed['Value_f'] = summed['Value_f_existing'].fillna(summed['Value_f'])
             summed = summed.drop(columns=['Value_f_existing'])
             summed['Branch'] = 'CIMS.CAN.' + summed['Region'] + parent_suffix
 

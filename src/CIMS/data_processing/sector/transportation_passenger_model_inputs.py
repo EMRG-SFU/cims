@@ -19,11 +19,12 @@ Energy price multipliers  (multiplier_price rows)
     processed_data/energy_prices/energy_price_multipliers.csv
     Inserted after the sector header (service_provide / competition).
 
-Mode service_request  (Urban / Intercity Land / Intercity Air fractions)
-    pipeline  →  variables 'Mode.Urban', 'Mode.Intercity Land', 'Mode.Intercity Air'
+Mode service_request  (Urban / Intercity Land / Intercity Air / International Air fractions)
+    pipeline  →  variables 'Mode.Urban', 'Mode.Intercity Land', 'Mode.Intercity Air',
+                 'Mode.International Air'
     Inserted after the Mode service header (service_provide / competition).
 
-Urban / Intercity Land / Intercity Air tech market_share_total  (year 2000 only)
+Urban / Intercity Land / Intercity Air / International Air tech market_share_total  (year 2000 only)
     Spliced after the 'lifetime' row for each technology in those services.
 
 Passenger Vehicles tech market_share_total (year 2000) + output (all years)
@@ -108,14 +109,6 @@ INTERCITY_LAND_CAT_TO_TECH: dict[str, str] = {
     'Passenger Vehicle': 'Passenger Vehicle Intercity',
 }
 
-# Gasoline Passenger Vehicle Motors technology → its diesel equivalent.
-DIESEL_EQUIVALENTS: dict[str, str] = {
-    'Gasoline_Low Efficiency':  'Diesel_Low Efficiency',
-    'Gasoline_Medium Efficiency':  'Diesel_Medium Efficiency',
-    'Gasoline_High Efficiency': 'Diesel_High Efficiency',
-}
-
-
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
@@ -161,53 +154,6 @@ def _techs_with_existing_output(fixed: pl.DataFrame, service_name: str) -> set[s
         (pl.col('Parameter').fill_null('') == 'output')
     )
     return set(fixed.filter(mask)['Technology'].unique().to_list())
-
-
-def _add_diesel_equivalents(fixed: pl.DataFrame, region: str) -> pl.DataFrame:
-    """
-    Insert Diesel Low/Medium/High technology blocks into the
-    Passenger Vehicle Motors service, each immediately after its Gasoline
-    counterpart (Gasoline_Low Efficiency → Diesel_Low Efficiency, etc.).
-
-    Every row of the Gasoline block is copied verbatim except the
-    service_request Target, which is repointed from
-    CIMS.CAN.{region}.Fuel Blends.Gasoline_Transportation to
-    CIMS.CAN.{region}.Fuel Blends.Diesel_Transportation.
-    """
-    fixed = fixed.cast({'_order': pl.Float64})
-    gasoline_target = f'CIMS.CAN.{region}.Fuel Blends.Gasoline_Transportation'
-    diesel_target = f'CIMS.CAN.{region}.Fuel Blends.Diesel_Transportation'
-
-    diesel_blocks: list[pl.DataFrame] = []
-    for gas_tech, diesel_tech in DIESEL_EQUIVALENTS.items():
-        block = fixed.filter(
-            (pl.col('Service').fill_null('') == 'Passenger Vehicle Motors') &
-            (pl.col('Technology').fill_null('') == gas_tech)
-        ).sort('_order')
-        if len(block) == 0:
-            continue
-        max_order = float(block['_order'].max())
-        diesel_block = (
-            block.with_row_index('_local')
-            .with_columns([
-                pl.lit(diesel_tech).alias('Technology'),
-                pl.when(
-                    (pl.col('Parameter') == 'service_request') &
-                    (pl.col('Target') == gasoline_target)
-                )
-                .then(pl.lit(diesel_target))
-                .otherwise(pl.col('Target'))
-                .alias('Target'),
-                (pl.lit(max_order) + 0.5 + pl.col('_local').cast(pl.Float64) * 1e-4)
-                .alias('_order'),
-            ])
-            .drop('_local')
-        )
-        diesel_blocks.append(diesel_block)
-
-    if not diesel_blocks:
-        return fixed
-    return pl.concat([fixed, *diesel_blocks], how='diagonal_relaxed').sort('_order')
 
 
 def _build_total_kpkm_rows(tp: pl.DataFrame, region: str,
@@ -281,7 +227,8 @@ def _build_price_mult_rows(multipliers: pl.DataFrame, region: str,
 def _build_mode_sr_rows(tp: pl.DataFrame, region: str,
                          start_order: float) -> pl.DataFrame:
     """
-    service_request rows for Urban, Intercity Land, and Intercity Air mode shares.
+    service_request rows for Urban, Intercity Land, Intercity Air and International
+    Air mode shares.
 
     These rows come from the Mode service and point to each transport-mode sub-service.
     Rows are sorted by variable then year so all Urban years precede all Intercity years.
@@ -293,6 +240,8 @@ def _build_mode_sr_rows(tp: pl.DataFrame, region: str,
             f'CIMS.CAN.{region}.Transportation Passenger.Mode.Intercity Land',
         'Mode.Intercity Air':
             f'CIMS.CAN.{region}.Transportation Passenger.Mode.Intercity Air',
+        'Mode.International Air':
+            f'CIMS.CAN.{region}.Transportation Passenger.Mode.International Air',
     }
     data = (
         tp.filter(
@@ -697,6 +646,7 @@ def _assemble_region(
     b_urban = f'{b_mode}.Urban'
     b_il    = f'{b_mode}.Intercity Land'
     b_ia    = f'{b_mode}.Intercity Air'
+    b_ina   = f'{b_mode}.International Air'
     b_pv    = f'CIMS.CAN.{region}.Transportation Passenger.Passenger Vehicles'
     b_pvm   = f'CIMS.CAN.{region}.Transportation Passenger.Passenger Vehicle Motors'
     b_pb    = f'CIMS.CAN.{region}.Transportation Passenger.Transit.Public Bus'
@@ -712,10 +662,6 @@ def _assemble_region(
             (pl.col('Technology').fill_null('') == '')
         )
     )
-
-    # Insert Diesel Low/Medium/High right after their Gasoline
-    # counterparts in Passenger Vehicle Motors.
-    fixed = _add_diesel_equivalents(fixed, region)
 
     # ── insertion-point discovery ──────────────────────────────────────────────
     sector_competition_max  = _find_max_order(fixed, '', 'competition') or 0.0
@@ -767,6 +713,10 @@ def _assemble_region(
     ia_mst = _build_mst_rows(
         tp, fixed, region,
         variable='Mode.Intercity Air', service_name='Intercity Air', branch=b_ia,
+    )
+    ina_mst = _build_mst_rows(
+        tp, fixed, region,
+        variable='Mode.International Air', service_name='International Air', branch=b_ina,
     )
 
     # 7. Passenger Vehicles: market_share_total + per-technology output
@@ -834,6 +784,7 @@ def _assemble_region(
         urban_mst,
         il_mst,
         ia_mst,
+        ina_mst,
         pv_mst, pv_out,
         pvm_mst, pvm_out,
         pb_mst, pb_out,

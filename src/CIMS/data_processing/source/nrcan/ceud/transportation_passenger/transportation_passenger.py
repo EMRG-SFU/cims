@@ -604,6 +604,13 @@ def load_projection_params(assumptions_csv: Path = ASSUMPTIONS_CSV,
     total_energy = params.pop('_air_total_energy_pj',  pd.Series(dtype=float))
     total_pkm    = params.pop('_air_total_pkm_mpkm',   pd.Series(dtype=float))
     if not total_energy.empty and not total_pkm.empty:
+        # Total (domestic + international) intensity, used to get each province's
+        # total air pkm; international air pkm = total - domestic.
+        total_intensity = (
+            total_energy / total_pkm.reindex(total_energy.index).replace(0, np.nan) * 1e3
+        ).dropna()
+        if not total_intensity.empty:
+            params['air_total_intensity_mj_per_kpkm'] = total_intensity
         e_share = aviation_domestic.get('CAN', 1.0)
         p_share = params.get('aviation_pkm_share_domestic', 1.0)
         if p_share > 0:
@@ -977,7 +984,18 @@ def extract_air_kpkm(province: str, tables: dict, params: dict) -> list[pl.DataF
     # Apply domestic share to isolate domestic-only aviation energy
     energy_domestic = energy.reindex(common) * dom_share
     pkm = (energy_domestic * 1e6 / intensity.reindex(common)).dropna()
-    return [_long(province, 'air_kpkm', '', 'output', 'kpkm', pkm)]
+    frames = [_long(province, 'air_kpkm', '', 'output', 'kpkm', pkm)]
+
+    # International air pkm = total provincial air pkm (all aviation energy at the
+    # national total intensity) minus the domestic air pkm above.
+    total_intensity = params.get('air_total_intensity_mj_per_kpkm', pd.Series(dtype=float))
+    common_t = sorted(set(common) & set(total_intensity.index))
+    if common_t:
+        total_pkm = energy.reindex(common_t) * 1e6 / total_intensity.reindex(common_t)
+        intl_pkm = (total_pkm - pkm.reindex(common_t)).clip(lower=0).dropna()
+        if not intl_pkm.empty:
+            frames.append(_long(province, 'intl_air_kpkm', '', 'output', 'kpkm', intl_pkm))
+    return frames
 
 
 # ==============================================================================
@@ -1077,6 +1095,7 @@ def apply_extensions(
         'intercity_bus_kpkm':  ('', 'Intercity Bus'),
         'rail_kpkm':           ('intercity', 'Rail'),
         'air_kpkm':            ('', 'Aviation'),
+        'intl_air_kpkm':       ('', 'Aviation'),
     }
 
     full: dict[str, pd.Series] = {}
@@ -1194,6 +1213,7 @@ def apply_extensions(
     moto_s   = full['motorcycle_kpkm']
     rail_s   = full['rail_kpkm']
     air_s    = full['air_kpkm']
+    intl_s   = full['intl_air_kpkm']
 
     walk_cycle_s = pd.Series(np.nan, index=all_years, dtype=float)
     if (walk_cycle_share and urban_vehicle_share
@@ -1215,7 +1235,7 @@ def apply_extensions(
     full['walk_cycle_urban_kpkm'] = walk_cycle_s
 
     all_mode_series = [car_s, lt_s, school_s, transit_s, icbus_s,
-                       moto_s, rail_s, air_s, walk_cycle_s]
+                       moto_s, rail_s, air_s, intl_s, walk_cycle_s]
     available = [s for s in all_mode_series if s.notna().any()]
 
     total_s = pd.Series(0.0, index=all_years, dtype=float)
@@ -1229,9 +1249,12 @@ def apply_extensions(
     # ------------------------------------------------------------------
     # Intercity land includes bus + rail + LDV intercity portion.
     # Motorcycle is treated as entirely urban (consistent with Step 5 pv_il formula).
-    # Urban is the residual, so urban + intercity_land + intercity_air = 1.
+    # Urban is the residual, so urban + intercity_land + intercity_air
+    # + international_air = 1. International air is added to the total rather than
+    # carved out of it, so the other modes keep their absolute pkm.
     _ldv_all = (car_s.reindex(all_years).fillna(0) + lt_s.reindex(all_years).fillna(0))
     air_num  = air_s.reindex(all_years).fillna(0)
+    intl_num = intl_s.reindex(all_years).fillna(0)
     land_num = (icbus_s.reindex(all_years).fillna(0)
                 + rail_s.reindex(all_years).fillna(0)
                 + _ldv_all * (1 - urban_vehicle_share))
@@ -1239,11 +1262,13 @@ def apply_extensions(
 
     intercity_air_share  = (air_num  / total_nn).dropna()
     intercity_land_share = (land_num / total_nn).dropna()
+    international_air_share = (intl_num / total_nn).dropna()
 
     common_modes = sorted(set(intercity_air_share.index) & set(intercity_land_share.index))
     if common_modes:
         urban_share = (1 - intercity_air_share.reindex(common_modes)
-                       - intercity_land_share.reindex(common_modes)).dropna()
+                       - intercity_land_share.reindex(common_modes)
+                       - international_air_share.reindex(common_modes).fillna(0)).dropna()
     else:
         urban_share = pd.Series(dtype=float)
 
@@ -1423,6 +1448,7 @@ def apply_extensions(
         ('Mode.Urban',          urban_share),
         ('Mode.Intercity Land', intercity_land_share),
         ('Mode.Intercity Air',  intercity_air_share),
+        ('Mode.International Air', international_air_share),
     ]:
         if not s.empty:
             frames.append(_long(province, var, '', 'service_request', '%', s))
@@ -1459,11 +1485,13 @@ def apply_extensions(
             frames.append(_long(province, 'Mode.Intercity Land', cat,
                                 'market_share_total', '%', s_ext))
 
-    # --- Air intercity tech shares (Mode.Intercity Air, extended to 2100) ---
-    for cat, default_val in AIR_TECH_DEFAULTS.items():
-        frames.append(_long(province, 'Mode.Intercity Air', cat,
-                            'market_share_total', '%',
-                            pd.Series(default_val, index=all_years)))
+    # --- Air tech shares (Mode.Intercity Air and Mode.International Air share the
+    # same technologies; extended to 2100) ---
+    for air_var in ('Mode.Intercity Air', 'Mode.International Air'):
+        for cat, default_val in AIR_TECH_DEFAULTS.items():
+            frames.append(_long(province, air_var, cat,
+                                'market_share_total', '%',
+                                pd.Series(default_val, index=all_years)))
 
     # --- Passenger Vehicles size shares (historical) ---
     for cat, s in [
@@ -1827,12 +1855,13 @@ def _split_bct(bct_df: pl.DataFrame,
     Split a BCT-combined DataFrame into separate BC, YT, NT, NU DataFrames.
 
     Rows with unit 'k*pkm' or 'k*vkm' are absolute quantities and are scaled
-    by each region's population share.  All other rows (shares, fractions,
-    averages) are copied unchanged — the technology mix is assumed identical
-    across the BCT region.
+    by each region's population share — except `output` rows, which are
+    per-vehicle averages (Passenger Vehicles avg km per vehicle, also in
+    'k*vkm').  All other rows (shares, fractions, averages) are copied
+    unchanged — the technology mix is assumed identical across the BCT region.
     """
     # Scale absolute quantities; copy ratios / shares / averages unchanged.
-    scale_mask = pl.col('unit').is_in(['k*pkm', 'k*vkm'])
+    scale_mask = pl.col('unit').is_in(['k*pkm', 'k*vkm']) & (pl.col('parameter') != 'output')
 
     # Build a Polars share lookup for joining
     def _share_frame(prov: str) -> pl.DataFrame:
