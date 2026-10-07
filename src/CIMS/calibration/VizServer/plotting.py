@@ -36,7 +36,6 @@ def plotOverTime_stack(res_obj, allYears=None, showlegend=True):
         # to the plotly area functions.
         
         dates = [datetime(int(yy), 1, 1) for yy in allYears]
-        values = range(numVals)
         df_list = []
         for n,vals in res_obj.items():
             #ax.plot(dates, vals, label=n, linewidth=4)
@@ -63,7 +62,7 @@ def plotOverTime_stack(res_obj, allYears=None, showlegend=True):
         #return(allDf)
 
         fig = px.area(allDf, x='dates', y='vals', color='name', markers=True)
-        fig.update_trace(showlegend=showlegend)
+        fig.update_traces(showlegend=showlegend)
         return((fig, allDf))
 
 
@@ -77,7 +76,6 @@ def plotOverTime_line(fig, ax, res_obj, allYears=None ):  # See `res_base` and `
         # If allYears given, make sure it's the length of the implicit number of years in res_obj
         assert len(allYears)==lenCheck1[0], "provided `allYears` not same length as param year val arrays"
         dates = [datetime(int(yy), 1, 1) for yy in allYears]
-        values = range(numVals)
         for n,vals in res_obj.items():
             ax.plot(dates, vals, label=n, linewidth=4)
         ax.xaxis.set_major_locator(mdates.YearLocator(5))

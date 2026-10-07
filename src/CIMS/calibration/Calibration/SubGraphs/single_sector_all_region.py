@@ -14,7 +14,7 @@ import pickle
 import gzip
 import copy
 
-from Calibration.SubGraphs.graphFunctions import getSubgraph
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getSubgraph
 
 def get_all_region_names(model):
     """

@@ -16,7 +16,7 @@ import re
 import pickle
 import gzip
 
-from Calibration.SubGraphs.graphFunctions import getSubgraph
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getSubgraph
 
 def get_custom_model():
     pass

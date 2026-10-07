@@ -7,8 +7,8 @@ import re
 
 import pandas as pd
 
-from Calibration.SubGraphs.graphFunctions import getDescendants
-from Calibration.Data.node_info import list_years, list_techs
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getDescendants
+from CIMS.calibration.Calibration.Data.node_info import list_years, list_techs
 
 COLUMNS = ["Branch", "Type", "Region", "Sector", "Service", "Technology", "Parameter",
            "Context", "Sub_Context", "Target", "Source", "Unit", "Year", "Value"]

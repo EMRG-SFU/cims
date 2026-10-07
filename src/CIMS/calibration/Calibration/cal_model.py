@@ -9,8 +9,8 @@ import re
 from collections.abc import Iterable
 import types
 
-import Calibration.utility_functions as UF
-import Calibration.Plotting as plotting
+import CIMS.calibration.Calibration.utility_functions as UF
+import CIMS.calibration.Calibration.Plotting as plotting
 
 def find_calibration_nodes(g, searchStr = r'calibration', retAll=False):
     ret = UF.findTechsWithParam_anyYears(g, searchStr)

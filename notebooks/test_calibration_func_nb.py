@@ -29,32 +29,32 @@ with app.setup:
     def vv(*args):
         return(mo.vstack(args))
 
-    import VizServer
+    from CIMS.calibration import VizServer
 
-    from Calibration import bind_data
+    from CIMS.calibration.Calibration import bind_data
 
 
-    from Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import optimize_total_market_share_fic
 
-    from Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
+    from CIMS.calibration.Calibration.CIMS_Functions.aggregation_traversal import aggregation_traversal
 
-    import Calibration.CIMS_Functions as CIMS_Functions
+    import CIMS.calibration.Calibration.CIMS_Functions as CIMS_Functions
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Data.parameter_values as parameter_values
-    import Calibration.Data.emissions as emissions
-    import Calibration.Data.quantities as requestedQuantities
-    import Calibration.Data.market_share as market_share
-    import Calibration.Data.FICs as FICs
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Data.parameter_values as parameter_values
+    import CIMS.calibration.Calibration.Data.emissions as emissions
+    import CIMS.calibration.Calibration.Data.quantities as requestedQuantities
+    import CIMS.calibration.Calibration.Data.market_share as market_share
+    import CIMS.calibration.Calibration.Data.FICs as FICs
 
-    from Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
-    from Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
+    from CIMS.calibration.Calibration.SubGraphs.get_subGraph_model import get_subGraph_model
+    from CIMS.calibration.Calibration.SubGraphs.get_subGraph_model import write_subGraph_pickle
 
-    from Calibration.Utility.write_fics import write_fics
+    from CIMS.calibration.Calibration.Utility.write_fics import write_fics
 
-    import Calibration.Plotting.plot_ms_for_node as plotMS
-    import Calibration.Plotting.plot_emissions_for_node as plotEmissions
-    import Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
+    import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
+    import CIMS.calibration.Calibration.Plotting.plot_emissions_for_node as plotEmissions
+    import CIMS.calibration.Calibration.Plotting.plot_requestedQuantities_for_node as plotRequestedQuantities
 
 
 @app.cell(hide_code=True)
@@ -75,8 +75,9 @@ def _():
 
 @app.cell
 def _():
-    # model_pickle_path = "/path/to/your/model/here.pkl"
-    # or "C:\path\to\your\model.pkl"
+    # Set this to your own model pickle, e.g.
+    #   macOS/Linux: "/path/to/your/model.pkl"
+    #   Windows:     "C:/path/to/your/model.pkl"
     model_pickle_path = "/Users/matt/Projects/CIMS/Calibration/CIMS_Calibration_Folder/TestData/model_3regions_withCalibration_abres.pickle"
     #model_pickle_path = "C:/cims/results/Reference/model.pkl"
     return (model_pickle_path,)

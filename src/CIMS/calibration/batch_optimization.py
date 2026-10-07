@@ -11,16 +11,16 @@ with app.setup:
     import gzip
     import time
 
-    import Calibration.Data.node_info as node_info
-    import Calibration.Plotting.plot_ms_for_node as plotMS
-    from Calibration.Optimization.optimize_ms import (
+    import CIMS.calibration.Calibration.Data.node_info as node_info
+    import CIMS.calibration.Calibration.Plotting.plot_ms_for_node as plotMS
+    from CIMS.calibration.Calibration.Optimization.optimize_ms import (
         optimize_total_market_share_fic,
         optimize_total_market_share_fic_lifetime,
         run_stage1_nodes_parallel,
         optimize_on_slice,
     )
-    from Calibration.Utility.write_fics import write_fics
-    from Calibration.Utility.write_lifetimes import write_lifetimes
+    from CIMS.calibration.Calibration.Utility.write_fics import write_fics
+    from CIMS.calibration.Calibration.Utility.write_lifetimes import write_lifetimes
 
 
 @app.cell(hide_code=True)

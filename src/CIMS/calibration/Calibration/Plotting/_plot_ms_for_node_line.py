@@ -7,7 +7,7 @@ from datetime import datetime
 import pandas as pd
 import re
 
-import Calibration.Data.node_info as node_info
+import CIMS.calibration.Calibration.Data.node_info as node_info
 
 def plotOverTime_line(res_obj, allYears=None, showlegend=True):
     lenCheck1 = [len(a) for a in res_obj.values()]

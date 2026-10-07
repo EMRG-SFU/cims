@@ -6,7 +6,7 @@ import json
 import gzip
 import copy
 
-from Calibration.SubGraphs.graphFunctions import getSubgraph
+from CIMS.calibration.Calibration.SubGraphs.graphFunctions import getSubgraph
 
 def get_subGraph_model(model, nodeName):
 

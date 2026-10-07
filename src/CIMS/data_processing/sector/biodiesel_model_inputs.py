@@ -21,17 +21,15 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 
 import polars as pl
 
 # ── path setup ─────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_file
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 
 # ── configuration ──────────────────────────────────────────────────────────────
@@ -59,28 +57,9 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
 
 # ── helpers ────────────────────────────────────────────────────────────────────
 
-def _read_flattened_fixed(template_region: str, output_region: str) -> pl.DataFrame:
-    """
-    Flatten one fixed biodiesel CSV and return as a row-indexed DataFrame.
-
-    When output_region differs from template_region (AT sub-regions, BC
-    territories) the region code is substituted throughout Branch / Target /
-    Region, and Marine rows are dropped for BC territory regions.
-    """
-    fixed_path = FIXED_INPUT_DIR / f'biodiesel_{template_region}.csv'
-    with tempfile.TemporaryDirectory() as tmp:
-        out_file = Path(tmp) / f'biodiesel_{template_region}.csv'
-        _flatten_mod.process_file(
-            input_path=fixed_path,
-            output_path=out_file,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR["cer"],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        df = pl.read_csv(out_file, infer_schema_length=0)
-
+def _read_flattened_fixed(template_region: str) -> pl.DataFrame:
+    """Flatten one fixed biodiesel CSV, force is_supply rows to TRUE, and return a row-indexed DataFrame."""
+    df = read_fixed_data_file(FIXED_INPUT_DIR / f'biodiesel_{template_region.lower()}.csv')
     df = df.with_columns(
         pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('')).otherwise(pl.col('Context')).alias('Context'),
         pl.when(pl.col('Parameter') == 'is_supply').then(pl.lit('TRUE')).otherwise(pl.col('Value')).alias('Value'),
@@ -187,7 +166,7 @@ def main() -> dict[str, pl.DataFrame]:
     results: dict[str, pl.DataFrame] = {}
 
     for region, template in sorted(FIXED_TEMPLATE.items()):
-        fixed_path = FIXED_INPUT_DIR / f'biodiesel_{template}.csv'
+        fixed_path = FIXED_INPUT_DIR / f'biodiesel_{template.lower()}.csv'
         if not fixed_path.exists():
             print(f'  ⚠  Skipping {region} — fixed data template not found: {fixed_path.name}')
             continue
@@ -195,7 +174,7 @@ def main() -> dict[str, pl.DataFrame]:
         try:
             print(f'\n{region} (template: {template}):')
             print('  Flattening fixed data...')
-            fixed = _read_flattened_fixed(template, region)
+            fixed = _read_flattened_fixed(template)
 
             print('  Assembling...')
             output = _assemble_region(fixed, multipliers, region)

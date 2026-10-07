@@ -26,14 +26,12 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 
 import pandas as pd
 import polars as pl
 
 # ── path setup ────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_folder
 
 import CIMS.data_processing.source.activity.emissions_drivers as _emissions_mod
 
@@ -41,8 +39,8 @@ import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _en
 
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_resd_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
-from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
+from CIMS.data_processing.utils.output_builder import write_per_region_csvs
 from CIMS.data_processing.utils.feedstock_demand import build_feedstock_rows_all_regions
 
 # ── configuration ─────────────────────────────────────────────────────────────
@@ -57,36 +55,6 @@ OUTPUT_COLS = [
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed_data() -> pl.DataFrame:
-    """
-    Flatten all Construction fixed CSVs and return as a combined DataFrame.
-
-    Wide year columns (2000, 2005, …, 2050) are expanded to annual rows
-    covering 2000–2100, with a Comments column dropped.
-    market_share_total rows are reduced to a single year-2000 row.
-
-    The fixed data encodes the full Construction→Transport→{Diesel,Electric}
-    structure, including the constant service_request of 1 from the
-    Construction sector node to its Transport sub-service.
-    """
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        _flatten_mod.main(
-            input_folder=FIXED_INPUT_DIR,
-            output_folder=tmp_path,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR["cer"],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        frames = [
-            pl.read_csv(f, infer_schema_length=0)
-            for f in sorted(tmp_path.rglob('*.csv'))
-        ]
-    return pl.concat(frames)
-
 
 def _build_emission_rows(emissions: pl.DataFrame) -> pl.DataFrame:
     """
@@ -192,7 +160,10 @@ def main() -> pl.DataFrame:
     print('=' * 60)
 
     print('\nFlattening fixed structural data...')
-    fixed = _read_flattened_fixed_data()
+    # The fixed data encodes the full Construction→Transport→{Diesel,Electric}
+    # structure, including the constant service_request of 1 from the
+    # Construction sector node to its Transport sub-service.
+    fixed = read_fixed_data_folder(FIXED_INPUT_DIR)
     print(f'  Rows: {len(fixed):,}')
 
     print('Building emission rows...')
@@ -233,14 +204,7 @@ def main() -> pl.DataFrame:
         .select(OUTPUT_COLS)
     )
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    regions = output['Region'].drop_nulls().unique().sort().to_list()
-    for region in regions:
-        region_df = output.filter(pl.col('Region') == region)
-        out_path = OUTPUT_DIR / f'construction_{region.lower()}.csv'
-        region_df = collapse_constant_years(region_df)
-        region_df.write_csv(out_path)
-        print(f'  Wrote {len(region_df):,} rows → {out_path.name}')
+    regions = write_per_region_csvs(output, OUTPUT_DIR, 'construction', collapse_years=True)
 
     print(f'\n✅ Construction model inputs complete')
     print(f'   Total rows:  {len(output):,}')

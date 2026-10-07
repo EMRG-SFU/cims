@@ -7,7 +7,7 @@ from collections.abc import Iterable
 from functools import reduce
 import types
 
-import Calibration.Data.node_info as node_info
+import CIMS.calibration.Calibration.Data.node_info as node_info
 
 #import Calibration.utility_functions as UF
 #import Calibration.plotting as plotting

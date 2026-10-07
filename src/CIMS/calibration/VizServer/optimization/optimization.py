@@ -10,7 +10,7 @@ import numpy as np
 import scipy
 import scipy.optimize as SO
 
-import utility_functions as uf
+from .. import utility_functions as uf
 import CIMS.lcc_calculation as LCC
 
 

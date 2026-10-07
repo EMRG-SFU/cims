@@ -505,7 +505,7 @@ def _(model, results_path):
     results_df = CIMS.log_model(
        model=model,
        output_file = f"{results_path}/results_general.csv",
-       parameter_file="results/results_general.txt",
+       parameter_file="data/config/results_general.txt",
        ensure_dir=True
     )
     return
@@ -517,7 +517,7 @@ def _(model, results_path):
     tech_results_df = CIMS.log_model(
        model=model,
        output_file=f'{results_path}/results_tech.csv',
-       parameter_file = "results/results_tech.txt",
+       parameter_file = "data/config/results_tech.txt",
        ensure_dir=True
     )
     return

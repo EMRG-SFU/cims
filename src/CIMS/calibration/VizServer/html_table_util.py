@@ -1,8 +1,3 @@
-import jinja2
-import string
-import os, os.path
-import sys
-import pickle
 import polars as pl
 
 
@@ -18,6 +13,26 @@ def numFormat(x):
     """
     return f"{x:.2f}"  
 
+def isInt(v):
+    """
+    Any nodeDict key that can be parsed as an integer we treat as a year.
+    """
+    try:
+        thing = int(v)
+    except Exception as e:
+        return(False)
+    return(True)
+
+def getMaybe(ff, onError=lambda e: None):
+    """
+    Call `ff` and return its result. If it raises, return `onError(exception)` instead,
+    which is None unless the caller asks for something else to show in the table cell.
+    """
+    try:
+        return(ff())
+    except Exception as e:
+        return(onError(e))
+
 def make_emissions_table_context(node_name, nodeDict, emissions_key="emissions_total_cumul_net"):
     """
     `nodeDict` is the dict structure that's stored in the nodes of the model graph.
@@ -26,19 +41,7 @@ def make_emissions_table_context(node_name, nodeDict, emissions_key="emissions_t
     returned by a different function. This one does include the technology NAMES though.
     """
 
-    # Any nodeDict key that can be parsed as an integer we treat as a year.
-    def isInt(v):
-        try:
-            thing = int(v)
-        except Exception as e:
-            return(False)
-        return(True)
-
     yearHeaders = [a for a in nodeDict.keys() if isInt(a)]
-    otherHeaders = [a for a in nodeDict.keys() if not isInt(a)]
-
-    # These are all the rowNames ever found in any year, as a set
-    rowNames = set(reduce(lambda x,y: x+y, [[a for a in nodeDict[yy].keys()] for yy in yearHeaders]))
 
     # Here we're just interested in the `emissions_key` rowName (and this extra structure is the reason that Emissions (and Quantities)
     # always showed up as an error in the 
@@ -62,16 +65,7 @@ def make_emissions_table_context(node_name, nodeDict, emissions_key="emissions_t
 
 def make_requestedQuantities_table_context(node_name, nodeDict, rqKey="quantity_requested"):
 
-    # Any nodeDict key that can be parsed as an integer we treat as a year.
-    def isInt(v):
-        try:
-            thing = int(v)
-        except Exception as e:
-            return(False)
-        return(True)
-
     yearHeaders = [a for a in nodeDict.keys() if isInt(a)]
-    otherHeaders = [a for a in nodeDict.keys() if not isInt(a)]
 
     allQDict = {yy:nodeDict[yy][rqKey]["year_value"].requested_quantities for yy in yearHeaders}
 
@@ -95,16 +89,7 @@ def make_service_table_context(node_name, nodeDict, filtParams=None):
     returned by a different function. This one does include the technology NAMES though.
     """
 
-    # Any nodeDict key that can be parsed as an integer we treat as a year.
-    def isInt(v):
-        try:
-            thing = int(v)
-        except Exception as e:
-            return(False)
-        return(True)
-
     yearHeaders = [a for a in nodeDict.keys() if isInt(a)]
-    otherHeaders = [a for a in nodeDict.keys() if not isInt(a)]
 
     rowNames = set(reduce(lambda x,y: x+y, [[a for a in nodeDict[yy].keys()] for yy in yearHeaders]))
 
@@ -113,14 +98,7 @@ def make_service_table_context(node_name, nodeDict, filtParams=None):
     else:
         rowNames = sorted(rowNames)
 
-    def getMaybe(ff):
-        try:
-            return(ff())
-        except Exception as e:
-            #return(None)
-            return('Error')
-
-    tbl = [[str(rr)]+[getMaybe(lambda: nodeDict[yy][rr]['year_value']) for yy in yearHeaders] for rr in rowNames]
+    tbl = [[str(rr)]+[getMaybe(lambda: nodeDict[yy][rr]['year_value'], onError=lambda e: 'Error') for yy in yearHeaders] for rr in rowNames]
 
     return({'colNames' : ['paramName'] + yearHeaders,
             'rows' : tbl,
@@ -132,25 +110,10 @@ def make_service_table_context(node_name, nodeDict, filtParams=None):
 def make_tech_table_context(node_name, tech_name, nodeDict):
     """
     """
-    
-    def isInt(v):
-        try:
-            thing = int(v)
-        except Exception as e:
-            return(False)
-        return(True)
-
     yearHeaders = [a for a in nodeDict.keys() if isInt(a)]
-    otherHeaders = [a for a in nodeDict.keys() if not isInt(a)]
 
     rowNames = set(reduce(lambda x,y: x+y, [[a for a in nodeDict[yy]['technologies'][tech_name].keys()] for yy in yearHeaders]))
     rowNames = sorted(rowNames)
-
-    def getMaybe(ff):
-        try:
-            return(ff())
-        except Exception as e:
-            return(None)
 
     tbl = [[str(rr)] + [getMaybe(lambda: nodeDict[yy]['technologies'][tech_name][rr]['year_value']) for yy in yearHeaders] for rr in rowNames]
 
@@ -169,12 +132,6 @@ def make_fic_table_context(model, node_name):
     function can easily use to build the abovementioned table. This is pretty much identical to how the other functions in this
     module work for making the service and tech tables.
     """
-    def getMaybe(ff):
-        try:
-            return(ff())
-        except Exception as e:
-            #return(None)
-            return(f"Error: {e}")
     graph = model.graph
 
     allTechNames = uf.getAllTechNames(graph, node_name)
@@ -182,7 +139,7 @@ def make_fic_table_context(model, node_name):
 
     rowNames = sorted(allTechNames)
     colNames = ['Technology'] + allYearVals
-    tbl = [[str(rr)] + [getMaybe(lambda: model.get_param('fic', node_name, year=yv, tech=rr)) for yv in allYearVals] for rr in rowNames]
+    tbl = [[str(rr)] + [getMaybe(lambda: model.get_param('fic', node_name, year=yv, tech=rr), onError=lambda e: f"Error: {e}") for yv in allYearVals] for rr in rowNames]
 
     return({'colNames': colNames,
             'rows': tbl,
@@ -194,14 +151,6 @@ def make_tech_table_context2(graph, node_name, filtParams=None):
     This version takes in the whole networkx graph in `graph`, and uses the `tech_name` and associated `node_name`
     to get the tech information needed for rendering the template.
     """
-    
-    def isInt(v):
-        try:
-            thing = int(v)
-        except Exception as e:
-            return(False)
-        return(True)
-
     # Temporarily `node_name is coming in as the full address of the tech, so strip off the last element (tech name), and 
     # get the corresponding service node with what's left.
     node_name2 = ".".join(node_name.split(".")[0:-1])
@@ -211,7 +160,6 @@ def make_tech_table_context2(graph, node_name, filtParams=None):
     nodeDict = graph.nodes.get(node_name2)
 
     yearHeaders = [a for a in nodeDict.keys() if isInt(a)]
-    otherHeaders = [a for a in nodeDict.keys() if not isInt(a)]
 
     rowNames = set(reduce(lambda x,y: x+y, [[a for a in nodeDict[yy]['technologies'][tech_name].keys()] for yy in yearHeaders]))
 
@@ -219,12 +167,6 @@ def make_tech_table_context2(graph, node_name, filtParams=None):
         rowNames = [a for a in sorted(rowNames) if a in filtParams]
     else:
         rowNames = sorted(rowNames)
-
-    def getMaybe(ff):
-        try:
-            return(ff())
-        except Exception as e:
-            return(None)
 
     tbl = [[str(rr)] + [getMaybe(lambda: nodeDict[yy]['technologies'][tech_name][rr]['year_value']) for yy in yearHeaders] for rr in rowNames]
 

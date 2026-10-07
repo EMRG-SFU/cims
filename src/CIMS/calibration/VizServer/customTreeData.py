@@ -1,5 +1,5 @@
 
-import VizServer.utility_functions as UF
+from . import utility_functions as UF
 import networkx as nx
 
 def addTech(g_in):
@@ -75,7 +75,6 @@ def custom_tree_data(G, root, ident="id", children="children"):
             #d = {**G.nodes[child], ident: child}
             # ::TODO:: This is where the emissions/quantities values should be for each node. Get them computed from the datastructure inside
             # this node, and then add them to the `d` dict below.
-            nodeInfo = G.nodes()[child]
             d = {ident: child, 'isTechNode': 'tech' in edgeType, 'isReqProv': 'request_provide' in edgeType}
             d.update(get_calData_info(G, child))
             c = add_children(child, G)

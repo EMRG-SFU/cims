@@ -37,19 +37,17 @@ Branch, Type, Region, Sector, Service, Technology, Parameter,
 Context, Sub_Context, Target, Source, Unit, Year, Value
 """
 
-import tempfile
-from pathlib import Path
 
 import polars as pl
 
 # ── path setup ────────────────────────────────────────────────────────────────
-import CIMS.data_processing.utils.flatten_fixed_data as _flatten_mod
+from CIMS.data_processing.utils.flatten_fixed_data import read_fixed_data_folder
 
 import CIMS.data_processing.source.activity.heavy_industry as _heavy_industry_mod
 
 import CIMS.data_processing.source.energy_prices.energy_price_multipliers as _energy_price_mod
 
-from CIMS.data_processing.utils.controls_conversions import BASE_PATH, DATA_START, PROJECTION_END, LAST_DATA_YEAR
+from CIMS.data_processing.utils.controls_conversions import BASE_PATH
 from CIMS.data_processing.utils.collapse_constant_years import collapse_constant_years
 from CIMS.data_processing.utils.drop_zero_activity import drop_zero_activity_regions
 
@@ -65,35 +63,6 @@ OUTPUT_COLS = [
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
-
-def _read_flattened_fixed_data() -> pl.DataFrame:
-    """
-    Flatten all Industrial Minerals fixed CSVs and return as a combined DataFrame.
-
-    Wide year columns (2000, 2005, …, 2050) are expanded to annual rows
-    covering 2000–2100, with a Comments column dropped.
-    market_share_total rows are reduced to a single year-2000 row.
-
-    Note: service_request rows on the Products branch are excluded from the
-    fixed data and replaced with dynamic values from heavy_industry.py.
-    """
-    with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp)
-        _flatten_mod.main(
-            input_folder=FIXED_INPUT_DIR,
-            output_folder=tmp_path,
-            year_min=DATA_START,
-            year_max=LAST_DATA_YEAR["cer"],
-            target_start=DATA_START,
-            target_end=PROJECTION_END,
-            target_step=1,
-        )
-        frames = [
-            pl.read_csv(f, infer_schema_length=0)
-            for f in sorted(tmp_path.rglob('*.csv'))
-        ]
-    return pl.concat(frames, how='diagonal_relaxed')
-
 
 def _build_emission_rows(
     activity: pl.DataFrame,
@@ -204,7 +173,9 @@ def main() -> pl.DataFrame:
     print('=' * 60)
 
     print('\nFlattening fixed structural data...')
-    fixed = _read_flattened_fixed_data()
+    # service_request rows on the Products branch are excluded from the
+    # fixed data and replaced with dynamic values from heavy_industry.py.
+    fixed = read_fixed_data_folder(FIXED_INPUT_DIR)
     print(f'  Rows: {len(fixed):,}')
 
     print('Building emission rows...')
