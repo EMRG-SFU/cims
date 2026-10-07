@@ -1,5 +1,3 @@
-import plotly.graph_objects as go
-
 def _legend_required_height(fig, line_factor=1.25, pad_px=8, verbose: bool = False):
     """
     Roughly estimate how many vertical pixels the legend needs.
