@@ -12,17 +12,17 @@ from CIMS.data_processing.utils.data_extensions import extend_series_linear, ext
 from CIMS.data_processing.utils.data_fill import interpolate_5year_to_annual, backfill_constant
 
 # Usage:
-# 1. Open a command prompt in the folder containing this script.
+# 1. Open a terminal in the repository with the project environment active.
 # 2. Run the script with the input folder and output folder paths.
 #    Example:
-#      python flatten_year_columns.py \
+#      python -m CIMS.data_processing.utils.flatten_fixed_data \
 #        "<repo>/data/raw_data/fixed_data/Agriculture" \
 #        "/path/to/output" \
 #        --year-min 2000 --year-max 2050 --target-start 2000 --target-end 2100 --target-step 1
 #    (macOS/Linux output folder shown; on Windows use e.g. "C:/path/to/output")
 #
 # 3. Or call main() directly from Python if you prefer programmatic use:
-#      from flatten_year_columns import main
+#      from CIMS.data_processing.utils.flatten_fixed_data import main
 #      main(
 #          input_folder=r"<repo>/data/raw_data/fixed_data/Agriculture",
 #          output_folder="/path/to/output",  # Windows: "C:/path/to/output"
