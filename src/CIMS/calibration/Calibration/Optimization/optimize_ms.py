@@ -456,7 +456,8 @@ def optimize_total_market_share_fic(
         logFile="log_optimize_total_market_share_fic.log",
         verbose=True,
         objective_counterFactual='calibration_market_share_total',
-        objective_estimate=PARAM.market_share_total):
+        objective_estimate=PARAM.market_share_total,
+        scale_by_output=False):
     """
     Calibrate FICs so modelled market shares match the calibration counterfactual.
 
@@ -544,6 +545,18 @@ def optimize_total_market_share_fic(
     maxiter, maxfun : int
         Iteration and evaluation caps. `least_squares` has only an evaluation
         cap (`max_nfev`), which counts residual calls, not Jacobian columns.
+    scale_by_output : bool
+        Fit each technology's FIC divided by its `output` instead of the raw FIC.
+        FIC enters competition cost as `fic / output`, so a raw-FIC fit assumes
+        output ~1: at a node where output is large (e.g. Mode.Urban, 20,683) the
+        FICs it needs are ~1e7-1e8, far past `SEED_CLIP` and `fic_scale`, and the
+        solver sees no usable gradient, so it stops at the clipped seed. Where
+        outputs differ between technologies, one measured d(lcc)/d(fic) is also
+        wrong for some of them. With this on, the solver variable is in
+        lifecycle-cost units for every technology, so `fic_scale`, `SEED_CLIP`,
+        `fic_min`, `ridge` and `smooth` are all in cost units too. FICs applied to
+        the model, and reported under 'fics', are still raw FICs. Identical to
+        the default wherever every output is 1.
 
     Returns
     -------
@@ -551,6 +564,8 @@ def optimize_total_market_share_fic(
         'start'   – L1 market-share error before optimization
         'end'     – L1 market-share error after optimization
         'fics'    – {tech: fic} applied to the model
+        'fics_per_output' – {tech: fic / output}, the FIC's effect on
+                    competition cost per unit of service
         'free'    – technologies that were optimized in that year
         'result'  – the scipy OptimizeResult, normalised across solvers:
                     `fun` is the minimised sum of squares (penalties included),
@@ -605,9 +620,15 @@ def optimize_total_market_share_fic(
                 objective_counterFactual=objective_counterFactual,
                 objective_estimate=objective_estimate)
 
+            # Everything below works in solver units; `unit` converts them to raw
+            # FIC. With scale_by_output the solver unit is FIC per unit output.
+            outputs = np.array([float(model.get_param(PARAM.output, nodeName, year, tech=t) or 1.0)
+                                for t in all_techs])
+            unit = outputs if scale_by_output else np.ones(n_all)
+
             def apply(vec):
-                """Full-length FIC vector -> objective detail dict."""
-                return objective(vec, retAll=True)
+                """Full-length FIC vector (solver units) -> objective detail dict."""
+                return objective(np.asarray(vec, dtype=float) * unit, retAll=True)
 
             zeros = np.zeros(n_all)
             start_detail = apply(zeros)
@@ -690,7 +711,9 @@ def optimize_total_market_share_fic(
                 end_detail = apply(fixed)
                 end_l1 = sum(abs(a - b) for a, b in zip(targets, end_detail['y_est']))
                 out[year] = {'start': start_l1, 'end': end_l1,
-                             'fics': {all_techs[i]: float(fixed[i]) for i in range(n_all)},
+                             'fics': {all_techs[i]: float(fixed[i] * unit[i]) for i in range(n_all)},
+                             'fics_per_output': {all_techs[i]: float(fixed[i] * unit[i] / outputs[i])
+                                                 for i in range(n_all)},
                              'free': [],
                              'targets': {all_techs[i]: float(targets[i])
                                          for i in range(n_all)},
@@ -790,7 +813,9 @@ def optimize_total_market_share_fic(
             out[year] = {
                 'start': start_l1,
                 'end': end_l1,
-                'fics': {all_techs[i]: float(vec[i]) for i in range(n_all)},
+                'fics': {all_techs[i]: float(vec[i] * unit[i]) for i in range(n_all)},
+                'fics_per_output': {all_techs[i]: float(vec[i] * unit[i] / outputs[i])
+                                    for i in range(n_all)},
                 'free': [all_techs[i] for i in free_idx],
                 'targets': {all_techs[i]: float(targets[i]) for i in range(n_all)},
                 'estimates': {all_techs[i]: float(end_detail['y_est'][i])
