@@ -40,8 +40,9 @@ Space-heating intensity  (service_request rows, all years)
     Replaces the fixed-data Reference / Retrofit service_request rows from
     each Vintage "<bin> Bldg Code" node to its Heating node(s) with the CEUD
     intensity from residential_heating_intensity.py (GJ of heat per m2),
-    averaged over HEATING_INTENSITY_YEARS.  Retrofit techs and BC's
-    Cold/Marine split keep their fixed-data ratios to Reference.
+    averaged over HEATING_INTENSITY_YEARS.  Retrofit techs keep their
+    fixed-data ratios to Reference.  BC's Cold/Marine split is set by
+    BC_MARINE_HEAT_SHARE (None keeps the fixed-data split, ~63% Marine).
 
 Weather nodes  (WEATHER_NODES; service_provide / competition / service_request)
     A Fixed Ratio "Weather (Cold|Marine)" node is inserted before each
@@ -115,6 +116,12 @@ REGION_SPECIFIC_ENERGIES: set[str] = {
 # reach the model. A single historical mean is used instead.
 HEATING_INTENSITY_YEARS: tuple[int, int] = (DATA_START, _heating_mod.LAST_HIST_YEAR)
 HEATING_SERVICES: tuple[str, ...] = ('Heating (Cold)', 'Heating (Marine)')
+# BC share of each Bldg Code technology's heating request that goes to
+# Heating (Marine); the rest goes to Heating (Cold). 0.75 reflects ~79% of
+# BC's population in the coastal (Marine) zone, weighted by the Cold zone's
+# higher HDD and floor space per person. None keeps the fixed-data (JCIMS)
+# split, ~63% Marine.
+BC_MARINE_HEAT_SHARE: Optional[float] = 0.75
 DENSITY_TO_INTENSITY_VARIABLE: dict[str, str] = {
     'High Density':   'heating_intensity_high',
     'LowMed Density': 'heating_intensity_lowmed',
@@ -1251,6 +1258,24 @@ def _build_weather_node_rows(fixed: pl.DataFrame, heating_branch: str, region: s
     return rows
 
 
+def _apply_bc_climate_split(mean_v: dict, marine_share: float) -> dict:
+    """Re-split each technology's Cold + Marine heating request so Marine
+    gets marine_share. Each technology's total is unchanged, so Retrofit
+    Average / Deep keep their fraction of Reference."""
+    tech_total: dict[str, float] = {}
+    for (tech, _), v in mean_v.items():
+        tech_total[tech] = tech_total.get(tech, 0.0) + v
+    out = {}
+    for (tech, tgt), v in mean_v.items():
+        if tgt.endswith('.Heating (Marine)'):
+            out[(tech, tgt)] = tech_total[tech] * marine_share
+        elif tgt.endswith('.Heating (Cold)'):
+            out[(tech, tgt)] = tech_total[tech] * (1 - marine_share)
+        else:
+            out[(tech, tgt)] = v
+    return out
+
+
 def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
                                    region: str) -> tuple[pl.DataFrame, list[int]]:
     """
@@ -1259,8 +1284,9 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
 
     Each fixed-data (technology, target) row keeps its ratio to the node's
     total Reference request -- Retrofit Average / Deep stay at their JCIMS
-    fraction of Reference, and BC's Heating (Cold) / (Marine) targets keep
-    their climate split -- and is rescaled to the CEUD mean intensity.
+    fraction of Reference -- and is rescaled to the CEUD mean intensity.
+    BC's Heating (Cold) / (Marine) targets are first re-split to
+    BC_MARINE_HEAT_SHARE (see _apply_bc_climate_split).
 
     With WEATHER_NODES (and an HDD index for the region) the intensity is
     weather-normalised, the rows target a Weather node instead of the
@@ -1300,6 +1326,8 @@ def _build_heating_intensity_rows(heating, fixed: pl.DataFrame,
             (t, tgt): float(sub['_v'].mean())
             for (t, tgt), sub in g.group_by(['Technology', 'Target'], maintain_order=True)
         }
+        if region == 'BC' and BC_MARINE_HEAT_SHARE is not None:
+            mean_v = _apply_bc_climate_split(mean_v, BC_MARINE_HEAT_SHARE)
         ref_total = sum(v for (t, _), v in mean_v.items() if t == 'Reference')
         if not ref_total:
             print(f'  No Reference heating request at {branch}; keeping fixed data')
