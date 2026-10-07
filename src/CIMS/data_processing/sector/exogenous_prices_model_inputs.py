@@ -225,7 +225,7 @@ def main() -> dict[str, pl.DataFrame]:
     print('\nBuilding emission factors CIMS table...')
     ef_records = _ef_mod.build_records()
     _excluded  = {f['fuel_name'] for f in _ef_mod.FUELS if f.get('exclude_from_output')}
-    ef_out     = ef_records.filter(~pl.col('fuel').is_in(pl.Series(list(_excluded))))
+    ef_out     = ef_records.filter(~pl.col('fuel').is_in(list(_excluded)))
     ef_df      = _ef_mod.build_cims_table(ef_out)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
