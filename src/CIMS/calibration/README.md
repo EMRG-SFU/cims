@@ -23,8 +23,8 @@ see [Calibration/Optimization/README.md](Calibration/Optimization/README.md).
 | [estimated_market_share_calibration.py](estimated_market_share_calibration.py) | Notebook for nodes that CEUD doesn't survey by technology (e.g. Lighting's Incandescent/CFL/LED split). Fits against `estimated_market_share_total` (set by `target_key`), FICs only or FICs + lifetimes. |
 | [transportation_passenger.py](transportation_passenger.py) | Exploratory notebook for passenger transportation: find nodes with counterfactuals, plot them, inspect and edit FICs. |
 | [_stage1_worker.py](_stage1_worker.py) | Subprocess entry point for parallel and timeout-guarded Stage 1 fits. You don't run it directly. |
-| `initial_test_nb.py`, `test_calibration_func_nb*.py`, `test_subModels_nb.py` | Older development and test notebooks. |
-| [Calibration/](Calibration/) | The importable library. Notebooks use `import Calibration.…`. |
+| `initial_test_nb.py`, `test_calibration_func_nb*.py`, `test_subModels_nb.py` | Older development and test notebooks. These are in `notebooks/` at the repo root. |
+| [Calibration/](Calibration/) | The importable library. Notebooks use `import CIMS.calibration.Calibration.…`. |
 | [VizServer/](VizServer/) | Flask + D3 web viewer for browsing the model tree, viewing tables, editing FICs and re-running a node. |
 
 ### The `Calibration` package
@@ -45,7 +45,7 @@ see [Calibration/Optimization/README.md](Calibration/Optimization/README.md).
 
 ## Running the notebooks
 
-The notebooks are [marimo](https://marimo.io) apps (`pip install -e ".[notebooks]"`).
+The notebooks are [marimo](https://marimo.io) apps (`uv sync --extra calibration`).
 Launch them **from the repo root**, because paths such as `results/Reference/...`
 and `data/model_inputs/...` are relative to it:
 
@@ -53,7 +53,8 @@ and `data/model_inputs/...` are relative to it:
 marimo edit src/CIMS/calibration/batch_optimization.py
 ```
 
-marimo puts the notebook's folder on `sys.path`, so `import Calibration` works.
+The notebooks import the library as `CIMS.calibration.Calibration`, so CIMS needs
+to be installed in the environment (`uv sync` does this).
 Every notebook starts by loading a gzipped model pickle. Reference.py writes
 one to `results/<scenario>/model.pkl`.
 
@@ -193,8 +194,7 @@ requested-quantity tables, and market-share plots. It also lets you edit a
 node's FICs and re-run that node.
 
 ```bash
-cd src/CIMS/calibration
-python -m VizServer path/to/model.pkl [port]
+python -m CIMS.calibration.VizServer path/to/model.pkl [port]
 ```
 
 It can also be started from a thread inside a notebook (see

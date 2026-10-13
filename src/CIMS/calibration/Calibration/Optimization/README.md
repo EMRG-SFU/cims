@@ -26,7 +26,7 @@ All the fitters **mutate `model` in place**. Re-load the pickle between runs
 you want to compare.
 
 ```python
-from Calibration.Optimization.optimize_ms import (
+from CIMS.calibration.Calibration.Optimization.optimize_ms import (
     optimize_total_market_share_fic, optimize_total_market_share_fic_lifetime)
 
 # FICs only
