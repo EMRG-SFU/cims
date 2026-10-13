@@ -1301,14 +1301,11 @@ RESD_FUEL_TO_CEUD_CATEGORIES = {
         'Natural Gas_Boiler_Medium Efficiency',
         'Natural Gas_Boiler_High Efficiency',
     ],
+    # RESD 'Kerosene and stove oil' is folded into 'Light fuel oil' in
+    # _build_resd_shares (RESD_FUELS_COMBINED), so these categories split on the
+    # two combined. Listing them under both fuels here would make the inverted
+    # map pick kerosene alone, which is suppressed or zero for NT/NU in most years.
     'Light fuel oil': [
-        'Light Fuel Oil_Furnace_Low Efficiency',
-        'Light Fuel Oil_Furnace_Medium Efficiency',
-        'Light Fuel Oil_Furnace_High Efficiency',
-        'Light Fuel Oil_Boiler_Low Efficiency',
-        'Light Fuel Oil_Boiler_Medium Efficiency',
-    ],
-    'Kerosene and stove oil': [
         'Light Fuel Oil_Furnace_Low Efficiency',
         'Light Fuel Oil_Furnace_Medium Efficiency',
         'Light Fuel Oil_Furnace_High Efficiency',
@@ -1460,6 +1457,12 @@ def _get_efficiency(efficiencies: dict, category: str, year: int) -> float:
     return series[max(series.keys())]
 
 
+# RESD fuels summed into another before territorial shares are computed.
+RESD_FUELS_COMBINED = {
+    'Kerosene and stove oil': 'Light fuel oil',
+}
+
+
 def _build_resd_shares(resd_csv: Path) -> pd.DataFrame:
     """
     Load RESD CSV and return territorial energy shares by fuel and year.
@@ -1476,6 +1479,9 @@ def _build_resd_shares(resd_csv: Path) -> pd.DataFrame:
         .to_pandas()
     )
     resd.columns = ['year', 'territory', 'fuel', 'demand_TJ']
+    # Fold combined fuels together; suppressed (NaN) values count as 0 in the sum.
+    resd['fuel'] = resd['fuel'].replace(RESD_FUELS_COMBINED)
+    resd = resd.groupby(['year', 'territory', 'fuel'], as_index=False)['demand_TJ'].sum()
 
     national = (
         resd.groupby(['year', 'fuel'])['demand_TJ']
