@@ -17,20 +17,15 @@ def invalid_competition_type(validator):
     """
     Find nodes with an invalid or missing competition type.
 
-    Requires a list CSV (validator.competition_types). Returns None to signal
-    skipped when no list is provided — the valid types are unknown without it.
+    Blank values are always flagged. Values are only checked against the valid
+    types when a list CSV (validator.competition_types) is provided.
     """
-    if not len(validator.competition_types):
-        return None, "no list CSV provided"
-
     df = validator.model_df
     comp_rows = df[df[COL.parameter] == PARAM.competition_type]
     value_str = comp_rows[COL.value].astype(str).str.strip().str.lower()
-    missing_or_invalid = (
-        comp_rows[COL.value].isna()
-        | value_str.eq("")
-        | ~value_str.isin(validator.competition_types)
-    )
+    missing_or_invalid = comp_rows[COL.value].isna() | value_str.eq("")
+    if len(validator.competition_types):
+        missing_or_invalid |= ~value_str.isin(validator.competition_types)
 
     invalid_rows = comp_rows[missing_or_invalid]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
