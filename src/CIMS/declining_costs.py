@@ -92,33 +92,6 @@ def _dcc_segment(all_stock, pr, bc_A=None, bc_B=None):
     return segment
 
 
-def _calc_all_stock(model, node, year, tech):
-    dcc_class = model.get_param(PARAM.dcc_class, node, year, tech=tech)
-    dcc_class_techs = model.dcc_classes[dcc_class]
-
-    stock_sums = {PARAM.stock_base: 0,
-                  PARAM.stock_new: 0}
-    for node_k, tech_k in dcc_class_techs:
-        # Need to convert stocks for transportation techs to common vkt unit
-        unit_convert = model.get_param(PARAM.multiplier_load_factor, node_k, str(model.base_year), tech=tech_k)
-        if unit_convert is None:
-            unit_convert = 1
-
-        # Base Stock summed over all techs in DCC class (base year only)
-        bs_k = model.get_param(PARAM.stock_base, node_k, str(model.base_year), tech=tech_k)
-        if bs_k is not None:
-            stock_sums[PARAM.stock_base] += bs_k / unit_convert
-
-        year_list = [x for x in range(int(model.base_year), int(year))] # Range function is exclusive of final year (i.e., up to but not including final year)
-        for j in year_list:
-            reference_year = (j - int(model.base_year)) // model.step * model.step + int(model.base_year)
-            ns_jk = model.get_param(PARAM.stock_new, node_k, str(reference_year), tech=tech_k)
-            stock_sums[PARAM.stock_new] += ns_jk / unit_convert
-    all_stock = stock_sums[PARAM.stock_base] + stock_sums[PARAM.stock_new]
-
-    return all_stock
-
-
 # ==========================================
 # DCC Caching
 # ==========================================
@@ -327,8 +300,7 @@ def _find_dic_competing_stock_new(model, dic_techs, year):
 
 def _find_dic_competing_techs(model, node):
     """
-    Find all the nodes/technologies competing for stock with the DIC class technologies. For node
-    tech compete nodes this includes all the technologies of nodes requested by the parent NTC node.
+    Find all the nodes/technologies competing for stock with the DIC class technologies.
     """
     base_year = str(model.base_year)
     competing_technologies = []

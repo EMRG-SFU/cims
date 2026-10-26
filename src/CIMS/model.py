@@ -421,12 +421,12 @@ class Model:
     def _dic_classes(self):
         """
         Iterate through each node and technology in self to create a dictionary mapping Declining
-        Capital Cost (DCC) Classes to a list of nodes that belong to that class.
+        Intangible Cost (DIC) Classes to a list of nodes that belong to that class.
 
         Returns
         -------
         dict {str: [str]}:
-            Dictionary where keys are declining capital cost classes (str) and values are lists of
+            Dictionary where keys are declining intangible cost classes (str) and values are lists of
             nodes (str) belonging to that class.
         """
         dic_classes = {}
