@@ -17,20 +17,15 @@ def invalid_competition_type(validator):
     """
     Find nodes with an invalid or missing competition type.
 
-    Requires a list CSV (validator.competition_types). Returns None to signal
-    skipped when no list is provided — the valid types are unknown without it.
+    Blank values are always flagged. Values are only checked against the valid
+    types when a list CSV (validator.competition_types) is provided.
     """
-    if not len(validator.competition_types):
-        return None, "no list CSV provided"
-
     df = validator.model_df
     comp_rows = df[df[COL.parameter] == PARAM.competition_type]
     value_str = comp_rows[COL.value].astype(str).str.strip().str.lower()
-    missing_or_invalid = (
-        comp_rows[COL.value].isna()
-        | value_str.eq("")
-        | ~value_str.isin(validator.competition_types)
-    )
+    missing_or_invalid = comp_rows[COL.value].isna() | value_str.eq("")
+    if len(validator.competition_types):
+        missing_or_invalid |= ~value_str.isin(validator.competition_types)
 
     invalid_rows = comp_rows[missing_or_invalid]
     invalid_nodes = list(zip(invalid_rows.index, invalid_rows[COL.branch]))
@@ -466,6 +461,67 @@ def nodes_missing_competition(validator):
             missing.append((validator.branch2node_index_map[node], node))
 
     concern_desc = "nodes are missing a Competition parameter"
+    return missing, concern_desc
+
+def _has_value(data):
+    return data[COL.value].notna() & (data[COL.value].astype(str).str.strip() != "")
+
+def _techs_missing_class(validator, class_param, trigger_param):
+    """
+    Identify (node, tech) pairs with a trigger_param row but no class_param row
+    with a non-blank Value for the same tech.
+    """
+    data = validator.model_df
+    class_rows = data[(data[COL.parameter] == class_param) & _has_value(data)]
+    declared = set(zip(class_rows[validator.node_col], class_rows[COL.technology]))
+
+    key_cols = [validator.node_col, COL.technology]
+    trigger_rows = data[data[COL.parameter] == trigger_param].drop_duplicates(subset=key_cols)
+
+    missing = []
+    for idx, node, tech in zip(trigger_rows.index, trigger_rows[validator.node_col], trigger_rows[COL.technology]):
+        if (node, tech) not in declared:
+            missing.append((idx, node, tech))
+    return missing
+
+def techs_missing_dcc_class(validator):
+    """
+    Identify technologies with declining capital cost inputs (dcc_capacity_1)
+    but no dcc_class.
+    """
+    missing = _techs_missing_class(validator, PARAM.dcc_class, PARAM.dcc_capacity_1)
+    concern_desc = "technologies have dcc_capacity_1 but no dcc_class"
+    return missing, concern_desc
+
+def techs_missing_dic_class(validator):
+    """
+    Identify technologies with declining intangible cost inputs (dic_initial)
+    but no dic_class.
+    """
+    missing = _techs_missing_class(validator, PARAM.dic_class, PARAM.dic_initial)
+    concern_desc = "technologies have dic_initial but no dic_class"
+    return missing, concern_desc
+
+def market_share_limits_missing_class(validator):
+    """
+    Identify node-level market share class limits whose class has no member
+    technology at that node. Limits name their class in Context; technologies
+    join a class through a market_share_class row with the class name in Value.
+    """
+    data = validator.model_df
+    class_rows = data[(data[COL.parameter] == PARAM.market_share_class) & _has_value(data)]
+    declared = set(zip(class_rows[validator.node_col], class_rows[COL.value]))
+
+    key_cols = [validator.node_col, COL.context]
+    limit_params = [PARAM.market_share_class_max, PARAM.market_share_class_min]
+    limit_rows = data[data[COL.parameter].isin(limit_params)].drop_duplicates(subset=key_cols)
+
+    missing = []
+    for idx, node, class_name in zip(limit_rows.index, limit_rows[validator.node_col], limit_rows[COL.context]):
+        if (node, class_name) not in declared:
+            missing.append((idx, node, class_name))
+
+    concern_desc = "market share class limits name a class no technology at the node belongs to"
     return missing, concern_desc
 
 def no_structural_parent_node_exists(validator):

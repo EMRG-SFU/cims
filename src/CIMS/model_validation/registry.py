@@ -131,7 +131,8 @@ REGISTRY.register("invalid_competition_type", CheckSpec(
         "  valid competition types list; row_index is that node's competition row\n"
         "  in model_df, node is the branch name.\n\n"
         "Reading: check the Value column at the flagged row to see what value was\n"
-        "set. This check is skipped entirely when no list CSV is provided."
+        "set. Blank values are always flagged; values are only checked against the\n"
+        "valid types when a list CSV is provided."
     ),
 ))
 REGISTRY.register("nodes_requesting_self", CheckSpec(
@@ -397,6 +398,56 @@ REGISTRY.register("nodes_missing_competition", CheckSpec(
         "  row_index is a representative row for that node in model_df.\n\n"
         "Reading: every node must declare a competition type. Add a competition\n"
         "row with the appropriate type."
+    ),
+))
+REGISTRY.register("techs_missing_dcc_class", CheckSpec(
+    fn=file_errors.techs_missing_dcc_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="technologies have dcc_capacity_1 but no dcc_class",
+    help_text=(
+        "Output: [(row_index, node, tech)]\n"
+        "  Each entry is a technology with a dcc_capacity_1 row but no dcc_class\n"
+        "  row with a Value; row_index is a representative dcc_capacity_1 row.\n\n"
+        "Reading: declining capital cost is only calculated for technologies in a\n"
+        "DCC class. Without one, the model uses the fixed capital cost and ignores\n"
+        "the DCC inputs. Add a dcc_class row with the class name in Value (blank\n"
+        "Year for a constant)."
+    ),
+))
+REGISTRY.register("techs_missing_dic_class", CheckSpec(
+    fn=file_errors.techs_missing_dic_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="technologies have dic_initial but no dic_class",
+    help_text=(
+        "Output: [(row_index, node, tech)]\n"
+        "  Each entry is a technology with a dic_initial row but no dic_class\n"
+        "  row with a Value; row_index is a representative dic_initial row.\n\n"
+        "Reading: declining intangible cost declines with the new market share of\n"
+        "the technology's DIC class, so every technology with DIC inputs needs a\n"
+        "class. Add a dic_class row with the class name in Value (blank Year for a\n"
+        "constant)."
+    ),
+))
+REGISTRY.register("market_share_limits_missing_class", CheckSpec(
+    fn=file_errors.market_share_limits_missing_class,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="market share class limits name a class no technology at the node belongs to",
+    help_text=(
+        "Output: [(row_index, node, class_name)]\n"
+        "  Each entry is a node-level market_share_class_max/min limit whose class\n"
+        "  (the limit row's Context) has no member technology at that node;\n"
+        "  row_index is a representative limit row. class_name is None when the\n"
+        "  limit's Context is blank.\n\n"
+        "Reading: a technology joins a class through a market_share_class row with\n"
+        "the class name in Value. If no technology at the node does, the model\n"
+        "silently ignores the limit. Check the limit's Context, and that the\n"
+        "technologies' market_share_class rows use Value (not Context)."
     ),
 ))
 
