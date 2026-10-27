@@ -192,15 +192,20 @@ class ModelValidator:
 
         self.file_validation_ran = True
    
-    def validate_graph(self):
+    def validate_graph(self, model):
         """
         Run graph-phase validation checks using the central registry.
+
+        Parameters
+        ----------
+        model : CIMS.Model
+            The model whose constructed graph is checked. Passed to checks as `model`.
         """
         start = time.time()
         
         print("\n=== Running graph-phase validation ===")
 
-        context = {}
+        context = {'model': model}
         # ---- Errors ----
         print("\n-- Errors --")
         errors_found = False

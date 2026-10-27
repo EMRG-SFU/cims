@@ -37,6 +37,7 @@ from dataclasses import dataclass
 from typing import Callable, Dict, Optional
 from . import file_errors
 from . import file_warnings
+from . import graph_errors
 
 # ---------------------------------------------------------------------------
 # Core registry tags
@@ -619,13 +620,33 @@ REGISTRY.register("constant_fills_gaps_between_years", CheckSpec(
 ))
 
 # ---------------------------------------------------------------------------
-# GRAPH-PHASE CHECKS (to be added)
+# GRAPH-PHASE CHECKS
 # ---------------------------------------------------------------------------
-# All of these are run by ModelValidator.file_warnings() via:
+# All of these are run by ModelValidator.validate_graph() via:
 #   REGISTRY.iter(phase=Phase.GRAPH, severity=...)
+#
+# Graph checks can take the constructed model with argmap={"model": "model"}.
 #
 # Errors first, then warnings.
 # ---------------------------------------------------------------------------
 # ---- Errors ----
+REGISTRY.register("market_share_total_after_base_year", CheckSpec(
+    fn=graph_errors.market_share_total_after_base_year,
+    phase=Phase.GRAPH,
+    severity=Severity.ERROR,
+    argmap={"model": "model"},
+    short_desc="technologies have a market_share_total after the base year and a lifetime > 1",
+    help_text=(
+        "Output: [(node, tech, years)]\n"
+        "  Each entry is a technology with a market_share_total value in years\n"
+        "  after the base year where its lifetime is greater than 1; years lists\n"
+        "  them. A constant (blank Year) market_share_total applies to every year.\n\n"
+        "Reading: an exogenous total market share after the base year only gives\n"
+        "consistent stocks when lifetime is 1. Remove the market_share_total rows\n"
+        "for those years, or set lifetime to 1 in those years.\n"
+        "Years without a lifetime value use the default (1), unless lifetime is\n"
+        "in the list file's Interpolated column."
+    ),
+))
 
 # ---- Warnings ----
