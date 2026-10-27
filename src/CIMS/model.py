@@ -9,7 +9,7 @@ import os.path
 from typing import Iterable, Mapping
 
 from .utils.model_description import column_list as COL
-from .utils.parameter import construction, list as PARAM, setters, query as param_query
+from .utils.parameter import construction, interpolation, list as PARAM, setters, query as param_query
 from .utils.graph import node_utils, edge_utils, loop_resolution, traversals, query as graph_query 
 from .utils.model_description.columns_builder import build_col_list
 from .readers.helpers import collect_base_files, collect_update_files, collect_files, filter_model_data, print_file_health
@@ -137,6 +137,7 @@ class Model:
         # Parameter lists & defaults
         self.node_tech_defaults = self._model_reader.get_default_params()
         self.inheritable_params = frozenset(self._model_reader.get_inheritable_params())
+        self.interpolated_params = frozenset(self._model_reader.get_interpolated_params())
         self.competition_types = self._model_reader.get_valid_competition_types()
         self.output_params = []
 
@@ -256,6 +257,7 @@ class Model:
         model.dic_classes = model._dic_classes()
 
         # Re-initialize parameters
+        model._interpolate_parameter_values()
         model._inherit_parameter_values()
         model._initialize_tax()
 
@@ -342,6 +344,7 @@ class Model:
         self.dic_classes = self._dic_classes()
 
         # Initialize parameters on the base graph
+        self._interpolate_parameter_values()
         self._inherit_parameter_values()
         self._initialize_tax()
 
@@ -369,6 +372,7 @@ class Model:
             self.dic_classes = self._dic_classes()
 
             # Re-initialize parameters after scenario changes
+            self._interpolate_parameter_values()
             self._inherit_parameter_values()
             self._initialize_tax()
 
@@ -1094,6 +1098,28 @@ class Model:
         # Reset the provided_quantities at each node
         for n in self.graph.nodes():
             self.graph.nodes[n][year][PARAM.provided_quantities] = construction.create_value_dict(ProvidedQuantity(), param_source='initialization')
+
+    def _interpolate_parameter_values(self):
+        """
+        Interpolate each parameter in `interpolated_params` between the years it is given, at
+        every node and technology (#619). See utils.parameter.interpolation.
+        """
+        # Models pickled before #619 have no interpolated_params; they never interpolated.
+        interpolated_params = getattr(self, 'interpolated_params', frozenset())
+        if not interpolated_params:
+            return
+        years = [str(y) for y in self._year_list]
+        for node in self.graph.nodes:
+            node_years = {y: self.graph.nodes[node][y] for y in years if y in self.graph.nodes[node]}
+            techs = {tech for year_dict in node_years.values()
+                     for tech in year_dict.get(PARAM.technologies) or {}}
+            year_dicts = [node_years] + [
+                {y: d[PARAM.technologies][tech] for y, d in node_years.items()
+                 if tech in (d.get(PARAM.technologies) or {})}
+                for tech in techs]
+            for param in interpolated_params:
+                for param_years in year_dicts:
+                    interpolation.interpolate_parameter(param_years, param)
 
     def _inherit_parameter_values(self):
         def inherit_function(graph, node, year):
