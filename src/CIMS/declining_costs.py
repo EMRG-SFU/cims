@@ -5,6 +5,7 @@ part of LCC calculation.
 from math import log2, exp
 from .utils.parameter import construction
 from .utils.parameter import list as PARAM
+from .utils.model_description import column_list as COL
 
 
 
@@ -147,14 +148,20 @@ def _get_class_members(model, dcc_class, cache):
         base_year = str(model.base_year)
         members = []
         for node_k, tech_k in model.dcc_classes[dcc_class]:
-            # Need to convert stocks for transportation techs to common vkt unit
-            unit_convert = model.get_param(PARAM.multiplier_load_factor, node_k, base_year,
-                                           tech=tech_k)
-            if unit_convert is None:
-                unit_convert = 1
-            members.append((node_k, tech_k, unit_convert))
+            members.append((node_k, tech_k, _unit_convert(model, node_k, tech_k, base_year)))
         cache['members'][dcc_class] = members
     return members
+
+
+def _unit_convert(model, node, tech, base_year):
+    """
+    Return the divisor that converts `tech`'s stock to the class's common unit (e.g. vehicles to
+    vkt for transportation techs), i.e. its base-year `multiplier_load_factor`, or 1 if unset.
+    """
+    unit_convert = model.get_param(PARAM.multiplier_load_factor, node, base_year, tech=tech)
+    if unit_convert is None:
+        unit_convert = 1
+    return unit_convert
 
 
 def _calc_all_stock(model, node, year, tech):
@@ -208,6 +215,10 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
     Calculate Annual Declining Intangible Cost (DIC). DIC only declines for technologies in a DIC
     class; technologies without one have a DIC of 0.
 
+    A DIC class's new market share is pooled within the technology's region only (see
+    `Model._dic_classes`). Stocks are divided by `multiplier_load_factor` before summing, as for
+    DCC, so technologies with different units can share a class.
+
     Parameters
     ----------
     model : The model containing component parts of DIC.
@@ -239,7 +250,8 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
 
     # Find the tech's NMS & DIC in the previous year
     prev_year = str(int(year) - model.step)
-    prev_nms = _find_dic_class_new_market_share(model, dic_class, prev_year)
+    region = model.graph.nodes[node].get(COL.region.lower())
+    prev_nms = _find_dic_class_new_market_share(model, (region, dic_class), prev_year)
     prev_dic = model.get_param(PARAM.dic, node, prev_year, tech=tech)
 
     # Calculate DIC
@@ -249,12 +261,13 @@ def calc_declining_intangible_cost(model: 'CIMS.Model', node: str, year: str, te
     return dic
 
 
-def _find_dic_class_new_market_share(model, dic_class, year):
+def _find_dic_class_new_market_share(model, dic_class_key, year):
     """
     Find the total new market share attributed to technologies from the DIC class (relative to
-    all technologies competing for market share with technologies within the DIC class)
+    all technologies competing for market share with technologies within the DIC class).
+    `dic_class_key` is a (region, dic_class) pair.
     """
-    dic_class_techs = model.dic_classes[dic_class]
+    dic_class_techs = model.dic_classes[dic_class_key]
 
     # DIC Stock
     dic_class_stock = _find_dic_class_stock_new(model, dic_class_techs, year)
@@ -275,9 +288,11 @@ def _find_dic_class_stock_new(model, dic_techs, year):
     """
     Calculate the new stock from all the technologies in the DIC class.
     """
+    base_year = str(model.base_year)
     new_dic_stock = 0
     for node, tech in dic_techs:
-        new_dic_stock += model.get_param(PARAM.stock_new, node, year, tech=tech)
+        new_dic_stock += (model.get_param(PARAM.stock_new, node, year, tech=tech)
+                          / _unit_convert(model, node, tech, base_year))
     return new_dic_stock
 
 
@@ -286,16 +301,19 @@ def _find_dic_competing_stock_new(model, dic_techs, year):
     Calculate the new stock from all the technologies competing for market share with the nodes in
     the DIC class (including the DIC techs).
     """
+    base_year = str(model.base_year)
     dic_nodes = {x[0] for x in dic_techs}
 
     competing_stocks = {}
     for node in dic_nodes:
         competing_techs = _find_dic_competing_techs(model, node)
         for c_node, c_tech in competing_techs:
-            competing_stocks[(c_node, c_tech)] = \
-                model.get_param(PARAM.stock_new, c_node, year, tech=c_tech)
+            stock_new = model.get_param(PARAM.stock_new, c_node, year, tech=c_tech)
+            if stock_new is not None:
+                competing_stocks[(c_node, c_tech)] = \
+                    stock_new / _unit_convert(model, c_node, c_tech, base_year)
 
-    return sum(v for k, v in competing_stocks.items() if v is not None)
+    return sum(competing_stocks.values())
 
 
 def _find_dic_competing_techs(model, node):

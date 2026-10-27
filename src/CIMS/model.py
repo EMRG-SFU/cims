@@ -396,6 +396,9 @@ class Model:
         Iterate through each node and technology in self to create a dictionary mapping Declining
         Capital Cost (DCC) Classes to a list of nodes that belong to that class.
 
+        DCC classes are not scoped to a region: technologies with the same dcc_class name pool
+        together across all regions in the model.
+
         Returns
         -------
         dict {str: [str]}:
@@ -423,11 +426,15 @@ class Model:
         Iterate through each node and technology in self to create a dictionary mapping Declining
         Intangible Cost (DIC) Classes to a list of nodes that belong to that class.
 
+        DIC classes are scoped to a region: technologies only pool with others in the same region,
+        even if their dic_class names match. This differs from DCC classes, which pool across
+        regions (see _dcc_classes).
+
         Returns
         -------
-        dict {str: [str]}:
-            Dictionary where keys are declining intangible cost classes (str) and values are lists of
-            nodes (str) belonging to that class.
+        dict {(str, str): [(str, str)]}:
+            Dictionary where keys are (region, dic_class) pairs and values are lists of
+            (node, tech) pairs belonging to that class.
         """
         dic_classes = {}
 
@@ -438,10 +445,11 @@ class Model:
                 for tech in nodes[node][base_year][PARAM.technologies]:
                     dicc = self.get_param(PARAM.dic_class, node, base_year, tech=tech)
                     if dicc is not None:
-                        if dicc in dic_classes:
-                            dic_classes[dicc].append((node, tech))
+                        key = (nodes[node].get(COL.region.lower()), dicc)
+                        if key in dic_classes:
+                            dic_classes[key].append((node, tech))
                         else:
-                            dic_classes[dicc] = [(node, tech)]
+                            dic_classes[key] = [(node, tech)]
 
         return dic_classes
 
