@@ -199,7 +199,11 @@ class Model:
         print_file_health(self._file_health_rows, verbose=verbose)
         
     def validate_graph(self):
-        self.validator.validate_graph()
+        if self.status != "graph constructed":
+            raise ValueError(
+                "Model graph has not been constructed. Call construct_graph() before validate_graph()."
+            )
+        self.validator.validate_graph(self)
     
     def update(self, update_files: Mapping[str, Iterable[str]]):
         """
