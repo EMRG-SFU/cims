@@ -86,7 +86,16 @@ class ModelReader:
         # they aren't parameter names, so drop them.
         return [param for param in self._get_list(column_identifier="Inheritable")
                 if param is not None]
-    
+
+    def get_interpolated_params(self):
+        # Parameters interpolated between the years they are given (#619). Older list files
+        # have no "Interpolated" column, in which case nothing is interpolated.
+        try:
+            params = self._get_list(column_identifier="Interpolated")
+        except KeyError:
+            return []
+        return [param for param in params if param is not None]
+
     def get_valid_competition_types(self):
         return self._get_list(column_identifier="Competition")
 
