@@ -1,0 +1,37 @@
+# Coal mining process flowchart. See appendix_figure-style.qmd for the format.
+sector: coal-mining
+title: Coal mining
+
+nodes:
+  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 2]}
+  - {id: extraction, label: Extraction, icon: open-pit, role: process, at: [1, 1],
+     branches: [coal-mining.product.raw-product.extraction, coal-mining.product.simplified-extraction]}
+  - {id: haulage, label: Mine haulage, icon: truck, role: service, at: [1, 2],
+     branch: coal-mining.service.mine-haulage}
+  - {id: ventilation, label: Mine ventilation, icon: fan, role: process, at: [1, 0],
+     branch: coal-mining.product.raw-product.mine-ventilation}
+  - {id: methane, label: Coal-mine methane, icon: methane, role: emission, at: [0, 0],
+     branch: coal-mining.product.raw-product.mine-methane}
+  - {id: crushing, label: Crushing, icon: crusher, role: process, at: [2, 1],
+     branch: coal-mining.product.size-reduced-product.crushing}
+  - {id: milling, label: Milling, icon: mill, role: process, at: [3, 1],
+     branch: coal-mining.product.size-reduced-product.milling}
+  - {id: washing, label: Washing, icon: separator, role: process, at: [4, 1],
+     branch: coal-mining.product.coal-preparation.washing}
+  - {id: tailings, label: Tailings disposal, icon: tailings, role: process, at: [4, 2],
+     branch: coal-mining.product.coal-preparation.tailings-disposal}
+  - {id: drying, label: Drying, icon: dryer, role: process, at: [5, 1],
+     branch: coal-mining.product.coal-preparation.drying}
+  - {id: coal, label: Metallurgical and thermal coal, icon: coal, role: output, at: [6, 1]}
+
+edges:
+  - {from: diesel, to: haulage, kind: energy}
+  - {from: haulage, to: extraction, kind: energy}
+  - {from: ventilation, to: extraction, kind: energy}
+  - {from: extraction, to: methane, kind: emission, sides: [left, bottom]}
+  - [extraction, crushing]
+  - [crushing, milling]
+  - [milling, washing]
+  - [washing, drying]
+  - {from: washing, to: tailings}
+  - [drying, coal]
