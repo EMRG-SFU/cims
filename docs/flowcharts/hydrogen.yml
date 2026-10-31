@@ -1,0 +1,25 @@
+# Hydrogen process flowchart. See appendix_figure-style.qmd for the format.
+sector: hydrogen
+title: Hydrogen
+
+nodes:
+  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 0]}
+  - {id: coal, label: Coal or petroleum coke, icon: coal, role: input, at: [0, 1]}
+  - {id: biomass, label: Biomass or waste, icon: biomass, role: input, at: [0, 2]}
+  - {id: electricity, label: Electricity and water, icon: electricity, role: input, at: [0, 3]}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [1, 0],
+     branch: hydrogen.service.ccs.concentrated}
+  - {id: production, label: Hydrogen production, icon: electrolysis, role: process, at: [1, 1.5],
+     branch: hydrogen.product.centralized-hydrogen}
+  - {id: distribution, label: Distribution and storage, icon: pipeline, role: service, at: [2, 1.5],
+     branch: hydrogen.service.distribution}
+  - {id: users, label: Hydrogen users, icon: factory, role: output, at: [3, 1.5]}
+
+edges:
+  - {from: gas, to: production, turn: late}
+  - {from: coal, to: production, turn: late}
+  - {from: biomass, to: production, turn: late}
+  - {from: electricity, to: production, kind: energy, turn: late}
+  - {from: production, to: capture, kind: emission}
+  - [production, distribution]
+  - [distribution, users]
