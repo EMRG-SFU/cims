@@ -2,15 +2,36 @@
 bibliography: references.bib
 ---
 
-# Cogeneration {#sec-cogen}
+# Cogeneration and On-Site Power {#sec-cogen}
 
-## Scope and Definition
+## Cogeneration
 
-Cogeneartion (also referred to as combined heat and power) is the sequential or simultaneous generation of multiple forms of useful energy (usually mechanical and thermal) in a single, integrated system. Cogeneartion systems consist of a number of individual components—prime mover (heat engine), generator, heat recovery, and electrical interconnection— configured into an integrated whole. The type of equipment that drives the overall system (i.e., the prime mover) typically identifies the cogeneartion system. Prime movers for cogeneartion systems include steam turbines, gas turbines (also called combustion turbines), spark ignition engines, diesel engines, microturbines, and fuel cells. These prime movers are capable of burning a variety of fuels, including biomass/biogas, natural gas, or coal to produce shaft power or mechanical energy. Additional technologies are also used in configuring a complete cogeneartion system, including boilers, absorption chillers, desiccants, engine-driven chillers, and gasifiers. Boilers and gasifiers are discussed in Chapter 5 of this document. (@epa-2007)
+Cogeneration, also called combined heat and power (CHP), generates useful heat and electricity (or shaft power) in one integrated system. A CHP system pairs a prime mover (a steam turbine, gas turbine, reciprocating engine, microturbine, or fuel cell) with a generator, heat recovery, and an electrical connection, and takes its name from the prime mover [@epa-2007]. The prime mover can burn biomass, biogas, natural gas, or coal, and its recovered heat can raise steam, heat water or air for drying, or drive absorption chillers.
 
-Although mechanical energy from the prime mover is most often used to drive a generator to produce electricity, it can also be used to drive rotating equipment such as compressors, pumps, and fans. Thermal energy from the system can be used in direct process applications or indirectly to produce steam, hot water, hot air for drying, or chilled water for process cooling.
+Canadian industry already runs biomass CHP in the pulp and paper, chemical, wood products, and food processing industries. A typical plant fires a biomass boiler whose steam drives a back-pressure or extraction turbine, with the exhaust or extracted steam serving the process; using the heat this way can raise overall efficiency by more than 35 % [@epa-2007].
 
-The industrial sector currently produces both thermal output and electricity from biomass in CHP facilities in the paper, chemical, wood products, and food processing industries. These industries are major users of biomass fuels—utilizing the heat and steam in their processes can improve energy efficiencies by more than 35 percent. In these applications, the typical CHP system configuration consists of a biomass-fired boiler whose steam is used to propel a steam turbine in addition to the extraction of steam or heat for process use. 
+### How CIMS represents cogeneration
+
+CIMS does not treat cogeneration as a service of its own. A CHP unit is one of the technologies competing to supply a sector's **Steam** node (see @sec-industrial-heat): the heat is the service it provides, and the electricity is a co-product that offsets the site's purchased power. This puts CHP in direct competition with boilers, heat pumps, and the other heat-supply technologies on the full lifecycle cost of meeting the steam demand.
+
+The CHP technologies at the Steam nodes are:
+
+- **Gas-turbine CHP**, simple or combined cycle, where the turbine exhaust raises process steam in a heat-recovery steam generator;
+- **Reciprocating engine CHP**;
+- **Back-pressure or extraction steam-turbine CHP**, typically behind a fuel-fired or biomass boiler;
+- **Fuel-cell CHP**;
+- **Biomass gasifier CHP**; and
+- **Gas-turbine or engine CHP with post-combustion capture**.
+
+Their descriptions, types, and readiness levels are in the Steam technology list in @sec-industrial-heat.
+
+## On-site power generation
+
+Some sites generate electricity with no useful heat recovered: diesel and gas generator sets at off-grid mines and oil-and-gas sites, gas turbines and engines, condensing steam turbines, power plants burning by-product gases, and solar, wind, and storage in site microgrids. At isolated northern mines, diesel can supply more than 80 % of site energy. The boundary with cogeneration is heat recovery: a unit that supplies useful heat competes at the Steam node, and one that does not competes for on-site power.
+
+The hierarchy carries an **On-Site Power** node in the Mining sector only. Waste-heat power and other power-only options could serve other sectors (cement, iron and steel, glass, refining, chemicals, pulp and paper, metal smelting, and offshore oil platforms), but those sectors have no on-site power node yet.
+
+{{< include _technology-blocks/mining/service_on-site-power.md >}}
 
 {{< pagebreak >}}
 

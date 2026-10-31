@@ -76,7 +76,7 @@ The estimates in @tbl-residential-cost are order-of-magnitude figures from publi
 
 ### Heat pumps and the cold-climate question
 
-As in commercial buildings, the central lever is the heat pump. The model competes air-source and ground-source heat pumps and, importantly for Canada, hybrid systems pairing a heat pump with an electric or gas backup for the coldest hours — which is why heating is split into Cold and Marine competitions. Cold-climate heat pumps that maintain output at low temperatures are the key enabling technology for electrifying heat across most of the country. Heat-pump water heaters and solar water heating electrify domestic hot water. These draw on the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter's broader heat-pump treatment.
+As in commercial buildings, the central lever is the heat pump. The model competes air-source and ground-source heat pumps and, importantly for Canada, hybrid systems pairing a heat pump with an electric or gas backup for the coldest hours — which is why heating is split into Cold and Marine competitions. Cold-climate heat pumps that maintain output at low temperatures are the key enabling technology for electrifying heat across most of the country. Heat-pump water heaters and solar water heating electrify domestic hot water. These draw on the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter's broader heat-pump treatment.
 
 ### Envelope, appliances, and behaviour
 

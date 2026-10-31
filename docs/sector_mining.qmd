@@ -69,7 +69,7 @@ Canada's other non-metal mining is smaller in energy terms but is within the sco
 Mining's production technologies draw on the shared **Service** sub-tree rather than specifying their own utility equipment. These services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The services the mining sector draws on are:
 
 - **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. Mining's largest electrical loads sit here: comminution under Materials Processing, mine ventilation under Fans, and haulage and conveyance under Materials Handling, alongside Pumps and Compressed Air.
-- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), which covers boiler-raised steam and its fuel options.
+- **Steam** — see [Low-Temperature Industrial Heat](industrial-heat.qmd), which covers boiler-raised steam and its fuel options.
 - **Cogeneration** — see [Cogeneration](cogeneration.qmd) for combined heat-and-power.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for mine facilities.
@@ -105,7 +105,7 @@ Comminution is the single largest electricity consumer at a metal mine, so effic
 
 ### Electrified and low-carbon process heat
 
-Concentrate drying (Cleaning) and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and heat-pump drying, electrode and electric-resistance boilers, biomass and hydrogen boilers, and mechanical vapour recompression — are described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter and reached through the **Steam** service; the **Methane Blend** node additionally substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty.
+Concentrate drying (Cleaning) and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and heat-pump drying, electrode and electric-resistance boilers, biomass and hydrogen boilers, and mechanical vapour recompression — are described in the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter and reached through the **Steam** service; the **Methane Blend** node additionally substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty.
 
 ### Ventilation and auxiliary drive (underground)
 

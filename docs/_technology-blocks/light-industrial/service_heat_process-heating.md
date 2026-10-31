@@ -1,0 +1,12 @@
+::: {.tech-block}
+Technologies
+
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Steam-heated kettles, retorts and plate heat exchangers | Jacketed vessels, retorts and plate pasteurizers on site steam and hot water. | Conventional | 9 |
+| Steam-heated thermal processing efficiency measures, strong | Best-practice steam-heated kettles, retorts, blanchers and vats: heat recovery, insulation, controls and process redesign saving more than about 15% against typical plants. | Efficiency variant | 9 |
+| Aseptic and UHT processing | Short high-temperature treatment with regeneration, in place of in-container sterilizing. | Alternative | 9 |
+| Electromagnetic food heating (RF, microwave, ohmic, infrared) | Volumetric electric heating of the product itself for baking, drying and thermal processing. | Alternative | 9 |
+| High-pressure processing | Non-thermal pasteurization by pressure rather than heat. | Alternative | 9 |
+
+:::

@@ -1,0 +1,36 @@
+# HVAC and Lighting {#sec-hvac-lighting}
+
+Industrial sites heat, cool, ventilate, and light their buildings as well as running their processes. These loads are small next to process heat and machine drive, but they are present at almost every site and respond to the same technologies across sectors. CIMS represents them as shared services in each industrial sector's Service sub-tree and lists their technologies once, here.
+
+The building sectors, Residential and Commercial, carry their own heating, cooling, and lighting structures, described in @sec-residential and @sec-commercial.
+
+## HVAC
+
+Each industrial sector's **HVAC** node splits into two end uses:
+
+| End use | What it covers |
+|:--------|:---------------|
+| Heating | Heating and ventilating plant buildings and warehouses: unit heaters, radiant tubes, make-up air units, supply and exhaust air handling, heat-recovery ventilation, and building heat pumps. |
+| Cooling | Cooling and ventilating offices, control rooms, and production space, including supply and exhaust air handling. |
+
+: HVAC end uses in the industrial sectors {#tbl-hvac-end-uses}
+
+Building ventilation is part of these two end uses rather than a service of its own. Mine ventilation and mine air heating are mining end uses (see @sec-coal-mining and @sec-mining). The HVAC nodes appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Refining, and Pulp and Paper. Each is measured in GJ of delivered heating or cooling.
+
+### Heating technologies
+
+{{< include _technology-blocks/general/hvac_heating.md >}}
+
+### Cooling technologies
+
+{{< include _technology-blocks/general/hvac_cooling.md >}}
+
+## Lighting
+
+Each industrial sector's **Lighting** node covers interior and yard lighting and its controls. The lighting technologies deliver light, measured in lumen-hours, so that a site's request for light stays the same whichever lamp meets it; a more efficient lamp then shows up as less electricity for the same service.
+
+::: {.callout-note}
+The lighting nodes are moving from GJ to lumen-hours (Mlm-h) and splitting into general and high-bay lighting, so that a request for high-bay light can only be met by high-bay fixtures. Until that change reaches the model, a sector's single Lighting node offers both groups of technologies.
+:::
+
+{{< include _technology-blocks/general/lighting.md >}}

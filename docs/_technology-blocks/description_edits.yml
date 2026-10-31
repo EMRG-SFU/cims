@@ -1,0 +1,45 @@
+# Wording changes applied to the technology database's archetype
+# descriptions before they appear in the documentation.
+#
+# The database descriptions are written for modellers and sometimes refer to
+# the database's own records, review rulings, or other archetypes by their
+# identifiers. The documentation keeps the database text wherever it reads
+# well, and changes it only through this file, so every difference stays
+# visible and the blocks still rebuild from the database.
+
+# Sentences removed wherever they appear (regular expressions). The CCUS
+# chapter explains once that a host with capture carries its own penalty and
+# that the capture plant sits on the capture service.
+drop_sentences:
+  - 'The capture plant, with its cost and energy, is on the (concentrated|diffuse) capture service\.'
+  - 'Regeneration steam is (drawn from the unit itself|extracted from the steam cycle), a host-side (efficiency )?penalty that belongs here\.'
+  - 'Taking the reformer flue gas as well would also need the diffuse capture service\.'
+
+# Whole descriptions replaced for one archetype.
+replace:
+  steam-cracker_fired-tubular: >-
+    Hydrocarbon feed cracked in fired tubular coils, then quenched and separated into
+    high-value chemicals. Represents an ethane cracker, the feed of the Canadian fleet.
+  steam-reformer_methane_ccs-diffuse: >-
+    A steam methane reformer whose reformer-furnace flue gas (dilute CO2) is sent to
+    post-combustion capture. The capture unit itself is a separate technology.
+  combustion-turbine_chp_ccs-diffuse: >-
+    A gas-turbine (simple or combined cycle) or engine CHP unit whose exhaust is sent to
+    capture. Regeneration steam drawn from the unit cuts its electricity or steam export.
+  blast-furnace_efficiency-strong: >-
+    Heat recovery from the hot stoves and the slag.
+  coke-oven_by-product_efficiency-strong: >-
+    Recovering the heat now lost in coke quenching and in the raw coke-oven gas.
+  shaft-furnace_hydrogen-direct-reduction: >-
+    Reduces iron ore pellets (or fines, in a fluidised bed) with about 100% hydrogen instead
+    of reformed natural gas, giving solid DRI for an EAF. Hydrogen production is not
+    included; the whole-plant route with electrolysers is listed separately.
+  evaporator_crystallizer: >-
+    Thermal evaporative crystallisation of potassium chloride from mine brine or dissolved
+    ore at a potash mill, using multiple-effect and vacuum crystallisers on low-temperature heat.
+  electrolysis-cell_zinc-electrowinning: >-
+    Leaching of roasted zinc concentrate, solution purification, and electrowinning: the
+    hydrometallurgical part of the roast-leach-electrowin route.
+  pipeline_natural-gas: >-
+    A large-diameter transmission pipeline with compressor stations every 65-160 km. Its
+    compression comes from the compressor-drive services.

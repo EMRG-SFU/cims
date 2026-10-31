@@ -38,7 +38,7 @@ The Python redevelopment of CIMS has been led by Brad Griffin, Jillian Anderson,
 
 ## Current status
 
-CIMS continues to be maintained at EMRG and is used by a network of researchers and policy clients across Canada [@cme-emh-cims]. It has been registered in the Energy Modelling Hub's open-models inventory and is part of the Open Insights suite of open-source models, where it sits among the country's small set of national-scope hybrid energy-economy models. Recent extensions include the disaggregation of the Atlantic provinces and territories, expanded coverage of low- and high-temperature industrial heat (see @sec-low-temp-heat), updated demand and price-elasticity calibrations, and continued evolution of the calibration workflow described in @sec-calibration.
+CIMS continues to be maintained at EMRG and is used by a network of researchers and policy clients across Canada [@cme-emh-cims]. It has been registered in the Energy Modelling Hub's open-models inventory and is part of the Open Insights suite of open-source models, where it sits among the country's small set of national-scope hybrid energy-economy models. Recent extensions include the disaggregation of the Atlantic provinces and territories, expanded coverage of low- and high-temperature industrial heat (see @sec-industrial-heat), updated demand and price-elasticity calibrations, and continued evolution of the calibration workflow described in @sec-calibration.
 
 ## Selected applications
 

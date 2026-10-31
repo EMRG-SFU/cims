@@ -82,7 +82,7 @@ The remaining services are common to the industrial sectors and are documented i
 
 - **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. The sector's large motive loads sit here: mill drives and materials processing, fans and blowers, materials handling, pumps, and compressed air.
 - **Reheating** — reheat furnaces (natural-gas or oil; unrecuperated, recuperated, induction, or direct-rolling) that bring semi-finished steel back to rolling temperature.
-- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants.
+- **Steam** — see [Low-Temperature Industrial Heat](industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for mill facilities.
 
@@ -138,7 +138,7 @@ Carbon capture is represented as a shared **CCS** service that any equipped rout
 
 ### Electrified and low-carbon heat, and efficient casting
 
-Beyond the reduction step, reheating and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and hydrogen reheat furnaces, electrode and electric-resistance boilers, and process-gas cogeneration — are reached through the **Reheating**, **Steam**, and **Iron Process Gas** services and are described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter; the **Methane Blend** node substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty. On the product side, near-net-shape casting (thin-slab and strip casting) reduces or removes the reheating step entirely, and oxygen-enriched, ultra-high-power EAFs cut melting energy. High-efficiency motors and variable-speed drives in the [Machine Drive](machine-drive.qmd) service reduce the large auxiliary load.
+Beyond the reduction step, reheating and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and hydrogen reheat furnaces, electrode and electric-resistance boilers, and process-gas cogeneration — are reached through the **Reheating**, **Steam**, and **Iron Process Gas** services and are described in the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter; the **Methane Blend** node substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty. On the product side, near-net-shape casting (thin-slab and strip casting) reduces or removes the reheating step entirely, and oxygen-enriched, ultra-high-power EAFs cut melting energy. High-efficiency motors and variable-speed drives in the [Machine Drive](machine-drive.qmd) service reduce the large auxiliary load.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

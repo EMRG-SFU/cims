@@ -56,9 +56,11 @@ book:
         - technologies.qmd      # Technology competition
         - energy-supply-demand.qmd  # Energy supply and demand
         - demand-feedbacks.qmd  # Goods and services demand feedbacks
-    - part: "Sector Descriptions"
+        - sector_overview.qmd   # How a sector is modelled (shared structure of the sector chapters)
+    # Sector chapters, grouped. Sub-sector chapters sit next to their parent
+    # sector's chapter (for example sector_metal-smelting_aluminum.qmd).
+    - part: "Energy Supply Sectors"
       chapters:
-        - sector_overview.qmd      # Industrial sector overview
         - sector_coal-mining.qmd              # Coal Mining
         - sector_natural-gas.qmd              # Natural Gas
         - sector_petroleum-crude.qmd          # Petroleum Crude
@@ -67,28 +69,38 @@ book:
         - sector_biofuels_ethanol.qmd         # Ethanol
         - sector_biofuels_biodiesel.qmd       # Biodiesel
         - sector_hydrogen.qmd                 # Hydrogen
+    - part: "Industrial Sectors"
+      chapters:
         - sector_mining.qmd                   # Mining
         - sector_industrial-minerals.qmd      # Industrial Minerals
-        - sector_chemicals.qmd                # Chemical Products
+        - sector_chemicals.qmd                # Chemicals
         - sector_pulp-and-paper.qmd           # Pulp and Paper
         - sector_metal-smelting.qmd           # Metal Smelting
         - sector_iron-and-steel.qmd           # Iron and Steel
         - sector_light-industrial.qmd         # Light Industrial
         - sector_construction.qmd             # Construction
+    - part: "Buildings"
+      chapters:
         - sector_residential.qmd              # Residential
         - sector_commercial.qmd               # Commercial
+    - part: "Transportation"
+      chapters:
         - sector_transportation-passenger.qmd # Transportation Passenger
         - sector_transportation-freight.qmd   # Transportation Freight
-        - sector_waste.qmd                    # Waste
+    - part: "Land, Waste, and Removals"
+      chapters:
         - sector_agriculture.qmd              # Agriculture
         - sector_forestry.qmd                 # Forestry
-        - sector_direct-air-capture.qmd       # Carbon dioxide removal / DAC
+        - sector_waste.qmd                    # Waste
+        - sector_direct-air-capture.qmd       # Direct air capture
         - sector_lulucf.qmd                   # LULUCF
     - part: "General Services"
       chapters:
         - machine-drive.qmd      # Machine drive systems in industry
-        - low-temp-industrial-heat.qmd     # Low-temperature industrial heat, including steam generation
-        - cogeneration.qmd     # Cogeneration of heat and power
+        - industrial-heat.qmd    # Industrial heat and steam
+        - cogeneration.qmd       # Cogeneration and on-site power
+        - hvac-and-lighting.qmd  # HVAC and lighting in the industrial sectors
+        - fuel-blends.qmd        # Fuel blend nodes
         - ccus.qmd               # Carbon capture, utilization, and storage
         - energy-storage.qmd     # Energy storage: thermal, short duration, long duration
     - part: "Running the Model"

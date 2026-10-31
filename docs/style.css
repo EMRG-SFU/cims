@@ -203,8 +203,9 @@ img.img-fluid[src*="images/flowcharts/"] {
 .tech-block table {
   margin-bottom: 0.4rem;
 }
-.tech-block td:first-child {
-  width: 34%;
+.tech-block th,
+.tech-block td {
+  padding: 0.3rem 0.5rem;
 }
 .quarto-dark .tech-block {
   border-left-color: #6fa0d8;

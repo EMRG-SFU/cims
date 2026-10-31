@@ -75,7 +75,7 @@ The standout option is capturing the fermentation CO₂. Unlike a flue gas, it e
 
 ### Feedstock and process energy
 
-Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the **Agricultural Input** options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching **Steam** to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter.
+Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the **Agricultural Input** options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching **Steam** to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

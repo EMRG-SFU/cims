@@ -71,7 +71,7 @@ Downstream, Petrochemicals covers Intermediate Production, BTX Reforming (benzen
 The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The chemicals sector draws on:
 
 - **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. The sector's large motive loads sit here: compressors (a major load in synthesis and refrigeration), pumps, fans, and materials handling and processing.
-- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants. Steam is a large load in chemicals.
+- **Steam** — see [Low-Temperature Industrial Heat](industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants. Steam is a large load in chemicals.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for plant facilities.
 - **CCS** — the shared carbon-capture service that the reforming, cracking, and other equipped routes request.
@@ -137,7 +137,7 @@ Carbon capture is represented as a shared **CCS** service that any equipped rout
 
 ### Electrified heat and efficient drives
 
-Process steam and lower-temperature heat can shift from gas to electricity and hydrogen through the **Steam** and **Methane Blend** services described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter, and the large compressor and pump loads can move to high-efficiency motors and variable-speed drives in the **Machine Drive** service. The electrochemical products (chlor-alkali, sodium chlorate) are already electricity-driven, so their decarbonisation depends mainly on grid intensity and on choosing the more efficient cell and evaporator technologies the model already competes.
+Process steam and lower-temperature heat can shift from gas to electricity and hydrogen through the **Steam** and **Methane Blend** services described in the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter, and the large compressor and pump loads can move to high-efficiency motors and variable-speed drives in the **Machine Drive** service. The electrochemical products (chlor-alkali, sodium chlorate) are already electricity-driven, so their decarbonisation depends mainly on grid intensity and on choosing the more efficient cell and evaporator technologies the model already competes.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

@@ -71,7 +71,7 @@ The estimates in @tbl-commercial-cost are order-of-magnitude figures from public
 
 ### Heat pumps: the central lever
 
-The largest direct-emissions source in commercial buildings is fossil space and water heating, and the central decarbonisation lever is the heat pump. The model competes air-source and ground-source heat pumps, and hybrid systems that pair a heat pump with a gas backup for the coldest hours — a configuration well suited to Canada's cold climate, which is why the model splits HVAC into Cold and Marine zones. Heat-pump water heaters electrify domestic hot water. These options draw on the broader treatment in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) and [Cogeneration](cogeneration.qmd) chapters.
+The largest direct-emissions source in commercial buildings is fossil space and water heating, and the central decarbonisation lever is the heat pump. The model competes air-source and ground-source heat pumps, and hybrid systems that pair a heat pump with a gas backup for the coldest hours — a configuration well suited to Canada's cold climate, which is why the model splits HVAC into Cold and Marine zones. Heat-pump water heaters electrify domestic hot water. These options draw on the broader treatment in the [Low-Temperature Industrial Heat](industrial-heat.qmd) and [Cogeneration](cogeneration.qmd) chapters.
 
 ### Efficiency: envelope, lighting, HVAC, and refrigeration
 

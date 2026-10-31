@@ -78,7 +78,7 @@ The largest determinant of biodiesel's carbon intensity is the feedstock. Switch
 
 ### Cleaning up process energy
 
-The plant's own emissions come from process heat and electricity. Switching steam to electric boilers (clean where the grid is clean), to biomass or biogas, or adding CCS to gas-fired steam reduces the conversion step's footprint; the **Methane Fuel** node lets natural gas be displaced by biogas, biomass gas, or hydrogen. These are the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter.
+The plant's own emissions come from process heat and electricity. Switching steam to electric boilers (clean where the grid is clean), to biomass or biogas, or adding CCS to gas-fired steam reduces the conversion step's footprint; the **Methane Fuel** node lets natural gas be displaced by biogas, biomass gas, or hydrogen. These are the same low-carbon heat options described in the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files, and add an explicit feedstock-supply constraint so waste-oil availability limits the low-CI pathways.</mark>
 

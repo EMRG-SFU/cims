@@ -81,7 +81,7 @@ The cost estimates in @tbl-light-industrial-cost are order-of-magnitude figures 
 
 ### Electrified heat: heat pumps and electric boilers
 
-The largest lever is electrifying the sector's abundant low- and medium-temperature heat. Industrial heat pumps deliver heat up to about 120 °C at a coefficient of performance of 3.5–4, so each unit of electricity yields three to four units of heat — a strong economic and emissions case wherever the grid is clean, as in much of Canada [@aceee-ihp; @arpagaus]. Where temperatures or duty cycles do not suit a heat pump, electric boilers and resistance heating electrify the remainder at high efficiency but higher running cost. These appear in the model as the electric options at the **Heat**, **Steam**, and **Water Heating** services, drawing on the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter.
+The largest lever is electrifying the sector's abundant low- and medium-temperature heat. Industrial heat pumps deliver heat up to about 120 °C at a coefficient of performance of 3.5–4, so each unit of electricity yields three to four units of heat — a strong economic and emissions case wherever the grid is clean, as in much of Canada [@aceee-ihp; @arpagaus]. Where temperatures or duty cycles do not suit a heat pump, electric boilers and resistance heating electrify the remainder at high efficiency but higher running cost. These appear in the model as the electric options at the **Heat**, **Steam**, and **Water Heating** services, drawing on the [Low-Temperature Industrial Heat](industrial-heat.qmd) chapter.
 
 ### Biomass, hydrogen, and cogeneration
 

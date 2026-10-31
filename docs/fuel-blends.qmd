@@ -1,0 +1,21 @@
+# Fuel Blends {#sec-fuel-blends}
+
+Technologies in CIMS rarely request a pure fuel. They request a blend, and the blend's makeup decides the fuel's cost and lifecycle emissions. Each sector's Service sub-tree carries one **Fuel Blend** node for each blended fuel it uses, and the sector's technologies request fuel from those nodes. When renewable content in a blend rises, the carbon intensity of every technology that burns the blend falls with it, without any change to the technologies themselves.
+
+## Blend nodes
+
+| Blend | What it blends | Sectors |
+|:------|:---------------|:--------|
+| Methane | Natural gas with biogas, gas from biomass gasification, renewable natural gas, and hydrogen | Every sector except Construction, Direct Air Capture, and Forestry |
+| Diesel | Fossil diesel with biodiesel and renewable diesel | Every sector except Construction, Direct Air Capture, Forestry, Residential, and Waste |
+| Gasoline | Fossil gasoline with ethanol | Natural Gas, Petroleum Crude, and both transportation sectors |
+| Still gas | Refinery fuel gas produced by the refinery's own units | Petroleum Crude and Petroleum Refining |
+| Process gas | Blast-furnace, coke-oven, and basic oxygen furnace gases | Iron and Steel |
+
+: Fuel blend nodes {#tbl-fuel-blends}
+
+The first three are true blends: they mix a purchased fossil fuel with lower-carbon substitutes supplied by the Biofuels and Hydrogen sectors (see @sec-biodiesel, @sec-ethanol, and @sec-hydrogen). The last two route a sector's own by-product fuels to the steam, reheating, and direct-heat nodes that burn them; the heat they provide is counted at those nodes.
+
+The technology database does not describe the blending technologies; their shares and limits come from the CIMS model inputs.
+
+<mark>TODO: Document the blending competition at each node: which substitutes compete, the blend limits (for example, the share of hydrogen natural-gas equipment can accept, or the ethanol share gasoline engines can take), and how the Clean Fuel Regulations and other policies set minimum renewable content.</mark>

@@ -1,0 +1,105 @@
+---
+bibliography: references.bib
+aliases:
+  - low_temp_industrial_heat.html
+  - low-temp-industrial-heat.html
+---
+
+# Industrial Heat and Steam {#sec-industrial-heat}
+
+## Scope and definition
+
+Industrial heat in CIMS covers the steam, hot water, thermal oil, and direct heat that a site's heat system supplies to its processes. CIMS divides it into three bands by the temperature the process needs, not by the steam grade or the equipment:
+
+| Band | Temperature | What it covers |
+|:-----|:-----------:|:---------------|
+| Low | Below 150 °C | Hot water and low-pressure steam for washing, pasteurizing, bleaching, stock heating, evaporation, and low-temperature drying. |
+| Medium | 150–400 °C | Medium- and high-pressure steam, thermal oil, and direct heaters for distillation reboilers, digesters, stripping, polymer melting, panel pressing, and fired heaters feeding refinery distillation. |
+| High | Above 400 °C | Fired heaters and furnaces separate from the unit they serve, mainly refinery process heaters. |
+
+: Industrial heat bands in the CIMS hierarchy {#tbl-heat-bands}
+
+The 150 °C boundary is roughly where commercial heat pumps stop, so it marks the band in which they compete; above about 200 °C heat pumps fall away, leaving combustion, electric boilers and heaters, thermal storage, and cogeneration. Natural Resources Canada reports industrial heat in different bands (below 200 °C, 200–700 °C, and above 700 °C), which don't map directly onto these.
+
+Heat released *inside* a sector's own process unit is not part of this service: the heat in a cement kiln, a blast furnace, a steam cracker's furnace, a lime kiln, or a glass furnace belongs to that sector's process step and its technologies.
+
+Industrial heat globally accounts for about two-thirds of final industrial energy use and roughly one-fifth of energy-related CO~2~ emissions; analyses across IEA member countries place 30–45 % of industrial heat demand at low temperature [@iea-fop; @iea-renewables; @madeddu].
+
+## Where heat sits in the hierarchy
+
+Each industrial sector that raises steam has a **Steam** node in its Service sub-tree, and the sector's process technologies request steam from it. Nine sectors carry one: Biofuels, Chemicals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Crude, Petroleum Refining, and Pulp and Paper. The same heat-supply technologies compete at every Steam node, so this chapter lists them once.
+
+Two other nodes carry separable direct heat. Petroleum Refining has a **Direct Heat** node for its fired process heaters, the only node in the high band. In Natural Gas, the gas-processing chain has a direct-heat step for its heaters. Their technologies are listed in those sector chapters.
+
+**Cogeneration** is not a separate service. A combined heat and power (CHP) unit is one of the technologies competing to supply a Steam node, with electricity as a co-product; see @sec-cogen.
+
+The allocation of base-year heat demand across sectors and provinces comes from calibration against Statistics Canada and Natural Resources Canada's Comprehensive Energy Use Database (CEUD), Environment and Climate Change Canada's National Inventory Report (NIR), and the U.S. Energy Information Administration Manufacturing Energy Consumption Survey (MECS), used for analogous subsector benchmarks. The CEUD does not publish process heat by temperature band; end-use accounting nevertheless shows that steam systems, boilers, and process heating account for most fossil-fuel use in Canadian manufacturing [@nrcan-ceud].
+
+## End uses by sector
+
+@tbl-heat-end-uses lists representative heat end uses and their temperatures in the Canadian industrial mix. Food and beverage processing, textiles, wood products, and light manufacturing are not separate CIMS sectors: Light Industrial represents them, and splits its heat into its own end uses (see @sec-light-industrial).
+
+| Sector | Representative end uses | Range (°C) |
+|:----|:---------|:-:|
+| Pulp and paper | Black-liquor evaporation, paper drying on steam-heated cylinders, digester heating | 100–180 |
+| Chemicals | Distillation reboilers, batch reactor heating, crystallization | 80–180 |
+| Mining, and oil and gas | Produced-water heating, glycol regeneration, remote-site building heat, gas processing | 60–200 |
+| Food and beverage | Pasteurization, sterilization, spray and tray drying, clean-in-place wash water | 60–200 |
+| Textiles, leather, and laundry | Dyeing baths, drying, finishing | 60–160 |
+| Wood products | Lumber kiln drying, panel pressing | 60–200 |
+| Light manufacturing and assembly | Paint curing, parts washing | 50–180 |
+
+: Representative industrial heat end uses and temperature ranges {#tbl-heat-end-uses}
+
+## Technologies
+
+The technologies below compete at every Steam node. Each carries the heat bands it can reach, so a technology competes only where its temperature suits the demand.
+
+{{< include _technology-blocks/general/steam.md >}}
+
+### Industrial heat pumps
+
+Closed-cycle vapour-compression heat pumps upgrade ambient or recovered low-grade heat to a useful temperature. Commercial products reach about 165 °C; units at 200 °C with novel working fluids are at the demonstration stage [@arpagaus; @zuhlsdorf]. Mechanical vapour recompression, an open-cycle heat pump applied to evaporators in dairy, sugar, and pulp operations, is the most mature variant.
+
+### Direct electrification
+
+Electric resistance and electrode boilers deliver steam at near-100 % efficiency for less capital than heat pumps, and are the simplest like-for-like replacement for packaged gas-fired boilers. They suit retrofits where low first cost matters [@eccc-nir]. Direct-contact electric processes (induction, infrared, microwave, and dielectric heating) serve specific drying, curing, and surface-heating duties, and appear in the sector chapters where those duties sit [@madeddu].
+
+### Solar thermal
+
+Flat-plate and evacuated-tube collectors supply heat up to about 100 °C; line-focus concentrators (parabolic trough and linear Fresnel) extend the range to 200 °C and beyond. @schoeneberger estimate that about half of global industrial heat demand falls within the range current commercial solar thermal technologies can reach. In Canada, solar resources are best in the Prairies and the southern interior of British Columbia [@iea-renewables].
+
+### Bioenergy
+
+Biomass boilers, biogas, and renewable natural gas serve as drop-in low-carbon supply where a site is built around combustion. Biomass is the dominant on-site heat source in the Canadian pulp and paper sector and matters in food processing near feedstock supply [@nrcan-bioheat]. Outside pulp and paper, Canadian bioheat systems mostly fall between 50 kW and 5 MW thermal; the 2023 update of CanmetENERGY's Canadian Bioheat Database reports that more than 90 % of catalogued commercial, institutional, and small industrial systems burn wood chips (about 45 %) or wood pellets (about 46 %) [@nrcan-bioheat-survey]. Wood chips dominate in Quebec, Ontario, British Columbia, and Nova Scotia; pellets account for nearly all use in New Brunswick and the Northwest Territories. CIMS represents the limits of sustainable biomass supply through energy supply curves rather than at the device level.
+
+### Geothermal heat and recovered waste heat
+
+Geothermal wells and geoexchange coupled with heat pumps can supply facility heat. Every industrial site is also a source of low-grade waste heat (from compressors, condensers, flue gases, and effluents) that it usually rejects. National-laboratory analyses estimate that recovered waste heat could in principle supply 20–50 % of industrial process heat [@ornl-waste]. Waste-heat recovery units compete as technologies at the Steam node.
+
+### Thermal energy storage
+
+Pressurized hot water, molten salt, and solid-media storage shift electrified heat to off-peak hours and extend solar thermal to continuous processes. Storage competes at the Steam node alongside the heat-supply technologies, charged either by electricity or by heat [@iea-fop].
+
+### Hydrogen
+
+Burning hydrogen for low-temperature heat rarely competes with direct electrification: converting electricity to hydrogen and back to heat loses far more energy than electric boilers or heat pumps, so hydrogen's value lies mainly in high-temperature and feedstock uses [@thiel; @rissman]. Fuel-fired boilers and heaters can burn hydrogen where a sector's fuel blend supplies it.
+
+## Existing stock
+
+Existing boiler stock, by sector and heat band, comes from CEUD and NIR base-year data. Existing units stay online for their modelled lifetimes past the base year and then need replacing; policy or other drivers can force earlier retirement. Capital costs, retrofit feasibility (see @sec-technology-competition), and sensitivity to electricity prices vary widely across these technologies.
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::
