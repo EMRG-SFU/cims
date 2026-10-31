@@ -1,0 +1,78 @@
+# Residential process flowchart. See appendix_figure-style.qmd for the format.
+sector: residential
+title: Residential
+
+groups:
+  - {label: Household end uses, cols: [4, 6], rows: [0, 2]}
+
+nodes:
+  - {id: households, label: Households, icon: people, role: input, at: [0, 1]}
+  - {id: dwellings, label: Dwellings by type, icon: house, role: process, at: [1, 1],
+     branches: [residential.product.building-type.lowmed-density,
+                residential.product.building-type.high-density]}
+  - {id: shell, label: Shell by vintage, icon: shell, role: process, at: [2, 1],
+     branches: [residential.product.building-type.lowmed-density.vintage,
+                residential.product.building-type.high-density.vintage]}
+  - id: heating
+    label: Space heating
+    icon: heat-pump
+    role: process
+    at: [3, 0]
+    branches:
+                - residential.product.building-type.lowmed-density.vintage.pre-1960-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.pre-1960-bldg-code.heating_marine
+                - residential.product.building-type.lowmed-density.vintage.1961-1980-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.1961-1980-bldg-code.heating_marine
+                - residential.product.building-type.lowmed-density.vintage.1981-2000-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.1981-2000-bldg-code.heating_marine
+                - residential.product.building-type.lowmed-density.vintage.2001-2020-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.2001-2020-bldg-code.heating_marine
+                - residential.product.building-type.lowmed-density.vintage.2021-2035-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.2021-2035-bldg-code.heating_marine
+                - residential.product.building-type.lowmed-density.vintage.post-2035-bldg-code.heating_cold
+                - residential.product.building-type.lowmed-density.vintage.post-2035-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.pre-1960-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.pre-1960-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.1961-1980-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.1961-1980-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.1981-2000-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.1981-2000-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.2001-2020-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.2001-2020-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.2021-2035-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.2021-2035-bldg-code.heating_marine
+                - residential.product.building-type.high-density.vintage.post-2035-bldg-code.heating_cold
+                - residential.product.building-type.high-density.vintage.post-2035-bldg-code.heating_marine
+  - {id: cooling, label: Space cooling, icon: air-conditioner, role: process, at: [3, 2],
+     branches: [residential.product.building-type.lowmed-density.cooling.central,
+                residential.product.building-type.lowmed-density.cooling.room,
+                residential.product.building-type.high-density.cooling.central,
+                residential.product.building-type.high-density.cooling.room]}
+
+  # end uses requested per household
+  - {id: water-heating, label: Water heating, icon: water-heater, role: service, at: [4, 0],
+     branches: [residential.service.water-heating.lowmed-density,
+                residential.service.water-heating.high-density]}
+  - {id: hot-water-use, label: Fixtures and hot water use, icon: water, role: service, at: [5, 0],
+     branch: residential.service.non-appliance-hot-water}
+  - {id: lighting, label: Lighting, icon: lightbulb, role: service, at: [6, 0],
+     branch: residential.service.lighting}
+  - {id: cold-storage, label: Refrigerators and freezers, icon: fridge, role: service, at: [4, 1],
+     branches: [residential.service.refrigerators, residential.service.freezers]}
+  - {id: ranges, label: Cooking ranges, icon: stove, role: service, at: [5, 1],
+     branch: residential.service.ranges}
+  - {id: washing, label: Dishwashing and laundry, icon: washer, role: service, at: [6, 1],
+     branches: [residential.service.dishwashing.machine, residential.service.dishwashing.non-machine,
+                residential.service.clothes-washing, residential.service.clothes-drying.machine,
+                residential.service.clothes-drying.air-dry]}
+  - {id: minor, label: Minor appliances, icon: plug, role: service, at: [4, 2],
+     branch: residential.service.minor-appliances}
+  - {id: solar, label: Rooftop solar PV, icon: solar, role: service, at: [5, 2],
+     branch: residential.service.solar-pv}
+
+edges:
+  - [households, dwellings]
+  - [dwellings, shell]
+  - {from: shell, to: heating, label: heat load}
+  - {from: shell, to: cooling, label: cooling load}
+  - {from: hot-water-use, to: water-heating, kind: energy, sides: [left, right]}

@@ -1,0 +1,111 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 476" width="1086" height="476" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Residential process flowchart">
+<defs>
+<symbol id="icon-air-conditioner" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="40" height="16" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M10 20 H38"/><path d="M14 32 V42 M24 32 V42 M34 32 V42 M11 35 L17 39 M17 35 L11 39 M21 35 L27 39 M27 35 L21 39 M31 35 L37 39 M37 35 L31 39"/></g></symbol>
+<symbol id="icon-fridge" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="3"/><path d="M12 18 H36 M16 10 V14 M16 24 V30"/></g></symbol>
+<symbol id="icon-heat-pump" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="28" rx="3"/><circle cx="19" cy="24" r="8"/><path d="M19 16 V32 M11 24 H27 M13 18 L25 30 M25 18 L13 30"/><path d="M32 18 H38 M32 24 H38 M32 30 H38"/></g></symbol>
+<symbol id="icon-house" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22 L24 7 L42 22"/><path d="M10 19 V41 H38 V19" fill="currentColor" fill-opacity="0.18"/><path d="M20 41 V30 H28 V41"/></g></symbol>
+<symbol id="icon-lightbulb" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 30 C10 25 10 16 15 11 C20 6 28 6 33 11 C38 16 38 25 31 30 V35 H17 Z"/><path d="M18 40 H30 M20 44 H28"/></g></symbol>
+<symbol id="icon-people" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="14" r="6"/><path d="M5 40 C5 30 10 24 17 24 C24 24 29 30 29 40 Z" fill="currentColor" fill-opacity="0.18"/><circle cx="33" cy="16" r="5"/><path d="M30 25 C32 24 34 24 35 24 C41 24 44 30 44 38 H31"/></g></symbol>
+<symbol id="icon-plug" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 V14 M32 4 V14 M10 14 H38 V22 A14 14 0 0 1 10 22 Z M24 36 V44"/></g></symbol>
+<symbol id="icon-shell" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22 L24 7 L42 22"/><path d="M10 19 V41 H38 V19"/><path d="M14 22 V37 H34 V22" stroke-dasharray="3 3"/><path d="M20 41 V31 H28 V41" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-solar" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 30 L14 12 H42 L36 30 Z" fill="currentColor" fill-opacity="0.18"/><path d="M11 21 H39 M23 12 L19 30 M33 12 L29 30 M22 30 V40 M14 40 H30"/></g></symbol>
+<symbol id="icon-stove" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="16" width="32" height="26" rx="2"/><path d="M8 24 H40"/><path d="M16 12 c-2-3 2-4 0-7 M24 12 c-2-3 2-4 0-7 M32 12 c-2-3 2-4 0-7"/><rect x="14" y="29" width="20" height="9"/></g></symbol>
+<symbol id="icon-washer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="32" height="36" rx="3"/><circle cx="24" cy="27" r="10"/><path d="M14 12 H22"/><circle cx="33" cy="12" r="1.5" fill="currentColor"/></g></symbol>
+<symbol id="icon-water" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 6 C20 13 24 17 24 22 A8 8 0 0 1 8 22 C8 17 12 13 16 6 Z"/><path d="M33 20 C37 27 41 31 41 35 A8 8 0 0 1 25 35 C25 31 29 27 33 20 Z"/></g></symbol>
+<symbol id="icon-water-heater" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="6" width="24" height="34" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M18 6 V2 M30 6 V2 M16 44 H32 M20 30 c-2-3 2-4 0-7 M28 30 c-2-3 2-4 0-7"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<rect x="624.0" y="37.0" width="438.0" height="386.0" rx="14" fill="#f4f6f8" stroke="#dde2e8"/>
+<text x="634.0" y="51.0" font-size="11.5" font-weight="700" letter-spacing="0.6" fill="#5a6472">HOUSEHOLD END USES</text>
+<path d="M 152.0 240.0 L 184.0 240.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 240.0 L 334.0 240.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 234.0 L 461.0 234.0 Q 468.0 234.0 468.0 227.0 L 468.0 119.0 Q 468.0 112.0 475.0 112.0 L 484.0 112.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="474.0" y="177.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">heat load</text>
+<path d="M 452.0 246.0 L 461.0 246.0 Q 468.0 246.0 468.0 253.0 L 468.0 361.0 Q 468.0 368.0 475.0 368.0 L 484.0 368.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="474.0" y="311.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">cooling load</text>
+<path d="M 784.0 112.0 L 752.0 112.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<g><title>Households</title>
+<rect x="34.0" y="195.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-people" x="74.0" y="203.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Households</text>
+</g>
+<g><title>Dwellings by type — residential.product.building-type.lowmed-density, residential.product.building-type.high-density</title>
+<rect x="184.0" y="195.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-house" x="224.0" y="203.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Dwellings by</text>
+<text x="243.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">type</text>
+</g>
+<g><title>Shell by vintage — residential.product.building-type.lowmed-density.vintage, residential.product.building-type.high-density.vintage</title>
+<rect x="334.0" y="195.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-shell" x="374.0" y="203.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Shell by</text>
+<text x="393.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">vintage</text>
+</g>
+<g><title>Space heating — residential.product.building-type.lowmed-density.vintage.pre-1960-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.pre-1960-bldg-code.heating_marine, residential.product.building-type.lowmed-density.vintage.1961-1980-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.1961-1980-bldg-code.heating_marine, residential.product.building-type.lowmed-density.vintage.1981-2000-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.1981-2000-bldg-code.heating_marine, residential.product.building-type.lowmed-density.vintage.2001-2020-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.2001-2020-bldg-code.heating_marine, residential.product.building-type.lowmed-density.vintage.2021-2035-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.2021-2035-bldg-code.heating_marine, residential.product.building-type.lowmed-density.vintage.post-2035-bldg-code.heating_cold, residential.product.building-type.lowmed-density.vintage.post-2035-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.pre-1960-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.pre-1960-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.1961-1980-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.1961-1980-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.1981-2000-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.1981-2000-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.2001-2020-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.2001-2020-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.2021-2035-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.2021-2035-bldg-code.heating_marine, residential.product.building-type.high-density.vintage.post-2035-bldg-code.heating_cold, residential.product.building-type.high-density.vintage.post-2035-bldg-code.heating_marine</title>
+<rect x="484.0" y="67.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-heat-pump" x="524.0" y="75.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Space heating</text>
+</g>
+<g><title>Space cooling — residential.product.building-type.lowmed-density.cooling.central, residential.product.building-type.lowmed-density.cooling.room, residential.product.building-type.high-density.cooling.central, residential.product.building-type.high-density.cooling.room</title>
+<rect x="484.0" y="323.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-air-conditioner" x="524.0" y="331.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="394.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Space cooling</text>
+</g>
+<g><title>Water heating — residential.service.water-heating.lowmed-density, residential.service.water-heating.high-density</title>
+<rect x="634.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-water-heater" x="674.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Water heating</text>
+</g>
+<g><title>Fixtures and hot water use — residential.service.non-appliance-hot-water</title>
+<rect x="784.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-water" x="824.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="843.0" y="130.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Fixtures and</text>
+<text x="843.0" y="146.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">hot water use</text>
+</g>
+<g><title>Lighting — residential.service.lighting</title>
+<rect x="934.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-lightbulb" x="974.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="993.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Lighting</text>
+</g>
+<g><title>Refrigerators and freezers — residential.service.refrigerators, residential.service.freezers</title>
+<rect x="634.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-fridge" x="674.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Refrigerators</text>
+<text x="693.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and freezers</text>
+</g>
+<g><title>Cooking ranges — residential.service.ranges</title>
+<rect x="784.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-stove" x="824.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="843.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Cooking ranges</text>
+</g>
+<g><title>Dishwashing and laundry — residential.service.dishwashing.machine, residential.service.dishwashing.non-machine, residential.service.clothes-washing, residential.service.clothes-drying.machine, residential.service.clothes-drying.air-dry</title>
+<rect x="934.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-washer" x="974.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="993.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Dishwashing</text>
+<text x="993.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and laundry</text>
+</g>
+<g><title>Minor appliances — residential.service.minor-appliances</title>
+<rect x="634.0" y="323.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-plug" x="674.0" y="331.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="386.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Minor</text>
+<text x="693.0" y="402.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">appliances</text>
+</g>
+<g><title>Rooftop solar PV — residential.service.solar-pv</title>
+<rect x="784.0" y="323.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-solar" x="824.0" y="331.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="843.0" y="386.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Rooftop solar</text>
+<text x="843.0" y="402.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">PV</text>
+</g>
+<rect x="22.0" y="448" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="458" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="448" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="458" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="448" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="458" font-size="11.5" fill="#5a6472">Site service</text>
+<path d="M 391.7 454 H 419.7" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="427.7" y="458" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 528.9 454 H 556.9" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="564.9" y="458" font-size="11.5" fill="#5a6472">Energy or service</text>
+</svg>
