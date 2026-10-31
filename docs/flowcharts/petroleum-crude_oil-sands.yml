@@ -1,0 +1,47 @@
+# Oil sands process flowchart (sub-sector of petroleum crude). See appendix_figure-style.qmd for the format.
+sector: petroleum-crude_oil-sands
+title: Oil sands
+
+nodes:
+  # mining route
+  - {id: haulage, label: Mine haulage, icon: truck, role: service, at: [1, 0],
+     branch: petroleum-crude.service.mine-haulage}
+  - {id: extraction, label: Bitumen extraction, icon: separator, role: process, at: [2, 0],
+     branch: petroleum-crude.product.bitumen.mining.extraction}
+  - {id: froth, label: Froth treatment, icon: separator, role: process, at: [3, 0],
+     branch: petroleum-crude.product.bitumen.mining.froth-treatment}
+  - {id: tailings, label: Tailings, icon: tailings, role: service, at: [2, 1],
+     branch: petroleum-crude.service.tailings-disposal}
+
+  # in-situ route
+  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 2]}
+  - {id: steam, label: Steam, icon: boiler, role: service, at: [1, 2],
+     branch: petroleum-crude.service.steam}
+  - {id: water, label: Produced water, icon: water, role: service, at: [1, 3],
+     branch: petroleum-crude.service.produced-water}
+  - {id: in-situ, label: In-situ recovery, icon: oil-sands, role: process, at: [2, 2],
+     branch: petroleum-crude.product.bitumen.in-situ}
+
+  # upgrading
+  - {id: primary, label: Primary upgrading, icon: refinery, role: process, at: [4, 0.5],
+     branch: petroleum-crude.product.bitumen.upgrading.primary}
+  - {id: secondary, label: Secondary upgrading, icon: reactor, role: process, at: [5, 0.5],
+     branch: petroleum-crude.product.bitumen.upgrading.secondary}
+  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: service, at: [5, 1.5],
+     branch: petroleum-crude.service.hydrogen}
+  - {id: sco, label: Synthetic crude, icon: liquid-fuel, role: output, at: [6, 0.5]}
+  - {id: dilbit, label: Diluted bitumen, icon: liquid-fuel, role: output, at: [6, 2]}
+
+edges:
+  - {from: haulage, to: extraction, kind: energy}
+  - [extraction, froth]
+  - {from: extraction, to: tailings, label: tailings}
+  - [froth, primary]
+  - {from: gas, to: steam}
+  - {from: water, to: steam, kind: energy}
+  - {from: steam, to: in-situ, kind: energy}
+  - [in-situ, primary]
+  - [in-situ, dilbit]
+  - [primary, secondary]
+  - {from: hydrogen, to: secondary, kind: energy}
+  - [secondary, sco]

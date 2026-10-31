@@ -1,0 +1,52 @@
+# Natural gas process flowchart. See appendix_figure-style.qmd for the format.
+sector: natural-gas
+title: Natural gas
+
+nodes:
+  - {id: drilling, label: Drilling, icon: well, role: process, at: [0, 0],
+     branch: natural-gas.product.supply.drilling}
+  - {id: completion, label: Well completion, icon: well, role: process, at: [1, 0],
+     branch: natural-gas.product.supply.completion}
+  - {id: transport, label: Field vehicles and equipment, icon: truck, role: service, at: [1, 1],
+     branch: natural-gas.product.supply.off-road-transport}
+  - {id: extraction, label: Extraction, icon: well, role: process, at: [2, 1],
+     branches: [natural-gas.product.supply.extraction.conventional, natural-gas.product.supply.extraction.shale,
+                natural-gas.product.supply.extraction.tight, natural-gas.product.supply.extraction.coalbed-methane]}
+  - {id: field, label: Artificial lift and treating, icon: pump, role: service, at: [2, 2],
+     branches: [natural-gas.service.artificial-lift, natural-gas.service.treating]}
+  - {id: acid-gas, label: Gas sweetening, icon: separator, role: process, at: [3, 0],
+     branch: natural-gas.product.supply.formation-co2}
+  - {id: processing, label: Gas processing, icon: column, role: process, at: [3, 1],
+     branches: [natural-gas.product.supply.processing.dehydration, natural-gas.product.supply.processing.ngl-recovery,
+                natural-gas.product.supply.processing.sulphur-recovery]}
+  - {id: heat, label: Process heaters, icon: furnace, role: service, at: [3, 2],
+     branch: natural-gas.product.supply.direct-heat}
+  - {id: compression, label: Compressor drives, icon: compressor, role: service, at: [4, 0],
+     branches: [natural-gas.service.compressor-drive.engine, natural-gas.service.compressor-drive.turbine]}
+  - {id: transmission, label: Transmission, icon: pipeline, role: process, at: [4, 1],
+     branch: natural-gas.product.transmission}
+  - {id: lng, label: Liquefaction, icon: lng, role: process, at: [4, 2],
+     branch: natural-gas.product.supply.lng-liquefaction}
+  - {id: methane, label: "Venting, leaks, and flaring", icon: flare, role: emission, at: [5, 0],
+     branches: [natural-gas.product.supply.fugitive, natural-gas.product.supply.flaring]}
+  - {id: distribution, label: Distribution, icon: pipeline, role: process, at: [5, 1],
+     branch: natural-gas.product.distribution}
+  - {id: export, label: LNG, icon: ship, role: output, at: [5, 2]}
+  - {id: delivered, label: Delivered gas, icon: natural-gas, role: output, at: [6, 1]}
+
+edges:
+  - [drilling, completion]
+  - [completion, extraction]
+  - {from: transport, to: extraction, kind: energy}
+  - {from: field, to: extraction, kind: energy}
+  - [extraction, processing]
+  - {from: processing, to: acid-gas, label: acid gas}
+  - {from: heat, to: processing, kind: energy}
+  - [processing, transmission]
+  - [processing, lng]
+  - {from: compression, to: transmission, kind: energy}
+  - [transmission, distribution]
+  - [lng, export]
+  - [distribution, delivered]
+  - {from: transmission, to: methane, kind: emission}
+  - {from: distribution, to: methane, kind: emission}

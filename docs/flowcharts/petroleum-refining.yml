@@ -1,0 +1,45 @@
+# Petroleum refining process flowchart. See appendix_figure-style.qmd for the format.
+sector: petroleum-refining
+title: Petroleum refining
+
+nodes:
+  - {id: crude, label: Crude oil and synthetic crude, icon: liquid-fuel, role: input, at: [0, 1]}
+  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: service, at: [1, 0],
+     branch: petroleum-refining.service.hydrogen}
+  - {id: distillation, label: Crude distillation, icon: column, role: process, at: [1, 1],
+     branch: petroleum-refining.product.petroleum-fractions.distillation}
+  - {id: heat, label: Process heaters, icon: furnace, role: service, at: [1, 2],
+     branch: petroleum-refining.service.direct-heat}
+  - {id: hydrotreating, label: Hydrotreating, icon: reactor, role: process, at: [2, 0],
+     branch: petroleum-refining.product.petroleum-fractions.hydrotreating.desulphurization}
+  - {id: coking, label: Coking, icon: furnace, role: process, at: [2, 1],
+     branch: petroleum-refining.product.petroleum-fractions.cracked-gas-oil.coking}
+  - {id: cracking, label: Cracking, icon: reactor, role: process, at: [2, 2],
+     branch: petroleum-refining.product.petroleum-fractions.cracked-gas-oil.hydrocracking}
+  - {id: reforming, label: Catalytic reforming, icon: reactor, role: process, at: [2, 3],
+     branch: petroleum-refining.product.reforming}
+  - {id: sulphur, label: Sulphur plant, icon: separator, role: process, at: [3, 0],
+     branch: petroleum-refining.product.petroleum-fractions.hydrotreating.sulphur-recovery}
+  - {id: alkylation, label: Alkylation and isomerization, icon: reactor, role: process, at: [3, 2],
+     branches: [petroleum-refining.product.alkylates, petroleum-refining.product.isomerization]}
+  - {id: feed, label: Coal or natural gas, icon: coal, role: input, at: [3, 3]}
+  - {id: synfuels, label: Synthetic fuels, icon: refinery, role: process, at: [4, 3],
+     branch: petroleum-refining.product.synthetic-fuels}
+  - {id: products, label: Refined products, icon: liquid-fuel, role: output, at: [5, 1.5]}
+
+edges:
+  - [crude, distillation]
+  - {from: hydrogen, to: hydrotreating, kind: energy}
+  - {from: heat, to: distillation, kind: energy}
+  - [distillation, hydrotreating]
+  - [distillation, coking]
+  - [distillation, cracking]
+  - [distillation, reforming]
+  - [hydrotreating, sulphur]
+  - [cracking, alkylation]
+  - {from: hydrotreating, to: products, turn: early}
+  - {from: coking, to: products, turn: early}
+  - {from: reforming, to: products, turn: early}
+  - [alkylation, products]
+  - [feed, synfuels]
+  - [synfuels, products]

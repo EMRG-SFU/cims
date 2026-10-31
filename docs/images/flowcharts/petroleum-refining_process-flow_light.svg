@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 574" width="936" height="574" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Petroleum refining process flowchart">
+<defs>
+<symbol id="icon-coal" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 38 L12 25 L22 23 L28 31 L24 39 Z" fill="currentColor" fill-opacity="0.55"/><path d="M22 23 L32 14 L42 21 L39 35 L28 31"/><path d="M28 31 L39 35"/></g></symbol>
+<symbol id="icon-column" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="4" width="16" height="40" rx="8"/><path d="M16 14 H32 M16 21 H32 M16 28 H32 M16 35 H32 M32 9 H42 M6 39 H16"/></g></symbol>
+<symbol id="icon-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14 H40 V38 H8 Z"/><path d="M8 22 H40" /><path d="M17 38 c-3-4 3-5 0-9 M24 38 c-3-4 3-5 0-9 M31 38 c-3-4 3-5 0-9"/><path d="M33 14 V6 H38 V14"/></g></symbol>
+<symbol id="icon-hydrogen" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="24" r="9"/><circle cx="33" cy="24" r="9"/><text x="15" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text><text x="33" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text></g></symbol>
+<symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
+<symbol id="icon-reactor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10 H36 V36 A12 6 0 0 1 12 36 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V30 M17 30 H31 M18 26 L30 34 M30 26 L18 34"/></g></symbol>
+<symbol id="icon-refinery" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="8" height="28" rx="4"/><rect x="18" y="6" width="8" height="36" rx="4"/><path d="M30 42 V24 A8 4 0 0 1 46 24 V42" fill="currentColor" fill-opacity="0.18"/><path d="M2 42 H46"/></g></symbol>
+<symbol id="icon-separator" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6 H38 V20 L28 32 V42 H20 V32 L10 20 Z"/><path d="M10 20 H38"/><path d="M38 12 H44"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<path d="M 152.0 210.0 L 184.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 243.0 293.0 L 243.0 255.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 302.0 192.0 L 311.0 192.0 Q 318.0 192.0 318.0 185.0 L 318.0 95.0 Q 318.0 88.0 325.0 88.0 L 334.0 88.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 204.0 L 334.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 216.0 L 311.0 216.0 Q 318.0 216.0 318.0 223.0 L 318.0 331.0 Q 318.0 338.0 325.0 338.0 L 334.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 228.0 L 311.0 228.0 Q 318.0 228.0 318.0 235.0 L 318.0 459.0 Q 318.0 466.0 325.0 466.0 L 334.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 76.0 L 484.0 76.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 338.0 L 484.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 88.0 L 464.0 88.0 Q 471.0 88.0 471.0 95.0 L 471.0 243.0 Q 471.0 250.0 478.0 250.0 L 784.0 250.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 210.0 L 461.0 210.0 Q 468.0 210.0 468.0 217.0 L 468.0 255.0 Q 468.0 262.0 475.0 262.0 L 784.0 262.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 466.0 L 461.0 466.0 Q 468.0 466.0 468.0 459.0 L 468.0 293.0 Q 468.0 286.0 475.0 286.0 L 784.0 286.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 338.0 L 686.0 338.0 Q 693.0 338.0 693.0 331.0 L 693.0 281.0 Q 693.0 274.0 700.0 274.0 L 784.0 274.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 466.0 L 634.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 752.0 466.0 L 761.0 466.0 Q 768.0 466.0 768.0 459.0 L 768.0 305.0 Q 768.0 298.0 775.0 298.0 L 784.0 298.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<g><title>Crude oil and synthetic crude</title>
+<rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-liquid-fuel" x="74.0" y="173.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="220.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Crude oil and</text>
+<text x="93.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">synthetic</text>
+<text x="93.0" y="251.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crude</text>
+</g>
+<g><title>Hydrogen — petroleum-refining.service.hydrogen</title>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-hydrogen" x="224.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="243.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+</g>
+<g><title>Crude distillation — petroleum-refining.product.petroleum-fractions.distillation</title>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-column" x="224.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Crude</text>
+<text x="243.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">distillation</text>
+</g>
+<g><title>Process heaters — petroleum-refining.service.direct-heat</title>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-furnace" x="224.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="243.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Process</text>
+<text x="243.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">heaters</text>
+</g>
+<g><title>Hydrotreating — petroleum-refining.product.petroleum-fractions.hydrotreating.desulphurization</title>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-reactor" x="374.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrotreating</text>
+</g>
+<g><title>Coking — petroleum-refining.product.petroleum-fractions.cracked-gas-oil.coking</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-furnace" x="374.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Coking</text>
+</g>
+<g><title>Cracking — petroleum-refining.product.petroleum-fractions.cracked-gas-oil.hydrocracking</title>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-reactor" x="374.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Cracking</text>
+</g>
+<g><title>Catalytic reforming — petroleum-refining.product.reforming</title>
+<rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-reactor" x="374.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Catalytic</text>
+<text x="393.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">reforming</text>
+</g>
+<g><title>Sulphur plant — petroleum-refining.product.petroleum-fractions.hydrotreating.sulphur-recovery</title>
+<rect x="484.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-separator" x="524.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Sulphur plant</text>
+</g>
+<g><title>Alkylation and isomerization — petroleum-refining.product.alkylates, petroleum-refining.product.isomerization</title>
+<rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-reactor" x="524.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Alkylation and</text>
+<text x="543.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">isomerization</text>
+</g>
+<g><title>Coal or natural gas</title>
+<rect x="484.0" y="421.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-coal" x="524.0" y="429.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="543.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Coal or</text>
+<text x="543.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">natural gas</text>
+</g>
+<g><title>Synthetic fuels — petroleum-refining.product.synthetic-fuels</title>
+<rect x="634.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-refinery" x="674.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
+<text x="693.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Synthetic</text>
+<text x="693.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">fuels</text>
+</g>
+<g><title>Refined products</title>
+<rect x="784.0" y="229.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-liquid-fuel" x="824.0" y="237.0" width="38" height="38" style="color:#ffffff"/>
+<text x="843.0" y="292.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Refined</text>
+<text x="843.0" y="308.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">products</text>
+</g>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="556" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="556" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="556" font-size="11.5" fill="#5a6472">Site service</text>
+<rect x="391.7" y="546" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
+<text x="413.7" y="556" font-size="11.5" fill="#5a6472">Product</text>
+<path d="M 478.4 552 H 506.4" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="514.4" y="556" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 615.6 552 H 643.6" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="651.6" y="556" font-size="11.5" fill="#5a6472">Energy or service</text>
+</svg>
