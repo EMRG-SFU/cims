@@ -1,0 +1,124 @@
+# Shared visual style for the sector process flowcharts.
+#
+# Every flowchart in images/flowcharts/ is generated from this file, the
+# sector specs in this folder (<hierarchy-sector>.yml), and the pictograms in
+# icons/. Change a value here and rebuild to restyle every chart at once:
+#
+#   uv run --with pyyaml python docs/flowcharts/build_flowcharts.py
+#
+# The appendix "Figure style" (appendix_figure-style.qmd) documents these
+# settings and shows the icon gallery.
+
+# Where the CIMS hierarchy lives. The build checks every `branch:` in a spec
+# against it. The path is relative to this folder; set the environment
+# variable CIMS_HIERARCHY_CSV to override it.
+hierarchy_csv: ../../../../tech_data/database/harmonized/records/cims_hierarchy.csv
+
+# Output folder (relative to this folder) and file naming.
+output_dir: ../images/flowcharts
+output_name: "{sector}_process-flow_{mode}.svg"
+
+font:
+  family: "'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+  label_size: 12.5        # node labels
+  label_weight: 600
+  note_size: 10.5         # second line under a label, edge labels, legend
+  group_size: 11.5        # group (band) titles
+  group_weight: 700
+  group_letter_spacing: 0.6
+  char_width: 0.53        # average glyph width as a share of font size, for wrapping
+
+layout:
+  col_width: 150          # distance between column centres
+  row_height: 128         # distance between row centres (leaves room for group titles)
+  margin: 18
+  group_pad: 10           # padding between a group band and its nodes
+  group_title_height: 20
+  legend_gap: 26          # space above the legend
+
+node:
+  width: 118
+  height: 90
+  radius: 10
+  stroke_width: 1.4
+  icon_size: 38
+  icon_top: 8             # icon offset from the top of the card
+  label_max_chars: 17     # wrap labels longer than this
+  label_line_height: 1.15
+
+edge:
+  width: 1.7
+  arrow_size: 7
+  corner_radius: 7
+  label_offset: 4
+  kinds:                  # line pattern for each kind of flow
+    material: {dash: "", colour: material}
+    energy:   {dash: "5 4", colour: energy}
+    emission: {dash: "1.5 3.5", colour: emission}
+
+# Card style for each role. Colour names refer to the palettes below.
+roles:
+  input:    {fill: input_fill,    stroke: input_stroke,    icon: input_icon,    text: ink, legend: "Purchased input"}
+  process:  {fill: process_fill,  stroke: process_stroke,  icon: process_icon,  text: ink, legend: "Process step"}
+  service:  {fill: service_fill,  stroke: service_stroke,  icon: service_icon,  text: ink, legend: "Site service"}
+  output:   {fill: output_fill,   stroke: output_stroke,   icon: output_icon,   text: output_text, legend: "Product"}
+  emission: {fill: emission_fill, stroke: emission_stroke, icon: emission_icon, text: ink, legend: "Emission or capture", dash: "4 3"}
+
+legend_edges:
+  material: "Material flow"
+  energy: "Energy or service"
+  emission: "CO₂ or other emissions"
+
+palettes:
+  light:
+    ink: "#1f2a37"
+    muted: "#5a6472"
+    input_fill: "#f5efe5"
+    input_stroke: "#b8976a"
+    input_icon: "#7d5b30"
+    process_fill: "#e4eef9"
+    process_stroke: "#3d6ea5"
+    process_icon: "#2b5788"
+    service_fill: "#e6f2e8"
+    service_stroke: "#5b8f66"
+    service_icon: "#3d6c48"
+    output_fill: "#2f4466"
+    output_stroke: "#2f4466"
+    output_icon: "#ffffff"
+    output_text: "#ffffff"
+    emission_fill: "#f1f2f4"
+    emission_stroke: "#8a96a3"
+    emission_icon: "#5a6472"
+    material: "#4a5563"
+    energy: "#c0691f"
+    emission: "#8a96a3"
+    group_fill: "#f4f6f8"
+    group_stroke: "#dde2e8"
+    group_text: "#5a6472"
+    halo: "#ffffff"          # outline behind edge labels; match the page background
+  dark:
+    ink: "#e6e9ec"
+    muted: "#a3acb6"
+    input_fill: "#3a3226"
+    input_stroke: "#c9a979"
+    input_icon: "#e6cc9f"
+    process_fill: "#1f3550"
+    process_stroke: "#6fa0d8"
+    process_icon: "#acd0f4"
+    service_fill: "#21392a"
+    service_stroke: "#78b386"
+    service_icon: "#acdcb6"
+    output_fill: "#acd0f4"
+    output_stroke: "#acd0f4"
+    output_icon: "#13233a"
+    output_text: "#13233a"
+    emission_fill: "#2b2f34"
+    emission_stroke: "#8f9aa6"
+    emission_icon: "#c3cad3"
+    material: "#c3cad3"
+    energy: "#eda15c"
+    emission: "#8f9aa6"
+    group_fill: "#262a2f"
+    group_stroke: "#363c43"
+    group_text: "#a3acb6"
+    halo: "#222222"

@@ -163,6 +163,57 @@ img.img-fluid[src$=".png"] {
   border-radius: 0.25rem;
 }
 
+/* Sector process flowcharts (images/flowcharts/). These are generated in
+   a light and a dark version (docs/flowcharts/build_flowcharts.py) and
+   embedded as a pair with the .light-content and .dark-content classes,
+   so each already suits its theme: drop the white backplate above, and
+   in the lightbox give each version a backplate in its own page colour. */
+img.figure-img[src*="images/flowcharts/"],
+img.img-fluid[src*="images/flowcharts/"] {
+  background-color: transparent;
+  padding: 0;
+}
+.glightbox-container .gslide-image img[src*="_light.svg"] {
+  background-color: #fff;
+}
+.glightbox-container .gslide-image img[src*="_dark.svg"] {
+  background-color: #222;
+}
+
+/* Technology blocks in the sector chapters: the archetypes that compete at
+   a process step, set apart from the process description they belong to.
+   Written as a fenced div with the .tech-block class around a definition
+   list or table. */
+.tech-block {
+  margin: 0.75rem 0 1.75rem 0;
+  padding: 0.6rem 1rem 0.4rem 1rem;
+  border-left: 4px solid #3d6ea5;
+  background-color: rgba(61, 110, 165, 0.06);
+  border-radius: 0 0.35rem 0.35rem 0;
+  font-size: 0.92em;
+}
+.tech-block > p:first-child {
+  margin-bottom: 0.35rem;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #3d6ea5;
+}
+.tech-block table {
+  margin-bottom: 0.4rem;
+}
+.tech-block td:first-child {
+  width: 34%;
+}
+.quarto-dark .tech-block {
+  border-left-color: #6fa0d8;
+  background-color: rgba(111, 160, 216, 0.08);
+}
+.quarto-dark .tech-block > p:first-child {
+  color: #8fb8e6;
+}
+
 /* (Dark-mode logo swap is handled natively by _brand.yml's light/dark
    logo pair — Quarto fills its own `.light-content`/`.dark-content` image
    slots, so no CSS swap is needed here.) */

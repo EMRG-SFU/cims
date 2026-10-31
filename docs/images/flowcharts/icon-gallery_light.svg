@@ -1,0 +1,302 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 836" width="936" height="836" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Flowchart icon gallery">
+<defs>
+<symbol id="icon-air-separation" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="12" height="36" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M8 16 H20 M8 24 H20 M8 32 H20"/><path d="M20 12 H30"/>
+  <text x="36" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none">O₂</text><path d="M20 36 H30"/><text x="37" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none">N₂</text></g></symbol>
+<symbol id="icon-battery" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="32" height="20" rx="3"/><path d="M38 20 H42 V28 H38"/><rect x="10" y="18" width="16" height="12" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-biomass" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39 C9 20 22 9 40 8 C40 27 29 39 9 39 Z" fill="currentColor" fill-opacity="0.18"/><path d="M9 39 L30 18"/></g></symbol>
+<symbol id="icon-blast-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4 H30 L33 12 L36 32 L31 42 H17 L12 32 L15 12 Z" fill="currentColor" fill-opacity="0.18"/><path d="M15 12 H33 M12 32 H36 M8 30 H12 M36 30 H40"/><path d="M24 42 V46"/></g></symbol>
+<symbol id="icon-boiler" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="8" width="28" height="26" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M16 42 c-3-4 3-5 0-8 M24 42 c-3-4 3-5 0-8 M32 42 c-3-4 3-5 0-8"/><path d="M38 14 H44 V4"/></g></symbol>
+<symbol id="icon-brick" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="12" width="18" height="10"/><rect x="26" y="12" width="18" height="10"/><rect x="14" y="26" width="20" height="10" fill="currentColor" fill-opacity="0.18"/><rect x="4" y="26" width="6" height="10"/><rect x="38" y="26" width="6" height="10"/></g></symbol>
+<symbol id="icon-building" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="28" height="36" fill="currentColor" fill-opacity="0.18"/><path d="M16 13 H20 M28 13 H32 M16 20 H20 M28 20 H32 M16 27 H20 M28 27 H32 M21 42 V35 H27 V42 M4 42 H44"/></g></symbol>
+<symbol id="icon-bus" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="28" rx="4" fill="currentColor" fill-opacity="0.18"/><path d="M6 22 H42 M12 14 H36"/><circle cx="14" cy="38" r="3"/><circle cx="34" cy="38" r="3"/></g></symbol>
+<symbol id="icon-car" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 L10 20 C11 17 13 16 16 16 H32 C35 16 37 17 38 20 L42 30 V36 H6 Z" fill="currentColor" fill-opacity="0.18"/><path d="M6 30 H42"/><circle cx="14" cy="36" r="4"/><circle cx="34" cy="36" r="4"/></g></symbol>
+<symbol id="icon-caster" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 H38 L34 12 H14 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 12 V18 M18 18 H30 V24 H18 Z"/><path d="M24 24 V30 C24 38 30 42 38 42 H46" stroke-width="4"/><circle cx="20" cy="34" r="2"/><circle cx="30" cy="36" r="2"/></g></symbol>
+<symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-cement" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8 H36 L40 40 H8 Z" fill="currentColor" fill-opacity="0.18"/><path d="M12 16 H36"/><text x="24" y="33" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">C</text></g></symbol>
+<symbol id="icon-charger" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="20" height="36" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M22 14 L16 24 H24 L18 34"/><path d="M30 18 H36 V36 A4 4 0 0 0 44 36 V28"/></g></symbol>
+<symbol id="icon-chemical" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 H29 M21 5 V18 L9 39 A3 3 0 0 0 12 43 H36 A3 3 0 0 0 39 39 L27 18 V5"/><path d="M13 32 H35 L39 39 A3 3 0 0 1 36 43 H12 A3 3 0 0 1 9 39 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-co2" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 36 A9 9 0 0 1 13 18 A11 11 0 0 1 34 15 A9 9 0 0 1 36 36 Z"/><text x="24" y="31" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-coal" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 38 L12 25 L22 23 L28 31 L24 39 Z" fill="currentColor" fill-opacity="0.55"/><path d="M22 23 L32 14 L42 21 L39 35 L28 31"/><path d="M28 31 L39 35"/></g></symbol>
+<symbol id="icon-coating" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 V42 H40 V22"/><path d="M8 30 H40 V42 H8 Z" fill="currentColor" fill-opacity="0.18"/><path d="M2 8 L16 36 H32 L46 8" stroke-width="3"/><circle cx="38" cy="8" r="0.1"/></g></symbol>
+<symbol id="icon-coil" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="5"/></g></symbol>
+<symbol id="icon-coke-oven" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="16" width="30" height="26" fill="currentColor" fill-opacity="0.18"/><path d="M11 16 V42 M17 16 V42 M23 16 V42 M29 16 V42"/><path d="M38 42 V8 H43 V42 M2 42 H46"/><path d="M40 6 c-2-2 1-4 3-3"/></g></symbol>
+<symbol id="icon-column" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="4" width="16" height="40" rx="8"/><path d="M16 14 H32 M16 21 H32 M16 28 H32 M16 35 H32 M32 9 H42 M6 39 H16"/></g></symbol>
+<symbol id="icon-compressor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="20" width="16" height="16" rx="2"/><path d="M22 28 H26"/><rect x="26" y="10" width="14" height="30" rx="7" fill="currentColor" fill-opacity="0.18"/><path d="M33 10 V5"/></g></symbol>
+<symbol id="icon-converter" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 12 L18 6 H30 L34 12 L37 30 A13 12 0 0 1 11 30 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V24" stroke-width="3"/><path d="M6 30 H11 M37 30 H42"/></g></symbol>
+<symbol id="icon-conveyor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="26" width="38" height="10" rx="5"/><circle cx="10" cy="31" r="2"/><circle cx="38" cy="31" r="2"/><path d="M12 26 L15 18 H22 L25 26 M27 26 L29 20 H35 L37 26"/></g></symbol>
+<symbol id="icon-cow" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20 H34 C38 20 40 22 40 26 V30 H34 V40 M30 30 V40 M12 30 V40 M16 30 V40 M8 20 V30 H34"/><path d="M34 20 L38 14 L44 16 L42 22"/></g></symbol>
+<symbol id="icon-crusher" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 L20 36 H28 L42 8"/><path d="M14 8 L22 28 M34 8 L26 28"/><path d="M19 42 l2-3 l3 2 l2-3 l3 4" /></g></symbol>
+<symbol id="icon-dryer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="36" height="16" rx="8"/><path d="M14 38 c-3-3 3-4 0-7 M24 38 c-3-3 3-4 0-7 M34 38 c-3-3 3-4 0-7"/><path d="M12 9 H36"/></g></symbol>
+<symbol id="icon-eaf" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 H42 L38 38 A6 6 0 0 1 32 42 H16 A6 6 0 0 1 10 38 Z" fill="currentColor" fill-opacity="0.18"/><path d="M17 4 V24 M24 4 V24 M31 4 V24 M4 20 H44"/><path d="M20 28 l2 3 l2-3 l2 3"/></g></symbol>
+<symbol id="icon-electricity" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M27 4 L11 27 H23 L20 44 L37 19 H25 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-electrolysis" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 V40 H42 V16"/><path d="M6 26 H42" stroke-dasharray="3 3"/><path d="M15 8 V34 M33 8 V34"/><path d="M22 4 L19 10 H24 L21 16" /></g></symbol>
+<symbol id="icon-factory" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 42 V24 L14 18 V24 L24 18 V24 L34 18 V42 Z" fill="currentColor" fill-opacity="0.18"/><path d="M34 42 V8 H40 V42 M2 42 H46"/></g></symbol>
+<symbol id="icon-fan" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="3"/><path d="M24 21 C20 12 25 5 31 7 C35 13 30 19 26 22 Z M27 25 C37 25 41 31 37 36 C30 37 27 31 25 27 Z M22 26 C17 34 9 35 8 29 C11 23 18 23 22 26 Z"/><circle cx="24" cy="24" r="19"/></g></symbol>
+<symbol id="icon-fertilizer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8 H36 L38 42 H10 Z" fill="currentColor" fill-opacity="0.18"/><path d="M12 16 H36 M24 22 V36 M24 30 C19 30 17 26 17 23 C21 23 24 26 24 30 M24 28 C29 28 31 24 31 21 C27 21 24 24 24 28"/></g></symbol>
+<symbol id="icon-flare" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 44 V18 M18 44 H30"/><path d="M24 16 C18 12 22 6 24 2 C26 6 30 10 26 16 Z"/></g></symbol>
+<symbol id="icon-fridge" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="3"/><path d="M12 18 H36 M16 10 V14 M16 24 V30"/></g></symbol>
+<symbol id="icon-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14 H40 V38 H8 Z"/><path d="M8 22 H40" /><path d="M17 38 c-3-4 3-5 0-9 M24 38 c-3-4 3-5 0-9 M31 38 c-3-4 3-5 0-9"/><path d="M33 14 V6 H38 V14"/></g></symbol>
+<symbol id="icon-glass" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6 H34 L32 24 A8 8 0 0 1 16 24 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 32 V42 M16 42 H32"/></g></symbol>
+<symbol id="icon-gypsum" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 36 L16 12 H32 L40 36 Z" fill="currentColor" fill-opacity="0.18"/><path d="M16 12 L20 36 M32 12 L28 36"/></g></symbol>
+<symbol id="icon-headframe" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 42 L18 10 H30 L38 42 M14 26 H34 M24 10 V42"/><circle cx="24" cy="8" r="4"/><path d="M4 42 H44"/></g></symbol>
+<symbol id="icon-heat-exchanger" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="36" height="20" rx="10"/><path d="M12 24 c4-6 8 6 12 0 s8 6 12 0"/><path d="M14 14 V8 M34 34 V40"/></g></symbol>
+<symbol id="icon-heat-pump" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="28" rx="3"/><circle cx="19" cy="24" r="8"/><path d="M19 16 V32 M11 24 H27 M13 18 L25 30 M25 18 L13 30"/><path d="M32 18 H38 M32 24 H38 M32 30 H38"/></g></symbol>
+<symbol id="icon-house" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22 L24 7 L42 22"/><path d="M10 19 V41 H38 V19" fill="currentColor" fill-opacity="0.18"/><path d="M20 41 V30 H28 V41"/></g></symbol>
+<symbol id="icon-hydro" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 H26 V42 H6 Z"/><path d="M26 30 c4 0 6 4 10 4 s6-4 10-4 M26 38 c4 0 6 4 10 4 s6-4 10-4"/><path d="M12 18 H20 M12 24 H20"/></g></symbol>
+<symbol id="icon-hydrogen" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="24" r="9"/><circle cx="33" cy="24" r="9"/><text x="15" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text><text x="33" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text></g></symbol>
+<symbol id="icon-ingot" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 34 L14 22 H42 L34 34 Z" fill="currentColor" fill-opacity="0.18"/><path d="M6 34 V40 H34 V34 M34 40 L42 28 V22"/></g></symbol>
+<symbol id="icon-kiln" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 L41 11 L43 21 L7 29 Z" fill="currentColor" fill-opacity="0.18"/><path d="M13 27 L11 40 M33 16 L35 40 M8 40 H40"/><path d="M3 31 c3-2 0-5 3-7"/></g></symbol>
+<symbol id="icon-ladle" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16 H38 L35 40 H13 Z" fill="currentColor" fill-opacity="0.18"/><path d="M10 16 L5 12 M8 22 C2 20 2 10 10 8 H38 C46 10 46 20 40 22"/><path d="M18 28 c2 2 4-2 6 0 s4-2 6 0"/></g></symbol>
+<symbol id="icon-landfill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 40 C10 26 18 20 26 20 C34 20 40 28 44 40 Z" fill="currentColor" fill-opacity="0.18"/><path d="M26 20 V8 H34 M34 8 c3-2 3 2 6 0"/></g></symbol>
+<symbol id="icon-lightbulb" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 30 C10 25 10 16 15 11 C20 6 28 6 33 11 C38 16 38 25 31 30 V35 H17 Z"/><path d="M18 40 H30 M20 44 H28"/></g></symbol>
+<symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
+<symbol id="icon-lng" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 H42 L38 40 H10 Z" fill="currentColor" fill-opacity="0.18"/><circle cx="16" cy="22" r="8"/><circle cx="32" cy="22" r="8"/></g></symbol>
+<symbol id="icon-log" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18 H36 A5 9 0 0 1 36 36 H8"/><ellipse cx="8" cy="27" rx="5" ry="9"/><circle cx="8" cy="27" r="3"/></g></symbol>
+<symbol id="icon-methane" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="7"/><circle cx="24" cy="7" r="4"/><circle cx="24" cy="41" r="4"/><circle cx="7" cy="24" r="4"/><circle cx="41" cy="24" r="4"/><path d="M24 11 V17 M24 31 V37 M11 24 H17 M31 24 H37"/><text x="24" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" stroke="none">C</text></g></symbol>
+<symbol id="icon-mill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="13" width="34" height="20" rx="10" fill="currentColor" fill-opacity="0.18"/><circle cx="17" cy="23" r="3"/><circle cx="25" cy="27" r="3"/><circle cx="30" cy="20" r="3"/><path d="M12 33 L10 41 M36 33 L38 41 M6 41 H42"/></g></symbol>
+<symbol id="icon-motor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="14" width="24" height="20" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M32 24 H44 M14 14 V10 M20 14 V10 M26 14 V10 M12 34 L10 40 M28 34 L30 40 M8 40 H34"/></g></symbol>
+<symbol id="icon-natural-gas" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C31 13 37 20 37 29 A13 13 0 0 1 11 29 C11 22 15 18 18 13 C20 19 22 22 25 22 C26 16 23 11 24 5 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-nuclear" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="4" fill="currentColor"/><ellipse cx="24" cy="24" rx="18" ry="7"/><ellipse cx="24" cy="24" rx="18" ry="7" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="18" ry="7" transform="rotate(-60 24 24)"/></g></symbol>
+<symbol id="icon-offshore" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 c4-3 8 3 12 0 s8 3 12 0 s8 3 12 0 s4 2 6 1"/><path d="M12 34 V20 H36 V34 M18 20 V12 H26 V20 M30 20 V6 M14 42 H34"/></g></symbol>
+<symbol id="icon-oil-sands" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 H44 V40 H4 Z" fill="currentColor" fill-opacity="0.18"/><circle cx="12" cy="26" r="2"/><circle cx="22" cy="32" r="2"/><circle cx="32" cy="25" r="2"/><circle cx="38" cy="34" r="2"/><path d="M18 18 V8 L28 4"/></g></symbol>
+<symbol id="icon-open-pit" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14 H10 L13 20 H18 L21 26 H27 L30 20 H35 L38 14 H46"/><path d="M4 36 H44" stroke-dasharray="3 4"/></g></symbol>
+<symbol id="icon-ore" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 39 L13 26 L21 30 L28 18 L37 23 L43 39 Z" fill="currentColor" fill-opacity="0.18"/><path d="M13 26 L17 39 M28 18 L25 39 M37 23 L33 39"/></g></symbol>
+<symbol id="icon-oxygen" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="24" r="10"/><circle cx="31" cy="24" r="10"/><text x="17" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">O</text><text x="31" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">O</text></g></symbol>
+<symbol id="icon-paper" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 8 H32 L38 14 V40 H10 Z"/><path d="M32 8 V14 H38 M16 20 H32 M16 26 H32 M16 32 H26"/></g></symbol>
+<symbol id="icon-paper-roll" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="13" cy="24" rx="7" ry="14" fill="currentColor" fill-opacity="0.18"/><circle cx="13" cy="24" r="3"/><path d="M13 10 H38 V38 H13"/><path d="M38 38 L44 38"/></g></symbol>
+<symbol id="icon-pickling" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 V40 H42 V20"/><path d="M6 28 c4-2 8 2 12 0 s8 2 12 0 s8 2 12 0"/><path d="M2 12 L14 34 H34 L46 12" stroke-width="3"/></g></symbol>
+<symbol id="icon-pipeline" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18 H45 M3 30 H45"/><path d="M14 14 V34 M34 14 V34" stroke-width="4"/></g></symbol>
+<symbol id="icon-plane" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4 C24 2 26 4 26 6 V18 L42 28 V32 L26 27 V38 L31 42 V44 L24 42 L17 44 V42 L22 38 V27 L6 32 V28 L22 18 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-plastic" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 6 L39 15 V33 L24 42 L9 33 V15 Z"/><circle cx="24" cy="24" r="5"/><path d="M24 6 V19 M39 33 L28 27 M9 33 L20 27"/></g></symbol>
+<symbol id="icon-plug" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 V14 M32 4 V14 M10 14 H38 V22 A14 14 0 0 1 10 22 Z M24 36 V44"/></g></symbol>
+<symbol id="icon-power-line" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L14 44 M24 4 L34 44 M10 14 H38 M14 24 H34 M17 34 H31"/><path d="M4 14 C6 18 8 18 10 14 M38 14 C40 18 42 18 44 14"/></g></symbol>
+<symbol id="icon-process" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="10" width="32" height="28" rx="4" fill="currentColor" fill-opacity="0.18"/><path d="M16 24 H32 M26 18 L32 24 L26 30"/></g></symbol>
+<symbol id="icon-pulp" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 H42 L38 40 H10 Z" fill="currentColor" fill-opacity="0.18"/><path d="M10 24 c4-3 8 3 12 0 s8 3 12 0 s4 3 6 1"/></g></symbol>
+<symbol id="icon-pump" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="20" cy="26" r="12"/><path d="M20 14 H42 V22 H32"/><path d="M6 26 H8 M20 26 L27 19"/><path d="M10 42 H30"/></g></symbol>
+<symbol id="icon-reactor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10 H36 V36 A12 6 0 0 1 12 36 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V30 M17 30 H31 M18 26 L30 34 M30 26 L18 34"/></g></symbol>
+<symbol id="icon-refinery" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="8" height="28" rx="4"/><rect x="18" y="6" width="8" height="36" rx="4"/><path d="M30 42 V24 A8 4 0 0 1 46 24 V42" fill="currentColor" fill-opacity="0.18"/><path d="M2 42 H46"/></g></symbol>
+<symbol id="icon-rolling-mill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="13" r="9"/><circle cx="24" cy="35" r="9"/><path d="M2 24 H46" stroke-width="3"/><path d="M24 13 h0 M24 35 h0" stroke-width="4"/></g></symbol>
+<symbol id="icon-scrap" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 33 L41 21 M9 22 L39 37 M17 11 L25 41"/><circle cx="35" cy="12" r="5"/></g></symbol>
+<symbol id="icon-separator" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 6 H38 V20 L28 32 V42 H20 V32 L10 20 Z"/><path d="M10 20 H38"/><path d="M38 12 H44"/></g></symbol>
+<symbol id="icon-shaft-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10 H32 V40 H16 Z" fill="currentColor" fill-opacity="0.18"/><path d="M14 10 L20 3 H28 L34 10"/><path d="M4 30 H16 M10 26 L16 30 L10 34 M24 40 V46"/></g></symbol>
+<symbol id="icon-ship" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 30 H44 L38 40 H10 Z" fill="currentColor" fill-opacity="0.18"/><path d="M12 30 V20 H34 V30 M18 20 V12 H26 V20"/></g></symbol>
+<symbol id="icon-sinter" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="24" width="40" height="10" rx="5" fill="currentColor" fill-opacity="0.18"/><circle cx="9" cy="29" r="2"/><circle cx="39" cy="29" r="2"/><path d="M12 20 c-2-3 2-4 0-7 M20 20 c-2-3 2-4 0-7 M28 20 c-2-3 2-4 0-7"/><path d="M6 40 H42" stroke-dasharray="2 3"/></g></symbol>
+<symbol id="icon-slab" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 30 L14 20 H44 L34 30 Z" fill="currentColor" fill-opacity="0.18"/><path d="M4 30 V36 H34 V30 M34 36 L44 26 V20"/></g></symbol>
+<symbol id="icon-soil" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 30 H44" /><path d="M4 30 V42 H44 V30" fill="currentColor" fill-opacity="0.18"/><path d="M24 30 V12 M24 18 C18 18 15 14 14 10 C20 10 23 13 24 18 M24 22 C30 22 33 18 34 14 C28 14 25 17 24 22"/></g></symbol>
+<symbol id="icon-solar" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 30 L14 12 H42 L36 30 Z" fill="currentColor" fill-opacity="0.18"/><path d="M11 21 H39 M23 12 L19 30 M33 12 L29 30 M22 30 V40 M14 40 H30"/></g></symbol>
+<symbol id="icon-stack" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 44 L17 14 H25 L28 44 Z" fill="currentColor" fill-opacity="0.18"/><path d="M21 10 C17 6 23 3 27 5 C31 2 38 4 37 9 C42 10 41 16 36 16 C33 19 27 18 26 15"/></g></symbol>
+<symbol id="icon-steam" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 42 c-5-6 5-9 0-15 s5-9 0-15 M24 42 c-5-6 5-9 0-15 s5-9 0-15 M34 42 c-5-6 5-9 0-15 s5-9 0-15"/></g></symbol>
+<symbol id="icon-stove" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="16" width="32" height="26" rx="2"/><path d="M8 24 H40"/><path d="M16 12 c-2-3 2-4 0-7 M24 12 c-2-3 2-4 0-7 M32 12 c-2-3 2-4 0-7"/><rect x="14" y="29" width="20" height="9"/></g></symbol>
+<symbol id="icon-tailings" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 C10 28 16 28 24 32 C32 36 38 34 44 30 V40 H4 Z" fill="currentColor" fill-opacity="0.18"/><path d="M8 24 L16 14 L24 24 M26 22 L33 12 L40 22"/></g></symbol>
+<symbol id="icon-tank" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12 V38 A14 4 0 0 0 38 38 V12"/><ellipse cx="24" cy="12" rx="14" ry="4" fill="currentColor" fill-opacity="0.18"/><path d="M10 25 A14 4 0 0 0 38 25"/></g></symbol>
+<symbol id="icon-thermometer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 30 V9 A4 4 0 0 1 28 9 V30 A8 8 0 1 1 20 30 Z"/><circle cx="24" cy="36" r="3" fill="currentColor"/><path d="M24 33 V16 M32 12 H36 M32 18 H36 M32 24 H36"/></g></symbol>
+<symbol id="icon-tool" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 6 A10 10 0 0 0 18 20 L6 32 A4 4 0 0 0 12 38 L24 26 A10 10 0 0 0 38 16 L32 22 L26 20 L24 14 Z"/></g></symbol>
+<symbol id="icon-tractor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 30 V18 H22 L26 28 H38 V30"/><circle cx="14" cy="34" r="8"/><circle cx="36" cy="36" r="5"/><path d="M12 18 V10"/></g></symbol>
+<symbol id="icon-train" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="28" height="30" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M10 22 H38 M16 36 L10 44 M32 36 L38 44"/><circle cx="17" cy="29" r="2"/><circle cx="31" cy="29" r="2"/></g></symbol>
+<symbol id="icon-tree" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L38 24 H30 L40 36 H8 L18 24 H10 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 36 V44"/></g></symbol>
+<symbol id="icon-truck" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 H28 V34 H4 Z" fill="currentColor" fill-opacity="0.18"/><path d="M28 22 H37 L43 28 V34 H28"/><circle cx="12" cy="36" r="4"/><circle cx="35" cy="36" r="4"/></g></symbol>
+<symbol id="icon-washer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="32" height="36" rx="3"/><circle cx="24" cy="27" r="10"/><path d="M14 12 H22"/><circle cx="33" cy="12" r="1.5" fill="currentColor"/></g></symbol>
+<symbol id="icon-waste" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 41 C10 27 18 22 24 22 C30 22 38 27 43 41 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 22 V9 M20 9 H28"/><path d="M14 33 h4 M27 31 h5"/></g></symbol>
+<symbol id="icon-water" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 6 C20 13 24 17 24 22 A8 8 0 0 1 8 22 C8 17 12 13 16 6 Z"/><path d="M33 20 C37 27 41 31 41 35 A8 8 0 0 1 25 35 C25 31 29 27 33 20 Z"/></g></symbol>
+<symbol id="icon-well" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 42 H42 M16 42 L22 14 L28 42 M10 18 L38 10 M34 11 V26 M22 14 L22 14"/><circle cx="22" cy="14" r="2"/><path d="M38 10 L42 14"/></g></symbol>
+<symbol id="icon-wind" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 20 V44 M18 44 H30"/><circle cx="24" cy="18" r="2.5"/><path d="M24 16 L22 3 L26 3 Z M26 19 L38 25 L36 28 Z M22 19 L10 25 L12 28 Z"/></g></symbol>
+</defs>
+<use href="#icon-air-separation" x="36.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">air-separation</text>
+<use href="#icon-battery" x="128.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">battery</text>
+<use href="#icon-biomass" x="220.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">biomass</text>
+<use href="#icon-blast-furnace" x="312.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">blast-furnace</text>
+<use href="#icon-boiler" x="404.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">boiler</text>
+<use href="#icon-brick" x="496.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">brick</text>
+<use href="#icon-building" x="588.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">building</text>
+<use href="#icon-bus" x="680.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">bus</text>
+<use href="#icon-car" x="772.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">car</text>
+<use href="#icon-caster" x="864.0" y="16" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="70" text-anchor="middle" font-size="10.5" fill="#5a6472">caster</text>
+<use href="#icon-ccs" x="36.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">ccs</text>
+<use href="#icon-cement" x="128.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">cement</text>
+<use href="#icon-charger" x="220.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">charger</text>
+<use href="#icon-chemical" x="312.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">chemical</text>
+<use href="#icon-co2" x="404.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">co2</text>
+<use href="#icon-coal" x="496.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">coal</text>
+<use href="#icon-coating" x="588.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">coating</text>
+<use href="#icon-coil" x="680.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">coil</text>
+<use href="#icon-coke-oven" x="772.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">coke-oven</text>
+<use href="#icon-column" x="864.0" y="98" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="152" text-anchor="middle" font-size="10.5" fill="#5a6472">column</text>
+<use href="#icon-compressor" x="36.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">compressor</text>
+<use href="#icon-converter" x="128.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">converter</text>
+<use href="#icon-conveyor" x="220.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">conveyor</text>
+<use href="#icon-cow" x="312.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">cow</text>
+<use href="#icon-crusher" x="404.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">crusher</text>
+<use href="#icon-dryer" x="496.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">dryer</text>
+<use href="#icon-eaf" x="588.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">eaf</text>
+<use href="#icon-electricity" x="680.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">electricity</text>
+<use href="#icon-electrolysis" x="772.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">electrolysis</text>
+<use href="#icon-factory" x="864.0" y="180" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="234" text-anchor="middle" font-size="10.5" fill="#5a6472">factory</text>
+<use href="#icon-fan" x="36.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">fan</text>
+<use href="#icon-fertilizer" x="128.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">fertilizer</text>
+<use href="#icon-flare" x="220.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">flare</text>
+<use href="#icon-fridge" x="312.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">fridge</text>
+<use href="#icon-furnace" x="404.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">furnace</text>
+<use href="#icon-glass" x="496.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">glass</text>
+<use href="#icon-gypsum" x="588.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">gypsum</text>
+<use href="#icon-headframe" x="680.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">headframe</text>
+<use href="#icon-heat-exchanger" x="772.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">heat-exchanger</text>
+<use href="#icon-heat-pump" x="864.0" y="262" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="316" text-anchor="middle" font-size="10.5" fill="#5a6472">heat-pump</text>
+<use href="#icon-house" x="36.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">house</text>
+<use href="#icon-hydro" x="128.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">hydro</text>
+<use href="#icon-hydrogen" x="220.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">hydrogen</text>
+<use href="#icon-ingot" x="312.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">ingot</text>
+<use href="#icon-kiln" x="404.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">kiln</text>
+<use href="#icon-ladle" x="496.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">ladle</text>
+<use href="#icon-landfill" x="588.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">landfill</text>
+<use href="#icon-lightbulb" x="680.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">lightbulb</text>
+<use href="#icon-liquid-fuel" x="772.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">liquid-fuel</text>
+<use href="#icon-lng" x="864.0" y="344" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="398" text-anchor="middle" font-size="10.5" fill="#5a6472">lng</text>
+<use href="#icon-log" x="36.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">log</text>
+<use href="#icon-methane" x="128.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">methane</text>
+<use href="#icon-mill" x="220.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">mill</text>
+<use href="#icon-motor" x="312.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">motor</text>
+<use href="#icon-natural-gas" x="404.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">natural-gas</text>
+<use href="#icon-nuclear" x="496.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">nuclear</text>
+<use href="#icon-offshore" x="588.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">offshore</text>
+<use href="#icon-oil-sands" x="680.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">oil-sands</text>
+<use href="#icon-open-pit" x="772.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">open-pit</text>
+<use href="#icon-ore" x="864.0" y="426" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="480" text-anchor="middle" font-size="10.5" fill="#5a6472">ore</text>
+<use href="#icon-oxygen" x="36.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">oxygen</text>
+<use href="#icon-paper" x="128.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">paper</text>
+<use href="#icon-paper-roll" x="220.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">paper-roll</text>
+<use href="#icon-pickling" x="312.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">pickling</text>
+<use href="#icon-pipeline" x="404.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">pipeline</text>
+<use href="#icon-plane" x="496.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">plane</text>
+<use href="#icon-plastic" x="588.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">plastic</text>
+<use href="#icon-plug" x="680.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">plug</text>
+<use href="#icon-power-line" x="772.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">power-line</text>
+<use href="#icon-process" x="864.0" y="508" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="562" text-anchor="middle" font-size="10.5" fill="#5a6472">process</text>
+<use href="#icon-pulp" x="36.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">pulp</text>
+<use href="#icon-pump" x="128.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">pump</text>
+<use href="#icon-reactor" x="220.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">reactor</text>
+<use href="#icon-refinery" x="312.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">refinery</text>
+<use href="#icon-rolling-mill" x="404.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">rolling-mill</text>
+<use href="#icon-scrap" x="496.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">scrap</text>
+<use href="#icon-separator" x="588.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">separator</text>
+<use href="#icon-shaft-furnace" x="680.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">shaft-furnace</text>
+<use href="#icon-ship" x="772.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">ship</text>
+<use href="#icon-sinter" x="864.0" y="590" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="644" text-anchor="middle" font-size="10.5" fill="#5a6472">sinter</text>
+<use href="#icon-slab" x="36.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">slab</text>
+<use href="#icon-soil" x="128.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">soil</text>
+<use href="#icon-solar" x="220.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">solar</text>
+<use href="#icon-stack" x="312.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">stack</text>
+<use href="#icon-steam" x="404.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">steam</text>
+<use href="#icon-stove" x="496.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">stove</text>
+<use href="#icon-tailings" x="588.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">tailings</text>
+<use href="#icon-tank" x="680.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">tank</text>
+<use href="#icon-thermometer" x="772.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">thermometer</text>
+<use href="#icon-tool" x="864.0" y="672" width="36" height="36" style="color:#2b5788"/>
+<text x="882.0" y="726" text-anchor="middle" font-size="10.5" fill="#5a6472">tool</text>
+<use href="#icon-tractor" x="36.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="54.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">tractor</text>
+<use href="#icon-train" x="128.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="146.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">train</text>
+<use href="#icon-tree" x="220.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="238.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">tree</text>
+<use href="#icon-truck" x="312.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="330.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">truck</text>
+<use href="#icon-washer" x="404.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="422.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">washer</text>
+<use href="#icon-waste" x="496.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="514.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">waste</text>
+<use href="#icon-water" x="588.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="606.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">water</text>
+<use href="#icon-well" x="680.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="698.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">well</text>
+<use href="#icon-wind" x="772.0" y="754" width="36" height="36" style="color:#2b5788"/>
+<text x="790.0" y="808" text-anchor="middle" font-size="10.5" fill="#5a6472">wind</text>
+</svg>

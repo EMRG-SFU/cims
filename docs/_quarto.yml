@@ -109,6 +109,7 @@ book:
     - appendix_acronyms.qmd
     - appendix_file-formats.qmd
     - appendix_equations.qmd
+    - appendix_figure-style.qmd
     - appendix_changelog.qmd
 
 format:
