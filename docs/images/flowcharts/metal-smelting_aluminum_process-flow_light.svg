@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 786 597" width="786" height="597" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Aluminium process flowchart">
+<defs>
+<symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-coal" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 38 L12 25 L22 23 L28 31 L24 39 Z" fill="currentColor" fill-opacity="0.55"/><path d="M22 23 L32 14 L42 21 L39 35 L28 31"/><path d="M28 31 L39 35"/></g></symbol>
+<symbol id="icon-electrolysis" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 V40 H42 V16"/><path d="M6 26 H42" stroke-dasharray="3 3"/><path d="M15 8 V34 M33 8 V34"/><path d="M22 4 L19 10 H24 L21 16" /></g></symbol>
+<symbol id="icon-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14 H40 V38 H8 Z"/><path d="M8 22 H40" /><path d="M17 38 c-3-4 3-5 0-9 M24 38 c-3-4 3-5 0-9 M31 38 c-3-4 3-5 0-9"/><path d="M33 14 V6 H38 V14"/></g></symbol>
+<symbol id="icon-ingot" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 34 L14 22 H42 L34 34 Z" fill="currentColor" fill-opacity="0.18"/><path d="M6 34 V40 H34 V34 M34 40 L42 28 V22"/></g></symbol>
+<symbol id="icon-kiln" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19 L41 11 L43 21 L7 29 Z" fill="currentColor" fill-opacity="0.18"/><path d="M13 27 L11 40 M33 16 L35 40 M8 40 H40"/><path d="M3 31 c3-2 0-5 3-7"/></g></symbol>
+<symbol id="icon-ore" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 39 L13 26 L21 30 L28 18 L37 23 L43 39 Z" fill="currentColor" fill-opacity="0.18"/><path d="M13 26 L17 39 M28 18 L25 39 M37 23 L33 39"/></g></symbol>
+<symbol id="icon-reactor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10 H36 V36 A12 6 0 0 1 12 36 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V30 M17 30 H31 M18 26 L30 34 M30 26 L18 34"/></g></symbol>
+<symbol id="icon-scrap" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 33 L41 21 M9 22 L39 37 M17 11 L25 41"/><circle cx="35" cy="12" r="5"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<path d="M 152.0 82.0 L 484.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 543.0 127.0 L 543.0 165.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 152.0 210.0 L 184.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 210.0 L 334.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 204.0 L 634.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 466.0 L 484.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 466.0 L 611.0 466.0 Q 618.0 466.0 618.0 459.0 L 618.0 223.0 Q 618.0 216.0 625.0 216.0 L 634.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 393.0 255.0 L 393.0 293.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<path d="M 543.0 255.0 L 543.0 331.0 Q 543.0 338.0 536.0 338.0 L 452.0 338.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<g><title>Petroleum coke and pitch</title>
+<rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-coal" x="74.0" y="45.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Petroleum coke</text>
+<text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and pitch</text>
+</g>
+<g><title>Bauxite</title>
+<rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-ore" x="74.0" y="173.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Bauxite</text>
+</g>
+<g><title>Scrap</title>
+<rect x="34.0" y="421.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-scrap" x="74.0" y="429.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Scrap</text>
+</g>
+<g><title>Anode plant — metal-smelting.service.anode-production</title>
+<rect x="484.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-furnace" x="524.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="543.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Anode plant</text>
+</g>
+<g><title>Bayer digestion — metal-smelting.product.aluminum.primary-aluminum.alumina.digestion</title>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-reactor" x="224.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Bayer</text>
+<text x="243.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">digestion</text>
+</g>
+<g><title>Alumina calcination — metal-smelting.product.aluminum.primary-aluminum.alumina.calcination</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-kiln" x="374.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Alumina</text>
+<text x="393.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">calcination</text>
+</g>
+<g><title>Electrolysis — metal-smelting.product.aluminum.primary-aluminum.electrolysis</title>
+<rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-electrolysis" x="524.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Electrolysis</text>
+</g>
+<g><title>CO₂ capture — metal-smelting.service.ccs.diffuse</title>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#f1f2f4" stroke="#8a96a3" stroke-width="1.4" stroke-dasharray="4 3"/>
+<use href="#icon-ccs" x="374.0" y="301.0" width="38" height="38" style="color:#5a6472"/>
+<text x="393.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">CO₂ capture</text>
+</g>
+<g><title>Recycling and remelting — metal-smelting.product.aluminum.recycle</title>
+<rect x="484.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-furnace" x="524.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Recycling and</text>
+<text x="543.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">remelting</text>
+</g>
+<g><title>Aluminium</title>
+<rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-ingot" x="674.0" y="173.0" width="38" height="38" style="color:#ffffff"/>
+<text x="693.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Aluminium</text>
+</g>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="556" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="556" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="556" font-size="11.5" fill="#5a6472">Site service</text>
+<rect x="391.7" y="546" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
+<text x="413.7" y="556" font-size="11.5" fill="#5a6472">Product</text>
+<rect x="478.4" y="546" width="16" height="12" rx="3" fill="#f1f2f4" stroke="#8a96a3" stroke-dasharray="4 3"/>
+<text x="500.4" y="556" font-size="11.5" fill="#5a6472">Emission or capture</text>
+<path d="M 22.0 575.0 H 50.0" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="58.0" y="579.0" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 159.2 575.0 H 187.2" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="195.2" y="579.0" font-size="11.5" fill="#5a6472">Energy or service</text>
+<path d="M 320.9 575.0 H 348.9" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="356.9" y="579.0" font-size="11.5" fill="#5a6472">CO₂ or other emissions</text>
+</svg>

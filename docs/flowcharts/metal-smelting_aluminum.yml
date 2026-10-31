@@ -1,0 +1,34 @@
+# Aluminium process flowchart (sub-sector of metal smelting). See appendix_figure-style.qmd.
+sector: metal-smelting_aluminum
+title: Aluminium
+
+nodes:
+  - {id: coke, label: Petroleum coke and pitch, icon: coal, role: input, at: [0, 0]}
+  - {id: bauxite, label: Bauxite, icon: ore, role: input, at: [0, 1]}
+  - {id: scrap, label: Scrap, icon: scrap, role: input, at: [0, 3]}
+
+  - {id: anode, label: Anode plant, icon: furnace, role: service, at: [3, 0],
+     branch: metal-smelting.service.anode-production}
+  - {id: digestion, label: Bayer digestion, icon: reactor, role: process, at: [1, 1],
+     branch: metal-smelting.product.aluminum.primary-aluminum.alumina.digestion}
+  - {id: calcination, label: Alumina calcination, icon: kiln, role: process, at: [2, 1],
+     branch: metal-smelting.product.aluminum.primary-aluminum.alumina.calcination}
+  - {id: electrolysis, label: Electrolysis, icon: electrolysis, role: process, at: [3, 1],
+     branch: metal-smelting.product.aluminum.primary-aluminum.electrolysis}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 2],
+     branches: [metal-smelting.service.ccs.diffuse]}
+  - {id: recycle, label: Recycling and remelting, icon: furnace, role: process, at: [3, 3],
+     branch: metal-smelting.product.aluminum.recycle}
+  - {id: aluminium, label: Aluminium, icon: ingot, role: output, at: [4, 1]}
+
+edges:
+  - [coke, anode]
+  - {from: anode, to: electrolysis, kind: energy}
+  - [bauxite, digestion]
+  - [digestion, calcination]
+  - [calcination, electrolysis]
+  - [electrolysis, aluminium]
+  - [scrap, recycle]
+  - [recycle, aluminium]
+  - {from: calcination, to: capture, kind: emission}
+  - {from: electrolysis, to: capture, kind: emission, sides: [bottom, right]}

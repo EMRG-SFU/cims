@@ -1,0 +1,54 @@
+# Base metals, magnesium, and titanium slag (sub-sector of metal smelting). See appendix_figure-style.qmd.
+sector: metal-smelting_base-metals
+title: Base metals, magnesium, and titanium slag
+
+nodes:
+  - {id: conc, label: Sulphide concentrates, icon: ore, role: input, at: [0, 1]}
+  - {id: mg-feed, label: Dolomite or brine, icon: chemical, role: input, at: [0, 4]}
+  - {id: ilmenite, label: Ilmenite, icon: ore, role: input, at: [0, 5]}
+
+  - {id: roasting, label: Roasting, icon: furnace, role: process, at: [1, 0],
+     branches: [metal-smelting.product.zinc.pyrometallurgy.roasting, metal-smelting.product.lead.pyrometallurgy.roasting]}
+  - {id: smelting, label: Smelting, icon: furnace, role: process, at: [1, 1],
+     branches: [metal-smelting.product.copper.pyrometallurgy.smelting, metal-smelting.product.nickel.pyrometallurgy.smelting,
+                metal-smelting.product.lead.pyrometallurgy.smelting]}
+  - {id: acid, label: Acid plant, icon: reactor, role: service, at: [1, 2],
+     branch: metal-smelting.service.acid-plant}
+  - {id: oxygen, label: Oxygen, icon: air-separation, role: service, at: [2, 0],
+     branch: metal-smelting.service.oxygen}
+  - {id: converting, label: Converting, icon: converter, role: process, at: [2, 1],
+     branches: [metal-smelting.product.copper.pyrometallurgy.converting, metal-smelting.product.nickel.pyrometallurgy.converting]}
+  - {id: refining, label: Refining, icon: electrolysis, role: process, at: [3, 1],
+     branches: [metal-smelting.product.copper.pyrometallurgy.refining, metal-smelting.product.nickel.pyrometallurgy.refining,
+                metal-smelting.product.lead.pyrometallurgy.refining]}
+  - {id: hydro, label: Leaching and electrowinning, icon: reactor, role: process, at: [2, 3],
+     branches: [metal-smelting.product.copper.hydrometallurgy, metal-smelting.product.nickel.hydrometallurgy,
+                metal-smelting.product.zinc.hydrometallurgy]}
+  - {id: melt-cast, label: Melting and casting, icon: furnace, role: process, at: [4, 1],
+     branches: [metal-smelting.product.copper.melt-cast, metal-smelting.product.nickel.melt-cast,
+                metal-smelting.product.lead.melt-cast, metal-smelting.product.zinc.melt-cast,
+                metal-smelting.product.magnesium.melt-cast]}
+  - {id: metals, label: Refined metals, icon: ingot, role: output, at: [5, 1]}
+  - {id: magnesium, label: Magnesium production, icon: electrolysis, role: process, at: [1, 4],
+     branches: [metal-smelting.product.magnesium.electrolysis, metal-smelting.product.magnesium.thermal-reduction]}
+  - {id: electric-smelting, label: Electric smelting, icon: eaf, role: process, at: [1, 5],
+     branches: [metal-smelting.product.titanium-slag.pyrometallurgy.roasting,
+                metal-smelting.product.titanium-slag.pyrometallurgy.smelting]}
+  - {id: ti-slag, label: Titanium slag, icon: slab, role: output, at: [2, 5]}
+
+edges:
+  - [conc, smelting]
+  - [conc, roasting]
+  - [smelting, converting]
+  - [converting, refining]
+  - [refining, melt-cast]
+  - [melt-cast, metals]
+  - {from: oxygen, to: converting, kind: energy}
+  - {from: smelting, to: acid, kind: emission, label: SO₂}
+  - {from: conc, to: hydro, turn: early}
+  - [roasting, hydro]
+  - {from: hydro, to: melt-cast, turn: late}
+  - {from: magnesium, to: melt-cast, turn: late}
+  - [mg-feed, magnesium]
+  - [ilmenite, electric-smelting]
+  - [electric-smelting, ti-slag]
