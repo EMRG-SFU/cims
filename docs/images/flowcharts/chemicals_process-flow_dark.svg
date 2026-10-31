@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 486 620" width="486" height="620" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Chemicals process flowchart">
+<defs>
+<symbol id="icon-ammonia" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="8"/><circle cx="24" cy="7" r="4"/><circle cx="9" cy="34" r="4"/><circle cx="39" cy="34" r="4"/><path d="M24 16 V11 M17 28 L12 32 M31 28 L36 32"/><text x="24" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" stroke="none">N</text></g></symbol>
+<symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-column" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="16" y="4" width="16" height="40" rx="8"/><path d="M16 14 H32 M16 21 H32 M16 28 H32 M16 35 H32 M32 9 H42 M6 39 H16"/></g></symbol>
+<symbol id="icon-electrolysis" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 V40 H42 V16"/><path d="M6 26 H42" stroke-dasharray="3 3"/><path d="M15 8 V34 M33 8 V34"/><path d="M22 4 L19 10 H24 L21 16" /></g></symbol>
+<symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
+<symbol id="icon-natural-gas" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C31 13 37 20 37 29 A13 13 0 0 1 11 29 C11 22 15 18 18 13 C20 19 22 22 25 22 C26 16 23 11 24 5 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-reactor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10 H36 V36 A12 6 0 0 1 12 36 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V30 M17 30 H31 M18 26 L30 34 M30 26 L18 34"/></g></symbol>
+<symbol id="icon-salt" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L40 14 V34 L24 44 L8 34 V14 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 4 V44 M8 14 L40 34 M40 14 L8 34"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c3cad3"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#eda15c"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8f9aa6"/></marker>
+</defs>
+<path d="M 152.0 76.0 L 184.0 76.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 88.0 L 161.0 88.0 Q 168.0 88.0 168.0 95.0 L 168.0 203.0 Q 168.0 210.0 175.0 210.0 L 184.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 338.0 L 184.0 338.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 466.0 L 184.0 466.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 334.0 82.0 L 302.0 82.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 334.0 338.0 L 302.0 338.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 302.0 210.0 L 334.0 210.0" fill="none" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<g><title>Natural gas</title>
+<rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-natural-gas" x="74.0" y="45.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Natural gas</text>
+</g>
+<g><title>Ethane, propane, and naphtha</title>
+<rect x="34.0" y="293.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-liquid-fuel" x="74.0" y="301.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="348.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ethane,</text>
+<text x="93.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">propane, and</text>
+<text x="93.0" y="379.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">naphtha</text>
+</g>
+<g><title>Salt and electricity</title>
+<rect x="34.0" y="421.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-salt" x="74.0" y="429.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Salt and</text>
+<text x="93.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">electricity</text>
+</g>
+<g><title>Nitrogen products — chemicals.product.ammonia, chemicals.product.nitric-acid, chemicals.product.urea, chemicals.product.fertilizer, chemicals.product.adipic-acid</title>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-ammonia" x="224.0" y="45.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="243.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Nitrogen</text>
+<text x="243.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">products</text>
+</g>
+<g><title>Methanol — chemicals.product.methanol</title>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-reactor" x="224.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="243.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Methanol</text>
+</g>
+<g><title>Petrochemicals — chemicals.product.petrochemicals.olefins, chemicals.product.petrochemicals.aromatics, chemicals.product.petrochemicals.polymers, chemicals.product.petrochemicals.derivatives</title>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-column" x="224.0" y="301.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="243.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Petrochemicals</text>
+</g>
+<g><title>Chlor-alkali and oxidants — chemicals.product.chlor-alkali.chlorine-electrolysis, chemicals.product.chlor-alkali.caustic-evaporation, chemicals.product.sodium-chlorate, chemicals.product.hydrogen-peroxide</title>
+<rect x="184.0" y="421.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-electrolysis" x="224.0" y="429.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="243.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Chlor-alkali</text>
+<text x="243.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">and oxidants</text>
+</g>
+<g><title>N₂O abatement — chemicals.service.n2o-abatement</title>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-reactor" x="374.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">N₂O abatement</text>
+</g>
+<g><title>CO₂ capture — chemicals.service.ccs.concentrated, chemicals.service.ccs.diffuse</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#2b2f34" stroke="#8f9aa6" stroke-width="1.4" stroke-dasharray="4 3"/>
+<use href="#icon-ccs" x="374.0" y="173.0" width="38" height="38" style="color:#c3cad3"/>
+<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">CO₂ capture</text>
+</g>
+<g><title>Distillation — chemicals.service.distillation</title>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-column" x="374.0" y="301.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="393.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Distillation</text>
+</g>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#3a3226" stroke="#c9a979"/>
+<text x="44.0" y="556" font-size="11.5" fill="#a3acb6">Purchased input</text>
+<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#1f3550" stroke="#6fa0d8"/>
+<text x="179.4" y="556" font-size="11.5" fill="#a3acb6">Process step</text>
+<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#21392a" stroke="#78b386"/>
+<text x="296.6" y="556" font-size="11.5" fill="#a3acb6">Site service</text>
+<rect x="22.0" y="569.0" width="16" height="12" rx="3" fill="#2b2f34" stroke="#8f9aa6" stroke-dasharray="4 3"/>
+<text x="44.0" y="579.0" font-size="11.5" fill="#a3acb6">Emission or capture</text>
+<path d="M 181.8 575.0 H 209.8" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="217.8" y="579.0" font-size="11.5" fill="#a3acb6">Material flow</text>
+<path d="M 22.0 598.0 H 50.0" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="58.0" y="602.0" font-size="11.5" fill="#a3acb6">Energy or service</text>
+<path d="M 183.6 598.0 H 211.6" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="219.6" y="602.0" font-size="11.5" fill="#a3acb6">CO₂ or other emissions</text>
+</svg>

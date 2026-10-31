@@ -1,0 +1,40 @@
+# Nitrogen products flowchart (Chemicals). See appendix_figure-style.qmd for the format.
+sector: chemicals_nitrogen
+title: Nitrogen products
+
+nodes:
+  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 1]}
+  - {id: ka, label: Cyclohexanol and cyclohexanone, icon: chemical, role: input, at: [0, 3]}
+
+  - {id: ammonia, label: Ammonia, icon: ammonia, role: process, at: [1, 1],
+     branch: chemicals.product.ammonia}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [1, 0],
+     branch: chemicals.service.ccs.concentrated}
+  - {id: urea, label: Urea, icon: reactor, role: process, at: [2, 0],
+     branch: chemicals.product.urea}
+  - {id: nitric, label: Nitric acid, icon: reactor, role: process, at: [2, 2],
+     branch: chemicals.product.nitric-acid}
+  - {id: fertilizer, label: Other fertilizers, icon: fertilizer, role: process, at: [3, 1],
+     branch: chemicals.product.fertilizer}
+  - {id: n2o, label: N₂O abatement, icon: reactor, role: service, at: [3, 2],
+     branch: chemicals.service.n2o-abatement}
+  - {id: adipic, label: Adipic acid, icon: reactor, role: process, at: [3, 3],
+     branch: chemicals.product.adipic-acid}
+
+  - {id: out-fert, label: Fertilizers, icon: fertilizer, role: output, at: [4, 1]}
+  - {id: out-adipic, label: Nylon intermediates, icon: plastic, role: output, at: [4, 3]}
+
+edges:
+  - [gas, ammonia]
+  - {from: ammonia, to: capture, kind: emission}
+  - [ammonia, urea]
+  - [ammonia, fertilizer]
+  - [ammonia, nitric]
+  - {from: nitric, to: fertilizer, turn: late}
+  - {from: nitric, to: adipic, turn: late}
+  - [ka, adipic]
+  - {from: n2o, to: nitric, kind: energy, sides: [left, right]}
+  - {from: n2o, to: adipic, kind: energy}
+  - {from: urea, to: out-fert, turn: late}
+  - [fertilizer, out-fert]
+  - [adipic, out-adipic]

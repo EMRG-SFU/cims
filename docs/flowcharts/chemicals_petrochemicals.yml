@@ -1,0 +1,42 @@
+# Petrochemicals and methanol flowchart (Chemicals). See appendix_figure-style.qmd for the format.
+sector: chemicals_petrochemicals
+title: Petrochemicals and methanol
+
+nodes:
+  - {id: ethane, label: Ethane and propane, icon: natural-gas, role: input, at: [0, 0]}
+  - {id: naphtha, label: Naphtha and reformate, icon: liquid-fuel, role: input, at: [0, 2]}
+  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 3]}
+
+  - {id: olefins, label: Olefins, icon: column, role: process, at: [1, 0],
+     branch: chemicals.product.petrochemicals.olefins}
+  - {id: distillation, label: Distillation, icon: column, role: service, at: [1, 1],
+     branch: chemicals.service.distillation}
+  - {id: aromatics, label: Aromatics, icon: separator, role: process, at: [1, 2],
+     branch: chemicals.product.petrochemicals.aromatics}
+  - {id: methanol, label: Methanol, icon: reactor, role: process, at: [1, 3],
+     branch: chemicals.product.methanol}
+  - {id: polymers, label: Polymers, icon: plastic, role: process, at: [2, 0],
+     branch: chemicals.product.petrochemicals.polymers}
+  - {id: derivatives, label: Olefin derivatives, icon: reactor, role: process, at: [2, 1],
+     branch: chemicals.product.petrochemicals.derivatives}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 4],
+     branches: [chemicals.service.ccs.concentrated, chemicals.service.ccs.diffuse]}
+
+  - {id: out-poly, label: Plastics, icon: plastic, role: output, at: [3, 0]}
+  - {id: out-chem, label: Chemicals and solvents, icon: chemical, role: output, at: [3, 1.5]}
+  - {id: out-meoh, label: Methanol, icon: tank, role: output, at: [3, 3]}
+
+edges:
+  - [ethane, olefins]
+  - {from: naphtha, to: olefins, turn: early}
+  - [naphtha, aromatics]
+  - [gas, methanol]
+  - {from: distillation, to: olefins, kind: energy}
+  - {from: distillation, to: aromatics, kind: energy}
+  - [olefins, polymers]
+  - [olefins, derivatives]
+  - [polymers, out-poly]
+  - {from: derivatives, to: out-chem, turn: late}
+  - {from: aromatics, to: out-chem, turn: late}
+  - [methanol, out-meoh]
+  - {from: methanol, to: capture, kind: emission}

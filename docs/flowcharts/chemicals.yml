@@ -1,0 +1,37 @@
+# Chemicals sector overview flowchart. See appendix_figure-style.qmd for the format.
+sector: chemicals
+title: Chemicals
+
+nodes:
+  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 0]}
+  - {id: feed, label: "Ethane, propane, and naphtha", icon: liquid-fuel, role: input, at: [0, 2]}
+  - {id: salt, label: Salt and electricity, icon: salt, role: input, at: [0, 3]}
+
+  - {id: nitrogen, label: Nitrogen products, icon: ammonia, role: process, at: [1, 0],
+     branches: [chemicals.product.ammonia, chemicals.product.nitric-acid, chemicals.product.urea,
+                chemicals.product.fertilizer, chemicals.product.adipic-acid]}
+  - {id: methanol, label: Methanol, icon: reactor, role: process, at: [1, 1],
+     branch: chemicals.product.methanol}
+  - {id: petro, label: Petrochemicals, icon: column, role: process, at: [1, 2],
+     branches: [chemicals.product.petrochemicals.olefins, chemicals.product.petrochemicals.aromatics,
+                chemicals.product.petrochemicals.polymers, chemicals.product.petrochemicals.derivatives]}
+  - {id: chlor, label: Chlor-alkali and oxidants, icon: electrolysis, role: process, at: [1, 3],
+     branches: [chemicals.product.chlor-alkali.chlorine-electrolysis, chemicals.product.chlor-alkali.caustic-evaporation,
+                chemicals.product.sodium-chlorate, chemicals.product.hydrogen-peroxide]}
+
+  - {id: n2o, label: N₂O abatement, icon: reactor, role: service, at: [2, 0],
+     branch: chemicals.service.n2o-abatement}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 1],
+     branches: [chemicals.service.ccs.concentrated, chemicals.service.ccs.diffuse]}
+  - {id: distillation, label: Distillation, icon: column, role: service, at: [2, 2],
+     branch: chemicals.service.distillation}
+
+
+edges:
+  - [gas, nitrogen]
+  - {from: gas, to: methanol}
+  - [feed, petro]
+  - [salt, chlor]
+  - {from: n2o, to: nitrogen, kind: energy, sides: [left, right]}
+  - {from: distillation, to: petro, kind: energy, sides: [left, right]}
+  - {from: methanol, to: capture, kind: emission}

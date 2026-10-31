@@ -1,0 +1,33 @@
+# Chlor-alkali and bleaching chemicals flowchart (Chemicals). See appendix_figure-style.qmd for the format.
+sector: chemicals_chlor-alkali
+title: Chlor-alkali and bleaching chemicals
+
+nodes:
+  - {id: brine, label: Salt brine, icon: salt, role: input, at: [0, 1]}
+  - {id: h2, label: Hydrogen, icon: hydrogen, role: input, at: [0, 4]}
+
+  - {id: cell, label: Chlorine electrolysis, icon: electrolysis, role: process, at: [1, 1],
+     branch: chemicals.product.chlor-alkali.chlorine-electrolysis}
+  - {id: evap, label: Caustic evaporation, icon: dryer, role: process, at: [2, 1],
+     branch: chemicals.product.chlor-alkali.caustic-evaporation}
+  - {id: steam, label: Steam, icon: steam, role: service, at: [2, 2],
+     branch: chemicals.service.steam}
+  - {id: chlorate, label: Sodium chlorate, icon: electrolysis, role: process, at: [1, 3],
+     branch: chemicals.product.sodium-chlorate}
+  - {id: peroxide, label: Hydrogen peroxide, icon: reactor, role: process, at: [1, 4],
+     branch: chemicals.product.hydrogen-peroxide}
+
+  - {id: chlorine, label: Chlorine, icon: tank, role: output, at: [2, 0]}
+  - {id: caustic, label: Caustic soda, icon: tank, role: output, at: [3, 1]}
+  - {id: out-chlorate, label: Bleaching chemicals, icon: chemical, role: output, at: [3, 3.5]}
+
+edges:
+  - [brine, cell]
+  - {from: brine, to: chlorate, turn: early}
+  - [cell, chlorine]
+  - [cell, evap]
+  - [evap, caustic]
+  - {from: steam, to: evap, kind: energy}
+  - [h2, peroxide]
+  - {from: chlorate, to: out-chlorate, turn: late}
+  - {from: peroxide, to: out-chlorate, turn: late}
