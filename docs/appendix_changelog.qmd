@@ -1,3 +1,13 @@
 # Version History {#sec-changelog}
 
 <mark>TODO: A chronologically-organized log of substantive changes to the model and the documentation. Start with the current "version" and seed it with the recent reorganization (per-chapter bibliographies, equation reformatting, dynamic region-sector table, etc.). When a new model release is cut, add a section documenting what's new, what's deprecated, and any migration steps needed for inputs or scenarios from previous versions.</mark>
+
+## Documentation, October 2026: sector chapters aligned with the new CIMS hierarchy
+
+- Rewrote every sector chapter around the CIMS hierarchy in the technology database (`cims_hierarchy.csv`), with a generated process flowchart (see @sec-figure-style) and, after each process step, the technologies that compete there.
+- Added sub-sector chapters for chemicals (nitrogen, chlor-alkali, and petrochemicals), metal smelting (aluminum, and base metals), natural gas (methane emissions), and petroleum crude (oil sands).
+- Merged the Ethanol and Biodiesel chapters into Biofuels, retitled Chemical Products as Chemicals and Carbon Dioxide Removal as Direct Air Capture, and grouped the sector chapters into five parts.
+- Rebuilt the General Services part from the hierarchy: machine drive, industrial heat and steam (formerly low-temperature industrial heat), cogeneration and on-site power, HVAC and lighting (new), fuel blends (new), and CCUS.
+- Dropped the indicative literature cost and maturity tables; each technology now shows its type and readiness level from the database.
+- Renamed all documentation files to the project's naming convention; old page addresses redirect to the new ones.
+- Nodes the hierarchy added ahead of the CIMS model inputs, as listed in the technology database's `hierarchy-change-requests.md`, are documented as part of the structure: the iron and steel coke, hot-metal, and direct-reduced-iron services; direct air capture; mining on-site power; crude transmission, pumping, produced water, and oil sands tailings; pulp and paper effluent treatment; ceramics, gypsum, and the cement binder nodes; nitric acid, urea, and fertilizer; metal smelting CCS, the acid plant, and alumina calcination; synthetic fuels; and coal-mine methane.
