@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 476" width="936" height="476" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Commercial and institutional process flowchart">
+<defs>
+<symbol id="icon-air-conditioner" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="40" height="16" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M10 20 H38"/><path d="M14 32 V42 M24 32 V42 M34 32 V42 M11 35 L17 39 M17 35 L11 39 M21 35 L27 39 M27 35 L21 39 M31 35 L37 39 M37 35 L31 39"/></g></symbol>
+<symbol id="icon-building" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="28" height="36" fill="currentColor" fill-opacity="0.18"/><path d="M16 13 H20 M28 13 H32 M16 20 H20 M28 20 H32 M16 27 H20 M28 27 H32 M21 42 V35 H27 V42 M4 42 H44"/></g></symbol>
+<symbol id="icon-fridge" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="4" width="24" height="40" rx="3"/><path d="M12 18 H36 M16 10 V14 M16 24 V30"/></g></symbol>
+<symbol id="icon-heat-pump" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="28" rx="3"/><circle cx="19" cy="24" r="8"/><path d="M19 16 V32 M11 24 H27 M13 18 L25 30 M25 18 L13 30"/><path d="M32 18 H38 M32 24 H38 M32 30 H38"/></g></symbol>
+<symbol id="icon-lightbulb" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 30 C10 25 10 16 15 11 C20 6 28 6 33 11 C38 16 38 25 31 30 V35 H17 Z"/><path d="M18 40 H30 M20 44 H28"/></g></symbol>
+<symbol id="icon-motor" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="14" width="24" height="20" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M32 24 H44 M14 14 V10 M20 14 V10 M26 14 V10 M12 34 L10 40 M28 34 L30 40 M8 40 H34"/></g></symbol>
+<symbol id="icon-plug" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 V14 M32 4 V14 M10 14 H38 V22 A14 14 0 0 1 10 22 Z M24 36 V44"/></g></symbol>
+<symbol id="icon-shell" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22 L24 7 L42 22"/><path d="M10 19 V41 H38 V19"/><path d="M14 22 V37 H34 V22" stroke-dasharray="3 3"/><path d="M20 41 V31 H28 V41" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-stove" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="16" width="32" height="26" rx="2"/><path d="M8 24 H40"/><path d="M16 12 c-2-3 2-4 0-7 M24 12 c-2-3 2-4 0-7 M32 12 c-2-3 2-4 0-7"/><rect x="14" y="29" width="20" height="9"/></g></symbol>
+<symbol id="icon-water-heater" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="12" y="6" width="24" height="34" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M18 6 V2 M30 6 V2 M16 44 H32 M20 30 c-2-3 2-4 0-7 M28 30 c-2-3 2-4 0-7"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<rect x="474.0" y="37.0" width="438.0" height="258.0" rx="14" fill="#f4f6f8" stroke="#dde2e8"/>
+<text x="484.0" y="51.0" font-size="11.5" font-weight="700" letter-spacing="0.6" fill="#5a6472">END USES PER FLOOR AREA</text>
+<path d="M 152.0 240.0 L 184.0 240.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 234.0 L 311.0 234.0 Q 318.0 234.0 318.0 227.0 L 318.0 119.0 Q 318.0 112.0 325.0 112.0 L 334.0 112.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="324.0" y="177.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">heat load</text>
+<path d="M 302.0 246.0 L 311.0 246.0 Q 318.0 246.0 318.0 253.0 L 318.0 361.0 Q 318.0 368.0 325.0 368.0 L 334.0 368.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="324.0" y="311.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">cooling load</text>
+<g><title>Floor space</title>
+<rect x="34.0" y="195.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-building" x="74.0" y="203.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Floor space</text>
+</g>
+<g><title>Building shell by segment — commercial.product.building-shell.accommodation-and-food-services_cold, commercial.product.building-shell.accommodation-and-food-services_marine, commercial.product.building-shell.arts-entertainment-and-recreation_cold, commercial.product.building-shell.arts-entertainment-and-recreation_marine, commercial.product.building-shell.educational_cold, commercial.product.building-shell.educational_marine, commercial.product.building-shell.healthcare-and-social-assistance_cold, commercial.product.building-shell.healthcare-and-social-assistance_marine, commercial.product.building-shell.information-and-cultural_cold, commercial.product.building-shell.information-and-cultural_marine, commercial.product.building-shell.offices_cold, commercial.product.building-shell.offices_marine, commercial.product.building-shell.other-services_cold, commercial.product.building-shell.other-services_marine, commercial.product.building-shell.retail_cold, commercial.product.building-shell.retail_marine, commercial.product.building-shell.transportation-and-warehousing_cold, commercial.product.building-shell.transportation-and-warehousing_marine, commercial.product.building-shell.wholesale_cold, commercial.product.building-shell.wholesale_marine</title>
+<rect x="184.0" y="195.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-shell" x="224.0" y="203.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Building shell</text>
+<text x="243.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">by segment</text>
+</g>
+<g><title>Space heating — commercial.service.hvac.heating_cold, commercial.service.hvac.heating_marine</title>
+<rect x="334.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-heat-pump" x="374.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Space heating</text>
+</g>
+<g><title>Space cooling — commercial.service.hvac.cooling</title>
+<rect x="334.0" y="323.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-air-conditioner" x="374.0" y="331.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="394.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Space cooling</text>
+</g>
+<g><title>Hot water — commercial.service.hot-water</title>
+<rect x="484.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-water-heater" x="524.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="543.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hot water</text>
+</g>
+<g><title>Lighting — commercial.service.lighting</title>
+<rect x="634.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-lightbulb" x="674.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Lighting</text>
+</g>
+<g><title>Refrigeration — commercial.service.refrigeration</title>
+<rect x="784.0" y="67.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-fridge" x="824.0" y="75.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="843.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Refrigeration</text>
+</g>
+<g><title>Cooking — commercial.service.cooking</title>
+<rect x="484.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-stove" x="524.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="543.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Cooking</text>
+</g>
+<g><title>Plug load — commercial.service.plug-load</title>
+<rect x="634.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-plug" x="674.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Plug load</text>
+</g>
+<g><title>Machine drive — commercial.service.machine-drive</title>
+<rect x="784.0" y="195.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-motor" x="824.0" y="203.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="843.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Machine drive</text>
+</g>
+<rect x="22.0" y="448" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="458" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="448" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="458" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="448" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="458" font-size="11.5" fill="#5a6472">Site service</text>
+<path d="M 391.7 454 H 419.7" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="427.7" y="458" font-size="11.5" fill="#5a6472">Material flow</text>
+</svg>

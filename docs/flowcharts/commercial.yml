@@ -1,0 +1,56 @@
+# Commercial process flowchart. See appendix_figure-style.qmd for the format.
+sector: commercial
+title: Commercial and institutional
+
+groups:
+  - {label: End uses per floor area, cols: [3, 5], rows: [0, 1]}
+
+nodes:
+  - {id: floor-space, label: Floor space, icon: building, role: input, at: [0, 1]}
+  - id: shell
+    label: Building shell by segment
+    icon: shell
+    role: process
+    at: [1, 1]
+    branches:
+      - commercial.product.building-shell.accommodation-and-food-services_cold
+      - commercial.product.building-shell.accommodation-and-food-services_marine
+      - commercial.product.building-shell.arts-entertainment-and-recreation_cold
+      - commercial.product.building-shell.arts-entertainment-and-recreation_marine
+      - commercial.product.building-shell.educational_cold
+      - commercial.product.building-shell.educational_marine
+      - commercial.product.building-shell.healthcare-and-social-assistance_cold
+      - commercial.product.building-shell.healthcare-and-social-assistance_marine
+      - commercial.product.building-shell.information-and-cultural_cold
+      - commercial.product.building-shell.information-and-cultural_marine
+      - commercial.product.building-shell.offices_cold
+      - commercial.product.building-shell.offices_marine
+      - commercial.product.building-shell.other-services_cold
+      - commercial.product.building-shell.other-services_marine
+      - commercial.product.building-shell.retail_cold
+      - commercial.product.building-shell.retail_marine
+      - commercial.product.building-shell.transportation-and-warehousing_cold
+      - commercial.product.building-shell.transportation-and-warehousing_marine
+      - commercial.product.building-shell.wholesale_cold
+      - commercial.product.building-shell.wholesale_marine
+  - {id: heating, label: Space heating, icon: heat-pump, role: service, at: [2, 0],
+     branches: [commercial.service.hvac.heating_cold, commercial.service.hvac.heating_marine]}
+  - {id: cooling, label: Space cooling, icon: air-conditioner, role: service, at: [2, 2],
+     branch: commercial.service.hvac.cooling}
+  - {id: hot-water, label: Hot water, icon: water-heater, role: service, at: [3, 0],
+     branch: commercial.service.hot-water}
+  - {id: lighting, label: Lighting, icon: lightbulb, role: service, at: [4, 0],
+     branch: commercial.service.lighting}
+  - {id: refrigeration, label: Refrigeration, icon: fridge, role: service, at: [5, 0],
+     branch: commercial.service.refrigeration}
+  - {id: cooking, label: Cooking, icon: stove, role: service, at: [3, 1],
+     branch: commercial.service.cooking}
+  - {id: plug-load, label: Plug load, icon: plug, role: service, at: [4, 1],
+     branch: commercial.service.plug-load}
+  - {id: machine-drive, label: Machine drive, icon: motor, role: service, at: [5, 1],
+     branch: commercial.service.machine-drive}
+
+edges:
+  - [floor-space, shell]
+  - {from: shell, to: heating, label: heat load}
+  - {from: shell, to: cooling, label: cooling load}
