@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_industrial_minerals.html
 ---
 
 # Industrial Minerals {#sec-industrial-minerals}
@@ -28,7 +30,7 @@ Following the standard CIMS pattern, the sector divides into a **Product** sub-t
 
 As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the industrial-minerals tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which kiln, which furnace, which fuel, which clinker route — occur at the tech-compete leaves.
 
-![Energy-service flow model of the industrial minerals sector (region-agnostic master tree). The Product sub-tree holds cement, lime, glass, and brick chains; the Service sub-tree holds a sector-level Heat service, the MECS-aligned Machine Drive, and the shared CCS service that the calcination routes draw on.](images/ind_minerals_flow_model.svg){#fig-ind-minerals-flow-model .lightbox width=100%}
+![Energy-service flow model of the industrial minerals sector (region-agnostic master tree). The Product sub-tree holds cement, lime, glass, and brick chains; the Service sub-tree holds a sector-level Heat service, the MECS-aligned Machine Drive, and the shared CCS service that the calcination routes draw on.](images/retired/industrial-minerals_flow-model.svg){#fig-ind-minerals-flow-model .lightbox width=100%}
 
 ### Products: cement
 
@@ -53,7 +55,7 @@ The services follow the standard pattern and are documented in their own chapter
 - **Heat** — a sector-level process-heat service whose technology set is unusually broad, competing natural-gas (standard and efficient), oil, coal, coke, biomass, waste-fuel, hydrogen, and CCS-equipped (NG and coal) heat supply. This is a key fuel-switching lever for the non-calcination heat demand.
 - **CCS** — the shared carbon-capture service that the CCS-equipped clinker, lime, and heat routes request; its broader treatment is in the [Carbon Capture, Utilization, and Storage](ccus.qmd) chapter.
 
-The remaining services — **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)), **Methane Blend**, **HVAC**, and **Lighting** — are the cross-cutting utilities common to all sectors.
+The remaining services — **Machine Drive** (see [Industrial Machine Drive Systems](machine-drive.qmd)), **Methane Blend**, **HVAC**, and **Lighting** — are the cross-cutting utilities common to all sectors.
 
 <mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. They also name the product branch `Products` rather than the master tree's `Product`. Migrate these files to the region-agnostic master tree and the shared General Services chapters.</mark>
 
@@ -103,7 +105,7 @@ The combustion share of kiln emissions is addressed by alternative and waste-der
 
 ### Carbon capture, electrification, and mineralisation
 
-Deep cuts require attacking the process CO₂. The model offers three routes: CCS on the kiln (cement and lime), which captures most of the CO₂ but adds 30–50% more plant equipment and a capture energy penalty; electrochemical/electrified clinker and lime, which both remove the combustion CO₂ and produce a purer CO₂ stream that is cheaper to capture; and carbon curing, which mineralises CO₂ into concrete and is the one route the model scores as net-negative. On the glass side, electric and oxy-fuel melters and cullet preheating electrify or concentrate furnace emissions. Low-carbon process heat — biomass, hydrogen, and CCS-equipped boilers in the Heat service — addresses the non-calcination thermal demand, drawing on the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+Deep cuts require attacking the process CO₂. The model offers three routes: CCS on the kiln (cement and lime), which captures most of the CO₂ but adds 30–50% more plant equipment and a capture energy penalty; electrochemical/electrified clinker and lime, which both remove the combustion CO₂ and produce a purer CO₂ stream that is cheaper to capture; and carbon curing, which mineralises CO₂ into concrete and is the one route the model scores as net-negative. On the glass side, electric and oxy-fuel melters and cullet preheating electrify or concentrate furnace emissions. Low-carbon process heat — biomass, hydrogen, and CCS-equipped boilers in the Heat service — addresses the non-calcination thermal demand, drawing on the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

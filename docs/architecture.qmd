@@ -191,7 +191,7 @@ While the model is simple in operation, it can appear complex because it is tech
 
 CIMS highlights the interplay of energy supply and demand because energy-related GHG emissions are currently a key policy concern. Thus, the model focuses on the interaction between sectors that use energy (industrial, residential, commercial / institutional, and transportation sectors) and sectors that produce or transform energy (electricity generation, fossil fuel supply, oil refining, natural gas processing, biofuels, and hydrogen). This interaction is shown in @fig-general_model_structure. A policy that seeks to influence energy supply and demand may also influence the cost of producing goods and services, thus affecting their price and final demand. To reflect these interactions, CIMS includes a goods and services final demand feedback loop, composed of Armington elasticities for traded goods and empirically driven relationships between the traded and non-traded sectors.
 
-![General model structure](images/general_model_structure.svg){#fig-general_model_structure .lightbox width=70%}
+![General model structure](images/general-model-structure.svg){#fig-general_model_structure .lightbox width=70%}
 
 ## Simulation: Six Steps
 
@@ -221,7 +221,7 @@ CIMS is designed to mimic a sector or industry by representing a number of indus
 
 3.  The demand models then send their requirements for energy to the energy supply models. The supply models send back corresponding energy prices. If the changes in energy prices are over a set threshold value for equilibrium (usually 5%), the demand models are then rerun with the new energy prices. This process is repeated until all energy price changes fall under the threshold value. @fig-demand_supply_feedbacks describes this process:
 
-![Energy Supply and Demand](images/demand_supply_feedbacks.svg){#fig-demand_supply_feedbacks .lightbox}
+![Energy Supply and Demand](images/demand-supply-feedbacks.svg){#fig-demand_supply_feedbacks .lightbox}
 
 4.  Policy or market driven energy price changes may change the lifecycle cost of some energy services, thereby changing the end-use price for these services. If the change in lifecycle cost from the business-as-usual case is beyond a pre-set threshold price elasticities for these services are applied, thereby changing the demand for these services. This new demand is sent back to the supply and demand models for re-calculation.
 

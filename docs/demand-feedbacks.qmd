@@ -1,3 +1,8 @@
+---
+aliases:
+  - demand_feedbacks.html
+---
+
 # Goods and Services Demand Feedbacks {#sec-demand-feedbacks}
 
 The economy is commonly divided into: households, who provide labour and financial capital and who consume goods and services; firms, who consume capital and labour and provide goods and services; government, which consumes goods and services, provides public goods, and regulates the market; and finally foreign producers and consumers of goods, services, and capital (Dornbusch et al. 1989). It is common to assume that Canada is a price taker for capital (i.e., the interest rate is set at the world price of capital).

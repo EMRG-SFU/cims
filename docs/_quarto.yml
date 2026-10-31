@@ -33,7 +33,7 @@ filters:
 
 book:
   title: CIMS
-  favicon: images/cims_logo_favicon.svg
+  favicon: images/cims-logo_favicon.svg
   # author: Energy and Materials Research Group, Simon Fraser University
   repo-url: https://github.com/EMRG-SFU/cims
   repo-branch: quarto_docs
@@ -54,60 +54,60 @@ book:
       chapters:
         - theory.qmd            # Theory
         - technologies.qmd      # Technology competition
-        - energy_supply_demand.qmd  # Energy supply and demand
-        - demand_feedbacks.qmd  # Goods and services demand feedbacks
+        - energy-supply-demand.qmd  # Energy supply and demand
+        - demand-feedbacks.qmd  # Goods and services demand feedbacks
     - part: "Sector Descriptions"
       chapters:
         - sector_overview.qmd      # Industrial sector overview
-        - sector_coal_mining.qmd              # Coal Mining
-        - sector_natural_gas.qmd              # Natural Gas
-        - sector_petroleum_crude.qmd          # Petroleum Crude
-        - sector_petroleum_refining.qmd       # Petroleum Refining
+        - sector_coal-mining.qmd              # Coal Mining
+        - sector_natural-gas.qmd              # Natural Gas
+        - sector_petroleum-crude.qmd          # Petroleum Crude
+        - sector_petroleum-refining.qmd       # Petroleum Refining
         - sector_electricity.qmd              # Electricity
-        - sector_ethanol.qmd                  # Ethanol
-        - sector_biodiesel.qmd                # Biodiesel
+        - sector_biofuels_ethanol.qmd         # Ethanol
+        - sector_biofuels_biodiesel.qmd       # Biodiesel
         - sector_hydrogen.qmd                 # Hydrogen
         - sector_mining.qmd                   # Mining
-        - sector_industrial_minerals.qmd      # Industrial Minerals
-        - sector_chemical_products.qmd        # Chemical Products
-        - sector_pulp_and_paper.qmd           # Pulp and Paper
-        - sector_metal_smelting.qmd           # Metal Smelting
-        - sector_iron_and_steel.qmd           # Iron and Steel
-        - sector_light_industrial.qmd         # Light Industrial
+        - sector_industrial-minerals.qmd      # Industrial Minerals
+        - sector_chemicals.qmd                # Chemical Products
+        - sector_pulp-and-paper.qmd           # Pulp and Paper
+        - sector_metal-smelting.qmd           # Metal Smelting
+        - sector_iron-and-steel.qmd           # Iron and Steel
+        - sector_light-industrial.qmd         # Light Industrial
         - sector_construction.qmd             # Construction
         - sector_residential.qmd              # Residential
         - sector_commercial.qmd               # Commercial
-        - sector_transportation_passenger.qmd # Transportation Passenger
-        - sector_transportation_freight.qmd   # Transportation Freight
+        - sector_transportation-passenger.qmd # Transportation Passenger
+        - sector_transportation-freight.qmd   # Transportation Freight
         - sector_waste.qmd                    # Waste
         - sector_agriculture.qmd              # Agriculture
         - sector_forestry.qmd                 # Forestry
-        - sector_carbon_dioxide_removal.qmd   # Carbon dioxide removal / DAC
+        - sector_direct-air-capture.qmd       # Carbon dioxide removal / DAC
         - sector_lulucf.qmd                   # LULUCF
     - part: "General Services"
       chapters:
-        - machine_drive.qmd      # Machine drive systems in industry
-        - low_temp_industrial_heat.qmd     # Low-temperature industrial heat, including steam generation
+        - machine-drive.qmd      # Machine drive systems in industry
+        - low-temp-industrial-heat.qmd     # Low-temperature industrial heat, including steam generation
         - cogeneration.qmd     # Cogeneration of heat and power
         - ccus.qmd               # Carbon capture, utilization, and storage
-        - energy_storage.qmd     # Energy storage: thermal, short duration, long duration
+        - energy-storage.qmd     # Energy storage: thermal, short duration, long duration
     - part: "Running the Model"
       chapters:
-        - data_inputs.qmd       # Data inputs
-        - data_processing.qmd   # Data Processing
-        - running_scenario.qmd  # How to run a scenario
-        - building_tree.qmd     # Building the model tree
+        - data-inputs.qmd       # Data inputs
+        - data-processing.qmd   # Data Processing
+        - running-scenario.qmd  # How to run a scenario
+        - building-tree.qmd     # Building the model tree
         - calibration.qmd       # Calibration
-        - validation.qmd        # Validation        
+        - validation.qmd        # Validation
     - part: "Outputs and Analysis"
       chapters:
         - outputs.qmd           # Output files
-        - post_processing.qmd   # Post-processing and reporting
+        - post-processing.qmd   # Post-processing and reporting
         - policies.qmd          # Scenarios and policies
     - references.qmd
   appendices:
     - appendix_acronyms.qmd
-    - appendix_file_formats.qmd
+    - appendix_file-formats.qmd
     - appendix_equations.qmd
     - appendix_changelog.qmd
 

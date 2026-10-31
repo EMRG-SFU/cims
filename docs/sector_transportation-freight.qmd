@@ -1,16 +1,18 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_transportation_freight.html
 ---
 
 # Freight Transportation {#sec-transportation-freight}
 
-Freight transportation is the goods-movement module of CIMS-Transportation (CIMS-T), a demand-side sub-model: it meets a demand for freight movement (goods moved, in tonne-kilometres) by competing transport modes — road, rail, marine, and air — and, within each, competing vehicle powertrains and fuels. The emphasis is on the structure of the service flow model: the freight-demand nodes, the modes and vehicles that supply them, and the refuelling and charging infrastructure they need. The tree is region-agnostic. The general CIMS-T framework — service flow model, intangible costs, and stock-turnover dynamics — is described in the [Transportation (Passenger)](sector_transportation_passenger.qmd) chapter and is not repeated here.
+Freight transportation is the goods-movement module of CIMS-Transportation (CIMS-T), a demand-side sub-model: it meets a demand for freight movement (goods moved, in tonne-kilometres) by competing transport modes — road, rail, marine, and air — and, within each, competing vehicle powertrains and fuels. The emphasis is on the structure of the service flow model: the freight-demand nodes, the modes and vehicles that supply them, and the refuelling and charging infrastructure they need. The tree is region-agnostic. The general CIMS-T framework — service flow model, intangible costs, and stock-turnover dynamics — is described in the [Transportation (Passenger)](sector_transportation-passenger.qmd) chapter and is not repeated here.
 
 ## Scope
 
 CIMS represents the movement of goods by road (heavy trucks and light/medium commercial vehicles), rail, marine, and air, plus an off-road category (construction, agricultural, and other off-highway equipment). The driving variable is freight demand in tonne-kilometres, projected exogenously and able to shift between modes. The model also carries explicit infrastructure services — charging, overhead catenary, and hydrogen refuelling — recognising that zero-emission freight depends as much on infrastructure as on the vehicles.
 
-Adjacent activities are handled elsewhere: passenger mobility is in [Transportation (Passenger)](sector_transportation_passenger.qmd); the fuels (diesel, electricity, hydrogen, biofuels, natural gas) are supplied by the energy-supply sub-models; and vehicle manufacturing is in [Light Industrial](sector_light_industrial.qmd). This chapter covers the use of vehicles to move goods.
+Adjacent activities are handled elsewhere: passenger mobility is in [Transportation (Passenger)](sector_transportation-passenger.qmd); the fuels (diesel, electricity, hydrogen, biofuels, natural gas) are supplied by the energy-supply sub-models; and vehicle manufacturing is in [Light Industrial](sector_light-industrial.qmd). This chapter covers the use of vehicles to move goods.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ Three zero-emission pathways are competing for heavy freight, and the model repr
 
 The sector divides into a **Product** sub-tree — freight demand by mode — and a **Service** sub-tree of the refuelling and charging infrastructure. @fig-transport-freight-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); mode and powertrain shares are determined by lifecycle cost plus intangible cost.
 
-![Service flow model of freight transportation (region-agnostic master tree). The Product sub-tree is freight demand by mode — Land (heavy trucks and rail; light/medium vehicles), Marine, Air, and Off-Road — each competing diesel/biofuel against electric, hydrogen, and (for trucks) catenary powertrains; the Service sub-tree provides the EV charging, overhead-catenary, and hydrogen-refuelling infrastructure that zero-emission freight depends on.](images/transport_freight_flow_model.svg){#fig-transport-freight-flow-model .lightbox width=100%}
+![Service flow model of freight transportation (region-agnostic master tree). The Product sub-tree is freight demand by mode — Land (heavy trucks and rail; light/medium vehicles), Marine, Air, and Off-Road — each competing diesel/biofuel against electric, hydrogen, and (for trucks) catenary powertrains; the Service sub-tree provides the EV charging, overhead-catenary, and hydrogen-refuelling infrastructure that zero-emission freight depends on.](images/retired/transportation-freight_flow-model.svg){#fig-transport-freight-flow-model .lightbox width=100%}
 
 ### Products: freight demand by mode
 
@@ -92,7 +94,7 @@ Technology and mode choice follow the lifecycle-cost competition of @sec-technol
 
 Financial costs are discounted at behavioural rates — around 12.5% for some capital-intensive, long-lived assets (rail) and around 25–30% for road-vehicle decisions in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than pure financial costs of capital; together with the intangible costs they govern technology choice, as set out in the discount-rate and intangible-cost discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition.
 
-Emissions arise from fuel combustion in the trucks, trains, ships, and aircraft, entering through each technology's fuel service requests and the carbon price; battery-electric and catenary options have zero tailpipe emissions and inherit the carbon intensity of the grid, while hydrogen inherits the intensity of the [Hydrogen](sector_hydrogen.qmd) production mix and biofuels their lifecycle intensity from the [Biodiesel](sector_biodiesel.qmd) sub-model. The emissions benefit of each option therefore depends on the upstream energy system, and the infrastructure services mean the model accounts for the capital needed to enable the switch, not just the vehicles.
+Emissions arise from fuel combustion in the trucks, trains, ships, and aircraft, entering through each technology's fuel service requests and the carbon price; battery-electric and catenary options have zero tailpipe emissions and inherit the carbon intensity of the grid, while hydrogen inherits the intensity of the [Hydrogen](sector_hydrogen.qmd) production mix and biofuels their lifecycle intensity from the [Biodiesel](sector_biofuels_biodiesel.qmd) sub-model. The emissions benefit of each option therefore depends on the upstream energy system, and the infrastructure services mean the model accounts for the capital needed to enable the switch, not just the vehicles.
 
 ## Regional coverage and differences
 

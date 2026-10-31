@@ -44,7 +44,7 @@ $L$
 :   lifespan of the technology
 :::
 
-![Existing Stock Retirement](images/stock_retirement_existing.svg){#fig-stock_retirement_existing .lightbox width=80%}
+![Existing Stock Retirement](images/stock-retirement_existing.svg){#fig-stock_retirement_existing .lightbox width=80%}
 
 
 Retirement of capital stock purchased during a CIMS simulation is calculated using a different methodology since the vintage of new stock is known and an explicit lifetime (and retirement schedule) can be applied to the stock purchase.
@@ -75,7 +75,7 @@ $11.513$
 
 This function uses an s-shaped, logistic curve to simulate the retirement of technologies. @fig-stock_retirement_new shows examples of the retirement function for technologies with different lifespans. Half of the stock is retired before the average lifespan of the technology due to early replacement and failure and half is retired afterward to simulate technologies that last longer than the average. The default intercept value of 11.513, which comes from market research on product failure rates, is used in CIMS for many technologies that are purchased and installed. For other longer-lived technologies, like building shells, lower intercepts are used that flatten the logistic curve.
 
-![New Stock Retirement](images/stock_retirement_new.svg){#fig-stock_retirement_new .lightbox width=80%}
+![New Stock Retirement](images/stock-retirement_new.svg){#fig-stock_retirement_new .lightbox width=80%}
 
 The total stock of a technology in any given year *t* is the sum of the unretired base stock and the unretired new stock remaining from each previous year (@eq-stock_total).
 

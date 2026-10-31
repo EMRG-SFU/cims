@@ -8,7 +8,7 @@ The logging industry's on-site greenhouse-gas footprint comes almost entirely fr
 
 ## Scope
 
-CIMS represents the **fuel use of forestry's mobile equipment** — the off-road machinery that fells, gathers, and moves timber at the harvest site — as one aggregate energy service. The driving variable is an exogenous forecast of the sector's emissions in tonnes of CO₂-equivalent. Everything downstream of the roadside is handled elsewhere: log haulage on public roads belongs to [Transportation (Freight)](sector_transportation_freight.qmd), and the milling of logs into lumber and pulp is in [Pulp and Paper](sector_pulp_and_paper.qmd) and the wood-products part of [Light Industrial](sector_light_industrial.qmd). The biological carbon of the forest itself — growth, harvest, and regrowth — is the domain of [LULUCF](sector_lulucf.qmd), not this sector.
+CIMS represents the **fuel use of forestry's mobile equipment** — the off-road machinery that fells, gathers, and moves timber at the harvest site — as one aggregate energy service. The driving variable is an exogenous forecast of the sector's emissions in tonnes of CO₂-equivalent. Everything downstream of the roadside is handled elsewhere: log haulage on public roads belongs to [Transportation (Freight)](sector_transportation-freight.qmd), and the milling of logs into lumber and pulp is in [Pulp and Paper](sector_pulp-and-paper.qmd) and the wood-products part of [Light Industrial](sector_light-industrial.qmd). The biological carbon of the forest itself — growth, harvest, and regrowth — is the domain of [LULUCF](sector_lulucf.qmd), not this sector.
 
 ## Real-world context
 
@@ -18,9 +18,9 @@ Logging is energy-light compared with heavy industry, but what energy it uses is
 
 The sector is a single tech-compete node. @fig-forestry-flow-model shows the structure: the exogenous activity drives one **Transport** service, at which two technologies compete to provide the same mobile-equipment work.
 
-![Energy-service flow model of the forestry sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single **Transport** service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model.](images/forestry_flow_model.svg){#fig-forestry-flow-model .lightbox width=85%}
+![Energy-service flow model of the forestry sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single **Transport** service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model.](images/retired/forestry_flow-model.svg){#fig-forestry-flow-model .lightbox width=85%}
 
-At the **Transport** node, diesel equipment (the entire base-year fleet) requests the diesel transportation fuel blend, while electric equipment requests grid electricity; both carry a twenty-year lifetime and the same energy requirement per unit of activity. Because the diesel option draws on the blended fuel, any renewable-diesel content in that blend lowers its lifecycle carbon automatically (see [Biodiesel](sector_biodiesel.qmd)). Fuel prices at the node are currently borrowed from [Agriculture](sector_agriculture.qmd) as a proxy and flagged for review.
+At the **Transport** node, diesel equipment (the entire base-year fleet) requests the diesel transportation fuel blend, while electric equipment requests grid electricity; both carry a twenty-year lifetime and the same energy requirement per unit of activity. Because the diesel option draws on the blended fuel, any renewable-diesel content in that blend lowers its lifecycle carbon automatically (see [Biodiesel](sector_biofuels_biodiesel.qmd)). Fuel prices at the node are currently borrowed from [Agriculture](sector_agriculture.qmd) as a proxy and flagged for review.
 
 ## Decarbonisation technologies
 

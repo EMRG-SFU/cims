@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_iron_and_steel.html
 ---
 
 # Iron and Steel {#sec-iron-and-steel}
@@ -13,7 +15,7 @@ CIMS represents the integrated process chain of primary and secondary steelmakin
 Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
 
 - Iron-ore mining and ore beneficiation are covered in the [Mining](sector_mining.qmd) chapter; the iron and steel sub-model takes ore (or pellets) as an input and stops short of the mine gate on the upstream side.
-- Smelting and refining of non-ferrous metals — aluminium, nickel, copper, zinc, and the rest — are covered in the [Metal Smelting and Refining](sector_metal_smelting.qmd) chapter, which explicitly excludes iron and steel.
+- Smelting and refining of non-ferrous metals — aluminium, nickel, copper, zinc, and the rest — are covered in the [Metal Smelting and Refining](sector_metal-smelting.qmd) chapter, which explicitly excludes iron and steel.
 - Downstream fabrication of steel into final goods (structural fabrication, stamping, machining) belongs to the manufacturing branches and is not part of this sub-model, which ends with saleable cast-and-rolled steel forms.
 
 Coke-making and the on-site reducing gases are treated within the sector because they are integral to the ironmaking step and cannot be cleanly separated from it.
@@ -35,7 +37,7 @@ Following the standard CIMS pattern, the sector divides into two sub-trees: a **
 
 As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the iron and steel tree, the disaggregation of products and process stages is built from fixed-ratio nodes, while the technology choices — which steelmaking route, which casting method, which reheat furnace, which class of motor — occur at the tech-compete leaves.
 
-![Energy-service flow model of the iron and steel sector (region-agnostic master tree). The sector divides into a Product sub-tree — molten-steel production (Integrated and Recycled routes), continuous casting and finishing, and foundry — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the sector-specific Agglomeration, Oxygen, Iron Process Gas, and CCS services.](images/iron_steel_flow_model.svg){#fig-iron-steel-flow-model .lightbox width=100%}
+![Energy-service flow model of the iron and steel sector (region-agnostic master tree). The sector divides into a Product sub-tree — molten-steel production (Integrated and Recycled routes), continuous casting and finishing, and foundry — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the sector-specific Agglomeration, Oxygen, Iron Process Gas, and CCS services.](images/retired/iron-and-steel_flow-model.svg){#fig-iron-steel-flow-model .lightbox width=100%}
 
 ### Products: molten steel
 
@@ -78,9 +80,9 @@ Three services are specific to ironmaking and sit in the Service sub-tree alongs
 
 The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The iron and steel sector draws on:
 
-- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. The sector's large motive loads sit here: mill drives and materials processing, fans and blowers, materials handling, pumps, and compressed air.
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. The sector's large motive loads sit here: mill drives and materials processing, fans and blowers, materials handling, pumps, and compressed air.
 - **Reheating** — reheat furnaces (natural-gas or oil; unrecuperated, recuperated, induction, or direct-rolling) that bring semi-finished steel back to rolling temperature.
-- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants.
+- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for mill facilities.
 
@@ -120,7 +122,7 @@ The cost estimates in @tbl-iron-steel-technoecon are order-of-magnitude figures 
 
 : Indicative techno-economic characteristics of iron and steel technologies, 2025 CAD {#tbl-iron-steel-technoecon}
 
-![Molten Steel route competition. The exogenous primary/secondary split feeds an Integrated node (BF-BOF and emerging low-carbon primary routes, each with a CCS variant) and a Recycled node (scrap EAFs of increasing power, with an oxygen-and-CCS option). Most routes draw on the shared Agglomeration, Oxygen, and CCS services.](images/iron_steel_routes.svg){#fig-iron-steel-routes .lightbox width=90%}
+![Molten Steel route competition. The exogenous primary/secondary split feeds an Integrated node (BF-BOF and emerging low-carbon primary routes, each with a CCS variant) and a Recycled node (scrap EAFs of increasing power, with an oxygen-and-CCS option). Most routes draw on the shared Agglomeration, Oxygen, and CCS services.](images/retired/iron-and-steel_routes.svg){#fig-iron-steel-routes .lightbox width=90%}
 
 ### Primary-route shift: DRI, hydrogen, and smelting reduction
 
@@ -136,7 +138,7 @@ Carbon capture is represented as a shared **CCS** service that any equipped rout
 
 ### Electrified and low-carbon heat, and efficient casting
 
-Beyond the reduction step, reheating and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and hydrogen reheat furnaces, electrode and electric-resistance boilers, and process-gas cogeneration — are reached through the **Reheating**, **Steam**, and **Iron Process Gas** services and are described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter; the **Methane Blend** node substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty. On the product side, near-net-shape casting (thin-slab and strip casting) reduces or removes the reheating step entirely, and oxygen-enriched, ultra-high-power EAFs cut melting energy. High-efficiency motors and variable-speed drives in the [Machine Drive](machine_drive.qmd) service reduce the large auxiliary load.
+Beyond the reduction step, reheating and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and hydrogen reheat furnaces, electrode and electric-resistance boilers, and process-gas cogeneration — are reached through the **Reheating**, **Steam**, and **Iron Process Gas** services and are described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter; the **Methane Blend** node substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty. On the product side, near-net-shape casting (thin-slab and strip casting) reduces or removes the reheating step entirely, and oxygen-enriched, ultra-high-power EAFs cut melting energy. High-efficiency motors and variable-speed drives in the [Machine Drive](machine-drive.qmd) service reduce the large auxiliary load.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

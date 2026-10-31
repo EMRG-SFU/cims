@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_transportation_passenger.html
 ---
 
 # Transportation (Passenger) {#sec-transportation-passenger}
@@ -10,7 +12,7 @@ Passenger transportation is the personal-mobility module of CIMS-Transportation 
 
 CIMS represents passenger mobility — urban and inter-city travel of people — driven by passenger-kilometre demand. It covers personal vehicles (cars and light trucks), urban transit (public bus and rapid transit), inter-city bus and rail, and inter-city air. The driving demand is projected exogenously and can itself respond to cost (the model can shift demand for mobility).
 
-Adjacent activities are handled elsewhere: freight movement is in [Transportation (Freight)](sector_transportation_freight.qmd); off-road vehicles are handled separately; the fuels (gasoline, diesel, electricity, hydrogen, biofuels) are supplied by the energy-supply sub-models, including [Ethanol](sector_ethanol.qmd), [Biodiesel](sector_biodiesel.qmd), [Hydrogen](sector_hydrogen.qmd), and [Electricity](sector_electricity.qmd); and vehicle manufacturing is in [Light Industrial](sector_light_industrial.qmd). This chapter covers the use of vehicles to move people.
+Adjacent activities are handled elsewhere: freight movement is in [Transportation (Freight)](sector_transportation-freight.qmd); off-road vehicles are handled separately; the fuels (gasoline, diesel, electricity, hydrogen, biofuels) are supplied by the energy-supply sub-models, including [Ethanol](sector_biofuels_ethanol.qmd), [Biodiesel](sector_biofuels_biodiesel.qmd), [Hydrogen](sector_hydrogen.qmd), and [Electricity](sector_electricity.qmd); and vehicle manufacturing is in [Light Industrial](sector_light-industrial.qmd). This chapter covers the use of vehicles to move people.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ Two forces shape the transition in the model. First, vehicle electrification: ba
 
 The sector divides into a **Product** sub-tree — the mobility demand by mode — and a **Service** sub-tree of the vehicles and transit systems that supply it. @fig-transport-passenger-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); mode and powertrain shares are determined by lifecycle cost plus intangible cost.
 
-![Service flow model of passenger transportation (region-agnostic master tree). The Product sub-tree is mobility demand by mode — Urban (single- and high-occupancy vehicles, public transit, walk/cycle), Intercity Land (vehicle, bus, rail), and Intercity Air — and the Service sub-tree supplies it through passenger vehicles (size classes and competing powertrains), transit (public bus, rapid transit), and intercity bus and rail.](images/transport_passenger_flow_model.svg){#fig-transport-passenger-flow-model .lightbox width=100%}
+![Service flow model of passenger transportation (region-agnostic master tree). The Product sub-tree is mobility demand by mode — Urban (single- and high-occupancy vehicles, public transit, walk/cycle), Intercity Land (vehicle, bus, rail), and Intercity Air — and the Service sub-tree supplies it through passenger vehicles (size classes and competing powertrains), transit (public bus, rapid transit), and intercity bus and rail.](images/retired/transportation-passenger_flow-model.svg){#fig-transport-passenger-flow-model .lightbox width=100%}
 
 ### Products: mobility demand by mode
 
@@ -93,7 +95,7 @@ Technology and mode choice follow the lifecycle-cost competition of @sec-technol
 
 Financial costs are discounted at behavioural rates — around 8% for some capital-intensive, long-lived assets (rail, transit infrastructure) and around 25% for personal-vehicle decisions in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than pure financial costs of capital; together with the intangible costs they govern technology choice, as set out in the discount-rate and intangible-cost discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition.
 
-Emissions arise from fuel combustion in the vehicles, buses, trains, and aircraft, entering through each technology's fuel service requests and the carbon price; battery-electric options have zero tailpipe emissions and inherit the carbon intensity of the grid. The emissions benefit of electrification therefore depends on regional grid intensity, and the benefit of biofuels on their lifecycle intensity from the [Ethanol](sector_ethanol.qmd) and [Biodiesel](sector_biodiesel.qmd) sub-models. A note of caution carried from the original documentation: many of CIMS-T's intangible-cost parameters are under active review against stated-preference survey data, so the modelled pace of the ZEV transition is sensitive to them.
+Emissions arise from fuel combustion in the vehicles, buses, trains, and aircraft, entering through each technology's fuel service requests and the carbon price; battery-electric options have zero tailpipe emissions and inherit the carbon intensity of the grid. The emissions benefit of electrification therefore depends on regional grid intensity, and the benefit of biofuels on their lifecycle intensity from the [Ethanol](sector_biofuels_ethanol.qmd) and [Biodiesel](sector_biofuels_biodiesel.qmd) sub-models. A note of caution carried from the original documentation: many of CIMS-T's intangible-cost parameters are under active review against stated-preference survey data, so the modelled pace of the ZEV transition is sensitive to them.
 
 ## Regional coverage and differences
 

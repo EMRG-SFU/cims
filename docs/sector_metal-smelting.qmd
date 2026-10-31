@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_metal_smelting.html
 ---
 
 # Metal Smelting and Refining {#sec-metal-smelting}
@@ -12,7 +14,7 @@ CIMS represents the smelting and refining of the major non-ferrous metals: alumi
 
 Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
 
-- Iron and steel are explicitly excluded and covered in their own [Iron and Steel](sector_iron_and_steel.qmd) chapter.
+- Iron and steel are explicitly excluded and covered in their own [Iron and Steel](sector_iron-and-steel.qmd) chapter.
 - Mining and concentration of the ores are part of the [Mining](sector_mining.qmd) sector; the smelting sub-model takes concentrates (and, for aluminium, alumina) as inputs.
 - Downstream fabrication — rolling, extrusion, casting of finished goods — is downstream manufacturing and is not part of this sub-model, which ends with refined and cast metal.
 
@@ -30,7 +32,7 @@ Following the standard CIMS pattern, the sector divides into a **Product** sub-t
 
 As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the metal-smelting tree, the disaggregation into metals and process stages is built from fixed-ratio nodes, while the technology choices — which anode, which smelting furnace, which metallurgical route — occur at the tech-compete leaves.
 
-![Energy-service flow model of the metal smelting and refining sector (region-agnostic master tree). The Product sub-tree holds per-metal chains — aluminium (alumina, electrolysis, recycle) and the pyro-/hydro-metallurgical base metals — and the Service sub-tree holds the auxiliary energy services and oxygen supply.](images/metal_smelting_flow_model.svg){#fig-metal-smelting-flow-model .lightbox width=100%}
+![Energy-service flow model of the metal smelting and refining sector (region-agnostic master tree). The Product sub-tree holds per-metal chains — aluminium (alumina, electrolysis, recycle) and the pyro-/hydro-metallurgical base metals — and the Service sub-tree holds the auxiliary energy services and oxygen supply.](images/retired/metal-smelting_flow-model.svg){#fig-metal-smelting-flow-model .lightbox width=100%}
 
 ### Products: aluminium
 
@@ -54,7 +56,7 @@ Magnesium carries an explicit SF₆ process-emission factor on its melt-cast and
 
 ### Services
 
-The services follow the standard pattern and are documented in their own chapters in the General Services part. The sector draws on **Oxygen** (cryogenic air separation, feeding oxygen-enriched smelting and converting), **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)), **Steam** (see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd)), **Methane Blend**, **HVAC**, and **Lighting**. Notably, the sector has no CCS service in the current tree, which is a significant omission for the pyrometallurgical routes whose off-gases are relatively concentrated.
+The services follow the standard pattern and are documented in their own chapters in the General Services part. The sector draws on **Oxygen** (cryogenic air separation, feeding oxygen-enriched smelting and converting), **Machine Drive** (see [Industrial Machine Drive Systems](machine-drive.qmd)), **Steam** (see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd)), **Methane Blend**, **HVAC**, and **Lighting**. Notably, the sector has no CCS service in the current tree, which is a significant omission for the pyrometallurgical routes whose off-gases are relatively concentrated.
 
 <mark>TODO: The current regional input files still implement an earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the Product/Service split and the MECS-aligned Machine Drive grouping. Migrate these files to the region-agnostic master tree (which places the sector under `Metal.Smelting` with the Product/Service split) and the shared General Services chapters.</mark>
 

@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_pulp_and_paper.html
 ---
 
 # Pulp and Paper {#sec-pulp-and-paper}
@@ -13,7 +15,7 @@ CIMS represents the manufacture of **pulp, paper and paperboard** — the energy
 Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
 
 - **Forest harvesting and the supply of roundwood and residues** are covered in the [Forestry](sector_forestry.qmd) chapter; the pulp and paper sub-model takes logs, chips and recovered paper as inputs.
-- **Converted paper products** — boxes, bags, asphalt roofing, and other converting industries — are downstream manufacturing and are handled in the [Light Industrial](sector_light_industrial.qmd) branch, not here.
+- **Converted paper products** — boxes, bags, asphalt roofing, and other converting industries — are downstream manufacturing and are handled in the [Light Industrial](sector_light-industrial.qmd) branch, not here.
 - **Fuel and electricity supply** enter through the energy-supply sub-models and the shared fuel nodes; the sub-model consumes these as priced inputs and, importantly, can also *generate* electricity and steam on site (see below).
 
 The sub-model stops at saleable pulp and paper grades.
@@ -30,7 +32,7 @@ Following the standard CIMS pattern, the sector divides into two sub-trees: a **
 
 In the pulp and paper tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which pulping process, which bleaching sequence, which dryer, which recovery furnace — occur at the tech-compete leaves.
 
-![Energy-service flow model of the pulp and paper sector (region-agnostic master tree). The sector divides into a Product sub-tree — a pulp-making chain (log preparation, pulping, washing, bleaching, drying) and five paper-grade chains — and a Service sub-tree that holds the auxiliary energy services plus the sector-specific Black Liquor recovery-and-energy cycle.](images/pulp_paper_flow_model.svg){#fig-pulp-paper-flow-model .lightbox width=100%}
+![Energy-service flow model of the pulp and paper sector (region-agnostic master tree). The sector divides into a Product sub-tree — a pulp-making chain (log preparation, pulping, washing, bleaching, drying) and five paper-grade chains — and a Service sub-tree that holds the auxiliary energy services plus the sector-specific Black Liquor recovery-and-energy cycle.](images/retired/pulp-and-paper_flow-model.svg){#fig-pulp-paper-flow-model .lightbox width=100%}
 
 ### Products: pulp
 
@@ -65,14 +67,14 @@ The **Black Liquor** service is the energy and chemical heart of a kraft mill, a
 - The **Recovery Furnace** burns the concentrated liquor, regenerating cooking chemicals and raising steam. Technologies range from the conventional **Tomlinson** boiler through low-odour, high-solids-firing variants to **cogeneration** configurations (e.g. high-solids firing with 900–1200 psig cogeneration) and **gasification**, which raise the energy recovered from the liquor.
 - The **Lime Kiln** calcines lime to causticise the recovered chemicals. It is the sector's main fossil-fuel choke point, and the model competes conventional natural-gas, oil and coal kilns against **wood-waste gasification** and **lignin-precipitation** retrofits that displace fossil fuel.
 
-![The kraft black-liquor recovery and energy cycle as represented in CIMS. Chemical pulping produces weak black liquor, which is concentrated in the Evaporator and burned in the Recovery Furnace; the furnace regenerates pulping chemicals (via the Lime Kiln) and raises steam and power for the mill, with surplus electricity exported. Biomass and black liquor are biogenic, so this energy carries no fossil CO₂; the kiln is the main fossil load.](images/pulp_paper_recovery.svg){#fig-pulp-paper-recovery .lightbox width=90%}
+![The kraft black-liquor recovery and energy cycle as represented in CIMS. Chemical pulping produces weak black liquor, which is concentrated in the Evaporator and burned in the Recovery Furnace; the furnace regenerates pulping chemicals (via the Lime Kiln) and raises steam and power for the mill, with surplus electricity exported. Biomass and black liquor are biogenic, so this energy carries no fossil CO₂; the kiln is the main fossil load.](images/retired/pulp-and-paper_recovery.svg){#fig-pulp-paper-recovery .lightbox width=90%}
 
 ### Auxiliary energy and utility services
 
 The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The Pulp and Paper sector draws on:
 
-- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. Pulp and Paper's very large motor loads sit here, especially the refiners of mechanical pulping (materials processing), along with pumps, fans, compressed air and materials handling.
-- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd). This is the sector's largest energy service, and its technology set is unusually rich: alongside natural-gas, oil, coal, electric and hydrogen boilers it includes **solid-biomass** boilers, **biomass steam turbines** and grate firing, and gas- and biomass-fired **cogeneration**, reflecting the mills' reliance on hog fuel and on combined heat and power.
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. Pulp and Paper's very large motor loads sit here, especially the refiners of mechanical pulping (materials processing), along with pumps, fans, compressed air and materials handling.
+- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd). This is the sector's largest energy service, and its technology set is unusually rich: alongside natural-gas, oil, coal, electric and hydrogen boilers it includes **solid-biomass** boilers, **biomass steam turbines** and grate firing, and gas- and biomass-fired **cogeneration**, reflecting the mills' reliance on hog fuel and on combined heat and power.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification and hydrogen.
 - **HVAC** and **Lighting** for mill facilities.
 

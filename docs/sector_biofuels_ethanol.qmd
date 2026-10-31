@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_ethanol.html
 ---
 
 # Ethanol {#sec-ethanol}
@@ -10,7 +12,7 @@ Ethanol production is one of CIMS's energy-supply sub-models: it produces a low-
 
 CIMS represents the production of fuel ethanol by two routes: corn (and, in Western Canada, wheat) starch fermentation, and cellulosic conversion of crop residues and other lignocellulosic material. The sub-model covers the conversion plant and its inputs — agricultural feedstock, process steam, electricity, and a gaseous process fuel — and produces ethanol as an output that flows into the gasoline blend. Demand is set by the blending and fuel-switching choices in the consuming sectors and by renewable-fuel policy, rather than by an exogenous production target.
 
-Adjacent activities are handled elsewhere: biodiesel has its own [Biodiesel](sector_biodiesel.qmd) chapter; gasoline is produced in [Petroleum Refining](sector_petroleum_refining.qmd); the combustion of the ethanol blend happens in the transport sectors; and feedstock cultivation is represented here only through an **Agricultural Input** service rather than the full [Agriculture](sector_agriculture.qmd) sub-model.
+Adjacent activities are handled elsewhere: biodiesel has its own [Biodiesel](sector_biofuels_biodiesel.qmd) chapter; gasoline is produced in [Petroleum Refining](sector_petroleum-refining.qmd); the combustion of the ethanol blend happens in the transport sectors; and feedstock cultivation is represented here only through an **Agricultural Input** service rather than the full [Agriculture](sector_agriculture.qmd) sub-model.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ The sector has one striking decarbonisation feature. The fermentation step that 
 
 The sub-model divides into a **Product** sub-tree — the two production routes — and a **Service** sub-tree of the inputs they draw on. @fig-ethanol-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the production chains are fixed-ratio sequences and the technology choices occur at the service leaves.
 
-![Energy-service flow model of the ethanol sub-model. Two production routes — Corn (grain fermentation) and Cellulosic — convert feedstock into ethanol, drawing on an Agricultural Input service, process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service well suited to the pure biogenic CO₂ from fermentation; lifecycle CO₂, CH₄, and N₂O are tracked.](images/ethanol_flow_model.svg){#fig-ethanol-flow-model .lightbox width=90%}
+![Energy-service flow model of the ethanol sub-model. Two production routes — Corn (grain fermentation) and Cellulosic — convert feedstock into ethanol, drawing on an Agricultural Input service, process Steam, a gaseous Methane Fuel supply, electricity, and a shared CCS service well suited to the pure biogenic CO₂ from fermentation; lifecycle CO₂, CH₄, and N₂O are tracked.](images/retired/biofuels_ethanol_flow-model.svg){#fig-ethanol-flow-model .lightbox width=90%}
 
 ### Products: corn and cellulosic routes
 
@@ -73,7 +75,7 @@ The standout option is capturing the fermentation CO₂. Unlike a flue gas, it e
 
 ### Feedstock and process energy
 
-Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the **Agricultural Input** options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching **Steam** to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter.
+Shifting from corn to cellulosic feedstock lowers the cultivation burden, and within the corn route the **Agricultural Input** options (efficient or biodiesel-powered farming) reduce field emissions. On the plant side, switching **Steam** to electric, biomass, or biogas, or adding CCS to gas-fired steam, cuts the conversion footprint — the same low-carbon heat options described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

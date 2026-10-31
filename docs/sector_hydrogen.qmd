@@ -10,7 +10,7 @@ Hydrogen production is one of CIMS's energy-supply sub-models: it produces a ver
 
 CIMS represents the production of hydrogen by all the major routes — natural-gas reforming, coal and biomass gasification, water electrolysis, and ethanol reforming — at both centralised and distributed scale, together with the delivery infrastructure and a shared **CCS** service. The sub-model produces hydrogen as an output that flows to the consuming sectors; its demand is set by those sectors' fuel-switching and feedstock choices and by policy, rather than by an exogenous production target.
 
-Adjacent activities are handled elsewhere: the end uses of hydrogen — as a refinery input ([Petroleum Refining](sector_petroleum_refining.qmd), [Petroleum Crude](sector_petroleum_crude.qmd)), an ammonia/methanol feedstock ([Chemical Products](sector_chemical_products.qmd)), a reductant in steel ([Iron and Steel](sector_iron_and_steel.qmd)), or a transport fuel — are represented in those sectors. This chapter covers only how the hydrogen is made.
+Adjacent activities are handled elsewhere: the end uses of hydrogen — as a refinery input ([Petroleum Refining](sector_petroleum-refining.qmd), [Petroleum Crude](sector_petroleum-crude.qmd)), an ammonia/methanol feedstock ([Chemical Products](sector_chemicals.qmd)), a reductant in steel ([Iron and Steel](sector_iron-and-steel.qmd)), or a transport fuel — are represented in those sectors. This chapter covers only how the hydrogen is made.
 
 ## Real-world context
 
@@ -22,7 +22,7 @@ Two such routes are advancing. "Blue" hydrogen — SMR or gasification with carb
 
 The sub-model divides into a **Product** sub-tree — the hydrogen-production competition — and a **Service** sub-tree holding the delivery **Infrastructure** and the **CCS** service. @fig-hydrogen-flow-model shows the structure. The production node is a single tech-compete node (see @sec-technology-competition); the incumbent in the current data is distributed SMR.
 
-![Energy-service flow model of the hydrogen sub-model. A single Production competition spans the "colours" of hydrogen — grey (SMR, coal/biomass gasification), blue (the same routes with CCS), and green (electrolysis; biomass-with-CCS is net-negative) — at centralised and distributed scale, drawing on a delivery Infrastructure service and a shared 90%-capture CCS service; lifecycle CO₂, CH₄, and N₂O are tracked.](images/hydrogen_flow_model.svg){#fig-hydrogen-flow-model .lightbox width=90%}
+![Energy-service flow model of the hydrogen sub-model. A single Production competition spans the "colours" of hydrogen — grey (SMR, coal/biomass gasification), blue (the same routes with CCS), and green (electrolysis; biomass-with-CCS is net-negative) — at centralised and distributed scale, drawing on a delivery Infrastructure service and a shared 90%-capture CCS service; lifecycle CO₂, CH₄, and N₂O are tracked.](images/retired/hydrogen_flow-model.svg){#fig-hydrogen-flow-model .lightbox width=90%}
 
 ### Product: the production competition
 
@@ -32,7 +32,7 @@ The **Production** node competes the full set of routes, each consuming a charac
 - **Coal gasification + CCS** — centralised; coal-based blue hydrogen.
 - **Biomass gasification** — centralised, and a + CCS variant. Renewable feedstock; with CCS it is net-negative (the captured CO₂ is biogenic).
 - **Electrolysis** — centralised and distributed; splits water using electricity, so its emissions track the grid (green where the grid is clean). Electricity-dominated, at roughly 0.2 GJ electricity per unit of hydrogen energy.
-- **Ethanol reforming** — distributed; reforms ethanol from the [Ethanol](sector_ethanol.qmd) sub-model.
+- **Ethanol reforming** — distributed; reforms ethanol from the [Ethanol](sector_biofuels_ethanol.qmd) sub-model.
 
 The centralised versus distributed distinction matters because it trades production economies of scale against the **Infrastructure** (delivery, compression) cost: distributed production is made near the point of use and needs less delivery infrastructure, while centralised production is cheaper per unit but draws more heavily on the Infrastructure service.
 

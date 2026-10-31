@@ -12,17 +12,17 @@ CIMS represents both metal mining and non-metal mining. Metal mining is split in
 
 Several activities that are colloquially called "mining" are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
 
-- Coal mining is covered in the [Coal Mining](sector_coal_mining.qmd) chapter and the energy-supply component.
-- Oil and gas extraction and oil sands mining are covered under [Petroleum Crude](sector_petroleum_crude.qmd).
-- Cement, lime, glass, brick, and other non-metallic *mineral products* are covered under [Industrial Minerals](sector_industrial_minerals.qmd) — these are downstream manufacturing branches, distinct from the extraction of the non-metal ores treated here.
+- Coal mining is covered in the [Coal Mining](sector_coal-mining.qmd) chapter and the energy-supply component.
+- Oil and gas extraction and oil sands mining are covered under [Petroleum Crude](sector_petroleum-crude.qmd).
+- Cement, lime, glass, brick, and other non-metallic *mineral products* are covered under [Industrial Minerals](sector_industrial-minerals.qmd) — these are downstream manufacturing branches, distinct from the extraction of the non-metal ores treated here.
 
-The smelting and refining of mined concentrates is likewise excluded and handled in the [Metal Smelting and Refining](sector_metal_smelting.qmd) chapter; the mining sub-model stops at the mine gate, with a saleable concentrate or product as its final output.
+The smelting and refining of mined concentrates is likewise excluded and handled in the [Metal Smelting and Refining](sector_metal-smelting.qmd) chapter; the mining sub-model stops at the mine gate, with a saleable concentrate or product as its final output.
 
 ## Real-world context
 
 Canada is one of the world's leading mining nations, and the industry is highly regionalised. Metal mines produce base and precious metals — copper, nickel, zinc, gold, iron ore, and others — from both open-pit and underground operations. Saskatchewan is the world's largest potash-producing region, accounting on the order of 30% of global potash production [@nrcan-potash], and also supplies roughly a quarter of the world's uranium from the high-grade deposits of the Athabasca Basin [@wna-uranium]. The Northwest Territories host Canada's diamond industry, and Nunavut has growing gold and iron-ore production. Mining is capital-intensive and strongly export-oriented, so activity levels are driven by world commodity prices and ore grades rather than by domestic demand — which is why CIMS drives the sector with an exogenous throughput forecast rather than an endogenous demand response.
 
-Mining is energy-intensive, and the energy is concentrated in a few activities. Comminution — the crushing, grinding, and milling that reduce run-of-mine rock to particles fine enough for mineral separation — is typically the single largest energy consumer at a metal mine; published estimates put it at roughly a quarter of final energy at an average mine site and a majority of mine *electricity* use [@ceec-comminution]. Diesel dominates mobile equipment, particularly haulage, and is the largest single fuel at many sites; many remote northern mines are off-grid and rely heavily on diesel generation for all loads. Ventilation is a large and distinctively underground electricity load, since deep mines must move enormous volumes of air for air quality and temperature control. The CIMS structure is built around exactly these distinctions: it separates open-pit from underground mining, breaks the ore-processing chain into its comminution stages, and represents ventilation, fans, pumping, and the other utility loads through the shared machine-drive service (see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter).
+Mining is energy-intensive, and the energy is concentrated in a few activities. Comminution — the crushing, grinding, and milling that reduce run-of-mine rock to particles fine enough for mineral separation — is typically the single largest energy consumer at a metal mine; published estimates put it at roughly a quarter of final energy at an average mine site and a majority of mine *electricity* use [@ceec-comminution]. Diesel dominates mobile equipment, particularly haulage, and is the largest single fuel at many sites; many remote northern mines are off-grid and rely heavily on diesel generation for all loads. Ventilation is a large and distinctively underground electricity load, since deep mines must move enormous volumes of air for air quality and temperature control. The CIMS structure is built around exactly these distinctions: it separates open-pit from underground mining, breaks the ore-processing chain into its comminution stages, and represents ventilation, fans, pumping, and the other utility loads through the shared machine-drive service (see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter).
 
 ## Model structure
 
@@ -30,7 +30,7 @@ Following the standard CIMS pattern, the sector divides into two sub-trees: a **
 
 As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the mining tree, the disaggregation of products and process stages is built from fixed-ratio nodes, and the technology choices — which extraction method, which crusher, which boiler, which class of motor — occur at the tech-compete leaves.
 
-![Energy-service flow model of the mining sector (region-agnostic master tree). The sector divides into a Product sub-tree — metal (open-pit iron and non-iron, and underground) and potash — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses.](images/mining_flow_model.svg){#fig-mining-flow-model .lightbox width=100%}
+![Energy-service flow model of the mining sector (region-agnostic master tree). The sector divides into a Product sub-tree — metal (open-pit iron and non-iron, and underground) and potash — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses.](images/retired/mining_flow-model.svg){#fig-mining-flow-model .lightbox width=100%}
 
 ### Products: metal mining
 
@@ -54,7 +54,7 @@ Non-metal mining is represented in the same Product sub-tree as a sibling of Met
 
 Both methods feed a shared surface-processing and finishing train — Crystallization and Flotation (under Processing), followed by Drying, Compaction, and Tailings Disposal — and, like the metal mines, both draw on the cross-cutting energy and utility services.
 
-![Potash flow model. Potash is a non-metal product sibling of Metal; conventional (underground) and solution mining feed a shared processing and finishing train.](images/mining_potash_sk.svg){#fig-mining-potash-sk .lightbox width=90%}
+![Potash flow model. Potash is a non-metal product sibling of Metal; conventional (underground) and solution mining feed a shared processing and finishing train.](images/retired/mining_potash-sk.svg){#fig-mining-potash-sk .lightbox width=90%}
 
 Canada's other non-metal mining is smaller in energy terms but is within the scope of this sector and is included here for completeness. The most significant omissions are uranium and diamonds, both of which are material parts of the Canadian mining industry even though their energy intensity is lower than that of metal milling.
 
@@ -68,8 +68,8 @@ Canada's other non-metal mining is smaller in energy terms but is within the sco
 
 Mining's production technologies draw on the shared **Service** sub-tree rather than specifying their own utility equipment. These services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The services the mining sector draws on are:
 
-- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. Mining's largest electrical loads sit here: comminution under Materials Processing, mine ventilation under Fans, and haulage and conveyance under Materials Handling, alongside Pumps and Compressed Air.
-- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd), which covers boiler-raised steam and its fuel options.
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. Mining's largest electrical loads sit here: comminution under Materials Processing, mine ventilation under Fans, and haulage and conveyance under Materials Handling, alongside Pumps and Compressed Air.
+- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), which covers boiler-raised steam and its fuel options.
 - **Cogeneration** — see [Cogeneration](cogeneration.qmd) for combined heat-and-power.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for mine facilities.
@@ -105,11 +105,11 @@ Comminution is the single largest electricity consumer at a metal mine, so effic
 
 ### Electrified and low-carbon process heat
 
-Concentrate drying (Cleaning) and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and heat-pump drying, electrode and electric-resistance boilers, biomass and hydrogen boilers, and mechanical vapour recompression — are described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter and reached through the **Steam** service; the **Methane Blend** node additionally substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty.
+Concentrate drying (Cleaning) and process steam are met largely by combustion today. The low- and zero-emission alternatives — electric and heat-pump drying, electrode and electric-resistance boilers, biomass and hydrogen boilers, and mechanical vapour recompression — are described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter and reached through the **Steam** service; the **Methane Blend** node additionally substitutes biogas, biomass gas, and hydrogen for natural gas in any remaining gas-fired duty.
 
 ### Ventilation and auxiliary drive (underground)
 
-Ventilation can account for roughly 40–50% of an underground mine's energy use. Ventilation on demand (VOD) matches airflow to where vehicles and crews are actually working and can cut ventilation energy by up to about 50% [@abb-vod]; high-efficiency fans and motors with variable-speed drives further reduce auxiliary drive energy. These are represented through the Fans and other machine-drive end uses described in the [Industrial Machine Drive Systems](machine_drive.qmd) chapter.
+Ventilation can account for roughly 40–50% of an underground mine's energy use. Ventilation on demand (VOD) matches airflow to where vehicles and crews are actually working and can cut ventilation energy by up to about 50% [@abb-vod]; high-efficiency fans and motors with variable-speed drives further reduce auxiliary drive energy. These are represented through the Fans and other machine-drive end uses described in the [Industrial Machine Drive Systems](machine-drive.qmd) chapter.
 
 ### Potash-specific options
 

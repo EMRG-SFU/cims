@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_petroleum_crude.html
 ---
 
 # Petroleum Crude {#sec-petroleum-crude}
@@ -10,7 +12,7 @@ Crude oil and bitumen production is one of CIMS's energy-supply sub-models, cove
 
 CIMS represents the production of crude oil and bitumen: conventional light, medium, and heavy crude (onshore and offshore), and the oil sands in their three forms — surface mining, in-situ recovery, and upgrading of bitumen to synthetic crude oil. The driving variable is oil/bitumen output. The model carries the supporting energy services — steam, process hydrogen (for upgrading), industrial engines, and a **CCS** service.
 
-Adjacent activities are handled elsewhere: refining crude into fuels and products is in [Petroleum Refining](sector_petroleum_refining.qmd); natural gas production is in [Natural Gas](sector_natural_gas.qmd); the combustion of the refined fuels is in the demand sectors; and the hydrogen the sector uses can be drawn from the [Hydrogen](sector_hydrogen.qmd) sub-model. This chapter covers getting the oil and bitumen out of the ground and to a refinery-ready state.
+Adjacent activities are handled elsewhere: refining crude into fuels and products is in [Petroleum Refining](sector_petroleum-refining.qmd); natural gas production is in [Natural Gas](sector_natural-gas.qmd); the combustion of the refined fuels is in the demand sectors; and the hydrogen the sector uses can be drawn from the [Hydrogen](sector_hydrogen.qmd) sub-model. This chapter covers getting the oil and bitumen out of the ground and to a refinery-ready state.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ The sector's emissions profile is distinctive. For in-situ production, the singl
 
 The sector divides into a **Product** sub-tree — the production routes — and a **Service** sub-tree of the energy services that supply them. @fig-petroleum-crude-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition).
 
-![Energy-service flow model of the petroleum crude sector (region-agnostic master tree). The Product sub-tree holds conventional crude (light/medium onshore and offshore, heavy) and the oil sands (in-situ recovery, surface mining, and upgrading to synthetic crude); the Service sub-tree supplies the steam, hydrogen, industrial engines and CCS the production routes draw on. Steam generation is the dominant emission source for in-situ bitumen.](images/petroleum_crude_flow_model.svg){#fig-petroleum-crude-flow-model .lightbox width=100%}
+![Energy-service flow model of the petroleum crude sector (region-agnostic master tree). The Product sub-tree holds conventional crude (light/medium onshore and offshore, heavy) and the oil sands (in-situ recovery, surface mining, and upgrading to synthetic crude); the Service sub-tree supplies the steam, hydrogen, industrial engines and CCS the production routes draw on. Steam generation is the dominant emission source for in-situ bitumen.](images/retired/petroleum-crude_flow-model.svg){#fig-petroleum-crude-flow-model .lightbox width=100%}
 
 ### Products: conventional crude and the oil sands
 

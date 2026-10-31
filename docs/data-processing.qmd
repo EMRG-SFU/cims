@@ -1,3 +1,8 @@
+---
+aliases:
+  - data_processing.html
+---
+
 # Data Processing {#sec-data-processing}
 
 The data processing step transforms data into **model input** files and **calibration** files for the CIMS energy-economy model. Raw data is **never committed** to this repository — only scripts, mappings, and this documentation are tracked. Raw data is stored on the External-CIMS sharepoint. Model input files are used to build the model with information like sectors, activity levels, services, technologies, model parameters, and fuel prices. Calibration files include the historical demand, emissions, and technology shares publicly available. During the calibration step, the user will attempt to match market shares, energy demand, and emissions in the model from 2000-last historical year to the calibration data. This step will help determine intangible costs and trends, and will be a vetted starting point from which the projection begins. 

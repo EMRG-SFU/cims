@@ -11,11 +11,11 @@
 # picks resolves to the right pair.
 logo:
   small:
-    light: images/cims_logo_light_screen.svg
-    dark: images/cims_logo_dark_screen.svg
+    light: images/cims-logo_light-screen.svg
+    dark: images/cims-logo_dark-screen.svg
   medium:
-    light: images/cims_logo_light_screen.svg
-    dark: images/cims_logo_dark_screen.svg
+    light: images/cims-logo_light-screen.svg
+    dark: images/cims-logo_dark-screen.svg
   large:
-    light: images/cims_logo_light_screen.svg
-    dark: images/cims_logo_dark_screen.svg
+    light: images/cims-logo_light-screen.svg
+    dark: images/cims-logo_dark-screen.svg

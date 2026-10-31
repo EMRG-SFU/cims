@@ -1,3 +1,8 @@
+---
+aliases:
+  - machine_drive.html
+---
+
 # Industrial Machine Drive Systems {#sec-machine-drive}
 
 ```{=latex}

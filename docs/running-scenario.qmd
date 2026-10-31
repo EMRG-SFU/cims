@@ -1,3 +1,8 @@
+---
+aliases:
+  - running_scenario.html
+---
+
 # Running a Scenario {#sec-running-scenario}
 
 how to run a scenario

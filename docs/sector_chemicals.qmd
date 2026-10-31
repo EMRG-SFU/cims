@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_chemical_products.html
 ---
 
 # Chemical Products {#sec-chemical-products}
@@ -12,7 +14,7 @@ CIMS represents the energy-intensive chemical products that dominate the sector'
 
 Several adjacent activities are deliberately handled elsewhere in CIMS to avoid double-counting energy and emissions:
 
-- Petroleum refining — the production of fuels and refinery streams from crude oil — is covered in the [Petroleum Refining](sector_petroleum_refining.qmd) chapter; the chemicals sub-model takes refinery and gas-plant streams (ethane, naphtha, natural gas) as feedstock rather than producing them.
+- Petroleum refining — the production of fuels and refinery streams from crude oil — is covered in the [Petroleum Refining](sector_petroleum-refining.qmd) chapter; the chemicals sub-model takes refinery and gas-plant streams (ethane, naphtha, natural gas) as feedstock rather than producing them.
 - Merchant hydrogen production is covered in the [Hydrogen](sector_hydrogen.qmd) chapter; where the chemicals sub-model uses hydrogen as a reactant (for example in electrolytic ammonia) it draws on that representation rather than rebuilding it.
 - Fuel and feedstock supply (natural gas, oil, ethane) enters through the energy-supply sub-models and the shared fuel nodes; the chemicals sub-model consumes these as priced inputs.
 
@@ -30,7 +32,7 @@ Following the standard CIMS pattern, the sector divides into a **Product** sub-t
 
 As described in the [Sector Overview](sector_overview.qmd), each node carries a competition rule. **Fixed-ratio** nodes impose the unavoidable engineering sequence of process steps, while **tech-compete** nodes host competitions among alternative technologies on the basis of lifecycle cost (see @sec-technology-competition). In the chemicals tree, the disaggregation into products and process stages is built from fixed-ratio nodes, while the technology choices — which synthesis route, which electrolysis cell, which cracker — occur at the tech-compete leaves.
 
-![Energy-service flow model of the chemical products sector (region-agnostic master tree). The sector divides into a Product sub-tree of distinct chemical chains — ammonia and methanol, chlor-alkali, sodium chlorate, hydrogen peroxide, adipic acid, and other petrochemicals — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the shared CCS service.](images/chemicals_flow_model.svg){#fig-chemicals-flow-model .lightbox width=100%}
+![Energy-service flow model of the chemical products sector (region-agnostic master tree). The sector divides into a Product sub-tree of distinct chemical chains — ammonia and methanol, chlor-alkali, sodium chlorate, hydrogen peroxide, adipic acid, and other petrochemicals — and a Service sub-tree of auxiliary energy services structured on the EIA MECS end uses, plus the shared CCS service.](images/retired/chemicals_flow-model.svg){#fig-chemicals-flow-model .lightbox width=100%}
 
 ### Products: ammonia and methanol
 
@@ -68,8 +70,8 @@ Downstream, Petrochemicals covers Intermediate Production, BTX Reforming (benzen
 
 The remaining services are common to the industrial sectors and are documented in their own chapters in the General Services part; their general structure — and the "existing versus more efficient equipment, with fuel-switching where relevant" convention they follow — is set out in the [Sector Overview](sector_overview.qmd). This chapter does not repeat that detail. The chemicals sector draws on:
 
-- **Machine Drive** — see the [Industrial Machine Drive Systems](machine_drive.qmd) chapter. The sector's large motive loads sit here: compressors (a major load in synthesis and refrigeration), pumps, fans, and materials handling and processing.
-- **Steam** — see [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants. Steam is a large load in chemicals.
+- **Machine Drive** — see the [Industrial Machine Drive Systems](machine-drive.qmd) chapter. The sector's large motive loads sit here: compressors (a major load in synthesis and refrigeration), pumps, fans, and materials handling and processing.
+- **Steam** — see [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd), covering boiler- and turbine-raised steam and its fuel options, including electric, hydrogen, and CCS-equipped variants. Steam is a large load in chemicals.
 - **Methane Blend** — the gaseous-fuel supply node, where natural gas competes with biogas, biomass gasification, and hydrogen.
 - **HVAC** (space heating and cooling) and **Lighting** for plant facilities.
 - **CCS** — the shared carbon-capture service that the reforming, cracking, and other equipped routes request.
@@ -113,7 +115,7 @@ The cost estimates in @tbl-chemicals-technoecon gather order-of-magnitude capita
 
 : Indicative techno-economic characteristics of chemical products technologies, 2025 CAD {#tbl-chemicals-technoecon}
 
-![Ammonia and methanol synthesis routes. The conventional reform-and-synthesis route carries a large process-CO₂ emission; the model competes it against efficiency improvements, a CCS variant (blue), and an electrolytic-hydrogen route (green), with CCS-equipped routes drawing on the shared CCS service.](images/chemicals_ammonia_routes.svg){#fig-chemicals-ammonia-routes .lightbox width=90%}
+![Ammonia and methanol synthesis routes. The conventional reform-and-synthesis route carries a large process-CO₂ emission; the model competes it against efficiency improvements, a CCS variant (blue), and an electrolytic-hydrogen route (green), with CCS-equipped routes drawing on the shared CCS service.](images/retired/chemicals_ammonia-routes.svg){#fig-chemicals-ammonia-routes .lightbox width=90%}
 
 ### Feedstock and synthesis routes: blue and green ammonia and methanol
 
@@ -135,7 +137,7 @@ Carbon capture is represented as a shared **CCS** service that any equipped rout
 
 ### Electrified heat and efficient drives
 
-Process steam and lower-temperature heat can shift from gas to electricity and hydrogen through the **Steam** and **Methane Blend** services described in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) chapter, and the large compressor and pump loads can move to high-efficiency motors and variable-speed drives in the **Machine Drive** service. The electrochemical products (chlor-alkali, sodium chlorate) are already electricity-driven, so their decarbonisation depends mainly on grid intensity and on choosing the more efficient cell and evaporator technologies the model already competes.
+Process steam and lower-temperature heat can shift from gas to electricity and hydrogen through the **Steam** and **Methane Blend** services described in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) chapter, and the large compressor and pump loads can move to high-efficiency motors and variable-speed drives in the **Machine Drive** service. The electrochemical products (chlor-alkali, sodium chlorate) are already electricity-driven, so their decarbonisation depends mainly on grid intensity and on choosing the more efficient cell and evaporator technologies the model already competes.
 
 <mark>TODO: Replace the indicative literature ranges above with the capital costs, efficiencies, availability years, and emission factors actually used at these nodes in the model input files.</mark>
 

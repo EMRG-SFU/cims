@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_natural_gas.html
 ---
 
 # Natural Gas {#sec-natural-gas}
@@ -10,7 +12,7 @@ The natural gas supply sector is one of CIMS's energy-supply sub-models, coverin
 
 CIMS represents the supply of natural gas: extraction (conventional, shale, tight, and coalbed methane), field and plant processing, transmission, and distribution, together with the venting, fugitive, flaring, and formation-CO₂ emission sources that occur along the way and the energy the sector consumes for compression, drilling, and heat. The driving variable is gas throughput. The model also carries the oil-and-gas fuel blends (diesel, gasoline, methane) the sector burns for its own operations.
 
-Adjacent activities are handled elsewhere: the combustion of the delivered gas by end users is accounted in the demand sectors (residential, commercial, industry, electricity); crude oil production is in [Petroleum Crude](sector_petroleum_crude.qmd); and downstream gas use as a chemical feedstock is in [Chemical Products](sector_chemical_products.qmd) and as a hydrogen feedstock in [Hydrogen](sector_hydrogen.qmd). This chapter covers getting the gas out of the ground and to market.
+Adjacent activities are handled elsewhere: the combustion of the delivered gas by end users is accounted in the demand sectors (residential, commercial, industry, electricity); crude oil production is in [Petroleum Crude](sector_petroleum-crude.qmd); and downstream gas use as a chemical feedstock is in [Chemical Products](sector_chemicals.qmd) and as a hydrogen feedstock in [Hydrogen](sector_hydrogen.qmd). This chapter covers getting the gas out of the ground and to market.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ The decisive fact is that this methane is cheap to abate. Canada has set a targe
 
 The sector divides into a **Product** sub-tree — the gas supply chain, including its emission sources — and a **Service** sub-tree of the oil-and-gas fuel blends. @fig-natural-gas-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the emission-source nodes host competitions among abatement options.
 
-![Energy-service flow model of the natural gas supply sector (region-agnostic master tree). The Product sub-tree runs Supply (extraction, processing, and the venting/fugitive/flaring/formation-CO₂/testing emission sources, each with an abatement competition, plus a CCS service) → Transmission → Distribution; the Service sub-tree holds the oil-and-gas fuel blends the sector burns. Methane is the dominant emission, and most nodes carry an explicit abatement choice.](images/natural_gas_flow_model.svg){#fig-natural-gas-flow-model .lightbox width=100%}
+![Energy-service flow model of the natural gas supply sector (region-agnostic master tree). The Product sub-tree runs Supply (extraction, processing, and the venting/fugitive/flaring/formation-CO₂/testing emission sources, each with an abatement competition, plus a CCS service) → Transmission → Distribution; the Service sub-tree holds the oil-and-gas fuel blends the sector burns. Methane is the dominant emission, and most nodes carry an explicit abatement choice.](images/retired/natural-gas_flow-model.svg){#fig-natural-gas-flow-model .lightbox width=100%}
 
 ### Products: the supply chain and its emission sources
 

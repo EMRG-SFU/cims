@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_petroleum_refining.html
 ---
 
 # Petroleum Refining {#sec-petroleum-refining}
@@ -10,7 +12,7 @@ Petroleum refining is one of CIMS's energy-supply and processing sub-models: it 
 
 CIMS represents the refining of crude oil and synthetic crude into finished products, through the standard process units: distillation (atmospheric and vacuum), cracking (coking and hydrocracking), hydrotreating (desulphurisation and sulphur recovery), reforming, alkylation, and isomerisation, plus by-products such as asphalt and lubes. The driving variable is refinery throughput/product output. Lubricating-oil, grease, and asphalt manufacture are included where carried out within refineries. The model carries the supporting energy services — direct process heat, steam, still gas, hydrogen, machine drive, and a **CCS** service.
 
-Adjacent activities are handled elsewhere: crude oil and bitumen production (including oil-sands upgrading) is in [Petroleum Crude](sector_petroleum_crude.qmd); natural gas processing is in [Natural Gas](sector_natural_gas.qmd); petrochemicals made from refinery streams are in [Chemical Products](sector_chemical_products.qmd); and the combustion of the finished fuels is in the demand sectors. This chapter covers the refinery itself.
+Adjacent activities are handled elsewhere: crude oil and bitumen production (including oil-sands upgrading) is in [Petroleum Crude](sector_petroleum-crude.qmd); natural gas processing is in [Natural Gas](sector_natural-gas.qmd); petrochemicals made from refinery streams are in [Chemical Products](sector_chemicals.qmd); and the combustion of the finished fuels is in the demand sectors. This chapter covers the refinery itself.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ The decarbonisation levers follow from that emissions structure, and Canada's [R
 
 The sector divides into a **Product** sub-tree — the refinery process chain — and a **Service** sub-tree of the energy services. @fig-petroleum-refining-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the process chain is largely fixed-ratio, and the technology choices occur in the energy services.
 
-![Energy-service flow model of the petroleum refining sector (region-agnostic master tree). The Product sub-tree is the refinery process chain — distillation, cracking (coking, hydrocracking), hydrotreating (desulphurisation, sulphur recovery), reforming, alkylation/isomerisation, and by-products (asphalt, lubes); the Service sub-tree supplies the direct process heat, steam, still gas, hydrogen, machine drive, and CCS the process units draw on.](images/petroleum_refining_flow_model.svg){#fig-petroleum-refining-flow-model .lightbox width=100%}
+![Energy-service flow model of the petroleum refining sector (region-agnostic master tree). The Product sub-tree is the refinery process chain — distillation, cracking (coking, hydrocracking), hydrotreating (desulphurisation, sulphur recovery), reforming, alkylation/isomerisation, and by-products (asphalt, lubes); the Service sub-tree supplies the direct process heat, steam, still gas, hydrogen, machine drive, and CCS the process units draw on.](images/retired/petroleum-refining_flow-model.svg){#fig-petroleum-refining-flow-model .lightbox width=100%}
 
 ### Products: the refinery process chain
 

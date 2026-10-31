@@ -8,7 +8,7 @@ The commercial and institutional buildings sector is represented in CIMS as a de
 
 ## Scope
 
-CIMS represents the energy services of commercial and institutional buildings, driven by floor space. It deliberately excludes light industrial facilities (in [Light Industrial](sector_light_industrial.qmd)) and high-rise residential apartments (in [Residential](sector_residential.qmd)). The commercial building sector accounts for roughly 20% of all energy consumed in Canada, of which lighting and HVAC together are about 60% [@nrcan-ceud]. The model includes the end-uses significant enough to matter — space heating and cooling, ventilation, lighting, refrigeration, cooking, hot water, and plug load — and drives each through engineering ratios that link it to floor space; floor space itself is projected exogenously from population and economic growth. Exterior lighting (street, parking, architectural) is not represented for lack of data.
+CIMS represents the energy services of commercial and institutional buildings, driven by floor space. It deliberately excludes light industrial facilities (in [Light Industrial](sector_light-industrial.qmd)) and high-rise residential apartments (in [Residential](sector_residential.qmd)). The commercial building sector accounts for roughly 20% of all energy consumed in Canada, of which lighting and HVAC together are about 60% [@nrcan-ceud]. The model includes the end-uses significant enough to matter — space heating and cooling, ventilation, lighting, refrigeration, cooking, hot water, and plug load — and drives each through engineering ratios that link it to floor space; floor space itself is projected exogenously from population and economic growth. Exterior lighting (street, parking, architectural) is not represented for lack of data.
 
 ## Real-world context
 
@@ -20,7 +20,7 @@ The decarbonisation path is correspondingly clear. Because the loads are general
 
 The sector divides into a **Product** sub-tree — the building shell, disaggregated by building segment and climate zone — and a **Service** sub-tree of the energy end-uses. @fig-commercial-flow-model shows the structure. The building shell is the organising "product" because the choice of envelope determines the heating and cooling demand placed on the services. Each node carries a competition rule (see @sec-technology-competition).
 
-![Energy-service flow model of the commercial sector (region-agnostic master tree). The Product sub-tree is the building shell, split by building segment (offices, retail, healthcare, education, accommodation, etc.) and by climate zone (Cold / Marine); the Service sub-tree holds the end-use services — HVAC, lighting, cooling, hot water, cooking, refrigeration, plug load, and machine drive — that the shell's demand draws on.](images/commercial_flow_model.svg){#fig-commercial-flow-model .lightbox width=100%}
+![Energy-service flow model of the commercial sector (region-agnostic master tree). The Product sub-tree is the building shell, split by building segment (offices, retail, healthcare, education, accommodation, etc.) and by climate zone (Cold / Marine); the Service sub-tree holds the end-use services — HVAC, lighting, cooling, hot water, cooking, refrigeration, plug load, and machine drive — that the shell's demand draws on.](images/retired/commercial_flow-model.svg){#fig-commercial-flow-model .lightbox width=100%}
 
 ### Products: the building shell, by segment and climate
 
@@ -71,7 +71,7 @@ The estimates in @tbl-commercial-cost are order-of-magnitude figures from public
 
 ### Heat pumps: the central lever
 
-The largest direct-emissions source in commercial buildings is fossil space and water heating, and the central decarbonisation lever is the heat pump. The model competes air-source and ground-source heat pumps, and hybrid systems that pair a heat pump with a gas backup for the coldest hours — a configuration well suited to Canada's cold climate, which is why the model splits HVAC into Cold and Marine zones. Heat-pump water heaters electrify domestic hot water. These options draw on the broader treatment in the [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd) and [Cogeneration](cogeneration.qmd) chapters.
+The largest direct-emissions source in commercial buildings is fossil space and water heating, and the central decarbonisation lever is the heat pump. The model competes air-source and ground-source heat pumps, and hybrid systems that pair a heat pump with a gas backup for the coldest hours — a configuration well suited to Canada's cold climate, which is why the model splits HVAC into Cold and Marine zones. Heat-pump water heaters electrify domestic hot water. These options draw on the broader treatment in the [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd) and [Cogeneration](cogeneration.qmd) chapters.
 
 ### Efficiency: envelope, lighting, HVAC, and refrigeration
 

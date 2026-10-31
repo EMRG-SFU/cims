@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - low_temp_industrial_heat.html
 ---
 
 # Low-Temperature Industrial Heat {#sec-low-temp-heat}

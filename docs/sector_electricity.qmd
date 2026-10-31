@@ -8,7 +8,7 @@ Electricity generation is the central energy-supply sub-model in CIMS: it conver
 
 ## Scope
 
-CIMS represents utility-scale electricity generation and the supporting storage, transmission, and carbon-capture services. Electricity co-generated within industry is accounted for in the industrial sub-models (see, for example, the cogeneration options in [Pulp and Paper](sector_pulp_and_paper.qmd) and [Low-Temperature Industrial Heat](low_temp_industrial_heat.qmd)) and is not double-counted here — with the deliberate exception that all renewable generation is accounted in the electricity model regardless of whether a utility or an industrial site operates it. Final electricity demand across the economy drives the sub-model; imports and exports are handled through the macroeconomic module, with an own-price elasticity for export demand of about −1.07.
+CIMS represents utility-scale electricity generation and the supporting storage, transmission, and carbon-capture services. Electricity co-generated within industry is accounted for in the industrial sub-models (see, for example, the cogeneration options in [Pulp and Paper](sector_pulp-and-paper.qmd) and [Low-Temperature Industrial Heat](low-temp-industrial-heat.qmd)) and is not double-counted here — with the deliberate exception that all renewable generation is accounted in the electricity model regardless of whether a utility or an industrial site operates it. Final electricity demand across the economy drives the sub-model; imports and exports are handled through the macroeconomic module, with an own-price elasticity for export demand of about −1.07.
 
 The combustion of the electricity once delivered, and the end-use equipment that consumes it, belong to the demand sectors. This chapter covers only how the power is generated and delivered.
 
@@ -24,7 +24,7 @@ Following the standard CIMS pattern, the sector divides into a **Product** sub-t
 
 Total generation is split across **Base Load**, **Shoulder Load**, and **Peak Load** nodes using ratios derived from historical load-duration curves (the user-specified `fixed_matrix_ratio` decision rule). A load-duration curve re-orders the year's hourly demand from highest to lowest; its height gives the capacity required and its width the utilisation, so the three nodes correspond to power that is needed almost all the time (base), part of the time (shoulder), and only at peak. Within each node, technologies compete on the basis of their annual levelized cost (see @sec-technology-competition).
 
-![Energy-service flow model of the electricity sector (region-agnostic master tree). Total demand is split by load-duration-curve ratios into Base, Shoulder, and Peak Load nodes, each hosting a competition among generation technologies; a Service sub-tree provides CCS (coal, gas, biomass), Storage (battery and seasonal), and Transmission.](images/electricity_flow_model.svg){#fig-electricity-flow-model .lightbox width=100%}
+![Energy-service flow model of the electricity sector (region-agnostic master tree). Total demand is split by load-duration-curve ratios into Base, Shoulder, and Peak Load nodes, each hosting a competition among generation technologies; a Service sub-tree provides CCS (coal, gas, biomass), Storage (battery and seasonal), and Transmission.](images/retired/electricity_flow-model.svg){#fig-electricity-flow-model .lightbox width=100%}
 
 ### Products: base, shoulder, and peak generation
 
@@ -42,7 +42,7 @@ In the model the **Base Load** node hosts the widest set — wind (with battery 
 - **Transmission** — the delivery network that all generation requests.
 - **CCS** — the shared carbon-capture service, with coal, natural gas, and biomass variants; biomass-with-CCS generation is net-negative.
 
-<mark>TODO: The current regional input files predate the full Product/Service split (generation sits under a `Utility Generation` node rather than the master tree's `Product`). Migrate them to the region-agnostic master tree and harmonise the storage and transmission representation with the [Energy Storage](energy_storage.qmd) chapter.</mark>
+<mark>TODO: The current regional input files predate the full Product/Service split (generation sits under a `Utility Generation` node rather than the master tree's `Product`). Migrate them to the region-agnostic master tree and harmonise the storage and transmission representation with the [Energy Storage](energy-storage.qmd) chapter.</mark>
 
 ## Decarbonisation technologies
 
@@ -92,7 +92,7 @@ Where firm capacity is needed over long durations, the model competes reservoir 
 
 In the gas- and coal-heavy provinces, **CCS** on combined-cycle gas, on the existing coal fleet (Saskatchewan's Boundary Dam is a pioneer), or on biomass plants captures most of the combustion CO₂; biomass with CCS goes further and delivers net-negative generation. The shared CCS service and its costs are detailed in the [Carbon Capture, Utilization, and Storage](ccus.qmd) chapter.
 
-<mark>TODO: Replace the indicative literature ranges above with the capital costs, capacity factors, availability years, and emission factors actually used at these nodes in the model input files, and reconcile the storage representation with the [Energy Storage](energy_storage.qmd) chapter.</mark>
+<mark>TODO: Replace the indicative literature ranges above with the capital costs, capacity factors, availability years, and emission factors actually used at these nodes in the model input files, and reconcile the storage representation with the [Energy Storage](energy-storage.qmd) chapter.</mark>
 
 ## Economics
 
@@ -115,7 +115,7 @@ Electricity is the sector where the region-agnostic tree resolves to the most di
 
 ## Limitations and planned extensions
 
-The electricity sub-model captures the essential structure of a modern power system — a load-duration split, three functional technology classes, and the storage and transmission services a high-renewables grid needs — but it remains a simplified representation of a system whose real behaviour is hourly and spatial. Its main limitations are the coarse (base/shoulder/peak) time resolution relative to the sub-hourly dynamics that actually drive VRE integration, the simplified storage and transmission representation, and reliance on inherited cost and load-curve assumptions. The TODOs above record the priorities, of which keeping the cost and capacity-factor data current and reconciling storage with the dedicated [Energy Storage](energy_storage.qmd) chapter are the most important.
+The electricity sub-model captures the essential structure of a modern power system — a load-duration split, three functional technology classes, and the storage and transmission services a high-renewables grid needs — but it remains a simplified representation of a system whose real behaviour is hourly and spatial. Its main limitations are the coarse (base/shoulder/peak) time resolution relative to the sub-hourly dynamics that actually drive VRE integration, the simplified storage and transmission representation, and reliance on inherited cost and load-curve assumptions. The TODOs above record the priorities, of which keeping the cost and capacity-factor data current and reconciling storage with the dedicated [Energy Storage](energy-storage.qmd) chapter are the most important.
 
 <mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark the modelled generation mix and grid emissions intensity by province against Canada Energy Regulator and Canada Energy Future data.</mark>
 

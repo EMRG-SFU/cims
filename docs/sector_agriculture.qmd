@@ -10,7 +10,7 @@ Agriculture is unlike the other sectors CIMS represents: most of its greenhouse-
 
 CIMS represents the greenhouse-gas-emitting activities of agriculture and the on-farm energy that supports them: livestock enteric fermentation and manure management (the CH₄ sources), agricultural soils (the N₂O source, together with the land-management practices that affect it), farm tractors (mobile diesel equipment), and farm process and building heat. The driving variable is the level of agricultural activity, expressed in CO₂-equivalent terms.
 
-Adjacent activities are handled elsewhere to avoid double-counting: the manufacture of nitrogen fertiliser is in [Chemical Products](sector_chemical_products.qmd) (ammonia synthesis); food and beverage processing is in [Light Industrial](sector_light_industrial.qmd); the biofuels that use agricultural feedstock are in [Biodiesel](sector_biodiesel.qmd) and [Ethanol](sector_ethanol.qmd) (which carry their own Agricultural Input services); and the fuels burned on-farm are supplied by the energy-supply sub-models. This chapter covers the emissions and energy use of farming itself.
+Adjacent activities are handled elsewhere to avoid double-counting: the manufacture of nitrogen fertiliser is in [Chemical Products](sector_chemicals.qmd) (ammonia synthesis); food and beverage processing is in [Light Industrial](sector_light-industrial.qmd); the biofuels that use agricultural feedstock are in [Biodiesel](sector_biofuels_biodiesel.qmd) and [Ethanol](sector_biofuels_ethanol.qmd) (which carry their own Agricultural Input services); and the fuels burned on-farm are supplied by the energy-supply sub-models. This chapter covers the emissions and energy use of farming itself.
 
 ## Real-world context
 
@@ -22,7 +22,7 @@ This composition shapes the decarbonisation problem. Because the emissions are b
 
 The sector divides into a **Product** sub-tree — the emitting agricultural processes — and a **Service** sub-tree of the on-farm energy services. @fig-agriculture-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the abatement options compete against conventional practice on a lifecycle-cost basis, with the carbon price (applied to CH₄ and N₂O on a CO₂-equivalent basis) as the main driver.
 
-![Energy-service flow model of the agriculture sector (region-agnostic master tree). The Product sub-tree holds the emitting processes — Enteric Fermentation and Manure Management (CH₄) and Soils (N₂O, with tillage and land-use options including net-sequestering practices) — and the Service sub-tree holds on-farm Tractors and Heat.](images/agriculture_flow_model.svg){#fig-agriculture-flow-model .lightbox width=90%}
+![Energy-service flow model of the agriculture sector (region-agnostic master tree). The Product sub-tree holds the emitting processes — Enteric Fermentation and Manure Management (CH₄) and Soils (N₂O, with tillage and land-use options including net-sequestering practices) — and the Service sub-tree holds on-farm Tractors and Heat.](images/retired/agriculture_flow-model.svg){#fig-agriculture-flow-model .lightbox width=90%}
 
 ### Products: the emitting processes
 

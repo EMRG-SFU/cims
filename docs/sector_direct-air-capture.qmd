@@ -1,3 +1,8 @@
+---
+aliases:
+  - sector_carbon_dioxide_removal.html
+---
+
 # Carbon Dioxide Removal / Direct Air Capture {#sec-carbon-dioxide-removal}
 
 - Run year as normal with carbon price

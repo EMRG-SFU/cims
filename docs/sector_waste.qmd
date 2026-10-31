@@ -10,7 +10,7 @@ The waste sector is unlike most others CIMS represents: its greenhouse-gas footp
 
 CIMS represents the **management of landfill gas** at municipal solid waste disposal sites — the dominant source of greenhouse gases in the waste sector. Landfills are grouped by size (large, medium, and small), because the economics of gas collection and use depend strongly on how much gas a site produces. The driving variable is the methane-generation potential of the waste in place, expressed in tonnes of CO₂-equivalent; a forecast of that potential — which declines over the projection as waste diversion reduces the organic material sent to landfill — drives the sub-model.
 
-Adjacent activities are handled elsewhere or fall outside the current model. Waste collection and haulage are part of the [Transportation (Freight)](sector_transportation_freight.qmd) sector; the energy services of waste-management facilities are small and not separately represented; and waste used as a fuel (waste-derived fuel in cement kilns, biomass boilers) is accounted in the consuming sectors. The current sub-model focuses on landfill gas; wastewater treatment methane and waste incineration are not yet represented (see the limitations below).
+Adjacent activities are handled elsewhere or fall outside the current model. Waste collection and haulage are part of the [Transportation (Freight)](sector_transportation-freight.qmd) sector; the energy services of waste-management facilities are small and not separately represented; and waste used as a fuel (waste-derived fuel in cement kilns, biomass boilers) is accounted in the consuming sectors. The current sub-model focuses on landfill gas; wastewater treatment methane and waste incineration are not yet represented (see the limitations below).
 
 ## Real-world context
 
@@ -22,7 +22,7 @@ The levers are well established. Capturing the gas with a collection system and 
 
 The sector divides into a **Product** sub-tree — the landfill sites, grouped by size — with the gas-management technologies competing at each. @fig-waste-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the landfill-gas options compete on lifecycle cost, with the carbon price (applied to methane on a CO₂-equivalent basis) as the main driver.
 
-![Energy-service flow model of the waste sector (region-agnostic master tree). Methane-generation potential (in tonnes of CO₂-equivalent) is allocated across landfill **Sites** by size (Large, Medium, Small); at each, three landfill-gas options compete — No Control (vents CH₄), Flaring (captures and burns the gas, converting CH₄ to CO₂), and Electricity Generation (landfill-gas-to-energy, which also produces electricity). Larger sites more readily justify capture and energy recovery.](images/waste_flow_model.svg){#fig-waste-flow-model .lightbox width=90%}
+![Energy-service flow model of the waste sector (region-agnostic master tree). Methane-generation potential (in tonnes of CO₂-equivalent) is allocated across landfill **Sites** by size (Large, Medium, Small); at each, three landfill-gas options compete — No Control (vents CH₄), Flaring (captures and burns the gas, converting CH₄ to CO₂), and Electricity Generation (landfill-gas-to-energy, which also produces electricity). Larger sites more readily justify capture and energy recovery.](images/retired/waste_flow-model.svg){#fig-waste-flow-model .lightbox width=90%}
 
 ### Products: landfill sites and their gas-management options
 

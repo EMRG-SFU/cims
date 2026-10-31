@@ -76,7 +76,7 @@ The absolute change in sector financial output could be positive or negative dep
 
 Reductions in residential activity and mobility reflect consumers' surplus losses. Consumers' surplus is the area between the demand curve, which symbolizes the marginal willingness to pay for a service or good, and the market-clearing price of the good or service (@fig-consumer_surplus).
 
-![Consumer Surplus](images/consumer_surplus.png){#fig-consumer_surplus .lightbox width=70%}
+![Consumer Surplus](images/consumer-surplus.png){#fig-consumer_surplus .lightbox width=70%}
 
 The consumers' surplus loss between BAU and Policy is then calculated as BAU minus the policy. When calculating the direct welfare costs of a policy, consumers' surplus loss is added to the ERC value already calculated. Table 11 summarizes the financial and welfare costs adjustments made to the various sectors when their output changes.
 

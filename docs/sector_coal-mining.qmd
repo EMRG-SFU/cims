@@ -1,5 +1,7 @@
 ---
 bibliography: references.bib
+aliases:
+  - sector_coal_mining.html
 ---
 
 # Coal Mining {#sec-coal-mining}
@@ -10,7 +12,7 @@ Coal mining is one of CIMS's energy-supply and extractive sub-models: it produce
 
 CIMS represents the extraction, size reduction, and finishing of coal — from the mine face through crushing, milling, washing, and drying to a saleable product. The driving variable is coal output in tonnes. Both metallurgical (coking) coal and thermal coal are within scope; the chain includes a Metallurgical Finishing stage (washing, cleaning/drying, tailings) that prepares coking coal to the specification the steel industry needs.
 
-Adjacent activities are handled elsewhere to avoid double-counting: the combustion of thermal coal for power is in [Electricity](sector_electricity.qmd) and for industrial heat in the relevant industrial chapters; the conversion of coking coal to coke and its use in ironmaking are in [Iron and Steel](sector_iron_and_steel.qmd); and other (non-coal) mining is in the [Mining](sector_mining.qmd) sector. This chapter covers the mining of the coal itself.
+Adjacent activities are handled elsewhere to avoid double-counting: the combustion of thermal coal for power is in [Electricity](sector_electricity.qmd) and for industrial heat in the relevant industrial chapters; the conversion of coking coal to coke and its use in ironmaking are in [Iron and Steel](sector_iron-and-steel.qmd); and other (non-coal) mining is in the [Mining](sector_mining.qmd) sector. This chapter covers the mining of the coal itself.
 
 ## Real-world context
 
@@ -22,7 +24,7 @@ The sector's emissions come from two places. Diesel powers the trucks, shovels, 
 
 The sector divides into a **Product** sub-tree — the coal production chain — and a **Service** sub-tree of auxiliary energy services. @fig-coal-mining-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); the production chain is a fixed-ratio sequence and the technology choices occur at the tech-compete leaves.
 
-![Energy-service flow model of the coal mining sector (region-agnostic master tree). The Product sub-tree runs from Raw Product (extraction, mine ventilation, transportation) through Size Reduced Product (crushing and milling) to Metallurgical Finishing (washing, cleaning/drying, tailings); the Service sub-tree holds the MECS-aligned machine drive and building services. Fugitive coal-mine methane is released at extraction.](images/coal_mining_flow_model.svg){#fig-coal-mining-flow-model .lightbox width=100%}
+![Energy-service flow model of the coal mining sector (region-agnostic master tree). The Product sub-tree runs from Raw Product (extraction, mine ventilation, transportation) through Size Reduced Product (crushing and milling) to Metallurgical Finishing (washing, cleaning/drying, tailings); the Service sub-tree holds the MECS-aligned machine drive and building services. Fugitive coal-mine methane is released at extraction.](images/retired/coal-mining_flow-model.svg){#fig-coal-mining-flow-model .lightbox width=100%}
 
 ### Products: the coal production chain
 
@@ -34,7 +36,7 @@ The master tree also defines Simplified Extraction and Simplified Production nod
 
 ### Services
 
-The services follow the standard pattern and are documented in their own chapters in the General Services part: **Machine Drive** (see [Industrial Machine Drive Systems](machine_drive.qmd)) carries the large motor loads (the model's current files still use the older per-horsepower and separate compression/conveyance/pumping/ventilation structure), together with **HVAC**, **Lighting**, and the **Methane Blend** gaseous-fuel node.
+The services follow the standard pattern and are documented in their own chapters in the General Services part: **Machine Drive** (see [Industrial Machine Drive Systems](machine-drive.qmd)) carries the large motor loads (the model's current files still use the older per-horsepower and separate compression/conveyance/pumping/ventilation structure), together with **HVAC**, **Lighting**, and the **Methane Blend** gaseous-fuel node.
 
 <mark>TODO: The current regional input files still implement the earlier, more detailed auxiliary structure (six per-horsepower machine-drive size classes; separate Compression, Conveyance, Pumping, Ventilation, and Direct Drive sub-trees) and predate the MECS-aligned Machine Drive grouping. Migrate them to the region-agnostic master tree and the shared General Services chapters.</mark>
 

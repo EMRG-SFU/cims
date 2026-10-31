@@ -1,3 +1,8 @@
+---
+aliases:
+  - energy_supply_demand.html
+---
+
 # Energy Supply and Demand {#sec-energy-supply-demand}
 
 ## Energy Pricing
@@ -37,7 +42,7 @@ Each of the energy markets in CIMS has the option of fixed or dynamic pricing, a
 
 CIMS divides energy flow in the economy into demand for energy end-use services, intermediate processing, and primary supply (@fig-final_intermediate_primary_flow). It begins with an initial demand for four general end-use energy commodities: electricity, natural gas, coal, and refined petroleum products. The electricity needs of the domestic energy demand models (transportation, residential, commercial, and industry) plus net electricity transfers (inter-regional transfers and exports) are used to drive electricity generation. The refined petroleum products sector is driven by the net demand from the energy demand models, electricity, inter-regional transfers, and net exports. The primary energy supply models, crude extraction, coal mining and natural gas extraction and transmission are driven by the net demand for their products from the final demand sectors, electricity and refined petroleum.
 
-![final_intermediate_primary_flow](images/final_intermediate_primary_flow.png){#fig-final_intermediate_primary_flow .lightbox}
+![final_intermediate_primary_flow](images/final-intermediate-primary-flow.png){#fig-final_intermediate_primary_flow .lightbox}
 
 The electricity demands of petroleum refining, the refined petroleum product demands of the primary energy supply models, and the interdependencies among the primary energy supply models create feedback loops within the system. Because CIMS operates as a simulation model rather than a computable general equilibrium model, these feedback loops cannot be resolved within a single iteration of the demand–supply algorithm. To address this limitation, CIMS is run iteratively until lifecycle costs throughout the model converge below a specified threshold criterion (typically less than a 5% difference between iterations). Additional iterations may also be performed to ensure that the effects of the feedback loops have stabilized.
 
