@@ -63,19 +63,25 @@ book:
       chapters:
         - sector_coal-mining.qmd              # Coal Mining
         - sector_natural-gas.qmd              # Natural Gas
+        - sector_natural-gas_methane.qmd      #   Methane emissions in oil and gas
         - sector_petroleum-crude.qmd          # Petroleum Crude
+        - sector_petroleum-crude_oil-sands.qmd #   Oil sands
         - sector_petroleum-refining.qmd       # Petroleum Refining
         - sector_electricity.qmd              # Electricity
-        - sector_biofuels_ethanol.qmd         # Ethanol
-        - sector_biofuels_biodiesel.qmd       # Biodiesel
+        - sector_biofuels.qmd                 # Biofuels
         - sector_hydrogen.qmd                 # Hydrogen
     - part: "Industrial Sectors"
       chapters:
         - sector_mining.qmd                   # Mining
         - sector_industrial-minerals.qmd      # Industrial Minerals
         - sector_chemicals.qmd                # Chemicals
+        - sector_chemicals_nitrogen.qmd       #   Nitrogen chain
+        - sector_chemicals_chlor-alkali.qmd   #   Chlor-alkali and oxidants
+        - sector_chemicals_petrochemicals.qmd #   Petrochemicals and methanol
         - sector_pulp-and-paper.qmd           # Pulp and Paper
         - sector_metal-smelting.qmd           # Metal Smelting
+        - sector_metal-smelting_aluminum.qmd  #   Aluminum
+        - sector_metal-smelting_base-metals.qmd #   Base metals, magnesium, titanium slag
         - sector_iron-and-steel.qmd           # Iron and Steel
         - sector_light-industrial.qmd         # Light Industrial
         - sector_construction.qmd             # Construction
