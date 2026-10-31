@@ -1,0 +1,47 @@
+# Light industrial flowchart. The product groups request the heat and other
+# services on the right; the services carry the sector's energy use.
+# See appendix_figure-style.qmd for the format.
+sector: light-industrial
+title: Light industrial
+
+groups:
+  - {label: Product groups, cols: [0, 1], rows: [0, 3]}
+  - {label: Process heat, cols: [2, 3], rows: [0, 2]}
+  - {label: Other services, cols: [4, 4], rows: [0, 3]}
+
+nodes:
+  - {id: food, label: "Food, beverage, and tobacco", icon: bottle, role: process, at: [0, 0],
+     branch: light-industrial.product.food-tobacco-and-beverage}
+  - {id: rubber, label: Rubber and plastics, icon: plastic, role: process, at: [1, 0],
+     branch: light-industrial.product.rubber-and-plastics}
+  - {id: textiles, label: Leather and textiles, icon: spool, role: process, at: [0, 1],
+     branch: light-industrial.product.leather-and-textiles}
+  - {id: wood, label: Wood products, icon: log, role: process, at: [1, 1],
+     branch: light-industrial.product.wood-products}
+  - {id: furniture, label: Furniture and machinery, icon: chair, role: process, at: [0, 2],
+     branch: light-industrial.product.furniture-printing-and-machinery}
+  - {id: transport, label: Transportation equipment, icon: car, role: process, at: [1, 2],
+     branch: light-industrial.product.transportation-equipment}
+  - {id: electronics, label: Electronics and other, icon: chip, role: process, at: [0, 3],
+     branch: light-industrial.product.electronics-and-other}
+
+  - {id: process-heating, label: Process heating and cleaning, icon: heat-exchanger, role: service, at: [2, 0],
+     branches: [light-industrial.service.heat.process-heating, light-industrial.service.heat.cleaning]}
+  - {id: drying, label: Drying and curing, icon: dryer, role: service, at: [3, 0],
+     branch: light-industrial.service.heat.drying}
+  - {id: baking, label: "Baking, frying, and roasting", icon: stove, role: service, at: [2, 1],
+     branch: light-industrial.service.heat.baking-frying-roasting}
+  - {id: forming, label: Forming and pressing, icon: press, role: service, at: [3, 1],
+     branch: light-industrial.service.heat.forming-pressing}
+  - {id: melting, label: Melting and heat treating, icon: furnace, role: service, at: [2, 2],
+     branches: [light-industrial.service.heat.metal-melting, light-industrial.service.heat.heat-treatment]}
+
+  - {id: steam, label: Steam, icon: steam, role: service, at: [4, 0],
+     branch: light-industrial.service.steam}
+  - {id: refrigeration, label: Refrigeration, icon: fridge, role: service, at: [4, 1],
+     branch: light-industrial.service.refrigeration}
+  - {id: drive, label: Machine drive, icon: motor, role: service, at: [4, 2],
+     branch: light-industrial.service.machine-drive}
+  - {id: building, label: HVAC and lighting, icon: lightbulb, role: service, at: [4, 3],
+     branches: [light-industrial.service.hvac.heating, light-industrial.service.hvac.cooling,
+                light-industrial.service.lighting]}
