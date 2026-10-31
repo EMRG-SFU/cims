@@ -1,0 +1,31 @@
+# Electricity process flowchart. See appendix_figure-style.qmd for the format.
+sector: electricity
+title: Electricity
+
+nodes:
+  - {id: resources, label: Fuels and resources, icon: wind, role: input, at: [0, 1]}
+  - {id: base, label: Base load, icon: nuclear, role: process, at: [1, 0],
+     branch: electricity.product.base-load}
+  - {id: shoulder, label: Shoulder load, icon: hydro, role: process, at: [1, 1],
+     branch: electricity.product.shoulder-load}
+  - {id: peak, label: Peak load, icon: natural-gas, role: process, at: [1, 2],
+     branch: electricity.product.peak-load}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 0],
+     branches: [electricity.service.ccs.diffuse_coal, electricity.service.ccs.diffuse_natural-gas,
+                electricity.service.ccs.diffuse_biomass]}
+  - {id: transmission, label: Transmission, icon: power-line, role: service, at: [2, 1],
+     branch: electricity.service.transmission}
+  - {id: storage, label: Battery and seasonal storage, icon: battery, role: service, at: [2, 2],
+     branches: [electricity.service.storage.battery, electricity.service.storage.seasonal]}
+  - {id: users, label: Electricity users, icon: plug, role: output, at: [3, 1]}
+
+edges:
+  - [resources, base]
+  - [resources, shoulder]
+  - [resources, peak]
+  - {from: base, to: capture, kind: emission}
+  - [base, transmission]
+  - [shoulder, transmission]
+  - [peak, transmission]
+  - {from: storage, to: transmission, kind: energy}
+  - [transmission, users]

@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 636 492" width="636" height="492" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Electricity process flowchart">
+<defs>
+<symbol id="icon-battery" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="32" height="20" rx="3"/><path d="M38 20 H42 V28 H38"/><rect x="10" y="18" width="16" height="12" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-hydro" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 10 H26 V42 H6 Z"/><path d="M26 30 c4 0 6 4 10 4 s6-4 10-4 M26 38 c4 0 6 4 10 4 s6-4 10-4"/><path d="M12 18 H20 M12 24 H20"/></g></symbol>
+<symbol id="icon-natural-gas" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C31 13 37 20 37 29 A13 13 0 0 1 11 29 C11 22 15 18 18 13 C20 19 22 22 25 22 C26 16 23 11 24 5 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-nuclear" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="4" fill="currentColor"/><ellipse cx="24" cy="24" rx="18" ry="7"/><ellipse cx="24" cy="24" rx="18" ry="7" transform="rotate(60 24 24)"/><ellipse cx="24" cy="24" rx="18" ry="7" transform="rotate(-60 24 24)"/></g></symbol>
+<symbol id="icon-plug" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4 V14 M32 4 V14 M10 14 H38 V22 A14 14 0 0 1 10 22 Z M24 36 V44"/></g></symbol>
+<symbol id="icon-power-line" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4 L14 44 M24 4 L34 44 M10 14 H38 M14 24 H34 M17 34 H31"/><path d="M4 14 C6 18 8 18 10 14 M38 14 C40 18 42 18 44 14"/></g></symbol>
+<symbol id="icon-wind" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 20 V44 M18 44 H30"/><circle cx="24" cy="18" r="2.5"/><path d="M24 16 L22 3 L26 3 Z M26 19 L38 25 L36 28 Z M22 19 L10 25 L12 28 Z"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<path d="M 152.0 198.0 L 161.0 198.0 Q 168.0 198.0 168.0 191.0 L 168.0 89.0 Q 168.0 82.0 175.0 82.0 L 184.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 210.0 L 184.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 222.0 L 161.0 222.0 Q 168.0 222.0 168.0 229.0 L 168.0 331.0 Q 168.0 338.0 175.0 338.0 L 184.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<path d="M 302.0 88.0 L 311.0 88.0 Q 318.0 88.0 318.0 95.0 L 318.0 191.0 Q 318.0 198.0 325.0 198.0 L 334.0 198.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 210.0 L 334.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 338.0 L 311.0 338.0 Q 318.0 338.0 318.0 331.0 L 318.0 229.0 Q 318.0 222.0 325.0 222.0 L 334.0 222.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 393.0 293.0 L 393.0 255.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<g><title>Fuels and resources</title>
+<rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-wind" x="74.0" y="173.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Fuels and</text>
+<text x="93.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">resources</text>
+</g>
+<g><title>Base load — electricity.product.base-load</title>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-nuclear" x="224.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Base load</text>
+</g>
+<g><title>Shoulder load — electricity.product.shoulder-load</title>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-hydro" x="224.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Shoulder load</text>
+</g>
+<g><title>Peak load — electricity.product.peak-load</title>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-natural-gas" x="224.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Peak load</text>
+</g>
+<g><title>CO₂ capture — electricity.service.ccs.diffuse_coal, electricity.service.ccs.diffuse_natural-gas, electricity.service.ccs.diffuse_biomass</title>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#f1f2f4" stroke="#8a96a3" stroke-width="1.4" stroke-dasharray="4 3"/>
+<use href="#icon-ccs" x="374.0" y="45.0" width="38" height="38" style="color:#5a6472"/>
+<text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">CO₂ capture</text>
+</g>
+<g><title>Transmission — electricity.service.transmission</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-power-line" x="374.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Transmission</text>
+</g>
+<g><title>Battery and seasonal storage — electricity.service.storage.battery, electricity.service.storage.seasonal</title>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-battery" x="374.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="348.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Battery and</text>
+<text x="393.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">seasonal</text>
+<text x="393.0" y="379.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">storage</text>
+</g>
+<g><title>Electricity users</title>
+<rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-plug" x="524.0" y="173.0" width="38" height="38" style="color:#ffffff"/>
+<text x="543.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Electricity</text>
+<text x="543.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">users</text>
+</g>
+<rect x="22.0" y="418" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="428" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="418" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="428" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="418" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="428" font-size="11.5" fill="#5a6472">Site service</text>
+<rect x="391.7" y="418" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
+<text x="413.7" y="428" font-size="11.5" fill="#5a6472">Product</text>
+<rect x="22.0" y="441.0" width="16" height="12" rx="3" fill="#f1f2f4" stroke="#8a96a3" stroke-dasharray="4 3"/>
+<text x="44.0" y="451.0" font-size="11.5" fill="#5a6472">Emission or capture</text>
+<path d="M 181.8 447.0 H 209.8" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="217.8" y="451.0" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 319.0 447.0 H 347.0" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="355.0" y="451.0" font-size="11.5" fill="#5a6472">Energy or service</text>
+<path d="M 22.0 470.0 H 50.0" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="58.0" y="474.0" font-size="11.5" fill="#5a6472">CO₂ or other emissions</text>
+</svg>
