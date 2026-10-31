@@ -1,0 +1,31 @@
+# Agriculture process flowchart. See appendix_figure-style.qmd for the format.
+sector: agriculture
+title: Agriculture
+
+nodes:
+  - {id: diesel, label: Diesel blend, icon: liquid-fuel, role: service, at: [0, 0],
+     branch: agriculture.service.fuel-blend.diesel}
+  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: input, at: [0, 1]}
+  - {id: methane, label: Methane blend, icon: natural-gas, role: service, at: [0, 2],
+     branch: agriculture.service.fuel-blend.methane}
+  - {id: electricity, label: Electricity, icon: electricity, role: input, at: [0, 3]}
+  - {id: tractors, label: Tractors, icon: tractor, role: service, at: [1, 0.5],
+     branch: agriculture.service.tractors}
+  - {id: heat, label: Farm heat, icon: thermometer, role: service, at: [1, 2.5],
+     branch: agriculture.service.heat}
+  - {id: livestock, label: Livestock and manure, icon: cow, role: process, at: [2, 0],
+     branch: agriculture.product.enteric-fermentation-and-manure-management}
+  - {id: soils, label: Cropland soils, icon: soil, role: process, at: [2, 1],
+     branch: agriculture.product.soils}
+  - {id: ch4, label: Methane (CH₄), icon: methane, role: emission, at: [3, 0]}
+  - {id: n2o, label: Nitrous oxide (N₂O), icon: co2, role: emission, at: [3, 1]}
+
+edges:
+  - [diesel, tractors]
+  - [hydrogen, tractors]
+  - [methane, heat]
+  - [electricity, heat]
+  - {from: tractors, to: livestock, kind: energy}
+  - {from: tractors, to: soils, kind: energy}
+  - {from: livestock, to: ch4, kind: emission}
+  - {from: soils, to: n2o, kind: emission}
