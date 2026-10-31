@@ -1,0 +1,25 @@
+# Waste process flowchart. See appendix_figure-style.qmd for the format.
+sector: waste
+title: Waste
+
+nodes:
+  - {id: organics, label: Organic waste in place, icon: waste, role: input, at: [0, 1]}
+  - {id: large, label: Large landfills, icon: landfill, role: process, at: [1, 0],
+     branch: waste.product.large-sites}
+  - {id: medium, label: Medium landfills, icon: landfill, role: process, at: [1, 1],
+     branch: waste.product.medium-sites}
+  - {id: small, label: Small landfills, icon: landfill, role: process, at: [1, 2],
+     branch: waste.product.small-sites}
+  - {id: air, label: Vented CH₄ or flared CO₂, icon: stack, role: emission, at: [2.6, 0]}
+  - {id: power, label: Electricity to grid, icon: electricity, role: output, at: [2.6, 2]}
+
+edges:
+  - [organics, large]
+  - [organics, medium]
+  - [organics, small]
+  - {from: large, to: air, kind: emission, turn: early}
+  - {from: medium, to: air, kind: emission, turn: early}
+  - {from: small, to: air, kind: emission, turn: early}
+  - {from: large, to: power, kind: energy, turn: late}
+  - {from: medium, to: power, kind: energy, turn: late}
+  - {from: small, to: power, kind: energy, turn: late}
