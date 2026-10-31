@@ -16,7 +16,8 @@
 <g><title>Purchased input</title>
 <rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
 <use href="#icon-ore" x="74.0" y="173.0" width="38" height="38" style="color:#e6cc9f"/>
-<text x="93.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Purchased input</text>
+<text x="93.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Purchased</text>
+<text x="93.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">input</text>
 </g>
 <g><title>Process step</title>
 <rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>

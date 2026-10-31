@@ -43,7 +43,7 @@ node:
   stroke_width: 1.4
   icon_size: 38
   icon_top: 8             # icon offset from the top of the card
-  label_max_chars: 16     # wrap labels longer than this
+  label_max_chars: 14     # wrap labels longer than this (about the card width)
   label_line_height: 1.15
 
 edge:

@@ -355,7 +355,8 @@ class Chart:
                 roles_used.append(n.role)
             x, y = n.cx - self.w / 2, n.cy - self.h / 2
             dash = f' stroke-dasharray="{role["dash"]}"' if role.get("dash") else ""
-            out.append(f'<g><title>{escape(n.label)}{" — " + ", ".join(n.branches) if n.branches else ""}</title>')
+            tip = n.label + (" — " + ", ".join(n.branches) if n.branches else "")
+            out.append(f'<g><title>{escape(tip)}</title>')
             out.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{self.w}" height="{self.h}" '
                        f'rx="{nd["radius"]}" fill="{pal[role["fill"]]}" stroke="{pal[role["stroke"]]}" '
                        f'stroke-width="{nd["stroke_width"]}"{dash}/>')
@@ -365,9 +366,12 @@ class Chart:
             lines = wrap(n.label, nd["label_max_chars"])
             lh = font["label_size"] * nd["label_line_height"]
             ty = y + nd["icon_top"] + isz + 4 + font["label_size"]
-            if len(lines) == 1:
-                ty += lh / 2
-            for i, line in enumerate(lines[:2]):
+            if len(lines) > 3:
+                print(f"warning: {self.sector}: label '{n.label}' needs more than three lines",
+                      file=sys.stderr)
+            lines = lines[:3]
+            ty += lh / 2 * (2 - len(lines))   # centre one, two, or three lines in the label area
+            for i, line in enumerate(lines):
                 out.append(f'<text x="{n.cx:.1f}" y="{ty + i * lh:.1f}" text-anchor="middle" '
                            f'font-size="{font["label_size"]}" font-weight="{font["label_weight"]}" '
                            f'fill="{pal[role["text"]]}">{escape(line)}</text>')

@@ -82,7 +82,8 @@
 <g><title>Direct reduction — iron-and-steel.service.direct-reduced-iron</title>
 <rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-shaft-furnace" x="224.0" y="301.0" width="38" height="38" style="color:#acdcb6"/>
-<text x="243.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Direct reduction</text>
+<text x="243.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Direct</text>
+<text x="243.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">reduction</text>
 </g>
 <g><title>Ironmaking — iron-and-steel.service.hot-metal</title>
 <rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
@@ -102,8 +103,9 @@
 <g><title>Ladle preheating and refining — iron-and-steel.service.ladle-preheating, iron-and-steel.service.ladle-refining</title>
 <rect x="634.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-ladle" x="674.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
-<text x="693.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ladle preheating</text>
-<text x="693.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">and refining</text>
+<text x="693.0" y="92.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ladle</text>
+<text x="693.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">preheating and</text>
+<text x="693.0" y="123.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">refining</text>
 </g>
 <g><title>Oxygen — iron-and-steel.service.oxygen</title>
 <rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
