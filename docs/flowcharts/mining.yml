@@ -1,0 +1,47 @@
+# Mining process flowchart. See appendix_figure-style.qmd for the format.
+sector: mining
+title: Mining
+
+nodes:
+  - {id: mines, label: Mines by commodity, icon: open-pit, role: process, at: [0, 1],
+     branches: [mining.product.aggregate.open-pit, mining.product.diamond.open-pit,
+                mining.product.diamond.underground, mining.product.metal.open-pit,
+                mining.product.metal.underground, mining.product.potash.conventional,
+                mining.product.potash.solution, mining.product.uranium.open-pit,
+                mining.product.uranium.underground]}
+  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 3]}
+  - {id: extraction, label: Extraction and haulage, icon: truck, role: service, at: [1, 1],
+     branches: [mining.service.extraction, mining.service.mine-haulage.open-pit,
+                mining.service.mine-haulage.underground]}
+  - {id: power, label: On-site power, icon: power-line, role: service, at: [1, 3],
+     branch: mining.service.on-site-power}
+  - {id: crushing, label: Crushing, icon: crusher, role: service, at: [2, 1],
+     branch: mining.service.crushing}
+  - {id: milling, label: Milling, icon: mill, role: service, at: [3, 1],
+     branch: mining.service.milling}
+  - {id: crystallization, label: Potash crystallization, icon: tank, role: service, at: [3, 0],
+     branch: mining.service.crystallization}
+  - {id: leaching, label: Leaching, icon: reactor, role: service, at: [3, 2],
+     branch: mining.service.leaching}
+  - {id: separation, label: Separation, icon: separator, role: service, at: [4, 1],
+     branch: mining.service.separation}
+  - {id: tailings, label: Tailings disposal, icon: tailings, role: service, at: [4, 3],
+     branch: mining.service.tailings-disposal}
+  - {id: finishing, label: Drying and finishing, icon: dryer, role: service, at: [5, 1],
+     branches: [mining.service.drying, mining.service.compaction, mining.service.pelletizing]}
+  - {id: product, label: Concentrate or product, icon: ore, role: output, at: [6, 1]}
+
+edges:
+  - [mines, extraction]
+  - {from: diesel, to: extraction, kind: energy, turn: early}
+  - {from: power, to: extraction, kind: energy}
+  - [extraction, crushing]
+  - [crushing, milling]
+  - [milling, separation]
+  - {from: milling, to: crystallization}
+  - {from: milling, to: leaching}
+  - {from: crystallization, to: finishing, turn: late}
+  - {from: leaching, to: finishing, turn: late}
+  - [separation, finishing]
+  - {from: separation, to: tailings}
+  - [finishing, product]
