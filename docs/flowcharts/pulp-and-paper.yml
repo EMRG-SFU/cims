@@ -1,0 +1,56 @@
+# Pulp and paper process flowchart. See appendix_figure-style.qmd for the format.
+sector: pulp-and-paper
+title: Pulp and paper
+
+nodes:
+  - {id: wood, label: Logs and chips, icon: log, role: input, at: [0, 1]}
+  - {id: recovered, label: Recovered fibre, icon: paper, role: input, at: [0, 3]}
+
+  - {id: wood-prep, label: Debarking and chipping, icon: log, role: process, at: [1, 1],
+     branch: pulp-and-paper.product.pulp.wood-preparation}
+  - {id: chemical, label: Kraft and chemical pulping, icon: reactor, role: process, at: [2, 1],
+     branches: [pulp-and-paper.product.pulp.pulping-chemical, pulp-and-paper.product.pulp.pulping-semi-chemical]}
+  - {id: mechanical, label: Mechanical pulping, icon: mill, role: process, at: [2, 2],
+     branch: pulp-and-paper.product.pulp.pulping-mechanical}
+  - {id: recycled, label: Recycled fibre pulping, icon: pulp, role: process, at: [2, 3],
+     branch: pulp-and-paper.product.pulp.pulping-recycled}
+
+  - {id: evaporator, label: Evaporators, icon: column, role: service, at: [2, 0],
+     branch: pulp-and-paper.service.chemical-recovery.evaporator}
+  - {id: recovery, label: Recovery boiler, icon: boiler, role: service, at: [3, 0],
+     branch: pulp-and-paper.service.chemical-recovery.recovery-furnace}
+  - {id: lime-kiln, label: Lime kiln, icon: kiln, role: service, at: [4, 0],
+     branch: pulp-and-paper.service.chemical-recovery.lime-kiln}
+
+  - {id: bleaching, label: Washing and bleaching, icon: tank, role: process, at: [3, 1],
+     branches: [pulp-and-paper.product.pulp.washing, pulp-and-paper.product.pulp.bleaching]}
+  - {id: pulp-drying, label: Pulp drying, icon: dryer, role: process, at: [4, 1],
+     branch: pulp-and-paper.product.pulp.drying}
+  - {id: market-pulp, label: Market pulp, icon: pulp, role: output, at: [5, 1]}
+
+  - {id: forming, label: Forming and pressing, icon: paper-roll, role: process, at: [4, 3],
+     branches: [pulp-and-paper.product.paper.newsprint.forming, pulp-and-paper.product.paper.uncoated.forming,
+                pulp-and-paper.product.paper.coated.forming, pulp-and-paper.product.paper.linerboard.forming,
+                pulp-and-paper.product.paper.tissue.forming]}
+  - {id: paper-drying, label: Paper drying, icon: dryer, role: process, at: [5, 3],
+     branches: [pulp-and-paper.product.paper.newsprint.drying, pulp-and-paper.product.paper.uncoated.drying,
+                pulp-and-paper.product.paper.coated.drying, pulp-and-paper.product.paper.linerboard.drying,
+                pulp-and-paper.product.paper.tissue.drying]}
+  - {id: paper, label: Paper and tissue, icon: paper-roll, role: output, at: [6, 3]}
+
+edges:
+  - [wood, wood-prep]
+  - [wood-prep, chemical]
+  - [wood-prep, mechanical]
+  - [recovered, recycled]
+  - {from: chemical, to: evaporator, label: black liquor}
+  - [evaporator, recovery]
+  - [recovery, lime-kiln]
+  - [chemical, bleaching]
+  - [bleaching, pulp-drying]
+  - [pulp-drying, market-pulp]
+  - [bleaching, forming]
+  - {from: mechanical, to: forming, turn: late}
+  - [recycled, forming]
+  - [forming, paper-drying]
+  - [paper-drying, paper]
