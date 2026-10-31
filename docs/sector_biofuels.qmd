@@ -1,0 +1,135 @@
+---
+bibliography: references.bib
+aliases:
+  - sector_ethanol.html
+  - sector_biodiesel.html
+  - sector_biofuels_ethanol.html
+  - sector_biofuels_biodiesel.html
+---
+
+# Biofuels {#sec-biofuels}
+
+The Biofuels sector produces the low-carbon fuels that other sectors blend into their gasoline, diesel, jet fuel, and natural gas: ethanol, biodiesel, renewable diesel and sustainable aviation fuel (SAF), renewable natural gas (RNG), and solid biofuel pellets. Much of a biofuel's lifecycle footprint sits upstream of the plant, in the feedstock, so the sector carries its feedstock farming and lifecycle CO₂, CH₄, and N₂O accounting rather than treating the fuels as automatically carbon-neutral. Ethanol plants also release a stream of nearly pure, biogenic CO₂, one of the cheapest places in the energy system to apply carbon capture.
+
+## Scope
+
+The sector covers the conversion plants and their inputs: feedstock farming, process steam, electricity, process fuel, and capture. Its products flow into the fuel blends that the consuming sectors draw on (see @sec-fuel-blends), so demand comes from the blending and fuel-switching choices in those sectors and from renewable-fuel policy rather than from an exogenous production target.
+
+Adjacent activities sit elsewhere:
+
+- Fossil gasoline and diesel, and co-processing of renewable feedstock in existing refinery hydrotreaters, are covered in @sec-petroleum-refining.
+- The hydrogen that renewable diesel units consume can come from @sec-hydrogen.
+- Feedstock cultivation appears here only through the **Feedstock Farming** (agricultural input) service, not through the full @sec-agriculture sub-model; landfill methane that is flared or burned on site belongs to @sec-waste.
+- The fuels are burned in the transport, industrial, and building sectors that request the blends.
+
+## Context
+
+Canada has about 1,900 million litres per year of ethanol capacity and about 700 million litres per year of biodiesel capacity. Canadian ethanol is mostly first-generation: corn in Eastern Canada, Ontario in particular, and wheat in the West, fermented and blended into gasoline under the federal Clean Fuel Regulations and provincial renewable-content mandates [@nrcan-ethanol]. Cellulosic ethanol, made from crop residues, wood, and other lignocellulosic material, is much less developed but carries a far lower carbon intensity, because it avoids the cultivation emissions of a dedicated grain crop [@cen-ethanol].
+
+Biodiesel (fatty-acid methyl ester) is made by transesterifying vegetable oils and animal fats; around 90 % of domestic biomass-based diesel is made from Canadian canola, supplemented by tallow and used cooking oil [@nrcan-biodiesel; @cer-renewable-diesel]. Renewable diesel, made by hydrotreating the same oils and fats, is a true drop-in diesel and now dominates new Canadian capacity: Canada produced about 687 million litres in 2024, and planned capacity could triple. Its hydrogen demand is what sets its energy use apart from biodiesel's.
+
+Biofuels are not automatically low-carbon. Crop feedstocks carry the emissions of cultivation, including farm diesel and N₂O from nitrogen fertilizer, whereas waste and residue feedstocks such as tallow and used cooking oil can achieve 79–86 % lower lifecycle emissions than fossil diesel [@cer-renewable-diesel].
+
+## Process flow
+
+@fig-biofuels-process shows the five production routes, the feedstocks and services they draw on, and the fuel blends they supply.
+
+::: {#fig-biofuels-process}
+![](images/flowcharts/biofuels_process-flow_light.svg){.light-content .lightbox group="biofuels-light"}
+
+![](images/flowcharts/biofuels_process-flow_dark.svg){.dark-content .lightbox group="biofuels-dark"}
+
+Process flow of the Biofuels sector. Each product feeds a fuel blend in the consuming sectors.
+:::
+
+## Model structure
+
+The Product sub-tree holds the five fuels, each a competition among conversion routes. The Service sub-tree holds feedstock farming, steam, the fuel blends the plants burn, and capture.
+
+### Ethanol
+
+Ethanol production covers grain dry milling, cooking and fermentation, distillation and dehydration, stillage evaporation, and distillers-grain drying, as well as cellulosic routes. It is measured in litres or tonnes of ethanol. Fermentation CO₂ is nearly pure, so the capture-equipped fermenter sends it to the sector's concentrated capture node.
+
+{{< include _technology-blocks/biofuels/product_ethanol.md >}}
+
+### Biodiesel
+
+Biodiesel production covers oil and fat pretreatment, transesterification with methanol, methanol recovery, glycerin refining, and biodiesel distillation.
+
+{{< include _technology-blocks/biofuels/product_biodiesel.md >}}
+
+### Renewable diesel and SAF
+
+Dedicated hydrotreating units, including converted refineries, make renewable diesel and SAF from vegetable oils, tallow, and used cooking oil. Gasification with Fischer-Tropsch synthesis, alcohol-to-jet, and power-to-liquids routes compete as emerging options.
+
+{{< include _technology-blocks/biofuels/product_renewable-diesel-and-saf.md >}}
+
+### Renewable natural gas
+
+RNG is biogas from anaerobic digestion or landfills, upgraded to pipeline quality, or methane made by gasifying biomass. It is produced for sale into the gas system and measured in GJ.
+
+{{< include _technology-blocks/biofuels/product_renewable-natural-gas.md >}}
+
+### Solid biofuel
+
+Wood pellets and torrefied pellets, measured in tonnes of pellets.
+
+{{< include _technology-blocks/biofuels/product_solid-biofuel.md >}}
+
+### Feedstock farming
+
+The **Feedstock Farming** service represents the energy and emissions of growing grain and oilseed feedstock, with diesel-powered, efficient-diesel, and biodiesel-powered farming competing. The technology database does not cover it; its technologies come from the CIMS model inputs.
+
+### Shared services
+
+| Service | What it supplies | Technologies |
+|:--------|:-----------------|:-------------|
+| Steam | Heat for cooking, distillation, drying, and reaction | @sec-industrial-heat |
+| Fuel blends | Diesel and methane blends burned by the plants | @sec-fuel-blends |
+| CCS | Capture of concentrated fermentation and gasifier CO₂, and of diffuse flue gas | @sec-ccus |
+
+: Shared services in the Biofuels sector {#tbl-biofuels-shared}
+
+The steam node also offers one option specific to biofuels:
+
+{{< include _technology-blocks/biofuels/service_steam.md >}}
+
+## Decarbonisation
+
+Decarbonising biofuels means lowering their lifecycle carbon intensity.
+
+- **Feedstock.** Waste and residue oils remove most of the cultivation emissions, including fertilizer N₂O, and cellulosic feedstock does the same for ethanol. Waste-oil supply is limited, and renewable diesel competes with biodiesel for it.
+- **Fermentation CO₂ capture.** Fermentation CO₂ needs only compression and drying before storage, so its capture costs are a small fraction of those for dilute streams. Because the carbon is biogenic, storing it yields net-negative emissions (BECCS).
+- **Process energy.** Electric boilers, biomass or biogas, and anaerobic-digestion CHP reduce the plants' own emissions, and the methane blend can displace natural gas with biogas or hydrogen.
+- **Farming energy.** Efficient or biodiesel-powered farm equipment reduces field emissions.
+
+The sector's accounting is lifecycle: CO₂, CH₄, and N₂O factors carry agricultural N₂O and process emissions, so a biofuel's net benefit emerges from the difference between its lifecycle emissions and the fossil fuel it displaces.
+
+## Regional coverage and differences
+
+All seven modelled regions carry the sector's structure. Corn ethanol is concentrated in Ontario and the East and wheat ethanol in the Prairies; canola-based biodiesel is concentrated in Saskatchewan, Alberta, and Manitoba, while waste oils and tallow are more widely distributed. Regional differences show up in feedstock mix and in the carbon intensity of the grid supplying process electricity.
+
+<mark>TODO: Calibrate the regional feedstock mixes and carbon intensities (corn, wheat, and cellulosic ethanol; canola, tallow, and used cooking oil) against Clean Fuel Regulations pathway data and Canadian crop-residue supply estimates.</mark>
+
+## Limitations and planned extensions
+
+<mark>TODO: The ethanol and biodiesel input files predate the new hierarchy. Build the renewable diesel and SAF, renewable natural gas, and solid biofuel products in the regional input files, with renewable diesel's hydrogen demand drawn from the Hydrogen sector.</mark>
+
+<mark>TODO: Add a feedstock-supply constraint so that waste-oil and residue availability limits the low-carbon-intensity routes, and consider linking feedstock farming to the Agriculture sector.</mark>
+
+<mark>TODO: Benchmark modelled biofuel output and carbon intensity against Natural Resources Canada, Canada Energy Regulator, and Clean Fuel Regulations data.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

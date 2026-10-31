@@ -14,7 +14,7 @@ Technologies in CIMS rarely request a pure fuel. They request a blend, and the b
 
 : Fuel blend nodes {#tbl-fuel-blends}
 
-The first three are true blends: they mix a purchased fossil fuel with lower-carbon substitutes supplied by the Biofuels and Hydrogen sectors (see @sec-biodiesel, @sec-ethanol, and @sec-hydrogen). The last two route a sector's own by-product fuels to the steam, reheating, and direct-heat nodes that burn them; the heat they provide is counted at those nodes.
+The first three are true blends: they mix a purchased fossil fuel with lower-carbon substitutes supplied by the Biofuels and Hydrogen sectors (see @sec-biofuels and @sec-hydrogen). The last two route a sector's own by-product fuels to the steam, reheating, and direct-heat nodes that burn them; the heat they provide is counted at those nodes.
 
 The technology database does not describe the blending technologies; their shares and limits come from the CIMS model inputs.
 
