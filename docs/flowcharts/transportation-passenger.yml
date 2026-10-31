@@ -1,0 +1,38 @@
+# Passenger transportation process flowchart. See appendix_figure-style.qmd for the format.
+sector: transportation-passenger
+title: Passenger transportation
+
+nodes:
+  - {id: demand, label: Passenger travel demand, icon: people, role: input, at: [0, 1.5]}
+
+  # travel demand by mode (Product sub-tree)
+  - {id: urban, label: Urban travel, icon: building, role: process, at: [1, 0],
+     branch: transportation-passenger.product.urban}
+  - {id: intercity-land, label: Intercity land travel, icon: car, role: process, at: [1, 2],
+     branch: transportation-passenger.product.intercity-land}
+  - {id: intercity-air, label: Intercity air travel, icon: plane, role: process, at: [1, 3],
+     branch: transportation-passenger.product.intercity-air}
+
+  # vehicles and transit (Service sub-tree)
+  - {id: transit, label: Urban transit, icon: bus, role: service, at: [2, 0],
+     branches: [transportation-passenger.service.transit.public-bus,
+                transportation-passenger.service.transit.rapid-transit]}
+  - {id: vehicles, label: Passenger vehicles, icon: car, role: service, at: [2, 1],
+     branch: transportation-passenger.service.passenger-vehicles}
+  - {id: bus, label: Intercity bus, icon: bus, role: service, at: [2, 2],
+     branch: transportation-passenger.service.intercity-bus}
+  - {id: rail, label: Intercity rail, icon: train, role: service, at: [2, 3],
+     branch: transportation-passenger.service.intercity-rail}
+  - {id: motors, label: Vehicle powertrains, icon: charger, role: service, at: [3, 1],
+     branch: transportation-passenger.service.passenger-vehicle-motors}
+
+edges:
+  - {from: demand, to: urban, turn: early}
+  - {from: demand, to: intercity-land, turn: early}
+  - {from: demand, to: intercity-air, turn: early}
+  - [urban, transit]
+  - {from: urban, to: vehicles, turn: late}
+  - {from: intercity-land, to: vehicles, turn: late}
+  - [intercity-land, bus]
+  - {from: intercity-land, to: rail, turn: early}
+  - [vehicles, motors]

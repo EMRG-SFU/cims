@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 636 574" width="636" height="574" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Passenger transportation process flowchart">
+<defs>
+<symbol id="icon-building" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="28" height="36" fill="currentColor" fill-opacity="0.18"/><path d="M16 13 H20 M28 13 H32 M16 20 H20 M28 20 H32 M16 27 H20 M28 27 H32 M21 42 V35 H27 V42 M4 42 H44"/></g></symbol>
+<symbol id="icon-bus" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="8" width="36" height="28" rx="4" fill="currentColor" fill-opacity="0.18"/><path d="M6 22 H42 M12 14 H36"/><circle cx="14" cy="38" r="3"/><circle cx="34" cy="38" r="3"/></g></symbol>
+<symbol id="icon-car" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 L10 20 C11 17 13 16 16 16 H32 C35 16 37 17 38 20 L42 30 V36 H6 Z" fill="currentColor" fill-opacity="0.18"/><path d="M6 30 H42"/><circle cx="14" cy="36" r="4"/><circle cx="34" cy="36" r="4"/></g></symbol>
+<symbol id="icon-charger" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="20" height="36" rx="3" fill="currentColor" fill-opacity="0.18"/><path d="M22 14 L16 24 H24 L18 34"/><path d="M30 18 H36 V36 A4 4 0 0 0 44 36 V28"/></g></symbol>
+<symbol id="icon-people" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="17" cy="14" r="6"/><path d="M5 40 C5 30 10 24 17 24 C24 24 29 30 29 40 Z" fill="currentColor" fill-opacity="0.18"/><circle cx="33" cy="16" r="5"/><path d="M30 25 C32 24 34 24 35 24 C41 24 44 30 44 38 H31"/></g></symbol>
+<symbol id="icon-plane" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4 C24 2 26 4 26 6 V18 L42 28 V32 L26 27 V38 L31 42 V44 L24 42 L17 44 V42 L22 38 V27 L6 32 V28 L22 18 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-train" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="6" width="28" height="30" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M10 22 H38 M16 36 L10 44 M32 36 L38 44"/><circle cx="17" cy="29" r="2"/><circle cx="31" cy="29" r="2"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#4a5563"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
+</defs>
+<path d="M 152.0 262.0 L 157.0 262.0 Q 162.0 262.0 162.0 257.0 L 162.0 89.0 Q 162.0 82.0 169.0 82.0 L 184.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 274.0 L 161.0 274.0 Q 168.0 274.0 168.0 281.0 L 168.0 331.0 Q 168.0 338.0 175.0 338.0 L 184.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 286.0 L 167.0 286.0 Q 174.0 286.0 174.0 293.0 L 174.0 461.0 Q 174.0 466.0 179.0 466.0 L 184.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 88.0 L 308.5 88.0 Q 315.0 88.0 315.0 94.5 L 315.0 197.0 Q 315.0 204.0 322.0 204.0 L 334.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 326.0 L 314.0 326.0 Q 321.0 326.0 321.0 319.0 L 321.0 222.5 Q 321.0 216.0 327.5 216.0 L 334.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 338.0 L 334.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 350.0 L 317.0 350.0 Q 324.0 350.0 324.0 357.0 L 324.0 461.0 Q 324.0 466.0 329.0 466.0 L 334.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<g><title>Passenger travel demand</title>
+<rect x="34.0" y="229.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-people" x="74.0" y="237.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="292.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Passenger</text>
+<text x="93.0" y="308.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">travel demand</text>
+</g>
+<g><title>Urban travel — transportation-passenger.product.urban</title>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-building" x="224.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Urban travel</text>
+</g>
+<g><title>Intercity land travel — transportation-passenger.product.intercity-land</title>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-car" x="224.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Intercity land</text>
+<text x="243.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">travel</text>
+</g>
+<g><title>Intercity air travel — transportation-passenger.product.intercity-air</title>
+<rect x="184.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-plane" x="224.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Intercity air</text>
+<text x="243.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">travel</text>
+</g>
+<g><title>Urban transit — transportation-passenger.service.transit.public-bus, transportation-passenger.service.transit.rapid-transit</title>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-bus" x="374.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Urban transit</text>
+</g>
+<g><title>Passenger vehicles — transportation-passenger.service.passenger-vehicles</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-car" x="374.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Passenger</text>
+<text x="393.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">vehicles</text>
+</g>
+<g><title>Intercity bus — transportation-passenger.service.intercity-bus</title>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-bus" x="374.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Intercity bus</text>
+</g>
+<g><title>Intercity rail — transportation-passenger.service.intercity-rail</title>
+<rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-train" x="374.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="393.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Intercity rail</text>
+</g>
+<g><title>Vehicle powertrains — transportation-passenger.service.passenger-vehicle-motors</title>
+<rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-charger" x="524.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="543.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Vehicle</text>
+<text x="543.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">powertrains</text>
+</g>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="556" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="556" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="556" font-size="11.5" fill="#5a6472">Site service</text>
+<path d="M 391.7 552 H 419.7" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="427.7" y="556" font-size="11.5" fill="#5a6472">Material flow</text>
+</svg>
