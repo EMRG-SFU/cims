@@ -1,0 +1,38 @@
+# Freight transportation process flowchart. See appendix_figure-style.qmd for the format.
+sector: transportation-freight
+title: Freight transportation
+
+groups:
+  - {label: Infrastructure, cols: [2, 2], rows: [0, 2]}
+
+nodes:
+  - {id: demand, label: Freight demand, icon: package, role: input, at: [0, 1.5]}
+
+  # freight demand by mode (Product sub-tree)
+  - {id: trucks, label: Heavy trucks, icon: truck, role: process, at: [1, 0],
+     branch: transportation-freight.product.land.heavy.trucks}
+  - {id: rail, label: Rail, icon: train, role: process, at: [1, 1],
+     branch: transportation-freight.product.land.heavy.rail}
+  - {id: light, label: Light and medium vehicles, icon: car, role: process, at: [1, 2],
+     branch: transportation-freight.product.land.light-medium}
+  - {id: other, label: "Marine, air, and off-road", icon: ship, role: process, at: [1, 3],
+     branches: [transportation-freight.product.marine, transportation-freight.product.air,
+                transportation-freight.product.off-road]}
+
+  # infrastructure (Service sub-tree)
+  - {id: catenary, label: Overhead catenary, icon: catenary, role: service, at: [2, 0],
+     branch: transportation-freight.service.catenary-infrastructure}
+  - {id: charging, label: Charging stations, icon: charger, role: service, at: [2, 1],
+     branches: [transportation-freight.service.ev-infrastructure.depot-stations,
+                transportation-freight.service.ev-infrastructure.rapid-charging-stations]}
+  - {id: hydrogen, label: Hydrogen refuelling, icon: hydrogen-station, role: service, at: [2, 2],
+     branch: transportation-freight.service.fcev-infrastructure}
+
+edges:
+  - {from: demand, to: trucks, turn: early}
+  - {from: demand, to: rail, turn: early}
+  - {from: demand, to: light, turn: early}
+  - {from: demand, to: other, turn: early}
+  - {from: catenary, to: trucks, kind: energy, sides: [left, right]}
+  - {from: charging, to: trucks, kind: energy, sides: [left, right], turn: early}
+  - {from: hydrogen, to: trucks, kind: energy, sides: [left, right], turn: late}

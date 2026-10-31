@@ -4,109 +4,133 @@ aliases:
   - sector_transportation_freight.html
 ---
 
-# Freight Transportation {#sec-transportation-freight}
+# Transportation (Freight) {#sec-transportation-freight}
 
-Freight transportation is the goods-movement module of CIMS-Transportation (CIMS-T), a demand-side sub-model: it meets a demand for freight movement (goods moved, in tonne-kilometres) by competing transport modes — road, rail, marine, and air — and, within each, competing vehicle powertrains and fuels. The emphasis is on the structure of the service flow model: the freight-demand nodes, the modes and vehicles that supply them, and the refuelling and charging infrastructure they need. The tree is region-agnostic. The general CIMS-T framework — service flow model, intangible costs, and stock-turnover dynamics — is described in the [Transportation (Passenger)](sector_transportation-passenger.qmd) chapter and is not repeated here.
+Freight transportation meets a demand for goods movement, in tonne-kilometres, by competing modes (road, rail, marine, and air) and, within each, competing powertrains and fuels. It also carries the charging, overhead catenary, and hydrogen refuelling infrastructure that zero-emission freight depends on. The general approach to transportation (mode competition, intangible costs, and stock turnover) is described in @sec-transportation-passenger and is not repeated here.
 
 ## Scope
 
-CIMS represents the movement of goods by road (heavy trucks and light/medium commercial vehicles), rail, marine, and air, plus an off-road category (construction, agricultural, and other off-highway equipment). The driving variable is freight demand in tonne-kilometres, projected exogenously and able to shift between modes. The model also carries explicit infrastructure services — charging, overhead catenary, and hydrogen refuelling — recognising that zero-emission freight depends as much on infrastructure as on the vehicles.
+The sub-model covers goods moved by heavy trucks and rail, light and medium commercial vehicles, marine, and air, plus off-road equipment (construction, agricultural, and other off-highway machines). Freight demand is projected exogenously and can shift between modes, most importantly from road to rail.
 
-Adjacent activities are handled elsewhere: passenger mobility is in [Transportation (Passenger)](sector_transportation-passenger.qmd); the fuels (diesel, electricity, hydrogen, biofuels, natural gas) are supplied by the energy-supply sub-models; and vehicle manufacturing is in [Light Industrial](sector_light-industrial.qmd). This chapter covers the use of vehicles to move goods.
+Adjacent activities sit elsewhere: passenger travel in @sec-transportation-passenger; the fuels in the energy-supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and vehicle manufacturing in @sec-light-industrial.
 
-## Real-world context
+## Context
 
-Freight is a large and stubborn share of transport emissions, and it is dominated by on-road heavy trucks. In 2019, on-road freight produced about 64.8 Mt of Canada's transport emissions, against 7.8 Mt from rail and 4.5 Mt from marine [@icct-zet]. The disparity reflects efficiency as much as volume: rail freight is more than five times as emissions-efficient per tonne-kilometre as road, so shifting goods from truck to rail or intermodal can cut emissions by up to 30% [@icct-zet]. Heavy trucks are also among the hardest road vehicles to decarbonise, because their weight, range, and duty cycles strain battery technology.
+Freight is a large and stubborn share of transport emissions, dominated by heavy trucks. In 2019, on-road freight produced about 64.8 Mt of Canada's transport emissions, against 7.8 Mt from rail and 4.5 Mt from marine [@icct-zet]. Rail is more than five times as emissions-efficient per tonne-kilometre as road, so shifting goods from truck to rail or intermodal can cut emissions by up to 30 % [@icct-zet]. Heavy trucks are among the hardest road vehicles to decarbonise, because their weight, range, and duty cycles strain battery technology.
 
-Three zero-emission pathways are competing for heavy freight, and the model represents all of them. Battery-electric trucks are favoured for lighter and shorter-range duty; hydrogen fuel-cell trucks are emerging for heavy long-haul, where range and refuelling time matter and where — as techno-economic studies including intangible costs find — hydrogen tends to win over batteries [@icct-zet; @pembina-mhd]; and overhead catenary (eHighway) systems power trucks directly from the road on major corridors. By the 2030s, catenary and battery-electric trucks are projected to cost roughly 30–35% less to own and run than diesel, and hydrogen 15–25% less [@icct-zet]. For rail, electrification, hydrogen, and biofuels apply; for marine, hydrogen, ammonia, and biofuels; and for aviation, sustainable aviation fuels and e-fuels. The CIMS structure captures these technology competitions and, distinctively, the infrastructure they require.
+Three zero-emission pathways compete for heavy freight. Battery-electric trucks suit lighter and shorter-range duty; hydrogen fuel-cell trucks are emerging for heavy long-haul, where range and refuelling time matter [@icct-zet; @pembina-mhd]; and overhead catenary systems power trucks directly from the road on major corridors. By the 2030s, catenary and battery-electric trucks are projected to cost roughly 30–35 % less to own and run than diesel, and hydrogen trucks 15–25 % less [@icct-zet].
+
+## Process flow
+
+@fig-transportation-freight-process shows the structure of the sub-model. Freight demand splits by mode, and the zero-emission trucks request the infrastructure they need.
+
+::: {#fig-transportation-freight-process}
+![](images/flowcharts/transportation-freight_process-flow_light.svg){.light-content .lightbox group="transportation-freight-light"}
+
+![](images/flowcharts/transportation-freight_process-flow_dark.svg){.dark-content .lightbox group="transportation-freight-dark"}
+
+Process flow of the freight transportation sector. Freight demand by mode forms the Product sub-tree; charging, catenary, and hydrogen refuelling infrastructure form the Service sub-tree.
+:::
 
 ## Model structure
 
-The sector divides into a **Product** sub-tree — freight demand by mode — and a **Service** sub-tree of the refuelling and charging infrastructure. @fig-transport-freight-flow-model shows the structure. Each node carries a competition rule (see @sec-technology-competition); mode and powertrain shares are determined by lifecycle cost plus intangible cost.
+The technology database does not yet cover freight transportation. The tables in this chapter summarize the technologies in the current CIMS model input files and will be replaced by database archetypes when they are added.
 
-![Service flow model of freight transportation (region-agnostic master tree). The Product sub-tree is freight demand by mode — Land (heavy trucks and rail; light/medium vehicles), Marine, Air, and Off-Road — each competing diesel/biofuel against electric, hydrogen, and (for trucks) catenary powertrains; the Service sub-tree provides the EV charging, overhead-catenary, and hydrogen-refuelling infrastructure that zero-emission freight depends on.](images/retired/transportation-freight_flow-model.svg){#fig-transport-freight-flow-model .lightbox width=100%}
+### Heavy land freight: trucks and rail
 
-### Products: freight demand by mode
+The **heavy land** node splits heavy freight between trucks and rail, which is where road-to-rail mode shift happens. Each mode then competes its powertrains.
 
-- **Land — Heavy** — split into Trucks and Rail. Heavy Trucks compete diesel (existing/standard/efficient), biodiesel, natural gas, plug-in hybrid, battery-electric, hydrogen fuel-cell, and catenary (eHighway) powertrains. Heavy Rail competes diesel (and efficient diesel), biodiesel, electric, and hydrogen.
-- **Land — Light/Medium** — commercial vans and medium trucks, competing gasoline and diesel (existing/standard/efficient), propane, biodiesel, plug-in hybrid, battery-electric, and hydrogen.
-- **Marine** — competing fuel oil (existing/standard/efficient), biodiesel, and hydrogen.
-- **Air** — competing conventional, efficient, electric, and hydrogen aircraft.
-- **Off Road** — construction, agricultural, and other off-highway equipment, competing diesel (standard/medium/high-efficiency) and electric.
+::: {.tech-block}
+Technologies (pending the technology database)
 
-Freight demand can shift between modes — most importantly road to rail — as relative costs change.
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Diesel truck | Existing, standard, and efficient heavy diesel trucks. | Conventional | n/a |
+| Biodiesel truck | Heavy truck running on biodiesel. | Alternative | n/a |
+| Natural gas truck | Heavy truck running on compressed or liquefied natural gas. | Alternative | n/a |
+| Plug-in hybrid truck | Battery-electric driving with a diesel engine for range. | Alternative | n/a |
+| Battery-electric truck | Heavy electric truck, charged at depots or rapid-charging stations. | Alternative | n/a |
+| Hydrogen fuel-cell truck | Heavy fuel-cell truck. | Alternative | n/a |
+| Catenary truck | Electric truck powered from overhead wires on equipped corridors. | Prospective | n/a |
+| Diesel locomotive | Existing, standard, and efficient diesel freight rail. | Conventional | n/a |
+| Biodiesel locomotive | Freight rail on biodiesel. | Alternative | n/a |
+| Electric rail | Electrified freight rail. | Alternative | n/a |
+| Hydrogen locomotive | Fuel-cell freight rail. | Prospective | n/a |
+:::
 
-### Services: zero-emission infrastructure
+### Light and medium vehicles
 
-A distinctive feature of the freight sub-model is that it carries the infrastructure zero-emission vehicles depend on as explicit services:
+Commercial vans and medium trucks form their own competition.
 
-- **EV Infrastructure** — Depot Stations (overnight/return-to-base charging) and Rapid Charging Stations (en-route fast charging).
-- **Catenary Infrastructure** — the overhead-wire (eHighway) system for catenary trucks.
-- **FCEV Infrastructure** — hydrogen refuelling.
+::: {.tech-block}
+Technologies (pending the technology database)
 
-Representing these explicitly means the model can capture the chicken-and-egg coupling between zero-emission trucks and the networks they need, rather than assuming the infrastructure is free.
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Gasoline and diesel vehicles | Existing, standard, and efficient units of each. | Conventional | n/a |
+| Propane vehicle | Light or medium vehicle running on propane. | Alternative | n/a |
+| Biodiesel vehicle | Light or medium vehicle running on biodiesel. | Alternative | n/a |
+| Plug-in hybrid | Battery-electric driving with a combustion engine for range. | Alternative | n/a |
+| Battery-electric vehicle | Light or medium electric vehicle. | Alternative | n/a |
+| Hydrogen fuel-cell vehicle | Light or medium fuel-cell vehicle. | Alternative | n/a |
+:::
 
-## Decarbonisation technologies
+### Marine, air, and off-road
 
-Freight decarbonisation works through powertrain switching (electric, hydrogen, catenary, biofuels), modal shift (road to rail/marine), and low-carbon fuels for the hard-to-electrify modes (marine, aviation). @tbl-transport-freight-decarb summarises maturity and @tbl-transport-freight-cost gives indicative costs.
+**Marine** and **air** freight each compete their own fuels and powertrains, and **off-road** equipment competes diesel against electric machines.
 
-| Technology / action | Indicative benefit | Maturity |
-|:-----|:--------|:----|
-| Battery-electric truck (light/medium, regional heavy) | Zero tailpipe; ~30–35% lower lifecycle cost by 2030 | Early commercial |
-| Hydrogen fuel-cell truck (heavy long-haul) | Zero tailpipe; range/refuel suit heavy duty | Demonstration / early commercial |
-| Catenary (eHighway) truck | Direct road power; ~30–35% lower cost on corridors | Demonstration |
-| Electric / hydrogen rail | Displaces diesel; rail already efficient | Commercial (electric) |
-| Hydrogen / ammonia / biofuel marine | Decarbonises shipping fuel | Emerging |
-| SAF / e-fuels / electric / hydrogen aviation | Aviation decarbonisation | Emerging (SAF) |
-| Modal shift road → rail / intermodal | Up to ~30% emissions cut | Policy / logistics |
-| Electric off-road equipment | Zero tailpipe off-highway | Emerging |
+::: {.tech-block}
+Technologies (pending the technology database)
 
-: Indicative performance and maturity of key freight decarbonisation options {#tbl-transport-freight-decarb}
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Fuel oil vessel | Existing, standard, and efficient marine engines on fuel oil. | Conventional | n/a |
+| Biodiesel vessel | Marine engine on biodiesel. | Alternative | n/a |
+| Hydrogen vessel | Marine vessel on hydrogen. | Prospective | n/a |
+| Aircraft | Existing and efficient aircraft. | Conventional | n/a |
+| Electric and hydrogen aircraft | Zero-emission aircraft, mainly for short routes. | Prospective | n/a |
+| Diesel off-road equipment | Standard, medium-, and high-efficiency diesel machines. | Conventional | n/a |
+| Electric off-road equipment | Battery-electric machines. | Alternative | n/a |
+:::
 
-The estimates in @tbl-transport-freight-cost are order-of-magnitude figures from public sources [@icct-zet; @pembina-mhd; @srk-haultruck], in 2025 Canadian dollars (US sources converted at roughly 1.37 CAD/USD and adjusted to 2025). They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+### Zero-emission infrastructure
 
-| Technology | Capex / cost | Operating effect | Energy / input |
-|:-----|:-----|:-----|:-----|
-| Diesel heavy truck (reference) | baseline | baseline | diesel |
-| Battery-electric heavy truck | ~50–100% higher purchase | ~30–35% lower lifecycle cost by 2030 | electricity (+ charging) |
-| Hydrogen fuel-cell truck | higher than BEV truck | ~15–25% lower lifecycle cost by 2030 | hydrogen (+ refuelling) |
-| Catenary (eHighway) truck | truck premium + road catenary | ~30–35% lower cost on equipped corridors | grid electricity |
-| Electric rail | electrification capex (corridor) | low energy cost; rail already efficient | electricity |
-| Hydrogen / biofuel marine | engine/fuel-system + fuel | fuel-cost dependent | hydrogen / biofuel |
+The Service sub-tree carries the infrastructure that zero-emission trucks request, so that the cost of building it out is part of the competition rather than assumed to be free. **EV infrastructure** splits into depot stations (overnight and return-to-base charging) and rapid-charging stations (fast charging en route); **catenary infrastructure** is overhead wire on equipped roads; and **FCEV infrastructure** is hydrogen refuelling.
 
-: Indicative techno-economic characteristics of freight decarbonisation options, 2025 CAD {#tbl-transport-freight-cost}
+::: {.tech-block}
+Technologies (pending the technology database)
 
-### Zero-emission trucks and their infrastructure
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Depot charging station | Overnight and return-to-base charging. | Alternative | n/a |
+| Rapid-charging station | Fast charging along freight routes. | Alternative | n/a |
+| Catenary road | Overhead wires powering trucks on a road corridor. | Prospective | n/a |
+| Hydrogen refuelling station | Low- and high-capacity stations. | Alternative | n/a |
+:::
 
-Heavy trucks are the centre of gravity for freight emissions, and the model competes the three contenders — battery-electric, hydrogen fuel-cell, and catenary — against diesel and biodiesel. Which wins depends on duty cycle and on the intangible costs of range, refuelling time, and infrastructure availability: studies that include these costs find battery-electric dominating lighter and regional duty while hydrogen emerges for heavy long-haul [@icct-zet]. Crucially, all three depend on infrastructure — depot and rapid charging, overhead catenary, and hydrogen refuelling — which the model carries as explicit services, so the cost of building out that infrastructure is part of the competition.
+### Shared services
 
-### Modal shift and the hard-to-electrify modes
+Vehicles draw fuel from the sector's diesel, gasoline, and methane blends, where biodiesel, renewable diesel, ethanol, renewable natural gas, and hydrogen can replace part of the fossil fuel; see @sec-fuel-blends.
 
-Because rail is over five times as efficient per tonne-km as road, shifting freight from truck to rail and intermodal is a powerful lever, and the model allows freight demand to move between modes. Rail itself decarbonises through electrification, hydrogen, and biofuels. Marine and aviation are the hardest: marine switches to hydrogen, ammonia, and biofuels, and aviation to sustainable aviation fuels and e-fuels (the model currently competes efficient, electric, and hydrogen aircraft; SAF/e-fuels remain to be added, consistent with the passenger-aviation TODO).
+## Decarbonisation
 
-<mark>TODO: Add sustainable aviation fuel (SAF) and e-fuels to the freight Air competition, and consider ammonia as a marine fuel option, since these are the principal decarbonisation routes for the modes that cannot electrify.</mark>
+- **Zero-emission trucks.** Battery-electric, hydrogen fuel-cell, and catenary trucks compete against diesel and biodiesel. Which wins depends on duty cycle and on the intangible costs of range, refuelling time, and infrastructure: studies that include these costs find battery-electric trucks dominating lighter and regional duty, and hydrogen emerging for heavy long-haul [@icct-zet].
+- **Mode shift.** Moving freight from truck to rail, which is five times as efficient per tonne-kilometre, is a powerful lever; rail itself decarbonises through electrification, hydrogen, and biodiesel.
+- **Hard-to-electrify modes.** Marine switches to biodiesel and hydrogen, and aviation to efficient, electric, and hydrogen aircraft. Sustainable aviation fuel, e-fuels, and ammonia for shipping are not yet represented.
 
-<mark>TODO: Replace the indicative literature ranges above with the capital costs, energy intensities, availability years, and intangible-cost parameters actually used at these nodes in the model input files.</mark>
-
-## Economics
-
-Technology and mode choice follow the lifecycle-cost competition of @sec-technology-competition, combined — as throughout CIMS-T — with intangible costs that capture the non-financial barriers to alternative-fuel freight: vehicle range, refuelling time and availability, payload penalties, and operator familiarity. These are decisive for heavy trucks, where they tip the competition between battery-electric and hydrogen.
-
-Financial costs are discounted at behavioural rates — around 12.5% for some capital-intensive, long-lived assets (rail) and around 25–30% for road-vehicle decisions in the current data. As elsewhere in CIMS these are **behavioural** (revealed or empirical) discount rates rather than pure financial costs of capital; together with the intangible costs they govern technology choice, as set out in the discount-rate and intangible-cost discussion of the [Theory](theory.qmd) chapter and in @sec-technology-competition.
-
-Emissions arise from fuel combustion in the trucks, trains, ships, and aircraft, entering through each technology's fuel service requests and the carbon price; battery-electric and catenary options have zero tailpipe emissions and inherit the carbon intensity of the grid, while hydrogen inherits the intensity of the [Hydrogen](sector_hydrogen.qmd) production mix and biofuels their lifecycle intensity from the [Biodiesel](sector_biofuels_biodiesel.qmd) sub-model. The emissions benefit of each option therefore depends on the upstream energy system, and the infrastructure services mean the model accounts for the capital needed to enable the switch, not just the vehicles.
+Financial costs are discounted at behavioural rates of around 12.5 % for long-lived rail assets and around 25–30 % for road vehicles in the current data, and intangible costs capture range, refuelling, payload, and familiarity barriers (see @sec-technology-competition). Electric and catenary trucks inherit the carbon intensity of the regional grid, and hydrogen trucks that of the hydrogen supply.
 
 ## Regional coverage and differences
 
-All seven modelled regions carry the freight structure. Regional differences show up in mode mix — long inland corridors (the Prairies, Ontario–Québec) favour rail and long-haul trucking, coastal and Great Lakes regions add marine — in grid carbon intensity (which sets the benefit of electric and catenary trucks and electric rail), and in the hydrogen supply available regionally (Alberta's blue hydrogen, hydro-based electrolytic hydrogen elsewhere). Infrastructure build-out — charging, catenary corridors, hydrogen refuelling — is inherently regional and enters through the infrastructure services and their intangible costs.
+All seven modelled regions carry the freight structure. Long inland corridors (the Prairies and the Ontario–Québec corridor) favour rail and long-haul trucking, while coastal and Great Lakes regions add marine. Grid carbon intensity sets the benefit of electric trucks and rail, regional hydrogen supply differs (blue hydrogen in Alberta, electrolytic hydrogen from hydro power elsewhere), and infrastructure build-out is inherently regional.
 
-<mark>TODO: Calibrate the regional freight mode-share baselines (road/rail/marine/air) and the corridor-level feasibility of catenary and hydrogen refuelling, since both modal shift and the heavy-truck powertrain competition depend on them.</mark>
+<mark>TODO: Calibrate the regional freight mode-share baselines and the corridor-level feasibility of catenary and hydrogen refuelling.</mark>
 
 ## Limitations and planned extensions
 
-The freight sub-model captures the essential structure — freight demand, mode competition, a full set of zero-emission truck powertrains, and explicit refuelling/charging infrastructure — which makes it well suited to analysing the heavy-duty transition. Its main limitations are the absence of sustainable aviation fuels, e-fuels, and marine ammonia; reliance on intangible-cost parameters still being recalibrated; the exogenous treatment of some freight-technology shares (noted in the CIMS-T overview); and stock-turnover dynamics that make the transition gradual. The TODOs above record the priorities.
+<mark>TODO: Add sustainable aviation fuel and e-fuels to the air freight competition, and ammonia as a marine fuel.</mark>
 
-<mark>TODO: Replace the illustrative figures and example discount rates in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled freight energy use and mode shares against Transport Canada and Natural Resources Canada data.</mark>
+<mark>TODO: Refresh the intangible-cost parameters, add the freight technologies to the technology database, and benchmark modelled freight energy use and mode shares against Transport Canada and Natural Resources Canada data.</mark>
 
 {{< pagebreak >}}
 
