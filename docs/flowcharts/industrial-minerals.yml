@@ -1,0 +1,71 @@
+# Industrial minerals process flowchart. See appendix_figure-style.qmd for the format.
+sector: industrial-minerals
+title: Industrial minerals
+
+nodes:
+  # cement
+  - {id: clay, label: Clay, icon: soil, role: input, at: [0, 2]}
+  - {id: calcined-clay, label: Calcined clay, icon: kiln, role: process, at: [1, 2],
+     branch: industrial-minerals.product.cement.calcined-clay}
+  - {id: limestone, label: Limestone and raw meal, icon: ore, role: input, at: [0, 1]}
+  - {id: clinker, label: Clinker, icon: kiln, role: process, at: [1, 1],
+     branch: industrial-minerals.product.cement.clinker}
+  - {id: grinding, label: Cement grinding, icon: mill, role: process, at: [2, 1],
+     branch: industrial-minerals.product.cement.grinding}
+  - {id: binder, label: Cement binders, icon: cement, role: process, at: [3, 1],
+     branch: industrial-minerals.product.cement.binder}
+  - {id: cement, label: Cement, icon: cement, role: output, at: [4, 1]}
+  - {id: slag, label: Blast-furnace slag, icon: slab, role: input, at: [0, 3]}
+  - {id: ground-slag, label: Ground slag, icon: mill, role: process, at: [1, 3],
+     branch: industrial-minerals.product.cement.ground-slag}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 0],
+     branch: industrial-minerals.service.ccs.diffuse}
+
+  # lime
+  - {id: lime-stone, label: Limestone or dolomite, icon: ore, role: input, at: [0, 4]}
+  - {id: lime, label: Lime kilns, icon: kiln, role: process, at: [1, 4],
+     branches: [industrial-minerals.product.lime, industrial-minerals.service.kiln-heat]}
+  - {id: lime-out, label: Lime, icon: ingot, role: output, at: [4, 4]}
+
+  # glass
+  - {id: batch, label: "Sand, soda ash, and cullet", icon: chemical, role: input, at: [0, 5]}
+  - {id: glass-furnace, label: Glass melting, icon: furnace, role: process, at: [1, 5],
+     branch: industrial-minerals.product.glass.furnaces}
+  - {id: glass-finish, label: Glass forming and finishing, icon: glass, role: process, at: [2, 5],
+     branch: industrial-minerals.product.glass.form-and-finish}
+  - {id: glass, label: Glass, icon: glass, role: output, at: [4, 5]}
+
+  # ceramics
+  - {id: ceramic-clay, label: Clay, icon: soil, role: input, at: [0, 6]}
+  - {id: ceramic-dryer, label: Ceramic drying, icon: dryer, role: process, at: [1, 6],
+     branch: industrial-minerals.product.ceramics.dryer}
+  - {id: ceramic-kiln, label: Ceramic firing, icon: kiln, role: process, at: [2, 6],
+     branch: industrial-minerals.product.ceramics.kiln}
+  - {id: ceramics, label: Brick and ceramics, icon: brick, role: output, at: [4, 6]}
+
+  # gypsum
+  - {id: gypsum-rock, label: Gypsum rock, icon: ore, role: input, at: [0, 7]}
+  - {id: gypsum-calcining, label: Calcining, icon: dryer, role: process, at: [1, 7],
+     branch: industrial-minerals.product.gypsum}
+  - {id: gypsum, label: Gypsum, icon: gypsum, role: output, at: [4, 7]}
+
+edges:
+  - [clay, calcined-clay]
+  - [limestone, clinker]
+  - [clinker, grinding]
+  - [grinding, binder]
+  - [binder, cement]
+  - [slag, ground-slag]
+  - {from: calcined-clay, to: binder, turn: late}
+  - {from: ground-slag, to: binder, turn: late}
+  - {from: clinker, to: capture, kind: emission, sides: [top, left]}
+  - [lime-stone, lime]
+  - [lime, lime-out]
+  - [batch, glass-furnace]
+  - [glass-furnace, glass-finish]
+  - [glass-finish, glass]
+  - [ceramic-clay, ceramic-dryer]
+  - [ceramic-dryer, ceramic-kiln]
+  - [ceramic-kiln, ceramics]
+  - [gypsum-rock, gypsum-calcining]
+  - [gypsum-calcining, gypsum]
