@@ -1,0 +1,17 @@
+# Forestry process flowchart. See appendix_figure-style.qmd for the format.
+sector: forestry
+title: Forestry
+
+nodes:
+  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 0]}
+  - {id: electricity, label: Electricity, icon: electricity, role: input, at: [0, 1]}
+  - {id: equipment, label: Harvest equipment, icon: tractor, role: process, at: [1, 0.5],
+     branch: forestry.product.transport}
+  - {id: logs, label: Logs at roadside, icon: log, role: output, at: [2, 0.5]}
+  - {id: co2, label: Exhaust CO₂, icon: stack, role: emission, at: [1, 1.5]}
+
+edges:
+  - [diesel, equipment]
+  - [electricity, equipment]
+  - [equipment, logs]
+  - {from: equipment, to: co2, kind: emission}

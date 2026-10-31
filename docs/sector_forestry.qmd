@@ -4,65 +4,67 @@ bibliography: references.bib
 
 # Forestry {#sec-forestry}
 
-The logging industry's on-site greenhouse-gas footprint comes almost entirely from the diesel burned by mobile harvesting and handling equipment — feller-bunchers, skidders, harvesters, forwarders, and loaders working in the bush — so the sector is represented as a single mobile-equipment energy service in which diesel competes against electric. The tree is region-agnostic, and the sector's activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not output, are its organising variable. The structure is deliberately coarse; the limitations below set out what a fuller representation would add.
+Logging's direct greenhouse-gas emissions come almost entirely from the diesel burned by harvesting and handling equipment in the bush: feller-bunchers, skidders, harvesters, forwarders, and loaders. CIMS represents the sector as a single mobile-equipment service, in which diesel machines compete with electric ones.
 
 ## Scope
 
-CIMS represents the **fuel use of forestry's mobile equipment** — the off-road machinery that fells, gathers, and moves timber at the harvest site — as one aggregate energy service. The driving variable is an exogenous forecast of the sector's emissions in tonnes of CO₂-equivalent. Everything downstream of the roadside is handled elsewhere: log haulage on public roads belongs to [Transportation (Freight)](sector_transportation-freight.qmd), and the milling of logs into lumber and pulp is in [Pulp and Paper](sector_pulp-and-paper.qmd) and the wood-products part of [Light Industrial](sector_light-industrial.qmd). The biological carbon of the forest itself — growth, harvest, and regrowth — is the domain of [LULUCF](sector_lulucf.qmd), not this sector.
+The sub-model covers the **fuel use of forestry's mobile equipment**: the off-road machinery that fells, gathers, and moves timber at the harvest site. An exogenous forecast of the sector's emissions, in tonnes of CO₂-equivalent, drives it. Everything beyond the roadside sits elsewhere:
 
-## Real-world context
+- Log haulage on public roads belongs to @sec-transportation-freight.
+- Milling logs into lumber and pulp belongs to @sec-pulp-and-paper and the wood-products part of @sec-light-industrial.
+- The biological carbon of the forest itself (growth, harvest, and regrowth) belongs to land use, land-use change, and forestry (@sec-lulucf), not this sector.
 
-Logging is energy-light compared with heavy industry, but what energy it uses is overwhelmingly diesel in rugged off-road machines that run long duty cycles far from grid power. That combination — high power demand, remote sites, and no charging infrastructure — is exactly what makes the harvest fleet hard to electrify, and it is why diesel still does essentially all the work today. The decarbonisation options are the same three that face any off-road diesel fleet: drop-in **renewable diesel** or biodiesel that cuts lifecycle carbon with no equipment change, battery-electric machines where duty cycles and charging allow, and hydrogen fuel-cell machines for the heaviest, longest-running equipment. Canadian work on zero- and low-emission options for the forest sector — much of it through FPInnovations — has so far concentrated on the haulage fleet, where battery-electric Class 8 trucks have demonstrated more than 60% lower energy use and at least 80% lower greenhouse-gas emissions than diesel, with the in-bush machines a harder and later problem [@fpinnovations-zev]. The CIMS structure mirrors the core choice directly: a single competition between diesel and electric equipment.
+## Context
+
+Logging uses little energy compared with heavy industry, but what it uses is overwhelmingly diesel, burned in rugged machines that run long duty cycles far from grid power. High power demand, remote sites, and no charging infrastructure make the harvest fleet hard to electrify, which is why diesel still does essentially all the work. The options are those of any off-road diesel fleet: drop-in renewable diesel or biodiesel, battery-electric machines where duty cycles and charging allow, and hydrogen for the heaviest equipment. Canadian work on low- and zero-emission options for the forest sector, much of it through FPInnovations, has so far concentrated on log haulage, where battery-electric Class 8 trucks have shown more than 60 % lower energy use and at least 80 % lower greenhouse-gas emissions than diesel; in-bush machines are a harder, later problem [@fpinnovations-zev].
+
+## Process flow
+
+::: {#fig-forestry-process}
+![](images/flowcharts/forestry_process-flow_light.svg){.light-content .lightbox group="forestry-light" width=60%}
+
+![](images/flowcharts/forestry_process-flow_dark.svg){.dark-content .lightbox group="forestry-dark" width=60%}
+
+Process flow of the forestry sector. Diesel and electricity power the harvest equipment that delivers logs to the roadside.
+:::
 
 ## Model structure
 
-The sector is a single tech-compete node. @fig-forestry-flow-model shows the structure: the exogenous activity drives one **Transport** service, at which two technologies compete to provide the same mobile-equipment work.
+### Harvest equipment
 
-![Energy-service flow model of the forestry sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single **Transport** service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model.](images/retired/forestry_flow-model.svg){#fig-forestry-flow-model .lightbox width=85%}
+The sector has one process step, the **Transport** node in its Product sub-tree, where harvest equipment competes to supply the sector's work. Diesel equipment burns the diesel transportation fuel blend, so renewable content in that blend lowers its lifecycle carbon automatically (see @sec-fuel-blends).
 
-At the **Transport** node, diesel equipment (the entire base-year fleet) requests the diesel transportation fuel blend, while electric equipment requests grid electricity; both carry a twenty-year lifetime and the same energy requirement per unit of activity. Because the diesel option draws on the blended fuel, any renewable-diesel content in that blend lowers its lifecycle carbon automatically (see [Biodiesel](sector_biofuels_biodiesel.qmd)). Fuel prices at the node are currently borrowed from [Agriculture](sector_agriculture.qmd) as a proxy and flagged for review.
+The technology database does not yet cover this node. The model inputs carry two technologies, listed below pending the database:
 
-## Decarbonisation technologies
+::: {.tech-block}
+Technologies (from the model inputs, pending the technology database)
 
-Forestry decarbonisation means getting the carbon out of the off-road fleet's fuel: cleaner liquid fuel now, electrification where it fits, and hydrogen for the hardest duty cycles. @tbl-forestry-decarb summarises maturity and @tbl-forestry-cost gives indicative costs.
+| Technology | What it is | Type | TRL |
+|:------------------------|:------------------------------------------------------|:--------------|:------|
+| Diesel | Diesel harvesting and handling equipment; the whole base-year fleet. | Conventional | 9 |
+| Electric | Battery-electric equipment drawing grid electricity, with the same energy requirement per unit of work and a twenty-year lifetime. | Alternative | n/a |
 
-| Technology / practice | Indicative benefit | Maturity |
-|:-----|:--------|:----|
-| Renewable diesel / biodiesel (drop-in) | Cuts lifecycle CO₂ with no equipment change | Commercial |
-| Battery-electric equipment | Removes tailpipe CO₂; shifts load to grid | Emerging — *electric option in model* |
-| Hybrid diesel-electric machines | Lowers fuel use on variable duty cycles | Emerging — *not yet in model* |
-| Hydrogen fuel-cell equipment | Zero-tailpipe for heavy, long-run machines | Early / demonstration — *not yet in model* |
-| Efficient machines & idle reduction | Lower fuel per unit harvested | Commercial — *not explicit in model* |
+:::
 
-: Indicative performance and maturity of key forestry decarbonisation options {#tbl-forestry-decarb}
+The two technologies carry only a lifetime and their energy requests; their fuel prices are borrowed from Agriculture as a proxy.
 
-The estimates in @tbl-forestry-cost are order-of-magnitude figures from public literature [@fpinnovations-zev; @cer-renewable-diesel; @srk-haultruck], expressed in 2025 Canadian dollars. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
+<mark>TODO: Map the forestry Transport node to the database's on-site mobile-equipment archetypes (diesel, hybrid, battery-electric, and hydrogen equipment), which currently serve construction and natural-gas field vehicles, and populate capital, operating, and emission data.</mark>
 
-| Option | Capital vs diesel | Operating effect | Energy / emission |
-|:-----|:-----|:-----|:-----|
-| Renewable diesel / biodiesel | none (drop-in fuel) | fuel-cost dependent | lifecycle CO₂ cut, no fleet change |
-| Battery-electric machine | ~+50–100% on machine price | lower energy and maintenance cost | grid electricity; no tailpipe CO₂ |
-| Hydrogen fuel-cell machine | high (early-stage) | fuel-cost dependent | zero-tailpipe; needs H₂ supply |
+## Decarbonisation
 
-: Indicative techno-economic characteristics of forestry decarbonisation options, 2025 CAD {#tbl-forestry-cost}
-
-The cheapest near-term lever is the fuel itself: switching the diesel blend toward **renewable diesel** or biodiesel cuts lifecycle carbon across the whole fleet with no change to the machines. Battery-electric equipment — the model's electric option — removes tailpipe emissions and lowers energy and maintenance cost, but is held back by the power, runtime, and remote-charging demands of in-bush work, so it is emerging fastest in lighter machines and at the roadside. Hydrogen fuel cells remain early-stage and depend on hydrogen supply reaching remote sites.
-
-<mark>TODO: Add the renewable-diesel/biodiesel fuel-switching and hydrogen fuel-cell pathways as explicit competing options at the Transport node, and populate the technologies with capital, operating, and emission data rather than the current Agriculture-proxied fuel prices.</mark>
-
-## Economics
-
-Technology choice at the **Transport** node follows the lifecycle-cost competition of @sec-technology-competition. As elsewhere in CIMS, the intended discount rate is **behavioural** (revealed or empirical) rather than a true financial cost of capital, capturing the short payback horizons typical of resource industries (see the [Theory](theory.qmd) chapter). In the current input files, however, the two technologies carry only a lifetime and their energy requests — capital cost, operating cost, the discount rate, and the heterogeneity (variance) parameter are not yet populated — so the diesel-versus-electric competition cannot yet resolve on cost and the fleet holds near its base-year shares. Emissions enter upstream through the fuels the technologies request: the diesel option carries the carbon of the diesel blend, while the electric option moves the load to the grid, where it is counted in [Electricity](sector_electricity.qmd).
+- **Cleaner diesel.** Raising the renewable content of the diesel blend cuts lifecycle carbon across the whole fleet with no change to the machines.
+- **Electrification.** Battery-electric equipment removes exhaust emissions, but in-bush power, runtime, and charging demands hold it back; it is emerging fastest in lighter machines and at the roadside.
+- **Hydrogen.** Fuel cells remain early-stage and depend on hydrogen reaching remote sites.
 
 ## Regional coverage
 
-All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the forestry structure, scaled by an exogenous emissions forecast that differs sharply with the size of each region's logging industry: British Columbia is by far the largest, with Québec and Ontario next, and the Prairie provinces much smaller. The structure itself is identical across regions.
+All seven modelled regions carry the forestry structure, scaled by an exogenous emissions forecast that follows the size of each region's logging industry: British Columbia is by far the largest, followed by Québec and Ontario, with the Prairie provinces much smaller.
 
 ## Limitations and planned extensions
 
-The forestry sub-model is a placeholder: it captures the sector's dominant emission source — off-road diesel equipment — and the central diesel-to-electric choice, but little else. The off-road fleet is collapsed into a single aggregate **Transport** service rather than resolved by machine type or duty cycle; the competing technologies are not yet costed; the fuel prices are proxied from agriculture; and lower-carbon liquid fuels and hydrogen are not yet explicit options. The TODOs above record the priorities. Because forestry's footprint is small, this coarse treatment is a reasonable interim, but populating the technology costs is the minimum needed for the diesel-to-electric transition to respond to policy at all.
+The forestry sub-model is a placeholder. It collapses the harvest fleet into one aggregate service, its technologies are not yet costed, and its fuel prices are proxied from agriculture. Because forestry's footprint is small, this coarse treatment is a reasonable interim, but costing the technologies is the minimum needed for the fleet to respond to policy.
 
-<mark>TODO: Replace the illustrative figures and the Agriculture-proxied prices in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled forestry fuel use against Natural Resources Canada and FPInnovations data.</mark>
+<mark>TODO: Replace the agriculture-proxied prices with sector values, and benchmark modelled forestry fuel use against Natural Resources Canada and FPInnovations data.</mark>
 
 {{< pagebreak >}}
 
