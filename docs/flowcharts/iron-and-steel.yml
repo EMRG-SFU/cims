@@ -1,0 +1,69 @@
+# Iron and steel process flowchart. See appendix_figure-style.qmd for the format.
+sector: iron-and-steel
+title: Iron and steel
+
+nodes:
+  # purchased inputs
+  - {id: coal, label: Metallurgical coal, icon: coal, role: input, at: [0, 0]}
+  - {id: ore, label: Iron ore, icon: ore, role: input, at: [0, 1]}
+  - {id: gas, label: Natural gas or hydrogen, icon: natural-gas, role: input, at: [0, 2]}
+  - {id: scrap, label: Scrap, icon: scrap, role: input, at: [0, 3]}
+
+  # ironmaking
+  - {id: coke, label: Cokemaking, icon: coke-oven, role: service, at: [1, 0],
+     branch: iron-and-steel.service.coke}
+  - {id: agglomeration, label: Sintering and pelletizing, icon: sinter, role: service, at: [1, 1],
+     branch: iron-and-steel.service.agglomeration}
+  - {id: dri, label: Direct reduction, icon: shaft-furnace, role: service, at: [1, 2],
+     branch: iron-and-steel.service.direct-reduced-iron}
+  - {id: hot-metal, label: Ironmaking, icon: blast-furnace, role: service, at: [2, 0],
+     branch: iron-and-steel.service.hot-metal}
+  - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 1],
+     branches: [iron-and-steel.service.ccs.concentrated, iron-and-steel.service.ccs.diffuse]}
+
+  # steelmaking
+  - {id: molten-steel, label: Steelmaking, icon: converter, role: process, at: [3, 1],
+     branch: iron-and-steel.product.molten-steel}
+  - {id: ladle, label: Ladle preheating and refining, icon: ladle, role: service, at: [4, 0],
+     branches: [iron-and-steel.service.ladle-preheating, iron-and-steel.service.ladle-refining]}
+  - {id: oxygen, label: Oxygen, icon: air-separation, role: service, at: [3, 2],
+     branch: iron-and-steel.service.oxygen}
+
+  # casting and rolling
+  - {id: casting, label: Casting, icon: caster, role: process, at: [4, 1],
+     branch: iron-and-steel.product.continuous-cast.casting}
+  - {id: reheating, label: Reheating, icon: furnace, role: service, at: [4, 2],
+     branch: iron-and-steel.service.reheating}
+  - {id: hot-rolling, label: Hot rolling, icon: rolling-mill, role: process, at: [5, 1],
+     branch: iron-and-steel.product.continuous-cast.hot-rolling}
+  - {id: pickling, label: Pickling, icon: pickling, role: process, at: [5, 2],
+     branch: iron-and-steel.product.continuous-cast.pickling}
+  - {id: cold-rolling, label: Cold rolling, icon: rolling-mill, role: process, at: [5, 3],
+     branch: iron-and-steel.product.continuous-cast.cold-rolling}
+  - {id: finishing, label: Annealing and coating, icon: coating, role: process, at: [6, 3],
+     branches: [iron-and-steel.product.continuous-cast.annealing-and-coating.annealing,
+                iron-and-steel.product.continuous-cast.annealing-and-coating.coating]}
+  - {id: steel, label: Steel products, icon: coil, role: output, at: [6, 1]}
+
+edges:
+  - [coal, coke]
+  - [coke, hot-metal]
+  - [ore, agglomeration]
+  - [agglomeration, hot-metal]
+  - [ore, dri]
+  - [gas, dri]
+  - {from: hot-metal, to: molten-steel, label: hot metal, turn: late}
+  - {from: dri, to: molten-steel, label: DRI, turn: late}
+  - {from: scrap, to: molten-steel, turn: late}
+  - {from: oxygen, to: molten-steel, kind: energy}
+  - {from: ladle, to: molten-steel, kind: energy, sides: [left, top]}
+  - {from: hot-metal, to: capture, kind: emission}
+  - {from: molten-steel, to: capture, kind: emission, sides: [left, right]}
+  - [molten-steel, casting]
+  - [casting, hot-rolling]
+  - {from: reheating, to: hot-rolling, kind: energy}
+  - [hot-rolling, steel]
+  - [hot-rolling, pickling]
+  - [pickling, cold-rolling]
+  - [cold-rolling, finishing]
+  - [finishing, steel]

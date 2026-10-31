@@ -1,0 +1,165 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 597" width="1086" height="597" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Iron and steel process flowchart">
+<defs>
+<symbol id="icon-air-separation" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="6" width="12" height="36" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M8 16 H20 M8 24 H20 M8 32 H20"/><path d="M20 12 H30"/>
+  <text x="36" y="17" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none">O₂</text><path d="M20 36 H30"/><text x="37" y="40" text-anchor="middle" font-size="11" font-weight="700" fill="currentColor" stroke="none">N₂</text></g></symbol>
+<symbol id="icon-blast-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 4 H30 L33 12 L36 32 L31 42 H17 L12 32 L15 12 Z" fill="currentColor" fill-opacity="0.18"/><path d="M15 12 H33 M12 32 H36 M8 30 H12 M36 30 H40"/><path d="M24 42 V46"/></g></symbol>
+<symbol id="icon-caster" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4 H38 L34 12 H14 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 12 V18 M18 18 H30 V24 H18 Z"/><path d="M24 24 V30 C24 38 30 42 38 42 H46" stroke-width="4"/><circle cx="20" cy="34" r="2"/><circle cx="30" cy="36" r="2"/></g></symbol>
+<symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
+<symbol id="icon-coal" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 38 L12 25 L22 23 L28 31 L24 39 Z" fill="currentColor" fill-opacity="0.55"/><path d="M22 23 L32 14 L42 21 L39 35 L28 31"/><path d="M28 31 L39 35"/></g></symbol>
+<symbol id="icon-coating" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22 V42 H40 V22"/><path d="M8 30 H40 V42 H8 Z" fill="currentColor" fill-opacity="0.18"/><path d="M2 8 L16 36 H32 L46 8" stroke-width="3"/><circle cx="38" cy="8" r="0.1"/></g></symbol>
+<symbol id="icon-coil" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="5"/></g></symbol>
+<symbol id="icon-coke-oven" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="16" width="30" height="26" fill="currentColor" fill-opacity="0.18"/><path d="M11 16 V42 M17 16 V42 M23 16 V42 M29 16 V42"/><path d="M38 42 V8 H43 V42 M2 42 H46"/><path d="M40 6 c-2-2 1-4 3-3"/></g></symbol>
+<symbol id="icon-converter" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 12 L18 6 H30 L34 12 L37 30 A13 12 0 0 1 11 30 Z" fill="currentColor" fill-opacity="0.18"/><path d="M24 2 V24" stroke-width="3"/><path d="M6 30 H11 M37 30 H42"/></g></symbol>
+<symbol id="icon-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 14 H40 V38 H8 Z"/><path d="M8 22 H40" /><path d="M17 38 c-3-4 3-5 0-9 M24 38 c-3-4 3-5 0-9 M31 38 c-3-4 3-5 0-9"/><path d="M33 14 V6 H38 V14"/></g></symbol>
+<symbol id="icon-ladle" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 16 H38 L35 40 H13 Z" fill="currentColor" fill-opacity="0.18"/><path d="M10 16 L5 12 M8 22 C2 20 2 10 10 8 H38 C46 10 46 20 40 22"/><path d="M18 28 c2 2 4-2 6 0 s4-2 6 0"/></g></symbol>
+<symbol id="icon-natural-gas" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C31 13 37 20 37 29 A13 13 0 0 1 11 29 C11 22 15 18 18 13 C20 19 22 22 25 22 C26 16 23 11 24 5 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
+<symbol id="icon-ore" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 39 L13 26 L21 30 L28 18 L37 23 L43 39 Z" fill="currentColor" fill-opacity="0.18"/><path d="M13 26 L17 39 M28 18 L25 39 M37 23 L33 39"/></g></symbol>
+<symbol id="icon-pickling" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 20 V40 H42 V20"/><path d="M6 28 c4-2 8 2 12 0 s8 2 12 0 s8 2 12 0"/><path d="M2 12 L14 34 H34 L46 12" stroke-width="3"/></g></symbol>
+<symbol id="icon-rolling-mill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="13" r="9"/><circle cx="24" cy="35" r="9"/><path d="M2 24 H46" stroke-width="3"/><path d="M24 13 h0 M24 35 h0" stroke-width="4"/></g></symbol>
+<symbol id="icon-scrap" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 33 L41 21 M9 22 L39 37 M17 11 L25 41"/><circle cx="35" cy="12" r="5"/></g></symbol>
+<symbol id="icon-shaft-furnace" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 10 H32 V40 H16 Z" fill="currentColor" fill-opacity="0.18"/><path d="M14 10 L20 3 H28 L34 10"/><path d="M4 30 H16 M10 26 L16 30 L10 34 M24 40 V46"/></g></symbol>
+<symbol id="icon-sinter" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="24" width="40" height="10" rx="5" fill="currentColor" fill-opacity="0.18"/><circle cx="9" cy="29" r="2"/><circle cx="39" cy="29" r="2"/><path d="M12 20 c-2-3 2-4 0-7 M20 20 c-2-3 2-4 0-7 M28 20 c-2-3 2-4 0-7"/><path d="M6 40 H42" stroke-dasharray="2 3"/></g></symbol>
+<marker id="arrow-material" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c3cad3"/></marker>
+<marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#eda15c"/></marker>
+<marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8f9aa6"/></marker>
+</defs>
+<path d="M 152.0 82.0 L 184.0 82.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 204.0 L 184.0 204.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 210.0 L 311.0 210.0 Q 318.0 210.0 318.0 203.0 L 318.0 95.0 Q 318.0 88.0 325.0 88.0 L 334.0 88.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 216.0 L 161.0 216.0 Q 168.0 216.0 168.0 223.0 L 168.0 325.0 Q 168.0 332.0 175.0 332.0 L 184.0 332.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 344.0 L 184.0 344.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 82.0 L 455.5 82.0 Q 459.0 82.0 459.0 85.5 L 459.0 185.0 Q 459.0 192.0 466.0 192.0 L 484.0 192.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="465.0" y="141.0" text-anchor="start" font-size="11.5" fill="#a3acb6" stroke="#222222" stroke-width="4" paint-order="stroke">hot metal</text>
+<path d="M 302.0 338.0 L 464.0 338.0 Q 471.0 338.0 471.0 331.0 L 471.0 222.5 Q 471.0 216.0 477.5 216.0 L 484.0 216.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="386.5" y="334.0" text-anchor="middle" font-size="11.5" fill="#a3acb6" stroke="#222222" stroke-width="4" paint-order="stroke">DRI</text>
+<path d="M 152.0 466.0 L 470.0 466.0 Q 477.0 466.0 477.0 459.0 L 477.0 231.5 Q 477.0 228.0 480.5 228.0 L 484.0 228.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 543.0 293.0 L 543.0 255.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 634.0 82.0 L 550.0 82.0 Q 543.0 82.0 543.0 89.0 L 543.0 165.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 393.0 127.0 L 393.0 165.0" fill="none" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<path d="M 484.0 204.0 L 452.0 204.0" fill="none" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<path d="M 602.0 210.0 L 634.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 752.0 204.0 L 784.0 204.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 752.0 338.0 L 761.0 338.0 Q 768.0 338.0 768.0 331.0 L 768.0 223.0 Q 768.0 216.0 775.0 216.0 L 784.0 216.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 902.0 210.0 L 934.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 843.0 255.0 L 843.0 293.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 843.0 383.0 L 843.0 421.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 902.0 466.0 L 934.0 466.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 993.0 421.0 L 993.0 255.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<g><title>Metallurgical coal</title>
+<rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-coal" x="74.0" y="45.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Metallurgical</text>
+<text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">coal</text>
+</g>
+<g><title>Iron ore</title>
+<rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-ore" x="74.0" y="173.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Iron ore</text>
+</g>
+<g><title>Natural gas or hydrogen</title>
+<rect x="34.0" y="293.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-natural-gas" x="74.0" y="301.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Natural gas or</text>
+<text x="93.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">hydrogen</text>
+</g>
+<g><title>Scrap</title>
+<rect x="34.0" y="421.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
+<use href="#icon-scrap" x="74.0" y="429.0" width="38" height="38" style="color:#e6cc9f"/>
+<text x="93.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Scrap</text>
+</g>
+<g><title>Cokemaking — iron-and-steel.service.coke</title>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-coke-oven" x="224.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="243.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Cokemaking</text>
+</g>
+<g><title>Sintering and pelletizing — iron-and-steel.service.agglomeration</title>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-sinter" x="224.0" y="173.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="243.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Sintering and</text>
+<text x="243.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">pelletizing</text>
+</g>
+<g><title>Direct reduction — iron-and-steel.service.direct-reduced-iron</title>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-shaft-furnace" x="224.0" y="301.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="243.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Direct reduction</text>
+</g>
+<g><title>Ironmaking — iron-and-steel.service.hot-metal</title>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-blast-furnace" x="374.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ironmaking</text>
+</g>
+<g><title>CO₂ capture — iron-and-steel.service.ccs.concentrated, iron-and-steel.service.ccs.diffuse</title>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#2b2f34" stroke="#8f9aa6" stroke-width="1.4" stroke-dasharray="4 3"/>
+<use href="#icon-ccs" x="374.0" y="173.0" width="38" height="38" style="color:#c3cad3"/>
+<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">CO₂ capture</text>
+</g>
+<g><title>Steelmaking — iron-and-steel.product.molten-steel</title>
+<rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-converter" x="524.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="543.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Steelmaking</text>
+</g>
+<g><title>Ladle preheating and refining — iron-and-steel.service.ladle-preheating, iron-and-steel.service.ladle-refining</title>
+<rect x="634.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-ladle" x="674.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="693.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ladle preheating</text>
+<text x="693.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">and refining</text>
+</g>
+<g><title>Oxygen — iron-and-steel.service.oxygen</title>
+<rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-air-separation" x="524.0" y="301.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="543.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Oxygen</text>
+</g>
+<g><title>Casting — iron-and-steel.product.continuous-cast.casting</title>
+<rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-caster" x="674.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="693.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Casting</text>
+</g>
+<g><title>Reheating — iron-and-steel.service.reheating</title>
+<rect x="634.0" y="293.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
+<use href="#icon-furnace" x="674.0" y="301.0" width="38" height="38" style="color:#acdcb6"/>
+<text x="693.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Reheating</text>
+</g>
+<g><title>Hot rolling — iron-and-steel.product.continuous-cast.hot-rolling</title>
+<rect x="784.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-rolling-mill" x="824.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="843.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Hot rolling</text>
+</g>
+<g><title>Pickling — iron-and-steel.product.continuous-cast.pickling</title>
+<rect x="784.0" y="293.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-pickling" x="824.0" y="301.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="843.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Pickling</text>
+</g>
+<g><title>Cold rolling — iron-and-steel.product.continuous-cast.cold-rolling</title>
+<rect x="784.0" y="421.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-rolling-mill" x="824.0" y="429.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="843.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Cold rolling</text>
+</g>
+<g><title>Annealing and coating — iron-and-steel.product.continuous-cast.annealing-and-coating.annealing, iron-and-steel.product.continuous-cast.annealing-and-coating.coating</title>
+<rect x="934.0" y="421.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
+<use href="#icon-coating" x="974.0" y="429.0" width="38" height="38" style="color:#acd0f4"/>
+<text x="993.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Annealing and</text>
+<text x="993.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">coating</text>
+</g>
+<g><title>Steel products</title>
+<rect x="934.0" y="165.0" width="118" height="90" rx="10" fill="#acd0f4" stroke="#acd0f4" stroke-width="1.4"/>
+<use href="#icon-coil" x="974.0" y="173.0" width="38" height="38" style="color:#13233a"/>
+<text x="993.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#13233a">Steel products</text>
+</g>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#3a3226" stroke="#c9a979"/>
+<text x="44.0" y="556" font-size="11.5" fill="#a3acb6">Purchased input</text>
+<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#1f3550" stroke="#6fa0d8"/>
+<text x="179.4" y="556" font-size="11.5" fill="#a3acb6">Process step</text>
+<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#21392a" stroke="#78b386"/>
+<text x="296.6" y="556" font-size="11.5" fill="#a3acb6">Site service</text>
+<rect x="391.7" y="546" width="16" height="12" rx="3" fill="#acd0f4" stroke="#acd0f4"/>
+<text x="413.7" y="556" font-size="11.5" fill="#a3acb6">Product</text>
+<rect x="478.4" y="546" width="16" height="12" rx="3" fill="#2b2f34" stroke="#8f9aa6" stroke-dasharray="4 3"/>
+<text x="500.4" y="556" font-size="11.5" fill="#a3acb6">Emission or capture</text>
+<path d="M 638.2 552 H 666.2" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="674.2" y="556" font-size="11.5" fill="#a3acb6">Material flow</text>
+<path d="M 775.4 552 H 803.4" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="811.4" y="556" font-size="11.5" fill="#a3acb6">Energy or service</text>
+<path d="M 22.0 575.0 H 50.0" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="58.0" y="579.0" font-size="11.5" fill="#a3acb6">CO₂ or other emissions</text>
+</svg>

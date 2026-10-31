@@ -20,9 +20,9 @@ output_name: "{sector}_process-flow_{mode}.svg"
 
 font:
   family: "'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
-  label_size: 12.5        # node labels
+  label_size: 13.5        # node labels
   label_weight: 600
-  note_size: 10.5         # second line under a label, edge labels, legend
+  note_size: 11.5         # second line under a label, edge labels, legend
   group_size: 11.5        # group (band) titles
   group_weight: 700
   group_letter_spacing: 0.6
@@ -43,7 +43,7 @@ node:
   stroke_width: 1.4
   icon_size: 38
   icon_top: 8             # icon offset from the top of the card
-  label_max_chars: 17     # wrap labels longer than this
+  label_max_chars: 16     # wrap labels longer than this
   label_line_height: 1.15
 
 edge:
