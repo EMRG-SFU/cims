@@ -4,65 +4,56 @@ bibliography: references.bib
 
 # Construction {#sec-construction}
 
-The industry's on-site greenhouse-gas footprint comes almost entirely from the diesel burned by off-road equipment — excavators, loaders, dozers, cranes, and the like working on building and civil-engineering sites — so the sector is represented as a single mobile-equipment energy service in which diesel competes against electric. The tree is region-agnostic, and the sector's activity is measured directly in tonnes of CO₂-equivalent, signalling that emissions, not output, are its organising variable. The structure is deliberately coarse; the limitations below set out what a fuller representation would add.
+Construction's direct greenhouse-gas emissions come almost entirely from the diesel burned by off-road equipment on building and civil-engineering sites: excavators, loaders, dozers, graders, cranes, and dump trucks. CIMS therefore represents the sector as a single mobile-equipment service, in which diesel machines compete with electric and other lower-carbon equipment.
 
 ## Scope
 
-CIMS represents the **fuel use of construction's mobile equipment** — the off-road machinery that excavates, lifts, grades, and moves material on site — as one aggregate energy service. The driving variable is an exogenous forecast of the sector's emissions in tonnes of CO₂-equivalent. Importantly, this is the operational fuel of the construction process only. The far larger embodied-carbon question — the emissions of making the cement, steel, and other materials that go into a building — is accounted in the industries that produce those materials, such as [Industrial Minerals](sector_industrial-minerals.qmd) (cement) and [Iron and Steel](sector_iron-and-steel.qmd), not here. The energy the finished building later consumes belongs to [Residential](sector_residential.qmd) and [Commercial](sector_commercial.qmd).
+The sub-model covers the **fuel use of construction's mobile equipment**: the off-road machinery that excavates, lifts, grades, and moves material on site. An exogenous forecast of the sector's emissions, in tonnes of CO₂-equivalent, drives it. This is the operational fuel of the construction process only:
 
-## Real-world context
+- The embodied carbon of construction materials sits with the industries that make them, such as cement in @sec-industrial-minerals and steel in @sec-iron-and-steel.
+- The energy a finished building uses belongs to @sec-residential and @sec-commercial.
 
-Construction's direct emissions are an off-road diesel problem. Sites run a wide mix of heavy machines — excavators, wheel loaders, dozers, graders, cranes, dump trucks, and compactors — most of them diesel, often idling and working in stop-start cycles. The decarbonisation options are the familiar three for off-road fleets: drop-in **renewable diesel** or biodiesel that cuts lifecycle carbon with no equipment change, battery-electric machines, and hydrogen fuel-cell machines for the heaviest duty. Electrification has moved fastest here of any off-road sector, because many construction machines are compact, work fixed-hour shifts, and operate in cities where noise and local air quality matter: major manufacturers now ship battery-electric excavators and loaders, and electric machines increasingly match diesel on power and cycle time, at a purchase premium on the order of 50–100% that is partly offset by lower fuel and maintenance costs [@idtechex-construction-ev]. The CIMS structure mirrors the core choice directly: a single competition between diesel and electric equipment.
+## Context
+
+Construction's direct emissions are an off-road diesel problem. Sites run a wide mix of heavy machines, most of them diesel, often idling and working in stop-start cycles. Three options can decarbonise them: drop-in renewable diesel or biodiesel, which cuts lifecycle carbon with no change to the equipment; battery-electric machines; and hydrogen for the heaviest duty. Electrification has moved faster here than in any other off-road sector, because many construction machines are compact, work fixed-hour shifts, and operate in cities where noise and local air quality matter. Major manufacturers now ship battery-electric excavators and loaders at a purchase premium of roughly 50–100 %, partly offset by lower fuel and maintenance costs [@idtechex-construction-ev].
+
+## Process flow
+
+::: {#fig-construction-process}
+![](images/flowcharts/construction_process-flow_light.svg){.light-content .lightbox group="construction-light" width=75%}
+
+![](images/flowcharts/construction_process-flow_dark.svg){.dark-content .lightbox group="construction-dark" width=75%}
+
+Process flow of the construction sector. Fuels and electricity power the site equipment that carries out building and civil works.
+:::
 
 ## Model structure
 
-The sector is a single tech-compete node. @fig-construction-flow-model shows the structure: the exogenous activity drives one **Transport** service, at which two technologies compete to provide the same mobile-equipment work.
+### Site equipment
 
-![Energy-service flow model of the construction sector (region-agnostic master tree). An exogenous activity forecast in tonnes of CO₂-equivalent drives a single **Transport** service node, a tech-compete between diesel equipment (which draws on the diesel fuel blend and emits CO₂) and electric equipment (which draws grid electricity). Lower-carbon drop-in fuels and hydrogen are noted as future options not yet in the model.](images/retired/construction_flow-model.svg){#fig-construction-flow-model .lightbox width=85%}
+The sector has one process step, the **Transport** node in its Product sub-tree, where mobile equipment competes to supply the sector's site work. It uses the same on-site mobile-equipment technologies the database offers for oil-and-gas field vehicles. Diesel machines burn the diesel transportation fuel blend, so any renewable content in that blend lowers their lifecycle carbon automatically (see @sec-fuel-blends).
 
-At the **Transport** node, diesel equipment (the entire base-year fleet) requests the diesel transportation fuel blend, while electric equipment requests grid electricity; both carry a twenty-year lifetime and the same energy requirement per unit of activity. Because the diesel option draws on the blended fuel, any renewable-diesel content in that blend lowers its lifecycle carbon automatically (see [Biodiesel](sector_biofuels_biodiesel.qmd)). Fuel prices at the node are currently borrowed from [Agriculture](sector_agriculture.qmd) as a proxy and flagged for review.
+{{< include _technology-blocks/construction/product_transport.md >}}
 
-## Decarbonisation technologies
+The current model input files carry only two of these options, diesel and electric equipment, each with a twenty-year lifetime and the same energy requirement per unit of activity. Their fuel prices are borrowed from Agriculture as a proxy.
 
-Construction decarbonisation means getting the carbon out of the off-road fleet's fuel: cleaner liquid fuel now, electrification where it fits, and hydrogen for the hardest duty cycles. @tbl-construction-decarb summarises maturity and @tbl-construction-cost gives indicative costs.
+<mark>TODO: Add the hybrid, spark-ignition, and hydrogen options from the technology database to the model inputs, and populate capital, operating, and emission data so that the competition can respond to cost and policy.</mark>
 
-| Technology / practice | Indicative benefit | Maturity |
-|:-----|:--------|:----|
-| Renewable diesel / biodiesel (drop-in) | Cuts lifecycle CO₂ with no equipment change | Commercial |
-| Battery-electric equipment | Removes tailpipe CO₂; shifts load to grid | Commercial (compact) / emerging (large) — *electric option in model* |
-| Hybrid diesel-electric machines | Lowers fuel use on stop-start cycles | Commercial — *not yet in model* |
-| Hydrogen fuel-cell equipment | Zero-tailpipe for heavy, long-run machines | Early / demonstration — *not yet in model* |
-| Idle reduction & efficient machines | Lower fuel per unit of work | Commercial — *not explicit in model* |
+## Decarbonisation
 
-: Indicative performance and maturity of key construction decarbonisation options {#tbl-construction-decarb}
-
-The estimates in @tbl-construction-cost are order-of-magnitude figures from public literature [@idtechex-construction-ev; @cer-renewable-diesel; @srk-haultruck], expressed in 2025 Canadian dollars. They are indicative, for relative comparison rather than budgeting, and are separate from the values the model carries internally.
-
-| Option | Capital vs diesel | Operating effect | Energy / emission |
-|:-----|:-----|:-----|:-----|
-| Renewable diesel / biodiesel | none (drop-in fuel) | fuel-cost dependent | lifecycle CO₂ cut, no fleet change |
-| Battery-electric machine | ~+50–100% on machine price | ~50% lower maintenance; lower fuel cost | grid electricity; no tailpipe CO₂ |
-| Hydrogen fuel-cell machine | high (early-stage) | fuel-cost dependent | zero-tailpipe; needs H₂ supply |
-
-: Indicative techno-economic characteristics of construction decarbonisation options, 2025 CAD {#tbl-construction-cost}
-
-The cheapest near-term lever is the fuel: switching the diesel blend toward **renewable diesel** or biodiesel cuts lifecycle carbon across the whole fleet with no change to the machines. Battery-electric equipment — the model's electric option — removes tailpipe emissions and cuts maintenance and fuel cost; it is already commercial in compact machines and emerging in larger ones, helped by the urban, fixed-shift nature of much construction work. Hydrogen fuel cells remain early-stage and depend on on-site hydrogen supply.
-
-<mark>TODO: Add the renewable-diesel/biodiesel fuel-switching and hydrogen fuel-cell pathways as explicit competing options at the Transport node, and populate the technologies with capital, operating, and emission data rather than the current Agriculture-proxied fuel prices.</mark>
-
-## Economics
-
-Technology choice at the **Transport** node follows the lifecycle-cost competition of @sec-technology-competition. As elsewhere in CIMS, the intended discount rate is **behavioural** (revealed or empirical) rather than a true financial cost of capital, capturing the short payback horizons and adoption barriers typical of the trade (see the [Theory](theory.qmd) chapter). In the current input files, however, the two technologies carry only a lifetime and their energy requests — capital cost, operating cost, the discount rate, and the heterogeneity (variance) parameter are not yet populated — so the diesel-versus-electric competition cannot yet resolve on cost and the fleet holds near its base-year shares. Emissions enter upstream through the fuels the technologies request: the diesel option carries the carbon of the diesel blend, while the electric option moves the load to the grid, where it is counted in [Electricity](sector_electricity.qmd).
+- **Cleaner diesel.** Raising the renewable content of the diesel blend cuts lifecycle carbon across the whole fleet with no change to the machines.
+- **Electrification.** Battery-electric equipment removes exhaust emissions and moves the load to the grid, where @sec-electricity counts it. It is commercial in compact machines and emerging in larger ones.
+- **Hybrids and hydrogen.** Diesel-electric hybrids cut fuel use on stop-start cycles; hydrogen engines and fuel cells remain early-stage for heavy equipment and depend on hydrogen reaching the site.
 
 ## Regional coverage
 
-All seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — carry the construction structure, scaled by an exogenous emissions forecast that tracks the scale of building activity: Ontario and Québec are the largest, with Alberta and British Columbia next, and the smaller provinces well below. The structure itself is identical across regions.
+All seven modelled regions carry the construction structure, scaled by an exogenous emissions forecast that tracks building activity: Ontario and Québec are the largest, followed by Alberta and British Columbia, with the smaller provinces well below.
 
 ## Limitations and planned extensions
 
-The construction sub-model is a placeholder: it captures the sector's dominant direct emission source — off-road diesel equipment — and the central diesel-to-electric choice, but little else. The off-road fleet is collapsed into a single aggregate **Transport** service rather than resolved by machine type or duty cycle; the competing technologies are not yet costed; the fuel prices are proxied from agriculture; and lower-carbon liquid fuels and hydrogen are not yet explicit options. The sub-model also covers only operational site fuel, not the embodied carbon of construction materials, which lives in the materials-producing sectors. The TODOs above record the priorities; populating the technology costs is the minimum needed for the diesel-to-electric transition to respond to policy at all.
+The construction sub-model is a placeholder. It collapses the off-road fleet into one aggregate service rather than resolving it by machine type or duty cycle, its technologies are not yet costed, and its fuel prices are proxied from agriculture. It covers only operational site fuel, not the embodied carbon of materials.
 
-<mark>TODO: Replace the illustrative figures and the Agriculture-proxied prices in this chapter with quantitative values drawn directly from the model input files, and benchmark modelled construction fuel use against Statistics Canada and Environment and Climate Change Canada inventory data.</mark>
+<mark>TODO: Replace the agriculture-proxied prices with sector values from the model input files, and benchmark modelled construction fuel use against Statistics Canada and National Inventory Report data.</mark>
 
 {{< pagebreak >}}
 
