@@ -93,13 +93,13 @@ td:has(> p > .cell-on) {
   color: transparent;
 }
 
-/* Vertical column separators for the dynamic sector-by-region table. */
-#tbl-sectors-regions-dynamic table th,
-#tbl-sectors-regions-dynamic table td {
+/* Vertical column separators for the sector-by-region table. */
+#tbl-sectors-by-region table th,
+#tbl-sectors-by-region table td {
   border-left: 1px solid var(--bs-border-color, #dee2e6);
 }
-#tbl-sectors-regions-dynamic table th:first-child,
-#tbl-sectors-regions-dynamic table td:first-child {
+#tbl-sectors-by-region table th:first-child,
+#tbl-sectors-by-region table td:first-child {
   border-left: none;
 }
 
@@ -182,10 +182,11 @@ img.img-fluid[src*="images/flowcharts/"] {
 
 /* Technology blocks in the sector chapters: the archetypes that compete at
    a process step, set apart from the process description they belong to.
-   Written as a fenced div with the .tech-block class around a definition
-   list or table. */
+   Written as a fenced div with the .tech-block class around a table. The
+   left margin indents the block from the text; tech-block.lua gives PDF
+   output the same indent. */
 .tech-block {
-  margin: 0.75rem 0 1.75rem 0;
+  margin: 0.75rem 0 2rem 1.75rem;
   padding: 0.6rem 1rem 0.4rem 1rem;
   border-left: 4px solid #3d6ea5;
   background-color: rgba(61, 110, 165, 0.06);
@@ -252,4 +253,14 @@ p:has(.math.display) {
 }
 p:has(.math.display):has(+ .eq-vars) {
   margin-bottom: 0.5rem;
+}
+
+/* Space after figures and tables, so the text that follows doesn't sit
+   against the caption. cims-style.sty sets the matching spacing for PDF. */
+.quarto-float,
+div.quarto-figure,
+.cell-output-display > table,
+div[id^="tbl-"],
+main table:not(.tech-block table) {
+  margin-bottom: 2rem;
 }

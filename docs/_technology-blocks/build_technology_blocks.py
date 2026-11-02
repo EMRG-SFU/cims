@@ -2,7 +2,7 @@
 
 Each block lists the archetypes from the technology database that compete
 at one node of the CIMS hierarchy: their name, a one-line description,
-their type, and their technology readiness level (TRL). The chapters pull
+and their type. The chapters pull
 the blocks in with Quarto's include shortcode, for example::
 
     {{< include _technology-blocks/iron-and-steel/service_hot-metal.md >}}
@@ -117,11 +117,11 @@ def table(rows: list[dict]) -> list[str]:
     rows = sorted(rows, key=lambda r: (TYPE_ORDER.index(r["type"]) if r["type"] in TYPE_ORDER
                                         else len(TYPE_ORDER), r["label"].lower()))
     # dash counts set the relative column widths (Pandoc pipe tables)
-    out = ["| Technology | What it is | Type | TRL |",
-           "|:" + "-" * 24 + "|:" + "-" * 54 + "|:" + "-" * 14 + "|:" + "-" * 6 + "|"]
+    out = ["| Technology | What it is | Type |",
+           "|:" + "-" * 26 + "|:" + "-" * 58 + "|:" + "-" * 16 + "|"]
     for r in rows:
         out.append(f"| {cell(typeset(r['label']))} | {sentence(describe(r))} | "
-                   f"{TYPE_LABEL.get(r['type'], r['type'].capitalize())} | {cell(r['trl'])} |")
+                   f"{TYPE_LABEL.get(r['type'], r['type'].capitalize())} |")
     return out
 
 

@@ -329,7 +329,7 @@ Government data sources use various codes for confidential or unavailable cells:
 
 ### Projections
 
-Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the data_extensions.py util. A common one used across activity drivers is the CAGR function. It uses paramters defined  C:\cims\data\raw_data\assumptions\activity_cagr_projections.csv to determine the CAGR calculation period, and determine the projection period splits and dampeners. 
+Historical data typically ends between 2022 and 2024. The pipeline extends series to 2100 in various ways using the `data_extensions.py` util. A common one used across activity drivers is the CAGR function. It uses parameters defined in `C:\cims\data\raw_data\assumptions\activity_cagr_projections.csv` to determine the CAGR calculation period, and determine the projection period splits and dampeners. 
 
 CAGR Example
 ```

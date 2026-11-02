@@ -28,8 +28,13 @@ link-citations: true
 # Project-wide filters. watermark.lua injects a DRAFT watermark when the
 # `watermark` flag is set (via `quarto render --profile watermark`); it is a
 # no-op otherwise. Runs for all formats (LaTeX/PDF and HTML).
+# tech-block.lua indents and styles the sector chapters' technology blocks
+# in PDF output (HTML styling is in style.css). theme-images.lua drops the
+# dark version of light/dark image pairs (the flowcharts) outside HTML.
 filters:
   - watermark.lua
+  - tech-block.lua
+  - theme-images.lua
 
 book:
   title: CIMS
@@ -183,6 +188,7 @@ format:
   #   #    belt-and-suspenders fallback in case anything the filter misses
   #   #    still emits a \printbibliography call. references.qmd calls
   #   #    \printbibliographyORIG once to emit the combined bibliography.
+  #   # Format-level filters run in addition to the project-level ones.
   #   filters:
   #     - strip-chapter-refs.lua
   #   header-includes:
