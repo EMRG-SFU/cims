@@ -1,0 +1,81 @@
+<script>
+/* Nest book parts under a parent heading in the sidebar.
+
+   A Quarto book allows only one level of parts, so the sector parts are
+   ordinary parts in _quarto.yml. This script groups them in the HTML
+   sidebar under a collapsible "Sector Descriptions" heading. To change
+   the grouping, edit SIDEBAR_GROUPS: each part title must match a
+   `part:` title in _quarto.yml exactly. Other output formats (PDF) keep
+   the flat list of parts. */
+(function () {
+  const SIDEBAR_GROUPS = [
+    {
+      title: "Sector Descriptions",
+      parts: [
+        "Energy Supply",
+        "Industry",
+        "Buildings",
+        "Transportation",
+        "Land, Waste, and Removals",
+        "General Services",
+      ],
+    },
+  ];
+
+  const menu = document.querySelector("#quarto-sidebar .sidebar-menu-container > ul");
+  if (!menu) return;
+
+  // Top-level part entries, by title.
+  const partsByTitle = {};
+  for (const li of menu.children) {
+    if (!li.classList.contains("sidebar-item-section")) continue;
+    const text = li.querySelector(":scope > .sidebar-item-container .menu-text");
+    if (text) partsByTitle[text.textContent.trim()] = li;
+  }
+
+  SIDEBAR_GROUPS.forEach(function (group, g) {
+    const members = group.parts.map((t) => partsByTitle[t]).filter(Boolean);
+    if (!members.length) return;
+    const id = "sidebar-group-" + g;
+
+    const li = document.createElement("li");
+    li.className = "sidebar-item sidebar-item-section sidebar-group";
+    li.innerHTML =
+      '<div class="sidebar-item-container">' +
+      '<a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" ' +
+      'data-bs-target="#' + id + '" role="navigation" aria-expanded="false">' +
+      '<span class="menu-text"></span></a>' +
+      '<a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" ' +
+      'data-bs-target="#' + id + '" role="navigation" aria-expanded="false" aria-label="Toggle section">' +
+      '<i class="bi bi-chevron-right ms-2"></i></a></div>' +
+      '<ul id="' + id + '" class="collapse list-unstyled sidebar-section depth1"></ul>';
+    li.querySelector(".menu-text").textContent = group.title;
+    menu.insertBefore(li, members[0]);
+
+    const list = li.querySelector("ul");
+    for (const part of members) {
+      list.appendChild(part);
+      // One level deeper: depthN -> depthN+1, for the indentation.
+      part.querySelectorAll("ul.sidebar-section").forEach(function (ul) {
+        ul.className = ul.className.replace(/\bdepth(\d+)\b/, (m, d) => "depth" + (Number(d) + 1));
+      });
+    }
+
+    // Open the group when it holds the current page.
+    if (list.querySelector("a.active, ul.show")) {
+      list.classList.add("show");
+      li.querySelectorAll(":scope > .sidebar-item-container > a").forEach(function (a) {
+        a.classList.remove("collapsed");
+        a.setAttribute("aria-expanded", "true");
+      });
+    }
+  });
+})();
+</script>
+
+<style>
+  /* Indent the parts inside a sidebar group. */
+  #quarto-sidebar .sidebar-group > ul.sidebar-section {
+    padding-left: 0.75em;
+  }
+</style>

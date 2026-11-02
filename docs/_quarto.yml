@@ -59,7 +59,11 @@ book:
         - sector_overview.qmd   # How a sector is modelled (shared structure of the sector chapters)
     # Sector chapters, grouped. Sub-sector chapters sit next to their parent
     # sector's chapter (for example sector_metal-smelting_aluminum.qmd).
-    - part: "Energy Supply Sectors"
+    # Books allow only one level of parts, so the HTML sidebar nests the six
+    # parts from here to General Services under a "Sector Descriptions"
+    # heading with sidebar-sections.html (included below). Keep the part
+    # titles there in step with these.
+    - part: "Energy Supply"
       chapters:
         - sector_coal-mining.qmd              # Coal Mining
         - sector_natural-gas.qmd              # Natural Gas
@@ -70,7 +74,7 @@ book:
         - sector_electricity.qmd              # Electricity
         - sector_biofuels.qmd                 # Biofuels
         - sector_hydrogen.qmd                 # Hydrogen
-    - part: "Industrial Sectors"
+    - part: "Industry"
       chapters:
         - sector_mining.qmd                   # Mining
         - sector_industrial-minerals.qmd      # Industrial Minerals
@@ -140,6 +144,7 @@ format:
     include-after-body:
       - comma-fn.html
       - refs-backlinks.html
+      - sidebar-sections.html
   # docx:
   #   eval: true
   # pdf:
