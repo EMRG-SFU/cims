@@ -485,6 +485,22 @@ REGISTRY.register("no_structural_parent_node_exists", CheckSpec(
         "Branch name."
     ),
 ))
+REGISTRY.register("excel_error_values", CheckSpec(
+    fn=file_errors.excel_error_values,
+    phase=Phase.FILE,
+    severity=Severity.ERROR,
+    argmap={},
+    short_desc="rows have an Excel formula error (e.g. #DIV/0!, #N/A) as their Value",
+    help_text=(
+        "Output: [(row_index, node, parameter, value)]\n"
+        "  Each entry is a row whose Value is an Excel error code (#DIV/0!, #N/A,\n"
+        "  #VALUE!, #REF!, #NAME?, #NUM!, #NULL!, #SPILL!, #CALC!); row_index is\n"
+        "  that row in model_df.\n\n"
+        "Reading: the value was likely copied or exported from a spreadsheet where\n"
+        "the formula failed. Fix the formula in the source sheet, or enter the\n"
+        "value directly, and re-export the CSV."
+    ),
+))
 
 
 # ---- Warnings ----
