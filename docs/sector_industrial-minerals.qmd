@@ -1,32 +1,34 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_industrial_minerals.html
 ---
 
 # Industrial Minerals {#sec-industrial-minerals}
 
-The industrial minerals sector, the non-metallic mineral products industry, makes cement, lime, glass, ceramics, and gypsum products. It is defined by high-temperature thermal processing (calcining, clinkering, melting, and firing), and a large share of its emissions are process emissions released by the chemistry of calcination rather than by burning fuel. That fact shapes both the sub-model and its decarbonisation options.
+The industrial minerals sector makes cement, lime, glass, ceramics, and gypsum products. All of them are made by heating minerals to high temperatures, in kilns or furnaces. For cement and lime, much of the CO₂ comes not from the fuel but from the rock itself: heating limestone splits it into lime and CO₂. These process emissions shape both how CIMS represents the sector and how it can cut emissions.
 
 ## Scope
 
-The sub-model covers five product groups: cement, lime, glass, ceramics (brick, tile, sanitaryware, and refractories), and gypsum products. Cement and lime dominate the sector's energy and emissions, because both calcine carbonate rock at high temperature. A forecast of each product's output, in tonnes and closely tied to construction activity, drives the steps and services beneath it.
+The sub-model covers five product groups: cement, lime, glass, ceramics (brick, tile, sanitaryware, and refractories, the heat-resistant linings of furnaces and kilns), and gypsum products such as wallboard. Cement and lime make up most of the sector's energy use and emissions. A forecast of each product's output, closely tied to construction, drives everything beneath it.
 
-Adjacent activities sit elsewhere to avoid double-counting:
+Related activities sit elsewhere in CIMS, so their energy is counted once:
 
-- Quarrying limestone, silica, clay, and aggregate is part of @sec-mining; this sub-model begins inside the plant gate.
-- Concrete batching and downstream fabrication (ready-mix concrete, precast products, and finished glazing) are downstream manufacturing and are not part of this sub-model.
-- Granulated blast-furnace slag, a cement ingredient, comes from @sec-iron-and-steel.
+- Quarrying limestone, silica sand, clay, and aggregate is part of @sec-mining. This sub-model starts at the plant gate.
+- Making concrete, precast products, and finished windows is downstream manufacturing and is not part of this sub-model.
+- Granulated blast-furnace slag, used as a cement ingredient, comes from @sec-iron-and-steel.
 
 ## Context
 
-The sector is small in tonnage relative to its emissions. Canadian cement manufacturing emitted about 11.2 Mt CO₂ in 2019, roughly 1.5 % of national emissions, and calcination accounts for some 60–65 % of the CO₂ from clinker production: limestone (CaCO₃) breaks down into lime (CaO) and CO₂, with the rest of the CO₂ coming from the fuel burned to reach clinkering temperature [@cac-netzero; @iea-cement]. Lime production is the same calcination without the clinkering, and carries an even higher process-CO₂ intensity per tonne. Glass is melted rather than calcined, so its emissions come mostly from furnace fuel and carbonate batch materials; brick and ceramics are fired clay.
+The sector is small by tonnage but large by emissions. Canadian cement plants emitted about 11.2 Mt CO₂ in 2019, roughly 1.5 % of national emissions [@cac-netzero]. About 60–65 % of the CO₂ from making clinker, the main ingredient of cement, comes from calcination: limestone (calcium carbonate) breaks down into lime (calcium oxide) and CO₂. The rest comes from the fuel burned to reach the high temperature that clinker needs [@iea-cement]. Lime production is the same calcination without the clinker step, and releases even more process CO₂ per tonne. Glass is melted rather than calcined, so most of its emissions come from furnace fuel, with some from carbonate raw materials such as soda ash. Brick and ceramics are clay fired in kilns.
 
-Production is concentrated in the populous provinces and tracks construction demand. Ontario is the largest producer, followed by Québec and a fast-growing Alberta, with British Columbia and the Atlantic region smaller. Because so much of the CO₂ is intrinsic to the chemistry, deep decarbonisation depends on options most other sectors don't need: capture on the kiln, replacing clinker with other materials, alternative raw materials that avoid carbonate, and new binders.
+Production is concentrated in the most populous provinces and follows construction. Ontario is the largest producer, followed by Québec and a fast-growing Alberta, with British Columbia and the Atlantic region smaller. Because so much of the CO₂ comes from the chemistry, cutting it deeply needs options most other sectors don't: capturing CO₂ from the kiln, using less clinker, using raw materials that contain no carbonate, and new kinds of cement.
 
 ## Process flow
 
-@fig-industrial-minerals-process shows the five product chains. Cement is the most detailed: a cement binder (the recipe) requests clinker, grinding, and supplementary materials such as calcined clay and ground slag, each made at its own node.
+@fig-industrial-minerals-process shows the five product chains. Cement is the most detailed. A cement recipe calls for clinker, grinding, and other materials that can replace part of the clinker, such as calcined clay and ground slag, each made in its own step.
 
 ::: {#fig-industrial-minerals-process}
 ![](images/flowcharts/industrial-minerals_process-flow_light.svg){.light-content .lightbox group="industrial-minerals-light"}
@@ -38,33 +40,39 @@ Process flow of the industrial minerals sector.
 
 ## Model structure
 
-All the production steps sit in the Product sub-tree. The Service sub-tree holds a sector **kiln-heat** service, the diffuse **CCS** service that capture-equipped kilns and furnaces request, and the shared services.
+CIMS models each product as a chain of production steps. Those steps call on the sector's **kiln heat** service, the **CCS** service that kilns and furnaces with capture send their exhaust to, and the shared services.
 
 ### Cement
 
-Cement is made by recipe. Each **binder** technology is a recipe for a tonne of cement: it requests clinker, finish grinding, and supplementary materials from their own nodes, and holds only its own blending and handling. Portland cement uses mostly clinker; blended cements, calcined clay cement (LC3), and slag cements replace part of it; and alkali-activated, carbonated, sulphoaluminate, hydrothermal, and electrochemical binders avoid conventional clinker altogether. The clinker ratio is decided here, which is why grinding is not part of the shared machine-drive service.
+Cement is the powder that binds sand and stone into concrete. In CIMS it is made by recipe. Each **cement binder** is a recipe for a tonne of cement that calls on the other cement steps for its clinker, grinding, and replacement materials, and adds only its own blending and handling. The recipes differ in how much clinker they use:
+
+- Ordinary portland cement is mostly clinker, with a little gypsum.
+- Blended cements replace part of the clinker with slag, fly ash, limestone, or natural materials. Calcined clay cement (known as LC3) replaces it with a mix of calcined clay and limestone [@scrivener_2018_001].
+- Alkali-activated, carbonated, sulphoaluminate, hydrothermal, and electrochemical binders avoid conventional clinker altogether, or need much less heat to make [@habert_2020_001].
+
+Because the recipe sets how much clinker and grinding a tonne of cement needs, grinding stays in this sector rather than in the shared machine-drive service.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_binder.md >}}
 
-**Clinker** production covers raw meal preparation and drying, the preheater and precalciner, the rotary kiln, and the clinker cooler. It is measured in tonnes of clinker.
+**Clinker** is made by heating ground limestone and clay (raw meal) to about 1,450 °C in a long rotating kiln, where it fuses into grey nodules. A modern kiln preheats the meal in a tower of cyclones and does most of the calcination in a separate burner (the precalciner) before the kiln. Clinker production is where most of the sector's fuel is burned and most of its CO₂ released [@gcca_2024_001]. Alternatives include kilns that capture the CO₂ from their exhaust, kilns that burn fuel in pure oxygen or loop lime through a second reactor so their CO₂ comes out concentrated and easier to capture [@gardarsdottir_2019_001], calciners heated by electricity, and kilns that use calcium-silicate rock instead of limestone.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_clinker.md >}}
 
-**Finish grinding** grinds clinker and additions to cement fineness.
+**Finish grinding** grinds clinker and other ingredients into fine cement powder. Vertical roller mills use less electricity than the older ball mills.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_grinding.md >}}
 
-**Calcined clay** is clay calcined at 700–900 °C into a pozzolan for LC3 and other blends; LC3 requests about 0.30 t per tonne of cement.
+**Calcined clay** is clay heated to 700–900 °C, which makes it react with cement like clinker does. It needs far less heat than clinker and releases no process CO₂, because clay contains no carbonate.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_calcined-clay.md >}}
 
-**Ground slag** is granulated blast-furnace slag dried and ground to cement fineness, for slag blends and alkali-activated binders.
+**Ground slag** is granulated blast-furnace slag, a by-product of ironmaking, dried and ground to cement fineness. It goes into slag cements and alkali-activated binders.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_ground-slag.md >}}
 
 ### Lime
 
-Lime and dolomitic lime are made in rotary and shaft kilns. The lime kilns request their fuel directly in the current data; the sector's **kiln-heat** service offers an indirectly heated or electrified calciner, which separates the process CO₂ from the combustion gases.
+Lime is made by heating limestone (or dolomite, for dolomitic lime) in rotary or vertical shaft kilns until it gives off its CO₂. Steel mills, pulp mills, water treatment plants, and builders use it. About two-thirds of a lime kiln's CO₂ comes from the rock, so switching fuels alone can only go so far [@simoni_2022_001]. The sector's **kiln heat** service offers an electrically or indirectly heated calciner. It keeps the CO₂ from the rock separate from the combustion gases, which makes it much easier to capture.
 
 {{< include _technology-blocks/industrial-minerals/product_lime.md >}}
 
@@ -74,7 +82,7 @@ Lime and dolomitic lime are made in rotary and shaft kilns. The lime kilns reque
 
 ### Glass
 
-Glass melting covers batch and cullet preparation and melting in container, flat, fibre, and specialty glass furnaces, and mineral wool melting. Forming and finishing covers forming, annealing lehrs, tempering, and fire polishing. Both are measured in tonnes of glass.
+**Glass melting** prepares the raw materials (sand, soda ash, limestone, and recycled glass, called cullet) and melts them in a furnace at around 1,500 °C. Container, flat, fibre, and specialty glass each use their own furnace designs, and stone wool insulation is melted in a separate kind of furnace. Most furnaces burn natural gas, and some add electric heating through electrodes in the melt. Using more cullet cuts both fuel use and process CO₂, because recycled glass melts more easily and contains no carbonate. **Forming and finishing** shapes the glass, then reheats it and cools it slowly in an oven called a lehr, so it doesn't crack.
 
 **Melting**
 
@@ -86,7 +94,7 @@ Glass melting covers batch and cullet preparation and melting in container, flat
 
 ### Ceramics
 
-Ceramic ware is dried to remove forming water, then fired in tunnel, roller, or periodic kilns.
+Brick, tile, and other ceramic ware is shaped from wet clay, dried to remove the water, then fired in a kiln. Continuous tunnel and roller kilns carry the ware through a long heated chamber, while batch kilns heat and cool one load at a time and use more energy per tonne.
 
 **Drying**
 
@@ -98,7 +106,7 @@ Ceramic ware is dried to remove forming water, then fired in tunnel, roller, or 
 
 ### Gypsum
 
-Gypsum is calcined at low temperature to stucco for wallboard and plaster.
+Gypsum rock is heated at a low temperature to drive off part of its water, turning it into a powder (stucco) that is made into wallboard and plaster.
 
 {{< include _technology-blocks/industrial-minerals/product_gypsum.md >}}
 
@@ -108,23 +116,23 @@ Gypsum is calcined at low temperature to stucco for wallboard and plaster.
 |:--------|:-----------------|:-------------|
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of plant buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends | @sec-fuel-blends |
-| CCS | Diffuse capture for the cement kilns, lime kilns, and glass furnaces that send their flue gas to capture | @sec-ccus |
+| Fuel blends | Diesel and natural gas blends | @sec-fuel-blends |
+| CCS | Capture for the cement kilns, lime kilns, and glass furnaces that send their exhaust to it | @sec-ccus |
 
 : Shared services in the industrial minerals sector {#tbl-industrial-minerals-shared}
 
 ## Decarbonisation
 
-Efficiency and fuel switching reach only the combustion share of the sector's CO₂, so deep cuts must capture or avoid the process CO₂ too. Roughly the first 30–40 % of cement emissions can be abated with clinker substitution, alternative fuels, and efficiency; the remaining 60–70 %, the calcination CO₂, needs capture or new chemistry [@doe-liftoff-cement; @cac-netzero].
+Using less fuel or switching fuels only reaches the combustion share of the sector's CO₂, so deep cuts also need to capture or avoid the process CO₂. Using less clinker, burning alternative fuels, and improving efficiency can cut roughly the first 30–40 % of cement emissions. The remaining 60–70 %, the CO₂ from calcination, needs capture or new chemistry [@doe-liftoff-cement; @cac-netzero].
 
-- **Less clinker.** Supplementary materials (slag, fly ash, calcined clay, limestone, and natural pozzolans) replace part of the clinker; calcined clay cement can cut cement CO₂ by around 40 % and is commercial [@doe-liftoff-cement]. The cement recipes and the calcined clay and ground slag nodes represent this directly.
+- **Less clinker.** Slag, fly ash, calcined clay, limestone, and natural materials can replace part of the clinker. Calcined clay cement can cut cement CO₂ by around 40 % and is already on the market [@doe-liftoff-cement]. The cement recipes and the calcined clay and ground slag steps represent this directly.
 - **New binders and raw materials.** Alkali-activated, carbonated, electrochemical, and hydrothermal binders, and clinker made from calcium-silicate rock, avoid or reduce calcination CO₂.
-- **Capture.** Post-combustion capture on cement kilns, lime kilns, and glass furnaces, and kilns built to concentrate their CO₂ (oxy-fuel, calcium looping, and indirect calciners), reach the process CO₂.
-- **Electrification and efficiency.** Electric kilns and melters, hybrid glass furnaces, electric dryers and lehrs, efficiency retrofits on kilns, and vertical roller mills for grinding cut combustion CO₂ and energy use.
+- **Capture.** Cement kilns, lime kilns, and glass furnaces can capture CO₂ from their exhaust, and kilns designed to concentrate their CO₂ (oxy-fuel kilns, calcium looping, and indirect calciners) make capture cheaper [@plaza_2020_001].
+- **Electrification and efficiency.** Electric kilns and glass melters, hybrid glass furnaces, electric dryers and lehrs, kiln efficiency upgrades, and vertical roller mills cut fuel use and energy.
 
 ## Regional coverage and differences
 
-Five regions carry the sector: Alberta, the Atlantic region, British Columbia, Ontario, and Québec. Ontario is the largest producer and grows over the projection; Québec and a fast-growing Alberta follow; British Columbia and the Atlantic region are smaller. Unlike most heavy industry, modelled output rises in every region, because demand tracks population and construction.
+Five regions carry the sector: Alberta, the Atlantic region, British Columbia, Ontario, and Québec. Ontario is the largest producer and grows over the projection; Québec and a fast-growing Alberta follow; British Columbia and the Atlantic region are smaller. Unlike most heavy industry, modelled output rises in every region, because demand follows population and construction.
 
 <mark>TODO: Saskatchewan and the territories are absent. Confirm whether cement, lime, or glass capacity elsewhere should be added, and confirm that ceramics warrants its own branch in every province (check against Natural Resources Canada's NAICS 3271 energy series).</mark>
 
