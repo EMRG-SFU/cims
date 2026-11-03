@@ -1,21 +1,20 @@
 # Direct air capture process flowchart. See appendix_figure-style.qmd for the format.
+# Energy is shown generically: depending on the technology, DAC draws
+# electricity and high- or low-temperature heat, from whichever source wins.
 sector: direct-air-capture
 title: Direct air capture
 
 nodes:
   - {id: air, label: Ambient air, icon: wind, role: input, at: [0, 0]}
-  - {id: electricity, label: Electricity, icon: electricity, role: input, at: [0, 1]}
-  - {id: heat, label: Heat or natural gas, icon: natural-gas, role: input, at: [0, 2]}
+  - {id: energy, label: Heat and electricity, icon: electricity, role: input, at: [0, 1]}
   - {id: capture, label: CO₂ removal, icon: fan, role: process, at: [1, 1],
      branch: direct-air-capture.product.co2-removal}
-  - {id: transport, label: CO₂ transport and storage, icon: pipeline, role: service, at: [2, 1]}
-  # Shared root-level branch <root>.transmission.co2-pipeline-and-storage; no
-  # branch tag here because build_flowcharts.py does not escape "<" in tooltips.
+  - {id: transport, label: CO₂ transport and storage, icon: pipeline, role: service, at: [2, 1],
+     branch: <root>.transmission.co2-pipeline-and-storage}
   - {id: stored, label: Stored CO₂, icon: tank, role: output, at: [3, 1]}
 
 edges:
-  - [air, capture]
-  - {from: electricity, to: capture, kind: energy}
-  - {from: heat, to: capture, kind: energy}
+  - {from: air, to: capture, turn: late}
+  - {from: energy, to: capture, kind: energy}
   - [capture, transport]
   - [transport, stored]
