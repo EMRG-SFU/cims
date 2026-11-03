@@ -1,10 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 469" width="1086" height="469" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Coal mining process flowchart">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 446" width="1086" height="446" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Coal mining process flowchart">
 <defs>
 <symbol id="icon-coal" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 38 L12 25 L22 23 L28 31 L24 39 Z" fill="currentColor" fill-opacity="0.55"/><path d="M22 23 L32 14 L42 21 L39 35 L28 31"/><path d="M28 31 L39 35"/></g></symbol>
 <symbol id="icon-crusher" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8 L20 36 H28 L42 8"/><path d="M14 8 L22 28 M34 8 L26 28"/><path d="M19 42 l2-3 l3 2 l2-3 l3 4" /></g></symbol>
 <symbol id="icon-dryer" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="14" width="36" height="16" rx="8"/><path d="M14 38 c-3-3 3-4 0-7 M24 38 c-3-3 3-4 0-7 M34 38 c-3-3 3-4 0-7"/><path d="M12 9 H36"/></g></symbol>
 <symbol id="icon-fan" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="3"/><path d="M24 21 C20 12 25 5 31 7 C35 13 30 19 26 22 Z M27 25 C37 25 41 31 37 36 C30 37 27 31 25 27 Z M22 26 C17 34 9 35 8 29 C11 23 18 23 22 26 Z"/><circle cx="24" cy="24" r="19"/></g></symbol>
-<symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
 <symbol id="icon-methane" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="7"/><circle cx="24" cy="7" r="4"/><circle cx="24" cy="41" r="4"/><circle cx="7" cy="24" r="4"/><circle cx="41" cy="24" r="4"/><path d="M24 11 V17 M24 31 V37 M11 24 H17 M31 24 H37"/><text x="24" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="currentColor" stroke="none">C</text></g></symbol>
 <symbol id="icon-mill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="13" width="34" height="20" rx="10" fill="currentColor" fill-opacity="0.18"/><circle cx="17" cy="23" r="3"/><circle cx="25" cy="27" r="3"/><circle cx="30" cy="20" r="3"/><path d="M12 33 L10 41 M36 33 L38 41 M6 41 H42"/></g></symbol>
 <symbol id="icon-open-pit" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14 H10 L13 20 H18 L21 26 H27 L30 20 H35 L38 14 H46"/><path d="M4 36 H44" stroke-dasharray="3 4"/></g></symbol>
@@ -15,7 +14,6 @@
 <marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#eda15c"/></marker>
 <marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8f9aa6"/></marker>
 </defs>
-<path d="M 152.0 338.0 L 184.0 338.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 243.0 293.0 L 243.0 255.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 243.0 127.0 L 243.0 165.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 184.0 210.0 L 100.0 210.0 Q 93.0 210.0 93.0 203.0 L 93.0 127.0" fill="none" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
@@ -25,11 +23,6 @@
 <path d="M 752.0 210.0 L 784.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 693.0 255.0 L 693.0 293.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 902.0 210.0 L 934.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<g><title>Diesel</title>
-<rect x="34.0" y="293.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>
-<use href="#icon-liquid-fuel" x="74.0" y="301.0" width="38" height="38" style="color:#e6cc9f"/>
-<text x="93.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Diesel</text>
-</g>
 <g><title>Extraction — coal-mining.product.raw-product.extraction, coal-mining.product.simplified-extraction</title>
 <rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-open-pit" x="224.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
@@ -85,20 +78,18 @@
 <text x="993.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#13233a">and thermal</text>
 <text x="993.0" y="251.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#13233a">coal</text>
 </g>
-<rect x="22.0" y="418" width="16" height="12" rx="3" fill="#3a3226" stroke="#c9a979"/>
-<text x="44.0" y="428" font-size="11.5" fill="#a3acb6">Purchased input</text>
-<rect x="157.4" y="418" width="16" height="12" rx="3" fill="#1f3550" stroke="#6fa0d8"/>
-<text x="179.4" y="428" font-size="11.5" fill="#a3acb6">Process step</text>
-<rect x="274.6" y="418" width="16" height="12" rx="3" fill="#21392a" stroke="#78b386"/>
-<text x="296.6" y="428" font-size="11.5" fill="#a3acb6">Site service</text>
-<rect x="391.7" y="418" width="16" height="12" rx="3" fill="#acd0f4" stroke="#acd0f4"/>
-<text x="413.7" y="428" font-size="11.5" fill="#a3acb6">Product</text>
-<rect x="478.4" y="418" width="16" height="12" rx="3" fill="#2b2f34" stroke="#8f9aa6" stroke-dasharray="4 3"/>
-<text x="500.4" y="428" font-size="11.5" fill="#a3acb6">Emission or capture</text>
-<path d="M 638.2 424 H 666.2" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<text x="674.2" y="428" font-size="11.5" fill="#a3acb6">Material flow</text>
-<path d="M 775.4 424 H 803.4" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<text x="811.4" y="428" font-size="11.5" fill="#a3acb6">Energy or service</text>
-<path d="M 22.0 447.0 H 50.0" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
-<text x="58.0" y="451.0" font-size="11.5" fill="#a3acb6">CO₂ or other emissions</text>
+<rect x="22.0" y="418" width="16" height="12" rx="3" fill="#1f3550" stroke="#6fa0d8"/>
+<text x="44.0" y="428" font-size="11.5" fill="#a3acb6">Process step</text>
+<rect x="139.1" y="418" width="16" height="12" rx="3" fill="#21392a" stroke="#78b386"/>
+<text x="161.1" y="428" font-size="11.5" fill="#a3acb6">Site service</text>
+<rect x="256.3" y="418" width="16" height="12" rx="3" fill="#acd0f4" stroke="#acd0f4"/>
+<text x="278.3" y="428" font-size="11.5" fill="#a3acb6">Product</text>
+<rect x="342.9" y="418" width="16" height="12" rx="3" fill="#2b2f34" stroke="#8f9aa6" stroke-dasharray="4 3"/>
+<text x="364.9" y="428" font-size="11.5" fill="#a3acb6">Emission or capture</text>
+<path d="M 502.7 424 H 530.8" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="538.8" y="428" font-size="11.5" fill="#a3acb6">Material flow</text>
+<path d="M 640.0 424 H 668.0" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="676.0" y="428" font-size="11.5" fill="#a3acb6">Energy or service</text>
+<path d="M 801.6 424 H 829.6" stroke="#8f9aa6" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="837.6" y="428" font-size="11.5" fill="#a3acb6">CO₂ or other emissions</text>
 </svg>

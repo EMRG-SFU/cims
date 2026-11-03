@@ -1,28 +1,34 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_coal_mining.html
 ---
 
 # Coal Mining {#sec-coal-mining}
 
-Coal mining produces metallurgical coal for steelmaking and thermal coal for power and industrial heat. Its emissions come from two places: diesel in the mobile equipment, and methane released from the coal seam during mining. Coal-mine methane is the larger of the two, and the hierarchy now gives it its own node with technologies that drain, use, or destroy it.
+Coal mining produces metallurgical coal for steelmaking and thermal coal for power plants and industrial heat. Its emissions come from two places: the fuel burned by trucks and other mobile equipment, and methane that escapes from the coal seam as it is mined. Methane is the larger of the two, and the sector now has its own set of technologies to capture, use, or destroy it.
 
 ## Scope
 
-The sub-model covers coal extraction, size reduction, and preparation, from the mine face through crushing, milling, washing, and drying to a saleable product. Coal output, in tonnes, drives the sector. Both metallurgical and thermal coal are in scope.
+The sub-model follows coal from the mine to a saleable product: digging it out, breaking it to size, and cleaning and drying it. Coal output drives the sector, and both metallurgical and thermal coal are in scope.
 
-Adjacent activities sit elsewhere to avoid double-counting: burning thermal coal for power is in @sec-electricity, and for industrial heat in the industrial chapters; making coke from metallurgical coal and using it in ironmaking is in @sec-iron-and-steel; and other mining is in @sec-mining.
+Related activities sit elsewhere in CIMS, so their energy is counted once:
+
+- Burning thermal coal for power is covered in @sec-electricity, and burning it for industrial heat in the industrial chapters.
+- Turning metallurgical coal into coke and using it to make iron is covered in @sec-iron-and-steel.
+- Other mining is covered in @sec-mining.
 
 ## Context
 
-Canada produced about 42.6 Mt of coal in 2024, roughly two-thirds of it metallurgical [@nrcan-coal]. British Columbia accounts for around 69 % of tonnage (the Elk Valley coking-coal mines), Alberta about 19 % (metallurgical and thermal), and Saskatchewan about 11 % (lignite and thermal coal). The two coal types are on opposite paths. Thermal coal is in steep decline as Canada phases out unabated coal-fired electricity by 2030 and moves to end thermal-coal exports, while metallurgical coal, for which conventional steelmaking has no large-scale substitute, has held up as an export commodity [@nrcan-coal]. Canadian coal production has fallen about 31 % over the past decade, almost all of it thermal.
+Canada produced about 42.6 Mt of coal in 2024, roughly two-thirds of it metallurgical [@nrcan-coal]. British Columbia mines around 69 % of it, mostly coking coal from the Elk Valley; Alberta about 19 %, both metallurgical and thermal; and Saskatchewan about 11 %, mostly lignite for power plants. The two kinds of coal are heading in opposite directions. Thermal coal is in steep decline as Canada phases out conventional coal-fired electricity by 2030 and moves to end thermal coal exports. Metallurgical coal has held up as an export, because conventional steelmaking has no large-scale substitute for it yet [@nrcan-coal]. Canadian coal production has fallen about 31 % over the past decade, almost all of it thermal coal.
 
-Methane trapped in the coal seam escapes during mining, much of it in the ventilation air. Coal-mine methane is on the order of 60 % of the sector's greenhouse-gas emissions, and mature technologies exist to drain and use it or to destroy it: ventilation-air methane oxidizers can destroy more than 98 % of the methane in mine exhaust air [@iea-methane-coal; @csiro-vam].
+Coal seams hold methane, the main component of natural gas. Mining releases it, and much of it leaves an underground mine in the ventilation air. Coal-mine methane makes up roughly 60 % of the sector's greenhouse gas emissions. Proven technologies can capture it for use or destroy it: oxidizers fitted to mine ventilation shafts can destroy more than 98 % of the methane in the exhaust air [@iea-methane-coal; @csiro-vam].
 
 ## Process flow
 
-@fig-coal-mining-process shows the sector's process steps. Extraction requests mine haulage, ventilation, and methane control; the coal then passes through crushing and milling to washing and drying, and washing sends its tailings for disposal.
+@fig-coal-mining-process shows how coal moves through a mine. Extraction digs the coal and relies on haulage to move it and on ventilation to keep underground workings safe; it also releases seam methane, which methane control either lets escape, captures, or destroys. The coal is then crushed and milled to size, washed to remove rock and ash, and dried. Washing sends its rejects to tailings disposal.
 
 ::: {#fig-coal-mining-process}
 ![](images/flowcharts/coal-mining_process-flow_light.svg){.light-content .lightbox group="coal-mining-light"}
@@ -34,11 +40,13 @@ Process flow of the coal mining sector.
 
 ## Model structure
 
-The Product sub-tree holds three stages: the raw product (extraction, ventilation, and methane control), size reduction (crushing and milling), and coal preparation (washing, drying, and tailings disposal). Simplified extraction and simplified production nodes offer lower-resolution alternatives to the full chain, for regions or runs where the detail isn't needed. Extraction and the preparation steps are measured in tonnes of coal.
+CIMS splits coal production into three stages: getting the raw coal out (extraction, ventilation, and methane control), size reduction (crushing and milling), and coal preparation (washing, drying, and tailings disposal). Two simpler alternatives, simplified extraction and simplified production, stand in for the full chain where a model run doesn't need the detail.
 
 ### Extraction and haulage
 
-Extraction competes whole open-pit and underground mines, each including its own dewatering, ventilation, and hoisting where relevant. The simplified extraction node offers the same two mines. **Mine haulage**, in the Service sub-tree, moves coal and overburden.
+Coal comes from open-pit (surface) mines, where large machines strip away the soil and rock above the seam, and from underground mines, which cut the coal in rooms or along long faces and carry it to the surface. In CIMS, each kind of mine competes as a whole: an underground mine includes its own ventilation, hoisting, and pumping, and an open-pit mine its own pumping and overburden removal [@etsap_2014_002]. The simplified extraction option offers the same two mines.
+
+**Mine haulage** moves coal and waste rock with trucks, loaders, and hoists, and is where most of the sector's diesel goes. As in metal mining, battery-electric, hydrogen fuel-cell, dual-fuel, and trolley-assist trucks compete with diesel trucks.
 
 **Extraction**
 
@@ -54,7 +62,9 @@ Extraction competes whole open-pit and underground mines, each including its own
 
 ### Mine ventilation and methane control
 
-Underground mines ventilate their workings with large fans, and that ventilation carries away much of the seam methane. The **mine-methane** node, requested by extraction, competes letting the methane escape untreated against draining it from the seam for use and oxidizing the dilute methane in ventilation air.
+Underground mines blow large volumes of fresh air through their workings with big fans. The air keeps methane below explosive levels, so it also carries much of the seam methane out of the mine, at concentrations too low to burn in an ordinary flame.
+
+**Methane control** decides what happens to that methane. The mine can let it escape untreated; drill boreholes to drain methane from the seam before and after mining, so it can be used as fuel or flared; or pass the ventilation air through an oxidizer, which heats it until the dilute methane breaks down into CO₂ and water [@iea_2026_004; @epa_2019_001]. Because methane traps far more heat than CO₂ does, destroying it cuts emissions sharply even though it releases some CO₂.
 
 **Mine ventilation**
 
@@ -66,13 +76,13 @@ Underground mines ventilate their workings with large fans, and that ventilation
 
 ### Crushing and milling
 
-Run-of-mine coal is crushed and milled to size. The milling node has no technologies in the database yet.
+Coal from the mine comes in lumps of every size. Crushing breaks it down, and milling grinds it further where a customer needs fine coal. Sensor-based sorting can pick out rock before it is crushed. The technology database has no technologies for milling yet.
 
 {{< include _technology-blocks/coal-mining/product_size-reduced-product_crushing.md >}}
 
 ### Coal preparation
 
-Washing removes rock and ash, mainly for metallurgical coal; drying brings washed coal to specification; and tailings disposal thickens, filters, and stores the rejects.
+Most metallurgical coal is washed to remove rock and ash, since steelmakers need clean, low-ash coal. Washing uses flotation, where chemicals and air bubbles lift fine coal away from the heavier rock. The washed coal is wet, so it is dried, usually with hot combustion gases, before shipping. Tailings disposal thickens and filters the rejected rock and recovers water.
 
 **Washing**
 
@@ -92,23 +102,23 @@ Washing removes rock and ash, mainly for metallurgical coal; drying brings washe
 |:--------|:-----------------|:-------------|
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of mine buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends | @sec-fuel-blends |
+| Fuel blends | Diesel and natural gas blends | @sec-fuel-blends |
 
 : Shared services in the coal mining sector {#tbl-coal-mining-shared}
 
-The pumps node also carries a mining-specific technology for dewatering:
+The pumps service also has one technology specific to mining, for pumping water out of the pit or the underground workings:
 
 {{< include _technology-blocks/coal-mining/service_machine-drive_pumps.md >}}
 
 ## Decarbonisation
 
-- **Coal-mine methane.** Draining seam methane for use, and oxidizing ventilation-air methane, address the largest share of the sector's emissions with mature technology [@csiro-vam; @iea-methane-coal].
-- **Mobile equipment.** Battery-electric, trolley-assist, and hydrogen fuel-cell haulage reach the diesel load, as in metal mining, and biodiesel and renewable diesel reach the remaining fleet through the diesel blend [@bisulandu-mining-2026].
-- **Drying and auxiliaries.** Electric dryers replace fuel-fired drying, and efficient fans, motors, and drives cut ventilation and auxiliary energy through the shared machine-drive service.
+- **Coal-mine methane.** Draining seam methane for use, and oxidizing the methane in ventilation air, tackle the largest share of the sector's emissions with proven technology [@csiro-vam; @iea-methane-coal].
+- **Trucks and haulage.** Battery-electric, trolley-assist, and hydrogen fuel-cell haulage can replace diesel trucks, as in metal mining, and biodiesel and renewable diesel reach the trucks that remain through the diesel blend [@bisulandu-mining-2026].
+- **Drying and auxiliary loads.** Electric dryers can replace fuel-fired drying, and efficient fans, motors, and drives cut ventilation and other electricity use through the shared machine-drive service.
 
 ## Regional coverage and differences
 
-Four regions carry coal mining: British Columbia, with export-oriented metallurgical coal from the Elk Valley; Alberta, with metallurgical and declining thermal coal; Saskatchewan, with lignite and thermal coal, the most exposed to the coal-power phase-out; and the Atlantic region, with a small presence. Ontario, Québec, and Manitoba have no coal mining.
+Four regions mine coal: British Columbia, with export metallurgical coal from the Elk Valley; Alberta, with metallurgical and declining thermal coal; Saskatchewan, with lignite and thermal coal, which the coal-power phase-out affects most; and the Atlantic region, with a small presence. Ontario, Québec, and Manitoba have no coal mining.
 
 <mark>TODO: Represent the diverging paths of metallurgical and thermal coal explicitly (durable, export-driven coking-coal demand against a sharp thermal-coal decline), since lumping them understates the structural change underway.</mark>
 

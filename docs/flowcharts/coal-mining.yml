@@ -3,7 +3,6 @@ sector: coal-mining
 title: Coal mining
 
 nodes:
-  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 2]}
   - {id: extraction, label: Extraction, icon: open-pit, role: process, at: [1, 1],
      branches: [coal-mining.product.raw-product.extraction, coal-mining.product.simplified-extraction]}
   - {id: haulage, label: Mine haulage, icon: truck, role: service, at: [1, 2],
@@ -25,7 +24,6 @@ nodes:
   - {id: coal, label: Metallurgical and thermal coal, icon: coal, role: output, at: [6, 1]}
 
 edges:
-  - {from: diesel, to: haulage, kind: energy}
   - {from: haulage, to: extraction, kind: energy}
   - {from: ventilation, to: extraction, kind: energy}
   - {from: extraction, to: methane, kind: emission, sides: [left, bottom]}
