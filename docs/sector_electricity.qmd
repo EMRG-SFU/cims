@@ -1,113 +1,125 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Electricity {#sec-electricity}
 
-Electricity generation converts fuels and renewable resources into the power every other sector draws on, and as the rest of the economy electrifies, it increasingly decides system-wide emissions. The sector splits demand across the load curve, competes generation technologies to meet each part of it, and adds the storage, transmission, and capture services that support them. Its regional differences are the largest in the model, because each province's grid rests on a different resource base.
+The Electricity sector turns fuels, flowing water, wind, sunlight, and nuclear energy into the power every other sector uses. As homes, vehicles, and industry switch to electricity, this sector increasingly decides how much the whole economy emits. CIMS splits the year's demand by how often power is needed, has power plants compete to meet each part, and adds the storage, transmission, and carbon capture that support them. Regional differences are larger here than in any other sector, because each province's grid rests on different resources.
 
 ## Scope
 
-The sector covers utility-scale generation and its storage, transmission, and capture services. Electricity generated at industrial sites belongs to the industrial sectors (see @sec-cogen), with one deliberate exception: all renewable generation is accounted here, whoever operates it. Final electricity demand across the economy drives the sector; imports and exports are handled through the macroeconomic module, with an own-price elasticity for export demand of about −1.07. The equipment that uses the electricity belongs to the demand sectors.
+The sector covers large power plants and the storage, transmission, and carbon capture that support them. Power that industrial sites make for themselves belongs to the industrial sectors (see @sec-cogen), with one exception: all renewable generation is counted here, whoever runs it. Demand for electricity across the economy drives the sector. Imports and exports are handled by the model's economy module, which assumes export demand falls by about 1 % for every 1 % rise in price. The equipment that uses electricity belongs to the sectors that use it.
 
 ## Context
 
-Canada has one of the cleanest electricity systems in the world. In 2024 renewables supplied about 65.5 % of generation (hydropower 55.3 %, with Québec producing about half of national hydro; wind 7.2 %; solar 1.3 %), nuclear 13.7 % (almost entirely Ontario's CANDU reactors), and fossil fuels 20.8 % (natural gas 15.8 %, coal 4.1 %) [@nrcan-electricity-factbook]. More than four-fifths of recent generation investment has gone to non-emitting sources [@nrcan-electricity-factbook].
+Canada has one of the cleanest electricity systems in the world. In 2024, renewables supplied about 65.5 % of power: hydro 55.3 % (Québec makes about half of it), wind 7.2 %, and solar 1.3 %. Nuclear supplied 13.7 %, almost all from Ontario's reactors, and fossil fuels 20.8 % (natural gas 15.8 % and coal 4.1 %) [@nrcan-electricity-factbook]. More than four-fifths of recent investment in new power plants has gone to sources that don't emit [@nrcan-electricity-factbook].
 
-The system is deeply regional. British Columbia, Québec, and Manitoba run on hydro and are almost emissions-free; Ontario combines nuclear, hydro, and a growing renewable share; the Atlantic provinces are mixed; and Alberta and Saskatchewan are the fossil-heavy outliers, historically coal and increasingly natural gas. Federal regulation is phasing out conventional coal and pushing toward a net-zero grid, so the central question is how each province's mix evolves from its very different starting point.
+The system is very regional. British Columbia, Québec, and Manitoba run on hydro and emit almost nothing. Ontario combines nuclear, hydro, and a growing share of wind and solar. The Atlantic provinces have a mix. Alberta and Saskatchewan rely most on fossil fuels: historically coal, and increasingly natural gas. Federal rules are phasing out conventional coal plants and pushing toward a net-zero grid, so the central question is how each province's mix changes from its very different starting point.
 
 ## Process flow
 
-@fig-electricity-process shows how generation at three points on the load curve reaches users through transmission, supported by storage and capture.
+@fig-electricity-process shows how power plants serving three parts of demand reach users through transmission, supported by storage and carbon capture.
 
 ::: {#fig-electricity-process}
 ![](images/flowcharts/electricity_process-flow_light.svg){.light-content .lightbox group="electricity-light"}
 
 ![](images/flowcharts/electricity_process-flow_dark.svg){.dark-content .lightbox group="electricity-dark"}
 
-Process flow of the Electricity sector.
+Process flow of the Electricity sector. The energy resources (fuels, water, wind, sunlight, or nuclear fuel) depend on which power plants the model builds.
 :::
 
 ## Model structure
 
-The technology database does not yet cover electricity generation. The technologies below come from the current CIMS model inputs and are listed by their model names, pending the database.
+The technology database does not yet cover power plants. The technologies below come from the current CIMS model inputs and keep their model names until the database covers them.
 
 ### Base, shoulder, and peak load
 
-Total generation splits across **Base Load**, **Shoulder Load**, and **Peak Load** nodes in fixed ratios derived from historical load-duration curves. A load-duration curve reorders the year's hourly demand from highest to lowest: its height gives the capacity required and its width the utilization, so the three nodes are power needed almost all the time, part of the time, and only at peak. Within each node, technologies compete on annual levelized cost (see @sec-technology-competition).
+Electricity demand rises and falls through the day and the year. Some demand is there almost all the time; some appears only on the hottest or coldest days. CIMS splits total demand into three parts:
 
-The base/shoulder/peak split matters less in a system with large wind and solar shares, so the nodes are populated with three functional classes of technology: variable renewables (wind, solar, and run-of-river hydro), firm low-carbon resources (reservoir hydro, nuclear, geothermal, biomass, and fossil plants with capture), and balancing resources (storage paired with variable renewables).
+- **Base load**, the power needed almost all the time;
+- **Shoulder load**, the power needed for part of the time; and
+- **Peak load**, the power needed only at the highest points of demand.
+
+The split comes from load-duration curves: past hourly demand sorted from highest to lowest. Within each part, power plants compete on their yearly cost of supplying it, including the cost of building them (see @sec-technology-competition).
+
+The three parts matter less in a grid with a lot of wind and solar, whose output depends on the weather rather than on demand. So the technologies fall into three practical groups:
+
+- *Variable renewables* (wind, solar, and run-of-river hydro), which generate when the resource is there;
+- *Firm low-carbon plants* (hydro with reservoirs, nuclear, geothermal, biomass, and fossil plants with carbon capture), which can run whenever they are needed; and
+- *Balancing* (storage paired with wind and solar), which shifts their output to when it is needed.
+
+Base load offers the full set of plants. Shoulder load offers a narrower set: gas, coal, oil, biomass, reservoir hydro, and wind or solar paired with storage. Peak load offers only plants that can start quickly: simple-cycle gas turbines, reservoir hydro, oil, and wind with seasonal storage. Plants that take a long time to start, such as nuclear reactors, cannot serve the peak. Public cost studies such as the U.S. National Renewable Energy Laboratory's Annual Technology Baseline give a common reference for the costs and performance of these plants [@nrel_2025_001; @eia_2024_001].
 
 ::: {.tech-block}
 Technologies (pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Natural gas CC | Combined-cycle gas turbine | Conventional | n/a |
-| Natural gas SC | Simple-cycle gas turbine for peaking | Conventional | n/a |
-| Coal | Coal-fired steam plant | Conventional | n/a |
-| Fuel oil | Oil-fired generation | Conventional | n/a |
-| Hydro reservoir | Dispatchable hydro with storage reservoir | Conventional | n/a |
-| Hydro river | Run-of-river hydro | Conventional | n/a |
-| Nuclear | Large nuclear reactor | Conventional | n/a |
-| Biomass | Biomass-fired steam plant | Conventional | n/a |
-| Waste | Waste-to-energy plant | Conventional | n/a |
-| Wind onshore | Onshore wind farm | Alternative | n/a |
-| Wind offshore | Offshore wind farm | Alternative | n/a |
-| Solar PV | Utility-scale photovoltaics | Alternative | n/a |
-| Solar PV + battery | Photovoltaics paired with short-duration battery storage | Alternative | n/a |
-| Wind + battery | Wind paired with short-duration battery storage | Alternative | n/a |
-| Wind + seasonal | Wind paired with long-duration seasonal storage | Prospective | n/a |
-| Geoexchange | Geothermal generation | Prospective | n/a |
-| Nuclear SMR | Small modular reactor | Prospective | n/a |
-| Natural gas CC CCS | Combined cycle with post-combustion capture | Prospective | n/a |
-| Coal CCS | Coal plant with post-combustion capture | Prospective | n/a |
-| Biomass CCS | Biomass plant with capture, giving net-negative power | Prospective | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Natural gas CC | Combined-cycle gas plant: a gas turbine whose hot exhaust raises steam for a second, steam turbine | Conventional |
+| Natural gas SC | Simple-cycle gas turbine that starts quickly to meet peaks | Conventional |
+| Coal | Coal-fired steam plant | Conventional |
+| Fuel oil | Oil-fired plant | Conventional |
+| Hydro reservoir | Hydro dam with a reservoir that can store water and generate on demand | Conventional |
+| Hydro river | Run-of-river hydro, which generates with the river's flow | Conventional |
+| Nuclear | Large nuclear reactor | Conventional |
+| Biomass | Biomass-fired steam plant | Conventional |
+| Waste | Plant that burns municipal waste to make power | Conventional |
+| Wind onshore | Wind farm on land | Alternative |
+| Wind offshore | Wind farm at sea | Alternative |
+| Solar PV | Large solar farm | Alternative |
+| Solar PV + battery | Solar farm paired with a battery that stores power for a few hours | Alternative |
+| Wind + battery | Wind farm paired with a battery that stores power for a few hours | Alternative |
+| Wind + seasonal | Wind farm paired with long-term storage that holds energy across seasons | Prospective |
+| Geoexchange | Geothermal power plant | Prospective |
+| Nuclear SMR | Small modular nuclear reactor | Prospective |
+| Natural gas CC CCS | Combined-cycle gas plant that captures the CO₂ in its exhaust | Prospective |
+| Coal CCS | Coal plant that captures the CO₂ in its exhaust | Prospective |
+| Biomass CCS | Biomass plant with carbon capture, which removes CO₂ from the atmosphere overall | Prospective |
 :::
-
-**Base Load** hosts the full set. **Shoulder Load** hosts a narrower set (gas, coal, oil, biomass, reservoir hydro, and the wind and solar storage pairs), and **Peak Load** is limited to fast-responding plant: gas simple cycle, reservoir hydro, oil, and wind with seasonal storage. Long-start plant such as nuclear cannot serve peak.
 
 ### Storage
 
-The **Storage** service has a **Battery** node for short-duration balancing and a **Seasonal** node for long-duration storage that lets variable renewables meet firm demand. The paired wind and solar technologies request them.
+The **Storage** service has two parts. **Battery** storage holds power for a few hours to smooth out daily swings. **Seasonal** storage holds energy for weeks or months, so that wind and solar can meet demand through long calm or dark periods. The paired wind and solar plants request them.
 
 ### Transmission
 
-All generation requests the **Transmission** service, the delivery network to users.
+All power plants request the **Transmission** service: the lines and substations that carry power to users.
 
-### Capture
+### Carbon capture
 
-Electricity has its own capture nodes, split by the fuel of the flue gas: coal, natural gas, and biomass. The capture-equipped plants request them; biomass with capture gives net-negative generation. The shared capture technologies are described in @sec-ccus.
+Electricity has its own carbon capture services, split by the fuel the plant burns: coal, natural gas, or biomass. The plants with capture request them. Capturing and storing the CO₂ from burning biomass removes CO₂ from the atmosphere overall, because the plants took that carbon from the air as they grew. The shared capture technologies are described in @sec-ccus.
 
 ::: {.tech-block}
 Technologies (pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Battery | Short-duration battery storage | Alternative | n/a |
-| Seasonal | Long-duration seasonal storage | Prospective | n/a |
-| Transmission | Transmission and distribution network | Conventional | n/a |
-| CCS | Post-combustion capture on coal, gas, or biomass flue gas | Prospective | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Battery | Battery storage for a few hours | Alternative |
+| Seasonal | Long-term storage across seasons | Prospective |
+| Transmission | Transmission and distribution network | Conventional |
+| CCS | Capture of CO₂ from the exhaust of coal, gas, or biomass plants | Prospective |
 :::
 
-The sector also draws on the diesel and methane fuel blends (see @sec-fuel-blends).
+The sector also draws on the diesel and natural gas blends (see @sec-fuel-blends).
 
 ## Decarbonisation
 
-Decarbonising electricity means building clean firm and variable capacity to displace unabated coal and gas, with the storage and transmission a high-renewables grid needs. Because Canada starts so clean nationally, the action concentrates in the fossil-heavy provinces.
+Cutting emissions from electricity means building clean plants, both firm and variable, to replace coal and gas plants that don't capture their CO₂, along with the storage and transmission a grid with lots of wind and solar needs. Because Canada's grid is already clean overall, most of the change happens in the provinces that rely on fossil fuels.
 
-- **Variable renewables plus storage.** Onshore wind and solar are the cheapest new energy in most of Canada; paired with battery or seasonal storage, they can meet firm demand.
-- **Firm low-carbon resources.** Reservoir hydro, nuclear including small modular reactors, geothermal, and biomass replace unabated fossil baseload while keeping the grid reliable in low-wind, low-sun periods.
-- **Carbon capture.** Capture on combined-cycle gas, on the coal fleet (Saskatchewan's Boundary Dam is a pioneer), or on biomass plants removes most combustion CO₂; biomass with capture is net-negative.
+- **Wind and solar with storage.** Wind on land and solar are the cheapest new sources of power in most of Canada. Paired with batteries or seasonal storage, they can meet demand when the wind and sun don't cooperate.
+- **Firm low-carbon plants.** Reservoir hydro, nuclear (including small modular reactors), geothermal, and biomass can replace fossil plants and keep the grid reliable through calm, dark periods.
+- **Carbon capture.** Capture on combined-cycle gas plants, coal plants (Saskatchewan's Boundary Dam was an early example), or biomass plants removes most of the CO₂ from burning their fuel. Biomass with capture removes CO₂ from the atmosphere overall.
 
-Because electricity is an input to every other sector, the carbon price acts here with unusual leverage: it raises the cost of unabated coal and gas relative to renewables, nuclear, and capture, and through the delivered electricity price it changes the economics of electrification everywhere else.
+Electricity feeds every other sector, so a carbon price has unusual reach here. It raises the cost of coal and gas plants without capture compared with renewables, nuclear, and capture. And through the price of electricity, it changes whether switching to electricity pays off everywhere else.
 
 ## Regional coverage and differences
 
-- Québec, British Columbia, and Manitoba are dominated by hydro and already almost emissions-free; their question is mainly how to add capacity for growing electrified demand.
-- Ontario runs on nuclear and hydro with growing renewables, and faces choices about nuclear refurbishment, small modular reactors, and wind, solar, and storage.
-- Alberta and Saskatchewan are the fossil-heavy provinces, where the coal phase-out and the competition among gas, gas with capture, wind, solar, and storage matter most.
-- The Atlantic region is mixed, with significant wind potential.
+- Québec, British Columbia, and Manitoba rely mostly on hydro and already emit almost nothing. Their main question is how to add enough power for growing electric demand.
+- Ontario runs on nuclear and hydro with a growing share of wind and solar, and faces choices about refurbishing reactors, building small modular reactors, and adding wind, solar, and storage.
+- Alberta and Saskatchewan rely most on fossil fuels, so the coal phase-out and the competition among gas, gas with capture, wind, solar, and storage matter most there.
+- The Atlantic region has a mix of sources and good wind resources.
 
 <mark>TODO: Confirm the regional capacity factors, resource limits (especially hydro and wind siting), and existing-stock vintages, since the regional generation mix is highly sensitive to them.</mark>
 

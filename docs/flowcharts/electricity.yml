@@ -1,14 +1,16 @@
 # Electricity process flowchart. See appendix_figure-style.qmd for the format.
 sector: electricity
 title: Electricity
+# Generation competes among fuels and renewable resources, so the chart shows
+# one generic input and fuel-neutral icons on the load blocks.
 
 nodes:
-  - {id: resources, label: Fuels and resources, icon: wind, role: input, at: [0, 1]}
-  - {id: base, label: Base load, icon: nuclear, role: process, at: [1, 0],
+  - {id: resources, label: Energy resources, icon: process, role: input, at: [0, 1]}
+  - {id: base, label: Base load, icon: electricity, role: process, at: [1, 0],
      branch: electricity.product.base-load}
-  - {id: shoulder, label: Shoulder load, icon: hydro, role: process, at: [1, 1],
+  - {id: shoulder, label: Shoulder load, icon: electricity, role: process, at: [1, 1],
      branch: electricity.product.shoulder-load}
-  - {id: peak, label: Peak load, icon: natural-gas, role: process, at: [1, 2],
+  - {id: peak, label: Peak load, icon: electricity, role: process, at: [1, 2],
      branch: electricity.product.peak-load}
   - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [2, 0],
      branches: [electricity.service.ccs.diffuse_coal, electricity.service.ccs.diffuse_natural-gas,
