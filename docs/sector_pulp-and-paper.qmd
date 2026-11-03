@@ -1,32 +1,36 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_pulp_and_paper.html
 ---
 
 # Pulp and Paper {#sec-pulp-and-paper}
 
-Pulp and paper stands out among the industrial sectors in two ways. Mills already run largely on biomass, the spent pulping liquor and wood residues they produce themselves, so their fossil emissions sit in a few steps rather than across the whole process. And many traditional mill products have been declining in Canada for years, as falling newsprint demand works through the fleet.
+Pulp and paper stands out among the industrial sectors in two ways. First, mills already run largely on biomass: the spent cooking liquor and wood waste they produce themselves. Their fossil-fuel emissions therefore come from a few steps rather than the whole process. Second, many traditional mill products have been declining in Canada for years, as falling demand for newsprint works its way through the industry.
 
 ## Scope
 
-The sub-model covers the manufacture of pulp, paper, and paperboard: a pulp-making chain feeding five paper grades. A forecast of pulp and paper output, in tonnes, drives every upstream step and service.
+The sub-model covers the manufacture of pulp, paper, and paperboard: a pulp-making chain that feeds five paper grades. A forecast of pulp and paper output drives every step and service in the chain.
 
-Several adjacent activities sit elsewhere in CIMS to avoid double-counting:
+Several related activities sit in other parts of CIMS, so their energy and emissions aren't counted twice:
 
-- Forest harvesting and the supply of roundwood and residues are covered in @sec-forestry; this sub-model takes logs, chips, and recovered paper as inputs.
-- Converted paper products (boxes, bags, asphalt roofing, and other converting industries) belong to @sec-light-industrial.
-- Fuel and electricity enter through the energy-supply sectors and the shared fuel blends. Mills can also generate their own steam and electricity.
+- Forest harvesting and the supply of logs and wood residues are covered in @sec-forestry. This sub-model starts from logs, chips, and recovered paper.
+- Products made from paper and board, such as boxes, bags, and roofing, belong to @sec-light-industrial.
+- Purchased fuel and electricity come from the energy-supply sectors and the shared fuel blends. Mills can also make their own steam and electricity.
 
 ## Context
 
-Canadian pulp and paper is large, export-oriented, and regionally concentrated. The industry is largest in Québec, Ontario, and British Columbia, with significant capacity in the Atlantic region and a smaller presence in Alberta. Its economic output peaked around 2004 and fell by roughly 45 % to 2018 as newsprint demand collapsed [@cer-pulp].
+Canada's pulp and paper industry is large, mostly sells abroad, and is concentrated in a few regions. It is largest in Québec, Ontario, and British Columbia, with significant capacity in the Atlantic region and a smaller presence in Alberta. The industry's economic output peaked around 2004 and fell by roughly 45 % to 2018 as newsprint demand collapsed [@cer-pulp].
 
-The sector relies on **self-produced biomass energy**. Kraft mills concentrate and burn black liquor, the spent cooking chemicals and dissolved lignin left after pulping, in a recovery boiler that regenerates the chemicals and raises high-pressure steam; mills also burn hog fuel (bark and wood residues). Together these supply most mill energy, and many mills run biomass cogeneration, selling surplus electricity to the grid. Self-generation has supplied on the order of a quarter of the sector's electricity in recent years [@cer-pulp; @nrcan-pp-netzero]. Because this energy is biogenic, the sector's fossil emissions are comparatively small and concentrated, most prominently in the lime kiln, which has traditionally burned natural gas or oil, and in any remaining fossil-fired steam and drying [@ppc-limekiln].
+The industry relies on biomass energy it produces itself. Kraft mills, the most common type of chemical pulp mill, burn black liquor: the spent cooking chemicals, together with the parts of the wood they dissolved. Burning it in a recovery boiler both regenerates the chemicals and raises high-pressure steam. Mills also burn hog fuel, the bark and other wood waste from preparing logs. Together these supply most of a mill's energy, and many mills generate electricity from the steam and sell any surplus to the grid. Mills have made about a quarter of the sector's electricity themselves in recent years [@cer-pulp; @nrcan-pp-netzero].
+
+Because this energy comes from biomass, the sector's fossil emissions are small and come from a few places. The largest is the lime kiln, which has traditionally burned natural gas or oil. The rest comes from fossil-fired steam and drying where biomass doesn't cover the load [@ppc-limekiln; @kuparinen_2017_001].
 
 ## Process flow
 
-@fig-pulp-and-paper-process shows the pulp-making chain, the kraft chemical recovery loop, and papermaking.
+@fig-pulp-and-paper-process shows how wood becomes pulp, the chemical recovery loop of a kraft mill, and how pulp becomes paper.
 
 ::: {#fig-pulp-and-paper-process}
 ![](images/flowcharts/pulp-and-paper_process-flow_light.svg){.light-content .lightbox group="pulp-and-paper-light"}
@@ -38,22 +42,22 @@ Process flow of the pulp and paper sector. Chemical pulping sends its black liqu
 
 ## Model structure
 
-The Product sub-tree holds the **pulp** chain and the **paper** chain. The Service sub-tree holds two sector-specific services, **chemical recovery** and **effluent treatment**, alongside the shared services. The tables below follow the flowchart.
+The sector's Product sub-tree holds the **pulp** chain and the **paper** chain. Its Service sub-tree holds two services that belong to this sector alone, **chemical recovery** and **effluent treatment**, alongside the shared services. The sections below follow the flowchart.
 
 ### Wood preparation
 
-Logs are debarked and chipped before pulping. The step is measured in tonnes of wood.
+Logs arrive at the mill with their bark on. Drums tumble them to strip the bark, which goes to the mill's boilers as fuel, and chippers cut the logs into small, even chips that cook or grind uniformly. The step uses electricity to drive the drums, chippers, and conveyors.
 
 {{< include _technology-blocks/pulp-and-paper/product_pulp_wood-preparation.md >}}
 
 ### Pulping
 
-Four pulping routes serve different products rather than competing head to head.
+Pulping separates the wood fibres from lignin, the natural glue that holds them together. Four pulping routes make different kinds of pulp for different products, so they don't compete head to head:
 
-- **Chemical pulping** cooks chips in white liquor (kraft) or sulphite liquor, dissolving the lignin. It gives strong, bleachable pulp and produces the black liquor that fuels the mill.
-- **Semi-chemical pulping** uses milder cooking for corrugating medium and specialty pulps.
-- **Mechanical pulping** grinds logs or refines chips. It uses wood fibre efficiently but is very electricity-intensive; thermomechanical refiners recover their heat as steam.
-- **Recycled pulping** repulps and de-inks recovered paper. It is the lowest-energy route, limited by feedstock supply.
+- **Chemical pulping** cooks chips under pressure in a chemical solution, usually the kraft process's mix of sodium hydroxide and sodium sulphide. The solution dissolves the lignin and leaves long, strong fibres that can be bleached white. Cooking uses steam, and it produces the black liquor that fuels the mill.
+- **Semi-chemical pulping** cooks more gently and finishes the job mechanically. It makes stiff pulp for the fluted middle layer of corrugated board.
+- **Mechanical pulping** grinds logs against a stone or tears chips apart between the discs of a refiner. It turns almost all of the wood into pulp, but uses a great deal of electricity. Thermomechanical refiners recover much of that energy as steam for the mill [@jacobs_2006_001].
+- **Recycled pulping** breaks recovered paper back into fibres in a large mixer, then screens out contaminants and removes ink. It uses the least energy of the four routes, but supply of good recovered paper limits it.
 
 **Chemical pulping**
 
@@ -73,11 +77,11 @@ Four pulping routes serve different products rather than competing head to head.
 
 ### Chemical recovery
 
-The chemical recovery service is the energy and chemical heart of a kraft mill: a closed loop that recovers pulping chemicals while generating most of the mill's energy. It is measured in tonnes of black liquor solids.
+Chemical recovery is the energy and chemical centre of a kraft mill. It is a closed loop that recovers the cooking chemicals and, along the way, generates most of the mill's energy. It has three steps:
 
-- The **evaporators** concentrate weak black liquor.
-- The **recovery boiler** burns the concentrated liquor, recovering the cooking chemicals as smelt and raising high-pressure steam. Black liquor gasification is the alternative to the boiler, lifting energy recovery from roughly 65 % to about 75–80 % and producing a syngas for power or fuels [@iea-blg].
-- The **lime kiln** calcines lime mud back to lime for causticizing the recovered chemicals. It is the mill's main fossil-fuel load, and is measured in tonnes of lime.
+- The **evaporators** boil water off the weak black liquor that comes from the pulp washers until it is thick enough to burn. Several evaporators run in series, each heated by the vapour from the one before, so that one charge of steam does several times its work. Mechanical vapour recompression goes further, compressing the vapour with an electric compressor so it can be reused in place of fresh steam.
+- The **recovery boiler** burns the concentrated liquor. The organic matter fuels the fire and raises high-pressure steam, and the cooking chemicals collect at the bottom of the furnace as a molten smelt, ready to be made back into cooking liquor [@jacobs_2006_001]. Black liquor gasification is an alternative to the boiler. It turns the liquor into a fuel gas, lifting energy recovery from roughly 65 % to about 75–80 %, and the gas can make power or fuels [@iea-blg; @ekbom_2003_001].
+- The **lime kiln** is a long, rotating, fuel-fired kiln that heats lime mud, a by-product of remaking the cooking liquor, to about 1,000 °C to turn it back into quicklime for reuse. It needs high-temperature heat, which is why it is the mill's main fossil-fuel load. Wood powder, bio-oil, or gasified biomass can replace the fossil fuel it burns, and an electrified kiln is an emerging option [@kuparinen_2017_001; @svensson_2021_001].
 
 **Evaporators**
 
@@ -93,7 +97,9 @@ The chemical recovery service is the energy and chemical heart of a kraft mill: 
 
 ### Washing, bleaching, and pulp drying
 
-Pulp is washed to recover cooking chemicals, then bleached. Market pulp is dried into sheets for sale; pulp for an integrated paper mill goes straight to the paper machine. Pulp drying takes about a quarter of a kraft mill's heat. Washing has no competing technologies in the database.
+After cooking, the pulp is washed to separate it from the black liquor, so that the chemicals go back to recovery. Pulp for white papers is then bleached in stages with oxygen, chlorine dioxide, and peroxide, which use steam and electricity and the energy embodied in the chemicals. Washing has no competing technologies in the database.
+
+Pulp sold to other mills, called market pulp, is dried into sheets and baled. Pulp dryers evaporate water with steam-heated cylinders or hot air, and take about a quarter of a kraft mill's heat. Pulp made at an integrated mill goes straight to the paper machine wet, without drying.
 
 **Bleaching**
 
@@ -105,7 +111,12 @@ Pulp is washed to recover cooking chemicals, then bleached. Market pulp is dried
 
 ### Papermaking
 
-The paper chain covers five grades: newsprint, uncoated and coated wood-free papers, linerboard, and tissue. Each has a **forming and pressing** step, where the paper machine forms the sheet and removes water mechanically, and a **drying** step, where steam-heated cylinders (or, for tissue, Yankee or through-air dryers) evaporate the rest. Drying uses most of a paper machine's energy, so water removed in the press section saves heat in the dryers. Both steps are measured in tonnes of paper.
+The paper chain covers five grades: newsprint, uncoated papers, coated papers, linerboard (the flat faces of corrugated board), and tissue. A paper machine makes each grade in two steps:
+
+- **Forming and pressing.** A very dilute mix of fibre and water flows onto a moving screen, where the water drains away and the fibres mat into a sheet. Felted rollers then squeeze out more water. This step uses electricity for pumps, vacuum, and drives.
+- **Drying.** The sheet passes over dozens of steam-heated cylinders, or, for tissue, a single large Yankee cylinder or a hot-air through-dryer, which evaporate the remaining water. Drying uses most of a paper machine's energy, so every bit of water the press section removes saves heat in the dryers [@doe_2015_003; @kong_2016_001].
+
+In the HTML version, each grade's technologies sit on their own tab. The first table on each tab lists the forming and pressing technologies, and the second the drying technologies.
 
 ::: {.panel-tabset}
 #### Newsprint
@@ -129,11 +140,9 @@ The paper chain covers five grades: newsprint, uncoated and coated wood-free pap
 {{< include _technology-blocks/pulp-and-paper/product_paper_tissue_drying.md >}}
 :::
 
-In each tab, the first table lists the forming and pressing technologies and the second the drying technologies.
-
 ### Effluent treatment
 
-Mills treat their wastewater in two stages: **primary** clarification removes solids, and **secondary** biological treatment removes dissolved organics. Aeration blowers make secondary treatment a significant electricity load.
+Mills treat their wastewater in two stages before releasing it. **Primary** treatment lets solids such as fibre and bark settle out in large clarifiers. **Secondary** treatment uses bacteria to break down the dissolved organic matter, and the blowers that pump air into the treatment basins for those bacteria make it a significant electricity load.
 
 **Primary treatment**
 
@@ -152,32 +161,32 @@ The sector also draws on the shared services documented in the General Services 
 | Steam | The sector's largest energy service, including hog-fuel boilers and biomass cogeneration | @sec-industrial-heat |
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of mill buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends | @sec-fuel-blends |
+| Fuel blends | The diesel and gas blends the sector's equipment burns | @sec-fuel-blends |
 
 : Shared services in the pulp and paper sector {#tbl-pulp-and-paper-shared}
 
-The Steam node also offers one option specific to the sector:
+The Steam node also offers one option specific to this sector:
 
 {{< include _technology-blocks/pulp-and-paper/service_steam.md >}}
 
 ## Decarbonisation
 
-Because mills already run largely on bioenergy, decarbonisation means squeezing out the remaining fossil fuel, using less energy per tonne, and capturing biogenic CO₂.
+Because mills already run largely on bioenergy, decarbonising them means removing the remaining fossil fuel, using less energy per tonne, and capturing the CO₂ from the biomass they burn.
 
-- **Efficiency.** Low-energy refining and chemi-thermomechanical pulping cut refiner electricity; batch kraft digesters and oxygen delignification cut steam; dry or foam forming and better press sections remove water before the dryers; and mechanical vapour recompression drives the evaporators on electricity instead of live steam.
-- **The lime kiln.** The kiln is the most stubborn fossil load, because calcination needs high-temperature heat [@ppc-limekiln]. Efficiency measures cut its fuel, and electrified kilns would remove the load entirely.
-- **Electrified drying.** Electric and heat-pump dryers can replace steam and gas-fired drying.
-- **Recovery and cogeneration.** High-solids recovery boilers and black liquor gasification raise the steam and power recovered from each tonne of liquor.
-- **Negative emissions.** The recovery boiler and lime kiln emit large streams of biogenic CO₂; capturing them yields net-negative emissions. Capture-equipped versions of both are in the technology lists above.
+- **Efficiency.** Low-energy refining and chemi-thermomechanical pulping cut refiner electricity. Batch kraft digesters and oxygen delignification cut steam use. Dry or foam forming and better press sections remove more water before the dryers. Mechanical vapour recompression runs the evaporators on electricity instead of steam.
+- **The lime kiln.** The kiln is the hardest fossil load to remove, because turning lime mud back into lime needs high-temperature heat [@ppc-limekiln]. Efficiency measures cut its fuel, biofuels can replace it, and electrified kilns would remove it altogether [@kuparinen_2017_001].
+- **Electric drying.** Electric and heat-pump dryers can replace steam and gas-fired drying.
+- **Recovery and cogeneration.** Recovery boilers that burn more concentrated liquor at higher pressure, and black liquor gasification, recover more steam and power from each tonne of liquor.
+- **Negative emissions.** The recovery boiler and lime kiln release large streams of CO₂ from biomass. Capturing and storing it would take CO₂ out of the atmosphere overall [@svensson_2021_001]. Versions of both fitted with capture are in the technology lists above.
 
 ## Regional coverage and differences
 
-Five regions are represented: Alberta, the Atlantic region, British Columbia, Ontario, and Québec.
+Five regions carry the sector: Alberta, the Atlantic region, British Columbia, Ontario, and Québec.
 
 - Québec and Ontario are the largest, and both decline substantially over the projection as newsprint demand falls.
-- The Atlantic region carries significant capacity with a particularly steep modelled decline.
-- British Columbia is a major kraft and mechanical pulp region with biomass cogeneration, declining more gently.
-- Alberta is the smallest and the only region whose modelled output grows.
+- The Atlantic region carries significant capacity, with a particularly steep modelled decline.
+- British Columbia is a major region for kraft and mechanical pulp, with biomass cogeneration, and declines more gently.
+- Alberta is the smallest, and the only region whose modelled output grows.
 
 <mark>TODO: Saskatchewan and the territories are absent. Confirm whether any other region hosts pulp and paper capacity that should be included.</mark>
 
