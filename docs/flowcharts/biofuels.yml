@@ -7,9 +7,8 @@ nodes:
   - {id: farming, label: Feedstock farming, icon: tractor, role: service, at: [0, 1],
      branch: biofuels.service.agricultural-input}
   - {id: oils, label: Vegetable oils and fats, icon: liquid-fuel, role: input, at: [0, 2.5]}
-  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: input, at: [0, 3.5]}
-  - {id: waste, label: Organic waste and landfill gas, icon: landfill, role: input, at: [0, 4.5]}
-  - {id: wood, label: Wood residues, icon: log, role: input, at: [0, 5.5]}
+  - {id: waste, label: Organic waste, icon: landfill, role: input, at: [0, 4]}
+  - {id: wood, label: Wood and crop residues, icon: log, role: input, at: [0, 5]}
 
   # conversion
   - {id: capture, label: CO₂ capture, icon: ccs, role: emission, at: [1, 0],
@@ -20,9 +19,9 @@ nodes:
      branch: biofuels.product.biodiesel}
   - {id: renewable-diesel, label: Renewable diesel and SAF, icon: refinery, role: process, at: [1, 3],
      branch: biofuels.product.renewable-diesel-and-saf}
-  - {id: rng, label: Renewable natural gas, icon: methane, role: process, at: [1, 4.5],
+  - {id: rng, label: Renewable natural gas, icon: methane, role: process, at: [1, 4],
      branch: biofuels.product.renewable-natural-gas}
-  - {id: pellets, label: Solid biofuel, icon: biomass, role: process, at: [1, 5.5],
+  - {id: pellets, label: Solid biofuel, icon: biomass, role: process, at: [1, 5],
      branch: biofuels.product.solid-biofuel}
   - {id: steam, label: Process steam, icon: boiler, role: service, at: [0, 0],
      branch: biofuels.service.steam}
@@ -30,15 +29,14 @@ nodes:
   # products
   - {id: gasoline-blend, label: Gasoline blend, icon: car, role: output, at: [2, 1]}
   - {id: diesel-blend, label: Diesel and jet fuel blends, icon: truck, role: output, at: [2, 2.5]}
-  - {id: gas-blend, label: Natural gas blend, icon: pipeline, role: output, at: [2, 4.5]}
-  - {id: solid-fuel, label: Pellets for heat and power, icon: boiler, role: output, at: [2, 5.5]}
+  - {id: gas-blend, label: Natural gas blend, icon: pipeline, role: output, at: [2, 4]}
+  - {id: solid-fuel, label: Pellets for heat and power, icon: boiler, role: output, at: [2, 5]}
 
 edges:
   - [farming, ethanol]
   - [farming, biodiesel]
   - [oils, biodiesel]
   - [oils, renewable-diesel]
-  - {from: hydrogen, to: renewable-diesel, kind: energy, turn: late}
   - [waste, rng]
   - [wood, pellets]
   - {from: ethanol, to: capture, kind: emission}

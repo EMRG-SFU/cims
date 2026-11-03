@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 486 940" width="486" height="940" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Biofuels process flowchart">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 486 876" width="486" height="876" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Biofuels process flowchart">
 <defs>
 <symbol id="icon-biomass" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 39 C9 20 22 9 40 8 C40 27 29 39 9 39 Z" fill="currentColor" fill-opacity="0.18"/><path d="M9 39 L30 18"/></g></symbol>
 <symbol id="icon-boiler" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="8" width="28" height="26" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M16 42 c-3-4 3-5 0-8 M24 42 c-3-4 3-5 0-8 M32 42 c-3-4 3-5 0-8"/><path d="M38 14 H44 V4"/></g></symbol>
 <symbol id="icon-car" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 30 L10 20 C11 17 13 16 16 16 H32 C35 16 37 17 38 20 L42 30 V36 H6 Z" fill="currentColor" fill-opacity="0.18"/><path d="M6 30 H42"/><circle cx="14" cy="36" r="4"/><circle cx="34" cy="36" r="4"/></g></symbol>
 <symbol id="icon-ccs" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 30 A8 8 0 0 1 10 14 A10 10 0 0 1 29 11 A8 8 0 0 1 31 30 Z"/><path d="M20 22 V40 M14 34 L20 40 L26 34"/><text x="20" y="25" text-anchor="middle" font-size="9" font-weight="700" fill="currentColor" stroke="none">CO₂</text></g></symbol>
 <symbol id="icon-chemical" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 H29 M21 5 V18 L9 39 A3 3 0 0 0 12 43 H36 A3 3 0 0 0 39 39 L27 18 V5"/><path d="M13 32 H35 L39 39 A3 3 0 0 1 36 43 H12 A3 3 0 0 1 9 39 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
-<symbol id="icon-hydrogen" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="24" r="9"/><circle cx="33" cy="24" r="9"/><text x="15" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text><text x="33" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text></g></symbol>
 <symbol id="icon-landfill" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 40 C10 26 18 20 26 20 C34 20 40 28 44 40 Z" fill="currentColor" fill-opacity="0.18"/><path d="M26 20 V8 H34 M34 8 c3-2 3 2 6 0"/></g></symbol>
 <symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
 <symbol id="icon-log" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 18 H36 A5 9 0 0 1 36 36 H8"/><ellipse cx="8" cy="27" rx="5" ry="9"/><circle cx="8" cy="27" r="3"/></g></symbol>
@@ -22,17 +21,16 @@
 <path d="M 152.0 204.0 L 162.0 204.0 Q 168.0 204.0 168.0 210.0 L 168.0 210.0 Q 168.0 216.0 174.0 216.0 L 184.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 216.0 L 161.0 216.0 Q 168.0 216.0 168.0 223.0 L 168.0 325.0 Q 168.0 332.0 175.0 332.0 L 184.0 332.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 396.0 L 161.0 396.0 Q 168.0 396.0 168.0 389.0 L 168.0 351.0 Q 168.0 344.0 175.0 344.0 L 184.0 344.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 408.0 L 161.0 408.0 Q 168.0 408.0 168.0 415.0 L 168.0 453.0 Q 168.0 460.0 175.0 460.0 L 184.0 460.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 530.0 L 164.0 530.0 Q 171.0 530.0 171.0 523.0 L 171.0 478.5 Q 171.0 472.0 177.5 472.0 L 184.0 472.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 152.0 658.0 L 184.0 658.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 786.0 L 184.0 786.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 408.0 L 161.0 408.0 Q 168.0 408.0 168.0 415.0 L 168.0 459.0 Q 168.0 466.0 175.0 466.0 L 184.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 594.0 L 184.0 594.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 722.0 L 184.0 722.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 243.0 165.0 L 243.0 127.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
 <path d="M 152.0 82.0 L 158.5 82.0 Q 165.0 82.0 165.0 88.5 L 165.0 197.0 Q 165.0 204.0 172.0 204.0 L 184.0 204.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 302.0 210.0 L 334.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 338.0 L 311.0 338.0 Q 318.0 338.0 318.0 345.0 L 318.0 389.0 Q 318.0 396.0 325.0 396.0 L 334.0 396.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 466.0 L 311.0 466.0 Q 318.0 466.0 318.0 459.0 L 318.0 415.0 Q 318.0 408.0 325.0 408.0 L 334.0 408.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 302.0 658.0 L 334.0 658.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 302.0 786.0 L 334.0 786.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 594.0 L 334.0 594.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 722.0 L 334.0 722.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <g><title>Feedstock farming — biofuels.service.agricultural-input</title>
 <rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-tractor" x="74.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
@@ -45,22 +43,16 @@
 <text x="93.0" y="420.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Vegetable oils</text>
 <text x="93.0" y="436.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and fats</text>
 </g>
-<g><title>Hydrogen</title>
-<rect x="34.0" y="485.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
-<use href="#icon-hydrogen" x="74.0" y="493.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="556.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+<g><title>Organic waste</title>
+<rect x="34.0" y="549.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-landfill" x="74.0" y="557.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="620.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Organic waste</text>
 </g>
-<g><title>Organic waste and landfill gas</title>
-<rect x="34.0" y="613.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
-<use href="#icon-landfill" x="74.0" y="621.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="668.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Organic waste</text>
-<text x="93.0" y="684.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and landfill</text>
-<text x="93.0" y="699.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">gas</text>
-</g>
-<g><title>Wood residues</title>
-<rect x="34.0" y="741.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
-<use href="#icon-log" x="74.0" y="749.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="812.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Wood residues</text>
+<g><title>Wood and crop residues</title>
+<rect x="34.0" y="677.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
+<use href="#icon-log" x="74.0" y="685.0" width="38" height="38" style="color:#7d5b30"/>
+<text x="93.0" y="740.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Wood and crop</text>
+<text x="93.0" y="756.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">residues</text>
 </g>
 <g><title>CO₂ capture — biofuels.service.ccs.concentrated, biofuels.service.ccs.diffuse</title>
 <rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#f1f2f4" stroke="#8a96a3" stroke-width="1.4" stroke-dasharray="4 3"/>
@@ -84,15 +76,15 @@
 <text x="243.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">diesel and SAF</text>
 </g>
 <g><title>Renewable natural gas — biofuels.product.renewable-natural-gas</title>
-<rect x="184.0" y="613.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-methane" x="224.0" y="621.0" width="38" height="38" style="color:#2b5788"/>
-<text x="243.0" y="676.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Renewable</text>
-<text x="243.0" y="692.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">natural gas</text>
+<rect x="184.0" y="549.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-methane" x="224.0" y="557.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="612.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Renewable</text>
+<text x="243.0" y="628.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">natural gas</text>
 </g>
 <g><title>Solid biofuel — biofuels.product.solid-biofuel</title>
-<rect x="184.0" y="741.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-biomass" x="224.0" y="749.0" width="38" height="38" style="color:#2b5788"/>
-<text x="243.0" y="812.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Solid biofuel</text>
+<rect x="184.0" y="677.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-biomass" x="224.0" y="685.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="748.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Solid biofuel</text>
 </g>
 <g><title>Process steam — biofuels.service.steam</title>
 <rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
@@ -111,31 +103,31 @@
 <text x="393.0" y="436.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">fuel blends</text>
 </g>
 <g><title>Natural gas blend</title>
-<rect x="334.0" y="613.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
-<use href="#icon-pipeline" x="374.0" y="621.0" width="38" height="38" style="color:#ffffff"/>
-<text x="393.0" y="676.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Natural gas</text>
-<text x="393.0" y="692.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">blend</text>
+<rect x="334.0" y="549.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-pipeline" x="374.0" y="557.0" width="38" height="38" style="color:#ffffff"/>
+<text x="393.0" y="612.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Natural gas</text>
+<text x="393.0" y="628.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">blend</text>
 </g>
 <g><title>Pellets for heat and power</title>
-<rect x="334.0" y="741.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
-<use href="#icon-boiler" x="374.0" y="749.0" width="38" height="38" style="color:#ffffff"/>
-<text x="393.0" y="804.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Pellets for</text>
-<text x="393.0" y="820.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">heat and power</text>
+<rect x="334.0" y="677.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-boiler" x="374.0" y="685.0" width="38" height="38" style="color:#ffffff"/>
+<text x="393.0" y="740.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Pellets for</text>
+<text x="393.0" y="756.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">heat and power</text>
 </g>
-<rect x="22.0" y="866.0" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
-<text x="44.0" y="876.0" font-size="11.5" fill="#5a6472">Purchased input</text>
-<rect x="157.4" y="866.0" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
-<text x="179.4" y="876.0" font-size="11.5" fill="#5a6472">Process step</text>
-<rect x="274.6" y="866.0" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
-<text x="296.6" y="876.0" font-size="11.5" fill="#5a6472">Site service</text>
-<rect x="22.0" y="889.0" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
-<text x="44.0" y="899.0" font-size="11.5" fill="#5a6472">Product</text>
-<rect x="108.7" y="889.0" width="16" height="12" rx="3" fill="#f1f2f4" stroke="#8a96a3" stroke-dasharray="4 3"/>
-<text x="130.7" y="899.0" font-size="11.5" fill="#5a6472">Emission or capture</text>
-<path d="M 268.5 895.0 H 296.5" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<text x="304.5" y="899.0" font-size="11.5" fill="#5a6472">Material flow</text>
-<path d="M 22.0 918.0 H 50.0" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<text x="58.0" y="922.0" font-size="11.5" fill="#5a6472">Energy or service</text>
-<path d="M 183.6 918.0 H 211.6" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
-<text x="219.6" y="922.0" font-size="11.5" fill="#5a6472">CO₂ or other emissions</text>
+<rect x="22.0" y="802" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
+<text x="44.0" y="812" font-size="11.5" fill="#5a6472">Purchased input</text>
+<rect x="157.4" y="802" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="179.4" y="812" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="274.6" y="802" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="296.6" y="812" font-size="11.5" fill="#5a6472">Site service</text>
+<rect x="22.0" y="825.0" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
+<text x="44.0" y="835.0" font-size="11.5" fill="#5a6472">Product</text>
+<rect x="108.7" y="825.0" width="16" height="12" rx="3" fill="#f1f2f4" stroke="#8a96a3" stroke-dasharray="4 3"/>
+<text x="130.7" y="835.0" font-size="11.5" fill="#5a6472">Emission or capture</text>
+<path d="M 268.5 831.0 H 296.5" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="304.5" y="835.0" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 22.0 854.0 H 50.0" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="58.0" y="858.0" font-size="11.5" fill="#5a6472">Energy or service</text>
+<path d="M 183.6 854.0 H 211.6" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
+<text x="219.6" y="858.0" font-size="11.5" fill="#5a6472">CO₂ or other emissions</text>
 </svg>
