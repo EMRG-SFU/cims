@@ -590,3 +590,24 @@ def currency_table_coverage(validator):
 
     concern_desc = "currency table coverage gaps — year or currency missing from deflator/exchange tables"
     return problems, concern_desc
+
+
+EXCEL_ERROR_CODES = frozenset({
+    "#DIV/0!", "#N/A", "#VALUE!", "#REF!", "#NAME?", "#NUM!", "#NULL!", "#SPILL!", "#CALC!",
+})
+
+
+def excel_error_values(validator):
+    """
+    Identify rows whose Value is an Excel formula error (e.g. #DIV/0!, #N/A).
+
+    These appear when a sheet with a failed formula is saved as CSV. The reader keeps them
+    as text, so a numeric parameter would silently hold a string instead of a number.
+    """
+    df = validator.model_df
+    values = df[COL.value].astype("string").str.strip().str.upper()
+    flagged = df[values.isin(EXCEL_ERROR_CODES).fillna(False)]
+    errors = list(zip(flagged.index, flagged[COL.branch], flagged[COL.parameter], flagged[COL.value]))
+
+    concern_desc = "rows have an Excel formula error as their Value"
+    return errors, concern_desc
