@@ -1,7 +1,11 @@
 ---
 # Declares the shared master bib file so @* below is scoped to THIS
 # page (the combined global References list), not the whole book.
-bibliography: references.bib
+# tech-data_references.bib holds the technology-database sources the
+# chapters cite; _technology-blocks/build_tech_data_bib.py writes it.
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 nocite: |
   @*
 ---

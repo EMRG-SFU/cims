@@ -40,3 +40,15 @@
 \setlength{\textfloatsep}{1.5\baselineskip plus 0.3\baselineskip minus 0.4\baselineskip}
 \setlength{\floatsep}{1.25\baselineskip plus 0.3\baselineskip minus 0.3\baselineskip}
 \setlength{\LTpost}{1.25\baselineskip}
+
+% --- Unicode subscripts ------------------------------------------------
+% The body font (TeX Gyre Pagella) has no subscript digits, so CO₂, CH₄,
+% N₂O, and H₂ in the text would print as missing glyphs. Typeset them as
+% ordinary subscripts instead.
+\usepackage{newunicodechar}
+\newunicodechar{₀}{\textsubscript{0}}
+\newunicodechar{₁}{\textsubscript{1}}
+\newunicodechar{₂}{\textsubscript{2}}
+\newunicodechar{₃}{\textsubscript{3}}
+\newunicodechar{₄}{\textsubscript{4}}
+\newunicodechar{₆}{\textsubscript{6}}

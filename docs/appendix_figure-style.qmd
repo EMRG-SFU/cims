@@ -119,10 +119,14 @@ Each process step in a sector chapter lists the technologies that compete to pro
 ::: {.tech-block}
 Technologies
 
-| Technology | What it does | Type | TRL |
-|:-----------|:-------------|:-----|:----|
-| Blast furnace | Reduces iron ore to hot metal with coke | Conventional | 9 |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Blast furnace | Reduces iron ore to hot metal with coke | Conventional |
 :::
 ```
 
-The block style lives in `style.css` under "Technology blocks".
+Most blocks are generated from the technology database by `_technology-blocks/build_technology_blocks.py`; write one by hand only for a sector the database doesn't cover yet. The dash counts in the separator row set the column widths. The block style lives in `style.css` under "Technology blocks", and `tech-block.lua` indents the blocks in PDF output.
+
+## Flowchart content
+
+A flowchart shows the structure of a sector, not today's fuel mix. Show the material feedstocks that define the sector (ore, scrap, crude oil, logs) but not the specific fuels and electricity it buys, since new technologies can change those. Where an input's source may change, name it generally: "Carbon reductant" rather than "Metallurgical coal", or "Hydrogen source" rather than "Natural gas". Add a generic "Fuels and electricity" card only where the chart is unclear without it.

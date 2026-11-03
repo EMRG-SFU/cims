@@ -4,8 +4,11 @@
 # into the FIRST #refs div in book order. index.qmd is first, so the
 # hidden sink here absorbs that dump, leaving each real chapter to show
 # only its own cited references. The visible combined list lives on
-# references.qmd.
-bibliography: references.bib
+# references.qmd. The PDF build takes its bibliography files from this
+# page, so list every bib file the chapters use.
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 nocite: |
   @*
 ---
