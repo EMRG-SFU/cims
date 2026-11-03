@@ -1,79 +1,92 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_iron_and_steel.html
 ---
 
 # Iron and Steel {#sec-iron-and-steel}
 
-Iron and steel is one of the most energy- and emissions-intensive parts of Canadian industry, and almost all of its emissions come from a single step: reducing iron ore to metallic iron. That step is where the sector's main decarbonisation choices sit, between coke-based blast furnaces, gas- or hydrogen-based direct reduction, smelting reduction, and scrap-based electric steelmaking.
+Iron and steel is one of the most energy- and emissions-intensive industries in Canada. Almost all of its emissions come from one step: turning iron ore into iron. Iron ore is iron combined with oxygen, and removing that oxygen takes a reducing agent. Today that is mostly carbon, from coke, which leaves as CO₂. The sector's main choices for cutting emissions therefore centre on how it makes iron: in coke-fired blast furnaces, with natural gas or hydrogen, with electricity, or by melting scrap instead.
 
 ## Scope
 
-The sub-model covers the integrated chain of primary and secondary steelmaking, from preparing iron-bearing feed to finished rolled and coated steel. It takes in purchased ore or pellets, metallurgical coal, scrap, and fuels; makes coke, sinter or pellets, oxygen, and iron on site; turns iron and scrap into liquid steel; and casts, rolls, and finishes it. A forecast of steel output, in tonnes, drives every upstream step and service.
+The sub-model covers the whole chain from iron ore and scrap to finished, rolled, and coated steel. It takes in iron ore or pellets, scrap, and the carbon or gas used to reduce the ore. On site, it makes coke, sinter or pellets, oxygen, and iron; turns iron and scrap into liquid steel; and casts, rolls, and finishes it. A forecast of steel output drives every step and service beneath it.
 
-Several adjacent activities sit elsewhere in CIMS to avoid double-counting:
+Related activities sit elsewhere in CIMS, so their energy is counted once:
 
-- Iron-ore mining, concentration, and pelletizing at the mine are covered in @sec-mining. This sub-model takes ore or pellets as an input.
-- Smelting and refining of non-ferrous metals is covered in @sec-metal-smelting.
-- Fabricating steel into final goods (structural fabrication, stamping, and machining) belongs to the manufacturing branches in @sec-light-industrial.
+- Mining and concentrating iron ore, and pelletizing at the mine, are covered in @sec-mining.
+- Smelting and refining other metals is covered in @sec-metal-smelting.
+- Turning steel into finished goods (fabrication, stamping, and machining) belongs to the manufacturing sector in @sec-light-industrial.
 
-Cokemaking and the use of the sector's own process gases stay inside the sub-model, because they are integral to ironmaking.
+Cokemaking and the use of the sector's own by-product gases stay in this sub-model, because they are part of ironmaking.
 
 ## Context
 
-Canada produces about 12 Mt of crude steel a year, against world output of roughly 1,900 Mt [@worldsteel-2024]. Production is concentrated in Ontario, with the integrated plants at Hamilton (ArcelorMittal Dofasco and Stelco) and Sault Ste. Marie (Algoma Steel); in Québec, with electric arc furnace operations at Contrecœur and Longueuil; and in Saskatchewan, where the Regina works runs a scrap-based mini-mill of about 1 Mt per year.
+Canada produces about 12 Mt of crude steel a year, out of world output of roughly 1,900 Mt [@worldsteel-2024]. Most of it comes from Ontario, with integrated plants at Hamilton (ArcelorMittal Dofasco and Stelco) and Sault Ste. Marie (Algoma Steel). Québec has electric arc furnace plants at Contrecœur and Longueuil, and Saskatchewan has a scrap-based mini-mill of about 1 Mt per year at Regina.
 
-Two routes dominate:
+Two routes make most of the world's steel:
 
-- The **integrated route** reduces iron ore to hot metal in a blast furnace using coke, then refines it, with some scrap, in a basic oxygen furnace (BOF). It uses roughly 18–21 GJ and emits about 1.8–2.3 t CO₂ per tonne of crude steel; most of the carbon enters as the coke that chemically reduces the ore [@iea-steel-roadmap; @cgep-steel].
-- The **secondary route** melts scrap in an electric arc furnace (EAF). Because it skips ore reduction, it uses about 2–4 GJ of electricity per tonne and a small fraction of the integrated route's emissions; its footprint follows the carbon intensity of the grid [@cgep-steel].
+- The **integrated route** turns iron ore into liquid iron (hot metal) in a blast furnace using coke, then refines it, with some scrap, into steel in a basic oxygen furnace (BOF). It uses roughly 18–21 GJ and emits about 1.8–2.3 t of CO₂ per tonne of crude steel. Most of that carbon enters as the coke that pulls oxygen out of the ore [@iea-steel-roadmap; @cgep-steel].
+- The **scrap route** melts steel scrap in an electric arc furnace (EAF). Because it skips ironmaking, it uses about 2–4 GJ of electricity per tonne and emits a small fraction of the integrated route's CO₂, depending mostly on how clean the grid is [@cgep-steel].
 
-The Canadian industry is shifting from the first route to the second: Algoma Steel and ArcelorMittal Dofasco are both replacing blast furnaces with electric arc furnaces, conversions expected to cut each plant's CO₂ by around 70 % [@algoma-eaf]. Globally, the EAF share of crude-steel output passed 29 % in 2024 [@worldsteel-2024].
+Canadian steelmaking is shifting from the first route to the second. Algoma Steel and ArcelorMittal Dofasco are both replacing blast furnaces with electric arc furnaces, which is expected to cut each plant's CO₂ by around 70 % [@algoma-eaf]. Worldwide, electric arc furnaces made more than 29 % of crude steel in 2024 [@worldsteel-2024].
 
 ## Process flow
 
-@fig-iron-and-steel-process shows how the sector's process steps and services fit together. Ironmaking turns ore into hot metal (in a blast furnace or smelting-reduction vessel) or into solid direct-reduced iron (DRI); steelmaking turns hot metal, DRI, and scrap into liquid steel; and casting and rolling turn liquid steel into finished products.
+@fig-iron-and-steel-process shows how the steps fit together. Ironmaking turns ore into either hot metal (in a blast furnace or smelting vessel) or solid direct-reduced iron (DRI). Steelmaking turns hot metal, DRI, and scrap into liquid steel. Casting and rolling turn the liquid steel into finished products. The chart shows the reducing agents generically, because the routes that compete in the model use different ones: carbon from coal, coke, or biomass; natural gas; or hydrogen.
 
 ::: {#fig-iron-and-steel-process}
 ![](images/flowcharts/iron-and-steel_process-flow_light.svg){.light-content .lightbox group="iron-and-steel-light"}
 
 ![](images/flowcharts/iron-and-steel_process-flow_dark.svg){.dark-content .lightbox group="iron-and-steel-dark"}
 
-Process flow of the iron and steel sector. Process steps belong to the sector's Product sub-tree; site services belong to its Service sub-tree and are requested by the process steps.
+Structure of the iron and steel sector. Ore, scrap, and reducing agents enter on the left; the process steps turn them into steel products and call on the site services.
 :::
 
 ## Model structure
 
-The Product sub-tree holds steelmaking, casting and rolling, and foundry melting. Ironmaking and its feed preparation sit in the Service sub-tree, because the steelmaking technologies request hot metal and DRI as services: a BOF requests hot metal, and an EAF can request DRI. The tables below follow the flowchart, from feed preparation to finishing.
+CIMS treats steelmaking, casting and rolling, and foundry melting as the sector's main steps. It treats ironmaking and the preparation of its raw materials as services that steelmaking calls on: a basic oxygen furnace needs hot metal, and an electric arc furnace can use DRI. The sections below follow the flowchart from raw materials to finished steel.
 
 ### Cokemaking
 
-Coke ovens carbonize metallurgical coal into coke for the blast furnace, recovering coke-oven gas and chemicals. The service is measured in tonnes of coke.
+Coke is coal baked without air at around 1,100 °C, until the gases and tars are driven off and a hard, porous carbon remains. The blast furnace needs it both as fuel and as the agent that strips oxygen from the ore, and as a strong layer that keeps the furnace contents permeable to gas. Most coke ovens are built in long rows (batteries) that clean the gas they release and use it as fuel around the mill. Heat-recovery ovens burn that gas in place instead and raise steam with its heat [@doe_2000_001].
 
 {{< include _technology-blocks/iron-and-steel/service_coke.md >}}
 
 ### Sintering and pelletizing
 
-Agglomeration binds fine ore into sinter or pellets that a furnace can use. It is measured in tonnes of sinter or pellets.
+A blast furnace needs lumps of ore that let gas flow through them, but much mined ore is fine powder. Sintering heats ore fines with limestone and coke on a moving grate until they fuse into a porous cake. Pelletizing rolls fine concentrate into balls and bakes them hard. Both burn fuel, and sinter plants are a large source of the mill's CO₂ and air pollutants.
 
 {{< include _technology-blocks/iron-and-steel/service_agglomeration.md >}}
 
 ### Ironmaking: hot metal
 
-The hot-metal service makes liquid iron for a BOF. The blast furnace is the incumbent; smelting reduction avoids coke ovens and sinter plants; electric smelting melts DRI from lower-grade ore into hot metal; and molten oxide electrolysis reduces ore with electricity alone. Ironmaking is measured in tonnes of iron.
+The hot-metal service makes liquid iron for a basic oxygen furnace. In a blast furnace, ore, coke, and limestone go in at the top and a blast of hot air goes in at the bottom. The coke burns to carbon monoxide, which strips oxygen from the ore as it rises, and liquid iron collects at the bottom [@de-beer_1998_001]. The alternatives change either the reducing agent or the furnace:
+
+- Smelting reduction (Corex, Finex, and HIsarna) uses coal directly and skips both coke ovens and sinter plants [@hasanbeigi_2013_001].
+- Top-gas recycling strips CO₂ out of the furnace's exhaust gas and blows the cleaned gas back in, so the furnace needs less coke and its CO₂ comes out concentrated, ready to capture.
+- An electric smelting furnace melts DRI made from lower-grade ore into hot metal for a basic oxygen furnace, removing the waste rock as slag.
+- Molten oxide electrolysis passes electricity through molten ore at over 1,500 °C, giving liquid iron and oxygen with no carbon at all. It is still at an early stage [@hasanbeigi_2014_001].
 
 {{< include _technology-blocks/iron-and-steel/service_hot-metal.md >}}
 
 ### Ironmaking: direct reduction
 
-Direct reduction removes oxygen from iron ore pellets in the solid state, with reformed natural gas, hydrogen, or coal, giving DRI for an EAF or an electric smelting furnace.
+Direct reduction removes oxygen from iron ore pellets without melting them. A gas rich in hydrogen and carbon monoxide flows up through a tall shaft furnace, and solid sponge-like iron (DRI) comes out of the bottom. Today the gas is made from natural gas, but the same furnace can run on hydrogen, which leaves only water vapour instead of CO₂ [@philibert_2017_001]. A coal-based rotary hearth furnace and low-temperature electrowinning, which dissolves ore and plates out iron with electricity, are other options.
 
 {{< include _technology-blocks/iron-and-steel/service_direct-reduced-iron.md >}}
 
 ### Steelmaking
 
-The molten-steel step turns hot metal, DRI, and scrap into liquid steel, measured in tonnes. The BOF and the EAF compete here, along with a whole-plant hydrogen route that bundles electrolysers, a hydrogen shaft furnace, and an EAF. Steelmaking also requests **oxygen**, from an on-site air separation unit, and **ladle preheating and refining** before the steel goes to the caster.
+Steelmaking turns hot metal, DRI, and scrap into liquid steel with the right chemistry.
+
+- A **basic oxygen furnace** blows pure oxygen into hot metal to burn off its excess carbon. The reaction gives off so much heat that the furnace can melt some scrap without any added fuel.
+- An **electric arc furnace** melts scrap, DRI, or both with a powerful electric arc between graphite electrodes, helped by burners and injected oxygen and carbon [@bataille_2021_001]. Preheating the scrap with the furnace's hot exhaust saves electricity.
+- A whole-plant hydrogen route bundles electrolysers, a hydrogen shaft furnace, and an electric arc furnace into one technology.
+
+Steelmaking also calls on two site services. **Oxygen** comes from an air separation plant that cools air until it liquefies and then separates its gases. **Ladle preheating and refining** heats the large vessels (ladles) that carry liquid steel, and adjusts the steel's temperature and chemistry with an electric arc before it goes to the caster.
 
 {{< include _technology-blocks/iron-and-steel/product_molten-steel.md >}}
 
@@ -91,13 +104,13 @@ The molten-steel step turns hot metal, DRI, and scrap into liquid steel, measure
 
 ### Casting
 
-Casting solidifies liquid steel into slabs, blooms, or billets. Near-net-shape options (thin-slab casting with direct rolling and strip casting) cut out some or all of the reheating and rolling that follow. Casting is measured in tonnes of cast product.
+Casting pours liquid steel into a water-cooled mould, where it solidifies into a continuous strand that is cut into slabs, blooms, or billets. A few plants still cast large ingots, which must be reheated before rolling. Thin-slab casting and strip casting produce a shape much closer to the final product, so they cut out some or all of the reheating and rolling that would otherwise follow [@worrell_2010_001].
 
 {{< include _technology-blocks/iron-and-steel/product_continuous-cast_casting.md >}}
 
 ### Reheating and hot rolling
 
-Semi-finished steel is reheated to about 1,200 °C and hot rolled into plate, strip, sections, bar, rod, and tube. Rolling is measured in tonnes of rolled product, and reheating in tonnes reheated.
+Before rolling, slabs and billets are reheated to about 1,200 °C in large gas-fired furnaces, so the steel is soft enough to shape. Hot rolling then squeezes it between heavy rollers into plate, strip, sections, bar, rod, and tube. Reheating burns a lot of fuel; recovering heat from the furnace exhaust and switching to electric induction heating are the main options to cut it.
 
 **Reheating**
 
@@ -109,7 +122,7 @@ Semi-finished steel is reheated to about 1,200 °C and hot rolled into plate, st
 
 ### Pickling and cold rolling
 
-Strip for cold-rolled products is pickled in acid to remove scale, then cold rolled to its final thickness.
+Hot rolling leaves a layer of oxide scale on the steel. For thin, smooth products such as car body panels and appliance sheet, that scale is dissolved in an acid bath (pickling), and the strip is then rolled again at room temperature (cold rolling) to its final thickness and finish.
 
 **Pickling**
 
@@ -121,7 +134,7 @@ Strip for cold-rolled products is pickled in acid to remove scale, then cold rol
 
 ### Annealing and coating
 
-Cold-rolled strip is annealed to restore its ductility, then coated: hot-dip or electro-galvanized, or tin plated. Both are measured in tonnes of finished product.
+Cold rolling makes steel hard and brittle, so the strip is annealed: heated and cooled slowly to make it workable again. Much of it is then coated against corrosion, by dipping it in molten zinc (galvanizing) or by electroplating it with zinc or tin.
 
 **Annealing**
 
@@ -133,40 +146,40 @@ Cold-rolled strip is annealed to restore its ductility, then coated: hot-dip or 
 
 ### Foundry
 
-The foundry branch melts iron, steel, and scrap for cast products that bypass the rolling chain. It is measured in tonnes of metal.
+Foundries melt iron, steel, and scrap and pour it into moulds to make cast parts, such as engine blocks and pipe fittings, that skip the rolling chain. Cupola furnaces burn coke, while induction furnaces melt metal with electricity.
 
 {{< include _technology-blocks/iron-and-steel/product_foundry.md >}}
 
 ### Shared services
 
-The sector also draws on the shared services documented in the General Services part:
+The sector also draws on the shared services described in the General Services part:
 
 | Service | What it supplies | Technologies |
 |:--------|:-----------------|:-------------|
-| Steam | Process steam, from boilers, CHP, heat pumps, and other heat supply | @sec-industrial-heat |
+| Steam | Process steam, from boilers, combined heat and power, heat pumps, and other heat supply | @sec-industrial-heat |
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of mill buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends, and the **process-gas** node that routes blast-furnace, coke-oven, and BOF gases to the steam and reheating services that burn them | @sec-fuel-blends |
-| CCS | Capture of concentrated and diffuse CO₂ from the routes that send it there | @sec-ccus |
+| Fuel blends | Diesel and natural gas blends, and the **process gas** service, which routes blast-furnace, coke-oven, and basic oxygen furnace gases to the steam and reheating services that burn them | @sec-fuel-blends |
+| CCS | Capture of CO₂ from the routes that send it there | @sec-ccus |
 
 : Shared services in the iron and steel sector {#tbl-iron-and-steel-shared}
 
-The concentrated capture node also offers one option specific to steel:
+The capture service also has one option specific to steel, which turns the mill's by-product gases into chemicals instead of capturing and storing their CO₂:
 
 {{< include _technology-blocks/iron-and-steel/service_ccs_concentrated.md >}}
 
 ## Decarbonisation
 
-The sector's emissions come mainly from the carbon that reduces iron ore, so the decisive lever is the ironmaking route; capture, electrification, and efficiency handle the rest.
+Most of the sector's emissions come from the carbon that strips oxygen from iron ore, so the biggest lever is how iron is made. Capture, electrification, and efficiency handle the rest.
 
-- **Primary-route shift.** Gas-based direct reduction already cuts CO₂ to roughly 1.4–1.7 t per tonne of steel, against 1.8–2.3 t for the blast furnace and BOF; with green hydrogen as the reducing gas, the cut reaches about 95–98 % [@cgep-steel]. Smelting reduction avoids coke ovens and sinter plants and cuts energy and CO₂ by around a fifth on its own, and up to about 80 % with capture [@iea-steel-roadmap]. Electric smelting and molten oxide electrolysis are earlier-stage routes.
-- **Scrap-based EAF steelmaking.** Where scrap is available, the EAF is already the lowest-emission route, and its footprint falls with the grid's. Scrap supply and quality limit how far it can go.
-- **Carbon capture.** Routes that still reduce ore with carbon can only decarbonise deeply with capture. Their capture-equipped variants appear in the ironmaking tables, and the capture plants in @sec-ccus.
-- **Heat and efficiency.** Induction reheating, induction strip heating, electric boilers, and heat pumps reach the combustion loads; near-net-shape casting removes reheating; and efficient motors and drives cut the auxiliary load.
+- **Changing how iron is made.** Direct reduction with natural gas already cuts CO₂ to roughly 1.4–1.7 t per tonne of steel, compared with 1.8–2.3 t for the blast furnace and basic oxygen furnace. With hydrogen made from clean electricity as the reducing gas, the cut reaches about 95–98 % [@cgep-steel]. Smelting reduction avoids coke ovens and sinter plants and cuts energy and CO₂ by around a fifth on its own, and up to about 80 % with capture [@iea-steel-roadmap]. Electric smelting and molten oxide electrolysis are earlier-stage options.
+- **Melting more scrap.** Where scrap is available, the electric arc furnace is already the lowest-emission route, and its emissions fall as the grid gets cleaner. How much scrap is available, and how clean it is, limits how far this route can go.
+- **Capturing CO₂.** Routes that still use carbon to make iron can only cut emissions deeply by capturing the CO₂. Their versions with capture appear in the ironmaking tables, and the capture plants in @sec-ccus.
+- **Heat and efficiency.** Induction reheating and strip heating, electric boilers, and heat pumps can replace fuel-fired heat; thin-slab and strip casting remove reheating; and efficient motors and drives cut electricity use.
 
 ## Regional coverage and differences
 
-The tree is region-agnostic: each province is built from the same structure and carries no production on branches that don't apply. In the current regional data, Ontario carries most of Canada's steel with a mixed integrated and EAF fleet (about two-thirds integrated today); Québec is mixed but shifts strongly to EAF, reaching a majority-EAF split by 2050; and Saskatchewan is entirely EAF, reflecting its scrap-based mini-mill.
+Every region is built from the same structure and carries no production where there is no steel industry. In the current regional data, Ontario makes most of Canada's steel with a mix of integrated and electric arc furnace plants (about two-thirds integrated today); Québec has a similar mix that shifts strongly towards electric arc furnaces, which make most of its steel by 2050; and Saskatchewan makes all its steel in electric arc furnaces, at its scrap-based mini-mill.
 
 <mark>TODO: Only Ontario, Québec, and Saskatchewan are present in the current input files. Confirm whether any other province hosts steelmaking that should be represented; otherwise state that coverage is limited to these three regions.</mark>
 

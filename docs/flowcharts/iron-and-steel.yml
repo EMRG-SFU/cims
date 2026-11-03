@@ -4,9 +4,9 @@ title: Iron and steel
 
 nodes:
   # purchased inputs
-  - {id: coal, label: Metallurgical coal, icon: coal, role: input, at: [0, 0]}
+  - {id: coal, label: Carbon reductant, icon: coal, role: input, at: [0, 0]}
   - {id: ore, label: Iron ore, icon: ore, role: input, at: [0, 1]}
-  - {id: gas, label: Natural gas or hydrogen, icon: natural-gas, role: input, at: [0, 2]}
+  - {id: gas, label: Gaseous reductant, icon: hydrogen, role: input, at: [0, 2]}
   - {id: scrap, label: Scrap, icon: scrap, role: input, at: [0, 3]}
 
   # ironmaking
@@ -24,7 +24,7 @@ nodes:
   # steelmaking
   - {id: molten-steel, label: Steelmaking, icon: converter, role: process, at: [3, 1],
      branch: iron-and-steel.product.molten-steel}
-  - {id: ladle, label: Ladle preheating and refining, icon: ladle, role: service, at: [4, 0],
+  - {id: ladle, label: Ladle services, icon: ladle, role: service, at: [4, 0],
      branches: [iron-and-steel.service.ladle-preheating, iron-and-steel.service.ladle-refining]}
   - {id: oxygen, label: Oxygen, icon: air-separation, role: service, at: [3, 2],
      branch: iron-and-steel.service.oxygen}
