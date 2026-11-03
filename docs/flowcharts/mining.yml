@@ -9,7 +9,6 @@ nodes:
                 mining.product.metal.underground, mining.product.potash.conventional,
                 mining.product.potash.solution, mining.product.uranium.open-pit,
                 mining.product.uranium.underground]}
-  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 3]}
   - {id: extraction, label: Extraction and haulage, icon: truck, role: service, at: [1, 1],
      branches: [mining.service.extraction, mining.service.mine-haulage.open-pit,
                 mining.service.mine-haulage.underground]}
@@ -33,7 +32,6 @@ nodes:
 
 edges:
   - [mines, extraction]
-  - {from: diesel, to: extraction, kind: energy, turn: early}
   - {from: power, to: extraction, kind: energy}
   - [extraction, crushing]
   - [crushing, milling]
