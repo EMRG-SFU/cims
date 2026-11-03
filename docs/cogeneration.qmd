@@ -1,35 +1,41 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Cogeneration and On-Site Power {#sec-cogen}
 
 ## Cogeneration
 
-Cogeneration, also called combined heat and power (CHP), generates useful heat and electricity (or shaft power) in one integrated system. A CHP system pairs a prime mover (a steam turbine, gas turbine, reciprocating engine, microturbine, or fuel cell) with a generator, heat recovery, and an electrical connection, and takes its name from the prime mover [@epa-2007]. The prime mover can burn biomass, biogas, natural gas, or coal, and its recovered heat can raise steam, heat water or air for drying, or drive absorption chillers.
+Cogeneration, also called combined heat and power (CHP), makes useful heat and electricity in one system. An ordinary power plant throws away most of the heat from the fuel it burns; a CHP unit captures that heat and puts it to work, so far more of the fuel's energy ends up being used [@ricardo-aea_2013_001].
 
-Canadian industry already runs biomass CHP in the pulp and paper, chemical, wood products, and food processing industries. A typical plant fires a biomass boiler whose steam drives a back-pressure or extraction turbine, with the exhaust or extracted steam serving the process; using the heat this way can raise overall efficiency by more than 35 % [@epa-2007].
+A CHP system has a *prime mover*, the engine that turns fuel into motion: a steam turbine, gas turbine, reciprocating engine, microturbine, or fuel cell. The prime mover drives a generator, and a heat-recovery unit captures the heat it gives off. CHP systems are named after their prime mover [@epa-2007]. They can burn biomass, biogas, natural gas, or coal, and the heat they recover can raise steam, heat water or air for drying, or drive absorption chillers for cooling.
+
+Canadian industry already runs biomass CHP in pulp and paper, chemicals, wood products, and food processing. A typical plant burns biomass in a boiler whose steam drives a turbine; the steam that leaves the turbine, or steam drawn off partway through it, then serves the process. Using that heat can raise a plant's overall efficiency by more than 35 % [@epa-2007].
 
 ### How CIMS represents cogeneration
 
-CIMS does not treat cogeneration as a service of its own. A CHP unit is one of the technologies competing to supply a sector's **Steam** node (see @sec-industrial-heat): the heat is the service it provides, and the electricity is a co-product that offsets the site's purchased power. This puts CHP in direct competition with boilers, heat pumps, and the other heat-supply technologies on the full lifecycle cost of meeting the steam demand.
+CIMS doesn't treat cogeneration as a service of its own. A CHP unit is one of the technologies that can supply a sector's **steam** service (see @sec-industrial-heat). The heat is what it provides, and the electricity is a by-product that reduces the electricity the site buys. This puts CHP in direct competition with boilers, heat pumps, and the other heat-supply technologies, on the full lifetime cost of meeting the site's steam demand.
 
-The CHP technologies at the Steam nodes are:
+The CHP technologies that compete in the steam services are:
 
-- **Gas-turbine CHP**, simple or combined cycle, where the turbine exhaust raises process steam in a heat-recovery steam generator;
-- **Reciprocating engine CHP**;
-- **Back-pressure or extraction steam-turbine CHP**, typically behind a fuel-fired or biomass boiler;
-- **Fuel-cell CHP**;
-- **Biomass gasifier CHP**; and
-- **Gas-turbine or engine CHP with post-combustion capture**.
+- gas-turbine CHP, simple or combined cycle, where the turbine's hot exhaust raises process steam in a heat-recovery steam generator;
+- reciprocating engine CHP, which recovers heat from the engine's cooling water and exhaust;
+- back-pressure or extraction steam-turbine CHP, usually behind a fuel-fired or biomass boiler;
+- fuel-cell CHP;
+- biomass gasifier CHP, which turns biomass into a fuel gas for an engine or turbine; and
+- gas-turbine or engine CHP with carbon capture on its exhaust.
 
-Their descriptions, types, and readiness levels are in the Steam technology list in @sec-industrial-heat.
+Their descriptions and types are in the steam technology table in @sec-industrial-heat.
 
 ## On-site power generation
 
-Some sites generate electricity with no useful heat recovered: diesel and gas generator sets at off-grid mines and oil-and-gas sites, gas turbines and engines, condensing steam turbines, power plants burning by-product gases, and solar, wind, and storage in site microgrids. At isolated northern mines, diesel can supply more than 80 % of site energy. The boundary with cogeneration is heat recovery: a unit that supplies useful heat competes at the Steam node, and one that does not competes for on-site power.
+Some sites make electricity with no useful heat recovered. Off-grid mines and oil and gas sites run diesel and gas generators; other sites run gas turbines and engines, condensing steam turbines, or power plants that burn by-product gases; and remote operations increasingly add solar panels, wind turbines, and batteries in small local grids. At isolated northern mines, diesel can supply more than 80 % of all the energy used on site.
 
-The hierarchy carries an **On-Site Power** node in the Mining sector only. Waste-heat power and other power-only options could serve other sectors (cement, iron and steel, glass, refining, chemicals, pulp and paper, metal smelting, and offshore oil platforms), but those sectors have no on-site power node yet.
+The line between cogeneration and on-site power is heat recovery. A unit that supplies useful heat competes in the steam service; one that doesn't competes for on-site power. One option sits on the line: a waste-heat power unit takes heat that a process would otherwise throw away and turns it into electricity, using an organic Rankine cycle or a steam turbine [@epa_2022_001; @hedman_2008_001].
+
+Mining is the only sector with an **on-site power** service so far. Waste-heat power and other power-only options could serve other sectors, including cement, iron and steel, glass, refining, chemicals, pulp and paper, metal smelting, and offshore oil platforms, but those sectors don't have an on-site power service yet.
 
 {{< include _technology-blocks/mining/service_on-site-power.md >}}
 

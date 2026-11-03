@@ -1,43 +1,51 @@
+---
+bibliography:
+  - references.bib
+  - tech-data_references.bib
+---
+
 # Carbon Capture, Utilization, and Storage {#sec-ccus}
 
-CIMS represents carbon capture in two parts. A sector's process technology decides whether its CO~2~ goes to capture, and a shared **CCS** service in the sector does the capturing. The captured CO~2~ then needs transport and storage, which a separate root-level branch provides by provincial route. Direct air capture, which removes CO~2~ from the air rather than from a stack, is a sector of its own (see @sec-carbon-dioxide-removal).
+Carbon capture separates CO~2~ from a plant's exhaust or process gas before it reaches the air. The captured CO~2~ is then dried, compressed, and sent by pipeline to be stored deep underground, or used: injected into oil fields to recover more oil, or turned into products such as urea and synthetic fuels.
+
+CIMS represents capture in two parts. A sector's process technology decides whether its CO~2~ goes to capture, and a shared **CCS** service in the sector does the capturing. The captured CO~2~ then needs transport and storage, which a separate branch at the top of the model provides, route by route between regions. Direct air capture, which takes CO~2~ from the air rather than from a plant, is a sector of its own (see @sec-carbon-dioxide-removal).
 
 ## Capture
 
-### Concentrated and diffuse streams
+### Concentrated and dilute streams
 
-Each sector that can capture CO~2~ has a CCS node with up to two end uses, set by how dilute the CO~2~ is:
+How hard and how costly capture is depends mostly on how concentrated the CO~2~ is. Each sector that can capture CO~2~ has a CCS service with up to two parts:
 
-| End use | What it covers |
-|:--------|:---------------|
-| Concentrated | Capture from process streams where the CO~2~ is already concentrated and free of nitrogen: shifted syngas and acid-gas removal in ammonia, methanol, and hydrogen plants (including upgrader hydrogen units), formation CO~2~ removed at gas-processing plants, fermentation CO~2~ at ethanol plants, pre-combustion capture on gasifiers, oxygen-blown iron routes, indirectly heated calciners, and oxy-fuel flue gas. The work is mostly drying and compression, with little or no solvent regeneration. |
-| Diffuse | Post-combustion capture from flue gas where the CO~2~ is diluted in nitrogen: boilers, CHP units, fired heaters, cement and lime kiln stacks, cracker furnaces, fluid catalytic cracker regenerators, sinter strands, and electric arc furnace off-gas. |
+| Part | What it covers |
+|:-----|:---------------|
+| Concentrated | Capture from process gases where the CO~2~ is already concentrated and free of nitrogen. Examples are the gas streams in ammonia, methanol, and hydrogen plants (including the hydrogen units at oil sands upgraders), CO~2~ removed from natural gas at processing plants, fermentation CO~2~ at ethanol plants, gasifiers, iron-making routes that use pure oxygen, and kilns or calciners heated from outside. The work is mostly drying and compressing the gas, with little or no chemical separation. |
+| Dilute | Capture from flue gas, where the CO~2~ is mixed with the nitrogen in the air that fuel was burned in. Examples are boilers, CHP units, fired heaters, cement and lime kilns, steam cracker furnaces, fluid catalytic crackers, sinter plants, and electric arc furnace off-gas. A chemical solvent usually absorbs the CO~2~, and heating the solvent releases it again. |
 
-: CO~2~ capture end uses {#tbl-ccs-end-uses}
+: The two parts of the CCS service {#tbl-ccs-end-uses}
 
-The distinction matters for cost: the IPCC puts concentrated-stream capture at up to 99 % reduction for USD 40 per tonne or less, and dilute post-combustion capture at up to 90 % for USD 120 per tonne or less. Some plants have both kinds of stream. A steam methane reformer's process CO~2~ from the shift is concentrated while its furnace flue gas is dilute; cement calcination CO~2~ from an indirectly heated calciner is concentrated while the fuel CO~2~ is dilute.
+The difference shows up in cost. The IPCC puts capture from concentrated streams at up to 99 % reduction for USD 40 per tonne or less, and capture from flue gas at up to 90 % reduction for USD 120 per tonne or less [@ipcc_2022_001]. Some plants have both kinds of stream. A steam methane reformer's process CO~2~ is concentrated while its furnace flue gas is dilute; in a cement plant, the CO~2~ released from limestone in a calciner heated from outside is concentrated while the CO~2~ from burning fuel is dilute.
 
-Concentrated capture nodes appear in Biofuels, Chemicals, Hydrogen, Iron and Steel, Metal Smelting, Natural Gas, Petroleum Crude, and Petroleum Refining. Diffuse capture nodes appear in the same sectors except Hydrogen, plus Industrial Minerals. Electricity has its own capture nodes, split by fuel (see @sec-electricity).
+Concentrated capture appears in Biofuels, Chemicals, Hydrogen, Iron and Steel, Metal Smelting, Natural Gas, Petroleum Crude, and Petroleum Refining. Dilute capture appears in the same sectors except Hydrogen, plus Industrial Minerals. Electricity has its own capture services, split by fuel (see @sec-electricity).
 
-### Hosts and capture units
+### Host plants and capture units
 
-A process with capture appears in its sector as its own technology, named for the host with a capture suffix: for example, *Blast furnace with post-combustion capture* or *Cement kiln with post-combustion capture*. That host technology carries only the effects of capture on the host itself, such as the steam drawn for solvent regeneration or the electricity or steam export it gives up, and it requests capture from the sector's CCS node for the CO~2~ it sends there. The capture plant's own cost and energy sit on the CCS node, once, rather than being repeated on every host. A few integrated routes, where capture is built into the process (for example, gas-based direct reduction that already strips CO~2~ from its recycled gas), remain process technologies in their sector.
+A plant with capture appears in its sector as its own technology, named after the host plant with "with capture" added: for example, *Blast furnace with post-combustion capture* or *Cement kiln with post-combustion capture*. That technology carries only the effects of capture on the host plant itself, such as the steam it gives up to regenerate the solvent, or the electricity or steam it can no longer export. It sends its CO~2~ to the sector's CCS service, which holds the capture unit's own cost and energy, so these are counted once rather than on every host plant. A few routes have capture built into the process, such as gas-based direct reduction of iron, which already strips CO~2~ from its recycled gas; these stay as process technologies in their sector.
 
 ### Capture technologies
 
-The technologies below compete at every sector's CCS nodes. Some sectors add capture options of their own, listed in their chapters.
+The technologies below compete in every sector's CCS services. Some sectors add capture options of their own, listed in their chapters.
 
-**Concentrated streams**
+For concentrated streams, the main options are chemical or physical solvents that absorb CO~2~ from gas at pressure, adsorbent beds that hold the CO~2~ back as the other gases pass, and cryogenic separation, which cools the gas until the CO~2~ condenses [@dea_2024_002]:
 
 {{< include _technology-blocks/general/ccs_concentrated.md >}}
 
-**Diffuse streams**
+For dilute streams, amine solvents are the established method, now in use at cement plants such as Brevik in Norway [@burns_2024_001]. Advanced solvents need less heat to release the CO~2~, and newer methods use membranes, cold, or lime that absorbs CO~2~ and gives it up when reheated [@dea_2024_002]:
 
 {{< include _technology-blocks/general/ccs_diffuse.md >}}
 
 ## Transport and storage
 
-Each tonne of captured CO~2~ needs both transport and storage, so the two act as complements rather than alternatives. The hierarchy carries a **CO~2~ Pipeline and Storage** branch at its root, with one route for each source region and destination:
+Every tonne of captured CO~2~ needs both transport and storage, so the two work together rather than competing. CO~2~ travels by pipeline as a dense, compressed fluid, and is injected into deep saline rock formations, depleted oil and gas fields, or producing oil fields, where it helps push out more oil [@mccollum_2006_001; @sanchez_2018_001]. The model has a **CO~2~ pipeline and storage** branch at its top level, with one route for each region the CO~2~ comes from and goes to:
 
 | Route | From | To |
 |:------|:-----|:---|
@@ -51,7 +59,7 @@ Each tonne of captured CO~2~ needs both transport and storage, so the two act as
 
 : CO~2~ transport and storage routes {#tbl-co2-routes}
 
-Each route has a pipeline step and a storage step, measured in tonnes of CO~2~.
+Each route has a pipeline step and a storage step.
 
 **Pipeline**
 
@@ -62,3 +70,18 @@ Each route has a pipeline step and a storage step, measured in tonnes of CO~2~.
 {{< include _technology-blocks/general/co2-transport_storage.md >}}
 
 <mark>TODO: Document how captured CO~2~ from each sector and region is assigned to a route, the storage capacity assumed on each route, and how utilization (enhanced oil recovery, urea, synthetic fuels) is distinguished from permanent storage.</mark>
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

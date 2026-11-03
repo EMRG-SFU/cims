@@ -1,21 +1,29 @@
+---
+bibliography:
+  - references.bib
+  - tech-data_references.bib
+---
+
 # HVAC and Lighting {#sec-hvac-lighting}
 
-Industrial sites heat, cool, ventilate, and light their buildings as well as running their processes. These loads are small next to process heat and machine drive, but they are present at almost every site and respond to the same technologies across sectors. CIMS represents them as shared services in each industrial sector's Service sub-tree and lists their technologies once, here.
+Industrial sites heat, cool, ventilate, and light their buildings as well as running their processes. These loads are small next to process heat and machine drive, but almost every site has them, and the same technologies serve them in every sector. CIMS represents them as shared services in each industrial sector and lists their technologies once, here.
 
-The building sectors, Residential and Commercial, carry their own heating, cooling, and lighting structures, described in @sec-residential and @sec-commercial.
+The Residential and Commercial sectors have their own heating, cooling, and lighting services, described in @sec-residential and @sec-commercial.
 
 ## HVAC
 
-Each industrial sector's **HVAC** node splits into two end uses:
+HVAC stands for heating, ventilation, and air conditioning. In a plant it keeps workers comfortable and safe, keeps equipment and stored goods within their temperature limits, and replaces air that process exhausts pull out of the building. Each industrial sector's **HVAC** service has two parts:
 
-| End use | What it covers |
-|:--------|:---------------|
-| Heating | Heating and ventilating plant buildings and warehouses: unit heaters, radiant tubes, make-up air units, supply and exhaust air handling, heat-recovery ventilation, and building heat pumps. |
+| Part | What it covers |
+|:-----|:---------------|
+| Heating | Heating and ventilating plant buildings and warehouses: unit heaters, radiant tubes, make-up air units that heat the fresh air brought in to replace exhausted air, supply and exhaust air handling, heat-recovery ventilation, and building heat pumps. |
 | Cooling | Cooling and ventilating offices, control rooms, and production space, including supply and exhaust air handling. |
 
-: HVAC end uses in the industrial sectors {#tbl-hvac-end-uses}
+: Parts of the HVAC service in the industrial sectors {#tbl-hvac-end-uses}
 
-Building ventilation is part of these two end uses rather than a service of its own. Mine ventilation and mine air heating are mining end uses (see @sec-coal-mining and @sec-mining). The HVAC nodes appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Refining, and Pulp and Paper. Each is measured in GJ of delivered heating or cooling.
+Building ventilation is part of these two services rather than a service of its own. Ventilating and heating mine air is a mining service (see @sec-coal-mining and @sec-mining). The HVAC services appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Refining, and Pulp and Paper.
+
+Most plant buildings are heated today by gas-fired unit heaters and make-up air units, or by electric heaters. Heat pumps can heat for less energy, because they move heat in from outside rather than making it, and reversible units can cool as well. Ventilation controls cut energy by moving only as much air as people or fumes require, and heat-recovery ventilation uses the warm air leaving a building to preheat the cold air coming in [@etsap_2012_002; @iea_2026_003]. For cooling, electric chillers are the incumbent, and free or evaporative cooling uses cool outside air or evaporating water before running the chiller.
 
 ### Heating technologies
 
@@ -27,10 +35,27 @@ Building ventilation is part of these two end uses rather than a service of its 
 
 ## Lighting
 
-Each industrial sector's **Lighting** node covers interior and yard lighting and its controls. The lighting technologies deliver light, measured in lumen-hours, so that a site's request for light stays the same whichever lamp meets it; a more efficient lamp then shows up as less electricity for the same service.
+Each industrial sector's **lighting** service covers indoor and yard lighting and its controls. Plants need two kinds of light: general lighting for offices, control rooms, and low ceilings, and high-bay lighting for tall production halls and warehouses, where fixtures hang high above the floor.
+
+In the technology database, the lighting technologies all deliver the same thing: light, measured in lumen-hours. Measuring the service as light rather than electricity means a site's need for light stays the same whichever lamp meets it, and a more efficient lamp shows up as less electricity for the same light. Older fluorescent tubes and high-intensity discharge lamps (mercury vapour, metal halide, and high-pressure sodium) are giving way to LED fixtures, which use much less electricity for the same light and last longer. Occupancy sensors and daylight dimming cut energy further by turning lights down or off when they aren't needed [@etsap_2012_003; @eia_2023_002].
 
 ::: {.callout-note}
-The lighting nodes are moving from GJ to lumen-hours (Mlm-h) and splitting into general and high-bay lighting, so that a request for high-bay light can only be met by high-bay fixtures. Until that change reaches the model, a sector's single Lighting node offers both groups of technologies.
+The model's lighting services still measure energy rather than light. They are moving to lumen-hours and splitting into general and high-bay lighting, so that a request for high-bay light can only be met by high-bay fixtures. Until that change reaches the model, a sector's single lighting service offers both groups of technologies.
 :::
 
 {{< include _technology-blocks/general/lighting.md >}}
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

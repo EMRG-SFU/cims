@@ -1,4 +1,7 @@
 ---
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - machine_drive.html
 ---
@@ -12,39 +15,66 @@ aliases:
 \addtocontents{toc}{\protect\setcounter{tocdepth}{1}}
 ```
 
-Most of the electricity industry uses goes to motor systems. A motor is the core of a broader system of electrical and mechanical equipment that moves liquids, air, and solids around a site: pumps, fans and blowers, compressors, conveyors, and the machines that mix and size materials. CIMS represents this equipment as a shared **Machine Drive** service that every industrial sector draws on, so that more efficient motors, speed control, and system improvements compete once and serve the whole sector.
+Most of the electricity that industry uses goes into motors. A motor turns electricity into rotation, and that rotation drives the equipment that moves liquids, air, and solids around a site: pumps, fans, compressors, conveyors, and the machines that mix, cut, and shape materials. The motor is only one part of the job. How much energy a pump or fan uses depends just as much on the pipes and ducts it pushes against, how its flow is controlled, and whether it is the right size for the work [@mckane-hasanbeigi_2010_001; @rao_2022_001].
+
+CIMS treats this equipment as a shared **machine drive** service that every industrial sector draws on. Describing it once means that better motors, speed control, and system improvements compete in one place and serve the whole sector.
 
 ## Structure
 
-Each industrial sector's Service sub-tree has a Machine Drive node split into five end uses. The split follows the U.S. Department of Energy's Manufacturing Energy and Carbon Footprints, which divide the machine-drive total reported by the EIA Manufacturing Energy Consumption Survey (MECS) into these end uses; the Footprints' residual "other systems" is not carried, and motor-driven equipment that none of the other four covers is filed under materials processing.
+Each industrial sector has a machine drive service split into five end uses. The split follows the U.S. Department of Energy's Manufacturing Energy and Carbon Footprints, which divide the machine-drive total reported by the EIA Manufacturing Energy Consumption Survey (MECS) into these groups. The Footprints also have an "other systems" group; CIMS doesn't carry it, and puts any motor-driven equipment the other four don't cover under materials processing.
 
 | End use | What it covers |
 |:--------|:---------------|
-| Pumps | Motor-, engine-, and turbine-driven pumps moving liquids and slurries around a site. Pipeline pumping is an oil-and-gas end use. |
-| Fans and blowers | Process fans, blowers, and induced- and forced-draught sets. Building ventilation belongs to HVAC, and mine ventilation is a mining end use. |
-| Compressed air | Compressed-air systems and the process compression that serves them. Pipeline and gas-processing compression are oil-and-gas end uses. |
-| Materials handling | Conveyors, cranes, hoists, stackers, and reclaimers moving solids around a site. |
-| Materials processing | Motor-driven size reduction, mixing, forming, and separation not already counted in a sector's own process steps. Comminution, mechanical pulping, rolling, and cement grinding stay with their sectors. |
+| Pumps | Pumps driven by motors, engines, or turbines that move liquids and slurries around a site. Pumping along pipelines belongs to the oil and gas sectors. |
+| Fans and blowers | Fans that move process air and flue gas, including the draught fans on boilers and furnaces. Building ventilation belongs to HVAC, and mine ventilation is a mining end use. |
+| Compressed air | Systems that compress air to power tools, controls, and cleaning, and the compression that serves them. Compression in pipelines and gas plants belongs to the oil and gas sectors. |
+| Materials handling | Conveyors, cranes, hoists, stackers, and reclaimers that move solids around a site. |
+| Materials processing | Motor-driven crushing, grinding, mixing, forming, and separating that isn't already counted in a sector's own process steps. Crushing and grinding ore, mechanical pulping, steel rolling, and cement grinding stay with their sectors. |
 
 : Machine-drive end uses {#tbl-machine-drive-end-uses}
 
-All five end uses appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Metal Smelting, Mining, and Pulp and Paper. Petroleum Refining carries all but materials handling, and Natural Gas carries pumps only; its compression has dedicated compressor-drive nodes (see @sec-natural-gas). Each end use's service is measured in GJ of delivered drive energy.
+All five end uses appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Metal Smelting, Mining, and Pulp and Paper. Petroleum Refining has all but materials handling. Natural Gas has pumps only, because its compression has its own compressor-drive services (see @sec-natural-gas).
+
+## Where the energy goes
+
+The energy a motor system uses depends on four things:
+
+- *The motor itself.* A standard induction motor already turns most of its electricity into rotation, but premium-efficiency designs lose less as heat. Because a large motor runs for many hours a year, a few per cent of efficiency adds up.
+- *How flow is controlled.* Many pumps and fans run at full speed while a valve or damper throttles the flow down to what the process needs. That wastes energy, much as driving with the brake on would. A variable-speed drive slows the motor instead, and because the power a pump or fan needs falls steeply with speed, running slower saves far more than throttling [@doe_2006_002; @doe_2003_002].
+- *The system around the motor.* Leaks, undersized pipes and ducts, and equipment that is too big for its load all make a motor work harder than it needs to. Compressed air is the clearest case: making it uses a lot of electricity, and leaks often waste a large share of what a plant produces [@doe_2016_002].
+- *What turns the shaft.* Most equipment is driven by an electric motor. Where a site has fuel or steam to hand, a gas engine, gas turbine, or steam turbine can drive a large pump or compressor directly.
 
 ## How the competition works
 
 Each end use hosts a competition among drives and efficiency measures:
 
-- **Drives.** A standard-efficiency induction motor is the incumbent. Where a site has fuel or steam to hand, a gas engine, gas turbine, or back-pressure steam turbine can drive a pump or compressor directly.
-- **More efficient motors.** Premium-efficiency (IE4–IE5) motors, including permanent-magnet and synchronous-reluctance designs, compete with the standard motor.
-- **Speed control.** Variable-speed drives match motor speed to the load instead of throttling flow with a valve or damper, which cuts the energy a pump or fan uses at part load.
-- **System measures.** Leak repair, pressure and flow optimization, sequencing, right-sizing, and impeller trimming improve the whole pump, fan, or compressed-air system rather than the motor alone.
+- A standard-efficiency induction motor is the incumbent.
+- Premium-efficiency motors, including permanent-magnet and synchronous-reluctance designs, compete with it.
+- Variable-speed drives match motor speed to the load.
+- System measures, such as repairing leaks, optimizing pressure and flow, sequencing compressors, right-sizing equipment, and trimming pump impellers, improve the whole system rather than the motor alone.
+- Engine and turbine drives, and efficiency measures on them, compete where a pump or compressor can be driven directly.
 
 ## Technologies
 
-Pumps, fans and blowers, and compressed air currently share the same eight technologies:
+Pumps, fans and blowers, and compressed air currently share the same technologies:
 
 {{< include _technology-blocks/general/machine-drive_pumps.md >}}
 
-Materials handling and materials processing are motor-driven only, and share three technologies:
+Materials handling and materials processing use motors only, and share these technologies:
 
 {{< include _technology-blocks/general/machine-drive_materials-handling.md >}}
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

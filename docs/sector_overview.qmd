@@ -1,30 +1,30 @@
 # Sector Overview {#sec-sector-overview}
 
-This part of the documentation sets out how CIMS represents each part of the economy. Every sector is a self-contained sub-model — a flow model of the energy services and products that drive its energy use and emissions — but all of them are built from the same handful of ideas: hierarchical nodes linked by engineering ratios, technologies competing on lifecycle cost at the lowest nodes, and a split between the things a sector produces and the auxiliary services it consumes. The chapters that follow take each sector in turn; this overview sets out the shared structure they rest on, the conventions they have in common, and a map of which sectors are covered and how they relate.
+The chapters that follow describe how CIMS represents each part of the economy. Each sector is its own sub-model: a map of the products the sector makes, the steps that make them, and the energy those steps use. All the sectors are built from the same few ideas, which this chapter sets out once: a tree of steps linked by fixed amounts of input per unit of output, technologies that compete at the end of each branch, and a split between what a sector makes and the supporting services it uses. The chapter ends with a map of the sectors and the conventions they share.
 
-## How a sector is modelled: the flow model
+## How a sector is modelled
 
-In CIMS, the product and energy-service demands of a sub-sector are linked in a **flow model** that traces the sequence of activities needed to generate the sector's output. A CIMS flow model is geared toward representing technology evolution and energy consumption, rather than the monetary flows of an econometric model (where units are typically in dollars) or the literal mechanical detail of the blueprints and process-flow diagrams an engineer would use. Because the emphasis is on energy rather than material flow, each node represents a process stage at which energy consumption can be distinctly estimated. Nodes are arranged hierarchically and linked by engineering ratios — the physical quantity of input each stage requires per unit of its output — and technology competitions take place at the lowest-level nodes in the hierarchy.
+CIMS represents a sector as a **flow model**: a chain of the activities needed to make the sector's output. The model tracks energy and technology, not money, and it is simpler than an engineer's process diagram. Each step in the chain is a place where CIMS can estimate energy use on its own. The steps are arranged as a tree. Fixed ratios link each step to the steps below it: how much of each input a step needs to make one unit of its output. Technologies compete only at the ends of the branches.
 
-## Nodes and competition rules
+## How demand moves down the tree
 
-Each sector sub-model is a hierarchical tree, implemented in the model code as a NetworkX directed tree. Every node carries a competition rule that determines how the demand passed down to it is allocated among its children:
+The model code stores each sector as a tree of nodes. Each node passes the demand it receives down to the nodes below it in one of two ways:
 
-- **Fixed-ratio** nodes split demand among their children in fixed, exogenously specified proportions — the engineering ratios that capture the unavoidable sequence of process steps required to produce the sector's output.
-- **Tech-compete** nodes host a competition among alternative technologies that can provide the same service. Each technology carries a capital cost, a fixed operating and maintenance cost, an output (node-unit) basis, service requests for the energy and upstream services it consumes, and availability and lifetime years; these are annualised and combined with service costs into a lifecycle cost. Market shares are then assigned by the standard CIMS technology-choice rule of @sec-technology-competition, on the basis of those lifecycle costs and a heterogeneity (variance) parameter that governs how sharply the competition responds to cost differences.
+- A **fixed-ratio** node splits its demand among the nodes below it in set proportions. These proportions capture the steps a process can't skip. Making a tonne of cement, for example, always takes a set amount of clinker.
+- A **competition** node shares its demand among technologies that can each do the same job. Each technology has a capital cost, an operating cost, an amount of output, the energy and services it uses, and the years it is available and lasts. CIMS turns these into a lifecycle cost and gives each technology a share of new purchases based on that cost, using the choice rule described in @sec-technology-competition. A heterogeneity setting controls how strongly shares respond to differences in cost.
 
-The interplay of these two rules is what gives each sector its shape: a fixed-ratio backbone fixes the process chain, while tech-compete leaves decide which equipment and fuels actually serve each step — and it is at those leaves that policy, whether a carbon price, a regulation, or a subsidy, changes the outcome.
+Fixed-ratio nodes give a sector its shape, and competition nodes decide which equipment and fuels serve each step. Policies such as a carbon price, a regulation, or a subsidy work by changing the outcome of those competitions.
 
 ## Product and Service sub-trees
 
-At the top of each sector tree, the nodes are organised into two sub-trees, a **Product** sub-tree and a **Service** sub-tree:
+Each sector tree splits at the top into two parts:
 
-- The **Product** sub-tree is the physical production chain: the sequence of process stages that converts raw inputs into the sector's saleable output — tonnes of steel, square metres of floor space, vehicle-kilometres, and so on. It is driven by the sector's exogenous output or activity forecast, and its shape is specific to each sector's process flow.
-- The **Service** sub-tree holds the auxiliary energy and utility services that production technologies request rather than producing themselves — for example space heating and cooling, lighting, machine drive, steam and cogeneration, fuel blending, and carbon capture where applicable. Factoring these shared loads into their own sub-tree avoids re-specifying the same equipment inside every process stage, and lets efficiency and fuel-switching measures compete once and serve the whole sector.
+- The **Product** sub-tree is the production chain itself: the steps that turn raw inputs into what the sector sells, such as tonnes of steel, floor space, or kilometres travelled. A forecast of the sector's output or activity drives it, and its shape is specific to each sector.
+- The **Service** sub-tree holds the supporting services that production steps use rather than provide for themselves, such as space heating and cooling, lighting, machine drive, steam, fuel blends, and carbon capture. Gathering these shared loads in one place means CIMS describes each piece of equipment once, and lets more efficient equipment or a switch of fuel serve the whole sector.
 
-### Auxiliary services and the MECS structure
+### Shared services
 
-For the industrial sectors, the auxiliary services follow the end-use structure of the U.S. Energy Information Administration's Manufacturing Energy Consumption Survey (MECS): in particular, **Machine Drive** splits into pumps, fans and blowers, compressed air, materials handling, and materials processing. The same services, with the same competing technologies, recur across the industrial sectors, so the General Services part documents each one once:
+The industrial sectors use the same supporting services, with the same competing technologies. They follow the end uses of the U.S. Energy Information Administration's Manufacturing Energy Consumption Survey (MECS); for example, **machine drive** splits into pumps, fans and blowers, compressed air, materials handling, and materials processing. The General Services part describes each shared service once:
 
 | Shared service | Chapter |
 |:---------------|:--------|
@@ -35,47 +35,50 @@ For the industrial sectors, the auxiliary services follow the end-use structure 
 | Fuel blends | @sec-fuel-blends |
 | CO~2~ capture, transport, and storage | @sec-ccus |
 
-: Shared services and the chapters that document them {#tbl-shared-services}
+: Shared services and the chapters that describe them {#tbl-shared-services}
 
-The specific set of services varies by sector, and each sector also has services of its own (cokemaking in iron and steel, chemical recovery in pulp and paper, mine haulage in mining). The buildings and transportation sectors carry their own service definitions, described in their chapters.
+Not every sector uses every service, and each sector also has services of its own, such as cokemaking in iron and steel, chemical recovery in pulp and paper, and mine haulage in mining. The buildings and transportation sectors define their own services, described in their chapters.
 
-## The sectors represented
+## The sectors
 
-The sub-models fall into a few natural groups, reflecting how energy and materials move through the economy.
+The sectors fall into a few groups, following how energy and materials move through the economy.
 
-Energy supply and transformation covers the industries that produce and convert the fuels everything else burns: [Coal Mining](sector_coal-mining.qmd), [Natural Gas](sector_natural-gas.qmd), [Petroleum Crude](sector_petroleum-crude.qmd), and [Petroleum Refining](sector_petroleum-refining.qmd) on the fossil side; [Electricity](sector_electricity.qmd) as the central energy carrier; and the low-carbon fuels made in [Biofuels](sector_biofuels.qmd) (ethanol, biodiesel, renewable diesel and SAF, renewable natural gas, and pellets) and [Hydrogen](sector_hydrogen.qmd). Because these sectors supply the fuel blends and electricity that every demand sector draws on, their emissions intensity propagates throughout the model.
+Energy supply covers the industries that produce and convert the fuels everyone else uses: [Coal Mining](sector_coal-mining.qmd), [Natural Gas](sector_natural-gas.qmd), [Petroleum Crude](sector_petroleum-crude.qmd), and [Petroleum Refining](sector_petroleum-refining.qmd) for fossil fuels; [Electricity](sector_electricity.qmd); and the low-carbon fuels made in [Biofuels](sector_biofuels.qmd) (ethanol, biodiesel, renewable diesel and sustainable aviation fuel, renewable natural gas, and pellets) and [Hydrogen](sector_hydrogen.qmd). Every other sector uses the fuels and electricity these sectors supply, so their emissions carry through the whole model.
 
-Extraction and heavy industry covers the material-producing sectors: [Mining](sector_mining.qmd), [Industrial Minerals](sector_industrial-minerals.qmd) (including cement and lime), [Chemicals](sector_chemicals.qmd), [Pulp and Paper](sector_pulp-and-paper.qmd), [Metal Smelting](sector_metal-smelting.qmd), [Iron and Steel](sector_iron-and-steel.qmd), and the catch-all [Light Industrial](sector_light-industrial.qmd). These carry the richest Product sub-trees and the largest process-heat and process-emission loads, and they are where carbon capture and deep fuel-switching matter most.
+Industry covers the sectors that make materials: [Mining](sector_mining.qmd), [Industrial Minerals](sector_industrial-minerals.qmd) (including cement and lime), [Chemicals](sector_chemicals.qmd), [Pulp and Paper](sector_pulp-and-paper.qmd), [Metal Smelting](sector_metal-smelting.qmd), [Iron and Steel](sector_iron-and-steel.qmd), the catch-all [Light Industrial](sector_light-industrial.qmd), and [Construction](sector_construction.qmd). These sectors have the most detailed production chains and the largest process heat and process emissions, and they are where carbon capture and deep fuel switching matter most.
 
-Buildings and construction covers the built environment: [Construction](sector_construction.qmd), the activity of building itself, and the [Residential](sector_residential.qmd) and [Commercial](sector_commercial.qmd) sectors, which represent the heating, cooling, lighting, and plug loads of the building stock once it is in use.
+Buildings covers the [Residential](sector_residential.qmd) and [Commercial](sector_commercial.qmd) sectors: the heating, cooling, lighting, and appliances of the building stock.
 
-Transportation covers the movement of people and goods, split into [Transportation (Passenger)](sector_transportation-passenger.qmd) and [Transportation (Freight)](sector_transportation-freight.qmd), each resolving its vehicle fleet by mode and powertrain.
+Transportation covers moving people and goods, in [Transportation (Passenger)](sector_transportation-passenger.qmd) and [Transportation (Freight)](sector_transportation-freight.qmd). Each splits its vehicles by mode and by engine type.
 
-Emissions-driven and land-based sectors are those whose footprint is dominated by something other than energy use, and whose activity is therefore often measured directly in tonnes of CO₂-equivalent: [Waste](sector_waste.qmd) (landfill methane), [Agriculture](sector_agriculture.qmd), and [Forestry](sector_forestry.qmd), together with the negative-emissions and land-accounting sectors [Direct Air Capture](sector_direct-air-capture.qmd) and [LULUCF](sector_lulucf.qmd). Several of these are deliberately simplified placeholders today, and their chapters flag what a fuller representation would add.
+Land, waste, and removals covers sectors whose emissions come mostly from something other than burning fuel, so their activity is often counted directly in tonnes of CO₂-equivalent: [Waste](sector_waste.qmd) (landfill methane), [Agriculture](sector_agriculture.qmd), and [Forestry](sector_forestry.qmd), along with [Direct Air Capture](sector_direct-air-capture.qmd), which removes CO₂ from the air, and [LULUCF](sector_lulucf.qmd) (land use, land-use change, and forestry). Several of these are simple placeholders today, and their chapters say what a fuller version would add.
 
 ## What each sector chapter contains
 
-The sector chapters follow a common template, so that the same questions can be asked of every part of the economy. Each opens with the sector's **scope**: what it does and does not include, and where adjacent activities are handled to avoid double-counting. A **context** section grounds the model in the actual industry: its scale in Canada, its emission sources, and the levers available to reduce them.
+The sector chapters share one layout, so that each part of the economy answers the same questions:
 
-A **process flowchart** then shows the steps that turn purchased inputs into the sector's products, the site services those steps draw on, and the flows between them. The flowcharts share one visual style, documented in @sec-figure-style. The **model structure** sections walk through the sector's tree in the order of the flowchart. Each process step is followed by its **technologies**: the archetypes from the CIMS technology database that compete to provide it, each with a one-line description, its type (conventional, efficiency variant, alternative, or prospective), and its technology readiness level (TRL). Shared services are listed by name, with a link to the General Services chapter that holds their technologies.
+- *Scope* says what the sector includes and leaves out, and where nearby activities are covered so nothing is counted twice.
+- *Context* describes the real industry: its size in Canada, where its emissions come from, and the main ways to cut them.
+- A *process flowchart* shows the steps that turn the sector's inputs into its products, the services those steps use, and the flows between them. The flowcharts show the sector's structure, not just how it runs today: they name purchased fuels only in general terms, because many newer technologies remove the need for a particular fuel. All the flowcharts share one visual style, described in @sec-figure-style.
+- *Model structure* walks through the steps in the order of the flowchart. Each step is followed by a table of its technologies: the archetypes from the CIMS technology database that compete to provide it, each with a short description and its type (conventional, efficiency variant, alternative, or prospective). Shared services are listed by name, with a link to the General Services chapter that holds their technologies.
+- *Decarbonisation* draws out the main ways those technologies can cut the sector's emissions.
+- *Regional coverage* notes which regions carry the sector and how they differ, and *limitations and planned extensions* records known gaps and future work.
 
-A **decarbonisation** section draws out the main levers among those technologies. The chapter closes with **regional coverage**, noting which regions carry the sector and how they differ, and **limitations and planned extensions**, with embedded TODOs recording the known gaps and the priorities for future work.
-
-The technology lists carry only summary details. The full parameter set for every archetype (costs, energy use, lifetimes, emissions, and sources) is in the technology database's archetype table.
+Where it helps, the chapters cite the sources the technology database draws on for a technology. The tables give only a summary; the technology database's archetype table holds the full set of values for every technology, including costs, energy use, lifetimes, emissions, and sources.
 
 <mark>TODO: Link the published archetype wide-view table (`wide-archetype.csv` in the technology database) here.</mark>
 
-## Cross-cutting conventions
+## Shared conventions
 
-A few conventions hold across all the sector chapters and are worth stating once.
+A few conventions apply to every sector chapter.
 
-The trees are written as a **region-agnostic master tree** and then instantiated for each of the seven modelled regions — Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan — which share a structure but differ in their activity forecasts, fuel prices, and grid emissions intensity. Not every sector appears in every region; coal mining, for instance, is carried only where coal is actually mined.
+*One tree for all regions.* Each sector tree is written once and then set up for each of the seven modelled regions: Alberta, the Atlantic region, British Columbia, Manitoba, Ontario, Québec, and Saskatchewan. The regions share the structure but differ in their activity forecasts, fuel prices, and how clean their electricity is. Not every sector appears in every region; coal mining, for instance, appears only where coal is mined.
 
-Technology choice everywhere uses **behavioural** (revealed or empirical) discount rates rather than true financial costs of capital. These higher rates capture the short payback horizons and adoption barriers that govern real investment decisions, and they are applied throughout the lifecycle-cost calculation, as set out in the [Theory](theory.qmd) chapter and in @sec-technology-competition.
+*Behavioural discount rates.* Technology choices use discount rates drawn from how firms and households actually behave, not their financial cost of borrowing. These rates are higher, because they reflect short payback expectations and other barriers to investment. CIMS uses them throughout the lifecycle cost calculation, as set out in the [Theory](theory.qmd) chapter and in @sec-technology-competition.
 
-Emissions accounting combines combustion CO₂ from the fuels each technology requests with **process emissions** released by chemical reactions independent of energy use — calcination in cement, for example — and, in a few sectors, fugitive methane, all expressed on a CO₂-equivalent basis so that high-warming gases enter at their full weight. Fuels reach the demand sectors as blends, so a rising renewable content in a blend lowers the lifecycle carbon of every technology that draws on it, and **carbon capture** is represented as a shared service that sectors can call on where it applies.
+*Emissions accounting.* Emissions include the CO₂ from the fuels each technology burns, process emissions released by chemical reactions rather than combustion (such as the CO₂ released when limestone is heated to make cement), and, in a few sectors, methane that leaks or is vented. All are counted as CO₂-equivalent, so gases with a stronger warming effect count at their full weight. Fuels reach the sectors as blends, so as the renewable share of a blend rises, every technology that burns it emits less. **Carbon capture** is a shared service that sectors can use where it applies.
 
-Taken together, these shared structures are what let CIMS treat a landfill, a steel mill, and a passenger-vehicle fleet within one consistent framework: each is a flow model of competing technologies, driven by an activity forecast, discounted behaviourally, and accounted on a common emissions basis. The chapters that follow apply that framework, one sector at a time.
+These shared structures let CIMS treat a landfill, a steel mill, and a fleet of cars in one consistent way: each is a flow model of competing technologies, driven by a forecast of activity, using behavioural discount rates, and counted on a common emissions basis.
 
 ```{=latex}
 % PDF only: show chapters but not sections in the TOC for the sector
