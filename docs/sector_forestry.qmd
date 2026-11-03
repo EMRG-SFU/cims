@@ -1,70 +1,76 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Forestry {#sec-forestry}
 
-Logging's direct greenhouse-gas emissions come almost entirely from the diesel burned by harvesting and handling equipment in the bush: feller-bunchers, skidders, harvesters, forwarders, and loaders. CIMS represents the sector as a single mobile-equipment service, in which diesel machines compete with electric ones.
+Logging's direct greenhouse-gas emissions come almost entirely from the diesel burned by the machines that cut and move timber in the forest: feller-bunchers, skidders, harvesters, forwarders, and loaders. CIMS represents the sector as a single service, harvest equipment, where diesel machines compete with electric ones.
 
 ## Scope
 
-The sub-model covers the **fuel use of forestry's mobile equipment**: the off-road machinery that fells, gathers, and moves timber at the harvest site. An exogenous forecast of the sector's emissions, in tonnes of CO₂-equivalent, drives it. Everything beyond the roadside sits elsewhere:
+The sub-model covers the **fuel use of forestry's mobile equipment**: the off-road machines that cut trees, gather them, and move the logs to the roadside. A forecast of the sector's emissions drives it. Everything after the roadside sits elsewhere:
 
-- Log haulage on public roads belongs to @sec-transportation-freight.
-- Milling logs into lumber and pulp belongs to @sec-pulp-and-paper and the wood-products part of @sec-light-industrial.
-- The biological carbon of the forest itself (growth, harvest, and regrowth) belongs to land use, land-use change, and forestry (@sec-lulucf), not this sector.
+- Hauling logs on public roads belongs to @sec-transportation-freight.
+- Turning logs into lumber and pulp belongs to @sec-pulp-and-paper and the wood-products part of @sec-light-industrial.
+- The carbon stored in the forest itself, as trees grow, are cut, and regrow, belongs to land use, land-use change, and forestry (@sec-lulucf), not this sector.
 
 ## Context
 
-Logging uses little energy compared with heavy industry, but what it uses is overwhelmingly diesel, burned in rugged machines that run long duty cycles far from grid power. High power demand, remote sites, and no charging infrastructure make the harvest fleet hard to electrify, which is why diesel still does essentially all the work. The options are those of any off-road diesel fleet: drop-in renewable diesel or biodiesel, battery-electric machines where duty cycles and charging allow, and hydrogen for the heaviest equipment. Canadian work on low- and zero-emission options for the forest sector, much of it through FPInnovations, has so far concentrated on log haulage, where battery-electric Class 8 trucks have shown more than 60 % lower energy use and at least 80 % lower greenhouse-gas emissions than diesel; in-bush machines are a harder, later problem [@fpinnovations-zev].
+Logging uses little energy compared with heavy industry, but almost all of it is diesel. Harvest machines are heavy, work long shifts, and operate far from the electricity grid. Their high power needs, remote sites, and lack of charging make them hard to electrify, so diesel still does nearly all the work.
+
+The options are the same as for any off-road diesel fleet: renewable diesel or biodiesel in place of fossil diesel, battery-electric machines where the work and charging allow, and hydrogen for the heaviest machines. Canadian research on low- and zero-emission options for forestry, much of it through FPInnovations, has so far focused on hauling logs by road. There, battery-electric heavy trucks have shown more than 60 % lower energy use and at least 80 % lower greenhouse-gas emissions than diesel. Machines working in the forest are a harder, later problem [@fpinnovations-zev].
 
 ## Process flow
 
 ::: {#fig-forestry-process}
-![](images/flowcharts/forestry_process-flow_light.svg){.light-content .lightbox group="forestry-light" width=60%}
+![](images/flowcharts/forestry_process-flow_light.svg){.light-content .lightbox group="forestry-light" width=55%}
 
-![](images/flowcharts/forestry_process-flow_dark.svg){.dark-content .lightbox group="forestry-dark" width=60%}
+![](images/flowcharts/forestry_process-flow_dark.svg){.dark-content .lightbox group="forestry-dark" width=55%}
 
-Process flow of the forestry sector. Diesel and electricity power the harvest equipment that delivers logs to the roadside.
+Process flow of the forestry sector. Fuels and electricity power the harvest equipment that delivers logs to the roadside; the mix of fuels depends on which machines win the competition.
 :::
 
 ## Model structure
 
 ### Harvest equipment
 
-The sector has one process step, the **Transport** node in its Product sub-tree, where harvest equipment competes to supply the sector's work. Diesel equipment burns the diesel transportation fuel blend, so renewable content in that blend lowers its lifecycle carbon automatically (see @sec-fuel-blends).
+The sector has one process step, **harvest equipment** (the Transport node in its Product sub-tree), where machines compete to do the sector's work. A diesel machine burns fuel in an engine that drives its wheels, tracks, saws, and cranes. A battery-electric machine runs the same equipment from electric motors and a battery charged from the grid. Electric motors waste much less energy than engines, but a battery big enough for a long shift in the forest is heavy and costly, and charging is hard to arrange far from the grid.
 
-The technology database does not yet cover this node. The model inputs carry two technologies, listed below pending the database:
+Diesel machines burn the diesel fuel blend, so any renewable fuel in that blend lowers their emissions automatically (see @sec-fuel-blends).
+
+The technology database does not yet cover this step. The model inputs carry two technologies, listed below until the database adds them:
 
 ::: {.tech-block}
 Technologies (from the model inputs, pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Diesel | Diesel harvesting and handling equipment; the whole base-year fleet. | Conventional | 9 |
-| Electric | Battery-electric equipment drawing grid electricity, with the same energy requirement per unit of work and a twenty-year lifetime. | Alternative | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Diesel | Diesel harvesting and handling equipment; the whole fleet in the base year. | Conventional |
+| Electric | Battery-electric equipment charged from the grid, needing the same energy for each unit of work and lasting twenty years. | Alternative |
 
 :::
 
-The two technologies carry only a lifetime and their energy requests; their fuel prices are borrowed from Agriculture as a proxy.
+The two technologies carry only a lifetime and the energy they use; their fuel prices are borrowed from Agriculture.
 
-<mark>TODO: Map the forestry Transport node to the database's on-site mobile-equipment archetypes (diesel, hybrid, battery-electric, and hydrogen equipment), which currently serve construction and natural-gas field vehicles, and populate capital, operating, and emission data.</mark>
+<mark>TODO: Link the forestry Transport node to the database's on-site mobile equipment (diesel, hybrid, battery-electric, and hydrogen machines), which currently serves construction and natural-gas field vehicles [@dea_2026_005], and add capital, operating, and emission data.</mark>
 
 ## Decarbonisation
 
-- **Cleaner diesel.** Raising the renewable content of the diesel blend cuts lifecycle carbon across the whole fleet with no change to the machines.
-- **Electrification.** Battery-electric equipment removes exhaust emissions, but in-bush power, runtime, and charging demands hold it back; it is emerging fastest in lighter machines and at the roadside.
-- **Hydrogen.** Fuel cells remain early-stage and depend on hydrogen reaching remote sites.
+- **Cleaner diesel.** Adding renewable fuel to the diesel blend cuts emissions across the whole fleet with no change to the machines.
+- **Electrification.** Battery-electric machines remove exhaust emissions, but the power, run time, and charging that work in the forest needs hold them back. They are spreading fastest in lighter machines and at the roadside.
+- **Hydrogen.** Fuel cells are still at an early stage and depend on hydrogen reaching remote sites.
 
 ## Regional coverage
 
-All seven modelled regions carry the forestry structure, scaled by an exogenous emissions forecast that follows the size of each region's logging industry: British Columbia is by far the largest, followed by Québec and Ontario, with the Prairie provinces much smaller.
+All seven modelled regions carry the forestry sector, scaled by an emissions forecast that follows the size of each region's logging industry. British Columbia is by far the largest, followed by Québec and Ontario; the Prairie provinces are much smaller.
 
 ## Limitations and planned extensions
 
-The forestry sub-model is a placeholder. It collapses the harvest fleet into one aggregate service, its technologies are not yet costed, and its fuel prices are proxied from agriculture. Because forestry's footprint is small, this coarse treatment is a reasonable interim, but costing the technologies is the minimum needed for the fleet to respond to policy.
+The forestry sub-model is a placeholder. It treats the harvest fleet as one service, its technologies are not yet costed, and its fuel prices are borrowed from Agriculture. Forestry's emissions are small, so this simple treatment is reasonable for now, but the fleet cannot respond to policy until its technologies have costs.
 
-<mark>TODO: Replace the agriculture-proxied prices with sector values, and benchmark modelled forestry fuel use against Natural Resources Canada and FPInnovations data.</mark>
+<mark>TODO: Replace the prices borrowed from Agriculture with sector values, and check modelled forestry fuel use against Natural Resources Canada and FPInnovations data.</mark>
 
 {{< pagebreak >}}
 
