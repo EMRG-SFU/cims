@@ -6,88 +6,90 @@ aliases:
 
 # Transportation (Passenger) {#sec-transportation-passenger}
 
-Passenger transportation meets a demand for personal mobility, in passenger-kilometres, by competing travel modes and, within road travel, competing vehicle powertrains. It is among Canada's largest emitting sectors, and its technology choices are unusually shaped by consumer preferences (range, refuelling convenience, vehicle size, and power), which CIMS represents through intangible costs alongside financial costs.
+Passenger transportation covers how people travel: by car, transit, intercity bus and train, plane, or on foot and by bike. CIMS lets these ways of travelling compete, and within road travel it lets different kinds of vehicles compete, for example gasoline against battery-electric cars. The sector is one of Canada's largest sources of emissions. People's choices about vehicles depend on more than cost (range, ease of refuelling, size, and power all matter), so CIMS adds non-financial costs, called intangible costs, to reproduce how people actually choose.
 
 ## Scope
 
-The sub-model covers urban and intercity travel by people: personal vehicles (cars and light trucks), urban transit (public bus, ferry, and light rail), intercity bus and rail, intercity air, and walking and cycling. Travel demand is projected exogenously and can shift between modes as relative costs change.
+The sub-model covers urban and intercity travel by people: personal vehicles (cars and light trucks), urban transit (public bus, ferry, and light rail), intercity bus and rail, air travel between cities, and walking and cycling. Total travel demand is projected for each region, and it can shift between ways of travelling as their relative costs change.
 
-Adjacent activities sit elsewhere: freight movement in @sec-transportation-freight; the fuels in the energy-supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and vehicle manufacturing in @sec-light-industrial.
+Related activities sit elsewhere: moving goods in @sec-transportation-freight; supplying fuels and electricity in the energy supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and building vehicles in @sec-light-industrial.
 
 ## Context
 
-Transportation is responsible for roughly a quarter of Canada's greenhouse-gas emissions, and light-duty passenger vehicles are its single largest part. The emissions come overwhelmingly from burning gasoline and diesel [@eccc-zev]. Policy is driving a rapid transition: Canada's zero-emission vehicle (ZEV) mandate requires all new light-duty vehicle sales to be zero-emission by 2035, with interim targets of 20 % by 2026 and 60 % by 2030, where a ZEV is a battery-electric, plug-in hybrid, or fuel-cell vehicle [@eccc-zev].
+Transportation produces roughly a quarter of Canada's greenhouse gas emissions, and cars and light trucks are its largest part. Nearly all of those emissions come from burning gasoline and diesel [@eccc-zev]. Policy is pushing a fast change: Canada's zero-emission vehicle (ZEV) mandate requires all new car and light truck sales to be zero-emission by 2035, with interim targets of 20 % by 2026 and 60 % by 2030. A ZEV is a battery-electric, plug-in hybrid, or hydrogen fuel-cell vehicle [@eccc-zev].
 
-Battery-electric vehicles cost more to buy than gasoline vehicles but have 66–77 % lower fuel and maintenance costs, and the purchase-price gap is closing [@nrcan-ev]. Moving trips from single-occupant vehicles to shared vehicles, transit, and active modes cuts energy per passenger-kilometre, and electrifying transit buses cuts their emissions by around 93 % [@transit-elec]. Consumer choice is not driven by cost alone, though: range anxiety, refuelling availability, and preferences for larger, more powerful vehicles all matter, and CIMS carries intangible costs to reproduce observed behaviour.
+Battery-electric vehicles cost more to buy than gasoline vehicles, but cost 66–77 % less to fuel and maintain, and the price gap is closing [@nrcan-ev]. Moving trips from cars with one person in them to shared cars, transit, walking, and cycling uses less energy per trip, and switching transit buses to electricity cuts their emissions by around 93 % [@transit-elec]. Cost isn't everything, though: worry about range, the availability of charging and refuelling, and a preference for larger, more powerful vehicles all shape what people buy.
 
 ## Process flow
 
-@fig-transportation-passenger-process shows the structure of the sub-model. Travel demand splits into urban, intercity land, and intercity air travel; each mode requests the vehicles or transit services that carry it; and passenger vehicles request powertrains.
+@fig-transportation-passenger-process shows how the sub-model is put together. Travel demand splits into urban travel, intercity travel by land, and intercity travel by air; each draws on the vehicles or transit services that carry it; and passenger vehicles draw on powertrains, the engine or motor and fuel system that moves the vehicle. The chart shows structure only: the fuels and electricity each vehicle uses are not drawn, because the competition between vehicles decides them.
 
 ::: {#fig-transportation-passenger-process}
 ![](images/flowcharts/transportation-passenger_process-flow_light.svg){.light-content .lightbox group="transportation-passenger-light"}
 
 ![](images/flowcharts/transportation-passenger_process-flow_dark.svg){.dark-content .lightbox group="transportation-passenger-dark"}
 
-Process flow of the passenger transportation sector. Travel demand by mode forms the Product sub-tree; vehicles, transit, and powertrains form the Service sub-tree.
+Process flow of the passenger transportation sector. Travel demand by way of travelling makes up the Product sub-tree, and vehicles, transit, and powertrains make up the Service sub-tree.
 :::
 
 ## Model structure
 
-The technology database does not yet cover passenger transportation. The tables in this chapter summarize the modes and technologies in the current CIMS model input files and will be replaced by database archetypes when they are added.
+The technology database does not cover passenger transportation yet. The tables in this chapter summarize the ways of travelling and the technologies in the current CIMS model input files; database technologies will replace them once they are added.
 
-### Travel modes
+### Ways of travelling
 
-The Product sub-tree splits travel demand into three nodes, each a competition among modes. Mode shift (from single-occupant vehicles to shared vehicles, transit, and walking and cycling, or from cars to buses and trains) is one of the main actions the sub-model simulates.
+The Product sub-tree splits travel demand into three groups, and in each the ways of travelling compete. Shifting travel from cars with one person in them to shared cars, transit, walking, and cycling, or from cars to buses and trains, is one of the main changes the sub-model can show. Cars carrying more people, transit, and active travel use less energy per person moved, but they differ in convenience, travel time, and comfort, which the intangible costs capture.
 
 ::: {.tech-block}
-Modes (pending the technology database)
+Ways of travelling (pending the technology database)
 
-| Mode | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Urban: single-occupant vehicle | A passenger vehicle carrying its driver alone. | Conventional | n/a |
-| Urban: high-occupancy vehicle | A passenger vehicle carrying two or more people. | Conventional | n/a |
-| Urban: public transit | Bus, ferry, and light rail. | Conventional | n/a |
-| Urban: walking and cycling | Active travel. | Conventional | n/a |
-| Intercity land | Passenger vehicle, intercity bus, and intercity rail. | Conventional | n/a |
-| Intercity air | Conventional, efficient, electric, and hydrogen aircraft. | Conventional to prospective | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Urban: single-occupant vehicle | A car or light truck carrying only its driver. | Conventional |
+| Urban: high-occupancy vehicle | A car or light truck carrying two or more people. | Conventional |
+| Urban: public transit | Bus, ferry, and light rail. | Conventional |
+| Urban: walking and cycling | Getting around on foot or by bike. | Conventional |
+| Intercity land | Car, intercity bus, and intercity train. | Conventional |
+| Intercity air | Conventional, more efficient, electric, and hydrogen aircraft. | Conventional to prospective |
 :::
 
 ### Passenger vehicles and powertrains
 
-The **Passenger Vehicles** node splits vehicle travel by size class: small and large cars, and small and large light trucks. Each class requests **powertrains**, where the competition between gasoline and zero-emission vehicles takes place. Powertrain and efficiency are set for new vehicles; older vehicles are tracked and retired through stock turnover, so even a sales mandate changes the fleet gradually.
+The **Passenger Vehicles** step splits car travel by vehicle size: small and large cars, and small and large light trucks (pickups, SUVs, and vans). Each size draws on **powertrains**, where gasoline and zero-emission vehicles compete. Gasoline vehicles burn fuel and emit CO₂ directly; battery-electric vehicles produce no tailpipe emissions, and their emissions depend on how the region generates electricity; fuel-cell vehicles depend on how their hydrogen is made.
+
+People choose a powertrain only when they buy a new vehicle. Older vehicles stay on the road until they wear out, so even a sales mandate changes the fleet gradually.
 
 ::: {.tech-block}
 Technologies (pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Gasoline vehicle | Existing, standard, and efficient internal-combustion vehicles. | Conventional | n/a |
-| Hybrid electric vehicle | Gasoline vehicle with an electric drive and no plug. | Efficiency variant | n/a |
-| Plug-in hybrid | Battery-electric driving with a gasoline engine for longer trips. | Alternative | n/a |
-| Battery-electric vehicle | Two range classes, of about 500 and 800 km. | Alternative | n/a |
-| Fuel-cell vehicle | Hydrogen fuel-cell vehicle. | Alternative | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Gasoline vehicle | Existing, standard, and more efficient gasoline vehicles. | Conventional |
+| Hybrid electric vehicle | A gasoline vehicle with an electric motor and battery but no plug. | Efficiency variant |
+| Plug-in hybrid | Drives on battery power, with a gasoline engine for longer trips. | Alternative |
+| Battery-electric vehicle | Two range classes, of about 500 and 800 km. | Alternative |
+| Fuel-cell vehicle | A hydrogen fuel-cell vehicle. | Alternative |
 :::
 
 ### Transit, intercity bus, and intercity rail
 
-**Urban transit** splits into public buses (including urban ferries) and rapid transit (light rail). **Intercity bus** and **intercity rail** carry the intercity land travel that doesn't go by car.
+**Urban transit** splits into public buses (including urban ferries) and rapid transit (light rail). **Intercity bus** and **intercity rail** carry the intercity travel by land that doesn't go by car. Diesel buses and trains burn fuel; electric, battery, and hydrogen options cut direct emissions, at higher up-front cost.
 
 ::: {.tech-block}
 Technologies (pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| Diesel bus | Urban and intercity diesel buses; intercity gasoline buses. | Conventional | n/a |
-| Hybrid bus | Diesel-electric hybrid, on diesel or biodiesel. | Efficiency variant | n/a |
-| Natural gas bus | Compressed natural gas bus. | Alternative | n/a |
-| Battery-electric bus | Urban electric bus. | Alternative | n/a |
-| Hydrogen bus | Fuel-cell bus, urban and intercity. | Alternative | n/a |
-| Urban ferry | Ferry serving urban transit routes. | Conventional | n/a |
-| Light rail | Electric rapid transit. | Conventional | n/a |
-| Diesel train | Standard and efficient diesel locomotives, and diesel hybrids on biodiesel. | Conventional | n/a |
-| Electric train | Electrified intercity rail. | Alternative | n/a |
-| Hydrogen train | Fuel-cell intercity rail. | Prospective | n/a |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| Diesel bus | Urban and intercity diesel buses, and intercity gasoline buses. | Conventional |
+| Hybrid bus | A diesel-electric hybrid bus, running on diesel or biodiesel. | Efficiency variant |
+| Natural gas bus | A bus running on compressed natural gas. | Alternative |
+| Battery-electric bus | An electric bus for urban routes. | Alternative |
+| Hydrogen bus | A fuel-cell bus for urban and intercity routes. | Alternative |
+| Urban ferry | A ferry serving urban transit routes. | Conventional |
+| Light rail | Electric rapid transit. | Conventional |
+| Diesel train | Standard and more efficient diesel trains, and diesel hybrids running on biodiesel. | Conventional |
+| Electric train | Intercity trains powered from overhead wires. | Alternative |
+| Hydrogen train | A fuel-cell intercity train. | Prospective |
 :::
 
 ### Shared services
@@ -96,24 +98,24 @@ Vehicles and transit draw fuel from the sector's gasoline, diesel, and methane b
 
 ## Decarbonisation
 
-- **Electrifying the light-duty fleet.** Battery-electric, plug-in hybrid, hybrid, and fuel-cell powertrains compete against gasoline, and the ZEV transition emerges from their falling capital costs and much lower running costs, tempered by the intangible costs of range, charging and refuelling availability, and vehicle size.
-- **Mode shift.** Shifting trips from single-occupant cars to shared vehicles, transit, and active travel lowers energy per passenger-kilometre, governed by the intangible-cost differences between modes.
+- **Electric cars and light trucks.** Battery-electric, plug-in hybrid, hybrid, and fuel-cell vehicles compete with gasoline vehicles. The switch to zero-emission vehicles follows from their falling purchase prices and much lower running costs, slowed by the intangible costs of range, charging and refuelling, and vehicle size.
+- **Changing how people travel.** Moving trips from single-occupant cars to shared cars, transit, and active travel uses less energy per person moved, depending on how people weigh the convenience of each.
 - **Transit and rail.** Electric and hydrogen buses and trains compete directly with diesel; electrifying transit buses cuts their emissions by around 90 % [@transit-elec].
-- **Aviation.** Efficient, electric, and hydrogen aircraft compete for intercity air travel, the last two mainly on short routes. Sustainable aviation fuel, the main near-term route, is not yet represented.
+- **Aviation.** More efficient, electric, and hydrogen aircraft compete for intercity air travel, the last two mainly on short routes. Sustainable aviation fuel, the main near-term option, is not yet represented.
 
-Intangible costs matter more here than in any other sector: they encode consumers' revealed willingness to pay for size and power and their preferences for the range and refuelling convenience of gasoline, calibrated from market data and stated-preference surveys. Financial costs are discounted at behavioural rates of around 8 % for long-lived transit and rail assets and around 25 % for personal vehicles in the current data (see @sec-technology-competition). The emissions benefit of electrification depends on the regional grid, and that of biofuels on their lifecycle intensity.
+Intangible costs matter more here than in any other sector. They represent what people have shown they will pay for larger, more powerful vehicles and for the range and easy refuelling of gasoline, calibrated from market data and surveys. The current data discount costs at about 8 % for long-lived transit and rail and about 25 % for personal vehicles (see @sec-technology-competition). How much electric vehicles cut emissions depends on the regional grid, and how much biofuels cut emissions depends on how they are made.
 
 ## Regional coverage and differences
 
-All seven modelled regions carry the passenger structure. Denser regions support more transit and active travel, while dispersed regions are more car-dependent; grid carbon intensity sets how much electrification reduces emissions (a lot in Québec, British Columbia, and Manitoba; less in Alberta and Saskatchewan until their grids decarbonise); and the availability of charging and hydrogen networks enters through the intangible costs.
+All seven modelled regions include passenger transportation. Denser regions support more transit, walking, and cycling, while spread-out regions depend more on cars. The regional grid decides how much electrification cuts emissions: a lot in Québec, British Columbia, and Manitoba, and less in Alberta and Saskatchewan until their grids are cleaner. How widely charging and hydrogen stations are available enters through the intangible costs.
 
-<mark>TODO: Calibrate the regional mode-share baselines and the intangible costs of transit and active modes against current travel-survey data.</mark>
+<mark>TODO: Calibrate the regional shares of each way of travelling, and the intangible costs of transit and active travel, against current travel survey data.</mark>
 
 ## Limitations and planned extensions
 
-<mark>TODO: Add sustainable aviation fuel and e-fuels to the intercity air competition; they are the principal decarbonisation routes for aviation.</mark>
+<mark>TODO: Add sustainable aviation fuel and e-fuels to the intercity air competition; they are the main ways to decarbonise aviation.</mark>
 
-<mark>TODO: Many intangible-cost parameters are under review against stated-preference survey data, so the modelled pace of the ZEV transition is sensitive to them. Refresh them, add the passenger technologies to the technology database, and benchmark modelled energy use and mode shares against Transport Canada and Natural Resources Canada data.</mark>
+<mark>TODO: Many intangible-cost parameters are under review against survey data, and the modelled pace of the switch to zero-emission vehicles is sensitive to them. Refresh them, add the passenger technologies to the technology database, and benchmark modelled energy use and travel shares against Transport Canada and Natural Resources Canada data.</mark>
 
 {{< pagebreak >}}
 
