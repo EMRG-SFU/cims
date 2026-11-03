@@ -1,4 +1,6 @@
 # Waste process flowchart. See appendix_figure-style.qmd for the format.
+# The landfill-gas card is a summary, not a hierarchy node: at each site size
+# the gas is vented, flared, or burned for electricity.
 sector: waste
 title: Waste
 
@@ -10,16 +12,16 @@ nodes:
      branch: waste.product.medium-sites}
   - {id: small, label: Small landfills, icon: landfill, role: process, at: [1, 2],
      branch: waste.product.small-sites}
-  - {id: air, label: Vented CH₄ or flared CO₂, icon: stack, role: emission, at: [2.6, 0]}
-  - {id: power, label: Electricity to grid, icon: electricity, role: output, at: [2.6, 2]}
+  - {id: gas, label: Landfill gas, icon: methane, role: emission, at: [2, 1]}
+  - {id: air, label: Vented CH₄ or flared CO₂, icon: stack, role: emission, at: [3, 0]}
+  - {id: power, label: Electricity to grid, icon: electricity, role: output, at: [3, 2]}
 
 edges:
   - [organics, large]
   - [organics, medium]
   - [organics, small]
-  - {from: large, to: air, kind: emission, turn: early}
-  - {from: medium, to: air, kind: emission, turn: early}
-  - {from: small, to: air, kind: emission, turn: early}
-  - {from: large, to: power, kind: energy, turn: late}
-  - {from: medium, to: power, kind: energy, turn: late}
-  - {from: small, to: power, kind: energy, turn: late}
+  - {from: large, to: gas, kind: emission}
+  - {from: medium, to: gas, kind: emission}
+  - {from: small, to: gas, kind: emission}
+  - {from: gas, to: air, kind: emission}
+  - {from: gas, to: power, kind: energy}

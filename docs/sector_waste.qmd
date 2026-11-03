@@ -4,23 +4,23 @@ bibliography: references.bib
 
 # Waste {#sec-waste}
 
-The waste sector's greenhouse-gas footprint is dominated by one non-CO₂ gas: methane generated as organic waste decomposes in landfills. CIMS builds the sector around managing that landfill gas, choosing whether each landfill vents it, flares it, or burns it to generate electricity. The sector's activity is measured in tonnes of CO₂-equivalent.
+Most of the waste sector's greenhouse-gas emissions come from one gas: methane released as food, paper, and other organic waste rots in landfills. CIMS builds the sector around what happens to that landfill gas: whether each landfill lets it escape, burns it in a flare, or burns it to generate electricity. The sector's activity is measured in tonnes of CO₂-equivalent (the warming effect of its gases expressed as CO₂).
 
 ## Scope
 
-The sub-model covers the **management of landfill gas** at municipal solid waste disposal sites, grouped by size, because the economics of gas collection depend strongly on how much gas a site produces. An exogenous forecast of the methane-generation potential of waste in place drives it; the forecast declines over the projection as diversion reduces the organic material sent to landfill.
+The sub-model covers **landfill gas management** at municipal solid-waste landfills. It groups landfills by size, because whether it pays to collect the gas depends on how much gas a site produces. A forecast of how much methane the waste already in landfills can produce drives the sector. That forecast falls over time, as programs that divert food and yard waste send less organic material to landfill.
 
-Adjacent activities sit elsewhere or are not yet represented:
+Related activities sit elsewhere or are not yet represented:
 
-- Waste collection and haulage belong to @sec-transportation-freight.
-- Waste burned as fuel, such as waste-derived fuel in cement kilns, is counted in the sector that burns it.
-- Wastewater treatment methane and waste incineration are not yet represented.
+- Collecting and hauling waste belongs to @sec-transportation-freight.
+- Waste burned as fuel, such as fuel made from waste for cement kilns, is counted in the sector that burns it.
+- Methane from wastewater treatment, and burning waste in incinerators, are not yet represented.
 
 ## Context
 
-As the organic fraction of municipal solid waste (food, paper, wood, and yard trimmings) decomposes without oxygen in a landfill, it generates landfill gas that is roughly half methane and half CO₂. Methane's global-warming potential is many times CO₂'s (about 28–30 over 100 years, and far higher over 20 years), so uncontrolled landfill gas is the sector's defining problem and its largest abatement opportunity.
+When organic waste (food, paper, wood, and yard trimmings) breaks down in a landfill, it is buried away from air. Without oxygen, microbes break it down into landfill gas, which is roughly half methane and half CO₂. Methane traps far more heat than CO₂: about 28 to 30 times as much over 100 years, and far more over 20 years. Uncontrolled landfill gas is therefore the sector's main problem and its biggest opportunity to cut emissions.
 
-The levers are well established. Collecting the gas and **flaring** it converts the methane to CO₂, cutting its warming impact roughly 25-fold at modest cost. Using it for **energy**, by generating electricity or upgrading it to renewable natural gas, does the same while displacing fossil energy and earning revenue. Upstream, diverting organics through composting and anaerobic digestion stops the methane forming. Canada has committed under the Global Methane Pledge to cut methane sharply by 2030, and federal regulations requiring gas capture at large municipal landfills are central to that effort [@eccc-waste].
+The ways to cut it are well established. A landfill can collect the gas through a network of wells and pipes and burn it in a **flare**, which turns the methane into CO₂ and cuts its warming effect about 25-fold at modest cost. It can instead use the gas for **energy**, by burning it in an engine to generate electricity or cleaning it into renewable natural gas. That cuts methane in the same way while replacing fossil energy and earning revenue. Further upstream, composting and anaerobic digestion (breaking organic waste down in sealed tanks to make biogas) keep organic waste out of landfills, so the methane never forms. Canada has committed under the Global Methane Pledge to cut methane sharply by 2030, and federal rules requiring large municipal landfills to capture their gas are central to that effort [@eccc-waste].
 
 ## Process flow
 
@@ -29,49 +29,55 @@ The levers are well established. Collecting the gas and **flaring** it converts 
 
 ![](images/flowcharts/waste_process-flow_dark.svg){.dark-content .lightbox group="waste-dark" width=75%}
 
-Process flow of the waste sector. Each landfill size class vents, flares, or generates electricity from its landfill gas.
+Process flow of the waste sector. Organic waste in each size of landfill produces landfill gas, which is vented, flared, or burned to generate electricity.
 :::
 
 ## Model structure
 
 ### Landfill sites
 
-The Product sub-tree splits the landfill stock into **Large Sites**, **Medium Sites**, and **Small Sites**. The same three gas-management options compete at each, with costs that differ by size: large landfills produce enough gas to justify a collection system and an engine, while small ones often cannot. The technology database does not yet cover the waste sector, so the technologies come from the model inputs, pending the database.
+The Product sub-tree splits landfills into **large**, **medium**, and **small sites**. The same three ways of handling landfill gas compete at each size, but their costs differ:
+
+- **No control** leaves the gas to seep out of the landfill surface. It costs nothing, but all the methane reaches the air.
+- **Flaring** needs a gas collection system: wells drilled into the waste, pipes, and a blower that draws the gas to a flare, where it burns. Burning turns the methane into CO₂. The collection system costs roughly the same regardless of how much gas a site produces, so it is cheapest per tonne at large sites.
+- **Electricity generation** uses the same collection system but burns the gas in an engine that drives a generator, sending power to the grid. The engine adds cost, but selling the electricity earns revenue. Large landfills produce enough gas to justify an engine; small ones often do not.
+
+The technology database does not yet cover the waste sector, so the technologies come from the model inputs until the database adds them.
 
 ::: {.tech-block}
 Technologies at each site size (from the model inputs, pending the technology database)
 
-| Technology | What it is | Type | TRL |
-|:------------------------|:------------------------------------------------------|:--------------|:------|
-| No control | Landfill gas vents uncontrolled, so the site emits its full methane potential as CH₄. | Conventional | 9 |
-| Flaring | A collection system captures the gas and flares it, so the carbon leaves as CO₂ instead of CH₄. | Alternative | 9 |
-| Electricity generation | The captured gas fuels an engine that generates electricity for the grid, also emitting CO₂ instead of CH₄. | Alternative | 9 |
+| Technology | What it is | Type |
+|:--------------------------|:----------------------------------------------------------|:----------------|
+| No control | Landfill gas escapes uncontrolled, so all the methane the site can produce reaches the air. | Conventional |
+| Flaring | A collection system captures the gas and burns it in a flare, so the carbon leaves as CO₂ instead of methane. | Alternative |
+| Electricity generation | The captured gas fuels an engine that generates electricity for the grid; the carbon also leaves as CO₂ instead of methane. | Alternative |
 
 :::
 
-The flaring and generation options request the captured gas as biogas, and generation returns electricity to the grid. The sector also carries a methane fuel blend node (see @sec-fuel-blends).
+The flaring and generation options draw on the captured gas as biogas, and generation sends electricity back to the grid. The sector also has a methane fuel blend (see @sec-fuel-blends).
 
-<mark>TODO: Add upstream organics diversion (composting and anaerobic digestion) to reduce the methane-generation potential itself, a renewable natural gas upgrading option alongside electricity generation, and an explicit gas-capture efficiency rather than an all-or-nothing control choice.</mark>
+<mark>TODO: Add upstream diversion of organic waste (composting and anaerobic digestion) to reduce how much methane the waste can produce, an option to clean the gas into renewable natural gas alongside electricity generation, and an explicit share of gas captured rather than an all-or-nothing choice.</mark>
 
 ## Decarbonisation
 
-- **Stop venting.** Collection and flaring is cheap and high-impact, and works at almost any site size.
-- **Recover energy.** Where a site produces enough gas, electricity generation earns revenue that offsets its cost, which favours large sites.
-- **Prevent generation.** Composting and anaerobic digestion keep organics out of landfill, the lever that federal and municipal policy increasingly emphasises, but the model does not yet represent them.
+- **Stop venting.** Collecting and flaring the gas is cheap and cuts a lot of emissions, and works at almost any size of site.
+- **Recover energy.** Where a site produces enough gas, selling electricity pays back part of the cost, which favours large sites.
+- **Prevent the gas forming.** Composting and anaerobic digestion keep organic waste out of landfills. Federal and municipal policy increasingly emphasizes this, but the model does not yet represent it.
 
-The emissions accounting is almost entirely non-CO₂. No control emits the site's full potential as CH₄, while flaring and generation emit the same carbon as CO₂; on a CO₂-equivalent basis the difference is the large methane-versus-CO₂ warming gap. Even a modest carbon price or a landfill methane regulation therefore drives a large shift from venting to flaring and energy recovery.
+Almost all of the sector's emissions are methane rather than CO₂. With no control, a site releases all its potential methane; flaring and generation release the same carbon as CO₂ instead. Counted by warming effect, the difference is large, so even a modest carbon price or a landfill methane regulation shifts sites from venting to flaring and energy recovery.
 
 ## Regional coverage and differences
 
-All seven modelled regions carry the waste structure, each with large, medium, and small landfills. The methane-generation potential follows population and waste arisings, and declines as diversion programmes cut the organic fraction. The value of recovered electricity depends on each region's grid and power price.
+All seven modelled regions carry the waste sector, each with large, medium, and small landfills. How much methane the waste can produce follows population and the amount of waste generated, and falls as diversion programs cut the organic share. The value of the electricity recovered depends on each region's grid and power price.
 
-<mark>TODO: Calibrate the regional split across site sizes and the baseline control levels (vent, flare, or energy) against the National Inventory Report and provincial landfill data.</mark>
+<mark>TODO: Calibrate the regional split across site sizes and the starting mix of venting, flaring, and energy recovery against the National Inventory Report and provincial landfill data.</mark>
 
 ## Limitations and planned extensions
 
-The waste sub-model captures the dominant source, landfill methane, and the central choice between venting, flaring, and energy recovery. It omits organics diversion, renewable natural gas, explicit capture efficiency, wastewater treatment methane, and waste incineration.
+The waste sub-model captures the largest source, landfill methane, and the central choice between venting, flaring, and energy recovery. It leaves out diverting organic waste, renewable natural gas, the share of gas actually captured, methane from wastewater treatment, and waste incineration.
 
-<mark>TODO: Add wastewater-treatment methane and waste incineration, make the methane-generation potential respond to waste composition and diversion policy, and benchmark modelled landfill methane against the National Inventory Report.</mark>
+<mark>TODO: Add methane from wastewater treatment and waste incineration, make the landfill methane forecast respond to waste composition and diversion policy, and check modelled landfill methane against the National Inventory Report.</mark>
 
 {{< pagebreak >}}
 
