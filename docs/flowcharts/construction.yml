@@ -1,19 +1,17 @@
 # Construction process flowchart. See appendix_figure-style.qmd for the format.
+# Fuels are shown generically: the equipment options run on diesel blends,
+# electricity, hydrogen, or propane, and the mix changes over time.
 sector: construction
 title: Construction
 
 nodes:
-  - {id: diesel, label: Diesel, icon: liquid-fuel, role: input, at: [0, 0]}
-  - {id: electricity, label: Electricity, icon: electricity, role: input, at: [0, 1]}
-  - {id: hydrogen, label: Hydrogen or propane, icon: hydrogen, role: input, at: [0, 2]}
+  - {id: energy, label: Fuels and electricity, icon: electricity, role: input, at: [0, 1]}
   - {id: equipment, label: Site equipment, icon: truck, role: process, at: [1, 1],
      branch: construction.product.transport}
   - {id: works, label: Building and civil works, icon: building, role: output, at: [2, 1]}
   - {id: co2, label: Exhaust CO₂, icon: stack, role: emission, at: [2, 0]}
 
 edges:
-  - [diesel, equipment]
-  - [electricity, equipment]
-  - [hydrogen, equipment]
+  - {from: energy, to: equipment, kind: energy}
   - [equipment, works]
   - {from: equipment, to: co2, kind: emission, sides: [top, left]}

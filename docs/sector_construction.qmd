@@ -1,59 +1,75 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Construction {#sec-construction}
 
-Construction's direct greenhouse-gas emissions come almost entirely from the diesel burned by off-road equipment on building and civil-engineering sites: excavators, loaders, dozers, graders, cranes, and dump trucks. CIMS therefore represents the sector as a single mobile-equipment service, in which diesel machines compete with electric and other lower-carbon equipment.
+Construction's direct greenhouse-gas emissions come almost entirely from the fuel burned by the machines that work on building and civil-engineering sites: excavators, loaders, bulldozers, graders, cranes, and dump trucks. CIMS represents the sector as a single service, site equipment, where diesel machines compete with hybrid, electric, and hydrogen machines.
 
 ## Scope
 
-The sub-model covers the **fuel use of construction's mobile equipment**: the off-road machinery that excavates, lifts, grades, and moves material on site. An exogenous forecast of the sector's emissions, in tonnes of CO₂-equivalent, drives it. This is the operational fuel of the construction process only:
+The sub-model covers the **fuel use of construction's mobile equipment**: the off-road machines that dig, lift, level, and move material on site. A forecast of the sector's emissions drives it. It counts only the fuel these machines burn during construction:
 
-- The embodied carbon of construction materials sits with the industries that make them, such as cement in @sec-industrial-minerals and steel in @sec-iron-and-steel.
+- The carbon released in making construction materials sits with the industries that make them, such as cement in @sec-industrial-minerals and steel in @sec-iron-and-steel.
 - The energy a finished building uses belongs to @sec-residential and @sec-commercial.
 
 ## Context
 
-Construction's direct emissions are an off-road diesel problem. Sites run a wide mix of heavy machines, most of them diesel, often idling and working in stop-start cycles. Three options can decarbonise them: drop-in renewable diesel or biodiesel, which cuts lifecycle carbon with no change to the equipment; battery-electric machines; and hydrogen for the heaviest duty. Electrification has moved faster here than in any other off-road sector, because many construction machines are compact, work fixed-hour shifts, and operate in cities where noise and local air quality matter. Major manufacturers now ship battery-electric excavators and loaders at a purchase premium of roughly 50–100 %, partly offset by lower fuel and maintenance costs [@idtechex-construction-ev].
+A construction site runs a wide mix of heavy machines, most of them diesel. They often idle and work in stop-start cycles, which wastes fuel. Three options can cut their emissions:
+
+- Renewable diesel or biodiesel can replace fossil diesel without any change to the machines.
+- Battery-electric machines remove exhaust emissions on site.
+- Hydrogen engines and fuel cells could serve the heaviest machines in future.
+
+Electric machines have spread faster in construction than in other off-road uses. Many construction machines are compact, work fixed shifts, and operate in cities, where noise and local air quality matter. Major manufacturers now sell battery-electric excavators and loaders. They cost roughly 50–100 % more to buy, but part of that comes back through lower fuel and maintenance costs [@idtechex-construction-ev].
 
 ## Process flow
 
 ::: {#fig-construction-process}
-![](images/flowcharts/construction_process-flow_light.svg){.light-content .lightbox group="construction-light" width=75%}
+![](images/flowcharts/construction_process-flow_light.svg){.light-content .lightbox group="construction-light" width=60%}
 
-![](images/flowcharts/construction_process-flow_dark.svg){.dark-content .lightbox group="construction-dark" width=75%}
+![](images/flowcharts/construction_process-flow_dark.svg){.dark-content .lightbox group="construction-dark" width=60%}
 
-Process flow of the construction sector. Fuels and electricity power the site equipment that carries out building and civil works.
+Process flow of the construction sector. Fuels and electricity power the site equipment that carries out building and civil works; the mix of fuels depends on which machines win the competition.
 :::
 
 ## Model structure
 
 ### Site equipment
 
-The sector has one process step, the **Transport** node in its Product sub-tree, where mobile equipment competes to supply the sector's site work. It uses the same on-site mobile-equipment technologies the database offers for oil-and-gas field vehicles. Diesel machines burn the diesel transportation fuel blend, so any renewable content in that blend lowers their lifecycle carbon automatically (see @sec-fuel-blends).
+The sector has one process step, **site equipment** (the Transport node in its Product sub-tree). Here the machines compete to do the sector's site work. The options are the same on-site mobile equipment the technology database describes for other off-road uses, such as oil-and-gas field vehicles [@dea_2026_005]. They differ in how they turn fuel into work:
+
+- A **diesel machine** burns diesel in an engine that drives the wheels, tracks, and hydraulics directly. It is cheap to buy and refuels quickly, but it wastes much of its fuel as heat, especially when idling.
+- A **diesel-electric hybrid** adds a battery and electric drive. It recovers energy when the machine brakes or lowers a load, and lets the engine run more steadily, which saves fuel in stop-start work.
+- A **battery-electric machine** draws all its energy from a battery charged from the grid. Electric motors waste far less energy than engines, and the machine uses almost nothing while idle [@kukkonen_2017_001]. Its limits are battery size, charging time, and purchase cost.
+- A **hydrogen machine** uses either a hydrogen-burning engine or a fuel cell that turns hydrogen into electricity. Neither releases CO₂ at the machine, but both depend on hydrogen reaching the site.
+- A **propane or natural-gas machine** uses a spark-ignition engine, like a car's, and is common in forklifts.
+
+Diesel machines burn the diesel fuel blend, so any renewable fuel in that blend lowers their emissions automatically (see @sec-fuel-blends).
 
 {{< include _technology-blocks/construction/product_transport.md >}}
 
-The current model input files carry only two of these options, diesel and electric equipment, each with a twenty-year lifetime and the same energy requirement per unit of activity. Their fuel prices are borrowed from Agriculture as a proxy.
+The current model input files carry only two of these options, diesel and electric equipment. Both last twenty years and need the same energy for each unit of work. Their fuel prices are borrowed from Agriculture.
 
-<mark>TODO: Add the hybrid, spark-ignition, and hydrogen options from the technology database to the model inputs, and populate capital, operating, and emission data so that the competition can respond to cost and policy.</mark>
+<mark>TODO: Add the hybrid, spark-ignition, and hydrogen options from the technology database to the model inputs, and add their capital, operating, and emission data so that the competition can respond to cost and policy.</mark>
 
 ## Decarbonisation
 
-- **Cleaner diesel.** Raising the renewable content of the diesel blend cuts lifecycle carbon across the whole fleet with no change to the machines.
-- **Electrification.** Battery-electric equipment removes exhaust emissions and moves the load to the grid, where @sec-electricity counts it. It is commercial in compact machines and emerging in larger ones.
-- **Hybrids and hydrogen.** Diesel-electric hybrids cut fuel use on stop-start cycles; hydrogen engines and fuel cells remain early-stage for heavy equipment and depend on hydrogen reaching the site.
+- **Cleaner diesel.** Adding renewable fuel to the diesel blend cuts emissions across the whole fleet with no change to the machines.
+- **Electrification.** Battery-electric machines remove exhaust emissions and move the energy demand to the grid, which @sec-electricity counts. They are already on the market for compact machines and are emerging for larger ones.
+- **Hybrids and hydrogen.** Diesel-electric hybrids save fuel in stop-start work. Hydrogen engines and fuel cells are still at an early stage for heavy machines.
 
 ## Regional coverage
 
-All seven modelled regions carry the construction structure, scaled by an exogenous emissions forecast that tracks building activity: Ontario and Québec are the largest, followed by Alberta and British Columbia, with the smaller provinces well below.
+All seven modelled regions carry the construction sector, scaled by an emissions forecast that follows building activity. Ontario and Québec are the largest, followed by Alberta and British Columbia; the smaller provinces are well below.
 
 ## Limitations and planned extensions
 
-The construction sub-model is a placeholder. It collapses the off-road fleet into one aggregate service rather than resolving it by machine type or duty cycle, its technologies are not yet costed, and its fuel prices are proxied from agriculture. It covers only operational site fuel, not the embodied carbon of materials.
+The construction sub-model is a placeholder. It treats the whole off-road fleet as one service rather than separating machines by type or use, its technologies are not yet costed, and its fuel prices are borrowed from Agriculture. It covers only the fuel burned on site, not the carbon in materials.
 
-<mark>TODO: Replace the agriculture-proxied prices with sector values from the model input files, and benchmark modelled construction fuel use against Statistics Canada and National Inventory Report data.</mark>
+<mark>TODO: Replace the prices borrowed from Agriculture with sector values from the model input files, and check modelled construction fuel use against Statistics Canada and National Inventory Report data.</mark>
 
 {{< pagebreak >}}
 
