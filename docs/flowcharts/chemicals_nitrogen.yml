@@ -3,7 +3,7 @@ sector: chemicals_nitrogen
 title: Nitrogen products
 
 nodes:
-  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 1]}
+  - {id: h2src, label: Hydrogen source, icon: hydrogen, role: input, at: [0, 1]}
   - {id: ka, label: Cyclohexanol and cyclohexanone, icon: chemical, role: input, at: [0, 3]}
 
   - {id: ammonia, label: Ammonia, icon: ammonia, role: process, at: [1, 1],
@@ -25,7 +25,7 @@ nodes:
   - {id: out-adipic, label: Nylon intermediates, icon: plastic, role: output, at: [4, 3]}
 
 edges:
-  - [gas, ammonia]
+  - [h2src, ammonia]
   - {from: ammonia, to: capture, kind: emission}
   - [ammonia, urea]
   - [ammonia, fertilizer]

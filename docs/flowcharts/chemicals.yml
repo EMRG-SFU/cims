@@ -1,11 +1,14 @@
 # Chemicals sector overview flowchart. See appendix_figure-style.qmd for the format.
+# Inputs are named generically: the routes that compete in each chain draw
+# on different sources (natural gas, coal, biomass, electrolysis, captured CO2).
 sector: chemicals
 title: Chemicals
 
 nodes:
-  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 0]}
-  - {id: feed, label: "Ethane, propane, and naphtha", icon: liquid-fuel, role: input, at: [0, 2]}
-  - {id: salt, label: Salt and electricity, icon: salt, role: input, at: [0, 3]}
+  - {id: h2src, label: Hydrogen source, icon: hydrogen, role: input, at: [0, 0]}
+  - {id: carbon, label: Carbon source, icon: co2, role: input, at: [0, 1]}
+  - {id: feed, label: Hydrocarbon feedstock, icon: liquid-fuel, role: input, at: [0, 2]}
+  - {id: salt, label: Salt, icon: salt, role: input, at: [0, 3]}
 
   - {id: nitrogen, label: Nitrogen products, icon: ammonia, role: process, at: [1, 0],
      branches: [chemicals.product.ammonia, chemicals.product.nitric-acid, chemicals.product.urea,
@@ -26,10 +29,9 @@ nodes:
   - {id: distillation, label: Distillation, icon: column, role: service, at: [2, 2],
      branch: chemicals.service.distillation}
 
-
 edges:
-  - [gas, nitrogen]
-  - {from: gas, to: methanol}
+  - [h2src, nitrogen]
+  - [carbon, methanol]
   - [feed, petro]
   - [salt, chlor]
   - {from: n2o, to: nitrogen, kind: energy, sides: [left, right]}

@@ -4,7 +4,7 @@ title: Chlor-alkali and bleaching chemicals
 
 nodes:
   - {id: brine, label: Salt brine, icon: salt, role: input, at: [0, 1]}
-  - {id: h2, label: Hydrogen, icon: hydrogen, role: input, at: [0, 4]}
+  - {id: h2, label: Hydrogen source, icon: hydrogen, role: input, at: [0, 4]}
 
   - {id: cell, label: Chlorine electrolysis, icon: electrolysis, role: process, at: [1, 1],
      branch: chemicals.product.chlor-alkali.chlorine-electrolysis}

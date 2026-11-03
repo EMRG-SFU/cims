@@ -1,11 +1,13 @@
 # Petrochemicals and methanol flowchart (Chemicals). See appendix_figure-style.qmd for the format.
+# Olefin feedstock is ethane or naphtha today, but ethanol, methanol, and
+# biomass routes compete; methanol can come from gas, coal, biomass, or CO2.
 sector: chemicals_petrochemicals
 title: Petrochemicals and methanol
 
 nodes:
-  - {id: ethane, label: Ethane and propane, icon: natural-gas, role: input, at: [0, 0]}
+  - {id: ethane, label: Olefin feedstock, icon: liquid-fuel, role: input, at: [0, 0]}
   - {id: naphtha, label: Naphtha and reformate, icon: liquid-fuel, role: input, at: [0, 2]}
-  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 3]}
+  - {id: gas, label: Hydrogen and carbon sources, icon: co2, role: input, at: [0, 3]}
 
   - {id: olefins, label: Olefins, icon: column, role: process, at: [1, 0],
      branch: chemicals.product.petrochemicals.olefins}

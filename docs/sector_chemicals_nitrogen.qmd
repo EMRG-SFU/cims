@@ -1,14 +1,18 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Chemicals: Nitrogen Products {#sec-chemicals-nitrogen}
 
-Ammonia is the starting point for Canada's nitrogen fertilizers and for nitric and adipic acid. It is also the sector's largest source of process CO₂, and the acids it feeds are its source of N₂O. This chapter covers the nitrogen chain of the chemicals sector; @sec-chemical-products describes the sector as a whole.
+Ammonia is the starting point for Canada's nitrogen fertilizers and for nitric and adipic acid. It is also the chemicals sector's largest source of process CO₂, and the acids made from it are the sector's source of nitrous oxide (N₂O). This chapter covers the nitrogen chain; @sec-chemical-products describes the sector as a whole.
 
 ## Process flow
 
-@fig-chemicals-nitrogen-process shows the chain. Natural gas is reformed to hydrogen and combined with nitrogen to make ammonia. Ammonia goes to urea (with CO₂ from the ammonia plant), to nitric acid, and to other fertilizers; nitric acid in turn oxidizes cyclohexanol and cyclohexanone to adipic acid, a nylon intermediate.
+@fig-chemicals-nitrogen-process shows the chain. Ammonia is made by combining hydrogen with nitrogen from the air. Most ammonia then goes into fertilizers: urea, made by reacting ammonia with CO₂, and other fertilizers such as ammonium nitrate. Some ammonia is burned to make nitric acid, which goes into fertilizers or is used to make adipic acid, a building block for nylon.
+
+The hydrogen source is shown generically. Today it comes from reforming natural gas, but coal or biomass gasification and electrolysis of water compete to supply it.
 
 ::: {#fig-chemicals-nitrogen-process}
 ![](images/flowcharts/chemicals_nitrogen_process-flow_light.svg){.light-content .lightbox group="chemicals-nitrogen-light"}
@@ -22,47 +26,62 @@ Process flow of nitrogen products. The nitric and adipic acid plants request N�
 
 ### Ammonia
 
-Ammonia synthesis makes hydrogen from steam or autothermal reforming of natural gas, coal or biomass gasification, or electrolysis, and combines it with nitrogen in the Haber-Bosch loop. Reforming releases a nearly pure stream of process CO₂ ahead of synthesis, which makes capture comparatively cheap; part of that CO₂ already goes to urea. Ammonia is measured in tonnes.
+An ammonia plant has two main parts. The first makes hydrogen. In a conventional plant, a **steam reformer** heats natural gas with steam over a catalyst in tubes inside a large furnace, producing a mix of hydrogen, carbon monoxide, and CO₂. Further steps convert the carbon monoxide to more hydrogen and CO₂ and then strip the CO₂ out as a nearly pure stream. The second part, the **Haber-Bosch synthesis loop**, combines the hydrogen with nitrogen from the air at high pressure and temperature over an iron catalyst to make ammonia.
+
+The energy goes mainly into the reformer furnace and into the large compressors that pressurize the synthesis loop. The emissions come from two places: the furnace's flue gas, and the CO₂ separated from the hydrogen, which is chemistry rather than combustion [@iea_2021_001; @fertilizer-canada_2023_001]. Part of that separated CO₂ already goes to urea.
+
+The competing technologies differ in how they make the hydrogen:
+
+- Efficiency measures on a conventional plant recover more heat and cut fuel use.
+- An autothermal reformer burns part of the gas with oxygen inside the reactor instead of heating it in an external furnace, which puts nearly all the CO₂ into one concentrated stream that is easier to capture.
+- Coal or biomass gasification makes the hydrogen by partly burning the solid fuel with oxygen and steam.
+- An electrolytic plant splits water with electricity and needs no reformer at all; the synthesis loop is unchanged [@smith_2020_001].
 
 {{< include _technology-blocks/chemicals/product_ammonia.md >}}
 
 ### Urea
 
-Urea plants react ammonia with the ammonia plant's CO₂ and finish the product by prilling or granulation. Urea is measured in tonnes.
+Urea plants react ammonia with CO₂ under pressure, then dry the urea into small beads or granules for sale as fertilizer. The CO₂ comes from the ammonia plant's hydrogen step, so urea locks up part of the process CO₂ until the fertilizer is applied to fields and releases it. A switch to electrolytic hydrogen leaves urea plants needing another source of CO₂.
 
 {{< include _technology-blocks/chemicals/product_urea.md >}}
 
 ### Nitric acid
 
-Nitric acid plants burn ammonia over a platinum gauze and absorb the gases in water (the Ostwald process). The reaction heat raises steam, and the process releases N₂O. Nitric acid is measured in tonnes.
+Nitric acid plants burn ammonia with air over a platinum gauze, then absorb the resulting gases in water (the Ostwald process). The reaction gives off heat, so the plants raise steam rather than consume much fuel. A side reaction on the gauze also makes N₂O, which leaves in the tail gas unless the plant destroys it [@epa_2010_001].
 
 {{< include _technology-blocks/chemicals/product_nitric-acid.md >}}
 
 ### Other fertilizers
 
-This node holds ammonium nitrate and calcium ammonium nitrate, UAN solutions, and ammonium phosphates and sulphate, made from ammonia and nitric acid. It is measured in tonnes of product.
+This step makes ammonium nitrate and calcium ammonium nitrate, urea-ammonium nitrate solutions, and ammonium phosphates and sulphate. Plants neutralize nitric acid or other acids with ammonia, then evaporate the water and form the product into granules or prills, which takes steam and drying heat.
 
 {{< include _technology-blocks/chemicals/product_fertilizer.md >}}
 
 ### Adipic acid
 
-Adipic acid plants oxidize cyclohexanol and cyclohexanone with nitric acid, releasing N₂O in the off-gas. Adipic acid is measured in tonnes.
+Adipic acid plants oxidize cyclohexanol and cyclohexanone, purchased from petrochemical plants, with nitric acid. The reaction releases N₂O in the off-gas, in larger amounts per tonne of product than a nitric acid plant.
 
 {{< include _technology-blocks/chemicals/product_adipic-acid.md >}}
 
 ### N₂O abatement
 
-The nitric and adipic acid plants request **N₂O abatement** for each tonne of acid they make. Leaving the N₂O untreated costs nothing and competes against catalytic and thermal destruction, so abatement wins only when a price applies to N₂O.
+The nitric and adipic acid plants request **N₂O abatement** for each tonne of acid they make. Leaving the N₂O untreated costs nothing, and it competes with two ways of destroying it. Catalytic abatement adds a catalyst inside or after the ammonia burner that breaks N₂O into nitrogen and oxygen. Thermal destruction burns the adipic acid off-gas, which also raises steam [@epa_2010_001]. In the model, abatement wins only when a carbon price applies to N₂O.
 
 {{< include _technology-blocks/chemicals/service_n2o-abatement.md >}}
 
 ## Decarbonisation
 
-Conventional ammonia carries roughly 1.8–2.4 t CO₂ per tonne, most of it process CO₂ from reforming [@rmi-ammonia]. Three routes cut it: capture on the concentrated process CO₂ stream (blue ammonia), an autothermal reformer designed for capture, and electrolytic hydrogen in place of the reformer (green ammonia), which cuts emissions by roughly 95–98 % when the electricity is low-carbon [@rmi-ammonia]. Biomass gasification offers a further route. For the acids, catalytic and thermal N₂O destruction remove most of an emission whose warming effect is roughly 270–300 times that of CO₂.
+A conventional ammonia plant emits roughly 1.8–2.4 t CO₂ per tonne of ammonia, most of it process CO₂ from making hydrogen [@rmi-ammonia]. Three kinds of route cut it:
+
+- capturing the concentrated process CO₂ the plant already separates, either on a conventional steam reformer or on an autothermal reformer designed for capture;
+- making the hydrogen by electrolysis of water, which cuts emissions by roughly 95–98 % when the electricity is low-carbon [@rmi-ammonia; @iea_2021_001]; and
+- gasifying biomass instead of reforming natural gas.
+
+For the acids, catalytic and thermal destruction remove most of the N₂O, a gas with roughly 270–300 times the warming effect of CO₂.
 
 <mark>TODO: The electrolytic Haber-Bosch technology draws hydrogen at a blended price. Consider linking it to the Hydrogen sector (@sec-hydrogen) and an electrolysis electricity load, so the route reflects hydrogen cost and availability.</mark>
 
-<mark>TODO: No technology yet serves the other-fertilizers node beyond ammonium nitrate; add UAN and ammonium phosphate and sulphate plants as data allow.</mark>
+<mark>TODO: No technology yet serves the other-fertilizers node beyond ammonium nitrate; add urea-ammonium nitrate and ammonium phosphate and sulphate plants as data allow.</mark>
 
 {{< pagebreak >}}
 

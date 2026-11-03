@@ -26,10 +26,11 @@
 <use href="#icon-salt" x="74.0" y="173.0" width="38" height="38" style="color:#7d5b30"/>
 <text x="93.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Salt brine</text>
 </g>
-<g><title>Hydrogen</title>
+<g><title>Hydrogen source</title>
 <rect x="34.0" y="549.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
 <use href="#icon-hydrogen" x="74.0" y="557.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="620.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+<text x="93.0" y="612.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+<text x="93.0" y="628.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">source</text>
 </g>
 <g><title>Chlorine electrolysis — chemicals.product.chlor-alkali.chlorine-electrolysis</title>
 <rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>

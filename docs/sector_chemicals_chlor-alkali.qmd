@@ -1,10 +1,16 @@
+---
+bibliography:
+  - references.bib
+  - tech-data_references.bib
+---
+
 # Chemicals: Chlor-Alkali and Oxidants {#sec-chemicals-chlor-alkali}
 
-Chlorine, caustic soda, sodium chlorate, and hydrogen peroxide are made mostly with electricity, and much of Canada's output supplies pulp bleaching. Their emissions therefore follow the grid more than any fuel or feedstock. This chapter covers this chain of the chemicals sector; @sec-chemical-products describes the sector as a whole.
+Chlorine, caustic soda, sodium chlorate, and hydrogen peroxide are made mostly with electricity, and much of Canada's output goes to bleaching pulp. Their emissions therefore depend on the grid more than on any fuel or feedstock. This chapter covers this chain of the chemicals sector; @sec-chemical-products describes the sector as a whole.
 
 ## Process flow
 
-@fig-chemicals-chlor-alkali-process shows the chain. Electrolysis of salt brine makes chlorine, weak caustic soda, and hydrogen; the caustic is concentrated by evaporation, using steam. Sodium chlorate cells also electrolyze brine. Hydrogen peroxide is made by hydrogenating and oxidizing an anthraquinone working solution.
+@fig-chemicals-chlor-alkali-process shows the chain. Passing an electric current through salt dissolved in water (brine) splits it into chlorine, a weak caustic soda solution, and hydrogen. Steam-heated evaporators then concentrate the caustic soda. Sodium chlorate cells also run on brine and electricity. Hydrogen peroxide plants use hydrogen to make peroxide through a cycle of chemical reactions.
 
 ::: {#fig-chemicals-chlor-alkali-process}
 ![](images/flowcharts/chemicals_chlor-alkali_process-flow_light.svg){.light-content .lightbox group="chemicals-chlor-alkali-light"}
@@ -18,28 +24,48 @@ Process flow of chlor-alkali and oxidants.
 
 ### Chlorine electrolysis
 
-Chlor-alkali cells split salt brine into chlorine, caustic soda, and hydrogen. Membrane cells are today's standard; diaphragm and mercury cells are legacy stock that use more energy, and oxygen-depolarized cathodes cut cell voltage further. The node is measured in tonnes of product.
+A chlor-alkali cell is a tank divided into two halves, with a positive electrode on one side and a negative one on the other. Electricity drives the salt apart: chlorine gas forms at one electrode, and hydrogen and caustic soda at the other. Something has to keep the two sides from mixing, and that is what separates the technologies:
+
+- **Membrane cells**, today's standard, use a plastic membrane that lets only sodium ions through. They use the least electricity and make the purest caustic soda.
+- **Diaphragm cells** use a porous barrier. They make a weaker, salty caustic soda that needs more steam to concentrate.
+- **Mercury cells** use a flowing mercury layer. They are legacy plants that use about 30 % more electricity and risk mercury releases.
+- **Oxygen-depolarized cathodes** feed oxygen to the negative side of a membrane cell, so it makes water instead of hydrogen. That lowers the voltage the cell needs and cuts its electricity use substantially, at the cost of the hydrogen by-product [@brinkmann_2014_001].
 
 {{< include _technology-blocks/chemicals/product_chlor-alkali_chlorine-electrolysis.md >}}
 
 ### Caustic evaporation
 
-Membrane-cell caustic soda leaves the cell at about 32 % and is concentrated to 50 % in steam-heated evaporators. Mechanical vapour recompression replaces most of the live steam with electricity.
+Membrane-cell caustic soda leaves the cell at about 32 % strength and is sold at 50 %, so plants boil off water in a series of steam-heated evaporators. Mechanical vapour recompression compresses the vapour from the evaporator so it can heat the next batch of liquid, replacing most of the steam with a smaller amount of electricity.
 
 {{< include _technology-blocks/chemicals/product_chlor-alkali_caustic-evaporation.md >}}
 
 ### Sodium chlorate
 
-Sodium chlorate cells electrolyze brine to make chlorate for pulp bleaching. The node is measured in tonnes of product.
+Sodium chlorate cells pass current through hot brine without separating the products, so the chlorine and caustic soda react with each other to form chlorate. Pulp mills use the chlorate to make chlorine dioxide for bleaching. Almost all the energy is electricity for the cells [@jrc_2007_001].
 
 {{< include _technology-blocks/chemicals/product_sodium-chlorate.md >}}
 
 ### Hydrogen peroxide
 
-Anthraquinone plants hydrogenate and air-oxidize a working solution, then extract and distil the peroxide. The node is measured in tonnes of hydrogen peroxide.
+Hydrogen peroxide plants use a working solution that carries a chemical called anthraquinone. The plant adds hydrogen to the solution over a catalyst, then blows air through it: the solution picks up oxygen and gives off hydrogen peroxide, which is washed out with water and purified by distillation. The working solution goes back to the start of the cycle. The energy goes mainly into the hydrogen, the air compressors, and the steam for distillation [@doe_2015_004].
 
 {{< include _technology-blocks/chemicals/product_hydrogen-peroxide.md >}}
 
 ## Decarbonisation
 
-These products already run mainly on electricity, so their emissions fall as the grid decarbonizes. Within the sector, the levers are more efficient cells (membrane and oxygen-depolarized cathodes in place of diaphragm and mercury cells) and electrified evaporation through mechanical vapour recompression, which cuts the steam the evaporators draw.
+These products already run mainly on electricity, so their emissions fall as the grid decarbonizes. Within the sector, the levers are more efficient cells (membrane cells and oxygen-depolarized cathodes in place of diaphragm and mercury cells) and mechanical vapour recompression in the caustic evaporators, which cuts the steam they draw.
+
+{{< pagebreak >}}
+
+```{=latex}
+\phantomsection
+```
+
+## References {.unnumbered}
+
+```{=latex}
+\printbibliography[heading=none]
+```
+
+::: {#refs}
+:::

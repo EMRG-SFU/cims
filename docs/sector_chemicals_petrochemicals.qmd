@@ -1,14 +1,18 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Chemicals: Petrochemicals and Methanol {#sec-chemicals-petrochemicals}
 
-Canada's petrochemical industry cracks ethane, mainly in Alberta, to make ethylene and the polyethylene and ethylene glycol made from it, with naphtha cracking and aromatics recovery at Sarnia. Methanol is made from natural gas, mainly in Alberta. This chapter covers this chain of the chemicals sector; @sec-chemical-products describes the sector as a whole.
+Canada's petrochemical industry mostly cracks ethane, mainly in Alberta, to make ethylene and the polyethylene and ethylene glycol made from it. Sarnia, Ontario, adds naphtha cracking and the recovery of aromatics such as benzene. Methanol is made mainly in Alberta. This chapter covers this chain of the chemicals sector; @sec-chemical-products describes the sector as a whole.
 
 ## Process flow
 
-@fig-chemicals-petrochemicals-process shows the chain. Steam crackers and propane dehydrogenation make olefins (ethylene and propylene), which go to polymers and to derivatives such as ethylene oxide and glycol. Aromatics are recovered from refinery reformate or pyrolysis gasoline. Both steps request distillation. Methanol is synthesized from reformed natural gas.
+@fig-chemicals-petrochemicals-process shows the chain. Crackers and other olefin plants make ethylene and propylene, the two most-used building blocks in the industry. These go to polymer plants, which make plastics, and to derivative plants, which make products such as ethylene oxide and glycol. Aromatics plants recover benzene, toluene, and xylenes from refinery and cracker streams. Both the olefin and aromatics steps rely on distillation to separate their products. Methanol plants make methanol from a hydrogen and carbon source.
+
+The feedstocks are shown generically. Olefins come from ethane or naphtha today, but plants making them from ethanol, methanol, or biomass compete in the model. Methanol can be made from natural gas, coal, biomass, or captured CO₂ and hydrogen.
 
 ::: {#fig-chemicals-petrochemicals-process}
 ![](images/flowcharts/chemicals_petrochemicals_process-flow_light.svg){.light-content .lightbox group="chemicals-petrochemicals-light"}
@@ -22,37 +26,45 @@ Process flow of petrochemicals and methanol. Distillation is described in @sec-c
 
 ### Olefins
 
-The olefins node makes ethylene and propylene, measured in tonnes of high-value chemicals. Fired tubular steam crackers on ethane are the incumbent; propane dehydrogenation makes propylene; and the alternatives include catalytic and electrified cracking, hydrogen-fired furnaces, and olefins made from methanol, ethanol, or biomass.
+A **steam cracker** heats a stream of ethane or naphtha, mixed with steam, to over 800 °C for a fraction of a second as it flows through long tubes in a furnace. The heat breaks the molecules into smaller ones, mainly ethylene and propylene. The hot gas is then cooled quickly to stop the reactions and separated in a train of compressors, chillers, and distillation columns. The furnace is the largest energy user and the main source of CO₂; it burns methane-rich gas recovered from the cracker itself along with purchased fuel [@iea_2018_001; @layritz_2021_001].
+
+The competing technologies change either how the heat is supplied or where the olefins come from:
+
+- Efficiency measures and catalytic cracking, which works at a lower temperature, cut the energy a conventional cracker needs.
+- Hydrogen-fired furnaces and **electric crackers**, which heat the tubes with electricity instead of burners, remove most of the furnace CO₂ [@tijani_2022_001].
+- Capture on the furnace flue gas takes the CO₂ out after the fact.
+- Propane dehydrogenation makes propylene directly by stripping hydrogen from propane over a catalyst.
+- Other plants make olefins from methanol, from bio-ethanol, or from gasified or pyrolyzed biomass, bypassing cracking altogether.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_olefins.md >}}
 
 ### Aromatics
 
-Aromatics plants recover benzene, toluene, and xylenes from reformate or pyrolysis gasoline by solvent extraction and extractive distillation. In Canada they are mostly integrated with refineries, at Sarnia and in Alberta. The node is measured in tonnes of aromatics.
+Aromatics plants recover benzene, toluene, and xylenes from refinery reformate and from the heavier liquid a naphtha cracker produces. They use solvents that dissolve aromatics selectively, then separate the solvent and products by distillation, which takes most of the steam. In Canada these plants are mostly part of refinery and petrochemical complexes at Sarnia and in Alberta.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_aromatics.md >}}
 
 ### Polymers
 
-Polyethylene and polypropylene reactors, with extrusion and pelletizing, turn olefins into polymer. The node is measured in tonnes of polymer.
+Polymer plants link ethylene or propylene molecules into long chains in pressurized reactors, making polyethylene and polypropylene. Extruders then melt the polymer, mix in additives, and cut it into pellets. The energy goes mainly into compressors, extruder motors, and heat for the reactors and extruders.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_polymers.md >}}
 
 ### Olefin derivatives
 
-This node holds ethylene oxide and glycol, made in Alberta, other olefin and aromatic derivatives, and chemical depolymerization of plastics back to monomer. It is measured in tonnes of product.
+This step makes products from olefins and aromatics. The largest in Canada is ethylene oxide, made in Alberta by reacting ethylene with oxygen over a silver catalyst and then turned into ethylene glycol for antifreeze and polyester. That reaction burns a little of the ethylene to CO₂, which the plant separates as a nearly pure stream that is cheap to capture. The step also includes chemical depolymerization, which breaks used plastics back down into the molecules they were made from.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_derivatives.md >}}
 
 ### Methanol
 
-Methanol is synthesized from reformed natural gas, gasified coal or biomass, or captured CO₂ and hydrogen. It is measured in tonnes.
+A conventional methanol plant reforms natural gas with steam into synthesis gas, a mix of hydrogen and carbon oxides, then converts it to methanol at pressure over a copper catalyst. Like ammonia, it releases CO₂ from the chemistry as well as from the reformer furnace. The competing routes make the synthesis gas from coal or biomass instead, or skip it by combining captured CO₂ with hydrogen [@iea_2013_001].
 
 {{< include _technology-blocks/chemicals/product_methanol.md >}}
 
 ## Decarbonisation
 
-Steam cracking is both energy- and emissions-intensive. The model offers capture on the cracker furnace flue gas, hydrogen-fired and electrified furnaces, catalytic cracking at lower temperature, and olefins made from ethanol, methanol, or biomass. An electrified cracker demonstrated at pilot scale can transfer about 95 % of its heat to the process and cut cracking-furnace CO₂ by up to about 90 % on low-carbon electricity [@basf-ecracker; @rmi-chemistry]. Ethylene oxide plants separate a nearly pure CO₂ stream that capture can take cheaply. For methanol, the options are capture on gasification routes, biomass or waste gasification, and synthesis from captured CO₂ and hydrogen.
+Steam cracking uses a lot of energy and emits a lot of CO₂. The model offers capture on the cracker furnace flue gas, hydrogen-fired and electric furnaces, catalytic cracking at lower temperature, and olefins made from ethanol, methanol, or biomass. An electric cracker demonstrated at pilot scale transfers about 95 % of its heat to the process and can cut cracking-furnace CO₂ by up to about 90 % on low-carbon electricity [@basf-ecracker; @rmi-chemistry]. Ethylene oxide plants already separate a nearly pure CO₂ stream that capture can take cheaply. For methanol, the options are capture on gasification routes, biomass or waste gasification, and synthesis from captured CO₂ and hydrogen.
 
 <mark>TODO: The derivatives node groups products made by different processes (ethylene oxide, other derivatives, and depolymerization), so costs per tonne are not comparable across its technologies. Check whether it should be split.</mark>
 
