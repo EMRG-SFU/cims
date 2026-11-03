@@ -3,41 +3,39 @@ sector: petroleum-crude
 title: Petroleum crude
 
 nodes:
-  - {id: gas, label: Natural gas, icon: natural-gas, role: input, at: [0, 3]}
-
   # conventional crude
-  - {id: exploration, label: Exploration and drilling, icon: well, role: process, at: [1, 0],
+  - {id: exploration, label: Exploration and drilling, icon: well, role: process, at: [0, 0],
      branch: petroleum-crude.product.exploration}
-  - {id: completion, label: Well completion, icon: well, role: process, at: [2, 0],
+  - {id: completion, label: Well completion, icon: well, role: process, at: [1, 0],
      branch: petroleum-crude.product.completion}
-  - {id: light, label: Light-medium crude, icon: offshore, role: process, at: [3, 0],
+  - {id: light, label: Light-medium crude, icon: offshore, role: process, at: [2, 0],
      branches: [petroleum-crude.product.light-medium.onshore, petroleum-crude.product.light-medium.offshore]}
-  - {id: field, label: Field services, icon: pump, role: service, at: [2, 1],
+  - {id: field, label: Field services, icon: pump, role: service, at: [1, 1],
      branches: [petroleum-crude.service.artificial-lift, petroleum-crude.service.treating,
                 petroleum-crude.service.produced-water, petroleum-crude.service.field-engines]}
-  - {id: heavy, label: Heavy crude, icon: well, role: process, at: [3, 1],
+  - {id: heavy, label: Heavy crude, icon: well, role: process, at: [2, 1],
      branch: petroleum-crude.product.heavy}
 
   # oil sands
-  - {id: haulage, label: Haulage and tailings, icon: truck, role: service, at: [2, 2],
+  - {id: haulage, label: Haulage and tailings, icon: truck, role: service, at: [1, 2],
      branches: [petroleum-crude.service.mine-haulage, petroleum-crude.service.tailings-disposal]}
-  - {id: mining, label: Oil sands mining, icon: open-pit, role: process, at: [3, 2],
+  - {id: mining, label: Oil sands mining, icon: open-pit, role: process, at: [2, 2],
      branches: [petroleum-crude.product.bitumen.mining.extraction, petroleum-crude.product.bitumen.mining.froth-treatment]}
-  - {id: steam, label: Steam, icon: boiler, role: service, at: [2, 3],
+  - {id: steam, label: Steam, icon: boiler, role: service, at: [1, 3],
      branch: petroleum-crude.service.steam}
-  - {id: in-situ, label: In-situ bitumen, icon: oil-sands, role: process, at: [3, 3],
+  - {id: in-situ, label: In-situ bitumen, icon: oil-sands, role: process, at: [2, 3],
      branch: petroleum-crude.product.bitumen.in-situ}
-  - {id: upgrading, label: Upgrading, icon: refinery, role: process, at: [4, 2],
+  - {id: upgrading, label: Upgrading, icon: refinery, role: process, at: [3, 2],
      branches: [petroleum-crude.product.bitumen.upgrading.primary, petroleum-crude.product.bitumen.upgrading.secondary]}
-  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: service, at: [4, 3],
+  - {id: hydrogen, label: Hydrogen supply, icon: hydrogen, role: service, at: [3, 3],
      branch: petroleum-crude.service.hydrogen}
 
   # transport
-  - {id: pumping, label: Pumping, icon: pump, role: service, at: [5, 0],
+  - {id: pumping, label: Pumping, icon: pump, role: service, at: [4, 0],
      branch: petroleum-crude.service.pumping}
-  - {id: transmission, label: Crude pipelines, icon: pipeline, role: process, at: [5, 1],
+  - {id: transmission, label: Crude pipelines, icon: pipeline, role: process, at: [4, 1],
      branch: petroleum-crude.product.transmission}
-  - {id: crude, label: Crude oil and bitumen, icon: liquid-fuel, role: output, at: [6, 1]}
+  - {id: crude, label: Crude oil and bitumen, icon: liquid-fuel, role: output, at: [5, 1]}
 
 edges:
   - [exploration, completion]
@@ -45,7 +43,6 @@ edges:
   - [completion, heavy]
   - {from: field, to: heavy, kind: energy}
   - {from: haulage, to: mining, kind: energy}
-  - {from: gas, to: steam}
   - {from: steam, to: in-situ, kind: energy}
   - [mining, upgrading]
   - [in-situ, upgrading]

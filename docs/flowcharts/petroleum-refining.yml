@@ -4,7 +4,7 @@ title: Petroleum refining
 
 nodes:
   - {id: crude, label: Crude oil and synthetic crude, icon: liquid-fuel, role: input, at: [0, 1]}
-  - {id: hydrogen, label: Hydrogen, icon: hydrogen, role: service, at: [1, 0],
+  - {id: hydrogen, label: Hydrogen supply, icon: hydrogen, role: service, at: [1, 0],
      branch: petroleum-refining.service.hydrogen}
   - {id: distillation, label: Crude distillation, icon: column, role: process, at: [1, 1],
      branch: petroleum-refining.product.petroleum-fractions.distillation}
@@ -22,7 +22,7 @@ nodes:
      branch: petroleum-refining.product.petroleum-fractions.hydrotreating.sulphur-recovery}
   - {id: alkylation, label: Alkylation and isomerization, icon: reactor, role: process, at: [3, 2],
      branches: [petroleum-refining.product.alkylates, petroleum-refining.product.isomerization]}
-  - {id: feed, label: Coal or natural gas, icon: coal, role: input, at: [3, 3]}
+  - {id: feed, label: Carbon feedstocks, icon: biomass, role: input, at: [3, 3]}
   - {id: synfuels, label: Synthetic fuels, icon: refinery, role: process, at: [4, 3],
      branch: petroleum-refining.product.synthetic-fuels}
   - {id: products, label: Refined products, icon: liquid-fuel, role: output, at: [5, 1.5]}

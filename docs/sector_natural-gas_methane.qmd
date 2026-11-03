@@ -1,65 +1,75 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Natural Gas: Methane and Flaring {#sec-natural-gas-methane}
 
-Methane released along the gas supply chain is the natural gas sector's largest controllable emission (see @sec-natural-gas). CIMS represents each source as its own node under the supply chain, with a competition among abatement options at each. Most of these nodes offer a **no abatement** option (pneumatic controls start instead from gas-driven devices), which leaves the methane vented or leaking as it does today at zero cost and energy, so the model buys down methane only where the carbon price or a regulation makes an abatement option cheaper.
+Methane that escapes along the gas supply chain is the natural gas sector's largest emission that can be controlled (see @sec-natural-gas). Methane traps far more heat than CO₂ over the decades after it is released, so even small leaks matter. CIMS gives each kind of release its own step in the supply chain and lets abatement options compete at each one.
 
-Because the captured methane is saleable gas, many abatement options pay for themselves, which is why Canada's 75 % reduction target for 2030 is achievable at an average cost of only around $11–48 per tonne of CO₂-equivalent [@edf-methane-canada; @eccc-methane-og].
+Most of these steps include a **no abatement** option, which leaves the methane vented or leaking as it does today, at no cost and no energy. (For pneumatic controls, the starting point is instead the gas-driven device itself.) The model therefore cuts methane only where a carbon price or a regulation makes an abatement option the cheaper choice.
+
+Because the methane saved is gas that can be sold, many abatement options pay for themselves. That is why Canada's target of a 75 % reduction by 2030 can be met at an average cost of roughly $11 to $48 per tonne of CO₂-equivalent [@edf-methane-canada; @eccc-methane-og; @icf_2015_001; @dunsky_2023_001].
 
 ## Emission sources
 
-| Source | What it covers | Measured in |
-|:-------|:---------------|:------------|
-| Well tests | Gas released during well testing and flowback after completion | t CH₄ |
-| Venting: controls | Gas-driven pneumatic controllers and chemical-injection pumps | 1,000 m³ gas handled |
-| Venting: blowdowns | Gas released when equipment and pipelines are depressurized for maintenance | t CH₄ |
-| Venting: liquid unloading | Gas released when wells are blown down to clear liquids | t CH₄ |
-| Venting: other point sources | Tank and process vents, and nitrogen rejection units | t CH₄ |
-| Venting: other diffuse sources | Diffuse venting not otherwise classified (no technologies yet) | t CH₄ |
-| Fugitive | Unintended leaks from equipment, compressors, and pipelines | t CH₄ |
-| Flaring | Gas burned rather than vented or sold | t CO₂ |
+| Source | What it covers |
+|:-------|:---------------|
+| Well tests | Gas released while a new well is tested and while fracturing fluid flows back after completion |
+| Venting: controls | Gas released by gas-driven pneumatic controllers and chemical-injection pumps |
+| Venting: blowdowns | Gas released when equipment and pipelines are emptied for maintenance |
+| Venting: liquid unloading | Gas released when wells are opened to the air to clear the liquids that block them |
+| Venting: other point sources | Gas released from tanks, process vents, and nitrogen rejection units |
+| Venting: other diffuse sources | Other venting not classified elsewhere (no technologies yet) |
+| Fugitive | Unintended leaks from valves, seals, compressors, and pipelines |
+| Flaring | Gas burned on site instead of being sold or vented |
 
 : Methane and flaring sources in the natural gas supply chain {#tbl-natural-gas-methane-sources}
 
 ## Well tests
 
-Reduced-emission completions capture the gas from a fractured well's flowback with portable separators instead of venting it.
+When a new well is fractured, the fluid that flows back carries a lot of gas. Without controls, that gas is vented. **Reduced-emission completions** run the flowback through portable separators that capture the gas and send it to sales instead.
 
 {{< include _technology-blocks/natural-gas/product_supply_well-tests.md >}}
 
 ## Pneumatic controls
 
-Gas-driven pneumatic devices vent methane by design. Low-bleed devices cut the vent rate; instrument air and electric actuators eliminate it.
+Many valves and controllers in the field are driven by gas pressure, because there is often no electricity on site. These devices release a little gas every time they move, by design. **Low-bleed** devices release less. **Non-emitting** devices, which run on compressed air or electricity, release none [@carbon-limits_2021_001].
 
 {{< include _technology-blocks/natural-gas/product_supply_venting_controls.md >}}
 
 ## Blowdowns
 
+Before crews can work on a compressor or a section of pipeline, they must empty it of gas. Venting that gas is a **blowdown**. **Blowdown gas recompression** pumps the gas into a nearby line or back into the system instead.
+
 {{< include _technology-blocks/natural-gas/product_supply_venting_blowdowns.md >}}
 
 ## Liquid unloading
+
+As gas wells age, water and other liquids collect at the bottom and slow the flow. Opening the well to the air blows those liquids out but releases gas with them. **Plunger lifts** use the well's own pressure to push the liquids up without venting, and **enclosed combustors** burn any gas that is still released.
 
 {{< include _technology-blocks/natural-gas/product_supply_venting_liquid-unloading.md >}}
 
 ## Other point venting
 
+Storage tanks release gas as liquids sit in them, and some processing equipment vents as part of its normal operation. **Vapour recovery** units capture that gas and send it back into the system, and enclosed combustors burn what can't be recovered.
+
 {{< include _technology-blocks/natural-gas/product_supply_venting_other-point-venting.md >}}
 
 ## Fugitive leaks
 
-Leak detection and repair finds and fixes leaking components; low-emission seals, valves, and connectors, and plastic liners in leak-prone distribution mains, cut the leak rate of the equipment itself.
+Valves, seals, connectors, and pipes all leak a little, and a few large leaks often account for most of the loss. **Leak detection and repair** programs survey equipment with cameras and sensors and fix what they find. **Low-emission components**, such as better compressor seals and valves, cut the leak rate of the equipment itself, and **plastic liners** seal old distribution mains from the inside [@icf_2015_001; @iea_2026_004].
 
 {{< include _technology-blocks/natural-gas/product_supply_fugitive.md >}}
 
 ## Flaring
 
-Flaring converts methane to CO₂, which is far less potent. Flare gas recovery sends the gas to the fuel or sales line instead, and high-efficiency flares cut the unburnt methane that escapes.
+Flaring burns gas that cannot be used or sold on site. Burning turns methane into CO₂, which traps far less heat, so a flare is better than venting but still wastes the gas. **Flare gas recovery** sends the gas to fuel or sales instead, and **high-efficiency flares** burn more of it, so less methane escapes unburnt.
 
 {{< include _technology-blocks/natural-gas/product_supply_flaring.md >}}
 
-<mark>TODO: Align the abatement options and their costs with the trajectory of Canada's updated federal oil-and-gas methane regulations, and benchmark modelled methane emissions against the National Inventory Report.</mark>
+<mark>TODO: Align the abatement options and their costs with the trajectory of Canada's updated federal oil-and-gas methane regulations [@eccc_2025_001], and benchmark modelled methane emissions against the National Inventory Report.</mark>
 
 {{< pagebreak >}}
 

@@ -1,48 +1,61 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_natural_gas.html
 ---
 
 # Natural Gas {#sec-natural-gas}
 
-The natural gas sector covers the upstream and midstream chain: drilling and completing wells, extracting and processing raw gas, liquefying it for export, and moving it through transmission and distribution to the point of use. Natural gas is defined, for climate purposes, by methane: the product is almost pure methane, so the leaks, vents, and flares along the chain make methane the sector's largest controllable emission, and one of the cheapest to abate anywhere in the economy. This chapter covers the production and transport chain; @sec-natural-gas-methane covers the methane and flaring sources.
+The natural gas sector finds gas underground, brings it to the surface, cleans it, and moves it to the people and industries that use it. Along the way it uses energy of its own, mostly to run compressors, drilling rigs, and heaters. The gas itself is almost pure methane, a powerful greenhouse gas, so leaks, venting, and flaring make methane the sector's largest emission that can be controlled. Much of that methane is also among the cheapest emissions to cut anywhere in the economy. This chapter follows the production and transport chain; @sec-natural-gas-methane covers the methane and flaring sources.
 
 ## Scope
 
-The sub-model covers the supply of natural gas: drilling, well completion, and extraction from conventional, shale, tight, and coalbed-methane resources; field and plant processing (dehydration, natural gas liquids recovery, sulphur recovery, and removal of formation CO₂); LNG liquefaction; transmission and distribution; and the venting, fugitive, and flaring sources along the way. It also carries the energy the sector uses on itself for compression, drilling, field equipment, and heat. A forecast of gas throughput drives every step and service.
+The sub-model covers the supply of natural gas:
 
-Several adjacent activities sit elsewhere in CIMS:
+- drilling and completing new wells;
+- producing gas from conventional, shale, tight, and coalbed-methane resources;
+- processing raw gas at field facilities and gas plants;
+- liquefying gas for export as liquefied natural gas (LNG);
+- moving gas through long-distance transmission pipelines and local distribution networks; and
+- the venting, leaks, and flaring along the way.
 
-- Burning the delivered gas is accounted in the demand sectors (residential, commercial, industry, and electricity).
+It also covers the energy the sector uses on itself for compression, drilling, field equipment, and heat. A forecast of gas production drives every step and service.
+
+Several related activities sit elsewhere in CIMS:
+
+- Burning the delivered gas counts in the sectors that use it: homes, businesses, industry, and electricity.
 - Crude oil production is covered in @sec-petroleum-crude.
-- Gas used as a chemical feedstock is covered in [Chemicals](sector_chemicals.qmd), and as a hydrogen feedstock in [Hydrogen](sector_hydrogen.qmd).
+- Gas used to make chemicals is covered in [Chemicals](sector_chemicals.qmd), and gas used to make hydrogen in [Hydrogen](sector_hydrogen.qmd).
 
 ## Context
 
-Canada is one of the world's largest natural gas producers, with output concentrated in the Western Canadian Sedimentary Basin, above all the Montney play straddling Alberta and British Columbia. Because methane has a high global-warming potential and the product is itself methane, leaks and intentional releases (fugitive equipment leaks, vented gas from pneumatic devices and tanks, flaring, well blowdowns, and liquid unloading) together make up the sector's largest greenhouse-gas source.
+Canada is one of the world's largest natural gas producers. Most of its gas comes from the Western Canadian Sedimentary Basin, above all the Montney formation that spans Alberta and British Columbia. Because the product is methane, any gas that escapes adds directly to the sector's emissions. Leaks from equipment, gas vented by pneumatic devices and tanks, flaring, well blowdowns, and the gas released when wells are cleared of liquids together make up the sector's largest greenhouse gas source.
 
-That methane is cheap to abate. Canada has set a target to cut oil-and-gas methane by 75 % below 2012 levels by 2030, and the measures to do it (leak detection and repair, vapour recovery, non-emitting pneumatic controllers, blowdown capture, plunger lifts, and flare reduction) are among the lowest-cost abatement options available, on the order of $11–48 per tonne of CO₂-equivalent, with much of the captured gas saleable [@edf-methane-canada; @eccc-methane-og]. Alberta accounts for roughly 68 % of the sector's methane, while British Columbia has already cut its oil-and-gas methane by about 51 % from 2014 levels while increasing production [@edf-methane-canada].
+Cutting that methane is cheap. Canada has set a target to reduce oil and gas methane to 75 % below 2012 levels by 2030. The measures that get there, such as finding and fixing leaks, recovering vapours, replacing gas-driven controllers, capturing blowdown gas, and reducing flaring, cost roughly $11 to $48 per tonne of CO₂-equivalent, and much of the gas they save can be sold [@edf-methane-canada; @eccc-methane-og; @dunsky_2023_001]. Alberta accounts for roughly 68 % of the sector's methane. British Columbia has already cut its oil and gas methane by about 51 % from 2014 levels while increasing production [@edf-methane-canada].
 
 ## Process flow
 
-@fig-natural-gas-process shows the sector's process steps and services. Methane and flaring sources occur at nearly every step; the flowchart shows them as one emission card, and @sec-natural-gas-methane breaks them down.
+@fig-natural-gas-process shows how gas moves from the well to the customer, and which services each step draws on. Methane and flaring occur at nearly every step; the flowchart shows them as one card, and @sec-natural-gas-methane breaks them down.
 
 ::: {#fig-natural-gas-process}
 ![](images/flowcharts/natural-gas_process-flow_light.svg){.light-content .lightbox group="natural-gas-light"}
 
 ![](images/flowcharts/natural-gas_process-flow_dark.svg){.dark-content .lightbox group="natural-gas-dark"}
 
-Process flow of the natural gas sector. Process steps belong to the sector's Product sub-tree; site services belong to its Service sub-tree and are requested by the process steps.
+Process flow of the natural gas sector. Process steps make up the production and transport chain; site services supply the energy those steps need.
 :::
 
 ## Model structure
 
-The Product sub-tree holds **supply**, the production and processing chain with its emission sources, followed by **transmission** and **distribution**. The Service sub-tree holds the compressor drives, artificial lift, treating, pumps, fuel blends, and capture. Production and processing are measured in cubic metres of gas; transmission and distribution in thousands of cubic metres moved.
+The model splits the sector into two parts. The production chain covers **supply** (drilling, extraction, processing, liquefaction, and the emission sources), followed by **transmission** and **distribution**. The services part holds the compressor drives, artificial lift, treating, pumps, fuel blends, and carbon capture that the production chain draws on.
 
 ### Drilling and completion
 
-Drilling rigs power the drawworks, mud pumps, and camp, measured in metres drilled. Completion fractures and prepares each new well; its energy goes to the fracturing fleet's high-pressure pumps, measured as GJ of hydraulic work.
+**Drilling** makes the hole. A drilling rig turns the drill string, pumps drilling mud down the hole to carry rock cuttings back up, and powers the camp around it. Most rigs run on diesel engines today; rigs that run on grid power, or that pair engines with batteries to cover peaks, cut that fuel use.
+
+**Completion** prepares a drilled well to produce. For shale and tight gas, that means hydraulic fracturing: pumping water, sand, and chemicals into the rock at very high pressure to open cracks the gas can flow through. A fracturing fleet uses large pumps driven by diesel engines, engines that burn a mix of diesel and natural gas, or electric motors.
 
 **Drilling**
 
@@ -54,7 +67,11 @@ Drilling rigs power the drawworks, mud pumps, and camp, measured in metres drill
 
 ### Extraction and field services
 
-Extraction is split by resource: conventional, shale, tight, and coalbed methane. These nodes have no technologies of their own; their energy goes to the field services that lift and treat the produced fluids, and to the vehicles and equipment that serve the field.
+**Extraction** is split by type of resource: conventional, shale, tight, and coalbed methane. These steps have no technologies of their own. Their energy goes to the field services that keep wells flowing and get produced fluids ready to move:
+
+- **Artificial lift** pumps liquids out of wells that no longer flow on their own, or uses plunger lifts that let the well's own pressure push liquids out.
+- **Treating** separates water and liquids from the gas and heats the flow so it doesn't freeze in the lines.
+- **Field vehicles and equipment** carry crews and materials and run work equipment around the field.
 
 **Artificial lift**
 
@@ -70,7 +87,13 @@ Extraction is split by resource: conventional, shale, tight, and coalbed methane
 
 ### Gas processing
 
-Gas plants dry the gas, recover ethane and heavier liquids, and remove hydrogen sulphide and CO₂ (sweetening). Fired heaters supply their direct heat.
+Raw gas from the well is not ready for a pipeline. Gas plants clean it in several steps:
+
+- **Dehydration** removes water vapour, which would otherwise corrode pipes and form ice-like solids. Most plants absorb the water into glycol and then boil it back out, which takes heat; molecular sieves are an alternative.
+- **Natural gas liquids recovery** chills the gas to condense out ethane, propane, butane, and heavier liquids, which are sold separately. A turboexpander does the chilling by letting the gas expand through a turbine.
+- **Sulphur recovery** turns the hydrogen sulphide removed from sour gas into solid sulphur.
+- **Sweetening** strips hydrogen sulphide and CO₂ from the gas, usually by absorbing them into an amine solvent and then heating the solvent to release them. The CO₂ that comes out is already concentrated, so sending it to storage instead of venting it is one of the cheaper capture options (see @sec-ccus).
+- **Process heaters** supply the direct heat these steps need, for example to regenerate solvents.
 
 **Dehydration**
 
@@ -86,8 +109,6 @@ Gas plants dry the gas, recover ethane and heavier liquids, and remove hydrogen 
 
 **Sweetening (formation CO₂)**
 
-The CO₂ separated from raw gas is already concentrated, so sending it to capture instead of venting it is one of the cheaper capture options (see @sec-ccus).
-
 {{< include _technology-blocks/natural-gas/product_supply_formation-co2.md >}}
 
 **Process heaters**
@@ -96,13 +117,13 @@ The CO₂ separated from raw gas is already concentrated, so sending it to captu
 
 ### LNG liquefaction
 
-Liquefaction trains chill gas to LNG for export, measured in tonnes of LNG. Their compressors are driven by gas turbines or large electric motors.
+**Liquefaction** cools natural gas to about −160 °C, where it becomes a liquid that takes up about 1/600 of its volume as a gas, so it can be shipped overseas. Cooling that far takes large refrigeration compressors, which use a significant share of the gas they process. The compressors run on gas turbines or, in electric designs, on large electric motors that shift the emissions to the power grid [@kidnay_2019_001; @zhang_2020_001].
 
 {{< include _technology-blocks/natural-gas/product_supply_lng-liquefaction.md >}}
 
 ### Transmission and distribution
 
-Transmission pipelines move gas long distances, with compressor stations every 65–160 km; at city gates and regulator stations, the gas is let down to distribution pressure. The pipeline's compression comes from the compressor-drive services, which also serve gathering and processing compression.
+**Transmission** pipelines move gas long distances at high pressure. Gas loses pressure as it flows, so compressor stations along the line push it onward. **Distribution** networks take gas from city gates and deliver it to homes and businesses at lower pressure. At each pressure drop, the gas can drive a turboexpander and generate electricity instead of simply passing through a valve. The pipelines' compression comes from the compressor-drive services, which also serve gathering and processing [@etsap_2011_001].
 
 **Transmission**
 
@@ -122,7 +143,7 @@ Transmission pipelines move gas long distances, with compressor stations every 6
 
 ### Natural gas market
 
-A separate **Natural Gas Market** sector carries the same three steps (supply, transmission, and distribution) at the level of the gas market rather than production. It has no technologies of its own in the technology database.
+A separate **Natural Gas Market** sector carries the same three steps (supply, transmission, and distribution) at the level of the whole gas market rather than production. It has no technologies of its own in the technology database.
 
 <mark>TODO: Document how the Natural Gas Market nodes relate to the production tree and to the Rest-of-World region for trade, and consolidate the two representations where appropriate.</mark>
 
@@ -131,21 +152,21 @@ A separate **Natural Gas Market** sector carries the same three steps (supply, t
 | Service | What it supplies | Technologies |
 |:--------|:-----------------|:-------------|
 | Machine drive | Pumps | @sec-machine-drive |
-| Fuel blends | Diesel, gasoline, and methane blends for the sector's own engines, compressors, and heaters | @sec-fuel-blends |
-| CCS | Capture of concentrated CO₂ (formation CO₂ from gas sweetening) and diffuse CO₂ (heater and turbine flue gas) | @sec-ccus |
+| Fuel blends | Diesel, gasoline, and methane for the sector's own engines, compressors, and heaters | @sec-fuel-blends |
+| CCS | Capture of concentrated CO₂ (from gas sweetening) and dilute CO₂ (from heater and turbine exhaust) | @sec-ccus |
 
 : Shared services in the natural gas sector {#tbl-natural-gas-shared}
 
 ## Decarbonisation
 
-- **Methane abatement**, the dominant and cheapest lever, is covered in @sec-natural-gas-methane.
-- **Electrifying compression and field equipment.** Electric-drive compressors, electric drilling rigs and fracturing fleets, electric LNG trains, and battery-electric equipment move combustion off site; their benefit depends on the grid.
-- **Capturing formation CO₂.** Amine sweetening with capture stores the CO₂ separated from raw gas.
-- **Efficiency.** Newer engine and turbine drives, turboexpanders at pressure let-down, and LNG boil-off recovery cut fuel use.
+- **Cutting methane** is the biggest and cheapest lever; @sec-natural-gas-methane covers it.
+- **Electrifying compression and field equipment.** Electric compressors, drilling rigs, fracturing fleets, LNG trains, and battery-electric equipment move burning off site. How much they help depends on how clean the grid is.
+- **Capturing formation CO₂.** Gas sweetening already separates a concentrated CO₂ stream, so storing it costs less than most capture.
+- **Using less fuel.** Newer engines and turbines, turboexpanders at pressure drops, and recovering the gas that boils off LNG all cut fuel use.
 
 ## Regional coverage and differences
 
-Alberta and British Columbia dominate production, and therefore the sector's emissions and abatement opportunity; Saskatchewan adds production; Ontario, Québec, Manitoba, and the Atlantic region carry mainly transmission and distribution. The model also includes a Rest-of-World region for trade and, prospectively, LNG export. Alberta holds most of the methane-abatement opportunity, while British Columbia has already moved further on methane controls.
+Alberta and British Columbia produce most of Canada's gas, and so hold most of the sector's emissions and of its chances to cut them. Saskatchewan adds some production; Ontario, Québec, Manitoba, and the Atlantic region mainly transmit and distribute gas. The model also includes a Rest-of-World region for trade and, in future, LNG exports. Alberta holds most of the remaining methane-cutting opportunity, while British Columbia has already gone further on methane controls.
 
 <mark>TODO: Calibrate the regional production mix (conventional, shale, tight, and coalbed methane) against the National Inventory Report and provincial data.</mark>
 

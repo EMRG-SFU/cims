@@ -1,9 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1086 574" width="1086" height="574" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Petroleum crude process flowchart">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 936 574" width="936" height="574" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Petroleum crude process flowchart">
 <defs>
 <symbol id="icon-boiler" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="10" y="8" width="28" height="26" rx="6" fill="currentColor" fill-opacity="0.18"/><path d="M16 42 c-3-4 3-5 0-8 M24 42 c-3-4 3-5 0-8 M32 42 c-3-4 3-5 0-8"/><path d="M38 14 H44 V4"/></g></symbol>
 <symbol id="icon-hydrogen" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="15" cy="24" r="9"/><circle cx="33" cy="24" r="9"/><text x="15" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text><text x="33" y="29" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor" stroke="none">H</text></g></symbol>
 <symbol id="icon-liquid-fuel" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C30 15 37 22 37 30 A13 13 0 0 1 11 30 C11 22 18 15 24 5 Z" fill="currentColor" fill-opacity="0.18"/><path d="M18 31 a6 6 0 0 0 6 6"/></g></symbol>
-<symbol id="icon-natural-gas" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M24 5 C31 13 37 20 37 29 A13 13 0 0 1 11 29 C11 22 15 18 18 13 C20 19 22 22 25 22 C26 16 23 11 24 5 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
 <symbol id="icon-offshore" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 34 c4-3 8 3 12 0 s8 3 12 0 s8 3 12 0 s4 2 6 1"/><path d="M12 34 V20 H36 V34 M18 20 V12 H26 V20 M30 20 V6 M14 42 H34"/></g></symbol>
 <symbol id="icon-oil-sands" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18 H44 V40 H4 Z" fill="currentColor" fill-opacity="0.18"/><circle cx="12" cy="26" r="2"/><circle cx="22" cy="32" r="2"/><circle cx="32" cy="25" r="2"/><circle cx="38" cy="34" r="2"/><path d="M18 18 V8 L28 4"/></g></symbol>
 <symbol id="icon-open-pit" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 14 H10 L13 20 H18 L21 26 H27 L30 20 H35 L38 14 H46"/><path d="M4 36 H44" stroke-dasharray="3 4"/></g></symbol>
@@ -16,116 +15,109 @@
 <marker id="arrow-energy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#c0691f"/></marker>
 <marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8a96a3"/></marker>
 </defs>
-<path d="M 302.0 82.0 L 334.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 452.0 76.0 L 484.0 76.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 452.0 88.0 L 461.0 88.0 Q 468.0 88.0 468.0 95.0 L 468.0 197.0 Q 468.0 204.0 475.0 204.0 L 484.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 452.0 216.0 L 484.0 216.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 452.0 338.0 L 484.0 338.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 152.0 466.0 L 334.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 452.0 466.0 L 484.0 466.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 602.0 332.0 L 634.0 332.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 602.0 466.0 L 611.0 466.0 Q 618.0 466.0 618.0 459.0 L 618.0 351.0 Q 618.0 344.0 625.0 344.0 L 634.0 344.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 693.0 421.0 L 693.0 383.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 602.0 82.0 L 686.0 82.0 Q 693.0 82.0 693.0 89.0 L 693.0 191.0 Q 693.0 198.0 700.0 198.0 L 784.0 198.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 602.0 210.0 L 784.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 752.0 338.0 L 761.0 338.0 Q 768.0 338.0 768.0 331.0 L 768.0 229.0 Q 768.0 222.0 775.0 222.0 L 784.0 222.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 543.0 511.0 L 543.0 523.0 Q 543.0 530.0 550.0 530.0 L 836.0 530.0 Q 843.0 530.0 843.0 523.0 L 843.0 255.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<text x="693.0" y="526.0" text-anchor="middle" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">diluted bitumen</text>
-<path d="M 843.0 127.0 L 843.0 165.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<path d="M 902.0 210.0 L 934.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<g><title>Natural gas</title>
-<rect x="34.0" y="421.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
-<use href="#icon-natural-gas" x="74.0" y="429.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Natural gas</text>
-</g>
+<path d="M 152.0 82.0 L 184.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 88.0 L 311.0 88.0 Q 318.0 88.0 318.0 95.0 L 318.0 197.0 Q 318.0 204.0 325.0 204.0 L 334.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 216.0 L 334.0 216.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 302.0 338.0 L 334.0 338.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 302.0 466.0 L 334.0 466.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 452.0 332.0 L 484.0 332.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 466.0 L 461.0 466.0 Q 468.0 466.0 468.0 459.0 L 468.0 351.0 Q 468.0 344.0 475.0 344.0 L 484.0 344.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 543.0 421.0 L 543.0 383.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 452.0 82.0 L 536.0 82.0 Q 543.0 82.0 543.0 89.0 L 543.0 191.0 Q 543.0 198.0 550.0 198.0 L 634.0 198.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 452.0 210.0 L 634.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 338.0 L 611.0 338.0 Q 618.0 338.0 618.0 331.0 L 618.0 229.0 Q 618.0 222.0 625.0 222.0 L 634.0 222.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 393.0 511.0 L 393.0 523.0 Q 393.0 530.0 400.0 530.0 L 686.0 530.0 Q 693.0 530.0 693.0 523.0 L 693.0 255.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="543.0" y="526.0" text-anchor="middle" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">diluted bitumen</text>
+<path d="M 693.0 127.0 L 693.0 165.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<path d="M 752.0 210.0 L 784.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <g><title>Exploration and drilling — petroleum-crude.product.exploration</title>
-<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-well" x="224.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
-<text x="243.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Exploration</text>
-<text x="243.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and drilling</text>
+<rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-well" x="74.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Exploration</text>
+<text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and drilling</text>
 </g>
 <g><title>Well completion — petroleum-crude.product.completion</title>
-<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-well" x="374.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
-<text x="393.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Well</text>
-<text x="393.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">completion</text>
+<rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-well" x="224.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="243.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Well</text>
+<text x="243.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">completion</text>
 </g>
 <g><title>Light-medium crude — petroleum-crude.product.light-medium.onshore, petroleum-crude.product.light-medium.offshore</title>
-<rect x="484.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-offshore" x="524.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
-<text x="543.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Light-medium</text>
-<text x="543.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crude</text>
+<rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-offshore" x="374.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Light-medium</text>
+<text x="393.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crude</text>
 </g>
 <g><title>Field services — petroleum-crude.service.artificial-lift, petroleum-crude.service.treating, petroleum-crude.service.produced-water, petroleum-crude.service.field-engines</title>
-<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-pump" x="374.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Field services</text>
+<rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-pump" x="224.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="243.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Field services</text>
 </g>
 <g><title>Heavy crude — petroleum-crude.product.heavy</title>
-<rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-well" x="524.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
-<text x="543.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Heavy crude</text>
+<rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-well" x="374.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Heavy crude</text>
 </g>
 <g><title>Haulage and tailings — petroleum-crude.service.mine-haulage, petroleum-crude.service.tailings-disposal</title>
-<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-truck" x="374.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="393.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Haulage and</text>
-<text x="393.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">tailings</text>
+<rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-truck" x="224.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="243.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Haulage and</text>
+<text x="243.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">tailings</text>
 </g>
 <g><title>Oil sands mining — petroleum-crude.product.bitumen.mining.extraction, petroleum-crude.product.bitumen.mining.froth-treatment</title>
-<rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-open-pit" x="524.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
-<text x="543.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Oil sands</text>
-<text x="543.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">mining</text>
+<rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-open-pit" x="374.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Oil sands</text>
+<text x="393.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">mining</text>
 </g>
 <g><title>Steam — petroleum-crude.service.steam</title>
-<rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-boiler" x="374.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="393.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Steam</text>
+<rect x="184.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-boiler" x="224.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="243.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Steam</text>
 </g>
 <g><title>In-situ bitumen — petroleum-crude.product.bitumen.in-situ</title>
-<rect x="484.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-oil-sands" x="524.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
-<text x="543.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">In-situ</text>
-<text x="543.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">bitumen</text>
+<rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-oil-sands" x="374.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
+<text x="393.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">In-situ</text>
+<text x="393.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">bitumen</text>
 </g>
 <g><title>Upgrading — petroleum-crude.product.bitumen.upgrading.primary, petroleum-crude.product.bitumen.upgrading.secondary</title>
-<rect x="634.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-refinery" x="674.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
-<text x="693.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Upgrading</text>
+<rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-refinery" x="524.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
+<text x="543.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Upgrading</text>
 </g>
-<g><title>Hydrogen — petroleum-crude.service.hydrogen</title>
-<rect x="634.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-hydrogen" x="674.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="693.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+<g><title>Hydrogen supply — petroleum-crude.service.hydrogen</title>
+<rect x="484.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-hydrogen" x="524.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="543.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
+<text x="543.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">supply</text>
 </g>
 <g><title>Pumping — petroleum-crude.service.pumping</title>
-<rect x="784.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-pump" x="824.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="843.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Pumping</text>
+<rect x="634.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-pump" x="674.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Pumping</text>
 </g>
 <g><title>Crude pipelines — petroleum-crude.product.transmission</title>
-<rect x="784.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
-<use href="#icon-pipeline" x="824.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
-<text x="843.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Crude</text>
-<text x="843.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">pipelines</text>
+<rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
+<use href="#icon-pipeline" x="674.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
+<text x="693.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Crude</text>
+<text x="693.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">pipelines</text>
 </g>
 <g><title>Crude oil and bitumen</title>
-<rect x="934.0" y="165.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
-<use href="#icon-liquid-fuel" x="974.0" y="173.0" width="38" height="38" style="color:#ffffff"/>
-<text x="993.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Crude oil and</text>
-<text x="993.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">bitumen</text>
+<rect x="784.0" y="165.0" width="118" height="90" rx="10" fill="#2f4466" stroke="#2f4466" stroke-width="1.4"/>
+<use href="#icon-liquid-fuel" x="824.0" y="173.0" width="38" height="38" style="color:#ffffff"/>
+<text x="843.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">Crude oil and</text>
+<text x="843.0" y="244.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#ffffff">bitumen</text>
 </g>
-<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#f5efe5" stroke="#b8976a"/>
-<text x="44.0" y="556" font-size="11.5" fill="#5a6472">Purchased input</text>
-<rect x="157.4" y="546" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
-<text x="179.4" y="556" font-size="11.5" fill="#5a6472">Process step</text>
-<rect x="274.6" y="546" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
-<text x="296.6" y="556" font-size="11.5" fill="#5a6472">Site service</text>
-<rect x="391.7" y="546" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
-<text x="413.7" y="556" font-size="11.5" fill="#5a6472">Product</text>
-<path d="M 478.4 552 H 506.4" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<text x="514.4" y="556" font-size="11.5" fill="#5a6472">Material flow</text>
-<path d="M 615.6 552 H 643.6" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
-<text x="651.6" y="556" font-size="11.5" fill="#5a6472">Energy or service</text>
+<rect x="22.0" y="546" width="16" height="12" rx="3" fill="#e4eef9" stroke="#3d6ea5"/>
+<text x="44.0" y="556" font-size="11.5" fill="#5a6472">Process step</text>
+<rect x="139.1" y="546" width="16" height="12" rx="3" fill="#e6f2e8" stroke="#5b8f66"/>
+<text x="161.1" y="556" font-size="11.5" fill="#5a6472">Site service</text>
+<rect x="256.3" y="546" width="16" height="12" rx="3" fill="#2f4466" stroke="#2f4466"/>
+<text x="278.3" y="556" font-size="11.5" fill="#5a6472">Product</text>
+<path d="M 342.9 552 H 370.9" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="378.9" y="556" font-size="11.5" fill="#5a6472">Material flow</text>
+<path d="M 480.2 552 H 508.2" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
+<text x="516.2" y="556" font-size="11.5" fill="#5a6472">Energy or service</text>
 </svg>

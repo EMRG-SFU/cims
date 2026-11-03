@@ -1,12 +1,16 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 ---
 
 # Oil Sands {#sec-oil-sands}
 
-The oil sands are the largest part of the petroleum crude sector (@sec-petroleum-crude) in both output and emissions. Bitumen is either mined from near-surface deposits and separated from the sand with warm water, or recovered in situ from deeper deposits with steam or solvents. Mined bitumen is usually upgraded to synthetic crude on site; in-situ bitumen is either upgraded or diluted and shipped by pipeline. This chapter covers those steps and the services they draw on.
+The oil sands are the largest part of the petroleum crude sector (@sec-petroleum-crude), in both output and emissions. They hold bitumen, a form of crude oil so thick that it won't flow at normal temperatures. Producers get it out in one of two ways. Near the surface, they mine the oil sand and wash the bitumen out with warm water. Deeper down, they heat the bitumen in place, usually with steam, so it can flow to wells. Mined bitumen is usually upgraded on site into a lighter synthetic crude. In-situ bitumen is either upgraded or thinned with a lighter liquid and shipped by pipeline. This chapter covers those steps and the services they draw on.
 
 ## Process flow
+
+@fig-oil-sands-process shows the two routes and where they meet. Mining feeds extraction and froth treatment, and leaves tailings behind. In-situ recovery draws on steam made from treated produced water. Both routes can feed the upgrader, which uses hydrogen to make synthetic crude.
 
 ::: {#fig-oil-sands-process}
 ![](images/flowcharts/petroleum-crude_oil-sands_process-flow_light.svg){.light-content .lightbox group="oil-sands-light"}
@@ -18,59 +22,73 @@ Process flow of oil sands mining, in-situ recovery, and upgrading.
 
 ## Mining and extraction
 
-Surface mining digs oil sands ore with shovels and haul trucks. The ore is slurried in warm water and pumped to separation vessels, where bitumen floats off as froth; froth treatment then removes the remaining water and solids with a solvent. Extraction and froth treatment are measured in cubic metres of bitumen.
+Surface mining works deposits close enough to the surface to dig, in open pits. Giant shovels load the oil sand into haul trucks, which carry it to crushers. The crushed ore is mixed with warm water into a slurry and pumped through a pipeline to the extraction plant. On the way, the warm water and the tumbling start to free the bitumen from the sand. At the plant, the slurry settles in large separation vessels: the sand sinks, and the bitumen floats to the top as a froth of bitumen, water, and fine solids [@ceri_2017_002].
 
-**Mine haulage**
+Mining uses energy in three main places. The haul trucks burn large amounts of diesel. Heating the water for extraction takes a lot of fuel, and much of that heat is lost when warm water goes to the tailings. Froth treatment and the pumps and crushers add the rest.
+
+**Mine haulage** moves ore from the pit face to the crushers. Diesel trucks are the incumbent. Dual-fuel trucks burn liquefied natural gas alongside diesel, and battery-electric haulage removes the exhaust from the mine altogether.
 
 {{< include _technology-blocks/petroleum-crude/service_mine-haulage.md >}}
 
-**Bitumen extraction**
+**Bitumen extraction** separates bitumen from the sand with warm water. Non-aqueous extraction uses a solvent in place of water, which cuts the heat needed and produces dry tailings instead of a wet slurry.
 
 {{< include _technology-blocks/petroleum-crude/product_bitumen_mining_extraction.md >}}
 
-**Froth treatment**
+**Froth treatment** cleans the bitumen froth by adding a light solvent, which lowers the bitumen's thickness so water and solids can settle out. The solvent is then recovered and reused. There are two kinds:
 
-Naphthenic froth treatment recovers about 98 % of the bitumen but leaves water, solids, and all the asphaltenes, so its product must be upgraded. Paraffinic treatment rejects asphaltenes and gives a cleaner bitumen.
+- Naphthenic treatment uses a naphtha solvent. It recovers nearly all the bitumen, but leaves some water and solids in it and keeps all the asphaltenes, the heaviest, most carbon-rich part of the oil. Its product must be upgraded.
+- Paraffinic treatment uses a lighter solvent that makes some of the asphaltenes drop out. It recovers a little less bitumen, but the product is clean enough to sell to refineries or ship by pipeline once diluted.
 
 {{< include _technology-blocks/petroleum-crude/product_bitumen_mining_froth-treatment.md >}}
 
-**Tailings**
-
-The sand, clay, and water left after extraction go to tailings, measured in tonnes. Dewatering the tailings shrinks the ponds and cuts the heat lost with recycled water.
+**Tailings** are the sand, clay, and water left after extraction. They are usually pumped to large ponds, where the fine clay can take decades to settle. Thickening and filtering the tailings recovers warm water for reuse, which saves heat, and shrinks the ponds. Filtered or paste tailings go further, producing material dry enough to stack.
 
 {{< include _technology-blocks/petroleum-crude/service_tailings-disposal.md >}}
 
 ## In-situ recovery
 
-In-situ recovery mobilizes bitumen in the reservoir and lifts it to the surface through wells. Steam-assisted gravity drainage (SAGD) and cyclic steam stimulation inject steam, which the sector's Steam service supplies (@sec-industrial-heat); the steam generators are fed with treated produced water. Solvent-assisted and solvent-only processes, electromagnetic heating, and downhole oxy-combustion cut or replace that steam. In-situ recovery is measured in cubic metres of bitumen.
+Most oil sands bitumen lies too deep to mine. In-situ ("in place") recovery heats it underground until it flows, then brings it to the surface through wells [@etsap_2010_010]. Two methods dominate:
 
-**In-situ recovery**
+- In **steam-assisted gravity drainage** (SAGD), operators drill pairs of horizontal wells, one a few metres above the other. Steam injected through the upper well heats the bitumen, which drains down with the condensed water into the lower well and is pumped to the surface.
+- In **cyclic steam stimulation**, a single well takes turns injecting steam, letting the reservoir soak, and producing the heated oil.
+
+Making steam is where nearly all the energy goes. The key measure is the steam-to-oil ratio: how much steam a project needs for each barrel of bitumen. A reservoir that needs more steam burns more fuel and emits more CO₂ per barrel [@oilsands-intensity]. The steam comes from the sector's Steam service (@sec-industrial-heat), in boilers and cogeneration plants fed with produced water that has been treated to remove oil, hardness, and silica.
+
+Several newer methods aim to cut or replace that steam:
+
+- **Solvent-assisted** processes add a light hydrocarbon solvent to the steam. The solvent mixes into the bitumen and thins it, so less steam is needed. Most of the solvent comes back up with the oil and is reused. Pilots at commercial sites have run this at field scale [@canadian-natural_2024_001; @cenovus_2025_002].
+- **Solvent-only** processes inject solvent vapour with no steam at all.
+- **Electromagnetic heating** uses radio-frequency energy, much like a microwave oven, to heat the reservoir with electricity, together with a solvent.
+- **In-situ oxy-combustion** burns fuel in pure oxygen to make steam mixed with CO₂. The mixture is injected into the reservoir, where both gases help thin the bitumen.
 
 {{< include _technology-blocks/petroleum-crude/product_bitumen_in-situ.md >}}
 
-The produced-water technologies, which condition water for steam generation, are listed in @sec-petroleum-crude.
+The produced-water technologies, which prepare water for making steam, are listed in @sec-petroleum-crude.
 
 ## Upgrading
 
-Upgrading turns bitumen into synthetic crude. Primary upgrading breaks the heavy residue into lighter fractions by coking or by hydrocracking in an ebullated bed; secondary upgrading hydrotreats those fractions to remove sulphur and nitrogen. Both are measured in cubic metres of synthetic crude. Partial upgrading, a prospective field-scale option, treats bitumen just enough to meet pipeline specification without diluent.
+Upgrading turns bitumen into synthetic crude, a light, low-sulphur oil that refineries can run like conventional crude. Bitumen has too little hydrogen for its carbon, and too much sulphur and metal. Upgrading fixes this in two stages, by removing carbon or adding hydrogen.
 
-**Primary upgrading**
+**Primary upgrading** breaks the heaviest molecules into smaller ones. Cokers heat the bitumen residue until it cracks into lighter liquids and gas, leaving solid petroleum coke behind, so they remove carbon. Delayed coking does this in large drums filled and emptied in turns. Fluid coking does it in a bed of hot coke particles, and flexicoking also turns the coke into a fuel gas. Ebullated-bed hydrocracking instead adds hydrogen over a catalyst, so it turns more of the barrel into liquid but uses much more hydrogen. Partial upgrading is a smaller field-scale option. It treats bitumen just enough to flow through a pipeline without diluent.
 
 {{< include _technology-blocks/petroleum-crude/product_bitumen_upgrading_primary.md >}}
 
-**Secondary upgrading**
+**Secondary upgrading** treats the lighter liquids from primary upgrading with hydrogen over a catalyst at high temperature and pressure. This hydroprocessing removes sulphur and nitrogen and adds hydrogen, which stabilizes the oil. Its heaters can run on fuel gas, on electricity, or on hydrogen.
 
 {{< include _technology-blocks/petroleum-crude/product_bitumen_upgrading_secondary.md >}}
 
-**Hydrogen**
-
-Upgraders make their own hydrogen for hydroprocessing, measured in GJ. Steam methane reformers dominate; capture on the shifted syngas yields a concentrated CO₂ stream, and on-site electrolysis is the zero-carbon alternative.
+**Hydrogen** for upgrading is made on site. Most of it comes from steam methane reformers, which react natural gas with steam to produce hydrogen and CO₂. More than half of a reformer's CO₂ ends up in a concentrated stream inside the process, which is cheap to capture; the rest is in the dilute exhaust from its furnace. Water electrolysis makes hydrogen from water and electricity with no direct emissions. Gasifying coke, the by-product of coking, is another option.
 
 {{< include _technology-blocks/petroleum-crude/service_hydrogen.md >}}
 
 ## Decarbonisation
 
-In-situ carbon intensity is dominated by steam, so the carbon price acts most strongly through the steam-to-oil ratio and the Steam service. Solvent-assisted processes can lower intensity by up to about 50 % [@oilsands-intensity]; electric boilers, cogeneration, and small nuclear reactors decarbonise the steam itself; and the concentrated CO₂ from upgrader hydrogen plants and the dilute CO₂ from steam generators are the main targets of the Pathways Alliance capture network [@pathways-alliance]. In mining, battery-electric and dual-fuel haul trucks cut diesel use, and non-aqueous extraction cuts both heat and tailings.
+- **Less steam per barrel.** In-situ emissions follow the steam-to-oil ratio, so cutting steam cuts emissions directly. Solvent-assisted processes can lower a barrel's carbon intensity by up to about half [@oilsands-intensity]. Solvent-only processes and electromagnetic heating go further.
+- **Low-carbon steam.** Electric boilers, cogeneration, and small nuclear reactors can make the steam itself with fewer emissions, through the Steam service.
+- **Carbon capture.** The concentrated CO₂ from upgrader hydrogen plants and the dilute CO₂ from steam generators are the main targets of the Pathways Alliance capture network [@pathways-alliance].
+- **Mining.** Battery-electric and dual-fuel haul trucks cut diesel use. Non-aqueous extraction cuts both the heat needed and the volume of wet tailings.
+
+The economics of each project matter as much as the technology. Older mines and in-situ projects have very different costs and steam-to-oil ratios, which shapes which options pay off where [@ceri_2018_001].
 
 <mark>TODO: The upgraders' hydrogen is made on site; link it to the [Hydrogen](sector_hydrogen.qmd) sector so upgrading can also draw on merchant blue or green hydrogen at that sector's cost and carbon intensity.</mark>
 

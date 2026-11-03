@@ -1,61 +1,75 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_petroleum_crude.html
 ---
 
 # Petroleum Crude {#sec-petroleum-crude}
 
-Crude oil and bitumen production is one of the energy-supply sectors in CIMS. It covers conventional crude, onshore and offshore, and the oil sands, which dominate Canadian output and emissions. The energy used to produce the oil, above all the natural gas burned to raise steam for in-situ bitumen recovery, is itself a large emissions source, so the sector's decarbonisation is mostly about how that production energy is supplied and whether its CO₂ is captured. This chapter covers the whole sector and conventional crude; @sec-oil-sands covers the oil sands in detail.
+The petroleum crude sector produces crude oil and bitumen and moves them to refineries and export markets. It covers conventional crude, from land and offshore wells, and the oil sands, which dominate Canadian output and emissions. Producing the oil takes a lot of energy, above all the heat used to make steam for in-situ bitumen recovery, and that energy is itself a large source of emissions. Cutting the sector's emissions is therefore mostly about how it supplies that energy and whether it captures the CO₂. This chapter covers the whole sector and conventional crude; @sec-oil-sands covers the oil sands in detail.
 
 ## Scope
 
-The sub-model covers the production of crude oil and bitumen: exploration and drilling, well completion, conventional light-medium crude (onshore and offshore) and heavy crude, the oil sands (surface mining with bitumen extraction, in-situ recovery, and upgrading to synthetic crude), and the trunk pipelines that move crude and bitumen to market. A forecast of oil and bitumen output drives every step and service.
+The sub-model covers:
 
-Several adjacent activities sit elsewhere in CIMS:
+- exploration and drilling, and preparing new wells to produce;
+- conventional light and medium crude, from onshore and offshore wells, and heavy crude;
+- the oil sands: surface mining with bitumen extraction, in-situ recovery from deeper deposits, and upgrading bitumen to synthetic crude; and
+- the trunk pipelines that move crude and bitumen to market.
 
-- Refining crude into fuels and products is covered in @sec-petroleum-refining.
+A forecast of oil and bitumen production drives every step and service.
+
+Several related activities sit elsewhere in CIMS:
+
+- Refining crude into fuels and other products is covered in @sec-petroleum-refining.
 - Natural gas production, processing, and transport are covered in @sec-natural-gas.
 - The hydrogen the sector uses can also come from the [Hydrogen](sector_hydrogen.qmd) sector.
-- Burning the refined fuels is accounted in the demand sectors.
+- Burning the refined fuels counts in the sectors that use them.
 
 ## Context
 
-Canadian crude production is dominated by the Alberta oil sands, the largest source of both output and emissions in the sector, supplemented by conventional crude in Saskatchewan and Alberta and offshore production off Newfoundland. The oil sands come in two forms: surface mining and upgrading, which digs out near-surface bitumen and upgrades it to synthetic crude; and in-situ recovery, which uses steam to mobilize deeper bitumen and now rivals mining as the main production route.
+Alberta's oil sands produce most of Canada's crude and most of the sector's emissions. Conventional crude from Saskatchewan and Alberta, and offshore crude from Newfoundland and Labrador, make up the rest. The oil sands are worked in two ways. Surface mining digs up bitumen near the surface and usually upgrades it on site to synthetic crude. In-situ recovery reaches deeper bitumen by heating it underground, usually with steam, so it flows to wells; it now rivals mining as the main way of producing oil sands bitumen [@ceri_2018_001].
 
-For in-situ production, the single largest emissions source is steam generation: natural gas burned to make the steam that lowers bitumen viscosity in steam-assisted gravity drainage (SAGD) and cyclic steam stimulation. The carbon intensity of a barrel therefore depends heavily on how much steam it needs and how that steam is produced [@oilsands-intensity]. Upgrading adds the emissions of coking, hydroprocessing, and the hydrogen it consumes. The decarbonisation levers follow directly: solvent processes that cut steam use (by up to about 50 % in carbon intensity), low-carbon steam, and carbon capture, the focus of the Pathways Alliance, whose proposed oil sands capture network would be among the world's largest [@pathways-alliance; @oilsands-intensity].
+For in-situ production, making steam is the single largest source of emissions. Bitumen is too thick to flow at reservoir temperature, so operators inject steam to thin it, either continuously in steam-assisted gravity drainage (SAGD) or in cycles in cyclic steam stimulation. The carbon intensity of each barrel therefore depends heavily on how much steam it needs and how that steam is made [@oilsands-intensity]. Upgrading adds the emissions of breaking down heavy oil and of making the hydrogen it consumes. The main levers follow from this: processes that use solvents to cut steam use (by up to about 50 % in carbon intensity), low-carbon steam, and carbon capture. Capture is the focus of the Pathways Alliance, whose proposed oil sands capture network would be among the world's largest [@pathways-alliance; @oilsands-intensity].
 
 ## Process flow
 
-@fig-petroleum-crude-process shows the sector's process steps and services. Conventional crude runs from exploration and completion to production; the oil sands run from mining or in-situ recovery, through upgrading for mined bitumen, to the pipelines. In-situ bitumen can also ship diluted, without upgrading.
+@fig-petroleum-crude-process shows how the sector fits together. Conventional crude runs from exploration and well completion to production. Oil sands bitumen comes from mining or in-situ recovery; mined bitumen is upgraded, and in-situ bitumen is either upgraded or mixed with a lighter liquid (diluent) so it can flow through a pipeline. Everything ends up in the crude pipelines.
 
 ::: {#fig-petroleum-crude-process}
 ![](images/flowcharts/petroleum-crude_process-flow_light.svg){.light-content .lightbox group="petroleum-crude-light"}
 
 ![](images/flowcharts/petroleum-crude_process-flow_dark.svg){.dark-content .lightbox group="petroleum-crude-dark"}
 
-Process flow of the petroleum crude sector. Process steps belong to the sector's Product sub-tree; site services belong to its Service sub-tree and are requested by the process steps.
+Process flow of the petroleum crude sector. Process steps make up the production chain; site services supply the energy, steam, and hydrogen those steps need.
 :::
 
 ## Model structure
 
-The Product sub-tree holds exploration, completion, conventional crude, the oil sands, and crude transmission. The Service sub-tree holds the field services, mine haulage and tailings, steam, hydrogen, pipeline pumping, fuel blends, and capture. This chapter follows conventional crude and transport; the oil sands steps and their services are in @sec-oil-sands.
+The model splits the sector into two parts. The production chain holds exploration, completion, conventional crude, the oil sands, and crude pipelines. The services part holds the field services, mine haulage and tailings, steam, hydrogen, pipeline pumping, fuel blends, and carbon capture. This chapter follows conventional crude and pipelines; the oil sands steps and their services are in @sec-oil-sands.
 
 ### Exploration and drilling
 
-Exploration and drilling covers the rigs and engines that drill and appraise new wells.
+**Exploration and drilling** covers the rigs and engines that drill and test new wells. A rig turns the drill bit, pumps drilling mud to carry rock cuttings out of the hole, and powers the work camp.
 
 {{< include _technology-blocks/petroleum-crude/product_exploration.md >}}
 
 ### Well completion
 
-Completion fractures and prepares a new well for production. Its energy goes mainly to the high-pressure pumps of the fracturing fleet, measured as GJ of hydraulic work.
+**Completion** prepares a drilled well to produce. For tight oil, that means hydraulic fracturing: pumping water, sand, and chemicals into the rock at very high pressure to open cracks the oil can flow through. Nearly all the energy goes to the fracturing fleet's large pumps, which run on diesel engines, on engines that burn a mix of diesel and natural gas, or on electric motors.
 
 {{< include _technology-blocks/petroleum-crude/product_completion.md >}}
 
 ### Conventional crude production
 
-Light-medium crude is split into onshore and offshore production, and heavy crude has its own node. Their energy goes to the field services that lift, treat, and handle the produced fluids. Production is measured in cubic metres of oil.
+The model splits conventional crude into light and medium crude, from onshore and offshore wells, and heavy crude. These steps have no technologies of their own. Their energy goes to the field services that bring oil to the surface and get it ready to ship:
+
+- **Artificial lift** pumps oil from wells that no longer flow on their own, most often with the familiar beam pumps ("pumpjacks").
+- **Treating** separates oil from the water and gas that come up with it, often by heating the mixture so the water settles out. Heat pumps can supply that heat in place of burning gas.
+- **Field engines** power pumps, compressors, and generators at sites without a grid connection.
+- **Produced water** is the salty water that comes up with the oil, often in larger volumes than the oil itself. It is either injected into deep disposal wells or treated and reused, for example to make steam or as fracturing water.
 
 **Artificial lift**
 
@@ -71,13 +85,11 @@ Light-medium crude is split into onshore and offshore production, and heavy crud
 
 **Produced water**
 
-Produced water is separated from the oil, then treated for reuse as steam or fracturing makeup, or disposed of by injection.
-
 {{< include _technology-blocks/petroleum-crude/service_produced-water.md >}}
 
 ### Crude pipelines and pumping
 
-Trunk pipelines move crude, bitumen blends, and refined products to refineries and export markets. The pipeline itself is the technology at the transmission node, measured in cubic metres moved 1,000 km; it requests its pumping energy from a separate pumping service, as a gas pipeline requests compression.
+**Crude pipelines** move crude, bitumen blends, and refined products long distances to refineries and export terminals. Oil loses pressure as it flows, so **pumping** stations along the line push it onward. The model treats the pipeline and its pumping separately, the same way a gas pipeline draws on separate compressor drives. Pump stations can cut their power use with better pumps and with drag-reducing agents, chemicals that let oil flow more easily.
 
 **Crude pipelines**
 
@@ -92,28 +104,28 @@ Trunk pipelines move crude, bitumen blends, and refined products to refineries a
 | Service | What it supplies | Technologies |
 |:--------|:-----------------|:-------------|
 | Steam | Steam for in-situ recovery and upgrading, from boilers, cogeneration, electric boilers, and other heat supply | @sec-industrial-heat |
-| Fuel blends | Diesel, gasoline, and methane blends, and the **still gas** node that routes upgrader off-gas to the heat it supplies | @sec-fuel-blends |
-| CCS | Capture of concentrated CO₂ (upgrader hydrogen plants) and diffuse CO₂ (boiler and heater flue gas) | @sec-ccus |
+| Fuel blends | Diesel, gasoline, and methane, and a **still gas** step that routes upgrader off-gas to the equipment that burns it | @sec-fuel-blends |
+| CCS | Capture of concentrated CO₂ (from upgrader hydrogen plants) and dilute CO₂ (from boiler and heater exhaust) | @sec-ccus |
 
 : Shared services in the petroleum crude sector {#tbl-petroleum-crude-shared}
 
 ## Decarbonisation
 
-- **Less steam per barrel.** Solvent-assisted and solvent-only in-situ processes, and electromagnetic heating, cut or replace steam (@sec-oil-sands).
-- **Low-carbon steam.** The Steam service can switch from gas boilers to cogeneration, electric boilers, or nuclear heat; for in-situ production this choice largely sets a barrel's carbon intensity.
-- **Carbon capture.** The oil sands produce large CO₂ streams from steam generation, upgrading, and hydrogen production, which the Pathways Alliance network proposes to capture [@pathways-alliance].
-- **Electrifying field equipment.** Electric fracturing fleets, heat-pump treating, and battery-electric haul trucks move combustion off site, and dual-fuel engines displace diesel with field gas.
+- **Less steam per barrel.** Solvent-assisted and solvent-only in-situ processes, and electromagnetic heating, cut or replace steam (see @sec-oil-sands).
+- **Low-carbon steam.** The Steam service can switch from gas boilers to cogeneration, electric boilers, or nuclear heat. For in-situ production, this choice largely sets a barrel's carbon intensity.
+- **Carbon capture.** The oil sands produce large CO₂ streams from making steam, upgrading, and making hydrogen. The Pathways Alliance network proposes to capture them [@pathways-alliance].
+- **Electrifying field equipment.** Electric fracturing fleets, heat-pump treating, and battery-electric haul trucks move burning off site, and engines that burn field gas alongside diesel cut diesel use.
 
 <mark>TODO: The hierarchy has no venting or fugitive methane nodes for petroleum crude, so oil-sector methane control is not represented here; decide whether crude production should share the methane sources modelled in @sec-natural-gas-methane.</mark>
 
 ## Regional coverage and differences
 
-Six regions carry crude production, but it is highly concentrated:
+Six regions produce crude, but production is highly concentrated:
 
-- **Alberta** dominates, with essentially all of the oil sands (mining, in-situ, and upgrading) plus conventional crude, and therefore most of the sector's energy use and abatement opportunity.
-- **Saskatchewan** carries conventional heavy and light-medium crude.
-- The **Atlantic** region carries offshore light-medium production (Newfoundland).
-- **British Columbia, Manitoba, and Ontario** carry smaller conventional volumes.
+- **Alberta** dominates, with essentially all of the oil sands (mining, in-situ, and upgrading) plus conventional crude, and so most of the sector's energy use and chances to cut emissions.
+- **Saskatchewan** produces conventional heavy and light-medium crude.
+- The **Atlantic** region produces offshore light-medium crude, off Newfoundland and Labrador.
+- **British Columbia, Manitoba, and Ontario** produce smaller conventional volumes.
 
 <mark>TODO: Calibrate the in-situ versus mining production split and the steam-to-oil ratios against current Alberta Energy Regulator data, since the sector's emissions and the value of steam decarbonisation depend heavily on both.</mark>
 

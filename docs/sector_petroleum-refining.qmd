@@ -1,33 +1,43 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_petroleum_refining.html
 ---
 
 # Petroleum Refining {#sec-petroleum-refining}
 
-Petroleum refining turns crude oil and synthetic crude into gasoline, diesel, jet fuel, fuel oils, petrochemical feedstocks, asphalt, lubricants, and coke. Almost all of its emissions come from burning fuel for process heat and steam, much of it the refinery's own still gas, and from making hydrogen on site. Its decarbonisation is therefore about electrifying and decarbonising that energy and capturing the concentrated CO₂ streams, against a backdrop of long-run demand decline as transport electrifies.
+Petroleum refining turns crude oil and synthetic crude into gasoline, diesel, jet fuel, fuel oils, petrochemical feedstocks, asphalt, lubricants, and petroleum coke. Almost all of its emissions come from two sources: burning fuel for process heat and steam, and making hydrogen on site. Much of the fuel a refinery burns is its own still gas, a by-product of its processes. Cutting emissions is therefore mostly about how the refinery supplies its heat and hydrogen, and whether it captures the CO₂. Over the long run, demand for refined fuels is also expected to fall as transport electrifies.
 
 ## Scope
 
-The sub-model covers refining through the standard process units: crude distillation, conversion (coking, fluid catalytic cracking, and hydrocracking), hydrotreating and sulphur recovery, catalytic reforming, alkylation, and isomerization, plus asphalt and lubes. It also holds a synthetic-fuels node for coal-to-liquids and gas-to-liquids plants. A forecast of refinery throughput drives every step and service.
+The sub-model covers the standard refinery process units:
 
-Several adjacent activities sit elsewhere in CIMS:
+- crude distillation;
+- conversion, which breaks heavy oil into lighter products (coking, fluid catalytic cracking, and hydrocracking);
+- hydrotreating and sulphur recovery;
+- catalytic reforming, alkylation, and isomerization; and
+- asphalt and lubricants.
 
-- Crude oil and bitumen production, including oil sands upgrading, is covered in @sec-petroleum-crude.
+It also covers synthetic fuels: plants that make liquid fuels from other carbon feedstocks. A forecast of refinery throughput drives every step and service.
+
+Several related activities sit elsewhere in CIMS:
+
+- Producing crude oil and bitumen, including upgrading bitumen in the oil sands, is covered in @sec-petroleum-crude.
 - Natural gas processing is covered in @sec-natural-gas.
 - Petrochemicals made from refinery streams are covered in [Chemicals](sector_chemicals.qmd).
-- Burning the finished fuels is accounted in the demand sectors.
+- Burning the finished fuels counts in the sectors that use them.
 
 ## Context
 
-Canada has a modest fleet of refineries spread across the country, supplying gasoline, diesel, and other products to domestic and export markets. A refinery's energy use and emissions depend on its complexity: the crude it runs and how much cracking, hydrotreating, and reforming it does to make high-value products. Most refinery emissions come from burning fossil fuels for process heat and steam, with a further large share from making hydrogen for hydrotreating and hydrocracking [@wri-refining]. Much of the process fuel is the refinery's own still gas.
+Canada has a modest number of refineries spread across the country, supplying fuels to domestic and export markets. A refinery's energy use depends on its complexity: the kind of crude it runs, and how much cracking, hydrotreating, and reforming it does to turn that crude into high-value products. A simple refinery mostly distils crude, while a complex one converts nearly all of the heavy oil into light fuels and uses far more energy to do it [@kaiser_2017_001; @abella_2022_001].
 
-Canada's [Roadmap for the Decarbonization of the Oil and Gas Sector](https://natural-resources.canada.ca/climate-change/roadmap-decarbonization-canada-s-oil-gas-sector) names the levers directly: electrifying low- and medium-grade process heat, switching to low- and zero-carbon hydrogen for high-temperature heat, energy efficiency, and CCUS. Refining is one of the lower-cost capture opportunities, with concentrated CO₂ available from the hydrogen plant [@nrcan-og-roadmap; @wri-refining]. Over the longer term, throughput is expected to decline as road transport electrifies, shifting the product slate toward aviation, petrochemicals, and exports.
+Most refinery emissions come from burning fuel for process heat and steam. Making hydrogen for hydrotreating and hydrocracking adds a further large share [@wri-refining]. Canada's roadmap for cutting oil and gas emissions names the main levers: electrifying low- and medium-temperature process heat, using low-carbon hydrogen for high-temperature heat, energy efficiency, and carbon capture. Refining is one of the cheaper places to capture CO₂, because the hydrogen plant produces a concentrated stream [@nrcan-og-roadmap; @wri-refining]. Over the longer term, throughput is expected to fall as road transport electrifies, shifting the product mix toward jet fuel, petrochemicals, and exports.
 
 ## Process flow
 
-@fig-petroleum-refining-process shows how the process units and services fit together. Distillation splits crude into fractions; conversion, treating, and reforming units turn those fractions into finished products.
+@fig-petroleum-refining-process shows how the process units and services fit together. Distillation splits crude into fractions. Conversion, treating, and reforming units then turn those fractions into finished products, drawing on the refinery's heaters and hydrogen plant.
 
 ::: {#fig-petroleum-refining-process}
 ![](images/flowcharts/petroleum-refining_process-flow_light.svg){.light-content .lightbox group="petroleum-refining-light"}
@@ -39,23 +49,29 @@ Process flow of the petroleum refining sector. Process steps belong to the secto
 
 ## Model structure
 
-The Product sub-tree holds the process units under **petroleum fractions** (distillation, cracked gas oil, hydrotreating, asphalt, and lubes) alongside alkylates, isomerization, reforming, and synthetic fuels. Distillation is measured in tonnes of crude; the conversion and treating units in tonnes of throughput. The Service sub-tree holds the fired process heaters, hydrogen, and the shared services.
+The Product sub-tree holds the process units. Distillation, conversion, hydrotreating, asphalt, and lubricants sit under **petroleum fractions**, alongside alkylation, isomerization, reforming, and synthetic fuels. The Service sub-tree holds the fired process heaters, hydrogen, and the shared services.
 
 ### Crude distillation
 
-Atmospheric and vacuum columns split crude into fractions, with fired heaters raising the feed temperature.
+**Distillation** is the first step in every refinery. Crude oil is a mix of many hydrocarbons that boil at different temperatures. A fired heater heats the crude until most of it turns to vapour, and the vapour rises up a tall column. Lighter hydrocarbons rise higher before they condense, so each tray of the column collects a different fraction: gases at the top, then naphtha, kerosene, and diesel, with heavy oil at the bottom. A second column, run under vacuum, splits that heavy oil further without heating it so much that it breaks down. Distillation uses a lot of heat, and much of it can be recovered by using the hot products to preheat the incoming crude [@gary_2007_001].
 
 {{< include _technology-blocks/petroleum-refining/product_petroleum-fractions_distillation.md >}}
 
 ### Process heaters
 
-Refinery fired heaters supply the high-temperature heat for distillation, reforming, coking, and hydrotreating. They are the only node in the high heat band (above 400 °C; see @sec-industrial-heat), measured in GJ. Electric heaters, thermal storage, and small nuclear reactors compete with fired heaters burning still gas or natural gas.
+**Process heaters** are the furnaces that supply the refinery's hottest heat, for distillation, reforming, coking, and hydrotreating. They burn still gas or natural gas in a firebox and heat oil flowing through tubes inside it. They are the only node in the high-temperature heat band (see @sec-industrial-heat). Electric heaters, heat stored from cheap electricity, concentrated solar heat, and small nuclear reactors compete with them, and fired heaters can also add carbon capture.
 
 {{< include _technology-blocks/petroleum-refining/service_direct-heat.md >}}
 
 ### Conversion
 
-Coking thermally cracks heavy residue into lighter products and petroleum coke. Fluid catalytic cracking and hydrocracking convert gas oil over a catalyst; the hierarchy has no separate catalytic-cracking node, so the cracking technologies share the hydrocracking node.
+Distillation leaves a lot of heavy oil that sells for little. Conversion units break those heavy molecules into lighter, more valuable ones.
+
+- **Coking** heats heavy residue until it cracks into lighter liquids and gas. It leaves solid petroleum coke behind, which is sold as a fuel or for making electrodes.
+- **Fluid catalytic cracking** breaks heavy gas oil into gasoline and lighter products over a hot powdered catalyst. Coke builds up on the catalyst, and a regenerator burns it off so the catalyst can be reused. That regenerator is often the largest single source of CO₂ in a refinery.
+- **Hydrocracking** also breaks gas oil apart over a catalyst, but adds hydrogen at high pressure, which gives cleaner products and uses a lot of hydrogen.
+
+The hierarchy has no separate catalytic-cracking node, so the cracking technologies share the hydrocracking node.
 
 **Coking**
 
@@ -67,7 +83,9 @@ Coking thermally cracks heavy residue into lighter products and petroleum coke. 
 
 ### Hydrotreating and sulphur recovery
 
-Hydrotreating removes sulphur and nitrogen from product streams with hydrogen at pressure. The hydrogen sulphide it removes goes to a sulphur plant: amine treating, a Claus unit, and tail-gas treatment.
+**Hydrotreating** removes sulphur and nitrogen from fuels so they meet clean-fuel standards. The fuel is heated and mixed with hydrogen over a catalyst, and the sulphur leaves as hydrogen sulphide gas. Its heaters can run on fuel gas, electricity, or hydrogen.
+
+**Sulphur recovery** turns that hydrogen sulphide into solid sulphur. A solvent first strips the gas out of the refinery's gas streams. A Claus unit then burns part of it and reacts the rest to make elemental sulphur, and a final step cleans up the leftover gas.
 
 **Hydrotreating**
 
@@ -79,7 +97,11 @@ Hydrotreating removes sulphur and nitrogen from product streams with hydrogen at
 
 ### Reforming, alkylation, and isomerization
 
-Catalytic reforming upgrades naphtha to high-octane reformate and produces hydrogen as a by-product. Alkylation and isomerization rearrange light ends into high-octane gasoline blendstock.
+These units make high-octane gasoline blending components:
+
+- **Catalytic reforming** reshapes naphtha molecules into high-octane reformate over a hot catalyst. It gives off hydrogen as a by-product, which the refinery reuses. Its heat can come from fired heaters or from electricity.
+- **Alkylation** joins small gas molecules into larger, high-octane ones.
+- **Isomerization** rearranges light naphtha molecules into branched shapes that have a higher octane rating.
 
 **Catalytic reforming**
 
@@ -95,13 +117,13 @@ Catalytic reforming upgrades naphtha to high-octane reformate and produces hydro
 
 ### Hydrogen
 
-The refinery makes hydrogen for hydrotreating and hydrocracking, measured in GJ. Steam methane reforming is the incumbent; capture on the shifted syngas gives blue hydrogen from a concentrated CO₂ stream, and on-site electrolysis gives green hydrogen.
+The refinery makes its own **hydrogen** for hydrotreating and hydrocracking. A steam methane reformer, the incumbent, reacts natural gas with steam over a catalyst in a fired furnace. This makes hydrogen and CO₂. More than half of that CO₂ is in a concentrated stream inside the process, which is cheap to capture; the rest leaves in the furnace exhaust, which is more dilute and costs more to capture [@collodi_2010_001]. An autothermal reformer makes its own heat inside the reactor, so nearly all of its CO₂ is concentrated. Water electrolysis makes hydrogen from water and electricity with no direct emissions.
 
 {{< include _technology-blocks/petroleum-refining/service_hydrogen.md >}}
 
 ### Synthetic fuels
 
-The synthetic-fuels node holds plants that make liquid fuels from coal or natural gas by gasification or reforming followed by Fischer-Tropsch synthesis. It is measured in GJ of liquid fuels.
+**Synthetic fuels** plants make liquid fuels from carbon feedstocks such as coal or natural gas. They first turn the feedstock into a mix of hydrogen and carbon monoxide, called syngas, by gasifying solid fuels or reforming gas. The Fischer-Tropsch process then builds that syngas into liquid hydrocarbons over a catalyst. The process uses a lot of energy and, without capture, emits a lot of CO₂.
 
 {{< include _technology-blocks/petroleum-refining/product_synthetic-fuels.md >}}
 
@@ -112,23 +134,27 @@ The synthetic-fuels node holds plants that make liquid fuels from coal or natura
 | Steam | Process steam, from boilers, cogeneration, heat pumps, and other heat supply | @sec-industrial-heat |
 | Machine drive | Pumps, fans and blowers, compressed air, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of refinery buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends, and the **still gas** node that routes the refinery's own off-gas to the heaters and boilers that burn it | @sec-fuel-blends |
-| CCS | Capture of concentrated CO₂ (hydrogen plants) and diffuse CO₂ (heater, boiler, and FCC regenerator flue gas) | @sec-ccus |
+| Fuel blends | Diesel and methane blends, and the **still gas** step that routes the refinery's own off-gas to the heaters and boilers that burn it | @sec-fuel-blends |
+| CCS | Capture of concentrated CO₂ (from hydrogen plants) and dilute CO₂ (from heater, boiler, and catalytic cracker exhaust) | @sec-ccus |
 
 : Shared services in the petroleum refining sector {#tbl-petroleum-refining-shared}
 
 ## Decarbonisation
 
-- **Electrifying process heat.** Electric process heaters and electrically heated hydroprocessing and reforming remove combustion CO₂ from low- and medium-grade heat, with thermal storage to shift load to off-peak hours.
-- **Hydrogen as fuel and feed.** Hydrogen-fired heaters decarbonise high-temperature duties that are hard to electrify, and blue or green hydrogen replaces grey hydrogen for hydrotreating.
-- **Carbon capture.** The hydrogen plant's concentrated CO₂ is among the cheapest capture opportunities in the economy; capture on the FCC regenerator, the largest single stack in a refinery, and on fired heaters is earlier-stage.
-- **Efficiency.** Pinch-designed preheat trains and heater revamps cut fuel use in the units that remain.
+- **Electrifying process heat.** Electric process heaters, and electrically heated hydroprocessing and reforming, remove the combustion CO₂ from low- and medium-temperature heat. Stored heat lets refineries use cheaper off-peak electricity.
+- **Hydrogen as fuel and feed.** Hydrogen-fired heaters cut emissions from high-temperature heat that is hard to electrify, and low-carbon hydrogen replaces hydrogen made from natural gas without capture.
+- **Carbon capture.** The hydrogen plant's concentrated CO₂ is among the cheapest capture opportunities in the economy. Capture on the catalytic cracker's regenerator and on fired heaters is less mature and costs more, because their exhaust is more dilute [@ieaghg_2017_002].
+- **Efficiency.** Better heat recovery and heater upgrades cut fuel use in the units that remain.
 
-Because so much of the fuel is self-generated still gas, the carbon price acts on how the refinery supplies heat and hydrogen rather than on a single process emission. Declining throughput as transport electrifies also lowers absolute emissions, independently of these choices.
+Because so much of the fuel is the refinery's own still gas, the carbon price acts mostly on how the refinery supplies heat and hydrogen, not on a single process emission. Falling throughput as transport electrifies also lowers total emissions, whatever technologies refineries choose.
 
 ## Regional coverage and differences
 
-Six regions carry refining (Alberta, the Atlantic region, British Columbia, Ontario, Québec, and Saskatchewan), matching where Canada's refineries sit. Regional differences show up in refinery complexity and product slate, in the fuels available for process heat (cheaper gas in the West), and in grid carbon intensity, which sets how much electrifying process heat actually reduces emissions (a lot in hydro-rich Québec and British Columbia, less in Alberta and Saskatchewan until their grids decarbonise).
+Six regions have refineries: Alberta, the Atlantic region, British Columbia, Ontario, Québec, and Saskatchewan. They differ in three ways:
+
+- refinery complexity and product mix;
+- the fuels available for process heat, with cheaper gas in the West; and
+- how clean the electricity grid is, which sets how much electrifying heat actually cuts emissions. The gain is large in hydro-rich Québec and British Columbia, and smaller in Alberta and Saskatchewan until their grids get cleaner.
 
 <mark>TODO: Calibrate the regional refinery configurations (complexity, product slate, hydrogen demand) and the long-run throughput trajectory against Canada Energy Regulator and Statistics Canada data.</mark>
 
