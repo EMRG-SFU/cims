@@ -13,11 +13,21 @@ Input files (raw_data/cer/cer_demand_data_update/):
 
 Output: processed_data/cer/cer_resd_demand.csv
     Columns: Region | Node | Variable | Unit | Source | Year | Value
+
+Biomass for Pulp and Paper and Light Industrial is replaced with StatCan
+25-10-0031 (stats_can/biomass_demand.py, replace_cer_biomass); those rows are
+labelled Source = 'StatCan 25-10-0031 (biomass_demand)'.
+
+Petroleum Refining fuels at the sector node are replaced with StatCan RESD
+refinery fuel (stats_can/refinery_fuel.py, replace_cer_refinery_fuel);
+labelled Source = 'StatCan RESD 25-10-0029 (refinery_fuel)'.
 """
 
 import pandas as pd
 from pathlib import Path
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, MAPPINGS_PATH
+from CIMS.data_processing.source.stats_can.biomass_demand import replace_cer_biomass
+from CIMS.data_processing.source.stats_can.refinery_fuel import replace_cer_refinery_fuel
 
 CER_DIR         = BASE_PATH / "raw_data/cer/cer_demand_data_update"
 MAP_FILE        = MAPPINGS_PATH / "cer_to_cims_map.csv"
@@ -306,6 +316,16 @@ def main() -> pd.DataFrame:
 
     print("Aggregating by region, cims_node, fuel, year...")
     result = _aggregate(merged)
+
+    # Pulp and Paper / Light Industrial biomass: StatCan 25-10-0031 in place of
+    # CER 'Biomass' (see biomass_demand.py for the method and node placement).
+    print("Replacing CER biomass with StatCan biomass (biomass_demand)...")
+    result = replace_cer_biomass(result)
+
+    # Petroleum Refining fuels: StatCan RESD refinery fuel (own + purchased,
+    # AB upgraders removed) in place of CER (see refinery_fuel.py).
+    print("Replacing CER refining fuels with StatCan refinery fuel (refinery_fuel)...")
+    result = replace_cer_refinery_fuel(result)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     result.to_csv(OUTPUT_FILE, index=False, encoding="utf-8-sig", na_rep="")

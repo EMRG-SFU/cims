@@ -43,8 +43,14 @@ MODULES = [
     f"{PACKAGE}.nrcan.ceud.transportation_freight.transportation_freight",
     # CER RESD demand data
     f"{PACKAGE}.cer.cer_resd_demand",
+    # EIA MECS steam shares (used by sector calibration.py via mecs_steam_calibration)
+    f"{PACKAGE}.eia.mecs_steam_shares",
     # Statistics Canada macro drivers
     f"{PACKAGE}.stats_can.pop_gdp",
+    # StatCan biomass (SPL and wood waste) for pulp and paper / light industrial
+    f"{PACKAGE}.stats_can.biomass_demand",
+    # StatCan refinery fuel (own + purchased) for petroleum refining
+    f"{PACKAGE}.stats_can.refinery_fuel",
 ]
 
 def main() -> int:

@@ -15,6 +15,8 @@ Emissions  (calibration_emissions_total from crosswalk; calibration_emissions_by
 Energy demand  (calibration_quantity_requested)
     cer_resd_demand.py            → energy demand in PJ by fuel and CIMS node;
                                     abbreviation regions
+    mecs_steam_calibration.py     → replaces the .Steam node rows with
+                                    EIA MECS steam share × CER sector demand
 
 Output columns
 --------------
@@ -34,6 +36,7 @@ import CIMS.data_processing.source.eccc.nir.nir_crosswalk_tables_cims as _crossw
 import CIMS.data_processing.source.eccc.nir.nir_to_cims as _nir_mod
 import CIMS.data_processing.source.cer.cer_resd_demand as _cer_mod
 from CIMS.data_processing.utils.controls_conversions import BASE_PATH, load_sector_regions, filter_excluded_branches
+from CIMS.data_processing.utils.mecs_steam_calibration import apply_mecs_steam
 
 # ── configuration ─────────────────────────────────────────────────────────────
 OUTPUT_DIR = BASE_PATH / 'calibration/light_industrial'
@@ -214,6 +217,9 @@ def main() -> pl.DataFrame:
 
     print('\nRunning CER demand (cer_resd_demand)...')
     cer_df = _cer_mod.main()
+
+    print('\nReplacing Steam node targets with MECS-based steam (mecs_steam_calibration)...')
+    cer_df = apply_mecs_steam(cer_df, '.Light Industrial')
 
     print('\nBuilding CER energy demand rows...')
     cer_rows = _build_cer_energy(cer_df)
