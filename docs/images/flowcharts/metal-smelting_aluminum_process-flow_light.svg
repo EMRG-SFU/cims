@@ -23,11 +23,11 @@
 <path d="M 602.0 466.0 L 611.0 466.0 Q 618.0 466.0 618.0 459.0 L 618.0 223.0 Q 618.0 216.0 625.0 216.0 L 634.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 393.0 255.0 L 393.0 293.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
 <path d="M 543.0 255.0 L 543.0 331.0 Q 543.0 338.0 536.0 338.0 L 452.0 338.0" fill="none" stroke="#8a96a3" stroke-width="1.7" stroke-dasharray="1.5 3.5" marker-end="url(#arrow-emission)"/>
-<g><title>Petroleum coke and pitch</title>
+<g><title>Carbon anode material</title>
 <rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>
 <use href="#icon-coal" x="74.0" y="45.0" width="38" height="38" style="color:#7d5b30"/>
-<text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Petroleum coke</text>
-<text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and pitch</text>
+<text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Carbon anode</text>
+<text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">material</text>
 </g>
 <g><title>Bauxite</title>
 <rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>

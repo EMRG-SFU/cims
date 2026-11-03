@@ -1,82 +1,95 @@
 ---
-bibliography: references.bib
+bibliography:
+  - references.bib
+  - tech-data_references.bib
 aliases:
   - sector_metal_smelting.html
 ---
 
 # Metal Smelting and Refining {#sec-metal-smelting}
 
-Metal smelting and refining turns ore concentrates, alumina, and scrap into finished non-ferrous metals. Aluminium dominates the sector, and its production runs mainly on electricity, much of it hydropower in Québec. The sector's hardest-to-cut emissions are therefore process emissions rather than combustion: CO₂ from the consumable carbon anode in aluminium electrolysis, and SF₆ from magnesium melt protection. This chapter covers the sector as a whole; two sub-sector chapters cover its production chains in detail: @sec-metal-smelting-aluminum and @sec-metal-smelting-base-metals.
+Metal smelting and refining turns ore concentrates, alumina, and scrap into finished metals other than iron and steel. Aluminium is by far the largest part of the sector. Making it takes a great deal of electricity, and in Canada most of that comes from hydropower in Québec. As a result, the sector's hardest emissions to cut don't come from burning fuel. They come from the chemistry of the processes themselves: the carbon anodes that aluminium cells consume, and the gas used to protect molten magnesium.
+
+This chapter covers the sector as a whole. Two further chapters describe its production chains in detail: @sec-metal-smelting-aluminum and @sec-metal-smelting-base-metals.
 
 ## Scope
 
-The sub-model covers the smelting and refining of aluminium, copper, nickel, lead, zinc, and magnesium, and the electric smelting of titanium slag. A forecast of refined-metal output, in tonnes, drives every upstream step and service.
+The sub-model covers the smelting and refining of aluminium, copper, nickel, lead, zinc, and magnesium, and the electric smelting of titanium slag, an iron-titanium ore concentrate used to make titanium pigment. A forecast of how much refined metal the sector produces drives every step and service in the chain.
 
-Several adjacent activities sit elsewhere in CIMS to avoid double-counting:
+Several related activities sit in other parts of CIMS, so their energy and emissions aren't counted twice:
 
 - Iron and steel are covered in @sec-iron-and-steel.
-- Mining and concentrating the ores belong to @sec-mining; this sub-model takes concentrates, bauxite, and scrap as inputs.
-- Fabricating metal into finished goods (rolling, extrusion, and casting of products) belongs to the manufacturing branches in @sec-light-industrial; this sub-model ends with refined and cast metal.
+- Mining and concentrating the ores belong to @sec-mining. This sub-model starts from concentrates, bauxite, and scrap.
+- Turning metal into finished goods, such as rolled sheet, extrusions, and cast parts, belongs to the manufacturing branches in @sec-light-industrial. This sub-model ends with refined, cast metal.
 
-Minor and precious metals (gold, silver, the platinum-group metals, and cadmium) are not represented separately: they are recovered alongside the base metals or produced in quantities too small to model on their own.
+Gold, silver, the platinum-group metals, and other minor metals aren't modelled on their own. Most are recovered alongside the base metals, and the rest are made in quantities too small to model separately.
 
 ## Context
 
-Canada is one of the world's leading non-ferrous metal producers. Almost all Canadian primary aluminium is smelted in Québec, where low-cost hydroelectricity makes the energy-intensive Hall-Héroult process economic; Canadian smelters are among the lowest-carbon in the world for this reason [@iea-aluminium]. Nickel and copper smelting and refining are concentrated in Ontario (Sudbury) and Manitoba (Thompson), with zinc and other base metals in several provinces.
+Canada is one of the world's leading producers of non-ferrous metals. Almost all of its primary aluminium is smelted in Québec, where low-cost hydroelectricity makes the very electricity-hungry smelting process economic. For that reason Canadian smelters are among the lowest-carbon in the world [@iea-aluminium; @iai_2026_001]. Nickel and copper smelting and refining are concentrated in Ontario (Sudbury) and Manitoba (Thompson), with zinc and other base metals in several provinces.
 
-The sector's emissions profile is distinctive. Hall-Héroult electrolysis uses roughly 14 MWh of electricity per tonne of aluminium, but even on clean electricity it emits CO₂, because the reaction consumes the carbon anode: about 1.6–1.7 t CO₂ per tonne of aluminium. Intermittent anode effects also release perfluorocarbons (PFCs), very potent greenhouse gases [@iea-aluminium]. Magnesium production and casting use SF₆ as a cover gas; SF₆ has roughly 22,000 times the warming potential of CO₂, so small quantities matter. Pyrometallurgical copper, nickel, lead, and zinc smelting burns fuel for roasting, smelting, and converting, and its sulphur-rich off-gas feeds an acid plant.
+The sector's emissions differ from most of industry's:
+
+- **Aluminium.** Each smelting cell passes a large electric current through alumina dissolved in a molten salt bath. A carbon block, the anode, carries the current into the bath and is slowly burned away by the oxygen released from the alumina. Even on clean electricity, this releases about 1.6–1.7 t of CO₂ for every tonne of aluminium. When a cell's alumina runs low, it can also give off perfluorocarbons (PFCs), very powerful greenhouse gases [@iea-aluminium].
+- **Magnesium.** Molten magnesium burns in air, so producers cover it with a protective gas, traditionally sulphur hexafluoride (SF₆). SF₆ traps roughly 22,000 times as much heat as CO₂, so small leaks matter [@nccp_1999_002].
+- **Base metals.** Copper, nickel, lead, and zinc smelting burns fuel to roast, smelt, and convert sulphide concentrates. Their sulphur ends up in the off-gas as sulphur dioxide, which an acid plant turns into sulphuric acid [@schlesinger_2011_001].
 
 ## Process flow
 
-@fig-metal-smelting-process shows the sector's production chains. Aluminium is made from bauxite, through alumina, or remelted from scrap. The base metals follow either a high-temperature (pyrometallurgical) route or an aqueous (hydrometallurgical) route, and most are then melted and cast. Magnesium comes from electrolysis or thermal reduction, and titanium slag from electric smelting of ilmenite.
+@fig-metal-smelting-process shows the sector's production chains. Aluminium is made from bauxite, by way of alumina, or remelted from scrap. The base metals take either a high-temperature route (pyrometallurgy: roasting, smelting, and converting in furnaces) or a water-based route (hydrometallurgy: dissolving the metal and recovering it by electrolysis), and most are then melted and cast. Magnesium comes from electrolysis or from reducing it out of dolomite with heat, and titanium slag from smelting ilmenite in an electric furnace.
 
 ::: {#fig-metal-smelting-process}
 ![](images/flowcharts/metal-smelting_process-flow_light.svg){.light-content .lightbox group="metal-smelting-light"}
 
 ![](images/flowcharts/metal-smelting_process-flow_dark.svg){.dark-content .lightbox group="metal-smelting-dark"}
 
-Process flow of the metal smelting and refining sector. Each production chain is detailed in its sub-sector chapter.
+Process flow of the metal smelting and refining sector. Each production chain is described in its sub-sector chapter.
 :::
 
 ## Model structure
 
-The Product sub-tree holds one branch per metal: **aluminium** (primary aluminium and recycling), **copper**, **nickel**, **lead**, and **zinc** (each split into pyrometallurgy, hydrometallurgy where it applies, and melting and casting), **magnesium** (electrolysis, thermal reduction, and melting and casting), and **titanium slag**. The Service sub-tree holds three sector-specific services, **anode production**, **oxygen**, and the smelter **acid plant**, alongside the shared services.
+Each metal has its own branch in the sector's Product sub-tree:
+
+- **Aluminium**, split into primary aluminium and recycling.
+- **Copper**, **nickel**, **lead**, and **zinc**, each split into the high-temperature route, the water-based route where it applies, and melting and casting.
+- **Magnesium**, split into electrolysis, thermal reduction, and melting and casting.
+- **Titanium slag**.
+
+Three services belong to this sector alone: **anode production** for the aluminium cells, **oxygen** for the base-metal furnaces, and the smelter **acid plant**. The sector also draws on the shared services below.
 
 - @sec-metal-smelting-aluminum covers alumina refining, anode production, electrolysis, and recycling.
 - @sec-metal-smelting-base-metals covers copper, nickel, lead, zinc, magnesium, and titanium slag, with the oxygen and acid-plant services.
 
 ### Shared services
 
-The sector also draws on the shared services documented in the General Services part:
-
 | Service | What it supplies | Technologies |
 |:--------|:-----------------|:-------------|
 | Steam | Process steam for alumina digestion, leaching, and refining | @sec-industrial-heat |
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of smelter and refinery buildings | @sec-hvac-lighting |
-| Fuel blends | Diesel and methane blends | @sec-fuel-blends |
-| CCS | Capture of concentrated and diffuse CO₂, including from alumina calciners and potlines | @sec-ccus |
+| Fuel blends | The diesel and gas blends the sector's equipment burns | @sec-fuel-blends |
+| CCS | Capture of CO₂ from alumina calciners and aluminium cells | @sec-ccus |
 
 : Shared services in the metal smelting sector {#tbl-metal-smelting-shared}
 
 ## Decarbonisation
 
-Because Canadian smelting already runs largely on clean electricity, its decarbonisation problem is less about energy supply than about process chemistry and the amount of primary metal made.
+Because Canadian smelting already runs largely on clean electricity, the sector's challenge is less about energy supply and more about process chemistry and how much new metal it has to make.
 
-- **Inert anodes.** Non-consumable anodes release oxygen instead of CO₂, removing both the anode CO₂ and the PFCs from anode effects. The ELYSIS joint venture in Québec produced primary aluminium at industrial scale with inert anodes in 2021 and targets wider commercial availability later this decade [@elysis].
-- **Recycling.** Remelting scrap aluminium uses about 5 % of the energy of primary production.
-- **Alumina refining.** Mechanical vapour recompression in digestion and electric or hydrogen-fired calciners displace the fuel burned in alumina refineries.
-- **Base-metal smelting.** Oxygen-enriched flash and bath smelting and continuous converting cut fuel per tonne; hydrometallurgy avoids high-temperature smelting where it applies; and electrolytic smelting is an earlier-stage alternative.
-- **Carbon capture.** Calciners and potlines with capture are in the technology lists, with the capture plants in @sec-ccus.
-- **Magnesium cover gas.** Replacing SF₆ with alternative cover gases (sulphur dioxide or fluorinated ketones) removes almost all of this emission at low cost [@ipcc-sf6-mg]. No technology in the database represents the switch yet.
+- **Inert anodes.** An anode that isn't consumed releases oxygen instead of CO₂, which removes both the anode CO₂ and the PFCs. The ELYSIS joint venture in Québec has produced aluminium with inert anodes at industrial scale and aims for wider commercial use later this decade [@elysis; @mpp_2023_001].
+- **Recycling.** Remelting scrap aluminium takes about 5 % of the energy of making it from alumina.
+- **Alumina refining.** Recompressing and reusing the steam in digestion, and electric or hydrogen-fired calciners, cut the fuel that alumina refineries burn.
+- **Base-metal smelting.** Furnaces that smelt with oxygen-enriched air, and continuous converting, cut fuel use per tonne. The water-based route avoids high-temperature smelting where the ore suits it.
+- **Carbon capture.** Calciners and aluminium cells fitted with capture appear in the technology lists, and the capture equipment in @sec-ccus.
+- **Magnesium cover gas.** Replacing SF₆ with sulphur dioxide or fluorinated ketones removes almost all of this emission at low cost [@ipcc-sf6-mg]. No technology in the database represents this switch yet.
 
 ## Regional coverage and differences
 
-The tree is region-agnostic: each region is built from the same structure and carries no production on branches that don't apply. Five regions are represented in the current regional data:
+Each region is built from the same structure and carries no production on branches that don't apply to it. Five regions carry the sector in the current regional data:
 
-- Québec dominates the sector, carrying essentially all primary aluminium on its hydropower, and grows over the projection.
+- Québec dominates the sector. It carries essentially all primary aluminium, on its hydropower, and grows over the projection.
 - Ontario (Sudbury) carries nickel and copper smelting and refining.
-- Manitoba (Thompson) carries nickel; British Columbia and the Atlantic region carry smaller base-metal operations.
+- Manitoba (Thompson) carries nickel. British Columbia and the Atlantic region carry smaller base-metal operations.
 
 <mark>TODO: Alberta and Saskatchewan are absent, consistent with the absence of major non-ferrous smelters there. Confirm the regional metal mix, including the lead and titanium-slag branches, against current operations. The titanium-slag branch has no demand series yet.</mark>
 

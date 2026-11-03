@@ -3,7 +3,7 @@ sector: metal-smelting_aluminum
 title: Aluminium
 
 nodes:
-  - {id: coke, label: Petroleum coke and pitch, icon: coal, role: input, at: [0, 0]}
+  - {id: coke, label: Carbon anode material, icon: coal, role: input, at: [0, 0]}
   - {id: bauxite, label: Bauxite, icon: ore, role: input, at: [0, 1]}
   - {id: scrap, label: Scrap, icon: scrap, role: input, at: [0, 3]}
 
