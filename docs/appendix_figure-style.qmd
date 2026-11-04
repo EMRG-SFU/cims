@@ -78,7 +78,8 @@ edges:
 
 - `branch` or `branches` name the hierarchy nodes a card stands for, without the `<sector>.` prefix. Every card except inputs and products should carry at least one.
 - A flow leaves the right side of its source and enters the left side of its target when the target sits further right; otherwise it runs vertically. Set `sides: [source side, target side]` to override this, `turn: early` or `turn: late` to move the bend of a stepped flow towards its source or target, and `route: below` or `route: above` to send a flow around a row.
-- Keep a chart to seven columns or fewer, so that it stays legible at page width, and avoid flows that cross cards. If a sector needs more, split it across its sub-sector chapters.
+- Where several flows bend in the same gap between columns, the script orders their bends, and the ports they use on each card, so that they don't cross. It warns about any flows that still cross each other or run through a card. Fix those by moving a card: a side branch that ends in a dead end, such as tailings, usually belongs in the row furthest from the main line.
+- Keep a chart to seven columns or fewer, so that it stays legible at page width. If a sector needs more, split it across its sub-sector chapters.
 
 ## Changing the style
 

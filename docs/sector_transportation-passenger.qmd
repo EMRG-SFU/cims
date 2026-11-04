@@ -4,7 +4,7 @@ aliases:
   - sector_transportation_passenger.html
 ---
 
-# Transportation (Passenger) {#sec-transportation-passenger}
+# Passenger Transportation {#sec-transportation-passenger}
 
 Passenger transportation covers how people travel: by car, transit, intercity bus and train, plane, or on foot and by bike. CIMS lets these ways of travelling compete, and within road travel it lets different kinds of vehicles compete, for example gasoline against battery-electric cars. The sector is one of Canada's largest sources of emissions. People's choices about vehicles depend on more than cost (range, ease of refuelling, size, and power all matter), so CIMS adds non-financial costs, called intangible costs, to reproduce how people actually choose.
 

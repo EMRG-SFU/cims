@@ -1,6 +1,6 @@
-# Petroleum crude process flowchart (sector overview). See appendix_figure-style.qmd for the format.
+# Crude oil process flowchart (sector overview). See appendix_figure-style.qmd for the format.
 sector: petroleum-crude
-title: Petroleum crude
+title: Crude oil
 
 nodes:
   # conventional crude

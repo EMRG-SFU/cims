@@ -13,13 +13,13 @@
 <marker id="arrow-emission" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" markerUnits="userSpaceOnUse" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#8f9aa6"/></marker>
 </defs>
 <path d="M 152.0 204.0 L 184.0 204.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 216.0 L 164.0 216.0 Q 171.0 216.0 171.0 223.0 L 171.0 459.5 Q 171.0 466.0 177.5 466.0 L 184.0 466.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 216.0 L 158.5 216.0 Q 165.0 216.0 165.0 222.5 L 165.0 459.0 Q 165.0 466.0 172.0 466.0 L 184.0 466.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 204.0 L 311.0 204.0 Q 318.0 204.0 318.0 197.0 L 318.0 89.0 Q 318.0 82.0 325.0 82.0 L 334.0 82.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 216.0 L 334.0 216.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 393.0 293.0 L 393.0 255.0" fill="none" stroke="#eda15c" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 152.0 594.0 L 184.0 594.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 302.0 466.0 L 458.0 466.0 Q 465.0 466.0 465.0 473.0 L 465.0 517.0 Q 465.0 524.0 472.0 524.0 L 484.0 524.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 466.0 L 464.0 466.0 Q 471.0 466.0 471.0 473.0 L 471.0 517.5 Q 471.0 524.0 477.5 524.0 L 484.0 524.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 594.0 L 464.0 594.0 Q 471.0 594.0 471.0 587.0 L 471.0 542.5 Q 471.0 536.0 477.5 536.0 L 484.0 536.0" fill="none" stroke="#c3cad3" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <g><title>Salt brine</title>
 <rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#3a3226" stroke="#c9a979" stroke-width="1.4"/>

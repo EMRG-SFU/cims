@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import itertools
 import os
 import re
 import sys
@@ -114,6 +115,7 @@ class Edge:
     dst_side: str = ""
     src_off: float = 0.0
     dst_off: float = 0.0
+    mx: float | None = None  # x of the vertical run, when set by _assign_turns
 
 
 def wrap(text: str, max_chars: int) -> list[str]:
@@ -185,6 +187,7 @@ class Chart:
                     raise SystemExit(f"{self.sector}: edge refers to unknown node '{end}'")
             self.edges.append(edge)
         self._assign_ports()
+        self._assign_turns()
 
     # ---- ports: which side each edge leaves and enters, spread along the side
     def _assign_ports(self) -> None:
@@ -205,13 +208,30 @@ class Chart:
                 e.src_side, e.dst_side = "bottom", "top"
             else:
                 e.src_side, e.dst_side = "top", "bottom"
-        slots: dict[tuple[str, str], list[tuple[float, Edge, str]]] = {}
+        slots: dict[tuple[str, str], list[tuple[tuple, Edge, str]]] = {}
+        gap = self.style["layout"]["col_width"] - self.w
         for e in self.edges:
             s, t = self.nodes[e.src], self.nodes[e.dst]
             key_s = (e.src, e.src_side)
             key_t = (e.dst, e.dst_side)
-            along_s = t.cy if e.src_side in ("left", "right") else t.cx
-            along_t = s.cy if e.dst_side in ("left", "right") else s.cx
+            along_s = (0, 0, t.cy if e.src_side in ("left", "right") else t.cx)
+            along_t = (0, 0, s.cy if e.dst_side in ("left", "right") else s.cx)
+            if {e.src_side, e.dst_side} == {"left", "right"} and abs(s.cy - t.cy) > 1:
+                # A stepped route. Nest the ports so that a flow whose vertical
+                # run sits further from the card takes the outer port; then its
+                # horizontal leg never crosses a nearer vertical run.
+                sign = 1 if t.cx > s.cx else -1
+                if e.turn == "early":
+                    mx = s.cx + sign * (self.w / 2 + gap / 2)
+                elif e.turn == "late":
+                    mx = t.cx - sign * (self.w / 2 + gap / 2)
+                else:
+                    mx = (s.cx + t.cx) / 2
+                down = 1 if t.cy > s.cy else -1
+                far_s = abs(mx - s.cx)       # distance of the turn from each card
+                far_t = abs(mx - t.cx)
+                along_s = (down, -down * far_s, t.cy)
+                along_t = (-down, down * far_t, s.cy)
             slots.setdefault(key_s, []).append((along_s, e, "src"))
             slots.setdefault(key_t, []).append((along_t, e, "dst"))
         for (nid, side), items in slots.items():
@@ -247,6 +267,58 @@ class Chart:
                 if counts[(e.dst, e.dst_side)] == 1 and abs(gap) < self.w / 2 - 12:
                     e.dst_off = gap
 
+    # ---- turns: order the vertical runs that share a column gap so they
+    # don't cross each other
+    def _assign_turns(self) -> None:
+        lay = self.style["layout"]
+        cw, margin = lay["col_width"], lay["margin"]
+        gap = cw - self.w
+        groups: dict[int, list[tuple[Edge, list]]] = {}
+        for e in self.edges:
+            e.mx = None
+            pts = self.route(e)
+            if len(pts) != 4 or abs(pts[0][1] - pts[1][1]) > 0.5 or abs(pts[1][0] - pts[2][0]) > 0.5:
+                continue                     # not a stepped left-right route
+            k = (pts[1][0] - margin) / cw    # column boundaries sit at whole numbers
+            if abs(k - round(k)) * cw > gap / 2:
+                continue                     # turns inside a column, not in a gap
+            groups.setdefault(round(k), []).append((e, pts))
+        for k, items in groups.items():
+            if len(items) < 2:
+                continue
+            items.sort(key=lambda it: it[1][1][0])        # current order, left to right
+            spans = []
+            for e, pts in items:
+                (x0, y0), (x1, y1) = pts[0], pts[3]
+                yl, yr = (y0, y1) if x0 < x1 else (y1, y0)  # y of the left and right legs
+                spans.append((min(y0, y1), max(y0, y1), yl, yr))
+
+            def crossings(order):
+                n = 0
+                for i, a in enumerate(order):
+                    for b in order[i + 1:]:       # a sits left of b
+                        lo, hi, _, _ = spans[a]
+                        if lo + 1 < spans[b][2] < hi - 1:
+                            n += 1                # b's left leg runs through a's vertical
+                        lo, hi, _, _ = spans[b]
+                        if lo + 1 < spans[a][3] < hi - 1:
+                            n += 1                # a's right leg runs through b's vertical
+                return n
+
+            n = len(items)
+            if n <= 7:
+                cands = itertools.permutations(range(n))
+            else:
+                cands = [tuple(range(n))]
+            best = min(cands, key=lambda o: (crossings(o),
+                       sum(1 for i in range(n) for j in range(i + 1, n) if o[i] > o[j])))
+            if best == tuple(range(n)) and crossings(best) == 0:
+                continue                          # keep the default insets
+            centre = margin + k * cw
+            step = min(8.0, (gap - 10) / (n - 1))
+            for slot, idx in enumerate(best):
+                items[idx][0].mx = centre + (slot - (n - 1) / 2) * step
+
     def port(self, node: Node, side: str, off: float) -> tuple[float, float]:
         if side == "right":
             return node.cx + self.w / 2, node.cy + off
@@ -267,14 +339,19 @@ class Chart:
                 return [p0, p1]
             sign = 1 if p1[0] > p0[0] else -1
             gap = lay["col_width"] - self.w          # free space between columns
+            # Several edges fanning out of (or into) one side are nested so
+            # they never cross: the outermost port turns closest to its card.
+            rise = 1 if p1[1] > p0[1] else -1      # +1 when the edge runs down
             if e.turn == "late":
-                inset = min(max(gap / 2 - e.dst_off * 0.5, 5), gap - 5)
+                inset = min(max(gap / 2 + rise * e.dst_off * 0.5, 5), gap - 5)
                 mx = p1[0] - sign * inset
             elif e.turn == "early":
-                inset = min(max(gap / 2 + e.src_off * 0.5, 5), gap - 5)
+                inset = min(max(gap / 2 - rise * e.src_off * 0.5, 5), gap - 5)
                 mx = p0[0] + sign * inset
             else:
                 mx = (p0[0] + p1[0]) / 2
+            if e.mx is not None:
+                mx = e.mx
             return [p0, (mx, p0[1]), (mx, p1[1]), p1]
         if (e.src_side in horizontal) != (e.dst_side in horizontal):
             # one horizontal and one vertical side: a single corner
@@ -436,6 +513,42 @@ class Chart:
                                     f"which is not in the hierarchy")
         return problems
 
+    def crossings(self) -> list[str]:
+        """Flows that cross each other or run through a card they don't touch."""
+        routes = {id(e): self.route(e) for e in self.edges}
+        segs = {k: list(zip(r, r[1:])) for k, r in routes.items()}
+
+        def flat(a):
+            return abs(a[0][1] - a[1][1]) < 0.5
+
+        def cross(a, b):
+            if flat(a) == flat(b):
+                return False
+            h, v = (a, b) if flat(a) else (b, a)
+            (x1, y), (x2, _) = h
+            (x, y1), (_, y2) = v
+            return (min(x1, x2) + 1 < x < max(x1, x2) - 1
+                    and min(y1, y2) + 1 < y < max(y1, y2) - 1)
+
+        def through(seg, n):
+            (x1, y1), (x2, y2) = seg
+            left, right = n.cx - self.w / 2 + 2, n.cx + self.w / 2 - 2
+            top, bottom = n.cy - self.h / 2 + 2, n.cy + self.h / 2 - 2
+            if flat(seg):
+                return top < y1 < bottom and min(x1, x2) < right and max(x1, x2) > left
+            return left < x1 < right and min(y1, y2) < bottom and max(y1, y2) > top
+
+        found = []
+        for i, e in enumerate(self.edges):
+            for n in self.nodes.values():
+                if n.id not in (e.src, e.dst) and any(through(sg, n) for sg in segs[id(e)]):
+                    found.append(f"{self.sector}: flow {e.src} -> {e.dst} runs through '{n.id}'")
+            for g in self.edges[i + 1:]:
+                if any(cross(a, b) for a in segs[id(e)] for b in segs[id(g)]):
+                    found.append(f"{self.sector}: flows {e.src} -> {e.dst} and "
+                                 f"{g.src} -> {g.dst} cross")
+        return found
+
 
 # --------------------------------------------------------------------------
 # Icon gallery (for the appendix)
@@ -508,6 +621,8 @@ def main(argv: list[str] | None = None) -> int:
         spec.setdefault("sector", path.stem)
         chart = Chart(spec, style)
         problems += chart.check(hierarchy)
+        for warning in chart.crossings():
+            print("warning:", warning, file=sys.stderr)
         charts.append(chart)
     for p in problems:
         print("error:", p, file=sys.stderr)

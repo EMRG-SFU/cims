@@ -4,7 +4,7 @@ aliases:
   - sector_transportation_freight.html
 ---
 
-# Transportation (Freight) {#sec-transportation-freight}
+# Freight Transportation {#sec-transportation-freight}
 
 Freight transportation covers moving goods by road, rail, ship, and plane, along with off-road machines. CIMS lets these ways of moving goods compete, and within each it lets different engines and fuels compete. The sector also includes the charging stations, overhead wires, and hydrogen stations that zero-emission trucks need. The general approach to transportation (competition between ways of travelling, non-financial costs, and the gradual turnover of vehicles) is described in @sec-transportation-passenger and is not repeated here.
 

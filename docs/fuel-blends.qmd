@@ -8,8 +8,8 @@ Technologies in CIMS rarely ask for a pure fuel. A gas boiler asks for "methane"
 |:------|:---------------|:--------|
 | Methane | Natural gas with biogas, gas from biomass gasification, renewable natural gas, and hydrogen | Every sector except Construction, Direct Air Capture, and Forestry |
 | Diesel | Fossil diesel with biodiesel and renewable diesel | Every sector except Construction, Direct Air Capture, Forestry, Residential, and Waste |
-| Gasoline | Fossil gasoline with ethanol | Natural Gas, Petroleum Crude, and both transportation sectors |
-| Still gas | Fuel gas that a refinery's own units produce | Petroleum Crude and Petroleum Refining |
+| Gasoline | Fossil gasoline with ethanol | Crude Oil, Natural Gas, and both transportation sectors |
+| Still gas | Fuel gas that a refinery's own units produce | Crude Oil and Petroleum Refining |
 | Process gas | Gases from blast furnaces, coke ovens, and basic oxygen furnaces | Iron and Steel |
 
 : Fuel blend services {#tbl-fuel-blends}

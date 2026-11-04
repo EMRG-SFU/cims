@@ -19,13 +19,13 @@
 <path d="M 243.0 421.0 L 243.0 255.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 302.0 210.0 L 334.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 222.0 L 611.0 222.0 Q 618.0 222.0 618.0 229.0 L 618.0 331.0 Q 618.0 338.0 625.0 338.0 L 634.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 602.0 198.0 L 611.0 198.0 Q 618.0 198.0 618.0 191.0 L 618.0 89.0 Q 618.0 82.0 625.0 82.0 L 634.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 602.0 210.0 L 634.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 543.0 165.0 L 543.0 127.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 543.0 255.0 L 543.0 293.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 602.0 82.0 L 755.0 82.0 Q 762.0 82.0 762.0 89.0 L 762.0 191.0 Q 762.0 198.0 769.0 198.0 L 784.0 198.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 602.0 338.0 L 767.0 338.0 Q 774.0 338.0 774.0 331.0 L 774.0 227.0 Q 774.0 222.0 779.0 222.0 L 784.0 222.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 752.0 82.0 L 761.0 82.0 Q 768.0 82.0 768.0 89.0 L 768.0 191.0 Q 768.0 198.0 775.0 198.0 L 784.0 198.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 752.0 210.0 L 784.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 693.0 255.0 L 693.0 421.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 752.0 338.0 L 761.0 338.0 Q 768.0 338.0 768.0 331.0 L 768.0 229.0 Q 768.0 222.0 775.0 222.0 L 784.0 222.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 693.0 383.0 L 693.0 421.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 902.0 210.0 L 934.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <g><title>Mines by commodity — mining.product.aggregate.open-pit, mining.product.diamond.open-pit, mining.product.diamond.underground, mining.product.metal.open-pit, mining.product.metal.underground, mining.product.potash.conventional, mining.product.potash.solution, mining.product.uranium.open-pit, mining.product.uranium.underground</title>
 <rect x="34.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
@@ -55,20 +55,20 @@
 <text x="543.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Milling</text>
 </g>
 <g><title>Potash crystallization — mining.service.crystallization</title>
-<rect x="484.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-tank" x="524.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="543.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Potash</text>
-<text x="543.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crystallization</text>
+<rect x="634.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-tank" x="674.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Potash</text>
+<text x="693.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crystallization</text>
 </g>
 <g><title>Leaching — mining.service.leaching</title>
-<rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-reactor" x="524.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="543.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Leaching</text>
+<rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-reactor" x="674.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Leaching</text>
 </g>
 <g><title>Separation — mining.service.separation</title>
-<rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
-<use href="#icon-separator" x="674.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
-<text x="693.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Separation</text>
+<rect x="634.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
+<use href="#icon-separator" x="674.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
+<text x="693.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Separation</text>
 </g>
 <g><title>Tailings disposal — mining.service.tailings-disposal</title>
 <rect x="634.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>

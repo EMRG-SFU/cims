@@ -1,4 +1,4 @@
-# Base metals, magnesium, and titanium slag (sub-sector of metal smelting). See appendix_figure-style.qmd.
+# Base metals, magnesium, and titanium slag (sub-sector of non-ferrous metals). See appendix_figure-style.qmd.
 sector: metal-smelting_base-metals
 title: Base metals, magnesium, and titanium slag
 
@@ -7,12 +7,12 @@ nodes:
   - {id: mg-feed, label: Dolomite or brine, icon: chemical, role: input, at: [0, 4]}
   - {id: ilmenite, label: Ilmenite, icon: ore, role: input, at: [0, 5]}
 
-  - {id: roasting, label: Roasting, icon: furnace, role: process, at: [1, 0],
+  - {id: roasting, label: Roasting, icon: furnace, role: process, at: [1, 2],
      branches: [metal-smelting.product.zinc.pyrometallurgy.roasting, metal-smelting.product.lead.pyrometallurgy.roasting]}
   - {id: smelting, label: Smelting, icon: furnace, role: process, at: [1, 1],
      branches: [metal-smelting.product.copper.pyrometallurgy.smelting, metal-smelting.product.nickel.pyrometallurgy.smelting,
                 metal-smelting.product.lead.pyrometallurgy.smelting]}
-  - {id: acid, label: Acid plant, icon: reactor, role: service, at: [1, 2],
+  - {id: acid, label: Acid plant, icon: reactor, role: service, at: [1, 0],
      branch: metal-smelting.service.acid-plant}
   - {id: oxygen, label: Oxygen, icon: air-separation, role: service, at: [2, 0],
      branch: metal-smelting.service.oxygen}

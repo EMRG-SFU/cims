@@ -73,7 +73,7 @@ book:
         - sector_coal-mining.qmd              # Coal Mining
         - sector_natural-gas.qmd              # Natural Gas
         - sector_natural-gas_methane.qmd      #   Methane emissions in oil and gas
-        - sector_petroleum-crude.qmd          # Petroleum Crude
+        - sector_petroleum-crude.qmd          # Crude Oil
         - sector_petroleum-crude_oil-sands.qmd #   Oil sands
         - sector_petroleum-refining.qmd       # Petroleum Refining
         - sector_electricity.qmd              # Electricity
@@ -88,7 +88,7 @@ book:
         - sector_chemicals_chlor-alkali.qmd   #   Chlor-alkali and oxidants
         - sector_chemicals_petrochemicals.qmd #   Petrochemicals and methanol
         - sector_pulp-and-paper.qmd           # Pulp and Paper
-        - sector_metal-smelting.qmd           # Metal Smelting
+        - sector_metal-smelting.qmd           # Non-Ferrous Metals
         - sector_metal-smelting_aluminum.qmd  #   Aluminum
         - sector_metal-smelting_base-metals.qmd #   Base metals, magnesium, titanium slag
         - sector_iron-and-steel.qmd           # Iron and Steel
@@ -100,8 +100,8 @@ book:
         - sector_commercial.qmd               # Commercial
     - part: "Transportation"
       chapters:
-        - sector_transportation-passenger.qmd # Transportation Passenger
-        - sector_transportation-freight.qmd   # Transportation Freight
+        - sector_transportation-passenger.qmd # Passenger Transportation
+        - sector_transportation-freight.qmd   # Freight Transportation
     - part: "Land, Waste, and Removals"
       chapters:
         - sector_agriculture.qmd              # Agriculture

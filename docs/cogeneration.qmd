@@ -35,7 +35,7 @@ Some sites make electricity with no useful heat recovered. Off-grid mines and oi
 
 The line between cogeneration and on-site power is heat recovery. A unit that supplies useful heat competes in the steam service; one that doesn't competes for on-site power. One option sits on the line: a waste-heat power unit takes heat that a process would otherwise throw away and turns it into electricity, using an organic Rankine cycle or a steam turbine [@epa_2022_001; @hedman_2008_001].
 
-Mining is the only sector with an **on-site power** service so far. Waste-heat power and other power-only options could serve other sectors, including cement, iron and steel, glass, refining, chemicals, pulp and paper, metal smelting, and offshore oil platforms, but those sectors don't have an on-site power service yet.
+Mining is the only sector with an **on-site power** service so far. Waste-heat power and other power-only options could serve other sectors, including cement, iron and steel, glass, refining, chemicals, pulp and paper, non-ferrous metals, and offshore oil platforms, but those sectors don't have an on-site power service yet.
 
 {{< include _technology-blocks/mining/service_on-site-power.md >}}
 

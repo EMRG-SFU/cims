@@ -6,7 +6,7 @@ bibliography:
 
 # Aluminium {#sec-metal-smelting-aluminum}
 
-Aluminium is the largest production chain in the metal smelting sector (see @sec-metal-smelting for the sector's scope, context, and shared services). New, or primary, aluminium is made in two stages. A refinery first extracts alumina, a white aluminium oxide powder, from bauxite ore. A smelter then splits the alumina into aluminium and oxygen with electricity, in cells that burn away carbon anodes as they work. Recycling remelts scrap aluminium for a small fraction of the energy.
+Aluminium is the largest production chain in the non-ferrous metals sector (see @sec-metal-smelting for the sector's scope, context, and shared services). New, or primary, aluminium is made in two stages. A refinery first extracts alumina, a white aluminium oxide powder, from bauxite ore. A smelter then splits the alumina into aluminium and oxygen with electricity, in cells that burn away carbon anodes as they work. Recycling remelts scrap aluminium for a small fraction of the energy.
 
 ## Process flow
 

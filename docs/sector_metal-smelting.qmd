@@ -6,9 +6,9 @@ aliases:
   - sector_metal_smelting.html
 ---
 
-# Metal Smelting and Refining {#sec-metal-smelting}
+# Non-Ferrous Metals {#sec-metal-smelting}
 
-Metal smelting and refining turns ore concentrates, alumina, and scrap into finished metals other than iron and steel. Aluminium is by far the largest part of the sector. Making it takes a great deal of electricity, and in Canada most of that comes from hydropower in Québec. As a result, the sector's hardest emissions to cut don't come from burning fuel. They come from the chemistry of the processes themselves: the carbon anodes that aluminium cells consume, and the gas used to protect molten magnesium.
+The non-ferrous metals sector smelts and refines ore concentrates, alumina, and scrap into finished metals other than iron and steel. Aluminium is by far the largest part of the sector. Making it takes a great deal of electricity, and in Canada most of that comes from hydropower in Québec. As a result, the sector's hardest emissions to cut don't come from burning fuel. They come from the chemistry of the processes themselves: the carbon anodes that aluminium cells consume, and the gas used to protect molten magnesium.
 
 This chapter covers the sector as a whole. Two further chapters describe its production chains in detail: @sec-metal-smelting-aluminum and @sec-metal-smelting-base-metals.
 
@@ -43,7 +43,7 @@ The sector's emissions differ from most of industry's:
 
 ![](images/flowcharts/metal-smelting_process-flow_dark.svg){.dark-content .lightbox group="metal-smelting-dark"}
 
-Process flow of the metal smelting and refining sector. Each production chain is described in its sub-sector chapter.
+Process flow of the non-ferrous metals sector. Each production chain is described in its sub-sector chapter.
 :::
 
 ## Model structure
@@ -70,7 +70,7 @@ Three services belong to this sector alone: **anode production** for the alumini
 | Fuel blends | The diesel and gas blends the sector's equipment burns | @sec-fuel-blends |
 | CCS | Capture of CO₂ from alumina calciners and aluminium cells | @sec-ccus |
 
-: Shared services in the metal smelting sector {#tbl-metal-smelting-shared}
+: Shared services in the non-ferrous metals sector {#tbl-metal-smelting-shared}
 
 ## Decarbonisation
 
@@ -95,7 +95,7 @@ Each region is built from the same structure and carries no production on branch
 
 ## Limitations and planned extensions
 
-<mark>TODO: Ferroalloys and silicon metal have no node; only titanium slag represents electric smelting. A node under metal smelting has been requested of the hierarchy.</mark>
+<mark>TODO: Ferroalloys and silicon metal have no node; only titanium slag represents electric smelting. A node in this sector has been requested of the hierarchy.</mark>
 
 <mark>TODO: Represent PFC emissions from aluminium anode effects explicitly (only the carbon-anode CO₂ is carried), and add an SF₆-free magnesium cover-gas technology so the magnesium emission can be abated in the model.</mark>
 

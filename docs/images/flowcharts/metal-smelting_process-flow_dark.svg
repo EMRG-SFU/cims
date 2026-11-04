@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 636 702" width="636" height="702" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Metal smelting and refining process flowchart">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 636 702" width="636" height="702" font-family="'Source Sans Pro', 'Source Sans 3', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" role="img" aria-label="Non-ferrous metals process flowchart">
 <defs>
 <symbol id="icon-chemical" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 5 H29 M21 5 V18 L9 39 A3 3 0 0 0 12 43 H36 A3 3 0 0 0 39 39 L27 18 V5"/><path d="M13 32 H35 L39 39 A3 3 0 0 1 36 43 H12 A3 3 0 0 1 9 39 Z" fill="currentColor" fill-opacity="0.18"/></g></symbol>
 <symbol id="icon-electrolysis" viewBox="0 0 48 48"><g fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16 V40 H42 V16"/><path d="M6 26 H42" stroke-dasharray="3 3"/><path d="M15 8 V34 M33 8 V34"/><path d="M22 4 L19 10 H24 L21 16" /></g></symbol>

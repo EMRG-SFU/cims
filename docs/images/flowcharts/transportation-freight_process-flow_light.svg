@@ -16,8 +16,8 @@
 <text x="334.0" y="51.0" font-size="11.5" font-weight="700" letter-spacing="0.6" fill="#5a6472">INFRASTRUCTURE</text>
 <path d="M 152.0 286.0 L 155.5 286.0 Q 159.0 286.0 159.0 282.5 L 159.0 119.0 Q 159.0 112.0 166.0 112.0 L 184.0 112.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 298.0 L 158.5 298.0 Q 165.0 298.0 165.0 291.5 L 165.0 247.0 Q 165.0 240.0 172.0 240.0 L 184.0 240.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 310.0 L 164.0 310.0 Q 171.0 310.0 171.0 317.0 L 171.0 361.5 Q 171.0 368.0 177.5 368.0 L 184.0 368.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 322.0 L 170.0 322.0 Q 177.0 322.0 177.0 329.0 L 177.0 492.5 Q 177.0 496.0 180.5 496.0 L 184.0 496.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 310.0 L 158.5 310.0 Q 165.0 310.0 165.0 316.5 L 165.0 361.0 Q 165.0 368.0 172.0 368.0 L 184.0 368.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 322.0 L 155.5 322.0 Q 159.0 322.0 159.0 325.5 L 159.0 489.0 Q 159.0 496.0 166.0 496.0 L 184.0 496.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 334.0 100.0 L 302.0 100.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 334.0 240.0 L 325.0 240.0 Q 318.0 240.0 318.0 233.0 L 318.0 119.0 Q 318.0 112.0 311.0 112.0 L 302.0 112.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 334.0 368.0 L 319.0 368.0 Q 312.0 368.0 312.0 361.0 L 312.0 129.0 Q 312.0 124.0 307.0 124.0 L 302.0 124.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>

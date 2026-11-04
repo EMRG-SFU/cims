@@ -14,7 +14,7 @@ Light industrial covers the manufacturing industries that are each too small for
 
 Light industrial groups the manufacturing industries that don't have their own sector into seven product groups: food, beverage, and tobacco; rubber and plastics; leather and textiles; wood products; furniture, printing, and machinery; transportation equipment; and electronics and other manufacturing. A forecast of each group's economic output drives how much of each service it needs.
 
-The energy-intensive industries with their own sectors, such as iron and steel, chemicals, pulp and paper, industrial minerals, metal smelting, and mining, are left out: light industrial is, by design, the rest of manufacturing. Fuels and electricity reach it through the energy supply sectors and the fuel blends.
+The energy-intensive industries with their own sectors, such as iron and steel, chemicals, pulp and paper, industrial minerals, non-ferrous metals, and mining, are left out: light industrial is, by design, the rest of manufacturing. Fuels and electricity reach it through the energy supply sectors and the fuel blends.
 
 ## Context
 

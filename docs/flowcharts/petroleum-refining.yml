@@ -14,16 +14,16 @@ nodes:
      branch: petroleum-refining.product.petroleum-fractions.hydrotreating.desulphurization}
   - {id: coking, label: Coking, icon: furnace, role: process, at: [2, 1],
      branch: petroleum-refining.product.petroleum-fractions.cracked-gas-oil.coking}
-  - {id: cracking, label: Cracking, icon: reactor, role: process, at: [2, 2],
+  - {id: cracking, label: Cracking, icon: reactor, role: process, at: [2, 3],
      branch: petroleum-refining.product.petroleum-fractions.cracked-gas-oil.hydrocracking}
-  - {id: reforming, label: Catalytic reforming, icon: reactor, role: process, at: [2, 3],
+  - {id: reforming, label: Catalytic reforming, icon: reactor, role: process, at: [2, 2],
      branch: petroleum-refining.product.reforming}
   - {id: sulphur, label: Sulphur plant, icon: separator, role: process, at: [3, 0],
      branch: petroleum-refining.product.petroleum-fractions.hydrotreating.sulphur-recovery}
-  - {id: alkylation, label: Alkylation and isomerization, icon: reactor, role: process, at: [3, 2],
+  - {id: alkylation, label: Alkylation and isomerization, icon: reactor, role: process, at: [3, 3],
      branches: [petroleum-refining.product.alkylates, petroleum-refining.product.isomerization]}
-  - {id: feed, label: Carbon feedstocks, icon: biomass, role: input, at: [3, 3]}
-  - {id: synfuels, label: Synthetic fuels, icon: refinery, role: process, at: [4, 3],
+  - {id: feed, label: Carbon feedstocks, icon: biomass, role: input, at: [3, 4]}
+  - {id: synfuels, label: Synthetic fuels, icon: refinery, role: process, at: [4, 4],
      branch: petroleum-refining.product.synthetic-fuels}
   - {id: products, label: Refined products, icon: liquid-fuel, role: output, at: [5, 1.5]}
 

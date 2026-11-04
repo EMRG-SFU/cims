@@ -13,12 +13,12 @@
 </defs>
 <path d="M 152.0 262.0 L 157.0 262.0 Q 162.0 262.0 162.0 257.0 L 162.0 89.0 Q 162.0 82.0 169.0 82.0 L 184.0 82.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 274.0 L 161.0 274.0 Q 168.0 274.0 168.0 281.0 L 168.0 331.0 Q 168.0 338.0 175.0 338.0 L 184.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 152.0 286.0 L 167.0 286.0 Q 174.0 286.0 174.0 293.0 L 174.0 461.0 Q 174.0 466.0 179.0 466.0 L 184.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 152.0 286.0 L 157.0 286.0 Q 162.0 286.0 162.0 291.0 L 162.0 459.0 Q 162.0 466.0 169.0 466.0 L 184.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 76.0 L 334.0 76.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 302.0 88.0 L 308.5 88.0 Q 315.0 88.0 315.0 94.5 L 315.0 197.0 Q 315.0 204.0 322.0 204.0 L 334.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 88.0 L 314.0 88.0 Q 321.0 88.0 321.0 95.0 L 321.0 197.5 Q 321.0 204.0 327.5 204.0 L 334.0 204.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 326.0 L 314.0 326.0 Q 321.0 326.0 321.0 319.0 L 321.0 222.5 Q 321.0 216.0 327.5 216.0 L 334.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 302.0 338.0 L 334.0 338.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 302.0 350.0 L 317.0 350.0 Q 324.0 350.0 324.0 357.0 L 324.0 461.0 Q 324.0 466.0 329.0 466.0 L 334.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<path d="M 302.0 350.0 L 307.0 350.0 Q 312.0 350.0 312.0 355.0 L 312.0 459.0 Q 312.0 466.0 319.0 466.0 L 334.0 466.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 452.0 210.0 L 484.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <g><title>Passenger travel demand</title>
 <rect x="34.0" y="229.0" width="118" height="90" rx="10" fill="#f5efe5" stroke="#b8976a" stroke-width="1.4"/>

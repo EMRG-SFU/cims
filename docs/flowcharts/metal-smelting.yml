@@ -1,6 +1,6 @@
-# Metal smelting and refining: sector-wide process flowchart. See appendix_figure-style.qmd.
+# Non-ferrous metals: sector-wide process flowchart. See appendix_figure-style.qmd.
 sector: metal-smelting
-title: Metal smelting and refining
+title: Non-ferrous metals
 
 nodes:
   - {id: bauxite, label: Bauxite, icon: ore, role: input, at: [0, 0]}

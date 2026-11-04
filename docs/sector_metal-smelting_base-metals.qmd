@@ -6,7 +6,7 @@ bibliography:
 
 # Base Metals, Magnesium, and Titanium Slag {#sec-metal-smelting-base-metals}
 
-This chapter covers the metal smelting chains other than aluminium. Copper, nickel, lead, and zinc share the same process steps, while magnesium and titanium slag have chains of their own. See @sec-metal-smelting for the sector's scope, context, and shared services.
+This chapter covers the non-ferrous metal chains other than aluminium. Copper, nickel, lead, and zinc share the same process steps, while magnesium and titanium slag have chains of their own. See @sec-metal-smelting for the sector's scope, context, and shared services.
 
 ## Process flow
 

@@ -29,8 +29,8 @@
 <path d="M 302.0 210.0 L 311.0 210.0 Q 318.0 210.0 318.0 203.0 L 318.0 95.0 Q 318.0 88.0 325.0 88.0 L 334.0 88.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 216.0 L 161.0 216.0 Q 168.0 216.0 168.0 223.0 L 168.0 325.0 Q 168.0 332.0 175.0 332.0 L 184.0 332.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <path d="M 152.0 344.0 L 184.0 344.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<path d="M 452.0 82.0 L 455.5 82.0 Q 459.0 82.0 459.0 85.5 L 459.0 185.0 Q 459.0 192.0 466.0 192.0 L 484.0 192.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<text x="465.0" y="141.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">hot metal</text>
+<path d="M 452.0 82.0 L 470.0 82.0 Q 477.0 82.0 477.0 89.0 L 477.0 188.5 Q 477.0 192.0 480.5 192.0 L 484.0 192.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
+<text x="483.0" y="141.0" text-anchor="start" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">hot metal</text>
 <path d="M 302.0 338.0 L 464.0 338.0 Q 471.0 338.0 471.0 331.0 L 471.0 222.5 Q 471.0 216.0 477.5 216.0 L 484.0 216.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
 <text x="386.5" y="334.0" text-anchor="middle" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">DRI</text>
 <path d="M 152.0 466.0 L 470.0 466.0 Q 477.0 466.0 477.0 459.0 L 477.0 231.5 Q 477.0 228.0 480.5 228.0 L 484.0 228.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>

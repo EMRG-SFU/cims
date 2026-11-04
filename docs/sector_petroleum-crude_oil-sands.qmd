@@ -6,7 +6,7 @@ bibliography:
 
 # Oil Sands {#sec-oil-sands}
 
-The oil sands are the largest part of the petroleum crude sector (@sec-petroleum-crude), in both output and emissions. They hold bitumen, a form of crude oil so thick that it won't flow at normal temperatures. Producers get it out in one of two ways. Near the surface, they mine the oil sand and wash the bitumen out with warm water. Deeper down, they heat the bitumen in place, usually with steam, so it can flow to wells. Mined bitumen is usually upgraded on site into a lighter synthetic crude. In-situ bitumen is either upgraded or thinned with a lighter liquid and shipped by pipeline. This chapter covers those steps and the services they draw on.
+The oil sands are the largest part of the crude oil sector (@sec-petroleum-crude), in both output and emissions. They hold bitumen, a form of crude oil so thick that it won't flow at normal temperatures. Producers get it out in one of two ways. Near the surface, they mine the oil sand and wash the bitumen out with warm water. Deeper down, they heat the bitumen in place, usually with steam, so it can flow to wells. Mined bitumen is usually upgraded on site into a lighter synthetic crude. In-situ bitumen is either upgraded or thinned with a lighter liquid and shipped by pipeline. This chapter covers those steps and the services they draw on.
 
 ## Process flow
 

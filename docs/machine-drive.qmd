@@ -33,7 +33,7 @@ Each industrial sector has a machine drive service split into five end uses. The
 
 : Machine-drive end uses {#tbl-machine-drive-end-uses}
 
-All five end uses appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Metal Smelting, Mining, and Pulp and Paper. Petroleum Refining has all but materials handling. Natural Gas has pumps only, because its compression has its own compressor-drive services (see @sec-natural-gas).
+All five end uses appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Mining, Non-Ferrous Metals, and Pulp and Paper. Petroleum Refining has all but materials handling. Natural Gas has pumps only, because its compression has its own compressor-drive services (see @sec-natural-gas).
 
 ## Where the energy goes
 

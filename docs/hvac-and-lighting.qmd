@@ -21,7 +21,7 @@ HVAC stands for heating, ventilation, and air conditioning. In a plant it keeps 
 
 : Parts of the HVAC service in the industrial sectors {#tbl-hvac-end-uses}
 
-Building ventilation is part of these two services rather than a service of its own. Ventilating and heating mine air is a mining service (see @sec-coal-mining and @sec-mining). The HVAC services appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Refining, and Pulp and Paper.
+Building ventilation is part of these two services rather than a service of its own. Ventilating and heating mine air is a mining service (see @sec-coal-mining and @sec-mining). The HVAC services appear in Chemicals, Coal Mining, Industrial Minerals, Iron and Steel, Light Industrial, Mining, Non-Ferrous Metals, Petroleum Refining, and Pulp and Paper.
 
 Most plant buildings are heated today by gas-fired unit heaters and make-up air units, or by electric heaters. Heat pumps can heat for less energy, because they move heat in from outside rather than making it, and reversible units can cool as well. Ventilation controls cut energy by moving only as much air as people or fumes require, and heat-recovery ventilation uses the warm air leaving a building to preheat the cold air coming in [@etsap_2012_002; @iea_2026_003]. For cooling, electric chillers are the incumbent, and free or evaporative cooling uses cool outside air or evaporating water before running the chiller.
 

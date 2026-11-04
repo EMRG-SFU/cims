@@ -18,11 +18,11 @@ nodes:
      branch: mining.service.crushing}
   - {id: milling, label: Milling, icon: mill, role: service, at: [3, 1],
      branch: mining.service.milling}
-  - {id: crystallization, label: Potash crystallization, icon: tank, role: service, at: [3, 0],
+  - {id: crystallization, label: Potash crystallization, icon: tank, role: service, at: [4, 0],
      branch: mining.service.crystallization}
-  - {id: leaching, label: Leaching, icon: reactor, role: service, at: [3, 2],
+  - {id: leaching, label: Leaching, icon: reactor, role: service, at: [4, 1],
      branch: mining.service.leaching}
-  - {id: separation, label: Separation, icon: separator, role: service, at: [4, 1],
+  - {id: separation, label: Separation, icon: separator, role: service, at: [4, 2],
      branch: mining.service.separation}
   - {id: tailings, label: Tailings disposal, icon: tailings, role: service, at: [4, 3],
      branch: mining.service.tailings-disposal}
@@ -36,10 +36,10 @@ edges:
   - [extraction, crushing]
   - [crushing, milling]
   - [milling, separation]
-  - {from: milling, to: crystallization}
-  - {from: milling, to: leaching}
-  - {from: crystallization, to: finishing, turn: late}
-  - {from: leaching, to: finishing, turn: late}
+  - [milling, crystallization]
+  - [milling, leaching]
+  - [crystallization, finishing]
+  - [leaching, finishing]
   - [separation, finishing]
   - {from: separation, to: tailings}
   - [finishing, product]

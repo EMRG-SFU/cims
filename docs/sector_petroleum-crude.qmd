@@ -6,9 +6,9 @@ aliases:
   - sector_petroleum_crude.html
 ---
 
-# Petroleum Crude {#sec-petroleum-crude}
+# Crude Oil {#sec-petroleum-crude}
 
-The petroleum crude sector produces crude oil and bitumen and moves them to refineries and export markets. It covers conventional crude, from land and offshore wells, and the oil sands, which dominate Canadian output and emissions. Producing the oil takes a lot of energy, above all the heat used to make steam for in-situ bitumen recovery, and that energy is itself a large source of emissions. Cutting the sector's emissions is therefore mostly about how it supplies that energy and whether it captures the CO₂. This chapter covers the whole sector and conventional crude; @sec-oil-sands covers the oil sands in detail.
+The crude oil sector produces crude oil and bitumen and moves them to refineries and export markets. It covers conventional crude, from land and offshore wells, and the oil sands, which dominate Canadian output and emissions. Producing the oil takes a lot of energy, above all the heat used to make steam for in-situ bitumen recovery, and that energy is itself a large source of emissions. Cutting the sector's emissions is therefore mostly about how it supplies that energy and whether it captures the CO₂. This chapter covers the whole sector and conventional crude; @sec-oil-sands covers the oil sands in detail.
 
 ## Scope
 
@@ -43,7 +43,7 @@ For in-situ production, making steam is the single largest source of emissions. 
 
 ![](images/flowcharts/petroleum-crude_process-flow_dark.svg){.dark-content .lightbox group="petroleum-crude-dark"}
 
-Process flow of the petroleum crude sector. Process steps make up the production chain; site services supply the energy, steam, and hydrogen those steps need.
+Process flow of the crude oil sector. Process steps make up the production chain; site services supply the energy, steam, and hydrogen those steps need.
 :::
 
 ## Model structure
@@ -107,7 +107,7 @@ The model splits conventional crude into light and medium crude, from onshore an
 | Fuel blends | Diesel, gasoline, and methane, and a **still gas** step that routes upgrader off-gas to the equipment that burns it | @sec-fuel-blends |
 | CCS | Capture of concentrated CO₂ (from upgrader hydrogen plants) and dilute CO₂ (from boiler and heater exhaust) | @sec-ccus |
 
-: Shared services in the petroleum crude sector {#tbl-petroleum-crude-shared}
+: Shared services in the crude oil sector {#tbl-petroleum-crude-shared}
 
 ## Decarbonisation
 
@@ -116,7 +116,7 @@ The model splits conventional crude into light and medium crude, from onshore an
 - **Carbon capture.** The oil sands produce large CO₂ streams from making steam, upgrading, and making hydrogen. The Pathways Alliance network proposes to capture them [@pathways-alliance].
 - **Electrifying field equipment.** Electric fracturing fleets, heat-pump treating, and battery-electric haul trucks move burning off site, and engines that burn field gas alongside diesel cut diesel use.
 
-<mark>TODO: The hierarchy has no venting or fugitive methane nodes for petroleum crude, so oil-sector methane control is not represented here; decide whether crude production should share the methane sources modelled in @sec-natural-gas-methane.</mark>
+<mark>TODO: The hierarchy has no venting or fugitive methane nodes for the crude oil sector, so oil-sector methane control is not represented here; decide whether crude production should share the methane sources modelled in @sec-natural-gas-methane.</mark>
 
 ## Regional coverage and differences
 
@@ -133,7 +133,7 @@ Six regions produce crude, but production is highly concentrated:
 
 <mark>TODO: The crude transmission and pipeline pumping nodes were added to the hierarchy ahead of CIMS; the CIMS crude transmission node needs to request pumping before these technologies take effect.</mark>
 
-<mark>TODO: Offshore platforms generate their own power without heat recovery, but the hierarchy has no on-site power node for petroleum crude; add one so offshore power options can compete.</mark>
+<mark>TODO: Offshore platforms generate their own power without heat recovery, but the hierarchy has no on-site power node for the crude oil sector; add one so offshore power options can compete.</mark>
 
 <mark>TODO: Replace the illustrative figures in this chapter with values drawn from the model input files, and benchmark modelled crude and bitumen energy use and emissions intensity against the Alberta Energy Regulator and Environment and Climate Change Canada's National Inventory Report.</mark>
 

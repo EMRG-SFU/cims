@@ -25,7 +25,7 @@ How hard and how costly capture is depends mostly on how concentrated the CO~2~ 
 
 The difference shows up in cost. The IPCC puts capture from concentrated streams at up to 99 % reduction for USD 40 per tonne or less, and capture from flue gas at up to 90 % reduction for USD 120 per tonne or less [@ipcc_2022_001]. Some plants have both kinds of stream. A steam methane reformer's process CO~2~ is concentrated while its furnace flue gas is dilute; in a cement plant, the CO~2~ released from limestone in a calciner heated from outside is concentrated while the CO~2~ from burning fuel is dilute.
 
-Concentrated capture appears in Biofuels, Chemicals, Hydrogen, Iron and Steel, Metal Smelting, Natural Gas, Petroleum Crude, and Petroleum Refining. Dilute capture appears in the same sectors except Hydrogen, plus Industrial Minerals. Electricity has its own capture services, split by fuel (see @sec-electricity).
+Concentrated capture appears in Biofuels, Chemicals, Crude Oil, Hydrogen, Iron and Steel, Natural Gas, Non-Ferrous Metals, and Petroleum Refining. Dilute capture appears in the same sectors except Hydrogen, plus Industrial Minerals. Electricity has its own capture services, split by fuel (see @sec-electricity).
 
 ### Host plants and capture units
 

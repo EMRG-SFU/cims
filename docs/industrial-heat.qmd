@@ -31,7 +31,7 @@ Industrial heat makes up about two-thirds of the energy industry uses worldwide 
 
 ## Where heat sits in the model
 
-Each industrial sector that raises steam has a **steam** service, and the sector's process technologies draw on it. Nine sectors have one: Biofuels, Chemicals, Iron and Steel, Light Industrial, Metal Smelting, Mining, Petroleum Crude, Petroleum Refining, and Pulp and Paper. The same heat-supply technologies compete in every one, so this chapter lists them once.
+Each industrial sector that raises steam has a **steam** service, and the sector's process technologies draw on it. Nine sectors have one: Biofuels, Chemicals, Crude Oil, Iron and Steel, Light Industrial, Mining, Non-Ferrous Metals, Petroleum Refining, and Pulp and Paper. The same heat-supply technologies compete in every one, so this chapter lists them once.
 
 Two other services supply direct heat from separate heaters. Petroleum Refining has a **direct heat** service for its fired process heaters, the only service in the high band, and the Natural Gas sector's gas-processing chain has a direct heat step for its heaters. Their technologies are listed in those sector chapters.
 
