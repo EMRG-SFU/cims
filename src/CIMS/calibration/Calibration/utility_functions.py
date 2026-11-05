@@ -285,7 +285,6 @@ def getTechParamOverTime(gr, nodeName, techName, paramName):
             return(None)
 
     n = gr.nodes()[nodeName]
-    #yearVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
     yearVals = getAllNodeYears(gr, nodeName)
     pVals = [maybeGet(lambda : n[yv]['technologies'][techName][paramName]['year_value']) for yv in yearVals]
     return(pVals)
@@ -305,7 +304,6 @@ def getParamOverTime(gr, nodeName, paramName):
     pVals = [maybeGet(lambda: n[yv][paramName]['year_value']) for yv in yearVals]
     return pVals
 
-# No
 def getAllTechNames_union(gr, nodeName):
     """
     This one returnsr the UNION of each year's set of tech names. Any techs that appear in at least one year
@@ -327,14 +325,12 @@ def getAllTechNames_union(gr, nodeName):
         raise
 
 
-# No
 def getAllTechNames_intersect(gr, nodeName):
     """
     This one returns the INTERSECTION of each year's set of tech names. Techs returned from this are present in all
     the years.
     """
     n = gr.nodes()[nodeName]
-    #yVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
     yVals = getAllNodeYears(gr, nodeName)
     try:
         return(intersect_sublists([list(n[yv]['technologies']) for yv in yVals]))
@@ -349,7 +345,6 @@ def getAllTechNames_intersect(gr, nodeName):
         raise
 
 
-#No
 def getAllTechNames(gr, nodeName):
     """
     The set of technologies SHOULD be the same from year to year. This happens when the union is equal to the
@@ -360,7 +355,6 @@ def getAllTechNames(gr, nodeName):
     """
     def innerFunc(nodeName):
         n = gr.nodes()[nodeName]
-        #yVals = [yr for yr in [str(a) for a in range(2000, 2021, 5)] if yr in list(n)]
         yVals = getAllNodeYears(gr, nodeName)
         try:
             subListInter = intersect_sublists([list(n[yv]['technologies']) for yv in yVals])
