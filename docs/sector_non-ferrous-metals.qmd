@@ -4,13 +4,14 @@ bibliography:
   - tech-data_references.bib
 aliases:
   - sector_metal_smelting.html
+  - sector_metal-smelting.html
 ---
 
-# Non-Ferrous Metals {#sec-metal-smelting}
+# Non-Ferrous Metals {#sec-non-ferrous-metals}
 
 The non-ferrous metals sector smelts and refines ore concentrates, alumina, and scrap into finished metals other than iron and steel. Aluminium is by far the largest part of the sector. Making it takes a great deal of electricity, and in Canada most of that comes from hydropower in Québec. As a result, the sector's hardest emissions to cut don't come from burning fuel. They come from the chemistry of the processes themselves: the carbon anodes that aluminium cells consume, and the gas used to protect molten magnesium.
 
-This chapter covers the sector as a whole. Two further chapters describe its production chains in detail: @sec-metal-smelting-aluminum and @sec-metal-smelting-base-metals.
+This chapter covers the sector as a whole. Two further chapters describe its production chains in detail: @sec-non-ferrous-metals-aluminum and @sec-non-ferrous-metals-base-metals.
 
 ## Scope
 
@@ -36,12 +37,12 @@ The sector's emissions differ from most of industry's:
 
 ## Process flow
 
-@fig-metal-smelting-process shows the sector's production chains. Aluminium is made from bauxite, by way of alumina, or remelted from scrap. The base metals take either a high-temperature route (pyrometallurgy: roasting, smelting, and converting in furnaces) or a water-based route (hydrometallurgy: dissolving the metal and recovering it by electrolysis), and most are then melted and cast. Magnesium comes from electrolysis or from reducing it out of dolomite with heat, and titanium slag from smelting ilmenite in an electric furnace.
+@fig-non-ferrous-metals-process shows the sector's production chains. Aluminium is made from bauxite, by way of alumina, or remelted from scrap. The base metals take either a high-temperature route (pyrometallurgy: roasting, smelting, and converting in furnaces) or a water-based route (hydrometallurgy: dissolving the metal and recovering it by electrolysis), and most are then melted and cast. Magnesium comes from electrolysis or from reducing it out of dolomite with heat, and titanium slag from smelting ilmenite in an electric furnace.
 
-::: {#fig-metal-smelting-process}
-![](images/flowcharts/metal-smelting_process-flow_light.svg){.light-content .lightbox group="metal-smelting-light"}
+::: {#fig-non-ferrous-metals-process}
+![](images/flowcharts/non-ferrous-metals_process-flow_light.svg){.light-content .lightbox group="non-ferrous-metals-light"}
 
-![](images/flowcharts/metal-smelting_process-flow_dark.svg){.dark-content .lightbox group="metal-smelting-dark"}
+![](images/flowcharts/non-ferrous-metals_process-flow_dark.svg){.dark-content .lightbox group="non-ferrous-metals-dark"}
 
 Process flow of the non-ferrous metals sector. Each production chain is described in its sub-sector chapter.
 :::
@@ -57,8 +58,8 @@ Each metal has its own branch in the sector's Product sub-tree:
 
 Three services belong to this sector alone: **anode production** for the aluminium cells, **oxygen** for the base-metal furnaces, and the smelter **acid plant**. The sector also draws on the shared services below.
 
-- @sec-metal-smelting-aluminum covers alumina refining, anode production, electrolysis, and recycling.
-- @sec-metal-smelting-base-metals covers copper, nickel, lead, zinc, magnesium, and titanium slag, with the oxygen and acid-plant services.
+- @sec-non-ferrous-metals-aluminum covers alumina refining, anode production, electrolysis, and recycling.
+- @sec-non-ferrous-metals-base-metals covers copper, nickel, lead, zinc, magnesium, and titanium slag, with the oxygen and acid-plant services.
 
 ### Shared services
 
@@ -70,7 +71,7 @@ Three services belong to this sector alone: **anode production** for the alumini
 | Fuel blends | The diesel and gas blends the sector's equipment burns | @sec-fuel-blends |
 | CCS | Capture of CO₂ from alumina calciners and aluminium cells | @sec-ccus |
 
-: Shared services in the non-ferrous metals sector {#tbl-metal-smelting-shared}
+: Shared services in the non-ferrous metals sector {#tbl-non-ferrous-metals-shared}
 
 ## Decarbonisation
 

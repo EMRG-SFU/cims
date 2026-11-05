@@ -12,7 +12,7 @@ Logging's direct greenhouse-gas emissions come almost entirely from the diesel b
 
 The sub-model covers the **fuel use of forestry's mobile equipment**: the off-road machines that cut trees, gather them, and move the logs to the roadside. A forecast of the sector's emissions drives it. Everything after the roadside sits elsewhere:
 
-- Hauling logs on public roads belongs to @sec-transportation-freight.
+- Hauling logs on public roads belongs to @sec-freight-transportation.
 - Turning logs into lumber and pulp belongs to @sec-pulp-and-paper and the wood-products part of @sec-light-industrial.
 - The carbon stored in the forest itself, as trees grow, are cut, and regrow, belongs to land use, land-use change, and forestry (@sec-lulucf), not this sector.
 

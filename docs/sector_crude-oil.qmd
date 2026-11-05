@@ -4,9 +4,10 @@ bibliography:
   - tech-data_references.bib
 aliases:
   - sector_petroleum_crude.html
+  - sector_petroleum-crude.html
 ---
 
-# Crude Oil {#sec-petroleum-crude}
+# Crude Oil {#sec-crude-oil}
 
 The crude oil sector produces crude oil and bitumen and moves them to refineries and export markets. It covers conventional crude, from land and offshore wells, and the oil sands, which dominate Canadian output and emissions. Producing the oil takes a lot of energy, above all the heat used to make steam for in-situ bitumen recovery, and that energy is itself a large source of emissions. Cutting the sector's emissions is therefore mostly about how it supplies that energy and whether it captures the CO₂. This chapter covers the whole sector and conventional crude; @sec-oil-sands covers the oil sands in detail.
 
@@ -36,12 +37,12 @@ For in-situ production, making steam is the single largest source of emissions. 
 
 ## Process flow
 
-@fig-petroleum-crude-process shows how the sector fits together. Conventional crude runs from exploration and well completion to production. Oil sands bitumen comes from mining or in-situ recovery; mined bitumen is upgraded, and in-situ bitumen is either upgraded or mixed with a lighter liquid (diluent) so it can flow through a pipeline. Everything ends up in the crude pipelines.
+@fig-crude-oil-process shows how the sector fits together. Conventional crude runs from exploration and well completion to production. Oil sands bitumen comes from mining or in-situ recovery; mined bitumen is upgraded, and in-situ bitumen is either upgraded or mixed with a lighter liquid (diluent) so it can flow through a pipeline. Everything ends up in the crude pipelines.
 
-::: {#fig-petroleum-crude-process}
-![](images/flowcharts/petroleum-crude_process-flow_light.svg){.light-content .lightbox group="petroleum-crude-light"}
+::: {#fig-crude-oil-process}
+![](images/flowcharts/crude-oil_process-flow_light.svg){.light-content .lightbox group="crude-oil-light"}
 
-![](images/flowcharts/petroleum-crude_process-flow_dark.svg){.dark-content .lightbox group="petroleum-crude-dark"}
+![](images/flowcharts/crude-oil_process-flow_dark.svg){.dark-content .lightbox group="crude-oil-dark"}
 
 Process flow of the crude oil sector. Process steps make up the production chain; site services supply the energy, steam, and hydrogen those steps need.
 :::
@@ -54,13 +55,13 @@ The model splits the sector into two parts. The production chain holds explorati
 
 **Exploration and drilling** covers the rigs and engines that drill and test new wells. A rig turns the drill bit, pumps drilling mud to carry rock cuttings out of the hole, and powers the work camp.
 
-{{< include _technology-blocks/petroleum-crude/product_exploration.md >}}
+{{< include _technology-blocks/crude-oil/product_exploration.md >}}
 
 ### Well completion
 
 **Completion** prepares a drilled well to produce. For tight oil, that means hydraulic fracturing: pumping water, sand, and chemicals into the rock at very high pressure to open cracks the oil can flow through. Nearly all the energy goes to the fracturing fleet's large pumps, which run on diesel engines, on engines that burn a mix of diesel and natural gas, or on electric motors.
 
-{{< include _technology-blocks/petroleum-crude/product_completion.md >}}
+{{< include _technology-blocks/crude-oil/product_completion.md >}}
 
 ### Conventional crude production
 
@@ -73,19 +74,19 @@ The model splits conventional crude into light and medium crude, from onshore an
 
 **Artificial lift**
 
-{{< include _technology-blocks/petroleum-crude/service_artificial-lift.md >}}
+{{< include _technology-blocks/crude-oil/service_artificial-lift.md >}}
 
 **Treating**
 
-{{< include _technology-blocks/petroleum-crude/service_treating.md >}}
+{{< include _technology-blocks/crude-oil/service_treating.md >}}
 
 **Field engines**
 
-{{< include _technology-blocks/petroleum-crude/service_field-engines.md >}}
+{{< include _technology-blocks/crude-oil/service_field-engines.md >}}
 
 **Produced water**
 
-{{< include _technology-blocks/petroleum-crude/service_produced-water.md >}}
+{{< include _technology-blocks/crude-oil/service_produced-water.md >}}
 
 ### Crude pipelines and pumping
 
@@ -93,11 +94,11 @@ The model splits conventional crude into light and medium crude, from onshore an
 
 **Crude pipelines**
 
-{{< include _technology-blocks/petroleum-crude/product_transmission.md >}}
+{{< include _technology-blocks/crude-oil/product_transmission.md >}}
 
 **Pipeline pumping**
 
-{{< include _technology-blocks/petroleum-crude/service_pumping.md >}}
+{{< include _technology-blocks/crude-oil/service_pumping.md >}}
 
 ### Shared services
 
@@ -107,7 +108,7 @@ The model splits conventional crude into light and medium crude, from onshore an
 | Fuel blends | Diesel, gasoline, and methane, and a **still gas** step that routes upgrader off-gas to the equipment that burns it | @sec-fuel-blends |
 | CCS | Capture of concentrated CO₂ (from upgrader hydrogen plants) and dilute CO₂ (from boiler and heater exhaust) | @sec-ccus |
 
-: Shared services in the crude oil sector {#tbl-petroleum-crude-shared}
+: Shared services in the crude oil sector {#tbl-crude-oil-shared}
 
 ## Decarbonisation
 

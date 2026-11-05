@@ -1,5 +1,5 @@
 # Base metals, magnesium, and titanium slag (sub-sector of non-ferrous metals). See appendix_figure-style.qmd.
-sector: metal-smelting_base-metals
+sector: non-ferrous-metals_base-metals
 title: Base metals, magnesium, and titanium slag
 
 nodes:
@@ -8,32 +8,32 @@ nodes:
   - {id: ilmenite, label: Ilmenite, icon: ore, role: input, at: [0, 5]}
 
   - {id: roasting, label: Roasting, icon: furnace, role: process, at: [1, 2],
-     branches: [metal-smelting.product.zinc.pyrometallurgy.roasting, metal-smelting.product.lead.pyrometallurgy.roasting]}
+     branches: [non-ferrous-metals.product.zinc.pyrometallurgy.roasting, non-ferrous-metals.product.lead.pyrometallurgy.roasting]}
   - {id: smelting, label: Smelting, icon: furnace, role: process, at: [1, 1],
-     branches: [metal-smelting.product.copper.pyrometallurgy.smelting, metal-smelting.product.nickel.pyrometallurgy.smelting,
-                metal-smelting.product.lead.pyrometallurgy.smelting]}
+     branches: [non-ferrous-metals.product.copper.pyrometallurgy.smelting, non-ferrous-metals.product.nickel.pyrometallurgy.smelting,
+                non-ferrous-metals.product.lead.pyrometallurgy.smelting]}
   - {id: acid, label: Acid plant, icon: reactor, role: service, at: [1, 0],
-     branch: metal-smelting.service.acid-plant}
+     branch: non-ferrous-metals.service.acid-plant}
   - {id: oxygen, label: Oxygen, icon: air-separation, role: service, at: [2, 0],
-     branch: metal-smelting.service.oxygen}
+     branch: non-ferrous-metals.service.oxygen}
   - {id: converting, label: Converting, icon: converter, role: process, at: [2, 1],
-     branches: [metal-smelting.product.copper.pyrometallurgy.converting, metal-smelting.product.nickel.pyrometallurgy.converting]}
+     branches: [non-ferrous-metals.product.copper.pyrometallurgy.converting, non-ferrous-metals.product.nickel.pyrometallurgy.converting]}
   - {id: refining, label: Refining, icon: electrolysis, role: process, at: [3, 1],
-     branches: [metal-smelting.product.copper.pyrometallurgy.refining, metal-smelting.product.nickel.pyrometallurgy.refining,
-                metal-smelting.product.lead.pyrometallurgy.refining]}
+     branches: [non-ferrous-metals.product.copper.pyrometallurgy.refining, non-ferrous-metals.product.nickel.pyrometallurgy.refining,
+                non-ferrous-metals.product.lead.pyrometallurgy.refining]}
   - {id: hydro, label: Leaching and electrowinning, icon: reactor, role: process, at: [2, 3],
-     branches: [metal-smelting.product.copper.hydrometallurgy, metal-smelting.product.nickel.hydrometallurgy,
-                metal-smelting.product.zinc.hydrometallurgy]}
+     branches: [non-ferrous-metals.product.copper.hydrometallurgy, non-ferrous-metals.product.nickel.hydrometallurgy,
+                non-ferrous-metals.product.zinc.hydrometallurgy]}
   - {id: melt-cast, label: Melting and casting, icon: furnace, role: process, at: [4, 1],
-     branches: [metal-smelting.product.copper.melt-cast, metal-smelting.product.nickel.melt-cast,
-                metal-smelting.product.lead.melt-cast, metal-smelting.product.zinc.melt-cast,
-                metal-smelting.product.magnesium.melt-cast]}
+     branches: [non-ferrous-metals.product.copper.melt-cast, non-ferrous-metals.product.nickel.melt-cast,
+                non-ferrous-metals.product.lead.melt-cast, non-ferrous-metals.product.zinc.melt-cast,
+                non-ferrous-metals.product.magnesium.melt-cast]}
   - {id: metals, label: Refined metals, icon: ingot, role: output, at: [5, 1]}
   - {id: magnesium, label: Magnesium production, icon: electrolysis, role: process, at: [1, 4],
-     branches: [metal-smelting.product.magnesium.electrolysis, metal-smelting.product.magnesium.thermal-reduction]}
+     branches: [non-ferrous-metals.product.magnesium.electrolysis, non-ferrous-metals.product.magnesium.thermal-reduction]}
   - {id: electric-smelting, label: Electric smelting, icon: eaf, role: process, at: [1, 5],
-     branches: [metal-smelting.product.titanium-slag.pyrometallurgy.roasting,
-                metal-smelting.product.titanium-slag.pyrometallurgy.smelting]}
+     branches: [non-ferrous-metals.product.titanium-slag.pyrometallurgy.roasting,
+                non-ferrous-metals.product.titanium-slag.pyrometallurgy.smelting]}
   - {id: ti-slag, label: Titanium slag, icon: slab, role: output, at: [2, 5]}
 
 edges:

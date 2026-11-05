@@ -26,7 +26,7 @@ It also covers the energy the sector uses on itself for compression, drilling, f
 Several related activities sit elsewhere in CIMS:
 
 - Burning the delivered gas counts in the sectors that use it: homes, businesses, industry, and electricity.
-- Crude oil production is covered in @sec-petroleum-crude.
+- Crude oil production is covered in @sec-crude-oil.
 - Gas used to make chemicals is covered in [Chemicals](sector_chemicals.qmd), and gas used to make hydrogen in [Hydrogen](sector_hydrogen.qmd).
 
 ## Context

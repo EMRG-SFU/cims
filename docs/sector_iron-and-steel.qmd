@@ -17,7 +17,7 @@ The sub-model covers the whole chain from iron ore and scrap to finished, rolled
 Related activities sit elsewhere in CIMS, so their energy is counted once:
 
 - Mining and concentrating iron ore, and pelletizing at the mine, are covered in @sec-mining.
-- Smelting and refining other metals is covered in @sec-metal-smelting.
+- Smelting and refining other metals is covered in @sec-non-ferrous-metals.
 - Turning steel into finished goods (fabrication, stamping, and machining) belongs to the manufacturing sector in @sec-light-industrial.
 
 Cokemaking and the use of the sector's own by-product gases stay in this sub-model, because they are part of ironmaking.

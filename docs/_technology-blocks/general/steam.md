@@ -18,6 +18,7 @@ Technologies
 | Line-focus solar concentrator (parabolic trough, linear Fresnel) | Parabolic-trough or linear-Fresnel collector fields raising steam or thermal oil at about 150-400 °C, often with storage. | Alternative |
 | Solar thermal (non-concentrating) | Flat-plate, evacuated-tube or compound-parabolic collectors raising hot water or low-pressure steam. | Alternative |
 | Very-high-temperature heat pump or vapour recompression (above 150 °C) | Closed-cycle (very-high-temperature) heat pump or steam-generating heat pump or mechanical vapour recompression delivering above 150 °C, up to about 280 °C: medium-pressure process steam or hot air. | Alternative |
+| Back-pressure steam-turbine CHP with post-combustion capture | A solid-fuel boiler and back-pressure turbine CHP whose flue gas is sent to capture. Regeneration steam is drawn from the unit itself, a host-side penalty that belongs here and cuts its electricity export. | Prospective |
 | Biomass gasifier CHP | Gasifier feeding an engine or turbine, with heat recovery. | Prospective |
 | Boiler with post-combustion capture | A boiler whose flue gas is sent to capture. | Prospective |
 | Electric thermal energy storage | Electrically charged solid or salt store discharging steam, decoupling heat from power prices. | Prospective |

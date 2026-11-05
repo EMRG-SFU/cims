@@ -6,6 +6,7 @@ Technologies
 | Blast furnace | Coke-based counter-current shaft reducing iron ore to hot metal, with hot stoves. | Conventional |
 | Blast furnace efficiency measures, moderate | Incremental measures on an existing blast furnace, each worth a few per cent of fuel. | Efficiency variant |
 | Blast furnace efficiency measures, strong | Heat recovery from the hot stoves and the slag. | Efficiency variant |
+| Blast furnace with biocarbon injection or bio-coke | The host blast furnace with part of its injected coal or coke replaced by charcoal or other biocarbon. | Alternative |
 | Coal-based smelting reduction | Smelting reduction on coal without coke ovens: pre-reduction shaft plus melter-gasifier (Corex, Finex) or single-vessel bath smelting (HIsarna). | Alternative |
 | Blast furnace with post-combustion capture | A blast furnace whose gas, or the flue gas of the stoves and power plant that burn it, is sent to capture. | Prospective |
 | Coal-based smelting reduction with capture | A smelting reduction plant (two-stage or bath) whose CO₂-rich off-gas is sent to capture. | Prospective |

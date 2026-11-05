@@ -1,5 +1,5 @@
 # Freight transportation process flowchart. See appendix_figure-style.qmd for the format.
-sector: transportation-freight
+sector: freight-transportation
 title: Freight transportation
 
 groups:
@@ -10,23 +10,23 @@ nodes:
 
   # freight demand by mode (Product sub-tree)
   - {id: trucks, label: Heavy trucks, icon: truck, role: process, at: [1, 0],
-     branch: transportation-freight.product.land.heavy.trucks}
+     branch: freight-transportation.product.land.heavy.trucks}
   - {id: rail, label: Rail, icon: train, role: process, at: [1, 1],
-     branch: transportation-freight.product.land.heavy.rail}
+     branch: freight-transportation.product.land.heavy.rail}
   - {id: light, label: Light and medium vehicles, icon: car, role: process, at: [1, 2],
-     branch: transportation-freight.product.land.light-medium}
+     branch: freight-transportation.product.land.light-medium}
   - {id: other, label: "Marine, air, and off-road", icon: ship, role: process, at: [1, 3],
-     branches: [transportation-freight.product.marine, transportation-freight.product.air,
-                transportation-freight.product.off-road]}
+     branches: [freight-transportation.product.marine, freight-transportation.product.air,
+                freight-transportation.product.off-road]}
 
   # infrastructure (Service sub-tree)
   - {id: catenary, label: Overhead catenary, icon: catenary, role: service, at: [2, 0],
-     branch: transportation-freight.service.catenary-infrastructure}
+     branch: freight-transportation.service.catenary-infrastructure}
   - {id: charging, label: Charging stations, icon: charger, role: service, at: [2, 1],
-     branches: [transportation-freight.service.ev-infrastructure.depot-stations,
-                transportation-freight.service.ev-infrastructure.rapid-charging-stations]}
+     branches: [freight-transportation.service.ev-infrastructure.depot-stations,
+                freight-transportation.service.ev-infrastructure.rapid-charging-stations]}
   - {id: hydrogen, label: Hydrogen refuelling, icon: hydrogen-station, role: service, at: [2, 2],
-     branch: transportation-freight.service.fcev-infrastructure}
+     branch: freight-transportation.service.fcev-infrastructure}
 
 edges:
   - {from: demand, to: trucks, turn: early}

@@ -26,42 +26,42 @@
 <use href="#icon-package" x="74.0" y="267.0" width="38" height="38" style="color:#e6cc9f"/>
 <text x="93.0" y="330.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Freight demand</text>
 </g>
-<g><title>Heavy trucks — transportation-freight.product.land.heavy.trucks</title>
+<g><title>Heavy trucks — freight-transportation.product.land.heavy.trucks</title>
 <rect x="184.0" y="67.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-truck" x="224.0" y="75.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="138.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Heavy trucks</text>
 </g>
-<g><title>Rail — transportation-freight.product.land.heavy.rail</title>
+<g><title>Rail — freight-transportation.product.land.heavy.rail</title>
 <rect x="184.0" y="195.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-train" x="224.0" y="203.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="266.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Rail</text>
 </g>
-<g><title>Light and medium vehicles — transportation-freight.product.land.light-medium</title>
+<g><title>Light and medium vehicles — freight-transportation.product.land.light-medium</title>
 <rect x="184.0" y="323.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-car" x="224.0" y="331.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="378.7" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Light and</text>
 <text x="243.0" y="394.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">medium</text>
 <text x="243.0" y="409.8" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">vehicles</text>
 </g>
-<g><title>Marine, air, and off-road — transportation-freight.product.marine, transportation-freight.product.air, transportation-freight.product.off-road</title>
+<g><title>Marine, air, and off-road — freight-transportation.product.marine, freight-transportation.product.air, freight-transportation.product.off-road</title>
 <rect x="184.0" y="451.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-ship" x="224.0" y="459.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="514.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Marine, air,</text>
 <text x="243.0" y="530.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">and off-road</text>
 </g>
-<g><title>Overhead catenary — transportation-freight.service.catenary-infrastructure</title>
+<g><title>Overhead catenary — freight-transportation.service.catenary-infrastructure</title>
 <rect x="334.0" y="67.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-catenary" x="374.0" y="75.0" width="38" height="38" style="color:#acdcb6"/>
 <text x="393.0" y="130.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Overhead</text>
 <text x="393.0" y="146.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">catenary</text>
 </g>
-<g><title>Charging stations — transportation-freight.service.ev-infrastructure.depot-stations, transportation-freight.service.ev-infrastructure.rapid-charging-stations</title>
+<g><title>Charging stations — freight-transportation.service.ev-infrastructure.depot-stations, freight-transportation.service.ev-infrastructure.rapid-charging-stations</title>
 <rect x="334.0" y="195.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-charger" x="374.0" y="203.0" width="38" height="38" style="color:#acdcb6"/>
 <text x="393.0" y="258.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Charging</text>
 <text x="393.0" y="274.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">stations</text>
 </g>
-<g><title>Hydrogen refuelling — transportation-freight.service.fcev-infrastructure</title>
+<g><title>Hydrogen refuelling — freight-transportation.service.fcev-infrastructure</title>
 <rect x="334.0" y="323.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-hydrogen-station" x="374.0" y="331.0" width="38" height="38" style="color:#acdcb6"/>
 <text x="393.0" y="386.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Hydrogen</text>

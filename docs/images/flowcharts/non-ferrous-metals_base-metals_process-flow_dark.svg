@@ -48,43 +48,43 @@
 <use href="#icon-ore" x="74.0" y="685.0" width="38" height="38" style="color:#e6cc9f"/>
 <text x="93.0" y="748.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Ilmenite</text>
 </g>
-<g><title>Roasting — metal-smelting.product.zinc.pyrometallurgy.roasting, metal-smelting.product.lead.pyrometallurgy.roasting</title>
+<g><title>Roasting — non-ferrous-metals.product.zinc.pyrometallurgy.roasting, non-ferrous-metals.product.lead.pyrometallurgy.roasting</title>
 <rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-furnace" x="224.0" y="301.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Roasting</text>
 </g>
-<g><title>Smelting — metal-smelting.product.copper.pyrometallurgy.smelting, metal-smelting.product.nickel.pyrometallurgy.smelting, metal-smelting.product.lead.pyrometallurgy.smelting</title>
+<g><title>Smelting — non-ferrous-metals.product.copper.pyrometallurgy.smelting, non-ferrous-metals.product.nickel.pyrometallurgy.smelting, non-ferrous-metals.product.lead.pyrometallurgy.smelting</title>
 <rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-furnace" x="224.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Smelting</text>
 </g>
-<g><title>Acid plant — metal-smelting.service.acid-plant</title>
+<g><title>Acid plant — non-ferrous-metals.service.acid-plant</title>
 <rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-reactor" x="224.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
 <text x="243.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Acid plant</text>
 </g>
-<g><title>Oxygen — metal-smelting.service.oxygen</title>
+<g><title>Oxygen — non-ferrous-metals.service.oxygen</title>
 <rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#21392a" stroke="#78b386" stroke-width="1.4"/>
 <use href="#icon-air-separation" x="374.0" y="45.0" width="38" height="38" style="color:#acdcb6"/>
 <text x="393.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Oxygen</text>
 </g>
-<g><title>Converting — metal-smelting.product.copper.pyrometallurgy.converting, metal-smelting.product.nickel.pyrometallurgy.converting</title>
+<g><title>Converting — non-ferrous-metals.product.copper.pyrometallurgy.converting, non-ferrous-metals.product.nickel.pyrometallurgy.converting</title>
 <rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-converter" x="374.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Converting</text>
 </g>
-<g><title>Refining — metal-smelting.product.copper.pyrometallurgy.refining, metal-smelting.product.nickel.pyrometallurgy.refining, metal-smelting.product.lead.pyrometallurgy.refining</title>
+<g><title>Refining — non-ferrous-metals.product.copper.pyrometallurgy.refining, non-ferrous-metals.product.nickel.pyrometallurgy.refining, non-ferrous-metals.product.lead.pyrometallurgy.refining</title>
 <rect x="484.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-electrolysis" x="524.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="543.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Refining</text>
 </g>
-<g><title>Leaching and electrowinning — metal-smelting.product.copper.hydrometallurgy, metal-smelting.product.nickel.hydrometallurgy, metal-smelting.product.zinc.hydrometallurgy</title>
+<g><title>Leaching and electrowinning — non-ferrous-metals.product.copper.hydrometallurgy, non-ferrous-metals.product.nickel.hydrometallurgy, non-ferrous-metals.product.zinc.hydrometallurgy</title>
 <rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-reactor" x="374.0" y="429.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="393.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Leaching and</text>
 <text x="393.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">electrowinning</text>
 </g>
-<g><title>Melting and casting — metal-smelting.product.copper.melt-cast, metal-smelting.product.nickel.melt-cast, metal-smelting.product.lead.melt-cast, metal-smelting.product.zinc.melt-cast, metal-smelting.product.magnesium.melt-cast</title>
+<g><title>Melting and casting — non-ferrous-metals.product.copper.melt-cast, non-ferrous-metals.product.nickel.melt-cast, non-ferrous-metals.product.lead.melt-cast, non-ferrous-metals.product.zinc.melt-cast, non-ferrous-metals.product.magnesium.melt-cast</title>
 <rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-furnace" x="674.0" y="173.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="693.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Melting and</text>
@@ -95,13 +95,13 @@
 <use href="#icon-ingot" x="824.0" y="173.0" width="38" height="38" style="color:#13233a"/>
 <text x="843.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#13233a">Refined metals</text>
 </g>
-<g><title>Magnesium production — metal-smelting.product.magnesium.electrolysis, metal-smelting.product.magnesium.thermal-reduction</title>
+<g><title>Magnesium production — non-ferrous-metals.product.magnesium.electrolysis, non-ferrous-metals.product.magnesium.thermal-reduction</title>
 <rect x="184.0" y="549.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-electrolysis" x="224.0" y="557.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="612.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Magnesium</text>
 <text x="243.0" y="628.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">production</text>
 </g>
-<g><title>Electric smelting — metal-smelting.product.titanium-slag.pyrometallurgy.roasting, metal-smelting.product.titanium-slag.pyrometallurgy.smelting</title>
+<g><title>Electric smelting — non-ferrous-metals.product.titanium-slag.pyrometallurgy.roasting, non-ferrous-metals.product.titanium-slag.pyrometallurgy.smelting</title>
 <rect x="184.0" y="677.0" width="118" height="90" rx="10" fill="#1f3550" stroke="#6fa0d8" stroke-width="1.4"/>
 <use href="#icon-eaf" x="224.0" y="685.0" width="38" height="38" style="color:#acd0f4"/>
 <text x="243.0" y="740.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#e6e9ec">Electric</text>

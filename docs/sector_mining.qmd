@@ -23,9 +23,9 @@ A forecast of each product's output drives everything beneath it. The sub-model 
 Several activities that people often call mining sit elsewhere in CIMS, so that their energy is counted once:
 
 - Coal mining is covered in @sec-coal-mining.
-- Oil and gas extraction and oil sands mining are covered in @sec-petroleum-crude.
+- Oil and gas extraction and oil sands mining are covered in @sec-crude-oil.
 - Cement, lime, glass, brick, and other mineral products are covered in @sec-industrial-minerals.
-- Smelting and refining mined concentrates is covered in @sec-metal-smelting.
+- Smelting and refining mined concentrates is covered in @sec-non-ferrous-metals.
 
 ## Context
 

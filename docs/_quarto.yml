@@ -63,7 +63,7 @@ book:
         - demand-feedbacks.qmd  # Goods and services demand feedbacks
         - sector_overview.qmd   # How a sector is modelled (shared structure of the sector chapters)
     # Sector chapters, grouped. Sub-sector chapters sit next to their parent
-    # sector's chapter (for example sector_metal-smelting_aluminum.qmd).
+    # sector's chapter (for example sector_non-ferrous-metals_aluminum.qmd).
     # Books allow only one level of parts, so the HTML sidebar nests the six
     # parts from here to General Services under a "Sector Descriptions"
     # heading with sidebar-sections.html (included below). Keep the part
@@ -73,8 +73,8 @@ book:
         - sector_coal-mining.qmd              # Coal Mining
         - sector_natural-gas.qmd              # Natural Gas
         - sector_natural-gas_methane.qmd      #   Methane emissions in oil and gas
-        - sector_petroleum-crude.qmd          # Crude Oil
-        - sector_petroleum-crude_oil-sands.qmd #   Oil sands
+        - sector_crude-oil.qmd                # Crude Oil
+        - sector_crude-oil_oil-sands.qmd      #   Oil sands
         - sector_petroleum-refining.qmd       # Petroleum Refining
         - sector_electricity.qmd              # Electricity
         - sector_biofuels.qmd                 # Biofuels
@@ -88,9 +88,9 @@ book:
         - sector_chemicals_chlor-alkali.qmd   #   Chlor-alkali and oxidants
         - sector_chemicals_petrochemicals.qmd #   Petrochemicals and methanol
         - sector_pulp-and-paper.qmd           # Pulp and Paper
-        - sector_metal-smelting.qmd           # Non-Ferrous Metals
-        - sector_metal-smelting_aluminum.qmd  #   Aluminum
-        - sector_metal-smelting_base-metals.qmd #   Base metals, magnesium, titanium slag
+        - sector_non-ferrous-metals.qmd       # Non-Ferrous Metals
+        - sector_non-ferrous-metals_aluminum.qmd #   Aluminum
+        - sector_non-ferrous-metals_base-metals.qmd #   Base metals, magnesium, titanium slag
         - sector_iron-and-steel.qmd           # Iron and Steel
         - sector_light-industrial.qmd         # Light Industrial
         - sector_construction.qmd             # Construction
@@ -100,8 +100,8 @@ book:
         - sector_commercial.qmd               # Commercial
     - part: "Transportation"
       chapters:
-        - sector_transportation-passenger.qmd # Passenger Transportation
-        - sector_transportation-freight.qmd   # Freight Transportation
+        - sector_passenger-transportation.qmd # Passenger Transportation
+        - sector_freight-transportation.qmd   # Freight Transportation
     - part: "Land, Waste, and Removals"
       chapters:
         - sector_agriculture.qmd              # Agriculture

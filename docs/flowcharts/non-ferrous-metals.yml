@@ -1,5 +1,5 @@
 # Non-ferrous metals: sector-wide process flowchart. See appendix_figure-style.qmd.
-sector: metal-smelting
+sector: non-ferrous-metals
 title: Non-ferrous metals
 
 nodes:
@@ -9,22 +9,22 @@ nodes:
   - {id: feed, label: Magnesium and titanium feed, icon: chemical, role: input, at: [0, 4]}
 
   - {id: primary-al, label: Primary aluminium, icon: electrolysis, role: process, at: [1, 0],
-     branch: metal-smelting.product.aluminum.primary-aluminum}
+     branch: non-ferrous-metals.product.aluminum.primary-aluminum}
   - {id: recycle, label: Aluminium recycling, icon: furnace, role: process, at: [1, 1],
-     branch: metal-smelting.product.aluminum.recycle}
+     branch: non-ferrous-metals.product.aluminum.recycle}
   - {id: pyro, label: Pyrometallurgy, icon: furnace, role: process, at: [1, 2],
-     branches: [metal-smelting.product.copper.pyrometallurgy, metal-smelting.product.nickel.pyrometallurgy,
-                metal-smelting.product.lead.pyrometallurgy, metal-smelting.product.zinc.pyrometallurgy]}
+     branches: [non-ferrous-metals.product.copper.pyrometallurgy, non-ferrous-metals.product.nickel.pyrometallurgy,
+                non-ferrous-metals.product.lead.pyrometallurgy, non-ferrous-metals.product.zinc.pyrometallurgy]}
   - {id: hydro, label: Hydrometallurgy, icon: reactor, role: process, at: [1, 3],
-     branches: [metal-smelting.product.copper.hydrometallurgy, metal-smelting.product.nickel.hydrometallurgy,
-                metal-smelting.product.zinc.hydrometallurgy]}
+     branches: [non-ferrous-metals.product.copper.hydrometallurgy, non-ferrous-metals.product.nickel.hydrometallurgy,
+                non-ferrous-metals.product.zinc.hydrometallurgy]}
   - {id: mg-ti, label: Magnesium and titanium slag, icon: electrolysis, role: process, at: [1, 4],
-     branches: [metal-smelting.product.magnesium.electrolysis, metal-smelting.product.magnesium.thermal-reduction,
-                metal-smelting.product.titanium-slag.pyrometallurgy]}
+     branches: [non-ferrous-metals.product.magnesium.electrolysis, non-ferrous-metals.product.magnesium.thermal-reduction,
+                non-ferrous-metals.product.titanium-slag.pyrometallurgy]}
   - {id: melt-cast, label: Melting and casting, icon: ingot, role: process, at: [2, 2],
-     branches: [metal-smelting.product.copper.melt-cast, metal-smelting.product.nickel.melt-cast,
-                metal-smelting.product.lead.melt-cast, metal-smelting.product.zinc.melt-cast,
-                metal-smelting.product.magnesium.melt-cast]}
+     branches: [non-ferrous-metals.product.copper.melt-cast, non-ferrous-metals.product.nickel.melt-cast,
+                non-ferrous-metals.product.lead.melt-cast, non-ferrous-metals.product.zinc.melt-cast,
+                non-ferrous-metals.product.magnesium.melt-cast]}
 
   - {id: aluminium, label: Aluminium, icon: ingot, role: output, at: [3, 0]}
   - {id: metals, label: Other refined metals, icon: ingot, role: output, at: [3, 2]}

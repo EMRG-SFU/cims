@@ -12,7 +12,7 @@ The sub-model covers **landfill gas management** at municipal solid-waste landfi
 
 Related activities sit elsewhere or are not yet represented:
 
-- Collecting and hauling waste belongs to @sec-transportation-freight.
+- Collecting and hauling waste belongs to @sec-freight-transportation.
 - Waste burned as fuel, such as fuel made from waste for cement kilns, is counted in the sector that burns it.
 - Methane from wastewater treatment, and burning waste in incinerators, are not yet represented.
 

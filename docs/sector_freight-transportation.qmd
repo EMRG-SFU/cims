@@ -2,17 +2,18 @@
 bibliography: references.bib
 aliases:
   - sector_transportation_freight.html
+  - sector_transportation-freight.html
 ---
 
-# Freight Transportation {#sec-transportation-freight}
+# Freight Transportation {#sec-freight-transportation}
 
-Freight transportation covers moving goods by road, rail, ship, and plane, along with off-road machines. CIMS lets these ways of moving goods compete, and within each it lets different engines and fuels compete. The sector also includes the charging stations, overhead wires, and hydrogen stations that zero-emission trucks need. The general approach to transportation (competition between ways of travelling, non-financial costs, and the gradual turnover of vehicles) is described in @sec-transportation-passenger and is not repeated here.
+Freight transportation covers moving goods by road, rail, ship, and plane, along with off-road machines. CIMS lets these ways of moving goods compete, and within each it lets different engines and fuels compete. The sector also includes the charging stations, overhead wires, and hydrogen stations that zero-emission trucks need. The general approach to transportation (competition between ways of travelling, non-financial costs, and the gradual turnover of vehicles) is described in @sec-passenger-transportation and is not repeated here.
 
 ## Scope
 
 The sub-model covers goods moved by heavy trucks and rail, light and medium commercial vehicles (vans and delivery trucks), ships, and planes, plus off-road equipment such as construction and farm machines. Total freight demand is projected for each region, and it can shift between ways of moving goods, most importantly from road to rail.
 
-Related activities sit elsewhere: passenger travel in @sec-transportation-passenger; supplying fuels and electricity in the energy supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and building vehicles in @sec-light-industrial.
+Related activities sit elsewhere: passenger travel in @sec-passenger-transportation; supplying fuels and electricity in the energy supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and building vehicles in @sec-light-industrial.
 
 ## Context
 
@@ -22,12 +23,12 @@ Three zero-emission options compete for heavy freight. Battery-electric trucks s
 
 ## Process flow
 
-@fig-transportation-freight-process shows how the sub-model is put together. Freight demand splits by way of moving goods, and the zero-emission trucks draw on the infrastructure they need. The chart shows structure only: the fuels and electricity each vehicle uses are not drawn, because the competition between vehicles decides them.
+@fig-freight-transportation-process shows how the sub-model is put together. Freight demand splits by way of moving goods, and the zero-emission trucks draw on the infrastructure they need. The chart shows structure only: the fuels and electricity each vehicle uses are not drawn, because the competition between vehicles decides them.
 
-::: {#fig-transportation-freight-process}
-![](images/flowcharts/transportation-freight_process-flow_light.svg){.light-content .lightbox group="transportation-freight-light"}
+::: {#fig-freight-transportation-process}
+![](images/flowcharts/freight-transportation_process-flow_light.svg){.light-content .lightbox group="freight-transportation-light"}
 
-![](images/flowcharts/transportation-freight_process-flow_dark.svg){.dark-content .lightbox group="transportation-freight-dark"}
+![](images/flowcharts/freight-transportation_process-flow_dark.svg){.dark-content .lightbox group="freight-transportation-dark"}
 
 Process flow of the freight transportation sector. Freight demand by way of moving goods makes up the Product sub-tree, and charging, overhead wire, and hydrogen refuelling infrastructure make up the Service sub-tree.
 :::

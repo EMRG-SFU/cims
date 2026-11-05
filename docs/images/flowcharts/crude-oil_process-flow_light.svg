@@ -31,74 +31,74 @@
 <text x="543.0" y="526.0" text-anchor="middle" font-size="11.5" fill="#5a6472" stroke="#ffffff" stroke-width="4" paint-order="stroke">diluted bitumen</text>
 <path d="M 693.0 127.0 L 693.0 165.0" fill="none" stroke="#c0691f" stroke-width="1.7" stroke-dasharray="5 4" marker-end="url(#arrow-energy)"/>
 <path d="M 752.0 210.0 L 784.0 210.0" fill="none" stroke="#4a5563" stroke-width="1.7" marker-end="url(#arrow-material)"/>
-<g><title>Exploration and drilling — petroleum-crude.product.exploration</title>
+<g><title>Exploration and drilling — crude-oil.product.exploration</title>
 <rect x="34.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-well" x="74.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
 <text x="93.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Exploration</text>
 <text x="93.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">and drilling</text>
 </g>
-<g><title>Well completion — petroleum-crude.product.completion</title>
+<g><title>Well completion — crude-oil.product.completion</title>
 <rect x="184.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-well" x="224.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
 <text x="243.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Well</text>
 <text x="243.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">completion</text>
 </g>
-<g><title>Light-medium crude — petroleum-crude.product.light-medium.onshore, petroleum-crude.product.light-medium.offshore</title>
+<g><title>Light-medium crude — crude-oil.product.light-medium.onshore, crude-oil.product.light-medium.offshore</title>
 <rect x="334.0" y="37.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-offshore" x="374.0" y="45.0" width="38" height="38" style="color:#2b5788"/>
 <text x="393.0" y="100.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Light-medium</text>
 <text x="393.0" y="116.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">crude</text>
 </g>
-<g><title>Field services — petroleum-crude.service.artificial-lift, petroleum-crude.service.treating, petroleum-crude.service.produced-water, petroleum-crude.service.field-engines</title>
+<g><title>Field services — crude-oil.service.artificial-lift, crude-oil.service.treating, crude-oil.service.produced-water, crude-oil.service.field-engines</title>
 <rect x="184.0" y="165.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-pump" x="224.0" y="173.0" width="38" height="38" style="color:#3d6c48"/>
 <text x="243.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Field services</text>
 </g>
-<g><title>Heavy crude — petroleum-crude.product.heavy</title>
+<g><title>Heavy crude — crude-oil.product.heavy</title>
 <rect x="334.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-well" x="374.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
 <text x="393.0" y="236.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Heavy crude</text>
 </g>
-<g><title>Haulage and tailings — petroleum-crude.service.mine-haulage, petroleum-crude.service.tailings-disposal</title>
+<g><title>Haulage and tailings — crude-oil.service.mine-haulage, crude-oil.service.tailings-disposal</title>
 <rect x="184.0" y="293.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-truck" x="224.0" y="301.0" width="38" height="38" style="color:#3d6c48"/>
 <text x="243.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Haulage and</text>
 <text x="243.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">tailings</text>
 </g>
-<g><title>Oil sands mining — petroleum-crude.product.bitumen.mining.extraction, petroleum-crude.product.bitumen.mining.froth-treatment</title>
+<g><title>Oil sands mining — crude-oil.product.bitumen.mining.extraction, crude-oil.product.bitumen.mining.froth-treatment</title>
 <rect x="334.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-open-pit" x="374.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
 <text x="393.0" y="356.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Oil sands</text>
 <text x="393.0" y="372.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">mining</text>
 </g>
-<g><title>Steam — petroleum-crude.service.steam</title>
+<g><title>Steam — crude-oil.service.steam</title>
 <rect x="184.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-boiler" x="224.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
 <text x="243.0" y="492.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Steam</text>
 </g>
-<g><title>In-situ bitumen — petroleum-crude.product.bitumen.in-situ</title>
+<g><title>In-situ bitumen — crude-oil.product.bitumen.in-situ</title>
 <rect x="334.0" y="421.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-oil-sands" x="374.0" y="429.0" width="38" height="38" style="color:#2b5788"/>
 <text x="393.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">In-situ</text>
 <text x="393.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">bitumen</text>
 </g>
-<g><title>Upgrading — petroleum-crude.product.bitumen.upgrading.primary, petroleum-crude.product.bitumen.upgrading.secondary</title>
+<g><title>Upgrading — crude-oil.product.bitumen.upgrading.primary, crude-oil.product.bitumen.upgrading.secondary</title>
 <rect x="484.0" y="293.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-refinery" x="524.0" y="301.0" width="38" height="38" style="color:#2b5788"/>
 <text x="543.0" y="364.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Upgrading</text>
 </g>
-<g><title>Hydrogen supply — petroleum-crude.service.hydrogen</title>
+<g><title>Hydrogen supply — crude-oil.service.hydrogen</title>
 <rect x="484.0" y="421.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-hydrogen" x="524.0" y="429.0" width="38" height="38" style="color:#3d6c48"/>
 <text x="543.0" y="484.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Hydrogen</text>
 <text x="543.0" y="500.0" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">supply</text>
 </g>
-<g><title>Pumping — petroleum-crude.service.pumping</title>
+<g><title>Pumping — crude-oil.service.pumping</title>
 <rect x="634.0" y="37.0" width="118" height="90" rx="10" fill="#e6f2e8" stroke="#5b8f66" stroke-width="1.4"/>
 <use href="#icon-pump" x="674.0" y="45.0" width="38" height="38" style="color:#3d6c48"/>
 <text x="693.0" y="108.3" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Pumping</text>
 </g>
-<g><title>Crude pipelines — petroleum-crude.product.transmission</title>
+<g><title>Crude pipelines — crude-oil.product.transmission</title>
 <rect x="634.0" y="165.0" width="118" height="90" rx="10" fill="#e4eef9" stroke="#3d6ea5" stroke-width="1.4"/>
 <use href="#icon-pipeline" x="674.0" y="173.0" width="38" height="38" style="color:#2b5788"/>
 <text x="693.0" y="228.5" text-anchor="middle" font-size="13.5" font-weight="600" fill="#1f2a37">Crude</text>

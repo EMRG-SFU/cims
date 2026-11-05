@@ -2,9 +2,10 @@
 bibliography: references.bib
 aliases:
   - sector_transportation_passenger.html
+  - sector_transportation-passenger.html
 ---
 
-# Passenger Transportation {#sec-transportation-passenger}
+# Passenger Transportation {#sec-passenger-transportation}
 
 Passenger transportation covers how people travel: by car, transit, intercity bus and train, plane, or on foot and by bike. CIMS lets these ways of travelling compete, and within road travel it lets different kinds of vehicles compete, for example gasoline against battery-electric cars. The sector is one of Canada's largest sources of emissions. People's choices about vehicles depend on more than cost (range, ease of refuelling, size, and power all matter), so CIMS adds non-financial costs, called intangible costs, to reproduce how people actually choose.
 
@@ -12,7 +13,7 @@ Passenger transportation covers how people travel: by car, transit, intercity bu
 
 The sub-model covers urban and intercity travel by people: personal vehicles (cars and light trucks), urban transit (public bus, ferry, and light rail), intercity bus and rail, air travel between cities, and walking and cycling. Total travel demand is projected for each region, and it can shift between ways of travelling as their relative costs change.
 
-Related activities sit elsewhere: moving goods in @sec-transportation-freight; supplying fuels and electricity in the energy supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and building vehicles in @sec-light-industrial.
+Related activities sit elsewhere: moving goods in @sec-freight-transportation; supplying fuels and electricity in the energy supply sectors, including @sec-biofuels, @sec-hydrogen, and @sec-electricity; and building vehicles in @sec-light-industrial.
 
 ## Context
 
@@ -22,12 +23,12 @@ Battery-electric vehicles cost more to buy than gasoline vehicles, but cost 66â€
 
 ## Process flow
 
-@fig-transportation-passenger-process shows how the sub-model is put together. Travel demand splits into urban travel, intercity travel by land, and intercity travel by air; each draws on the vehicles or transit services that carry it; and passenger vehicles draw on powertrains, the engine or motor and fuel system that moves the vehicle. The chart shows structure only: the fuels and electricity each vehicle uses are not drawn, because the competition between vehicles decides them.
+@fig-passenger-transportation-process shows how the sub-model is put together. Travel demand splits into urban travel, intercity travel by land, and intercity travel by air; each draws on the vehicles or transit services that carry it; and passenger vehicles draw on powertrains, the engine or motor and fuel system that moves the vehicle. The chart shows structure only: the fuels and electricity each vehicle uses are not drawn, because the competition between vehicles decides them.
 
-::: {#fig-transportation-passenger-process}
-![](images/flowcharts/transportation-passenger_process-flow_light.svg){.light-content .lightbox group="transportation-passenger-light"}
+::: {#fig-passenger-transportation-process}
+![](images/flowcharts/passenger-transportation_process-flow_light.svg){.light-content .lightbox group="passenger-transportation-light"}
 
-![](images/flowcharts/transportation-passenger_process-flow_dark.svg){.dark-content .lightbox group="transportation-passenger-dark"}
+![](images/flowcharts/passenger-transportation_process-flow_dark.svg){.dark-content .lightbox group="passenger-transportation-dark"}
 
 Process flow of the passenger transportation sector. Travel demand by way of travelling makes up the Product sub-tree, and vehicles, transit, and powertrains make up the Service sub-tree.
 :::

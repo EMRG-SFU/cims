@@ -1,33 +1,33 @@
 # Oil sands process flowchart (sub-sector of crude oil). See appendix_figure-style.qmd for the format.
-sector: petroleum-crude_oil-sands
+sector: crude-oil_oil-sands
 title: Oil sands
 
 nodes:
   # mining route
   - {id: haulage, label: Mine haulage, icon: truck, role: service, at: [0, 0],
-     branch: petroleum-crude.service.mine-haulage}
+     branch: crude-oil.service.mine-haulage}
   - {id: extraction, label: Bitumen extraction, icon: separator, role: process, at: [1, 0],
-     branch: petroleum-crude.product.bitumen.mining.extraction}
+     branch: crude-oil.product.bitumen.mining.extraction}
   - {id: froth, label: Froth treatment, icon: separator, role: process, at: [2, 0],
-     branch: petroleum-crude.product.bitumen.mining.froth-treatment}
+     branch: crude-oil.product.bitumen.mining.froth-treatment}
   - {id: tailings, label: Tailings, icon: tailings, role: service, at: [1, 1],
-     branch: petroleum-crude.service.tailings-disposal}
+     branch: crude-oil.service.tailings-disposal}
 
   # in-situ route
   - {id: steam, label: Steam, icon: boiler, role: service, at: [0, 2],
-     branch: petroleum-crude.service.steam}
+     branch: crude-oil.service.steam}
   - {id: water, label: Produced water, icon: water, role: service, at: [0, 3],
-     branch: petroleum-crude.service.produced-water}
+     branch: crude-oil.service.produced-water}
   - {id: in-situ, label: In-situ recovery, icon: oil-sands, role: process, at: [1, 2],
-     branch: petroleum-crude.product.bitumen.in-situ}
+     branch: crude-oil.product.bitumen.in-situ}
 
   # upgrading
   - {id: primary, label: Primary upgrading, icon: refinery, role: process, at: [3, 0.5],
-     branch: petroleum-crude.product.bitumen.upgrading.primary}
+     branch: crude-oil.product.bitumen.upgrading.primary}
   - {id: secondary, label: Secondary upgrading, icon: reactor, role: process, at: [4, 0.5],
-     branch: petroleum-crude.product.bitumen.upgrading.secondary}
+     branch: crude-oil.product.bitumen.upgrading.secondary}
   - {id: hydrogen, label: Hydrogen supply, icon: hydrogen, role: service, at: [4, 1.5],
-     branch: petroleum-crude.service.hydrogen}
+     branch: crude-oil.service.hydrogen}
   - {id: sco, label: Synthetic crude, icon: liquid-fuel, role: output, at: [5, 0.5]}
   - {id: dilbit, label: Diluted bitumen, icon: liquid-fuel, role: output, at: [5, 2]}
 

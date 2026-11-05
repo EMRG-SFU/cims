@@ -24,7 +24,7 @@ It also covers synthetic fuels: plants that make liquid fuels from other carbon 
 
 Several related activities sit elsewhere in CIMS:
 
-- Producing crude oil and bitumen, including upgrading bitumen in the oil sands, is covered in @sec-petroleum-crude.
+- Producing crude oil and bitumen, including upgrading bitumen in the oil sands, is covered in @sec-crude-oil.
 - Natural gas processing is covered in @sec-natural-gas.
 - Petrochemicals made from refinery streams are covered in [Chemicals](sector_chemicals.qmd).
 - Burning the finished fuels counts in the sectors that use them.

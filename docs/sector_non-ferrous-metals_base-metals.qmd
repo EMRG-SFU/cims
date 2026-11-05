@@ -2,18 +2,20 @@
 bibliography:
   - references.bib
   - tech-data_references.bib
+aliases:
+  - sector_metal-smelting_base-metals.html
 ---
 
-# Base Metals, Magnesium, and Titanium Slag {#sec-metal-smelting-base-metals}
+# Base Metals, Magnesium, and Titanium Slag {#sec-non-ferrous-metals-base-metals}
 
-This chapter covers the non-ferrous metal chains other than aluminium. Copper, nickel, lead, and zinc share the same process steps, while magnesium and titanium slag have chains of their own. See @sec-metal-smelting for the sector's scope, context, and shared services.
+This chapter covers the non-ferrous metal chains other than aluminium. Copper, nickel, lead, and zinc share the same process steps, while magnesium and titanium slag have chains of their own. See @sec-non-ferrous-metals for the sector's scope, context, and shared services.
 
 ## Process flow
 
-::: {#fig-metal-smelting-base-metals-process}
-![](images/flowcharts/metal-smelting_base-metals_process-flow_light.svg){.light-content .lightbox group="base-metals-light"}
+::: {#fig-non-ferrous-metals-base-metals-process}
+![](images/flowcharts/non-ferrous-metals_base-metals_process-flow_light.svg){.light-content .lightbox group="base-metals-light"}
 
-![](images/flowcharts/metal-smelting_base-metals_process-flow_dark.svg){.dark-content .lightbox group="base-metals-dark"}
+![](images/flowcharts/non-ferrous-metals_base-metals_process-flow_dark.svg){.dark-content .lightbox group="base-metals-dark"}
 
 Process flow of base-metal, magnesium, and titanium-slag production. Sulphide concentrates take either the high-temperature route (smelting, converting, and refining) or, after roasting where needed, the water-based route (leaching and electrowinning). Most metals are then melted and cast.
 :::
@@ -44,10 +46,10 @@ Roasting heats sulphide concentrate in air, below its melting point, so that oxy
 
 ::: {.panel-tabset}
 #### Zinc
-{{< include _technology-blocks/metal-smelting/product_zinc_pyrometallurgy_roasting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_zinc_pyrometallurgy_roasting.md >}}
 
 #### Lead
-{{< include _technology-blocks/metal-smelting/product_lead_pyrometallurgy_roasting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_lead_pyrometallurgy_roasting.md >}}
 :::
 
 ### Smelting
@@ -56,13 +58,13 @@ Smelting melts the concentrate at around 1,200 °C. Most of the iron combines wi
 
 ::: {.panel-tabset}
 #### Copper
-{{< include _technology-blocks/metal-smelting/product_copper_pyrometallurgy_smelting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_copper_pyrometallurgy_smelting.md >}}
 
 #### Nickel
-{{< include _technology-blocks/metal-smelting/product_nickel_pyrometallurgy_smelting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_nickel_pyrometallurgy_smelting.md >}}
 
 #### Lead
-{{< include _technology-blocks/metal-smelting/product_lead_pyrometallurgy_smelting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_lead_pyrometallurgy_smelting.md >}}
 :::
 
 ### Converting
@@ -71,10 +73,10 @@ Converting blows air or oxygen through the molten matte to burn out the remainin
 
 ::: {.panel-tabset}
 #### Copper
-{{< include _technology-blocks/metal-smelting/product_copper_pyrometallurgy_converting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_copper_pyrometallurgy_converting.md >}}
 
 #### Nickel
-{{< include _technology-blocks/metal-smelting/product_nickel_pyrometallurgy_converting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_nickel_pyrometallurgy_converting.md >}}
 :::
 
 ### Refining
@@ -83,13 +85,13 @@ Refining turns blister or crude metal into marketable metal. Copper is cast into
 
 ::: {.panel-tabset}
 #### Copper
-{{< include _technology-blocks/metal-smelting/product_copper_pyrometallurgy_refining.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_copper_pyrometallurgy_refining.md >}}
 
 #### Nickel
-{{< include _technology-blocks/metal-smelting/product_nickel_pyrometallurgy_refining.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_nickel_pyrometallurgy_refining.md >}}
 
 #### Lead
-{{< include _technology-blocks/metal-smelting/product_lead_pyrometallurgy_refining.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_lead_pyrometallurgy_refining.md >}}
 :::
 
 ### Leaching and electrowinning
@@ -98,13 +100,13 @@ The water-based route dissolves the metal out of ore or roasted concentrate with
 
 ::: {.panel-tabset}
 #### Copper
-{{< include _technology-blocks/metal-smelting/product_copper_hydrometallurgy.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_copper_hydrometallurgy.md >}}
 
 #### Nickel
-{{< include _technology-blocks/metal-smelting/product_nickel_hydrometallurgy.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_nickel_hydrometallurgy.md >}}
 
 #### Zinc
-{{< include _technology-blocks/metal-smelting/product_zinc_hydrometallurgy.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_zinc_hydrometallurgy.md >}}
 :::
 
 ### Melting and casting
@@ -113,19 +115,19 @@ Refined metal, scrap, and production offcuts are melted and cast into ingots or 
 
 ::: {.panel-tabset}
 #### Copper
-{{< include _technology-blocks/metal-smelting/product_copper_melt-cast.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_copper_melt-cast.md >}}
 
 #### Nickel
-{{< include _technology-blocks/metal-smelting/product_nickel_melt-cast.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_nickel_melt-cast.md >}}
 
 #### Lead
-{{< include _technology-blocks/metal-smelting/product_lead_melt-cast.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_lead_melt-cast.md >}}
 
 #### Zinc
-{{< include _technology-blocks/metal-smelting/product_zinc_melt-cast.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_zinc_melt-cast.md >}}
 
 #### Magnesium
-{{< include _technology-blocks/metal-smelting/product_magnesium_melt-cast.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_magnesium_melt-cast.md >}}
 :::
 
 ### Oxygen and the acid plant
@@ -136,11 +138,11 @@ The **acid plant** cleans the sulphur dioxide from smelting, converting, and roa
 
 **Oxygen**
 
-{{< include _technology-blocks/metal-smelting/service_oxygen.md >}}
+{{< include _technology-blocks/non-ferrous-metals/service_oxygen.md >}}
 
 **Acid plant**
 
-{{< include _technology-blocks/metal-smelting/service_acid-plant.md >}}
+{{< include _technology-blocks/non-ferrous-metals/service_acid-plant.md >}}
 
 ### Magnesium
 
@@ -148,11 +150,11 @@ Primary magnesium comes from one of two routes. Electrolysis splits molten magne
 
 **Electrolysis**
 
-{{< include _technology-blocks/metal-smelting/product_magnesium_electrolysis.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_magnesium_electrolysis.md >}}
 
 **Thermal reduction**
 
-{{< include _technology-blocks/metal-smelting/product_magnesium_thermal-reduction.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_magnesium_thermal-reduction.md >}}
 
 ### Titanium slag
 
@@ -160,17 +162,17 @@ Electric furnaces smelt ilmenite, an iron-titanium oxide, with a carbon reductan
 
 **Pre-reduction**
 
-{{< include _technology-blocks/metal-smelting/product_titanium-slag_pyrometallurgy_roasting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_titanium-slag_pyrometallurgy_roasting.md >}}
 
 **Electric smelting**
 
-{{< include _technology-blocks/metal-smelting/product_titanium-slag_pyrometallurgy_smelting.md >}}
+{{< include _technology-blocks/non-ferrous-metals/product_titanium-slag_pyrometallurgy_smelting.md >}}
 
 ## Decarbonisation
 
 - **Base metals.** Smelting with oxygen-enriched air, and continuous converting, cut fuel per tonne and let waste-heat boilers recover more of the off-gas heat. The water-based route avoids high-temperature smelting where the ore suits it, and electrolytic smelting is an earlier-stage alternative to fuel-fired smelting. Induction and immersion furnaces electrify melting.
 - **Titanium slag.** Biocarbon replaces fossil carbon in the furnace charge.
-- **Magnesium.** The main lever, replacing the SF₆ cover gas, is not yet represented (see @sec-metal-smelting).
+- **Magnesium.** The main lever, replacing the SF₆ cover gas, is not yet represented (see @sec-non-ferrous-metals).
 
 {{< pagebreak >}}
 
