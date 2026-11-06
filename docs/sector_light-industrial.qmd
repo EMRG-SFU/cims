@@ -56,6 +56,8 @@ Process heat is split by the job it does, so that a technology suited to one job
 
 **Drying and curing** covers spray, drum, belt, and grain dryers, lumber kilns, and the ovens that cure paint and coatings. Most dryers today burn gas or wood residue to heat air that carries the moisture away, and much of that heat leaves with the exhaust. Heat-pump lumber kilns recover heat from the moist air and reuse it [@minea_2012_001], superheated-steam dryers recover the evaporated water as useful steam, and infrared or ultraviolet curing heats only the coating.
 
+The drying node's technologies have different product units (tonnes of dried product, lumber, or coated parts), and the energy per tonne varies roughly thirtyfold with the moisture removed. So, as for the other light industrial heat nodes, CIMS compares them per GJ of process heat delivered, using each technology's process-heat efficiency. Every drying technology, including the lumber kilns and the ultraviolet curer, now has one; the heat-pump lumber kiln's is 250 %.
+
 {{< include _technology-blocks/light-industrial/service_heat_drying.md >}}
 
 **Baking, frying, and roasting** covers the ovens, fryers, and roasters of food processing. Electric versions replace burners with heating elements [@element-energy_2021_001].
@@ -66,7 +68,7 @@ Process heat is split by the job it does, so that a technology suited to one job
 
 {{< include _technology-blocks/light-industrial/service_heat_forming-pressing.md >}}
 
-**Metal melting** covers foundry melting in fabricated metals, machinery, and transportation equipment. Coke-fired cupolas and gas-fired furnaces compete with electric arc and induction furnaces, which melt metal with electricity alone.
+**Metal melting** covers foundry melting in fabricated metals, machinery, and transportation equipment. Coke-fired cupolas and gas-fired furnaces compete with electric arc and induction furnaces, which melt metal with electricity alone. The gas-fired reverberatory furnace is the host for the regenerative and oxy-fuel furnace, so the efficient furnace has a base to improve on. The node counts its output in tonnes of metal.
 
 {{< include _technology-blocks/light-industrial/service_heat_metal-melting.md >}}
 
@@ -82,13 +84,13 @@ Steam serves the process-heating and cleaning jobs that run on a site boiler and
 
 ### Refrigeration
 
-Refrigeration covers chilling, freezing, and cold storage. Most plants use vapour-compression systems, in which an electric compressor drives a refrigerant (often ammonia or CO₂ in food plants) around a loop that pulls heat out of the cold space. High-efficiency chillers use variable-speed or magnetic-bearing compressors, free cooling uses cold outdoor air when it is available, and absorption chillers run on waste heat or steam instead of electricity [@etsap_2013_002].
+Refrigeration covers chilling, freezing, and cold storage. Most plants use vapour-compression systems, in which an electric compressor drives a refrigerant (often ammonia or CO₂ in food plants) around a loop that pulls heat out of the cold space. High-efficiency chillers use variable-speed or magnetic-bearing compressors, and absorption chillers run on waste heat or steam instead of electricity [@etsap_2013_002]. Free cooling, which uses cold outdoor air when it is available, delivers building cooling, so it competes in HVAC cooling (@sec-hvac-lighting) rather than in process refrigeration.
 
 {{< include _technology-blocks/light-industrial/service_refrigeration.md >}}
 
 ### Machine drive
 
-Unlike the other industrial sectors, light industrial has a single machine drive service rather than the five end uses described in @sec-machine-drive, and only motors compete there.
+Unlike the other industrial sectors, light industrial has a single machine drive service rather than the five end uses described in @sec-machine-drive, and only motors compete there. A variable-speed drive uses about 0.82 GJ per GJ of the shaft work a fixed-speed motor would deliver, a system saving of about 25 % (see @sec-machine-drive).
 
 {{< include _technology-blocks/light-industrial/service_machine-drive.md >}}
 
@@ -109,7 +111,7 @@ All of the sector's emissions come from burning fuel, so electrification, fuel s
 - **Electric heat.** Industrial heat pumps can supply heat up to about 120–150 °C, delivering three and a half to four units of heat for each unit of electricity, which makes them a strong option wherever the grid is clean [@aceee-ihp; @arpagaus]. Electric ovens and dryers, electromagnetic food heating, induction melting and reheating, and electric boilers cover the jobs heat pumps can't reach.
 - **Processes that need less heat.** Ultra-high-temperature and high-pressure processing, heat-pump lumber kilns, and infrared or ultraviolet curing cut the heat a process needs in the first place.
 - **Low-carbon fuels.** Biomass and wood residues, biogas from food waste, and hydrogen in the methane blend can replace the fossil fuel that remains.
-- **Efficiency.** Efficient motors and drives, high-efficiency chillers and free cooling, LED lighting, and heat recovery on cleaning systems cut the rest.
+- **Efficiency.** Efficient motors and drives, high-efficiency chillers, free cooling of buildings, LED lighting, and heat recovery on cleaning systems cut the rest.
 
 ## Regional coverage and differences
 

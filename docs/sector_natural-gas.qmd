@@ -73,6 +73,8 @@ The model splits the sector into two parts. The production chain covers **supply
 - **Treating** separates water and liquids from the gas and heats the flow so it doesn't freeze in the lines.
 - **Field vehicles and equipment** carry crews and materials and run work equipment around the field.
 
+The line heaters and artificial-lift pumps are counted per m³ of crude oil, because they also serve the crude oil nodes. On the gas nodes, a CIMS input factor converts them by energy content, at about 1.03 thousand m³ of gas per m³ of oil.
+
 **Artificial lift**
 
 {{< include _technology-blocks/natural-gas/service_artificial-lift.md >}}
@@ -123,7 +125,7 @@ Raw gas from the well is not ready for a pipeline. Gas plants clean it in severa
 
 ### Transmission and distribution
 
-**Transmission** pipelines move gas long distances at high pressure. Gas loses pressure as it flows, so compressor stations along the line push it onward. **Distribution** networks take gas from city gates and deliver it to homes and businesses at lower pressure. At each pressure drop, the gas can drive a turboexpander and generate electricity instead of simply passing through a valve. The pipelines' compression comes from the compressor-drive services, which also serve gathering and processing [@etsap_2011_001].
+**Transmission** pipelines move gas long distances at high pressure. Gas loses pressure as it flows, so compressor stations along the line push it onward. **Distribution** networks take gas from city gates and deliver it to homes and businesses at lower pressure. At each pressure drop, the gas can drive a turboexpander and generate electricity instead of simply passing through a valve. The let-down options no longer compete with the pipeline on the transmission node, since they do not move gas. The turboexpander's electricity is recorded as an output flow, which CIMS treats as a negative electricity request. The pipelines' compression comes from the compressor-drive services, which also serve gathering and processing [@etsap_2011_001].
 
 **Transmission**
 
@@ -172,9 +174,9 @@ Alberta and British Columbia produce most of Canada's gas, and so hold most of t
 
 ## Limitations and planned extensions
 
-<mark>TODO: The sulphur-recovery technology is per tonne of sulphur, but the processing nodes provide cubic metres of gas; converting needs the hydrogen sulphide content per cubic metre, which no source gives. Similarly, the sweetening technologies are per cubic metre of gas processed, while the formation-CO₂ node provides tonnes of CO₂.</mark>
+<mark>TODO: The sulphur-recovery technology is per tonne of sulphur, but the processing nodes provide cubic metres of gas; converting needs the hydrogen sulphide content per cubic metre, which no source gives.</mark>
 
-<mark>TODO: The turboexpander at pressure let-down produces electricity as its main product; in CIMS it would be a negative electricity request on a let-down step rather than a provider of gas transport.</mark>
+The sweetening technologies are shown per tonne of formation CO₂, to match the formation-CO₂ node, using a judgement value of about 0.05 t of CO₂ per 1,000 m³ of gas processed.
 
 <mark>TODO: Build out the LNG export chain and replace the illustrative figures in this chapter with values from the model input files.</mark>
 

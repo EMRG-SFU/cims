@@ -57,7 +57,7 @@ Coke is coal baked without air at around 1,100 °C, until the gases and tars are
 
 ### Sintering and pelletizing
 
-A blast furnace needs lumps of ore that let gas flow through them, but much mined ore is fine powder. Sintering heats ore fines with limestone and coke on a moving grate until they fuse into a porous cake. Pelletizing rolls fine concentrate into balls and bakes them hard. Both burn fuel, and sinter plants are a large source of the mill's CO₂ and air pollutants.
+A blast furnace needs lumps of ore that let gas flow through them, but much mined ore is fine powder. Sintering heats ore fines with limestone and coke on a moving grate until they fuse into a porous cake. Pelletizing rolls fine concentrate into balls and bakes them hard. Both burn fuel, and sinter plants are a large source of the mill's CO₂ and air pollutants. Canadian blast furnaces run mostly on fluxed pellets made at the iron ore mines (@sec-mining), so a blast furnace buys about 1.45 t of pellets and only about 0.1 t of sinter, from recycled fines and dust, per tonne of iron. This service therefore holds the sinter plants, and pellet plants sit with mining.
 
 {{< include _technology-blocks/iron-and-steel/service_agglomeration.md >}}
 
@@ -83,8 +83,8 @@ Direct reduction removes oxygen from iron ore pellets without melting them. A ga
 Steelmaking turns hot metal, DRI, and scrap into liquid steel with the right chemistry.
 
 - A **basic oxygen furnace** blows pure oxygen into hot metal to burn off its excess carbon. The reaction gives off so much heat that the furnace can melt some scrap without any added fuel.
-- An **electric arc furnace** melts scrap, DRI, or both with a powerful electric arc between graphite electrodes, helped by burners and injected oxygen and carbon [@bataille_2021_001]. Preheating the scrap with the furnace's hot exhaust saves electricity.
-- A whole-plant hydrogen route bundles electrolysers, a hydrogen shaft furnace, and an electric arc furnace into one technology.
+- An **electric arc furnace** melts scrap, DRI, or both with a powerful electric arc between graphite electrodes, helped by burners and injected oxygen and carbon [@bataille_2021_001]. Preheating the scrap with the furnace's hot exhaust saves electricity. CIMS offers two arc furnaces, split by what they melt: one charged mostly with scrap, and one charged mostly with DRI, which uses more electricity because the ore's leftover rock and unreduced iron must be melted off as slag. The DRI-charged furnace buys about 1.0 t of DRI per tonne of steel from the direct-reduction service.
+- The hydrogen route reaches the model as hydrogen direct reduction feeding the DRI-charged arc furnace, with the hydrogen bought from the Hydrogen sector. A whole plant that bundles electrolysers, a hydrogen shaft furnace, and an arc furnace is kept in the technology database only as a reference to check the chain against, so the route isn't offered twice.
 
 Steelmaking also calls on two site services. **Oxygen** comes from an air separation plant that cools air until it liquefies and then separates its gases. **Ladle preheating and refining** heats the large vessels (ladles) that carry liquid steel, and adjusts the steel's temperature and chemistry with an electric arc before it goes to the caster.
 
@@ -189,7 +189,7 @@ Every region is built from the same structure and carries no production where th
 
 <mark>TODO: The hierarchy now competes the BOF and EAF at the molten-steel node rather than splitting steel exogenously between integrated and recycled routes. Consider a scrap-supply constraint so that EAF growth is limited by domestic and imported scrap availability.</mark>
 
-<mark>TODO: The hydrogen direct-reduction technology excludes hydrogen production; check how the model supplies its hydrogen (the Hydrogen sector or the methane blend) so the route reflects hydrogen cost and availability.</mark>
+<mark>TODO: The hydrogen direct-reduction technology buys about 7 GJ of hydrogen per tonne of DRI and excludes hydrogen production; link that request to the Hydrogen sector (@sec-hydrogen) in the regional input files so the route reflects hydrogen cost and availability. The DRI-charged arc furnace was split from the arc furnace ahead of the CIMS model inputs.</mark>
 
 <mark>TODO: Populate the foundry branch in the regional input files, and benchmark modelled iron and steel energy use and emissions against CIEEDAC, the National Inventory Report, and Natural Resources Canada data.</mark>
 

@@ -53,13 +53,13 @@ The model splits the sector into two parts. The production chain holds explorati
 
 ### Exploration and drilling
 
-**Exploration and drilling** covers the rigs and engines that drill and test new wells. A rig turns the drill bit, pumps drilling mud to carry rock cuttings out of the hole, and powers the work camp.
+**Exploration and drilling** covers the rigs and engines that drill and test new wells. A rig turns the drill bit, pumps drilling mud to carry rock cuttings out of the hole, and powers the work camp. Diesel, battery-hybrid, and electric rigs compete on this node. The dual-fuel engine kit is costed as a whole rig plus the kit, so it competes on the same footing as the other rigs.
 
 {{< include _technology-blocks/crude-oil/product_exploration.md >}}
 
 ### Well completion
 
-**Completion** prepares a drilled well to produce. For tight oil, that means hydraulic fracturing: pumping water, sand, and chemicals into the rock at very high pressure to open cracks the oil can flow through. Nearly all the energy goes to the fracturing fleet's large pumps, which run on diesel engines, on engines that burn a mix of diesel and natural gas, or on electric motors.
+**Completion** prepares a drilled well to produce. For tight oil, that means hydraulic fracturing: pumping water, sand, and chemicals into the rock at very high pressure to open cracks the oil can flow through. Nearly all the energy goes to the fracturing fleet's large pumps, which run on diesel engines, on engines that burn a mix of diesel and natural gas, or on electric motors. All three fleets have a 15-year life, so each has a levelized cost.
 
 {{< include _technology-blocks/crude-oil/product_completion.md >}}
 

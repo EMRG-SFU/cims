@@ -83,7 +83,11 @@ These steps pull the valuable mineral out of the ground rock.
 
 - **Separation** concentrates the mineral by flotation, where chemicals and air bubbles carry mineral grains to the surface of a tank, or by gravity and magnetic methods, which suit iron ore.
 - **Leaching** dissolves the metal out of the ore with an acid or other solution, in heaps, in tanks, in high-pressure vessels, or in the orebody itself. The metal is then recovered from the solution, usually by electricity in a process called electrowinning.
+
+  Copper, nickel, and uranium tonnes are not one product, so each leaching technology has one home. Uranium in-situ recovery sits on the mining leaching node, with electricity and natural gas as its carriers. Copper heap leaching (with solvent extraction and electrowinning, since it makes cathode) sits on copper hydrometallurgy, and high-pressure acid leaching sits on nickel hydrometallurgy; both are described in @sec-non-ferrous-metals.
 - **Crystallization** recovers potassium chloride at a potash mill. A conventional mill floats the potash away from the salt and clay; a solution mine evaporates the brine to grow potash crystals, which takes a lot of heat.
+
+Direct lithium extraction by adsorption from brine is kept as a reference technology, off the separation node. It needs no mining or milling, so it does not compete per tonne of concentrate with flotation.
 
 **Separation**
 
@@ -117,7 +121,7 @@ Tailings are the finely ground waste left after separation. Most mines pump them
 
 ### On-site power
 
-Mining is the only sector with its own **on-site power** service, for mines that make their own electricity because they are off the grid. Diesel and gas generators compete there with solar, wind, and storage, waste-heat power, and small nuclear reactors. The technologies are listed in @sec-cogen.
+Mining is the only sector with its own **on-site power** service, for mines that make their own electricity because they are off the grid. Diesel and gas generators compete there with solar, wind, and storage, waste-heat power, and small nuclear reactors. There is no separate diesel genset: the simple-cycle combustion turbine covers diesel gensets through its diesel carrier. The technologies are listed in @sec-cogen.
 
 ### Shared services
 

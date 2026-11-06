@@ -36,11 +36,11 @@ Process flow of the Hydrogen sector. The energy and feedstock depend on the prod
 
 ### Hydrogen production
 
-The **Hydrogen Production** step is a single competition among ways of making hydrogen at large central plants. The plants serve many buyers, so their emissions and capture costs belong to this sector rather than to the users.
+The **Hydrogen Production** step is a single competition among ways of making hydrogen at large central plants. The plants serve many buyers, so their emissions and capture costs belong to this sector rather than to the users. Calibrate this node to merchant hydrogen supply, not to total Canadian hydrogen output: captive hydrogen made inside ammonia and methanol plants, refineries, and upgraders is already counted in those sectors.
 
-- **Reforming natural gas.** A steam methane reformer heats natural gas with steam over a catalyst to make a gas rich in hydrogen and carbon monoxide. A second step, the shift reaction, turns the carbon monoxide and more steam into extra hydrogen and CO₂. The reformer burns more gas to supply the heat. The CO₂ from the shift is concentrated and easy to capture; the CO₂ in the furnace's exhaust is dilute and costs more to capture [@collodi_2010_001]. An autothermal reformer instead burns part of the gas with pure oxygen inside the reactor, so almost all its CO₂ ends up in one concentrated stream, which suits capturing nearly all of it.
+- **Reforming natural gas.** A steam methane reformer heats natural gas with steam over a catalyst to make a gas rich in hydrogen and carbon monoxide. A second step, the shift reaction, turns the carbon monoxide and more steam into extra hydrogen and CO₂. The reformer burns more gas to supply the heat. The CO₂ from the shift is concentrated and easy to capture; the CO₂ in the furnace's exhaust is dilute and costs more to capture [@collodi_2010_001]. An autothermal reformer instead burns part of the gas with pure oxygen inside the reactor, so almost all its CO₂ ends up in one concentrated stream, which suits capturing nearly all of it. Because it makes its own heat from the feed, it buys no heat: it uses about 0.32 GJ of energy per GJ of hydrogen on top of the gas that ends up in the hydrogen.
 - **Gasification.** A gasifier heats coal, petroleum coke, biomass, or waste with limited oxygen and steam to make a hydrogen-rich gas. Gasifying biomass and capturing the CO₂ can give hydrogen with net-negative emissions.
-- **Methane pyrolysis.** Heating methane without oxygen splits it into hydrogen and solid carbon. It releases no CO₂, so it needs no CO₂ storage.
+- **Methane pyrolysis.** Heating methane without oxygen splits it into hydrogen and solid carbon. It releases no CO₂, so it needs no CO₂ storage. The methane carbon that leaves as carbon black is counted as feedstock, not energy use: about 0.69 GJ per GJ of hydrogen, so the technology's energy use is about 0.50 GJ/GJ.
 - **Electrolysis.** An electrolyser uses electricity to split water into hydrogen and oxygen. Its emissions are those of the electricity it uses. High-temperature (solid-oxide) electrolysers use steam and need less electricity.
 
 Routes that capture CO₂ request the sector's capture service for the concentrated stream.
@@ -50,6 +50,8 @@ Routes that capture CO₂ request the sector's capture service for the concentra
 ### Distribution and storage
 
 Hydrogen from a central plant has to be delivered. Compressors push it through dedicated pipelines to large users; where there is no pipeline, it can be cooled until it turns liquid and trucked, which takes a lot of electricity. Small amounts can be blended into the natural gas network. Salt caverns can store large volumes underground to balance supply and demand. Delivery costs are what set central production apart from making hydrogen where it is used [@anl_2025_001].
+
+The distribution node competes options per GJ of hydrogen delivered, so only pipelines and liquefaction compete there. Salt-cavern storage delivers no hydrogen, and blending delivers a methane blend, so both are kept as reference technologies in the technology database, off the node.
 
 {{< include _technology-blocks/hydrogen/service_distribution.md >}}
 

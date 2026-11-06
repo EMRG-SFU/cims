@@ -42,7 +42,9 @@ The technology lists below appear once for each metal, in the order of the flowc
 
 ### Roasting
 
-Roasting heats sulphide concentrate in air, below its melting point, so that oxygen replaces the sulphur and turns the sulphide into an oxide. Lead oxide then goes on to smelting, and zinc oxide to leaching. The reaction itself gives off heat, so a roaster needs little added fuel once it is running. Its off-gas, rich in sulphur dioxide, goes to the acid plant.
+Roasting heats sulphide concentrate in air, below its melting point, so that oxygen replaces the sulphur and turns the sulphide into an oxide. Lead oxide then goes on to smelting, and zinc oxide to leaching. The reaction itself gives off heat, so a roaster needs little added fuel once it is running. Its off-gas, rich in sulphur dioxide, goes to the acid plant. Because roasting is exothermic, the generic fuel-fired heater is no longer offered on the lead and zinc roasting nodes.
+
+<mark>TODO: The technology database has no roaster technology, so the zinc roaster's request to the acid plant is not yet added.</mark>
 
 ::: {.panel-tabset}
 #### Zinc
@@ -55,6 +57,8 @@ Roasting heats sulphide concentrate in air, below its melting point, so that oxy
 ### Smelting
 
 Smelting melts the concentrate at around 1,200 °C. Most of the iron combines with silica to form a molten slag that floats off, and the copper or nickel collects in a heavier molten layer called matte, a mix of metal and the remaining sulphur. For lead, smelting reduces the oxide to crude metal. Modern flash and bath smelters blow oxygen-enriched air into the furnace, so that burning the sulphur in the concentrate supplies much of the heat and less fuel is needed [@coursol_2015_001; @schlesinger_2011_001]. The off-gas goes to the **acid plant**, and the oxygen comes from the **oxygen** service.
+
+The flash smelters and the Noranda reactor are copper and nickel matte smelters, so they are no longer offered for lead. Lead smelting keeps the top-submerged lance and bottom-blowing furnaces. The lance furnace keeps the copper furnace-section values (a 2026-10-28 ruling), and the coke that reduces lead oxide is not yet added as a reductant.
 
 ::: {.panel-tabset}
 #### Copper
@@ -69,7 +73,7 @@ Smelting melts the concentrate at around 1,200 °C. Most of the iron combines wi
 
 ### Converting
 
-Converting blows air or oxygen through the molten matte to burn out the remaining iron and sulphur, leaving blister copper (about 99 % pure) or a nickel-rich matte. The traditional Peirce-Smith converter is a batch vessel that is filled and emptied with ladles, letting sulphur-laden gas escape each time. Continuous converters keep the gas contained, which makes it easier to capture the sulphur and recover the heat [@schlesinger_2011_001].
+Converting blows air or oxygen through the molten matte to burn out the remaining iron and sulphur, leaving blister copper (about 99 % pure) or a nickel-rich matte. The traditional Peirce-Smith converter is a batch vessel that is filled and emptied with ladles, letting sulphur-laden gas escape each time. Continuous converters keep the gas contained, which makes it easier to capture the sulphur and recover the heat [@schlesinger_2011_001]. Copper and nickel converting share the same values; on the nickel rows, the CIMS input label names the product as Bessemer matte rather than blister copper.
 
 ::: {.panel-tabset}
 #### Copper
@@ -81,7 +85,9 @@ Converting blows air or oxygen through the molten matte to burn out the remainin
 
 ### Refining
 
-Refining turns blister or crude metal into marketable metal. Copper is cast into anodes and refined electrically: in a tankhouse, pure copper plates onto cathodes while impurities fall to the bottom. Nickel matte goes to a refinery that separates the nickel, cobalt, and precious metals. Lead is refined by heating it and removing impurities in stages.
+Refining turns blister or crude metal into marketable metal. Copper is cast into anodes and refined electrically: in a tankhouse, pure copper plates onto cathodes while impurities fall to the bottom. Nickel matte goes to a refinery that separates the nickel, cobalt, and precious metals. Lead is refined by heating it and removing impurities in stages. The fired heater on lead refining carries about 0.75 GJ per tonne of lead, recorded as a CIMS input factor.
+
+<mark>TODO: Copper fire refining (about 1–1.5 GJ of gas per tonne), between converting and electrorefining, has no technology in the database yet.</mark>
 
 ::: {.panel-tabset}
 #### Copper
@@ -98,6 +104,8 @@ Refining turns blister or crude metal into marketable metal. Copper is cast into
 
 The water-based route dissolves the metal out of ore or roasted concentrate with acid, sometimes in heaps open to the air and sometimes in pressurized vessels. Solvent extraction then transfers the metal into a clean solution, and electrowinning plates it out as pure metal on cathodes. The route uses more electricity than smelting, mostly for electrowinning, but it avoids high-temperature fuel use and sulphur dioxide [@schlesinger_2011_001].
 
+Each leaching technology now has one home, because copper and nickel tonnes are not one product. Heap leaching, with solvent extraction and electrowinning, sits on copper only, since it makes cathode. High-pressure acid leaching of laterite sits on nickel only; it buys about 35 GJ of steam and about 25 t of sulphuric acid per tonne of nickel (0.3 t of acid per tonne of ore, at 0.0118 t of nickel per tonne of ore). Neither is offered for zinc, which keeps its roast-leach-electrowin route. Advanced electrowinning anodes are offered on copper only, at about 5 % above the copper host's capital cost. Uranium in-situ recovery sits with mining (@sec-mining).
+
 ::: {.panel-tabset}
 #### Copper
 {{< include _technology-blocks/non-ferrous-metals/product_copper_hydrometallurgy.md >}}
@@ -112,6 +120,8 @@ The water-based route dissolves the metal out of ore or roasted concentrate with
 ### Melting and casting
 
 Refined metal, scrap, and production offcuts are melted and cast into ingots or other shapes for sale. The same melting furnaces compete for every metal: fuel-fired reverberatory and rotary furnaces, more efficient regenerative and oxy-fuel furnaces, and electric induction furnaces.
+
+The furnace values come from aluminium remelting, but each metal takes a different amount of heat to melt. Each melt-cast row records a CIMS input factor that scales aluminium's melting heat: copper 0.6, nickel 0.9, magnesium 0.85, zinc 0.12, and lead 0.06. The technology tables below still show aluminium's values, because the furnaces share them with aluminium. Salt slag applies to aluminium only.
 
 ::: {.panel-tabset}
 #### Copper
@@ -146,7 +156,9 @@ The **acid plant** cleans the sulphur dioxide from smelting, converting, and roa
 
 ### Magnesium
 
-Primary magnesium comes from one of two routes. Electrolysis splits molten magnesium chloride, made from brine or serpentine rock, into magnesium and chlorine. The silicothermic route heats calcined dolomite with ferrosilicon under vacuum, so that the silicon pulls the oxygen off the magnesium; it uses much more energy. Molten magnesium is protected from burning with a cover gas, traditionally SF₆, an extremely potent greenhouse gas [@nccp_1999_002].
+Primary magnesium comes from one of two routes. Electrolysis splits molten magnesium chloride, made from brine or serpentine rock, into magnesium and chlorine. The silicothermic route heats calcined dolomite with ferrosilicon under vacuum, so that the silicon pulls the oxygen off the magnesium; it uses much more energy. Molten magnesium is protected from burning with a cover gas, traditionally SF₆, an extremely potent greenhouse gas [@nccp_1999_002]. SF₆ is a casthouse emission, so the electrolysis and silicothermic technologies no longer carry it. Instead, each asks a **cover gas** node for the SF₆ it would use: about 0.0006 t per tonne of magnesium for electrolysis and 0.00089 t for the silicothermic route [@nccp_1999_002]. Two technologies compete there, per tonne of SF₆ handled. The SF₆ cover gas releases all of it. An SF₆-free cover gas, sulphur dioxide or a fluorinated ketone in dry air, cuts the emission by about 99.5 % for a small gas-handling cost. Both carry judged values.
+
+<mark>TODO: The magnesium cover-gas node was added to the hierarchy ahead of CIMS. Add it to the regional input files, with the electrolysis and silicothermic technologies requesting it, and replace the casting SF₆ factors now in the Alberta and Ontario files.</mark>
 
 **Electrolysis**
 
@@ -158,7 +170,7 @@ Primary magnesium comes from one of two routes. Electrolysis splits molten magne
 
 ### Titanium slag
 
-Electric furnaces smelt ilmenite, an iron-titanium oxide, with a carbon reductant. The carbon removes oxygen from the iron, which settles out as molten iron, leaving a slag rich in titanium oxide for pigment makers. Pre-reducing the feed in a kiln cuts the furnace's electricity use, and biocarbon can replace fossil carbon as the reductant.
+Electric furnaces smelt ilmenite, an iron-titanium oxide, with a carbon reductant. The carbon removes oxygen from the iron, which settles out as molten iron, leaving a slag rich in titanium oxide for pigment makers. Pre-reducing the feed in a kiln cuts the furnace's electricity use, and biocarbon can replace fossil carbon as the reductant. The biogenic-carbon furnace uses charcoal (about 6.65 GJ per tonne of slag) and has no fossil CO₂. The standard furnace counts its coke as energy, as for ferroalloys.
 
 **Pre-reduction**
 
@@ -172,7 +184,7 @@ Electric furnaces smelt ilmenite, an iron-titanium oxide, with a carbon reductan
 
 - **Base metals.** Smelting with oxygen-enriched air, and continuous converting, cut fuel per tonne and let waste-heat boilers recover more of the off-gas heat. The water-based route avoids high-temperature smelting where the ore suits it, and electrolytic smelting is an earlier-stage alternative to fuel-fired smelting. Induction and immersion furnaces electrify melting.
 - **Titanium slag.** Biocarbon replaces fossil carbon in the furnace charge.
-- **Magnesium.** The main lever, replacing the SF₆ cover gas, is not yet represented (see @sec-non-ferrous-metals).
+- **Magnesium.** Replacing the SF₆ cover gas removes almost all of the sector's magnesium emission at low cost, through the SF₆-free cover gas on the cover-gas node.
 
 {{< pagebreak >}}
 

@@ -50,7 +50,7 @@ Each end use hosts a competition among drives and efficiency measures:
 
 - A standard-efficiency induction motor is the incumbent.
 - Premium-efficiency motors, including permanent-magnet and synchronous-reluctance designs, compete with it.
-- Variable-speed drives match motor speed to the load.
+- Variable-speed drives match motor speed to the load. A motor's own efficiency barely changes with a drive, so its saving would not show if CIMS read its energy use from motor efficiency. Instead, the variable-speed drive uses about 0.82 GJ of electricity per GJ of the shaft work a fixed-speed motor would deliver, a system saving of about 25 %.
 - System measures, such as repairing leaks, optimizing pressure and flow, sequencing compressors, right-sizing equipment, and trimming pump impellers, improve the whole system rather than the motor alone.
 - Engine and turbine drives, and efficiency measures on them, compete where a pump or compressor can be driven directly.
 

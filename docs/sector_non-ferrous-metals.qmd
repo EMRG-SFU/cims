@@ -53,7 +53,7 @@ Each metal has its own branch in the sector's Product sub-tree:
 
 - **Aluminium**, split into primary aluminium and recycling.
 - **Copper**, **nickel**, **lead**, and **zinc**, each split into the high-temperature route, the water-based route where it applies, and melting and casting.
-- **Magnesium**, split into electrolysis, thermal reduction, and melting and casting.
+- **Magnesium**, split into electrolysis, thermal reduction, melting and casting, and the cover gas that protects the molten metal.
 - **Titanium slag**.
 
 Three services belong to this sector alone: **anode production** for the aluminium cells, **oxygen** for the base-metal furnaces, and the smelter **acid plant**. The sector also draws on the shared services below.
@@ -82,7 +82,7 @@ Because Canadian smelting already runs largely on clean electricity, the sector'
 - **Alumina refining.** Recompressing and reusing the steam in digestion, and electric or hydrogen-fired calciners, cut the fuel that alumina refineries burn.
 - **Base-metal smelting.** Furnaces that smelt with oxygen-enriched air, and continuous converting, cut fuel use per tonne. The water-based route avoids high-temperature smelting where the ore suits it.
 - **Carbon capture.** Calciners and aluminium cells fitted with capture appear in the technology lists, and the capture equipment in @sec-ccus.
-- **Magnesium cover gas.** Replacing SF₆ with sulphur dioxide or fluorinated ketones removes almost all of this emission at low cost [@ipcc-sf6-mg]. No technology in the database represents this switch yet.
+- **Magnesium cover gas.** Replacing SF₆ with sulphur dioxide or fluorinated ketones removes almost all of this emission at low cost [@ipcc-sf6-mg]. The magnesium producers ask a cover-gas node for their SF₆, where an SF₆-free cover gas competes with it (@sec-non-ferrous-metals-base-metals).
 
 ## Regional coverage and differences
 
@@ -98,7 +98,7 @@ Each region is built from the same structure and carries no production on branch
 
 <mark>TODO: Ferroalloys and silicon metal have no node; only titanium slag represents electric smelting. A node in this sector has been requested of the hierarchy.</mark>
 
-<mark>TODO: Represent PFC emissions from aluminium anode effects explicitly (only the carbon-anode CO₂ is carried), and add an SF₆-free magnesium cover-gas technology so the magnesium emission can be abated in the model.</mark>
+<mark>TODO: Represent PFC emissions from aluminium anode effects explicitly (only the carbon-anode CO₂ is carried).</mark>
 
 <mark>TODO: The CCS nodes and the acid-plant service were added to the hierarchy ahead of the CIMS model inputs. Add them to the regional input files, with the copper smelting and converting technologies requesting about 2.5–4.0 t of sulphuric acid per tonne of copper.</mark>
 

@@ -44,7 +44,11 @@ CIMS splits coal production into three stages: getting the raw coal out (extract
 
 ### Extraction and haulage
 
-Coal comes from open-pit (surface) mines, where large machines strip away the soil and rock above the seam, and from underground mines, which cut the coal in rooms or along long faces and carry it to the surface. In CIMS, each kind of mine competes as a whole: an underground mine includes its own ventilation, hoisting, and pumping, and an open-pit mine its own pumping and overburden removal [@etsap_2014_002]. The simplified extraction option offers the same two mines.
+Coal comes from open-pit (surface) mines, where large machines strip away the soil and rock above the seam, and from underground mines, which cut the coal in rooms or along long faces and carry it to the surface. The two kinds of mine compete as whole mines only on the simplified extraction node: there an underground mine includes its own ventilation, hoisting, and pumping, and an open-pit mine its own pumping and overburden removal [@etsap_2014_002]. In the detailed chain, haulage, ventilation, and pumping are services of their own, so the extraction node keeps only the digging itself, and the whole mines are not offered there, so the services are not counted twice.
+
+The extraction node has two technologies: open-pit excavation (drilling, blasting, and loading by shovels or draglines, about 0.12 GJ per tonne of coal) and underground cutting by continuous miners or longwalls (about 0.03 GJ/t). Both are estimates in the technology database: their energy splits the whole mines' energy by the drilling, digging, and haulage shares in the US mining energy bandwidth study, and their capital cost is the whole mine's less its haulage and ventilation.
+
+<mark>TODO: Replace the estimated excavation technologies with coal-specific sources when available, and add them to the regional input files.</mark>
 
 **Mine haulage** moves coal and waste rock with trucks, loaders, and hoists, and is where most of the sector's diesel goes. As in metal mining, battery-electric, hydrogen fuel-cell, dual-fuel, and trolley-assist trucks compete with diesel trucks.
 
@@ -66,6 +70,8 @@ Underground mines blow large volumes of fresh air through their workings with bi
 
 **Methane control** decides what happens to that methane. The mine can let it escape untreated; drill boreholes to drain methane from the seam before and after mining, so it can be used as fuel or flared; or pass the ventilation air through an oxidizer, which heats it until the dilute methane breaks down into CO₂ and water [@iea_2026_004; @epa_2019_001]. Because methane traps far more heat than CO₂ does, destroying it cuts emissions sharply even though it releases some CO₂.
 
+In the detailed chain, seam methane sits at the methane-control service, not on the mines. Open-pit excavation requests about 0.00021 t of methane control per tonne of coal, and underground cutting about 0.0072 t CH₄/t. The methane options are counted per tonne of CH₄ handled: with no abatement the whole tonne escapes; a ventilation-air oxidizer leaves 0.31 t CH₄ and 1.88 t CO₂; and drainage leaves 0.61 t CH₄ and 1.07 t CO₂. The whole mines on the simplified extraction node keep their own methane emissions, since they do not request methane control.
+
 **Mine ventilation**
 
 {{< include _technology-blocks/coal-mining/product_raw-product_mine-ventilation.md >}}
@@ -82,7 +88,9 @@ Coal from the mine comes in lumps of every size. Crushing breaks it down, and mi
 
 ### Coal preparation
 
-Most metallurgical coal is washed to remove rock and ash, since steelmakers need clean, low-ash coal. Washing uses flotation, where chemicals and air bubbles lift fine coal away from the heavier rock. The washed coal is wet, so it is dried, usually with hot combustion gases, before shipping. Tailings disposal thickens and filters the rejected rock and recovers water.
+Most metallurgical coal is washed to remove rock and ash, since steelmakers need clean, low-ash coal. Washing separates coal from rock mainly by density, in dense-medium cyclones and jigs; flotation, where chemicals and air bubbles lift fine coal away from the heavier rock, cleans only the fines. The washed coal is wet, so it is dried, usually with hot combustion gases, before shipping. Tailings disposal thickens and filters the rejected rock and recovers water.
+
+In CIMS, washing uses the gravity separator, which stands for dense-medium separation: about 0.04 GJ per tonne of coal in a plant of about 10 Mt a year. The froth flotation cell from metal-ore processing is no longer offered on the washing node, so fines flotation has no technology of its own.
 
 **Washing**
 
@@ -124,7 +132,7 @@ Four regions mine coal: British Columbia, with export metallurgical coal from th
 
 ## Limitations and planned extensions
 
-<mark>TODO: The mine-methane node and its technologies were added to the hierarchy ahead of the CIMS model inputs. Add them to the regional input files, with extraction requesting methane control, and remove the fixed fugitive-methane factor from the extraction technologies.</mark>
+<mark>TODO: The technology database now has the mine-methane node, its per-tonne-CH₄ technologies, and the excavation and cutting requests for methane control, but the CIMS model inputs do not. Add them to the regional input files, and remove the fixed fugitive-methane factor from the detailed extraction technologies.</mark>
 
 <mark>TODO: The milling node has no technologies in the technology database yet, and mine-water treatment has no node; see the hierarchy change requests in the technology database.</mark>
 

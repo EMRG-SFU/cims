@@ -35,13 +35,15 @@ The competing technologies differ in how they make the hydrogen:
 - Efficiency measures on a conventional plant recover more heat and cut fuel use.
 - An autothermal reformer burns part of the gas with oxygen inside the reactor instead of heating it in an external furnace, which puts nearly all the CO₂ into one concentrated stream that is easier to capture.
 - Coal or biomass gasification makes the hydrogen by partly burning the solid fuel with oxygen and steam.
-- An electrolytic plant splits water with electricity and needs no reformer at all; the synthesis loop is unchanged [@smith_2020_001].
+- An electrolytic plant splits water with electricity and needs no reformer at all; the synthesis loop is unchanged [@smith_2020_001]. Like the reforming and gasification routes, it is a whole plant: its electrolysers are on site, and their electricity and cost are part of the technology, as its sources describe, so it buys no hydrogen.
 
 {{< include _technology-blocks/chemicals/product_ammonia.md >}}
 
 ### Urea
 
 Urea plants react ammonia with CO₂ under pressure, then dry the urea into small beads or granules for sale as fertilizer. The CO₂ comes from the ammonia plant's hydrogen step, so urea locks up part of the process CO₂ until the fertilizer is applied to fields and releases it. A switch to electrolytic hydrogen leaves urea plants needing another source of CO₂.
+
+In CIMS, the urea plant carries that credit itself. Urea fixes about 0.733 t CO₂ per tonne and releases about 0.038 t, so its process emission is −0.695 t CO₂ per tonne of urea. The credit has to sit on the technology: CIMS passes technology emissions through with no floor, but a negative service request carries no emissions. The ammonia plant still counts all of its process CO₂, and capture on ammonia should apply only to the CO₂ that urea does not take; the database records this as a note, not a cap.
 
 {{< include _technology-blocks/chemicals/product_urea.md >}}
 
@@ -65,7 +67,7 @@ Adipic acid plants oxidize cyclohexanol and cyclohexanone, purchased from petroc
 
 ### N₂O abatement
 
-The nitric and adipic acid plants request **N₂O abatement** for each tonne of acid they make. Leaving the N₂O untreated costs nothing, and it competes with two ways of destroying it. Catalytic abatement adds a catalyst inside or after the ammonia burner that breaks N₂O into nitrogen and oxygen. Thermal destruction burns the adipic acid off-gas, which also raises steam [@epa_2010_001]. In the model, abatement wins only when a carbon price applies to N₂O.
+The nitric and adipic acid plants request **N₂O abatement** in tonnes of N₂O: about 0.0085 t per tonne of nitric acid and 0.30 t per tonne of adipic acid. The acid plants' own N₂O emissions are left out, so the N₂O is counted once, at the abatement service. Each abatement option is counted per tonne of N₂O handled: with no abatement the whole tonne escapes, thermal destruction leaves about 0.01 t, and catalytic abatement about 0.22 t (a pooled value). Leaving the N₂O untreated costs nothing, and it competes with two ways of destroying it. Catalytic abatement adds a catalyst inside or after the ammonia burner that breaks N₂O into nitrogen and oxygen. Thermal destruction burns the adipic acid off-gas, which also raises steam [@epa_2010_001]. In the model, abatement wins only when a carbon price applies to N₂O.
 
 {{< include _technology-blocks/chemicals/service_n2o-abatement.md >}}
 
@@ -79,7 +81,7 @@ A conventional ammonia plant emits roughly 1.8–2.4 t CO₂ per tonne of ammoni
 
 For the acids, catalytic and thermal destruction remove most of the N₂O, a gas with roughly 270–300 times the warming effect of CO₂.
 
-<mark>TODO: The electrolytic Haber-Bosch technology draws hydrogen at a blended price. Consider linking it to the Hydrogen sector (@sec-hydrogen) and an electrolysis electricity load, so the route reflects hydrogen cost and availability.</mark>
+<mark>TODO: The electrolytic ammonia plant makes its own hydrogen on site. When the Hydrogen sector (@sec-hydrogen) is revised to choose between on-site and pipeline hydrogen, consider offering the synthesis loop alone, buying hydrogen from that sector, alongside or instead of the whole plant.</mark>
 
 <mark>TODO: No technology yet serves the other-fertilizers node beyond ammonium nitrate; add urea-ammonium nitrate and ammonium phosphate and sulphate plants as data allow.</mark>
 

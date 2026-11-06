@@ -59,7 +59,7 @@ Storage tanks release gas as liquids sit in them, and some processing equipment 
 
 ## Fugitive leaks
 
-Valves, seals, connectors, and pipes all leak a little, and a few large leaks often account for most of the loss. **Leak detection and repair** programs survey equipment with cameras and sensors and fix what they find. **Low-emission components**, such as better compressor seals and valves, cut the leak rate of the equipment itself, and **plastic liners** seal old distribution mains from the inside [@icf_2015_001; @iea_2026_004].
+Valves, seals, connectors, and pipes all leak a little, and a few large leaks often account for most of the loss. **Leak detection and repair** programs survey equipment with cameras and sensors and fix what they find. **Low-emission components**, such as better compressor seals and valves, cut the leak rate of the equipment itself, and **plastic liners** seal old distribution mains from the inside [@icf_2015_001; @iea_2026_004]. Measures that only fit distribution networks, plastic liners and automatic shut-off valves, compete on a separate **distribution fugitive** step with its own no-abatement option, so they can't be chosen to stop leaks at well sites and processing plants. That step sits under distribution (@sec-natural-gas).
 
 {{< include _technology-blocks/natural-gas/product_supply_fugitive.md >}}
 

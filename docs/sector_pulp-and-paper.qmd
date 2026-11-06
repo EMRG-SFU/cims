@@ -162,6 +162,7 @@ The sector also draws on the shared services documented in the General Services 
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of mill buildings | @sec-hvac-lighting |
 | Fuel blends | The diesel and gas blends the sector's equipment burns | @sec-fuel-blends |
+| CCS | Capture of the dilute CO₂ from recovery boilers and lime kilns fitted with capture | @sec-ccus |
 
 : Shared services in the pulp and paper sector {#tbl-pulp-and-paper-shared}
 
@@ -175,9 +176,9 @@ Because mills already run largely on bioenergy, decarbonising them means removin
 
 - **Efficiency.** Low-energy refining and chemi-thermomechanical pulping cut refiner electricity. Batch kraft digesters and oxygen delignification cut steam use. Dry or foam forming and better press sections remove more water before the dryers. Mechanical vapour recompression runs the evaporators on electricity instead of steam.
 - **The lime kiln.** The kiln is the hardest fossil load to remove, because turning lime mud back into lime needs high-temperature heat [@ppc-limekiln]. Efficiency measures cut its fuel, biofuels can replace it, and electrified kilns would remove it altogether [@kuparinen_2017_001].
-- **Electric drying.** Electric and heat-pump dryers can replace steam and gas-fired drying.
+- **Electric drying.** Electric dryers can replace steam and gas-fired drying, and heat pumps fitted to steam dryers recover heat from the dryer exhaust, cutting the steam they buy.
 - **Recovery and cogeneration.** Recovery boilers that burn more concentrated liquor at higher pressure, and black liquor gasification, recover more steam and power from each tonne of liquor.
-- **Negative emissions.** The recovery boiler and lime kiln release large streams of CO₂ from biomass. Capturing and storing it would take CO₂ out of the atmosphere overall [@svensson_2021_001]. Versions of both fitted with capture are in the technology lists above.
+- **Negative emissions.** The recovery boiler and lime kiln release large streams of CO₂ from biomass. Capturing and storing it would take CO₂ out of the atmosphere overall [@svensson_2021_001]. Versions of both fitted with capture are in the technology lists above, and send their CO₂ to the sector's CCS service.
 
 ## Regional coverage and differences
 
@@ -194,7 +195,7 @@ Five regions carry the sector: Alberta, the Atlantic region, British Columbia, O
 
 <mark>TODO: The demand trajectories come from older calibrations of the newsprint decline. Revisit them against current production and the shift toward packaging (linerboard), tissue, and market pulp, which are not declining in the way newsprint is.</mark>
 
-<mark>TODO: The pulp and paper hierarchy has no CCS node, although the recovery boiler and lime kiln carry capture-equipped technologies. Add capture nodes so those technologies have a capture service to request.</mark>
+<mark>TODO: The pulp and paper CCS service (dilute streams), which the recovery boiler and lime kiln with capture send their CO₂ to, was added to the hierarchy ahead of the CIMS model inputs. Add it to the regional input files.</mark>
 
 <mark>TODO: The effluent-treatment nodes were added to the hierarchy ahead of the CIMS model inputs. Update the regional input files to match.</mark>
 

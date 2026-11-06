@@ -56,6 +56,8 @@ A grain ethanol plant grinds the grain, cooks it with water and enzymes to turn 
 
 Fermentation also releases CO₂ that is almost pure. A plant can capture it with little more than drying and compression, which is why the capture-equipped fermenter is among the cheapest capture options in the model [@sanchez_2018_001]. Cellulosic plants first break down tough plant fibre into sugars, which takes more processing. Emerging options make ethanol from gasified biomass or from captured CO₂ and hydrogen.
 
+Both biomass routes count the biomass whose energy ends up in the ethanol (1 GJ per GJ) as feedstock, and the rest as energy use. The cellulosic fermenter's central value, about 2.3 GJ of biomass per GJ on top of the feed, comes from a plant converting only about 30 % of its biomass energy to ethanol; other sources give about 1.2 GJ/GJ. The gas-fermentation route gasifies about 2.7–2.9 t of dry biomass per tonne of ethanol, about 0.75 GJ per GJ on top of the feed, and raises its own steam and power from it, so it buys no steam.
+
 {{< include _technology-blocks/biofuels/product_ethanol.md >}}
 
 ### Biodiesel
@@ -72,13 +74,15 @@ Renewable diesel plants react oils and fats with hydrogen at high temperature an
 
 ### Renewable natural gas
 
-Renewable natural gas starts as biogas: the methane-rich gas that bacteria make when they break down manure, food waste, or landfilled waste without air. Plants clean the biogas and remove its CO₂ so it can go into the gas grid. Gasifying wood and turning the gas into methane is an emerging alternative [@etsap_2013_012].
+Renewable natural gas starts as biogas: the methane-rich gas that bacteria make when they break down manure, food waste, or landfilled waste without air. Plants clean the biogas and remove its CO₂ so it can go into the gas grid. Gasifying wood and turning the gas into methane is an emerging alternative [@etsap_2013_012]. Upgrading digester biogas uses about 0.04 GJ of electricity per GJ of gas, and landfill-gas recovery about 0.06 GJ/GJ, also electricity.
 
 {{< include _technology-blocks/biofuels/product_renewable-natural-gas.md >}}
 
 ### Solid biofuel
 
-Pellet mills dry, grind, and press sawdust, shavings, and chips into wood pellets for heating and power plants. Torrefaction, which roasts the wood without air before pressing it, makes denser pellets that resist water [@etsap_2013_010].
+Pellet mills dry, grind, and press sawdust, shavings, and chips into wood pellets for heating and power plants. Torrefaction, which roasts the wood without air before pressing it, makes denser pellets that resist water [@etsap_2013_010]. A charcoal retort also sits here, as a source of biocarbon for steelmaking.
+
+The node counts its products in GJ, so pellets, torrefied pellets, and charcoal compete on one footing: pellets at about 18.5 GJ per tonne, torrefied pellets about 21 GJ/t, and charcoal about 29 GJ/t. The pellet plant takes about 1.05 GJ of wood per GJ of pellets as feedstock, and torrefaction about 1.1 GJ/GJ. The retort's biomass input already is its wood.
 
 {{< include _technology-blocks/biofuels/product_solid-biofuel.md >}}
 

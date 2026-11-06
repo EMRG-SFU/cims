@@ -30,10 +30,10 @@ A **steam cracker** heats a stream of ethane or naphtha, mixed with steam, to ov
 
 The competing technologies change either how the heat is supplied or where the olefins come from:
 
-- Efficiency measures and catalytic cracking, which works at a lower temperature, cut the energy a conventional cracker needs.
+- Efficiency measures and catalytic cracking, which works at a lower temperature, cut the energy a conventional cracker needs. The catalytic cracker cracks naphtha, so its feedstock is naphtha, at 50 GJ per tonne: the energy held in the high-value chemicals, as for the other crackers' feedstock.
 - Hydrogen-fired furnaces and **electric crackers**, which heat the tubes with electricity instead of burners, remove most of the furnace CO₂ [@tijani_2022_001].
 - Capture on the furnace flue gas takes the CO₂ out after the fact.
-- Propane dehydrogenation makes propylene directly by stripping hydrogen from propane over a catalyst.
+- Propane dehydrogenation makes propylene directly by stripping hydrogen from propane over a catalyst. It takes about 60.5 GJ of propane (as LPG) per tonne as feedstock, and its energy splits into about 13.9 GJ of natural gas and 1.06 GJ of electricity.
 - Other plants make olefins from methanol, from bio-ethanol, or from gasified or pyrolyzed biomass, bypassing cracking altogether.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_olefins.md >}}
@@ -52,13 +52,13 @@ Polymer plants link ethylene or propylene molecules into long chains in pressuri
 
 ### Olefin derivatives
 
-This step makes products from olefins and aromatics. The largest in Canada is ethylene oxide, made in Alberta by reacting ethylene with oxygen over a silver catalyst and then turned into ethylene glycol for antifreeze and polyester. That reaction burns a little of the ethylene to CO₂, which the plant separates as a nearly pure stream that is cheap to capture. The step also includes chemical depolymerization, which breaks used plastics back down into the molecules they were made from.
+This step makes products from olefins and aromatics. The largest in Canada is ethylene oxide, made in Alberta by reacting ethylene with oxygen over a silver catalyst and then turned into ethylene glycol for antifreeze and polyester. That reaction burns a little of the ethylene to CO₂, which the plant separates as a nearly pure stream that is cheap to capture. The ethylene oxide and glycol plant requests about 0.51 t of ethylene per tonne from the olefins node. Chemical depolymerization, which breaks used plastics such as PET back down into the molecules they were made from, is kept only as a reference technology, because it does not make the same product per tonne as ethylene oxide and glycol.
 
 {{< include _technology-blocks/chemicals/product_petrochemicals_derivatives.md >}}
 
 ### Methanol
 
-A conventional methanol plant reforms natural gas with steam into synthesis gas, a mix of hydrogen and carbon oxides, then converts it to methanol at pressure over a copper catalyst. Like ammonia, it releases CO₂ from the chemistry as well as from the reformer furnace. The competing routes make the synthesis gas from coal or biomass instead, or skip it by combining captured CO₂ with hydrogen [@iea_2013_001].
+A conventional methanol plant reforms natural gas with steam into synthesis gas, a mix of hydrogen and carbon oxides, then converts it to methanol at pressure over a copper catalyst. Like ammonia, it releases CO₂ from the chemistry as well as from the reformer furnace. The competing routes make the synthesis gas from coal or biomass instead, or skip it by combining captured CO₂ with hydrogen [@iea_2013_001]. The coal route uses about 48 GJ per tonne of methanol on its sources' basis, with steam and power made on site. Higher figures of 58–72 GJ/t include exported energy and lignite feed.
 
 {{< include _technology-blocks/chemicals/product_methanol.md >}}
 
@@ -66,7 +66,7 @@ A conventional methanol plant reforms natural gas with steam into synthesis gas,
 
 Steam cracking uses a lot of energy and emits a lot of CO₂. The model offers capture on the cracker furnace flue gas, hydrogen-fired and electric furnaces, catalytic cracking at lower temperature, and olefins made from ethanol, methanol, or biomass. An electric cracker demonstrated at pilot scale transfers about 95 % of its heat to the process and can cut cracking-furnace CO₂ by up to about 90 % on low-carbon electricity [@basf-ecracker; @rmi-chemistry]. Ethylene oxide plants already separate a nearly pure CO₂ stream that capture can take cheaply. For methanol, the options are capture on gasification routes, biomass or waste gasification, and synthesis from captured CO₂ and hydrogen.
 
-<mark>TODO: The derivatives node groups products made by different processes (ethylene oxide, other derivatives, and depolymerization), so costs per tonne are not comparable across its technologies. Check whether it should be split.</mark>
+<mark>TODO: The derivatives node groups products made by different processes (ethylene oxide and other derivatives), so costs per tonne are not fully comparable across its technologies. Depolymerization is now a reference technology, off the node. Check whether the rest of the node should be split.</mark>
 
 {{< pagebreak >}}
 

@@ -25,7 +25,7 @@ How hard and how costly capture is depends mostly on how concentrated the CO~2~ 
 
 The difference shows up in cost. The IPCC puts capture from concentrated streams at up to 99 % reduction for USD 40 per tonne or less, and capture from flue gas at up to 90 % reduction for USD 120 per tonne or less [@ipcc_2022_001]. Some plants have both kinds of stream. A steam methane reformer's process CO~2~ is concentrated while its furnace flue gas is dilute; in a cement plant, the CO~2~ released from limestone in a calciner heated from outside is concentrated while the CO~2~ from burning fuel is dilute.
 
-Concentrated capture appears in Biofuels, Chemicals, Crude Oil, Hydrogen, Iron and Steel, Natural Gas, Non-Ferrous Metals, and Petroleum Refining. Dilute capture appears in the same sectors except Hydrogen, plus Industrial Minerals. Electricity has its own capture services, split by fuel (see @sec-electricity).
+Concentrated capture appears in Biofuels, Chemicals, Crude Oil, Hydrogen, Industrial Minerals, Iron and Steel, Natural Gas, Non-Ferrous Metals, and Petroleum Refining; in Industrial Minerals it takes the CO~2~ from oxy-fuel kilns, calcium looping, and indirectly heated calciners. Dilute capture appears in the same sectors except Hydrogen, plus Pulp and Paper, where it serves recovery boilers and lime kilns fitted with capture. Electricity has its own capture services, split by fuel (see @sec-electricity).
 
 ### Host plants and capture units
 
@@ -59,7 +59,9 @@ Every tonne of captured CO~2~ needs both transport and storage, so the two work 
 
 : CO~2~ transport and storage routes {#tbl-co2-routes}
 
-Each route has a pipeline step and a storage step.
+Each route has a compression step, a pipeline step, and a storage step. The pipeline is the pipe alone: for each tonne it carries, it asks the route's compression step to dry the CO~2~ and compress it to pipeline pressure, so the compressor's power is counted once.
+
+<mark>TODO: The compression step was added to the hierarchy ahead of the CIMS model inputs, with a CO~2~ compression and dehydration technology. Some capture-unit sources already include compression in their energy use; check them so it is not counted twice.</mark>
 
 **Pipeline**
 
@@ -70,6 +72,8 @@ Each route has a pipeline step and a storage step.
 {{< include _technology-blocks/general/co2-transport_storage.md >}}
 
 <mark>TODO: Document how captured CO~2~ from each sector and region is assigned to a route, the storage capacity assumed on each route, and how utilization (enhanced oil recovery, urea, synthetic fuels) is distinguished from permanent storage.</mark>
+
+<mark>TODO: Technologies that use captured CO~2~ as a feedstock (CO~2~-to-methanol, CO~2~-to-ethanol, and CO~2~-to-fuels) buy it from their sector's concentrated capture service in the technology database. This may not yet be possible in CIMS, and CO~2~ sent to use should not also earn a storage credit.</mark>
 
 {{< pagebreak >}}
 

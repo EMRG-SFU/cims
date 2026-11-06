@@ -54,7 +54,7 @@ Most oil sands bitumen lies too deep to mine. In-situ ("in place") recovery heat
 - In **steam-assisted gravity drainage** (SAGD), operators drill pairs of horizontal wells, one a few metres above the other. Steam injected through the upper well heats the bitumen, which drains down with the condensed water into the lower well and is pumped to the surface.
 - In **cyclic steam stimulation**, a single well takes turns injecting steam, letting the reservoir soak, and producing the heated oil.
 
-Making steam is where nearly all the energy goes. The key measure is the steam-to-oil ratio: how much steam a project needs for each barrel of bitumen. A reservoir that needs more steam burns more fuel and emits more CO₂ per barrel [@oilsands-intensity]. The steam comes from the sector's Steam service (@sec-industrial-heat), in boilers and cogeneration plants fed with produced water that has been treated to remove oil, hardness, and silica.
+Making steam is where nearly all the energy goes. The key measure is the steam-to-oil ratio: how much steam a project needs for each barrel of bitumen. A reservoir that needs more steam burns more fuel and emits more CO₂ per barrel [@oilsands-intensity]. The steam comes from the sector's Steam service (@sec-industrial-heat), in boilers and cogeneration plants fed with produced water that has been treated to remove oil, hardness, and silica. The in-situ technologies don't make their own steam: each buys it from that service at its steam-to-oil ratio, so the choice between once-through boilers, cogeneration, electric boilers, and small nuclear reactors is made there. In-situ oxy-combustion, which makes its steam downhole, keeps its own fuel. Direct-contact steam generation, which mixes combustion gas straight into the water, is set aside for now, since the technology database has only one source for it and no cost.
 
 Several newer methods aim to cut or replace that steam:
 
@@ -75,7 +75,7 @@ Upgrading turns bitumen into synthetic crude, a light, low-sulphur oil that refi
 
 {{< include _technology-blocks/crude-oil/product_bitumen_upgrading_primary.md >}}
 
-**Secondary upgrading** treats the lighter liquids from primary upgrading with hydrogen over a catalyst at high temperature and pressure. This hydroprocessing removes sulphur and nitrogen and adds hydrogen, which stabilizes the oil. Its heaters can run on fuel gas, on electricity, or on hydrogen.
+**Secondary upgrading** treats the lighter liquids from primary upgrading with hydrogen over a catalyst at high temperature and pressure. This hydroprocessing removes sulphur and nitrogen and adds hydrogen, which stabilizes the oil. The upgrading units buy the heat their furnaces supply from the sector's **fired-heater** service, which offers the same heaters as a refinery: fuel-fired, electric, and solid-fuel heaters, among others. Hydrogen reaches those heaters through the fuel blend rather than as a heater of its own.
 
 {{< include _technology-blocks/crude-oil/product_bitumen_upgrading_secondary.md >}}
 
@@ -95,6 +95,8 @@ The economics of each project matter as much as the technology. Older mines and 
 <mark>TODO: The upgraders' hydrogen is made on site; link it to the [Hydrogen](sector_hydrogen.qmd) sector so upgrading can also draw on merchant blue or green hydrogen at that sector's cost and carbon intensity.</mark>
 
 <mark>TODO: Refresh the solvent-SAGD and capture options against the Pathways Alliance project and current pilots.</mark>
+
+<mark>TODO: The crude oil fired-heater service was added to the hierarchy ahead of the CIMS model inputs. Add it to the regional input files, with the upgrading units and in-situ wells requesting heat and steam rather than burning their own fuel.</mark>
 
 {{< pagebreak >}}
 

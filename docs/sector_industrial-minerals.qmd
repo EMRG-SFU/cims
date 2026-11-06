@@ -44,17 +44,17 @@ CIMS models each product as a chain of production steps. Those steps call on the
 
 ### Cement
 
-Cement is the powder that binds sand and stone into concrete. In CIMS it is made by recipe. Each **cement binder** is a recipe for a tonne of cement that calls on the other cement steps for its clinker, grinding, and replacement materials, and adds only its own blending and handling. The recipes differ in how much clinker they use:
+Cement is the powder that binds sand and stone into concrete. In CIMS it is made by recipe. Each **cement binder** is a recipe for a tonne of cement that calls on the other cement steps for its clinker, grinding, and replacement materials, and adds only its own blending and handling. The binders that make their own non-portland clinker or binder (carbonated, sulphoaluminate, hydrothermal, and electrochemical) are instead whole binder plants, which ask for no clinker or grinding, except the clinker some of them still blend in. The recipes differ in how much clinker they use:
 
 - Ordinary portland cement is mostly clinker, with a little gypsum.
 - Blended cements replace part of the clinker with slag, fly ash, limestone, or natural materials. Calcined clay cement (known as LC3) replaces it with a mix of calcined clay and limestone [@scrivener_2018_001].
-- Alkali-activated, carbonated, sulphoaluminate, hydrothermal, and electrochemical binders avoid conventional clinker altogether, or need much less heat to make [@habert_2020_001].
+- Alkali-activated, carbonated, sulphoaluminate, hydrothermal, and electrochemical binders avoid conventional clinker altogether, or need much less heat to make [@habert_2020_001]. The carbonated binder still calcines limestone, so it carries process CO₂ of about 0.30 t per tonne. The CO₂ it takes up as it cures is a request of about 0.25 t CO₂ per tonne to the capture node.
 
 Because the recipe sets how much clinker and grinding a tonne of cement needs, grinding stays in this sector rather than in the shared machine-drive service.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_binder.md >}}
 
-**Clinker** is made by heating ground limestone and clay (raw meal) to about 1,450 °C in a long rotating kiln, where it fuses into grey nodules. A modern kiln preheats the meal in a tower of cyclones and does most of the calcination in a separate burner (the precalciner) before the kiln. Clinker production is where most of the sector's fuel is burned and most of its CO₂ released [@gcca_2024_001]. Alternatives include kilns that capture the CO₂ from their exhaust, kilns that burn fuel in pure oxygen or loop lime through a second reactor so their CO₂ comes out concentrated and easier to capture [@gardarsdottir_2019_001], calciners heated by electricity, and kilns that use calcium-silicate rock instead of limestone.
+**Clinker** is made by heating ground limestone and clay (raw meal) to about 1,450 °C in a long rotating kiln, where it fuses into grey nodules. A modern kiln preheats the meal in a tower of cyclones and does most of the calcination in a separate burner (the precalciner) before the kiln. Clinker production is where most of the sector's fuel is burned and most of its CO₂ released [@gcca_2024_001]. Alternatives include kilns that capture the CO₂ from their exhaust, kilns that burn fuel in pure oxygen or loop lime through a second reactor so their CO₂ comes out concentrated and easier to capture [@gardarsdottir_2019_001], calciners heated by electricity, and kilns that use calcium-silicate rock instead of limestone. The oxy-fuel and calcium-looping kilns send their concentrated CO₂ to the sector's concentrated capture service, which purifies and compresses it, and buy their oxygen from the sector's **oxygen** service, where air separation units supply it; the kilns' own energy and capital cost leave out both units, so neither is counted twice.
 
 {{< include _technology-blocks/industrial-minerals/product_cement_clinker.md >}}
 
@@ -72,7 +72,7 @@ Because the recipe sets how much clinker and grinding a tonne of cement needs, g
 
 ### Lime
 
-Lime is made by heating limestone (or dolomite, for dolomitic lime) in rotary or vertical shaft kilns until it gives off its CO₂. Steel mills, pulp mills, water treatment plants, and builders use it. About two-thirds of a lime kiln's CO₂ comes from the rock, so switching fuels alone can only go so far [@simoni_2022_001]. The sector's **kiln heat** service offers an electrically or indirectly heated calciner. It keeps the CO₂ from the rock separate from the combustion gases, which makes it much easier to capture.
+Lime is made by heating limestone (or dolomite, for dolomitic lime) in rotary or vertical shaft kilns until it gives off its CO₂. Steel mills, pulp mills, water treatment plants, and builders use it. About two-thirds of a lime kiln's CO₂ comes from the rock, so switching fuels alone can only go so far [@simoni_2022_001]. An electrically or indirectly heated calciner keeps the CO₂ from the rock separate from the combustion gases, which makes it much easier to capture. It competes on the lime node itself, not in the kiln heat service. Its data are per tonne of clinker, so CIMS converts them at about 0.535 t of lime per tonne of clinker, an estimate based on the ratio of calcination heat. The oxy-fuel lime kiln carries the same process CO₂ as the other lime kilns, 0.785 t per tonne of lime.
 
 {{< include _technology-blocks/industrial-minerals/product_lime.md >}}
 
@@ -82,7 +82,7 @@ Lime is made by heating limestone (or dolomite, for dolomitic lime) in rotary or
 
 ### Glass
 
-**Glass melting** prepares the raw materials (sand, soda ash, limestone, and recycled glass, called cullet) and melts them in a furnace at around 1,500 °C. Container, flat, fibre, and specialty glass each use their own furnace designs, and stone wool insulation is melted in a separate kind of furnace. Most furnaces burn natural gas, and some add electric heating through electrodes in the melt. Using more cullet cuts both fuel use and process CO₂, because recycled glass melts more easily and contains no carbonate. **Forming and finishing** shapes the glass, then reheats it and cools it slowly in an oven called a lehr, so it doesn't crack.
+**Glass melting** prepares the raw materials (sand, soda ash, limestone, and recycled glass, called cullet) and melts them in a furnace at around 1,500 °C. Container, flat, fibre, and specialty glass each use their own furnace designs, and stone wool insulation is melted in a separate kind of furnace, a coke-fired cupola that the model doesn't offer, since the data are too thin to give stone wool a step of its own. Most furnaces burn natural gas, and some add electric heating through electrodes in the melt. Using more cullet cuts both fuel use and process CO₂, because recycled glass melts more easily and contains no carbonate. Oxy-fuel furnaces buy their oxygen from the sector's oxygen service. The two hybrid electric furnaces are set on the regenerative furnace that hosts them, rather than on container and flat-glass sources: the hybrid furnace at about 4.7 GJ per tonne of glass (1.2 GJ electricity and 3.5 GJ gas), and the majority-electric hybrid at about 4.6 GJ/t (3.0 GJ electricity and 1.6 GJ gas). **Forming and finishing** shapes the glass, then reheats it and cools it slowly in an oven called a lehr, so it doesn't crack.
 
 **Melting**
 
@@ -106,7 +106,7 @@ Brick, tile, and other ceramic ware is shaped from wet clay, dried to remove the
 
 ### Gypsum
 
-Gypsum rock is heated at a low temperature to drive off part of its water, turning it into a powder (stucco) that is made into wallboard and plaster.
+Gypsum rock is heated at a low temperature to drive off part of its water, turning it into a powder (stucco) that is made into wallboard and plaster. The gypsum node offers a gypsum calciner, at about 1.05 GJ per tonne of stucco (a judgement value). The generic mineral dryer, which only dries, is no longer offered there.
 
 {{< include _technology-blocks/industrial-minerals/product_gypsum.md >}}
 
@@ -117,7 +117,8 @@ Gypsum rock is heated at a low temperature to drive off part of its water, turni
 | Machine drive | Pumps, fans and blowers, compressed air, materials handling, and materials processing | @sec-machine-drive |
 | HVAC and lighting | Heating, cooling, and lighting of plant buildings | @sec-hvac-lighting |
 | Fuel blends | Diesel and natural gas blends | @sec-fuel-blends |
-| CCS | Capture for the cement kilns, lime kilns, and glass furnaces that send their exhaust to it | @sec-ccus |
+| CCS | Capture of dilute CO₂ from the cement kilns, lime kilns, and glass furnaces that send their exhaust to it, and of concentrated CO₂ from oxy-fuel and calcium-looping kilns | @sec-ccus |
+| Oxygen | Oxygen for oxy-fuel kilns, calcium looping, and oxy-fuel glass furnaces | Air separation unit, as in @sec-iron-and-steel |
 
 : Shared services in the industrial minerals sector {#tbl-industrial-minerals-shared}
 
@@ -127,7 +128,7 @@ Using less fuel or switching fuels only reaches the combustion share of the sect
 
 - **Less clinker.** Slag, fly ash, calcined clay, limestone, and natural materials can replace part of the clinker. Calcined clay cement can cut cement CO₂ by around 40 % and is already on the market [@doe-liftoff-cement]. The cement recipes and the calcined clay and ground slag steps represent this directly.
 - **New binders and raw materials.** Alkali-activated, carbonated, electrochemical, and hydrothermal binders, and clinker made from calcium-silicate rock, avoid or reduce calcination CO₂.
-- **Capture.** Cement kilns, lime kilns, and glass furnaces can capture CO₂ from their exhaust, and kilns designed to concentrate their CO₂ (oxy-fuel kilns, calcium looping, and indirect calciners) make capture cheaper [@plaza_2020_001].
+- **Capture.** Cement kilns, lime kilns, and glass furnaces can capture CO₂ from their exhaust, and kilns designed to concentrate their CO₂ (oxy-fuel kilns, calcium looping, and indirect calciners) make capture cheaper [@plaza_2020_001]. Capture on a lime kiln costs more than on a cement kiln, because its heat supply for capture is more costly (an add-on of about 603 against 331 for cement, per tonne of CO₂ in the database). That difference is lost when the export sends lime kilns to the generic capture node.
 - **Electrification and efficiency.** Electric kilns and glass melters, hybrid glass furnaces, electric dryers and lehrs, kiln efficiency upgrades, and vertical roller mills cut fuel use and energy.
 
 ## Regional coverage and differences
@@ -139,6 +140,8 @@ Five regions carry the sector: Alberta, the Atlantic region, British Columbia, O
 ## Limitations and planned extensions
 
 <mark>TODO: The cement recipes, the calcined clay and ground slag nodes, and the ceramics and gypsum nodes were added to the hierarchy ahead of the CIMS model inputs. Build them into the regional input files (draft scripts are in the technology database's `cims/model-changes/`).</mark>
+
+<mark>TODO: The concentrated capture and oxygen services were added to the hierarchy ahead of the CIMS model inputs. Add them to the regional input files, with the oxy-fuel and calcium-looping kilns and oxy-fuel glass furnaces requesting them.</mark>
 
 <mark>TODO: Most lime kilns request their fuel directly rather than through the kiln-heat service; revisit the service requests when the sector is reviewed. Add an on-site power node so waste-heat power can compete at cement and glass plants.</mark>
 

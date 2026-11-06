@@ -59,7 +59,7 @@ The Product sub-tree holds the process units. Distillation, conversion, hydrotre
 
 ### Process heaters
 
-**Process heaters** are the furnaces that supply the refinery's hottest heat, for distillation, reforming, coking, and hydrotreating. They burn still gas or natural gas in a firebox and heat oil flowing through tubes inside it. They are the only node in the high-temperature heat band (see @sec-industrial-heat). Electric heaters, heat stored from cheap electricity, concentrated solar heat, and small nuclear reactors compete with them, and fired heaters can also add carbon capture.
+**Process heaters** are the furnaces that supply the refinery's hottest heat, for distillation, reforming, coking, and hydrotreating. They burn still gas or natural gas in a firebox and heat oil flowing through tubes inside it. They are the only node in the high-temperature heat band (see @sec-industrial-heat). Electric heaters, heat stored from cheap electricity, concentrated solar heat, and small nuclear reactors compete with them, and fired heaters can also add carbon capture. The process units don't burn fuel of their own: each buys the heat its furnaces supply from this service, so the choice of heater is made here, once, for the whole refinery. Hydrogen reaches the fired heaters through the fuel blend, so there is no separate hydrogen-fired heater.
 
 {{< include _technology-blocks/petroleum-refining/service_direct-heat.md >}}
 
@@ -83,7 +83,7 @@ The hierarchy has no separate catalytic-cracking node, so the cracking technolog
 
 ### Hydrotreating and sulphur recovery
 
-**Hydrotreating** removes sulphur and nitrogen from fuels so they meet clean-fuel standards. The fuel is heated and mixed with hydrogen over a catalyst, and the sulphur leaves as hydrogen sulphide gas. Its heaters can run on fuel gas, electricity, or hydrogen.
+**Hydrotreating** removes sulphur and nitrogen from fuels so they meet clean-fuel standards. The fuel is heated and mixed with hydrogen over a catalyst, and the sulphur leaves as hydrogen sulphide gas. It buys its heat from the process heaters, which can run on fuel gas, electricity, or hydrogen through the fuel blend.
 
 **Sulphur recovery** turns that hydrogen sulphide into solid sulphur. A solvent first strips the gas out of the refinery's gas streams. A Claus unit then burns part of it and reacts the rest to make elemental sulphur, and a final step cleans up the leftover gas.
 
@@ -99,7 +99,7 @@ The hierarchy has no separate catalytic-cracking node, so the cracking technolog
 
 These units make high-octane gasoline blending components:
 
-- **Catalytic reforming** reshapes naphtha molecules into high-octane reformate over a hot catalyst. It gives off hydrogen as a by-product, which the refinery reuses. Its heat can come from fired heaters or from electricity.
+- **Catalytic reforming** reshapes naphtha molecules into high-octane reformate over a hot catalyst. It gives off hydrogen as a by-product, which the refinery reuses. Its heat comes from the process heaters, fired or electric.
 - **Alkylation** joins small gas molecules into larger, high-octane ones.
 - **Isomerization** rearranges light naphtha molecules into branched shapes that have a higher octane rating.
 
@@ -141,8 +141,8 @@ The refinery makes its own **hydrogen** for hydrotreating and hydrocracking. A s
 
 ## Decarbonisation
 
-- **Electrifying process heat.** Electric process heaters, and electrically heated hydroprocessing and reforming, remove the combustion CO₂ from low- and medium-temperature heat. Stored heat lets refineries use cheaper off-peak electricity.
-- **Hydrogen as fuel and feed.** Hydrogen-fired heaters cut emissions from high-temperature heat that is hard to electrify, and low-carbon hydrogen replaces hydrogen made from natural gas without capture.
+- **Electrifying process heat.** Electric process heaters remove the combustion CO₂ from low- and medium-temperature heat. Stored heat lets refineries use cheaper off-peak electricity.
+- **Hydrogen as fuel and feed.** Hydrogen blended into the fuel the heaters burn cuts emissions from high-temperature heat that is hard to electrify, and low-carbon hydrogen replaces hydrogen made from natural gas without capture.
 - **Carbon capture.** The hydrogen plant's concentrated CO₂ is among the cheapest capture opportunities in the economy. Capture on the catalytic cracker's regenerator and on fired heaters is less mature and costs more, because their exhaust is more dilute [@ieaghg_2017_002].
 - **Efficiency.** Better heat recovery and heater upgrades cut fuel use in the units that remain.
 

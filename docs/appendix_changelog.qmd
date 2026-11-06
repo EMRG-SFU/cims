@@ -2,6 +2,13 @@
 
 <mark>TODO: A chronologically-organized log of substantive changes to the model and the documentation. Start with the current "version" and seed it with the recent reorganization (per-chapter bibliographies, equation reformatting, dynamic region-sector table, etc.). When a new model release is cut, add a section documenting what's new, what's deprecated, and any migration steps needed for inputs or scenarios from previous versions.</mark>
 
+## Documentation, 5 November 2026: chapters aligned with the technology database's node review
+
+- Steam and fired heat are bought, not made, by the units that use them: in-situ wells buy steam from the crude oil Steam service, Bayer digestion from the non-ferrous metals Steam service, and refinery and upgrading units buy heat from the fired-heater service, now also in the crude oil sector. Hydrogen reaches fired heaters through the fuel blend. Direct-contact steam generation is set aside.
+- Whole plants that compete with the chain of steps inside them are kept only as references. The hydrogen steel route is now hydrogen direct reduction feeding a DRI-charged arc furnace; the arc furnace is split by charge; blast furnaces use a Canadian burden of mostly pellets; and the coal mines compete as whole mines only on the simplified extraction node. Electrolytic ammonia stays a whole plant with on-site electrolysers, the footing its sources describe.
+- New nodes added to the hierarchy ahead of the CIMS model inputs: CO₂ compression under each pipeline route, concentrated capture and oxygen in industrial minerals, CCS in pulp and paper, heat for direct air capture, the crude oil fired-heater service, and a distribution fugitive step in natural gas.
+- Corrected the coal washing description (dense-medium separation, with flotation for fines only) and noted the data gaps: excavation-only coal mining, coal preparation plants, and mineral wool.
+
 ## Documentation, October 2026: sector chapters aligned with the new CIMS hierarchy
 
 - Rewrote every sector chapter around the CIMS hierarchy in the technology database (`cims_hierarchy.csv`), with a generated process flowchart (see @sec-figure-style) and, after each process step, the technologies that compete there.

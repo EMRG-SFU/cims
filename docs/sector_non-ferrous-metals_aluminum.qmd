@@ -26,7 +26,7 @@ The aluminium branch splits into **primary aluminium**, made up of the two alumi
 
 ### Bayer digestion
 
-The Bayer process is the first stage of alumina refining. Crushed bauxite is mixed with hot caustic soda and held under pressure, which dissolves the alumina and leaves the iron and other impurities behind as a red mud. After the mud settles out, the solution is cooled and seeded so that crystals of alumina hydrate form, and the caustic soda is reheated and reused. Almost all of the energy goes into heating and evaporating the solution, usually with steam from fuel-fired boilers. Mechanical vapour recompression captures the vapour from the evaporators, compresses it with an electric compressor, and uses it again in place of fresh steam [@alcoa_2022_002].
+The Bayer process is the first stage of alumina refining. Crushed bauxite is mixed with hot caustic soda and held under pressure, which dissolves the alumina and leaves the iron and other impurities behind as a red mud. After the mud settles out, the solution is cooled and seeded so that crystals of alumina hydrate form, and the caustic soda is reheated and reused. Almost all of the energy goes into heating and evaporating the solution, usually with steam from fuel-fired boilers. In CIMS, digestion buys that steam, about 5 GJ per tonne of alumina, from the sector's steam service, where the choice between fuel-fired boilers, cogeneration, electric boilers, and heat pumps is made. Mechanical vapour recompression captures the vapour from the evaporators, compresses it with an electric compressor, and uses it again in place of fresh steam, so it buys electricity instead [@alcoa_2022_002].
 
 {{< include _technology-blocks/non-ferrous-metals/product_aluminum_primary-aluminum_alumina_digestion.md >}}
 
@@ -38,7 +38,7 @@ Calcination heats the alumina hydrate to about 1,000 °C to drive off its chemic
 
 ### Anode production
 
-The smelting cells need a steady supply of carbon anodes. Most Canadian cells use prebaked anodes: blocks of petroleum coke bound with pitch, baked for about two weeks in a gas-fired ring furnace. Older Søderberg cells instead bake their own anode in place from a carbon paste fed into the top of the cell. Baking with electricity, or making anodes from bio-based coke and pitch, cuts the emissions of this step.
+The smelting cells need a steady supply of carbon anodes. Most Canadian cells use prebaked anodes: blocks of petroleum coke bound with pitch, baked for about two weeks in a gas-fired ring furnace. Older Søderberg cells instead bake their own anode in place from a carbon paste fed into the top of the cell. Baking with electricity, or making anodes from bio-based coke and pitch, cuts the emissions of this step. Prebaked cells request about 0.42 t of anode per tonne of aluminium from this service; Søderberg cells request none, because the database has too little data on paste plants to offer them as an option, and the paste's small energy use is left out.
 
 {{< include _technology-blocks/non-ferrous-metals/service_anode-production.md >}}
 

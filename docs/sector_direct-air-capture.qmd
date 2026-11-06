@@ -12,7 +12,7 @@ Direct air capture (DAC) takes CO₂ out of the open air rather than out of a sm
 
 ## Scope
 
-The sector covers capturing CO₂ from air with a liquid solvent or a solid sorbent (a material that holds CO₂ on its surface), and compressing it. Its single process step is **CO₂ removal**. The captured CO₂ then needs a pipeline and a place to store it underground, which the shared CO₂ transport and storage routes provide (see @sec-ccus). CO₂ that ends up stored counts as removed from the atmosphere. Capture at industrial plants belongs to the sectors that host it, also described in @sec-ccus.
+The sector covers capturing CO₂ from air with a liquid solvent or a solid sorbent (a material that holds CO₂ on its surface), and compressing it. Its single process step is **CO₂ removal**, supported by a low-temperature **heat** service. The captured CO₂ then needs a pipeline and a place to store it underground, which the shared CO₂ transport and storage routes provide (see @sec-ccus). CO₂ that ends up stored counts as removed from the atmosphere. Capture at industrial plants belongs to the sectors that host it, also described in @sec-ccus.
 
 ## Context
 
@@ -35,7 +35,7 @@ Process flow of direct air capture. Heat and electricity drive the capture of CO
 The **CO₂ removal** process step hosts the competition between two families of capture technology. Both move large volumes of air past a material that binds CO₂, then use energy to release the CO₂ as a pure stream ready for compression. They differ in how they release it:
 
 - **Liquid-solvent systems** pass air through a strong alkaline solution that absorbs CO₂. The CO₂ is then moved into a solid (calcium carbonate) and heated to about 900 °C in a kiln-like calciner, which drives it off. This needs high-temperature heat, usually from burning natural gas, so the plant must also capture the CO₂ from that fuel [@keith_2018_001].
-- **Solid-sorbent systems** pass air over filters coated with a material that holds CO₂. Once the filters are full, heating them to around 100 °C, often under a vacuum, releases the CO₂. The low temperature means waste heat or heat pumps can supply it, and the units are small and modular [@layritz_2021_001].
+- **Solid-sorbent systems** pass air over filters coated with a material that holds CO₂. Once the filters are full, heating them to around 100 °C, often under a vacuum, releases the CO₂. The low temperature means waste heat or heat pumps can supply it, and the units are small and modular [@layritz_2021_001]. In CIMS, solid-sorbent units buy that heat, about 6.3 GJ per tonne of CO₂, from the sector's **heat** service, where heat pumps, electric and fuel-fired boilers, waste-heat recovery, geothermal heat, and solar collectors compete to supply it.
 
 {{< include _technology-blocks/direct-air-capture/product_co2-removal.md >}}
 

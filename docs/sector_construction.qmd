@@ -44,7 +44,7 @@ The sector has one process step, **site equipment** (the Transport node in its P
 - A **diesel machine** burns diesel in an engine that drives the wheels, tracks, and hydraulics directly. It is cheap to buy and refuels quickly, but it wastes much of its fuel as heat, especially when idling.
 - A **diesel-electric hybrid** adds a battery and electric drive. It recovers energy when the machine brakes or lowers a load, and lets the engine run more steadily, which saves fuel in stop-start work.
 - A **battery-electric machine** draws all its energy from a battery charged from the grid. Electric motors waste far less energy than engines, and the machine uses almost nothing while idle [@kukkonen_2017_001]. Its limits are battery size, charging time, and purchase cost.
-- A **hydrogen machine** uses either a hydrogen-burning engine or a fuel cell that turns hydrogen into electricity. Neither releases CO₂ at the machine, but both depend on hydrogen reaching the site.
+- A **hydrogen machine** uses either a hydrogen-burning engine or a fuel cell that turns hydrogen into electricity. Neither releases CO₂ at the machine, but both depend on hydrogen reaching the site. A hydrogen engine is about 30–40 % efficient at its best operating point, but only about 18 % over a typical duty cycle, which is the value the database uses.
 - A **propane or natural-gas machine** uses a spark-ignition engine, like a car's, and is common in forklifts.
 
 Diesel machines burn the diesel fuel blend, so any renewable fuel in that blend lowers their emissions automatically (see @sec-fuel-blends).
