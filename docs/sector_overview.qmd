@@ -66,7 +66,7 @@ The sector chapters share one layout, so that each part of the economy answers t
 
 Where it helps, the chapters cite the sources the technology database draws on for a technology. The tables give only a summary; the technology database's archetype table holds the full set of values for every technology, including costs, energy use, lifetimes, emissions, and sources.
 
-<mark>TODO: Link the published archetype wide-view table (`wide-archetype.csv` in the technology database) here.</mark>
+<mark>TODO: Link the published archetype wide-view table (the archetypes sheet of `technology-database.xlsx` in the technology database) here.</mark>
 
 ## Shared conventions
 
